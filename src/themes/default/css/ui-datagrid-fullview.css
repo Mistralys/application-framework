@@ -1,0 +1,22 @@
+/**
+ * This stylesheet is used only when a datagrid is opened dynamically 
+ * in full view mode, which is available only when column controls are
+ * enabled. It ensures that action columns are hidden.
+ *
+ * @package Application
+ * @subpackage UI
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+
+BODY{
+background:#fff;
+padding:40px;
+}
+
+TFOOT .actions{
+display:none;
+}
+
+.role-actions{
+display:none;
+}

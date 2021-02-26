@@ -1,0 +1,1 @@
+<span class="field_required">*</span>

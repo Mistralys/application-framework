@@ -4,3 +4,15 @@ composer.phar
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
+.phpunit.result.cache
+/docs/phpstan/cache
+/tests/storage/logs
+tests/themes/default/js/localization/cachekey.txt
+tests/themes/default/js/localization/md5.min.js
+tests/themes/default/js/localization/translator.js
+tests/.buildpath
+tests/.project
+tests/.settings/org.eclipse.php.core.prefs
+src/dbhelper-upgrade.txt
+docs/phpstan/resultCache.php
+docs/phpstan/result.txt

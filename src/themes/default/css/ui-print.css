@@ -1,0 +1,105 @@
+/** 
+ * Fix for bootstrap showing links next to href tags with parenthesis
+ * @see https://stackoverflow.com/questions/7301989/need-to-remove-href-values-when-printing-in-chrome
+ */
+a[href]:after {
+  content: none !important;
+}
+
+BODY{
+padding:0 !important;
+}
+
+H1{
+font-size:160%;
+}
+
+H2.FormSection{
+text-transform:uppercase;
+border-bottom:none;
+background:#e0e0e0;
+display:block;
+width:100%;
+padding-left:8px;
+}
+
+FORM H3{
+font-size:110%;
+border-bottom:solid 1px #000;
+}
+
+H1,H2,H3,H4,H5,H6{
+padding:0 !important;
+margin:0 0 16px 0 !important;
+}
+
+.control-value-frozen{
+display:inline-block;
+padding-top:5px;
+}
+
+.content-wrap.with-sidebar #content{
+padding-right:0;
+border-right:none;
+}
+
+#sidebar,
+#quick_switch,
+#rating-widget,
+#footer,
+#qstitle-right,
+UL.nav,
+UL.breadcrumb,
+.chapter-permalink,
+.datagrid-column-controls,
+.btn-group,
+.countries-buttonbar,
+TD.role-actions,
+TH.role-actions,
+.btn,
+.icon-sort,
+.noprint{
+display:none !important;
+}
+
+#print-button{
+display:block !important;
+margin-top:30px;
+margin-bottom:30px;
+float:right;
+}
+
+.container{
+width:100%;
+}
+
+.row{
+margin-left:0;
+}
+
+A:link,
+A:active,
+A:visited,
+A:hover{
+color:#000;
+text-decoration:none;
+}
+
+/* DATA GRIDS */
+.cell-icons{
+display:none;
+}
+
+/* SECTIONS */
+.content-section-header > I{
+display:none;
+}
+
+.content-section-body{
+height:auto !important;
+}
+
+.content-section,
+.content-subsection{
+border-bottom: none;
+}

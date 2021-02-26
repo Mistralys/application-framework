@@ -1,0 +1,6 @@
+<?php
+
+abstract class Application_Admin_Area_Mode_Submode_Action_RevisionableChangelog extends Application_Admin_Area_Mode_Submode_Action_Revisionable
+{
+    use Application_Traits_Admin_RevisionableChangelog;
+}

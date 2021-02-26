@@ -1,0 +1,17 @@
+.media_image_container{
+font-size:87%;
+line-height:87%;
+width:100%;
+overflow:hidden;
+}
+
+.media_image{
+display:inline-block;
+float:left;
+margin-right:6px;
+}
+
+.media_image_container P{
+padding:0;
+margin:0 0 6px 0;
+}

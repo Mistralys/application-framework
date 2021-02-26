@@ -1,0 +1,99 @@
+<?php
+
+use PHPUnit\Framework\TestCase;
+use AppLocalize\Localization_Locale;
+use AppLocalize\Localization;
+
+abstract class ApplicationTestCase extends TestCase
+{
+    /**
+     * @var int
+     */
+    private static $counter = 0;
+
+    protected function logHeader(string $testName) : void
+    {
+        Application::logHeader(get_class($this).' | '.$testName);
+    }
+
+    protected function createEntryID() : string
+    {
+        return 'entry'.$this->getTestCounter();
+    }
+
+    protected function getTestCounter() : int
+    {
+        self::$counter++;
+
+        return self::$counter;
+    }
+
+    protected function tearDown() : void
+    {
+        $this->clearTransaction();
+        $this->disableLogging();
+    }
+
+    protected function startTransaction()
+    {
+        DBHelper::startConditional();
+    }
+
+    protected function clearTransaction()
+    {
+        DBHelper::rollbackConditional();
+        DBHelper::disableDebugging();
+    }
+
+    protected function startTest(string $name) : void
+    {
+        Application::logHeader(getClassTypeName(get_class($this)).' - '.$name);
+    }
+
+    protected function enableLogging() : void
+    {
+        Application::getLogger()->logModeEcho();
+    }
+
+    protected function disableLogging() : void
+    {
+        Application::getLogger()->logModeNone();
+    }
+
+    protected function createTestLocale(string $name='') : Localization_Locale
+    {
+        if(empty($name))
+        {
+            $names = DBHelper::createFetchMany('locales_application')
+                ->fetchColumn('locale_name');
+
+            $name = $names[array_rand($names)];
+        }
+
+        return Localization::getAppLocaleByName($name);
+    }
+
+    protected function isRunViaApplication() : bool
+    {
+        return boot_defined('APP_FRAMEWORK_TESTS') !== true;
+    }
+
+    protected function skipIfRunViaApplication() : bool
+    {
+        if ($this->isRunViaApplication())
+        {
+            $this->markTestSkipped();
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function createTestFormable(array $defaultValues=array()) : Application_Formable_Generic
+    {
+        $formable = new Application_Formable_Generic();
+        $formable->createFormableForm('formable-'.$this->getTestCounter(), $defaultValues);
+
+        return $formable;
+    }
+}

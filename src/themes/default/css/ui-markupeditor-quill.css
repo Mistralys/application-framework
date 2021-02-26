@@ -1,0 +1,39 @@
+.ql-wrapper{
+border:solid 1px #e4e4e4;
+border-radius:5px;
+}
+
+.ql-inner{
+background:#fff;
+}
+
+.ql-container.ql-snow{
+border:0;
+}
+
+.ql-toolbar.ql-snow{
+border:0;
+}
+
+.ql-editor{
+padding:24px;	
+font-size:16px;
+}
+
+.ql-editor:focus-within{
+border:solid 1px #cc0000;
+}
+
+.ql-editor > P{
+margin:0;
+padding:0 0 16px 0;
+}
+
+.ql-editor > P:last-child{
+margin:0;
+padding:0;
+}
+
+.element-type-Textarea.standalone{
+padding:10px;
+}

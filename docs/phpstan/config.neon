@@ -1,0 +1,6 @@
+parameters:
+    tmpDir:
+        ./
+    bootstrapFiles:
+        - ./constants.php
+        - ../../tests/bootstrap.php

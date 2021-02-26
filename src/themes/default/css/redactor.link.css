@@ -1,0 +1,6 @@
+.redactor_toolbar li a.re-mymodal {
+	background: #000;
+}
+.redactor_toolbar li a.re-mymodal:hover {
+	background: #ff0000;
+}

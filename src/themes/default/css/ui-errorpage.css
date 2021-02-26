@@ -1,0 +1,51 @@
+BODY.errorpage{
+background:#ffe2ad;
+}
+
+BODY.errorpage #content_frame{
+width:50%;
+margin:50px auto;
+background:#fff;
+border-radius:5px;
+padding:20px;
+border:solid 2px #ce8e00;
+color:#555;
+font-family:Arial;
+font-size:13px;
+}
+
+BODY.errorpage H1{
+line-height:36px;
+font-size:28px;
+}
+
+BODY.errorpage H1 .logo{
+margin-right:15px;
+width:36px;
+}
+
+BODY.errorpage .abstract{
+font-size:120%;
+margin-top:30px;
+}
+
+BODY.errorpage TD{
+font-size:13px;
+color:#555;
+}
+
+BODY.errorpage .errorpage-sent-content{
+background:#f0f0f0;
+padding:20px;
+}
+
+BODY.errorpage .errorpage-header{
+text-transform:uppercase;
+font-weight:normal;
+margin-top:40px;
+margin-bottom:20px;
+line-height:40px;
+font-size:16px;
+background:#f0f0f0;
+padding:0 8px;
+}

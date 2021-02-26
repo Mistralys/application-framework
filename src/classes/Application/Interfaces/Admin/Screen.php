@@ -1,0 +1,277 @@
+<?php
+/**
+ * File containing the {@see Application_Admin_ScreenInterface} interface.
+ *
+ * @package Application
+ * @subpackage Admin
+ * @see Application_Admin_ScreenInterface
+ */
+
+/**
+ * Interface for administration screens: defines all methods
+ * that administration screens have to share beyond what the
+ * skeleton offers.
+ * 
+ * NOTE: This is mostly implemented in the matching trait.
+ * 
+ * WARNING: The interface is not type hinted for backwards
+ * compatibility.
+ *
+ * @package Application
+ * @subpackage Admin
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Traits_Admin_Screen
+ * @see Application_Admin_Skeleton
+ * @see Application_Interfaces_Formable
+ */
+interface Application_Admin_ScreenInterface extends Application_Interfaces_Formable, Application_Interfaces_Loggable
+{
+   /**
+    * @return string
+    */
+    public function getID();
+    
+   /**
+    * @return UI 
+    */
+    public function getUI();
+    
+   /**
+    * @return UI_Themes_Theme_ContentRenderer
+    */
+    public function getRenderer() : UI_Themes_Theme_ContentRenderer;
+    
+   /**
+    * Handles any actions to execute before the UI layer is started. 
+    */
+    public function handleActions();
+    
+   /**
+    * Allows configuring the breadcrumb instance for the current page.
+    */
+    public function handleBreadcrumb();
+    
+   /**
+    * Allows configuring the help instance for the current page.
+    * 
+    * @param UI_Page_Help $help
+    */
+    public function handleHelp(UI_Page_Help $help);
+    
+   /**
+    * Allows configuring the sidebar instance for the current page.
+    * 
+    * @param UI_Page_Sidebar $sidebar
+    */
+    public function handleSidebar(UI_Page_Sidebar $sidebar);
+    
+   /**
+    * Allows configuring the subnavigation for the current page.
+    * 
+    * @param UI_Page_Navigation $subnav
+    */
+    public function handleSubnavigation(UI_Page_Navigation $subnav);
+    
+   /**
+    * Allows configuring the context menu in the subnavigation for the current page.
+    * 
+    * @param UI_Bootstrap_DropdownMenu $menu
+    */
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu);
+    
+   /**
+    * Allows configuring the content tabs for the current page.
+    *
+    * @param UI_Bootstrap_Tabs $tabs
+    */
+    public function handleTabs(UI_Bootstrap_Tabs $tabs);
+    
+   /**
+    * Whether the current user is allowed to access this screen / feature.
+    * 
+    * @return bool
+    */
+    public function isUserAllowed();
+    
+   /**
+    * Whether the screens are running in admin mode, and actions may be executed.
+    * 
+    * @return bool
+    * @see Application_Admin_Skeleton::isAdminMode()
+    */
+    public function isAdminMode();
+    
+   /**
+    * Retrieves the current screen's subscreen, if any.
+    * 
+    * @return Application_Admin_ScreenInterface|NULL
+    */
+    public function getActiveSubscreen() : ?Application_Admin_ScreenInterface;
+    
+   /**
+    * Whether the screen has an active subscreen.
+    * 
+    * @return bool
+    */
+    public function hasActiveSubscreen() : bool;
+    
+   /**
+    * @return string
+    */
+    public function getURLName();
+    
+   /**
+    * @return string
+    */
+    public function getURLPath();
+    
+   /**
+    * Retrieves the name of the parameter used to select this screen
+    * via the request.
+    * 
+    * @return string
+    */
+    public function getURLParam() : string;
+    
+    public function startTransaction();
+    
+    public function endTransaction();
+    
+   /**
+    * @param string[] $params
+    * @return string
+    */
+    public function getURL(array $params = array()) : string;
+    
+   /**
+    * @return string
+    */
+    public function getNavigationTitle();
+    
+   /**
+    * @return string
+    */
+    public function getTitle();
+    
+   /**
+    * Whether this class is an administration area class.
+    * @return boolean
+    * @see Application_Admin_Area
+    */
+    public function isArea() : bool;
+    
+   /**
+    * Whether this class is an administration mode class.
+    * @return boolean
+    * @see Application_Admin_Area_Mode
+    */
+    public function isMode() : bool;
+    
+   /**
+    * Whether this class is an administration submode class.
+    * @return boolean
+    * @see Application_Admin_Area_Mode_Submode
+    */
+    public function isSubmode() : bool;
+    
+   /**
+    * Whether this class is an administration action class.
+    * @return boolean
+    * @see Application_Admin_Area_Mode_Submode_Action
+    */
+    public function isAction() : bool;
+    
+   /**
+    * Retrieves the area this screen is a child of.
+    * 
+    * @return Application_Admin_Area
+    */
+    public function getArea() : Application_Admin_Area;
+    
+   /**
+    * Retrieves this screen's parent screen: only the 
+    * areas have no parent. 
+    * 
+    * @return Application_Admin_ScreenInterface
+    */
+    public function getParentScreen() : ?Application_Admin_ScreenInterface;
+
+    /**
+     * Checks whether this screen is currently active (it is
+     * in the chain of active screens).
+     * 
+     * @return boolean
+     */
+    public function isActive() : bool;
+    
+   /**
+    * Retrieves the currently active administration screen.
+    * 
+    * @return Application_Admin_ScreenInterface
+    */
+    public function getActiveScreen() : Application_Admin_ScreenInterface;
+    
+   /**
+    * Retrieves a list of IDs of all subscreens available for the screen, if any.
+    * 
+    * @return string[]
+    */
+    public function getSubscreenIDs() : array;
+    
+   /**
+    * Whether the screen has any subscreens.
+    * 
+    * @return bool
+    */
+    public function hasSubscreens() : bool;
+    
+    public function hasSubscreen(string $id) : bool;
+    
+    public function getSubscreenByID(string $id) : Application_Admin_ScreenInterface;
+    
+   /**
+    * Retrieves the ID of the active subscreen, if any.
+    * @return string|NULL
+    */
+    public function getActiveSubscreenID() : ?string;
+    
+   /**
+    * Retrieves the default subscreen ID, if any.
+    * 
+    * @return string|NULL
+    */
+    public function getDefaultSubscreenID() : ?string;
+    
+    public function renderContent() : string;
+    
+   /**
+    * Renders the content of the page's "Help" section.
+    * @return string
+    */
+    public function renderHelp() : string;
+    
+   /**
+    * Adds an error message, and redirects to the target URL.
+    * 
+    * @param string|number|UI_Renderable_Interface $message
+    * @param array|string $paramsOrURL
+    */
+    public function redirectWithErrorMessage($message, $paramsOrURL) : void;
+
+   /**
+    * Adds an error message, and redirects to the target URL.
+    *
+    * @param string|number|UI_Renderable_Interface $message
+    * @param array|string $paramsOrURL
+    */
+    public function redirectWithSuccessMessage($message, $paramsOrURL) : void;
+    
+   /**
+    * Adds an informational message, and redirects to the target URL.
+    *
+    * @param string|number|UI_Renderable_Interface $message
+    * @param array|string $paramsOrURL
+    */
+    public function redirectWithInfoMessage($message, $paramsOrURL) : void;
+}

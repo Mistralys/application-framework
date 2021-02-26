@@ -1,0 +1,219 @@
+<?php
+/**
+ * File containing the {@link UI_Renderable}.
+ * 
+ * @package Application
+ * @subpackage UserInterface
+ * @see UI_Renderable
+ * @see UI_Renderable_Interface
+ */
+
+/**
+ * Base class for elements that can be rendered to HTML.
+ * Made to be extended, and offer some utility methods
+ * on top of the base interface implementation.
+ * 
+ * @package Application
+ * @subpackage UserInterface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @see UI_Renderable_Interface
+ */
+abstract class UI_Renderable implements UI_Renderable_Interface
+{
+    use UI_Traits_RenderableGeneric;
+    
+    const ERROR_INVALID_TEMPLATE_CLASS = 62301;
+    
+   /**
+    * @var UI
+    */
+    protected $ui;
+    
+   /**
+    * @var Application_Driver
+    */
+    protected $driver;
+    
+   /**
+    * @var UI_Themes_Theme
+    */
+    protected $theme;
+    
+   /**
+    * The unique key of the UI instance.
+    * @var string
+    */
+    protected $uiKey;
+    
+   /**
+    * @var UI_Page
+    */
+    protected $page;
+    
+   /**
+    * @var string
+    */
+    protected $instanceID;
+    
+    /**
+     * @var UI_Themes_Theme_ContentRenderer
+     */
+    protected $renderer;
+    
+    public function __construct(?UI_Page $page=null)
+    {
+        $this->instanceID = nextJSID();
+        $this->driver = Application_Driver::getInstance();
+        
+        if($page === null) {
+            $page = UI::getInstance()->getPage();
+        }
+        
+        $this->renderer = $page->getRenderer();
+        $this->ui = $page->getUI();
+        $this->uiKey = $this->ui->getInstanceKey();
+        $this->page = $page;
+        $this->theme = $this->ui->getTheme();
+        
+        $this->initRenderable();
+    }
+    
+   /**
+    * Creates a new template object for the specified template.
+    * Templates are stored in the templates/ subfolder, specifiy
+    * the name here (without the extension).
+    *
+    * Example:
+    *
+    * createTemplate('content.mytemplate'); => loads templates/content.mytemplate.php
+    *
+    * @param string $templateID
+    * @return UI_Page_Template
+    */
+    public function createTemplate(string $templateID) : UI_Page_Template
+    {
+        if(stristr($templateID, '.php')) {
+            $templateID = \AppUtils\FileHelper::removeExtension($templateID, true);
+        }
+        
+        $templateFile = $this->theme->getTemplatePath($templateID.'.php');
+
+        $className = '';
+        if(strstr($templateFile, $this->theme->getDriverPath()))
+        {
+            $className = 'driver_';
+        }
+        
+        $className .= 'template_default_'.str_replace(array('.', '/', '-'), '_', $templateID);
+        
+        if(class_exists($className))
+        {
+            $instance = new $className($this->page, $templateID);
+            
+            if($instance instanceof UI_Page_Template_Custom)
+            {
+                return $instance;
+            }
+            
+            throw new Application_Exception(
+                'Invalid template class',
+                sprintf(
+                    'The class [%s] does not extend the [%s] class.',
+                    $className,
+                    UI_Page_Template_Custom::class
+                ),
+                self::ERROR_INVALID_TEMPLATE_CLASS
+            );
+        }
+        
+        return new UI_Page_Template($this->page, $templateID);
+    }
+  
+   /**
+    * Creates a template, renders it and returns the generated contents.
+    * @param string $templateID
+    * @param array $params
+    * @return string
+    * @see createTemplate()
+    */
+    public function renderTemplate(string $templateID, array $params = array()) : string
+    {
+        $tpl = $this->createTemplate($templateID);
+        $tpl->setVars($params);
+        
+        return $tpl->render();
+    }
+    
+   /**
+    * Creates a new UI message instance and returns it.
+    *
+    * @param string|number|UI_Renderable_Interface $message
+    * @param string $type
+    * @param array $options
+    * @return UI_Message
+    */
+    public function createMessage($message, string $type, array $options=array()) : UI_Message
+    {
+        return $this->ui->createMessage($message, $type, $options);
+    }
+    
+    protected function initRenderable() : void
+    {
+        
+    }
+    
+    public function getRenderer() : UI_Themes_Theme_ContentRenderer
+    {
+        return $this->renderer;
+    }
+    
+    public function getPage() : UI_Page
+    {
+        return $this->page;
+    }
+    
+    public function getUI() : UI
+    {
+        return $this->ui;
+    }
+    
+    public function getTheme() : UI_Themes_Theme
+    {
+        return $this->theme;
+    }
+    
+    public function getInstanceID() : string
+    {
+        return $this->instanceID;
+    }
+    
+    public function render() : string
+    {
+        return $this->_render();
+    }
+    
+   /**
+    * @return string
+    */
+    abstract protected function _render();
+    
+    public function display() : void
+    {
+        echo $this->render();
+    }
+    
+    public function __toString()
+    {
+        try
+        {
+            return $this->render();
+        }
+        catch(Exception $e) 
+        {
+            return $this->ui->getPage()->renderErrorMessage(
+                t('Cannot render element %1$s:', get_class($this)).' '.
+                t('The exception %1$s occurred with message %2$s.', $e->getCode(), $e->getMessage())    
+            );
+        }
+    }
+}

@@ -1,0 +1,29 @@
+#progress-container{
+border-radius:5px;
+border:solid 1px #418bb8;
+background:#93bfd9;
+box-shadow:inset 0 0 3px 0px #5e9fc6;
+margin-bottom:20px;
+}
+
+#progress-bar{
+background:url(../img/bg-progress-bar.png) #82d32b;
+width:0%;
+height:30px;
+border-radius:5px;
+border-top:solid 1px #c0e995;
+border-left:solid 1px #c0e995;
+border-bottom:solid 1px #74c425;
+border-right:solid 1px #74c425;
+}
+
+#progress-indicator{
+position:absolute;
+top:0;
+left:0;
+z-index:900;
+font-weight:bold;
+font-size:16px;
+color:#fff;
+text-shadow: 1px 1px 0 #116600;
+}

@@ -1,0 +1,126 @@
+.visel-images{
+}
+
+.visel-images UL.visel-items{
+list-style:none;
+margin:0;
+padding:0;
+}
+
+.visel-images .visel-body{
+max-height:212px;
+overflow:auto;
+}
+
+.visel-images.filtering-enabled .visel-body{
+margin-bottom:6px;
+}
+
+.visel-images.view-grouped .visel-body{
+max-height:390px;
+}
+
+.visel-images .visel-body.expanded{
+max-height:none !important;
+}
+
+.visel-images .visel-expand{
+display:none;
+color:#08c;
+}
+
+.visel-images .visel-expand:hover{
+display:none;
+color:#005580;
+cursor:pointer;
+}
+
+
+.visel-images.filtering-enabled .visel-expand{
+display:block;
+}
+
+.visel-images .visel-item{
+display:inline-block;
+margin:0 9px 9px 0;
+position:relative;
+}
+
+.visel-images .visel-item.selected .visel-item-image{
+border-color:#09cc00;
+background:#b4ffd0;
+}
+
+.visel-images .visel-expand{
+float:right;
+font-size:90%;
+}
+
+.visel-images .visel-item-image{
+border:solid 2px #999;
+cursor:pointer;
+}
+
+.visel-images .visel-item-image:hover{
+border-color:#08c;
+}
+
+.visel-images .visel-group-header{
+margin-bottom:13px;
+}
+
+.visel-images .visel-toolbar{
+margin:13px 0 13px 0;
+}
+
+.visel-images .visel-filter-input{
+width:180px;
+}
+
+.visel-images .visel-items.grouped{
+display:none;
+}
+
+.visel-images .visel-items.flat{
+display:block;
+}
+
+.visel-images.grouping-enabled .visel-items.grouped{
+display:block;
+}
+
+.visel-images.grouping-enabled .visel-items.flat{
+display:none;
+}
+
+.visel-item.no-icon IMG{
+opacity:0;
+}
+
+.visel-item.no-icon:before{
+content:"X";
+display:block;
+position:absolute;
+color:#808080;
+top:0;
+left:0;
+width:100%;
+height:100%;
+text-align:center;
+vertical-align:middle;
+font-size:36px;
+line-height:180%;
+}
+
+
+.visel-item.no-icon{
+background:#ccc;
+}
+
+.visel-item.no-icon.selected{
+background:#b4ffd0;
+}
+
+.visel-item.no-icon.selected:before{
+color:#26abca;
+}

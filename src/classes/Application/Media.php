@@ -1,0 +1,237 @@
+<?php
+
+class Application_Media
+{
+    const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
+    
+    /**
+     * The media manager instance.
+     * @var Application_Media
+     */
+    protected static $instance;
+
+    /**
+     * The full path to the storage folder.
+     * @see getStorageFolder()
+     * @var string
+     */
+    protected $storageFolder;
+    
+   /**
+    * @var Application_Driver
+    */
+    protected $driver;
+
+    /**
+     * Retrieves the global instance of the media manager. Creates
+     * the instance as needed.
+     *
+     * @return Application_Media
+     */
+    public static function getInstance()
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new Application_Media();
+        }
+
+        return self::$instance;
+    }
+
+    protected function __construct()
+    {
+        $this->storageFolder = Application::getStorageSubfolderPath('media');
+        $this->driver = Application_Driver::getInstance();
+    }
+
+    /**
+     * Retrieves the full path to the folder where media files are stored.
+     * @return string
+     */
+    public function getStorageFolder()
+    {
+        return $this->storageFolder;
+    }
+
+    /**
+     * Creates a new media document from a previously uploaded file.
+     * Returns the new media document. Note that this does not delete
+     * the upload: that has to be done manually as needed.
+     *
+     * @param Application_Uploads_Upload $upload
+     */
+    public function createFromUpload(Application_Uploads_Upload $upload)
+    {
+        require_once 'Application/Media/Document.php';
+
+        return Application_Media_Document::createNewFromUpload($upload);
+    }
+
+    /**
+     * Retrieves a media document by its ID.
+     * Throws an exception if it does not exist in the database.
+     *
+     * @param int $media_id
+     * @return Application_Media_Document
+     * @throws Application_Exception
+     */
+    public function getByID($media_id)
+    {
+        require_once 'Application/Media/Document.php';
+
+        return Application_Media_Document::create($media_id);
+    }
+    
+   /**
+    * Attempts to retrieve a media document from a form value.
+    * @param array $value
+    * @return Application_Media_Document|NULL
+    */
+    public function getByFormValue($value)
+    {
+        if($this->isMediaFormValue($value)) {
+            return $this->getByID($value['id']); 
+        }
+        
+        return null;
+    }
+    
+    public function isMediaFormValue($value)
+    {
+        if(!is_array($value)) {
+            return false;
+        }
+        
+        if(!isset($value['state'])) {
+            return false;
+        }
+        
+        if(!in_array($value['state'], array('media', 'upload'))) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
+     * Retrieves the media type ID for the specified extension,
+     * or NULL if no types exist to handle that extension.
+     *
+     * @param string $extension
+     * @return NULL|string
+     */
+    public function getTypeByExtension($extension)
+    {
+        $this->loadTypes();
+        if (isset($this->extensions[$extension])) {
+            return $this->extensions[$extension];
+        }
+
+        return null;
+    }
+
+    protected $extensions;
+
+    protected $types;
+
+    protected function loadTypes()
+    {
+        if (isset($this->extensions)) {
+            return;
+        }
+
+        $this->extensions = array();
+        $this->types = array();
+
+        $folder = $this->driver->getApplication()->getClassesFolder() . '/Application/Media/Document';
+        $d = new DirectoryIterator($folder);
+        foreach ($d as $item) {
+            if (!$item->isFile()) {
+                continue;
+            }
+
+            $info = pathinfo($item->getFilename());
+            if (!isset($info['extension']) || strtolower($info['extension']) != 'php') {
+                continue;
+            }
+
+            $id = AppUtils\ConvertHelper::filenameRemoveExtension($info['basename']);
+            $class = 'Application_Media_Document_' . $id;
+            Application::requireClass($class);
+
+            $extensions = call_user_func(array($class, 'getExtensions'));
+            foreach ($extensions as $extension) {
+                $this->extensions[$extension] = $id;
+            }
+
+            $this->types[$id] = array(
+                'label' => call_user_func(array($class, 'getLabel')),
+                'extensions' => $extensions
+            );
+        }
+    }
+    
+   /**
+    * Creates a media configuration instance. These are document
+    * type specific, and are used to store configurations for 
+    * media pre-processing using the media processor class. For 
+    * example, they are used to store the size presets to resize
+    * images.
+    * 
+    * @param string $type The configuration type, e.g. "Image". Case sensitive.
+    * @return Application_Media_Configuration
+    * @throws Application_Exception
+    */
+    public function createConfiguration($type)
+    {
+        require_once 'Application/Media/Configuration.php';
+        $class = 'Application_Media_Configuration_'.$type;
+        Application::requireClass($class);
+        
+        return new $class();
+    }
+    
+   /**
+    * @param integer $media_id
+    * @return boolean
+    */
+    public function idExists($media_id) 
+    {
+        return DBHelper::keyExists('media', array('media_id' => $media_id));
+    }
+    
+    public function configurationIDExists($config_id)
+    {
+        return DBHelper::keyExists('media_configurations', array('config_id' => $config_id));
+    }
+    
+    public function getConfigurationByID($config_id)
+    {
+        $data = DBHelper::fetch(
+            "SELECT
+                `type_id`
+            FROM
+                `media_configurations`
+            WHERE
+                `config_id`=:config_id",
+            array(
+                'config_id' => $config_id
+            )    
+        );
+        
+        if(!is_array($data) || !isset($data['type_id'])) {
+            throw new Application_Exception(
+                'Unknown media configuration',
+                sprintf(
+                    'Could not retrieve the media configuration [%s] from the database.',
+                    $config_id    
+                ),
+                self::ERROR_UNKNOWN_MEDIA_CONFIGURATION
+            );
+        }
+        
+        $config = $this->createConfiguration($data['type_id']);
+        $config->loadData($config_id);
+        
+        return $config;
+    }
+}

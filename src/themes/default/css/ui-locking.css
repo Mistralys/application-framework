@@ -1,0 +1,92 @@
+.sidebar-wrap .btn.btn-locked{
+cursor:not-allowed;
+}
+
+BODY.locking-lockable.locking-locked,
+BODY.locking-lockable.locking-unlocked{
+padding-top:100px;
+}
+
+.subnav LI.active.locked A{
+background:#c16 !important;
+background-image:repeating-linear-gradient(
+ -45deg,
+ rgba(0, 0, 0, 0.2),
+ rgba(0, 0, 0, 0.2) 10px,
+ rgba(0, 0, 0, 0.3) 10px,
+ rgba(0, 0, 0, 0.3) 15px
+ ) !important;
+}
+
+.locking-hint {
+height:30px;
+line-height:30px;
+background-color: #C16;
+border-bottom: 1px solid #69123A;
+border-top: 1px solid #b34300;
+background-image: repeating-linear-gradient(
+-45deg,
+rgba(0, 0, 0, 0.2),
+rgba(0, 0, 0, 0.2) 10px,
+rgba(0, 0, 0, 0.3) 10px,
+rgba(0, 0, 0, 0.3) 15px
+);
+color: #fff;
+}
+
+.locking-unlocked .locking-hint{
+background-color:#ff6000;
+border-bottom-color:#c04800;
+}
+
+.locking-hint UL{
+padding:0;
+margin:0;
+list-style:none;
+}
+
+.locking-hint LI{
+display:inline-block;
+margin-right:13px;
+font-size:90%;
+line-height:30px;
+}
+
+.locking-hint A:link,
+.locking-hint A:visited{
+color:#fff;
+}
+
+.locking-hint A:active,
+.locking-hint A:hover{
+color:#eee;
+}
+
+.locking-hint .popover{
+width:400px;
+}
+
+.lock-entries TD{
+padding-left:3px;
+padding-right:3px;
+}
+
+.locks-list .active-lock.lock-critlevel-warning TD{
+background:#fed9bb;
+}
+
+.locks-list .active-lock.lock-critlevel-critical TD{
+background:#fed9bb;
+}
+
+.locks-list .active-lock.current-lock TD{
+line-height:20px;
+}
+
+.locking-lockable .campaign-selector.campaign-default{
+border-bottom:solid 1px #6e6e6e;
+}
+
+.locking-lockable .campaign-selector.campaign-active{
+border-bottom:solid 2px #144184;
+}

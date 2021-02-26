@@ -1,0 +1,31 @@
+/**
+ * Styles for items in the UI that use the Application_Revisionable 
+ * class skeletons: these are used by a number of utility methods in
+ * the framework.
+ *
+ * @package Application
+ * @subpackage Revisionable
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+
+.revisionable-title-subline{
+display:block;
+color:#999;
+}
+
+H1.page-title .revisionable-title-subline{
+font-size:70%;    
+font-weight:normal;
+}
+
+H1.page-title .revisionable-title-subline A:link,
+H1.page-title .revisionable-title-subline A:visited{
+color:#999;
+}
+
+H1.page-title .revisionable-title-subline A:active,
+H1.page-title .revisionable-title-subline A:hover{
+color:#08c;
+}
+
+

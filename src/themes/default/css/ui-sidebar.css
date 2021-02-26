@@ -1,0 +1,150 @@
+#sidebar{
+font-size:0.9em;
+line-height:normal;
+width:310px;
+padding-left:25px;
+}
+
+.sidebar-wrap{
+}
+
+#content,
+#sidebar{
+vertical-align:top;
+}
+
+.content-wrap > table{
+width:100%;
+}
+
+#sidebar .accordion-inner{
+line-height:110%; /* to make it more compact */
+}
+
+.content-wrap.without-sidebar #content{
+width:100%;
+}
+
+.content-wrap.with-sidebar #content{
+padding-right:25px;
+border-right:solid 1px #e9e9e9;
+}
+
+.content-wrap.with-sidebar.sidebar-large #sidebar{
+width:380px;
+}
+
+.sidebar_separator{
+height:1px;
+border-bottom:dotted 1px #ccc;
+margin-bottom:14px;
+margin-top:14px;
+}
+
+#sidebar section{
+margin-bottom:14px;
+}
+
+#sidebar section.section-compact{
+margin-bottom:0;
+}
+
+.sidebar-section.section-compact .section-header{
+line-height:24px;
+}
+
+.sidebar-section.with-separator{
+border-bottom:dotted 1px #ccc;
+}
+
+#sidebar select{
+width:100%;
+}
+
+#sidebar .control-label{
+/* width:60px; */
+}
+
+#sidebar .controls{
+/* margin-left:70px; */
+}
+
+#sidebar .form-actions{
+padding:0 !important;
+margin:0 !important;
+border:0;
+background:transparent;
+}
+
+#sidebar .form-actions .btn{
+margin-right:5px;
+}
+
+.btn.sidebar{
+width:100%;
+display:block;
+margin-bottom:13px;
+}
+
+.sidebar-section .section-header{
+font-size:14px;
+line-height:30px;
+text-transform:uppercase;
+font-weight:normal;
+color:#444;
+}
+
+.sidebar-section.section-collapsible .section-header{
+cursor:pointer;
+}
+
+.sidebar-section.section-collapsible .section-header:hover{
+background:#fafafa;
+}
+
+.sidebar-section .section-header.collapsed{
+padding-bottom:0;
+}
+
+.sidebar-section .section-header.collapsible{
+cursor:pointer;
+}
+
+.sidebar-section .section-header.collapsible .caret{
+display:block;
+margin-top:5px;
+}
+
+.sidebar-section.developer{
+background:url(../img/bg-button-developer.png);
+border:solid 1px #f47e00;
+border-radius:3px;
+}
+
+.sidebar-section.developer .body-wrapper{
+padding:5px;
+}
+
+.sidebar-section.developer .section-header{
+padding:0 5px;
+}
+
+#sidebar P{
+line-height:14px;
+}
+
+.sidebar-section P.abstract{
+margin-top:0;
+}
+
+.sidebar-section .sidebar-context-buttons{
+margin-top:-5px;
+}
+
+.sidebar-section.nopadding .body-wrapper{
+padding:0;
+}
+
+#sidebar .alert.with-margin-top{
+margin-top:10px;
+}

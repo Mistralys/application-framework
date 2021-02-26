@@ -1,0 +1,1222 @@
+BODY {
+padding-top: 40px;
+background: #062c6b;
+position: absolute; /* to make it fill the viewport even in smaller resolutions */
+min-width:fit-content; /* to fix the body being smaller than the content in smaller resolutions */
+width:100%;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.navbar {
+    height: 40px;
+    margin: 0;
+}
+
+.navbar .nav > li > .brand {
+    padding: 4px 10px 0 0 !important;
+    outline: none;
+    font-size: 14px;
+    color: #777;
+}
+
+.nav.navbar-nav{
+	margin-right:0;
+}
+
+.navbar .nav > li > a {
+    color: #3f3f3f;
+    text-shadow: none;
+    font-weight: bold;
+}
+
+.navbar .nav > li > a:focus,
+.navbar .nav > li > a:hover {
+    color: #000;
+}
+
+.navbar .nav > .active > a,
+.navbar .nav > .active > a:hover,
+.navbar .nav > .active > a:focus,
+.navbar .nav > li > a.nav-group-active,
+.navbar .nav > li > a.nav-group-active:hover,
+.navbar .nav > li > a.nav-group-active:focus {
+    color: #FFF !important;
+}
+
+.navbar .nav > li > .dropdown-menu:before,
+.navbar .nav > li > .dropdown-menu:after {
+    display: none;
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    background-color: transparent;
+    color: #000;
+}
+
+.nav-pills>.active>a .muted, 
+.nav-pills>.active>a:hover .muted {
+color:#ccc;
+}
+
+.navbar .nav > .has-avatar > a {
+    padding: 4px;
+    line-height: 10px;
+}
+
+BODY,
+INPUT,
+BUTTON,
+SELECT,
+TEXTAREA {
+    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.navbar-toolbars{
+box-shadow:0 5px 5px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-appswitcher{
+	margin-left:20px !important;	
+}
+
+#app-mainnav{
+	box-shadow:0 5px 5px rgba(0, 0, 0, 0.25);
+}
+
+.navbar {
+    background: url(../img/bg-header.png) repeat-x;
+}
+
+.navbar-main LI.regular:hover{
+    background: url(../img/bg-header.png) 0 -100px repeat-x;
+}
+
+.navbar .nav > .active > a,
+.navbar .nav > .active > a:hover,
+.navbar .nav > .active > a:focus,
+.navbar .nav > li > a.nav-group-active,
+.navbar .nav > li > a.nav-group-active:hover,
+.navbar .nav > li > a.nav-group-active:focus {
+    color: #FFF !important;
+    background: url(../img/bg-nav-active.png) repeat-x;
+}
+
+#footer {
+    background: url(../img/bg-footer.png) repeat-x;
+}
+
+#footer section {
+    background: url(../img/footer-separator.png) no-repeat right;
+}
+
+
+#useravatar {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-position: center top;
+}
+
+#content_area {
+    background: #fff;
+}
+
+#content_frame {
+    padding: 26px 0 26px 0;
+	position:relative;
+}
+
+#footer {
+    margin: 0;
+    padding: 0;
+    height: 275px;
+    color: #a3c7ee;
+    font-size: 91%;
+}
+
+#footer A:link,
+#footer A:visited {
+    color: #60a1ff;
+}
+
+#footer A:active,
+#footer A:hover {
+    color: #aff2fc;
+}
+
+#footer_frame {
+    margin: 0 auto;
+    padding-top: 71px;
+    width: 1130px;
+}
+
+#footer section {
+    float: left;
+    height: 194px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#footer section:first-child {
+
+}
+
+#footer section:last-child {
+    background: none;
+}
+
+footer p {
+    line-height: 80%;
+}
+
+footer H2 {
+    font-weight: normal;
+    color: #fff;
+    font-size: 16px;
+    line-height: 20px;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+
+.clear {
+    clear: both;
+}
+
+/* font awesome icon in jquery UI wrappers */
+.ui-effects-wrapper .fa {
+    color: #cc0000;
+}
+
+/* -------------------------------------------------------------------
+   MISC ITEMS - BUTTONS, ETC
+   ------------------------------------------------------------------- */
+
+PRE.unstyled
+{
+border:0;
+background:transparent;
+border-radius:0;	
+}
+
+.btn-special{
+background-color:#aad146;
+background-image: linear-gradient(to bottom,#b0d84d,#89b027);
+color:#fff;
+text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+.btn-special:hover,
+.btn-special:focus{
+color:#fff;
+text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+background-image: none;
+background-color:#aad146;
+}
+
+.btn-special:active{
+color:#fff;
+text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+background-image: none;
+background-color:#79a017;
+}
+
+CODE{
+color:#5b5b5b;
+}
+
+LABEL.link{
+color:#08c;
+}
+
+.btn-dull{
+color: #fff;
+text-shadow: 0 -1px 0 rgba(0,0,0,0.25);
+background-color: #b0b0b0;
+background-image: linear-gradient(to bottom,#bbb,#828282);
+background-repeat: repeat-x;
+border-color: #222 #222 #000;
+border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+}
+
+.btn-dull:hover,
+.btn-dull:focus,
+.btn-dull.disabled,
+.btn-dull[disabled]{
+color:#fff;
+background-color:#828282;
+}
+
+A.whatsnew-image > IMG{
+max-width:60%;
+border:solid 1px #ccc;
+display:block;
+}
+
+/* avoid the arrow ususally shown on external links */
+A.whatsnew-image:after{
+content:"" !important;
+}
+
+DIV.log > CODE{
+font-family:monospace;
+white-space:nowrap;
+border:0;
+background:transparent;
+border-radius:0;
+color:#000;
+}
+
+.dropdown-menu.height-mini{
+height:80px;
+overflow:auto;
+}
+
+.back_link {
+    float: left;
+    margin: 4px 26px 0 0;
+    font-size: 12px;
+}
+
+#auth {
+    float: right;
+    background: #004192;
+    margin-top: 7px;
+    padding: 4px 17px;
+    -webkit-box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+#auth:hover {
+    background: url(../img/bg-nav-active.png) repeat-x;
+}
+
+#auth .dropdown-toggle {
+    font-size: 11px;
+    color: #fff;
+}
+
+#auth .dropdown-toggle:hover,
+#auth .dropdown-toggle:active {
+    text-decoration: none;
+}
+
+#auth .caret {
+    border-top-color: #fff;
+}
+
+A.dark:link,
+A.dark:visited {
+    color: #d8e9ff;
+}
+
+A.dark:active,
+A.dark:hover {
+    color: #fff;
+}
+
+#developer_mode_hint {
+	border-radius:4px;
+    padding: 6px 20px;
+    text-align: center;
+    font-weight: bold;
+    background: url(../img/bg-button-developer.png);
+    color: #b83d00;
+	margin-bottom:13px;
+	border:solid 1px #b83d00; 
+}
+
+#simulate_session_hint {
+	border-radius:4px;
+	padding: 6px 20px;
+    text-align: center;
+    font-weight: bold;
+    background: #00cc00;
+    color: #fff;
+	border:solid 1px #008800;
+	margin-bottom:13px;
+}
+
+#maintenance_mode_hint {
+    padding: 6px 20px;
+    text-align: center;
+    font-weight: bold;
+    background: #eac222;
+    color: #fff;
+}
+
+.help {
+    cursor: help;
+}
+
+.inline_label {
+    display: inline !important;
+}
+
+.control-value-frozen {
+    display: block;
+    padding-top: 5px;
+}
+
+.ui-widget {
+    font-size: 14px;
+}
+
+#printbutton {
+    float: right;
+    padding-top: 6px;
+}
+
+.btn [class^="icon-"],
+.btn [class*=" icon-"] {
+    line-height: 1.2em;
+}
+
+.controls .static {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #fff;
+    border: solid 1px #ccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-transition: border linear .2s, box-shadow linear 2s;
+    -o-transition: border linear .2s, box-shadow linear 2s;
+    transition: border linear .2s, box-shadow linear 2s;
+    height: 20px;
+    padding: 4px 10px;
+    line-height: 20px;
+    color: #555;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.controls .custom {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 4px 0;
+}
+
+.img-frame {
+    display: inline-block;
+    background: url(../img/checkers.png);
+}
+
+.img-frame .img-polaroid {
+    background-color: transparent;
+    padding: 0;
+    border: 1px solid #ccc;
+}
+
+ACRONYM {
+    border-bottom: dotted 1px #ccc;
+    cursor: help;
+}
+
+ACRONYM:hover {
+    color: #000066;
+}
+
+P.abstract {
+    margin: 9px 0 24px 0;
+    font-style: italic;
+}
+
+.body-wrapper > P.abstract{
+margin-top:0;
+}
+
+#sidebar P.abstract {
+    margin-bottom: 16px;
+}
+
+TD.nowrap {
+    white-space: nowrap;
+}
+
+.variable-type-string{
+color:#008040;
+}
+
+.variable-type-number{
+color:#00009f;
+font-family:monospace;
+}
+
+.text-link{
+color:#08c;
+text-decoration:none;
+}
+
+.text-link:hover,
+.text-link:active{
+text-decoration:underline;
+color:#005580;
+}
+
+/* ------------------------------------------------------------------------
+   TEXT FORMATTING
+   ------------------------------------------------------------------------*/
+
+.monospace {
+    font-family: monospace;
+}
+
+.uppercase{
+text-transform:uppercase;
+}
+
+
+/**
+ * ------------------------------------------------------------------
+ * QUICK SELECTOR
+ * ------------------------------------------------------------------
+ */
+
+.title-wrapper-subtitle .title-right .quick-selector{
+margin-top: 30px;
+}
+
+.quick-selector.size-small .quick-selector-select {
+    width: 160px;
+    height: 26px;
+    font-size: 12px;
+}
+
+.quick-selector.size-small .add-on {
+    height: 24px;
+    line-height: 24px;
+    padding: 0 4px;
+    font-size: 12px;
+}
+
+.quick-selector.size-small BUTTON {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+}
+
+/**
+ * ------------------------------------------------------------------
+ * SPLIT BUTTONS IN THE NAVS
+ * ------------------------------------------------------------------
+ */
+
+.nav.subnav > li > a {
+    display: inline-block;
+}
+
+.dropdown > a.split-link {
+    margin-right: 0;
+    padding-right: 10px;
+    border-right: solid 1px #f0f0f0;
+}
+
+.dropdown > a.split-caret {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.dropdown.active > a.split-link {
+    border-right-color: #07b;
+}
+
+.dropdown.open > a.split-link {
+    border-right-color: #888;
+}
+
+/**
+ * ------------------------------------------------------------------
+ * URL HIGHLIGHTING
+ * ------------------------------------------------------------------
+ * @see global_functions.js:highlightURL()
+ */
+
+.url-origin{
+color:#005fd6;
+}
+
+.url-path{
+color:#60ABD8;
+}
+
+.url-path-separator{
+color:#bbb;
+margin:0 2px;
+}
+
+.url-query-token{
+color:#bbb;
+margin:0 2px;
+}
+
+.url-query-variable{
+color:#C56F00;
+}
+
+.url-query-value{
+color:#019801;
+}
+
+.url-fragment{
+color:#60ABD8;
+}
+
+
+/**
+ * ------------------------------------------------------------------
+ * MISCELLANEOUS
+ * ------------------------------------------------------------------
+ */
+
+/* The info icon on buttons when they have a tooltip */
+.button-tooltip-icon{
+display:block;
+float:right;
+font-size:80%;
+margin:0 10px 0 10px;
+opacity:0.7;
+}
+
+.button-tooltip-icon:hover{
+opacity:1;
+}
+
+.control-icon {
+    margin-top: 7px;
+    display: block;
+}
+
+.tab-abstract {
+    padding-bottom: 13px;
+    border-bottom: solid 1px #dfdfdf;
+    margin-bottom: 18px;
+}
+
+.body-wrap .nav.nav-tabs{
+margin-bottom:0;
+}
+
+PRE.console {
+    margin-bottom: 50px;
+}
+
+.btn-developer {
+    background: url(../img/bg-button-developer.png);
+    border-color: #f47e00;
+}
+
+TR.active,
+TR.active:hover {
+    background: #dce2ec;
+}
+
+.loader_text {
+    text-align: center;
+    font-size: 110%;
+    font-weight: bold;
+}
+
+.loader_spinner {
+    text-align: center;
+    font-size: 190%;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.keyboard-shortcut {
+    display: inline-block;
+    font-size: 80%;
+    font-weight: bold;
+    color: #999;
+    letter-spacing: -0.1em;
+}
+
+.keyboard-shortcut-label {
+    letter-spacing: 0;
+
+}
+
+TD.align-center,
+TH.align-center {
+    text-align: center;
+}
+
+TD.align-right,
+TH.align-right {
+    text-align: right;
+}
+
+/* Make sure tooltips are shown above modal dialogs */
+.tooltip {
+    z-index: 2000 !important;
+}
+
+UL.dropdown-menu .header {
+    color: #999;
+    display: block;
+    text-transform: uppercase;
+    padding: 3px 15px;
+    font-size: 11px;
+    line-height: 20px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+UL.dropdown-menu {
+	min-width:185px;
+}
+
+.dropdown-form {
+    padding: 0 20px;
+}
+
+.nav-tabs-hint {
+    float: right;
+}
+
+.row.without-sidebar #content {
+    width: auto;
+}
+
+/* make sure that state labels with icons cannot wrap */
+.state-label {
+    white-space: nowrap;
+}
+
+/* used by buttons when they are set to not wrap their text */
+.text-nowrap {
+    white-space: nowrap;
+}
+
+.dropdown-menu LI {
+    text-align: left;
+}
+
+.dropdown-menu .danger A {
+    color: #b94a48;
+}
+
+.dropdown-menu LI.danger > a:hover {
+    background: #b94a48;
+    color: #fff;
+}
+
+.dropdown-menu .developer A {
+    color: #f47e00;
+}
+
+.dropdown-menu LI.developer > a:hover {
+    background: #f47e00;
+    color: #fff;
+}
+
+LI.select-block {
+    padding: 8px 16px;
+    border: solid 1px #a8c0d0;
+    border-radius: 8px;
+    background: #eef3f6;
+    background: linear-gradient(to bottom, #eef3f6 1%, #f7f9fb 32%);
+    margin-bottom: 16px;
+}
+
+LI.select-block.block-regular {
+    cursor: pointer;
+}
+
+LI.select-block.block-regular:hover {
+    border-color: #0773bd;
+    background: #fff;
+}
+
+LI.select-block.block-active {
+    background: #c4e2f5;
+}
+
+.table.table-first-unstyled TR:first-child TD,
+.table.table-first-unstyled TR:first-child TH {
+    border-top: 0;
+}
+
+TABLE.table-popover TD,
+TABLE.table-popover TH{
+font-size:93%;
+line-height:93%;
+}
+
+TABLE.table-nomargin{
+margin-bottom:0;
+}
+
+.drag-helper {
+    background: #08c;
+    color: #fff;
+    border-radius: 4px;
+    padding: 2px 10px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.changelog-table .with-changes {
+    cursor: pointer;
+}
+
+.changelog-table .without-changes {
+    display: none;
+}
+
+.title-campaign-selector .label.label-info{
+	background:#1c4d92;
+}
+
+.label .caret{
+	line-height:inherit;
+	vertical-align:middle;
+	border-top-color:#fff;
+}
+
+.dropdown-menu .menu-header A {
+    text-transform: uppercase;
+}
+
+.dropdown-menu .menu-header A:hover,
+.dropdown-menu .menu-header A:active {
+    background: transparent;
+}
+
+.whatsnew-category {
+    text-transform: uppercase;
+    font-size: 13px !important;
+    font-weight: normal;
+    color: #666;
+}
+
+.whatsnew-items {
+    margin-bottom: 20px;
+}
+
+.whatsnew-version {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.container {
+    min-width: 1000px;
+}
+
+BODY.layout-standard .container {
+    width: 80% !important;
+}
+
+BODY.layout-maximized .container {
+    width: 96% !important;
+}
+
+BODY.fontsize-bigger.zoomable{
+	zoom:110%;
+}
+
+/* for browsers that do not support zoom (firefox & co). 
+   Scaling makes the entire page get scrollbars,
+   so we scale the page and reduce the width 
+   accordingly. */
+BODY.fontsize-bigger.non-zoomable{
+	transform-origin:0 0;
+	transform: scale(1.1,1.1);
+	width:90.9%;
+}
+
+.navbar .nav > li > .brand {
+    padding-right: 0;
+}
+
+#content_frame > .nav-pills {
+    padding: 0;
+    border-top: solid 1px #e9e9e9;
+    border-bottom: solid 1px #e9e9e9;
+    background: #fafafa;
+    margin-bottom: 30px;
+}
+
+#content_frame > .nav-pills > li > a {
+    border-radius: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+#content_frame > .breadcrumb {
+    background: transparent;
+    padding-left: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.breadcrumb-item {
+    font-size: 12px;
+}
+
+.body-wrap {
+    border: solid 1px #D5D6DE;
+    background: #f8f8f8;
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.20);
+    border-radius: 4px;
+    padding: 18px;
+}
+
+.body-wrap.slim{
+border:none;
+box-shadow:none;
+padding:0;
+background:transparent;
+}
+
+.body-wrap TABLE.table{
+background:#fff;
+}
+
+.body-wrap TR.prop-header{
+background:transparent;
+}
+
+.body-wrap .accordion-group{
+background:#fff;
+}
+
+.accordion-toggle SPAN.muted{
+color:#79a2c0;
+}
+
+.body-wrap > .content-section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#messages-container{
+    margin:40px 0;
+}
+
+#messages-container > .alert:last-child {
+    margin-bottom: 0;
+}
+
+#header .navbar-nav > li > a {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+#header .navbar-nav > li.active > a {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+A[target="_blank"]:not([type="button"]) {
+    color: #063aae;
+}
+
+A[target="_blank"]:not([type="button"]):after {
+    content: " \00bb";
+}
+
+.text-warning{
+    color: #e2500b;
+}
+
+.popover-content p {
+    margin-bottom: 8px;
+}
+
+.popover-content p:last-child {
+    margin-bottom: 0;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.dropdown-menu > LI.disabled A:hover {
+    background: transparent;
+}
+
+UL .popover {
+    color: #000 !important;
+}
+
+.properties-grid {
+    border-bottom: solid 1px #ddd;
+}
+
+.properties-grid TD,
+.properties-grid TH {
+    border-left: solid 1px #ddd;
+    border-right: solid 1px #ddd;
+}
+
+.properties-grid .prop-header TH {
+    padding: 15px 8px 10px 8px;
+    font-size: 110%;
+    font-weight: normal;
+    text-transform: uppercase;
+    border-left: 0;
+    border-right: 0;
+}
+
+.properties-grid .prop-header {
+    border-right: 0;
+}
+
+/* Fix for submenus nested in dropup menus */
+.dropdown-submenu.dropdown .dropdown-menu{
+bottom:auto !important;
+}
+
+.toolbar-sort-categories{
+text-align:right;
+margin-bottom:13px;
+}
+
+TD.force-ellipsis{
+text-overflow:ellipsis;
+overflow:hidden;
+white-space:nowrap;
+}
+
+/* Fix for multiselect dropdowns in collapsible sections:
+ * they are truncated, so this makes them open inline 
+ * instead of a hover menu. See the multiselect class.
+ */
+.btn-group.multiselect.inline-menu .multiselect-container{
+float:none;
+position:relative;
+margin-bottom:8px;
+}
+
+/* To allow elements to be appended to these, and put it 
+ * on the same baseline as other elements.
+ */
+.btn-group.multiselect{
+display:inline-block;
+margin-top:-2px;
+}
+
+/* Fix for overlays not working in collapsible elements */
+.collapse.in,
+.accordion-body.in{ 
+overflow:visible; 
+}
+
+UL.list-messages{
+padding:5px 10px;
+border-left:solid 4px #ccc;
+} 
+
+UL.list-messages.messages-error{
+border-left-color:#b94a48;
+background:#fcf0f0;
+}
+
+UL.list-messages.messages-warning{
+border-left-color:#f89406;
+background:#fef1df;
+}
+
+UL.unstyled.compact > LI{
+line-height:14px;
+}
+
+.nomarginb{
+margin-bottom:0 !important;
+}
+
+
+/* -------------------------------------------------------------------
+   ALERTS
+   ------------------------------------------------------------------- */
+
+.alert > P:last-child {
+    margin-bottom: 0;
+}
+
+.alert.alert-inline{
+display:inline-block;
+margin-left:13px;
+margin-right:13px;
+}
+
+/* less margin for alert messages in form element help blocks  */
+.help-block .alert {
+    margin-bottom: 6px;
+}
+
+/* different margins for alert boxes in a table cell */
+.cell-messages .alert {
+    margin: 5px 0;
+}
+
+.alert.alert-warning {
+    color: #e2500b;
+}
+
+.alert.alert-warning {
+    border-color: #f2cfa5;
+    background-color: #fff1d1;
+}
+
+.alert.alert-layout-slim{
+	padding:3px 26px 3px 6px;
+	font-size:92%;
+	line-height:110%;
+}
+
+.alert.alert-layout-slim > .close{
+	right:-21px;
+	top:0;
+	font-size:16px;
+	line-height:14px;
+}
+
+.alert.alert-layout-large{
+	font-size:120%;
+}
+
+
+/* -------------------------------------------------------------------
+   HEADINGS
+   ------------------------------------------------------------------- */
+
+H1.page-title,
+H2.page-subtitle{
+margin: 0;
+padding: 40px 0 26px 0;
+font-size: 150%;
+line-height: 95%;
+font-weight:normal;
+}
+
+H1.page-title SMALL {
+font-size: 70%;
+}
+
+H1.page-title SMALL A {
+color: #999;
+}
+
+H2 {
+font-size: 16px;
+margin: 0;
+padding: 30px 0 16px 0;
+}
+
+H2.separator {
+padding-bottom: 5px;
+border-bottom: solid 1px #cbdae4;
+margin-bottom: 14px;
+}
+
+H3 {
+font-size: 14px;
+margin: 0;
+padding: 20px 0 10px 0;
+}
+
+.title-subline {
+display: block;
+color: #999;
+}
+
+H2.page-subtitle{
+font-size:1.3em;
+font-weight:normal;
+}
+
+H3.page-abstract{
+font-style:italic;
+font-size:16px;
+font-weight:normal;
+line-height:normal;
+padding:0;
+margin:0 0 40px 0;
+}
+
+.page-title .title-subline,
+.page-subtitle .title-subline{
+font-size: 70%;
+font-weight: normal;
+}
+
+.page-title .title-subline A:link,
+.page-title .title-subline A:visited {
+color: #999;
+}
+
+.page-title .title-subline A:active,
+.page-title .title-subline A:hover {
+color: #08c;
+}
+
+.page-title .title-badges,
+.page-subtitle .title-badges{
+position: relative;
+top: 0px;
+left: 9px;
+font-size:80%;
+}
+
+/* Fixing the position of labels in the page title H1 headers */
+.page-title .label{
+position:relative;
+top:-4px;
+}
+
+.title-right{
+float: right;
+}
+
+.title-wrapper-title .title-right{
+margin-top: 26px;
+}
+
+.title-wrapper-subtitle .title-right{
+margin-top:6px;
+}
+
+/* Ensure that dropdowns floated right open to the left, and not the right */
+.title-right .dropdown-menu{
+right: 0;
+left: auto;
+}
+
+/* -------------------------------------------------------------------
+   BADGES
+   ------------------------------------------------------------------- */
+
+.badge-dropdown{
+	display:inline-block;
+	position:relative;
+}
+
+/* Force the font size, for example when used in a title */
+.badge-dropdown .dropdown-menu{
+	font-size:14px;
+}
+
+.badge.badge-large{
+font-size:1.1em;
+line-height:1.2em;
+}

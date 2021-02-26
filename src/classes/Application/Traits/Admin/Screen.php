@@ -1,0 +1,907 @@
+<?php
+/**
+ * File containing the {@see Application_Traits_Admin_Screen} trait.
+ * 
+ * @package Application
+ * @subpackage Admin
+ * @see Application_Traits_Admin_Screen
+ */
+
+define('ADMIN_TRAIT_SCREEN_ERROR_MISSING_URL_PARAMETER', 51501);
+
+define('ADMIN_TRAIT_SCREEN_ERROR_SCREEN_HAS_NO_AREA', 51502);
+
+/**
+ * Trait used by all administration screens: used to 
+ * dispatch the <code>handleXXX</code> methods down the
+ * screens chain. 
+ * 
+ * In practice this means that calling the method <code>handleSubnavigation()</code>
+ * will be called initially on the active admin area, but 
+ * from there will recurse into all subscreens as applicable:
+ * 
+ * Area > Mode > Submode > Action
+ * 
+ * NOTE: If any of the screens in the chain return a boolean false 
+ * from a handleXXX method, it will stop there and not recurse
+ * into any subscreens that are left. 
+ * 
+ * Admin screens can choose to overwrite any or all of the 
+ * following protected methods:
+ * 
+ * - _handleActions
+ * - _handleBeforeActions
+ * - _handleBreadcrumb
+ * - _handleContextMenu
+ * - _handleTabs
+ * - _handleHelp
+ * - _handleSidebar
+ * - _handleSubnavigation
+ * 
+ * @package Application
+ * @subpackage Admin
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * 
+ * @see Application_Admin_Area
+ * @see Application_Admin_Area_Mode
+ * @see Application_Admin_Area_Mode_Submode
+ * @see Application_Admin_Area_Mode_Submode_Action
+ * 
+ * @see Application_Admin_ScreenInterface
+ * 
+ * @property Application_Driver $driver
+ * @property UI_Page_Navigation $subnav
+ * @property UI_Page_Help $help
+ * @property UI_Page_Sidebar $sidebar
+ * @property UI_Bootstrap_Tabs $tabs
+ * @property Application_Request $request
+ * @property Application_Admin_ScreenInterface|NULL $parentScreen
+ * @method string getURLName()
+ */
+trait Application_Traits_Admin_Screen
+{
+   /**
+    * @var string
+    */
+    protected $screenID;
+    
+   /**
+    * Cached flag for the active state of the page.
+    * @var boolean
+    * @see isActive()
+    */
+    protected $active;
+    
+   /**
+    * Caches subscreen IDs.
+    * @var string[]|NULL
+    */
+    protected $subscreenIDs;
+    
+    /**
+     * Stores subscreen instances that have been loaded.
+     * @var Application_Admin_ScreenInterface[]
+     */
+    protected $subscreens = array();
+    
+   /**
+    * Caches the screen's URL param name.
+    * @var string|NULL
+    */
+    protected $urlParam;
+    
+   /**
+    * Caches the screen's log prefix.
+    * @var string
+    */
+    protected $logPrefix;
+    
+   /**
+    * Caches the screen's URL path.
+    * @var string|NULL
+    */
+    protected $urlPath;
+    
+   /**
+    * @var string
+    */
+    protected $activeSubscreenID;
+
+   /**
+    * Caches the screen's parent screens stack.
+    * @var Application_Admin_ScreenInterface[]|NULL
+    */
+    protected $parentScreens;
+    
+   /**
+    * Caches the screen's ID path.
+    * @var string|NULL
+    * @see Application_Traits_Admin_Screen::getIDPath()
+    */
+    protected $idPath;
+    
+   /**
+    * Caches the name of the subscreen's URL parameter.
+    * @var string|NULL
+    */
+    protected $subscreenURLParam;
+    
+   /**
+    * Handles any actions that need to be executed before 
+    * the UI is rendered, like validating forms and the like.
+    * 
+    * NOTE: When the UI layer is disabled (running the application
+    * in script mode), this will not be executed to avoid 
+    * actually trying to handle the request the screen is built for.
+    * 
+    * @return boolean
+    */
+    public function handleActions()
+    {
+        $this->log('Handling actions.');
+        
+        if(!$this->isAdminMode())
+        {
+            $this->log('Handling actions | Not in admin mode, ignoring.');
+            return false;
+        }
+        
+        if(!$this->isUserAllowed()) 
+        {
+            $this->log('Handling actions | User is not authorized, ignoring.');
+            return false;
+        }
+        
+        $this->log('Handling actions | Executing before actions.');
+        
+        $this->_handleBeforeActions();
+        
+        $this->log('Handling actions | Executing actions.');
+        
+        if($this->_handleActions() === false)
+        {
+            return false;
+        }
+        
+        if($this->hasSubscreens())
+        {
+            $this->log('Handling actions | Handling subscreen.');
+            
+            $sub = $this->getActiveSubscreen();
+            
+            if($sub !== null) 
+            {
+                $this->log('Handling actions | Executing subscreen actions.');
+                $sub->handleActions();
+            }
+        }
+        
+        return true;
+    }
+    
+    protected function _handleBeforeActions()
+    {
+        return true;
+    }
+    
+    protected function _handleActions()
+    {
+        return true;
+    }
+    
+   /**
+    * Used to call a <code>handleXXX()</code> method dynamically,
+    * without a parameter. Automatically checks if the user is
+    * allowed to do so, and recurses into subscreens if available.
+    * 
+    * @param string $name
+    * @return bool
+    */
+    protected function _handleUIMethod(string $name) : bool
+    {
+        $publicMethod = 'handle'.$name;
+        $protectedMethod = '_'.$publicMethod;
+        
+        if(!$this->isUserAllowed()) 
+        {
+            return false;
+        }
+        
+        $sub = $this->getActiveSubscreen();
+        
+        if($this->$protectedMethod() === false)
+        {
+            return false;
+        }
+        
+        if($sub !== null)
+        {
+            $sub->$publicMethod();
+        }
+        
+        return true;
+    }
+    
+   /**
+    * Like <code>_handleUIMethod()</code>, but with an object instance as
+    * parameter that will be stored in an internal property and passed
+    * on to any subscreens.
+    * 
+    * @param string $name The name of the method to call. e.g. "Subnavigation".
+    * @param string $property The name of the property to store the object in.
+    * @param object $subject The object to store and pass on.
+    * @return bool
+    */
+    protected function _handleUIMethodObject(string $name, string $property, object $subject) : bool
+    {
+        $publicMethod = 'handle'.$name;
+        $protectedMethod = '_'.$publicMethod;
+
+        $this->$property = $subject;
+        
+        $this->log('UI Layer | Handling '.$name);
+        
+        if(!$this->isUserAllowed()) 
+        {
+            return false;
+        }
+        
+        if($this->$protectedMethod() === false) 
+        {
+            return false;
+        } 
+        
+        $sub = $this->getActiveSubscreen();
+        
+        if($sub !== null) 
+        {
+            $sub->$publicMethod($subject);
+        }
+        else if($this->isLocked() && $subject instanceof Application_LockableItem_Interface)
+        {
+            $subject->lock($this->lockManager->getLockReason());
+        }
+        
+        return true;
+    }
+    
+   /**
+    * Handles configuring the breadcrumb for the screen.
+    * 
+    * The breadcrumb object is always present when the UI layer
+    * is enabled, so it does not have to be passed to this method.
+    * 
+    * @return boolean
+    * @see Application_Admin_Skeleton::startUI()
+    */
+    public function handleBreadcrumb()
+    {
+        return $this->_handleUIMethod('Breadcrumb');
+    }
+    
+    protected function  _handleBreadcrumb()
+    {
+        
+    }
+    
+    public function handleSidebar(UI_Page_Sidebar $sidebar)
+    {
+        return $this->_handleUIMethodObject('Sidebar', 'sidebar', $sidebar);
+    }
+    
+    protected function _handleSidebar()
+    {
+    }
+    
+    public function handleSubnavigation(UI_Page_Navigation $subnav)
+    {
+        return $this->_handleUIMethodObject('Subnavigation', 'subnav', $subnav);
+    }
+    
+    protected function _handleSubnavigation()
+    {
+        
+    }
+    
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu)
+    {
+        return $this->_handleUIMethodObject('ContextMenu', 'contextmenu', $menu);
+    }
+    
+    protected function _handleContextMenu()
+    {
+        
+    }
+    
+    public function handleTabs(UI_Bootstrap_Tabs $tabs)
+    {
+        return $this->_handleUIMethodObject('Tabs', 'tabs', $tabs);
+    }
+    
+    protected function _handleTabs()
+    {
+        
+    }
+    
+    public function handleHelp(UI_Page_Help $help)
+    {
+        return $this->_handleUIMethodObject('Help', 'help', $help);
+    }
+    
+    protected function _handleHelp()
+    {
+        
+    }
+    
+    public function renderContent() : string
+    {
+        $this->log('Render content');
+        
+        if(!$this->isUserAllowed())
+        {
+            $this->log('Render content | User not authorized.');
+            return $this->renderUnauthorized();
+        }
+        
+        $content = $this->_renderContent();
+        if(!empty($content))
+        {
+            $this->log('Render content | Using the area\'s own content.');
+            return $content;
+        }
+        
+        if($this->hasSubscreens())
+        {
+            $subscreen = $this->getActiveSubscreen();
+            
+            if($subscreen)
+            {
+                $this->log('Render content | Rending subscreen content.');
+                return $subscreen->renderContent();
+            }
+        }
+        
+        $this->log('Render content | No content has been rendered.');
+        return '';
+    }
+    
+    protected function _renderContent()
+    {
+        return '';
+    }
+    
+    
+   /**
+    * Retrieves the tabs instance, if any.
+    * 
+    * @return UI_Bootstrap_Tabs|NULL
+    */
+    public function getTabs() : ?UI_Bootstrap_Tabs
+    {
+        return $this->tabs;
+    }
+    
+    public function hasTabs() : bool
+    {
+        return isset($this->tabs);
+    }
+    
+    /**
+     * @return UI_Page_Help|NULL
+     */
+    public function getHelp()
+    {
+        return $this->help;
+    }
+    
+    /**
+     * Retrieves the instance of the sidebar, if any.
+     * @return UI_Page_Sidebar|NULL
+     */
+    public function getSidebar() : ?UI_Page_Sidebar
+    {
+        return $this->sidebar;
+    }
+
+    public function isArea() : bool
+    {
+        return $this instanceof Application_Admin_Area;
+    }
+    
+    public function isMode() : bool
+    {
+        return $this instanceof Application_Admin_Area_Mode;
+    }
+
+    public function isSubmode() : bool
+    {
+        return $this instanceof Application_Admin_Area_Mode_Submode;
+    }
+    
+    public function isAction() : bool
+    {
+        return $this instanceof Application_Admin_Area_Mode_Submode_Action;
+    }
+    
+   /**
+    * Retrieves the screen's admin area instance, if any.
+    * @return Application_Admin_Area
+    */
+    public function getArea() : Application_Admin_Area
+    {
+        if($this instanceof Application_Admin_Area) 
+        {
+            return $this;
+        }
+        
+        $parent = $this->getParentScreen();
+        
+        if($parent)
+        {
+            return $parent->getArea();
+        }
+        
+        throw new Application_Exception(
+            'Administration screen has no area.',
+            'Path to screen: '.$this->getURLPath(),
+            ADMIN_TRAIT_SCREEN_ERROR_SCREEN_HAS_NO_AREA
+        );
+    }
+    
+   /**
+    * Whether this screen has an active subscreen. 
+    * 
+    * @return bool
+    */
+    public function hasActiveSubscreen() : bool
+    {
+        return $this->getActiveSubscreen() !== null;
+    }
+    
+   /**
+    * Retrieves all parent screens up to (but not including)
+    * this screen, with the area at the top. If this is the 
+    * area, the array will have only the area.
+    * 
+    * @return Application_Admin_ScreenInterface[]
+    */
+    public function getParentScreens()
+    {
+        if(isset($this->parentScreens))
+        {
+            return $this->parentScreens;
+        }
+        
+        $stack = array();
+        $screen = $this->getParentScreen();
+        
+        if($screen === null)
+        {
+            return $stack;
+        }
+        
+        array_unshift($stack, $screen);
+        
+        while(!$screen instanceof Application_Admin_Area)
+        {
+            $screen = $screen->getParentScreen();
+            
+            array_unshift($stack, $screen);
+        }
+        
+        $this->parentScreens = $stack;
+        
+        return $this->parentScreens;
+    }
+
+    public function getID() : string
+    {
+        if (!isset($this->screenID)) 
+        {
+            $tokens = explode('_', get_class($this));
+            $this->screenID = array_pop($tokens);
+        }
+        
+        return $this->screenID;
+    }
+    
+   /**
+    * Retrieves an URL to this screen.
+    * 
+    * @param array $params
+    */
+    public function getURL(array $params = array()) : string
+    {
+        $screens = $this->getParentScreens();
+        
+        foreach($screens as $screen)
+        {
+            $params[$screen->getURLParam()] = $screen->getURLName();
+        }
+        
+        $params[$this->getURLParam()] = $this->getURLName();
+        
+        return $this->request->buildURL($params);
+    }
+    
+   /**
+    * Retrieves the URL path to the screen, in the
+    * format <code>area.mode.submode.action</code>.
+    * 
+    * @return string
+    */
+    public function getURLPath() : string
+    {
+        if(isset($this->urlPath))
+        {
+            return $this->urlPath;
+        }
+
+        $parts = array();
+        $screens = $this->getParentScreens();
+        
+        foreach($screens as $screen)
+        {
+            $parts[] = $screen->getURLName();
+        }
+        
+        $parts[] = $this->getURLName();
+        
+        $this->urlPath = implode('.', $parts);
+        
+        return $this->urlPath;
+    }
+
+    protected function getIDPath() : string
+    {
+        if(isset($this->idPath))
+        {
+            return $this->idPath;
+        }
+        
+        $parts = array();
+        $screens = $this->getParentScreens();
+        
+        foreach($screens as $screen)
+        {
+            $parts[] = $screen->getID();
+        }
+        
+        $parts[] = $this->getID();
+        
+        $this->idPath = implode('_', $parts);
+        
+        return $this->idPath;
+    }
+    
+    public function getURLParam() : string
+    {
+        if(!isset($this->urlParam))
+        {
+            $this->urlParam = $this->driver->resolveURLParam($this);
+        }
+        
+        return $this->urlParam;
+    }
+    
+    public function isActive() : bool
+    {
+        if(isset($this->active)) 
+        {
+            return $this->active;
+        }
+        
+        $this->active = false;
+        
+        $mine = $this->getURLPath();
+        $current = $this->driver->getCurrentURLPath();
+        
+        $this->active = substr($current, 0, strlen($mine)) === $mine;
+        
+        return $this->active;
+    }
+
+   /**
+    * Retrieves the currently active administration screen.
+    * 
+    * @return Application_Admin_ScreenInterface
+    */
+    public function getActiveScreen() : Application_Admin_ScreenInterface
+    {
+        $target = $this->getArea();
+        
+        while($target->hasActiveSubscreen())
+        {
+            $target = $target->getActiveSubscreen();
+        }
+        
+        return $target;
+    }
+    
+    
+   /**
+    * Retrieves a list of IDs of all subscreens available for the screen, if any.
+    * 
+    * NOTE: Does not check if the file contains a valid subscreen class.
+    * 
+    * @return string[]
+    */
+    public function getSubscreenIDs() : array
+    {
+        if(isset($this->subscreenIDs))
+        {
+            return $this->subscreenIDs;
+        }
+        
+        $this->subscreenIDs = array();
+        
+        $folder = $this->getSubscreensFolder();
+        
+        if(file_exists($folder))
+        {
+            $this->subscreenIDs = \AppUtils\FileHelper::createFileFinder($folder)
+            ->getPHPClassNames();
+        }
+        
+        return $this->subscreenIDs;
+    }
+    
+   /**
+    * Retrieves the path to the screen's subscreens folder.
+    * 
+    * @return string
+    */
+    public function getSubscreensFolder() : string
+    {
+        return sprintf(
+            '%s/assets/classes/%s/Area/%s',
+            APP_ROOT,
+            $this->driver->getID(),
+            str_replace('_', '/', $this->getIDPath())
+        );
+    }
+    
+   /**
+    * Whether the screen has any subscreens.
+    * 
+    * @return bool
+    */
+    public function hasSubscreens() : bool
+    {
+        $ids = $this->getSubscreenIDs();
+        
+        return !empty($ids);
+    }
+    
+    public function hasSubscreen(string $id) : bool
+    {
+        $screenID = $this->resolveSubscreenID($id);
+        
+        return !empty($screenID);
+    }
+    
+    public function getSubscreenByID(string $id) : Application_Admin_ScreenInterface
+    {
+        return $this->createSubscreen($id);
+    }
+
+    /**
+     * @param string $id
+     * @return Application_Admin_ScreenInterface
+     */
+    protected function createSubscreen(string $id) : Application_Admin_ScreenInterface
+    {
+        $screenID = $this->requireValidSubscreenID($id);
+        
+        if(!isset($this->subscreens[$screenID])) 
+        {
+            $this->log(sprintf('Creating child screen [%s] with class ID [%s].', $id, $screenID));
+            
+            $className = get_class($this).'_'.$screenID;
+            
+            $this->subscreens[$screenID] = new $className($this->driver, $this);
+        }
+        
+        return $this->subscreens[$screenID];
+    }
+
+    /**
+     * Given the ID of a subscreen of this administration screen,
+     * returns the case sensitive ID of the class of the subscreen.
+     *
+     * Example: Admin area "Products" requires child screen by
+     * id "editproduct", which is its URL name. The class name
+     * however, can have any case in its name, e.g. "EditProduct".
+     * This will return the matching case sensitive screen ID by
+     * finding the appropriate file in the filesystem.
+     *
+     * This presupposes that the case of the filename matches the
+     * case in the class name.
+     *
+     * @param string $id
+     * @throws Application_Exception
+     * @return string
+     */
+    protected function requireValidSubscreenID(string $id) : string
+    {
+        $screenID = $this->resolveSubscreenID($id);
+        
+        if(!empty($screenID))
+        {
+            return $screenID;
+        }
+        
+        throw new Application_Exception(
+            'No such child administration screen.',
+            sprintf(
+                'The administration screen [%s] has no child screen [%s]. Available child screens are [%s]. Looking in URL parameter [%s].',
+                get_class($this),
+                $id,
+                implode(', ', $this->getSubscreenIDs()),
+                $this->getURLParam()
+            ),
+            Application_Admin_Skeleton::ERROR_NO_SUCH_CHILD_ADMIN_SCREEN
+        );
+    }
+    
+    protected function resolveSubscreenID(string $id) : ?string
+    {
+        $ids = $this->getSubscreenIDs();
+        
+        $compare = strtolower($id);
+        
+        foreach($ids as $existing)
+        {
+            if(strtolower($existing) === $compare)
+            {
+                return $existing;
+            }
+        }
+        
+        return null;
+    }
+    
+   /**
+    * Resolves and returns the ID of the active subscreen, if any.
+    * 
+    * @return string The subscreen ID, or an empty string otherwise.
+    */
+    public function getActiveSubscreenID() : string
+    {
+        if(isset($this->activeSubscreenID))
+        {
+            return $this->activeSubscreenID;
+        }
+        
+        $this->activeSubscreenID = '';
+        
+        $paramName = $this->getSubscreenURLParam();
+        
+        if(!empty($paramName))
+        {
+            $this->activeSubscreenID = (string)$this->request->registerParam($paramName)
+            ->get($this->getDefaultSubscreenID());
+        }
+        
+        return $this->activeSubscreenID;
+    }
+    
+   /**
+    * Determines the name of the URL parameter of this
+    * screen's subscreen (if it even has any).
+    * 
+    * @throws Application_Exception
+    * @return string The param name, or an empty string otherwise.
+    */
+    protected function getSubscreenURLParam() : string
+    {
+        if(isset($this->subscreenURLParam))
+        {
+            return $this->subscreenURLParam;
+        }
+        
+        $this->subscreenURLParam = '';
+        
+        if(!$this->hasSubscreens())
+        {
+            return $this->subscreenURLParam;
+        }
+        
+        $names = $this->driver->getURLParamNames();
+        
+        $pos = array_search($this->getURLParam(), $names, true);
+        
+        if($pos === false)
+        {
+            throw new Application_Exception(
+                'Screen URL parameter not present.',
+                sprintf(
+                    'The URL parameter [%s] of screen [%s] was not found in the driver\'s URL parameters list: [%s].',
+                    $this->getURLParam(),
+                    get_class($this),
+                    implode(', ', $names)
+                ),
+                ADMIN_TRAIT_SCREEN_ERROR_MISSING_URL_PARAMETER
+            );
+        }
+        
+        $next = $pos + 1;
+        
+        if(isset($names[$next]))
+        {
+            $this->subscreenURLParam = $names[$next];
+        }
+        
+        return $this->subscreenURLParam;
+    }
+    
+    public function getDefaultSubscreenID() : ?string
+    {
+        return null;
+    }
+    
+    public function getActiveSubscreen() : ?Application_Admin_ScreenInterface
+    {
+        $id = $this->getActiveSubscreenID();
+        
+        if(!empty($id)) 
+        {
+            return $this->createSubscreen($id);
+        }
+        
+        return null;
+    }
+
+    public function getParentScreen() : ?Application_Admin_ScreenInterface
+    {
+        return $this->parentScreen;
+    }
+    
+   /**
+    * Initializes the screen, when in admin mode. When not in admin
+    * mode, the initialization is ignored. This is called in the 
+    * constructor of the screens types.
+    */
+    protected function initScreen() : void
+    {
+        if(!$this->isAdminMode())
+        {
+            return;
+        }
+        
+        $this->request->setParam($this->getURLParam(), $this->getURLName());
+        $this->init();
+    }
+
+   /**
+    * Can be extended by the screen for any required internal
+    * initializations.
+    */
+    protected function init()
+    {
+        
+    }
+
+    public function getLogIdentifier() : string
+    {
+        if(isset($this->logPrefix)) {
+            return $this->logPrefix;
+        }
+
+        $type = 'Screen';
+
+        if($this->isAdminMode())
+        {
+            $type = 'Admin Screen';
+        }
+
+        $this->logPrefix = sprintf(
+            '%s [%s] [%s]',
+            $type,
+            $this->getURLPath(),
+            $this->instanceID
+        );
+
+        return $this->logPrefix;
+    }
+}

@@ -1,0 +1,270 @@
+<?php
+
+declare(strict_types=1);
+
+use AppUtils\Interface_Optionable;
+use AppUtils\Traits_Optionable;
+
+class Application_User_Recent_Category implements Interface_Optionable, Application_Interfaces_Loggable
+{
+    use Traits_Optionable;
+    use Application_Traits_Loggable;
+
+    const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
+
+    /**
+     * @var string
+     */
+    private $label;
+
+    /**
+     * @var Application_User_Recent_Entry[]
+     */
+    private $entries = array();
+
+    /**
+     * @var string
+     */
+    private $alias;
+
+    /**
+     * @var Application_User_Recent
+     */
+    private $recent;
+
+    /**
+     * @var string
+     */
+    private $settingName;
+
+    /**
+     * @var Application_User
+     */
+    private $user;
+
+    public function __construct(Application_User_Recent $recent, string $alias, string $label)
+    {
+        $this->recent = $recent;
+        $this->alias = $alias;
+        $this->label = $label;
+        $this->user = $this->recent->getUser();
+        $this->settingName = 'recent_entries_'.$this->alias;
+
+        $this->log(sprintf('Setting name [%s].', $this->settingName));
+
+        $this->loadEntries();
+    }
+
+    public function getDefaultOptions(): array
+    {
+        return array(
+            'max-items' => 10
+        );
+    }
+
+    public function setMaxItems(int $max) : Application_User_Recent_Category
+    {
+        $this->setOption('max-items', $max);
+        return $this;
+    }
+
+    public function getMaxItems() : int
+    {
+        return $this->getIntOption('max-items');
+    }
+
+    /**
+     * Adds a new recent item entry to the category.
+     *
+     * NOTE: If an item with the same ID already exists,
+     * the existing item is overwritten with a new instance,
+     * which means that the timestamp is updated automatically.
+     *
+     * @param string $id The unique ID of the item, which can be used to retrieve it again later.
+     * @param string $label The item label to show in the UI.
+     * @param string $url An URL to open to view the item.
+     * @param DateTime|null $date A specific date and time, or null to use the current time.
+     * @return Application_User_Recent_Entry
+     */
+    public function addEntry(string $id, string $label, string $url, ?DateTime $date=null) : Application_User_Recent_Entry
+    {
+        if(!$date)
+        {
+            $date = new DateTime();
+        }
+
+        if($this->entryIDExists($id))
+        {
+            $this->unregisterEntry($this->getEntryByID($id));
+        }
+
+        $entry = $this->registerEntry($id,$label, $url, $date);
+
+        $this->save();
+
+        return $entry;
+    }
+
+    private function registerEntry(string $id, string $label, string $url, DateTime $date) : Application_User_Recent_Entry
+    {
+        $this->log(sprintf('Registering new entry [%s %s].', $id, $date->format('Y-m-d H:i:s')));
+
+        $entry = new Application_User_Recent_Entry($this, $id, $label, $url, $date);
+
+        $this->entries[] = $entry;
+
+        usort($this->entries, function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
+            if($a < $b) { return -1; }
+            if($b > $a) { return 1; }
+            return 0;
+        });
+
+        $total = count($this->entries);
+        $max = $this->getMaxItems();
+
+        if($total > $max)
+        {
+            $this->entries = array_slice($this->entries, 0, $max);
+        }
+
+        return $entry;
+    }
+
+    /**
+     * Removes the specified entry from the category.
+     *
+     * @return $this
+     */
+    public function removeEntry(Application_User_Recent_Entry $entry) : Application_User_Recent_Category
+    {
+        $this->unregisterEntry($entry);
+
+        $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Removes an entry from the category, without saving.
+     */
+    private function unregisterEntry(Application_User_Recent_Entry $entry) : void
+    {
+        $keep = array();
+        $removeID = $entry->getID();
+
+        foreach ($this->entries as $existing)
+        {
+            if($existing->getID() !== $removeID)
+            {
+                $keep[] = $existing;
+            }
+        }
+
+        $this->entries = $keep;
+    }
+
+    /**
+     * @return Application_User_Recent_Entry[]
+     */
+    public function getEntries() : array
+    {
+        return $this->entries;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAlias(): string
+    {
+        return $this->alias;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getEntryIDs() : array
+    {
+        $result = array();
+
+        foreach($this->entries as $entry)
+        {
+            $result[] = $entry->getID();
+        }
+
+        return $result;
+    }
+
+    public function entryIDExists(string $id) : bool
+    {
+        return in_array($id, $this->getEntryIDs());
+    }
+
+    public function getEntryByID(string $id) : Application_User_Recent_Entry
+    {
+        foreach($this->entries as $entry)
+        {
+            if($entry->getID() === $id)
+            {
+                return $entry;
+            }
+        }
+
+        throw new Application_Exception(
+            'Recent entry not found.',
+            sprintf(
+                'No entry found with the ID [%s].',
+                $id
+            ),
+            self::ERROR_RECENT_ENTRY_NOT_FOUND
+        );
+    }
+
+    private function loadEntries() : void
+    {
+        $this->log('Loading entries.');
+
+        $entries = $this->recent->getUser()->getArraySetting($this->settingName);
+
+        foreach($entries as $def)
+        {
+            $this->registerEntry($def['id'], $def['label'], $def['url'], new DateTime($def['date']));
+        }
+    }
+
+    private function save() : void
+    {
+        $this->log(sprintf('Saving with [%s] entries.', count($this->entries)));
+
+        $data = array();
+
+        foreach ($this->entries as $entry)
+        {
+            $data[] = $entry->toArray();
+        }
+
+        $this->user->setArraySetting($this->settingName, $data);
+        $this->user->saveSettings();
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return sprintf(
+            '%s | Recent items | Category [%s]',
+            $this->recent->getUser()->getLogIdentifier(),
+            $this->getAlias()
+        );
+    }
+
+    public function hasEntries() : bool
+    {
+        return !empty($this->entries);
+    }
+}

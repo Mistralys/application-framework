@@ -1,0 +1,50 @@
+<?php
+/**
+ * File containing the {@see Application_Traits_Iconizable} trait.
+ * 
+ * @package Application
+ * @subpackage UserInterface 
+ * @see Application_Traits_Iconizable
+ */
+
+/**
+ * Trait for elements that can have an icon set.
+ * 
+ * Usage:
+ * 
+ * - Add the use statement
+ * - Implement the iconizable interface
+ * 
+ * @package Application
+ * @subpackage UserInterface 
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Interfaces_Iconizable
+ */
+trait Application_Traits_Iconizable
+{
+   /**
+    * @var UI_Icon|NULL
+    */
+    protected $icon;
+
+    /**
+     * @param UI_Icon $icon
+     * @return $this
+     */
+    public function setIcon(UI_Icon $icon)
+    {
+        $this->icon = $icon;
+        return $this;
+    }
+    
+    public function hasIcon() : bool
+    {
+        return isset($this->icon);
+    }
+    
+    public function getIcon() : ?UI_Icon
+    {
+        return $this->icon;
+    }
+}

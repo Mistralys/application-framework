@@ -1,0 +1,695 @@
+<?php
+
+abstract class Application_RevisionableCollection implements Application_CollectionInterface, Application_Interfaces_Loggable
+{
+    use Application_Traits_Loggable;
+    
+    const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
+    const ERROR_REVISION_DOES_NOT_EXIST = 16102;
+    const ERROR_CANNOT_INSTANTIATE_ABSTRACT_COLLECTION = 16103;
+    
+    const DUMMY_ID = -1;
+
+   /**
+    * @return string
+    */
+    abstract public function getRecordTableName();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordClassName();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordTypeName();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordFiltersClassName();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordFilterSettingsClassName();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRevisionsStorageClass();
+    
+   /**
+    * @return array<string,string|number>
+    */
+    abstract public function getAdminURLParams();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordReadableNameSingular();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordReadableNamePlural();
+    
+   /**
+    * @return string
+    */
+    abstract public function getRecordCopyRevisionClass();
+    
+    /**
+     * This is called right after the collection's constructor:
+     * it is used to process any custom arguments that may have
+     * been specified in the {@link create()} method call.
+     *
+     * Use this to enforce and/or validate specific arguments the
+     * collection implementation may require.
+     *
+     * @param array $arguments
+     */
+    abstract protected function initCustomArguments(array $arguments=array()) : void;
+    
+    /**
+     * Retrieves the column names and human readable labels for
+     * all columns that are relevant for a search.
+     *
+     * @return array<string,string> Associative array with column name => readable label pairs.
+     */
+    abstract public function getRecordSearchableColumns();
+    
+   /**
+    * @var string
+    */
+    protected $recordTypeName;
+    
+   /**
+    * @var string
+    */
+    protected $tableName;
+    
+   /**
+    * @var string
+    */
+    protected $revisionsTableName;
+    
+   /**
+    * @var string
+    */
+    protected $revisionKeyName;
+    
+   /**
+    * @var string
+    */
+    protected $currentRevisionsTableName;
+    
+   /**
+    * @var string
+    */
+    protected $primaryKeyName;
+    
+   /**
+    * @var string
+    */
+    protected $changelogTableName;
+    
+   /**
+    * @var string
+    */
+    protected $exportRevisionsTableName;
+    
+   /**
+    * @var string
+    */
+    protected $instanceID;
+    
+   /**
+    * @param array<int,mixed> $customArguments
+    */
+    protected function __construct(array $customArguments=array())
+    {
+        $this->recordTypeName = $this->getRecordTypeName();
+        $this->tableName = $this->getRecordTableName();
+        $this->revisionsTableName = $this->tableName.'_revisions';
+        $this->currentRevisionsTableName = $this->tableName.'_current_revisions';
+        $this->primaryKeyName = $this->recordTypeName.'_id';
+        $this->revisionKeyName = $this->recordTypeName.'_revision';
+        $this->changelogTableName = $this->tableName.'_changelog';
+        $this->exportRevisionsTableName = $this->tableName.'_export_revisions';
+        $this->instanceID = nextJSID();
+        
+        $this->initCustomArguments($customArguments);
+        $this->init();
+    }
+    
+   /**
+    * Creates a new collection instance. Can be given arbitrary
+    * arguments that are passed on to the constructor, and can
+    * be used in the collection implementation's {@link init()} method.
+    *
+    * @return Application_RevisionableCollection
+    * @param array<int,mixed> ...$args
+    */
+    public static function create(...$args)
+    {
+        $className = get_called_class();
+        
+        /**
+         * @phpstan-ignore-next-line
+         */
+        return new $className($args);
+    }
+    
+   /**
+    * Initializer, called after the constructor to allow extended classes to do their stuff.
+    */
+    protected function init()
+    {
+        
+    }
+    
+   /**
+    * @return string
+    */
+    public function getRecordExportRevisionsTableName()
+    {
+        return $this->exportRevisionsTableName;
+    }
+    
+   /**
+    * @return string
+    */
+    public function getInstanceID()
+    {
+        return $this->instanceID;
+    }
+
+   /**
+    * @return string[]
+    */
+    public function getRecordSearchableKeys()
+    {
+        $columns = $this->getRecordSearchableColumns();
+        return array_keys($columns);
+    }
+    
+   /**
+    * @return string
+    */
+    public function getCurrentRevisionsTableName()
+    {
+        return $this->currentRevisionsTableName;
+    }
+
+   /**
+    * @return string
+    */
+    public function getPrimaryKeyName()
+    {
+        return $this->primaryKeyName;
+    }
+
+   /**
+    * @return string
+    */
+    public function getTableName()
+    {
+        return $this->tableName;
+    }
+
+   /**
+    * @return string
+    */
+    public function getRevisionsTableName()
+    {
+        return $this->revisionsTableName;
+    }
+    
+   /**
+    * @return string
+    */
+    public function getRevisionKeyName()
+    {
+        return $this->revisionKeyName;
+    }
+
+   /**
+    * @return string
+    */
+    public function getRecordChangelogTableName()
+    {
+        return $this->changelogTableName;
+    }
+    
+   /**
+    * @return Application_RevisionableCollection_FilterCriteria
+    */
+    public function getFilterCriteria() : Application_RevisionableCollection_FilterCriteria
+    {
+        $class = $this->getRecordFiltersClassName();
+        
+        $obj = new $class($this);
+        return $obj;
+    }
+    
+   /**
+    * @return Application_RevisionableCollection_FilterSettings
+    */
+    public function getFilterSettings()
+    {
+        $class = $this->getRecordFilterSettingsClassName();
+        
+        $obj = new $class($this);
+        return $obj;
+    }
+    
+    /**
+     * Creates a dummy revisionable object to access
+     * information that only instances can provide, like
+     * the available revisionable states.
+     *
+     * @return Application_RevisionableCollection_DBRevisionable
+     */
+    public function createDummyRecord()
+    {
+        return $this->getByID(self::DUMMY_ID);
+    }
+    
+   /**
+    * Creates a new revisionable record in the collection.
+    * 
+    * @param string $label
+    * @param Application_User|NULL $author If empty, the current user is used.
+    * @param array<string,mixed> $data 
+    * @return Application_RevisionableCollection_DBRevisionable
+    */
+    public function createNewRecord(string $label, ?Application_User $author=null, array $data=array())
+    {
+        DBHelper::requireTransaction(sprintf('Create a new %s record.', $this->getRecordReadableNameSingular()));
+        
+        $this->log(sprintf('Creating new record | [%s]', $label));
+        
+        // first off, we need an ID.
+        $revisionable_id = intval(DBHelper::insert(sprintf(
+            "INSERT INTO
+                `%s`
+            SET `%s` = DEFAULT",
+            $this->tableName,
+            $this->primaryKeyName
+        )));
+        
+        if(!$author) 
+        {
+            $author = Application::getUser();
+        }
+        
+        /* @var $storage Application_RevisionStorage_CollectionDB */
+        
+        $this->log(sprintf('Creating new record | Inserted with ID [%s].', $revisionable_id));
+        
+        $dummy = $this->createDummyRecord();
+        $storageClass = $this->getRevisionsStorageClass();
+        $storage = new $storageClass($dummy);
+        
+        $initialState = $this->getInitialState();
+        
+        // now insert the revision
+        $revision = $storage->createRevision(
+            $revisionable_id,
+            $label,
+            $initialState,
+            new DateTime(),
+            $author,
+            1,
+            t('Created %1$s.', $this->getRecordReadableNameSingular()),
+            $data
+        );
+        
+        $this->log(sprintf(
+            'Revisionable [%s] | Added revision [%s] with state [%s].',
+            $revisionable_id,
+            $revision,
+            $initialState->getName()
+        ));
+        
+        $this->setCurrentRevision($revisionable_id, $revision);
+        
+        return $this->getByID($revisionable_id);
+    }
+    
+   /**
+    * @return Application_StateHandler_State
+    */
+    public function getInitialState()
+    {
+        $dummy = $this->createDummyRecord();
+        return $dummy->getInitialState();
+    }
+    
+    public function idExists(int $revisionableID) : bool
+    {
+        return $this->getCurrentRevision($revisionableID) !== null;
+    }
+    
+    public function getAll()
+    {
+        return $this->getFilterCriteria()->getItemsObjects();
+    }
+    
+   /**
+    * @var Application_RevisionableCollection_DBRevisionable[]
+    */
+    protected $cachedItems;
+    
+   /**
+    * @return Application_RevisionableCollection_DBRevisionable
+    */
+    public function getByID(int $revisionableID)
+    {
+        $class = $this->getRecordClassName();
+        
+        if(!isset($this->cachedItems)) {
+            $this->cachedItems = array();
+        }
+        
+        if(!isset($this->cachedItems[$revisionableID])) {
+            $this->cachedItems[$revisionableID] = new $class($this, $revisionableID);
+        }
+        
+        return $this->cachedItems[$revisionableID];
+    }
+    
+   /**
+    * Retrieves a revisionable by its revision.
+    *
+    * @param integer $revision
+    * @throws Application_Exception
+    * @return Application_RevisionableCollection_DBRevisionable
+    */
+    public function getByRevision($revision)
+    {
+        $id = $this->revisionExists($revision);
+        
+        if($id) 
+        {
+            return $this->getByID($id);
+        }
+        
+        throw new Application_Exception(
+            'Revision does not exist',
+            sprintf(
+                'Cannot find %s by revision [%s]: it cannot be found in the [%s] table. Campaign keys used: [%s]',
+                $this->getRecordReadableNameSingular(),
+                $revision,
+                $this->revisionsTableName,
+                json_encode($this->getCampaignKeys())
+            ),
+            self::ERROR_REVISION_DOES_NOT_EXIST
+        );
+    }
+    
+   /**
+    * Attempts to retrieve a revisionable instance by looking
+    * for a request parameter named like the primary key of
+    * the revisionable.
+    *
+    * @return Application_RevisionableCollection_DBRevisionable|NULL
+    */
+    public function getByRequest()
+    {
+        $id = intval(Application_Request::getInstance()->registerParam($this->getPrimaryKeyName())->setInteger()->get());
+        if(!empty($id) && $this->idExists($id)) {
+            return $this->getByID($id);
+        }
+        
+        return null;
+    }
+    
+   /**
+    * Checks if the specified revision exists.
+    *
+    * @param integer $revision
+    * @return integer|boolean The record ID if found, false otherwise
+    */
+    public function revisionExists(int $revision)
+    {
+        // since we're tied to the campaign keys, we
+        // need to ensure that we look for the revision
+        // in the correct place.
+        $where = $this->getCampaignKeys();
+        $where[$this->revisionKeyName] = $revision;
+        
+        $id = DBHelper::fetchKeyInt(
+            $this->primaryKeyName,
+            sprintf(
+                "SELECT
+                    `%s`
+                FROM
+                    `%s`
+                WHERE
+                    %s",
+                $this->primaryKeyName,
+                $this->revisionsTableName,
+                DBHelper::buildWhereFieldsStatement($where)
+            ),
+            $where
+        );
+        
+        if($id > 0) 
+        {
+            return $id;
+        }
+        
+        return false;
+    }
+    
+    public function getCurrentRevision(int $revisionableID) : ?int
+    {
+        $params = $this->getCampaignKeys();
+        $params[$this->primaryKeyName] = $revisionableID;
+        
+        $query = sprintf(
+            "SELECT
+                `current_revision`
+            FROM
+                `%s`
+            WHERE
+                %s",
+            $this->getCurrentRevisionsTableName(),
+            DBHelper::buildWhereFieldsStatement($params)
+        );
+        
+        $entry = DBHelper::fetch($query, $params);
+        
+        if(isset($entry['current_revision'])) 
+        {
+            return intval($entry['current_revision']);
+        }
+        
+        return null;
+    }
+    
+   /**
+    * Checks whether the specified column value exists in the
+    * record's revisions table.
+    *
+    * @param string $key The column name
+    * @param string $value The value to search for
+    * @return integer|boolean The ID of the matching record, false otherwise
+    */
+    public function keyValueExists($key, $value)
+    {
+        $primaryKey = $this->primaryKeyName;
+        $revisionsTable = $this->revisionsTableName;
+        $currentRevsTable = $this->currentRevisionsTableName;
+        $revisionKey = $this->revisionKeyName;
+        
+        $query =
+        "SELECT
+        revs.`$primaryKey`,
+        revs.`$revisionKey`
+        FROM
+        `$revisionsTable` AS revs
+        LEFT JOIN
+        `$currentRevsTable` AS current
+        ON
+        revs.`$primaryKey` = current.`$primaryKey`
+        WHERE
+        revs.`$revisionKey` = current.current_revision";
+        
+        $where = $this->getCampaignKeys();
+        $where[$key] = $value;
+        
+        if(!empty($where)) 
+        {
+            $keys = array_keys($where);
+            foreach($keys as $key) {
+                $query .= " AND revs.`$key` = :$key";
+            }
+        }
+        
+        $record = DBHelper::fetch($query, $where);
+        if(!empty($record)) {
+            return $record[$primaryKey];
+        }
+        
+        return false;
+    }
+    
+   /**
+    * @var array<string,string>
+    */
+    protected $campaignKeys = array();
+    
+   /**
+    * Sets the collection to use a campaign key: this is used as a namespace
+    * for all record revisions to keep them separate, so revisions with
+    * a different campaign key value can live in parallel.
+    *
+    * The campaign column must be present in the revisions table as well as
+    * the current revisions table.
+    *
+    * NOTE: Meant to be handled via a constructor of the collection class.
+    *
+    * @param string $keyName
+    * @param string $keyValue
+    */
+    protected function setCampaignKey($keyName, $keyValue)
+    {
+        $this->campaignKeys[$keyName] = $keyValue;
+    }
+    
+   /**
+    * @return array<string,string>
+    */
+    public function getCampaignKeys()
+    {
+        return $this->campaignKeys;
+    }
+    
+    /**
+     * Sets the revisionable's current revision.
+     *
+     * @param integer $revisionableID
+     * @param integer $revision
+     */
+    public function setCurrentRevision($revisionableID, $revision)
+    {
+        $this->log(sprintf(
+            'Revisionable [%s] | Setting current revision to [%s].',
+            $revisionableID,
+            $revision
+        ));
+        
+        $campaignKeys = $this->getCampaignKeys();
+        
+        $data = $campaignKeys;
+        $data[$this->primaryKeyName] = $revisionableID;
+        $data['current_revision'] = $revision;
+        
+        // Primary keys are the campaign keys + the revisionable ID.
+        // Without campaign keys, it's just the revisionable ID.
+        $primaries = array_keys($campaignKeys);
+        $primaries[] = $this->primaryKeyName;
+        
+        DBHelper::insertOrUpdate(
+            $this->currentRevisionsTableName,
+            $data,
+            $primaries
+        );
+    }
+    
+    public function getLogIdentifier() : string
+    {
+        $id = sprintf(
+            '%s Collection | ',
+            ucfirst($this->getRecordTypeName())
+        );
+        
+        if(!empty($this->campaignKeys)) 
+        {
+            $id .= http_build_query($this->campaignKeys, '', '; ').' | ';
+        }
+        
+        return $id;
+    }
+    
+   /**
+    * @param array<string,string|number> $params
+    * @return string
+    */
+    protected function getAdminURL($params=array())
+    {
+        $params = array_merge($params, $this->getAdminURLParams());
+        return Application_Driver::getInstance()->getRequest()->buildURL($params);
+    }
+    
+   /**
+    * Destroys the  target revisionable permanently by deleting it
+    * from the database.
+    *
+    * @param Application_RevisionableCollection_DBRevisionable $revisionable
+    */
+    public function destroy(Application_RevisionableCollection_DBRevisionable $revisionable)
+    {
+        DBHelper::requireTransaction('Destroy a revisionable');
+        
+        Application::getMessageLog()->logInfo(
+            t(
+                'Destroyed the %1$s %2$s.',
+                $this->getRecordReadableNameSingular(),
+                $revisionable->getLabel()
+            ),
+            t('Revisionables')
+        );
+        
+        DBHelper::delete(
+            sprintf(
+                "DELETE FROM
+                    `%s`
+                WHERE
+                    `%s`=:revisionable_id",
+                $this->tableName,
+                $this->primaryKeyName
+            ),
+            array(
+                'revisionable_id' => $revisionable->getID()
+            )
+        );
+    }
+    
+   /**
+    * Creates a datagrid multi action handler: these are used to handle common
+    * revisionable tasks like publishing, deleting etc. via the multi-action
+    * datagrid feature.
+    *
+    * @param string $className The name of the multi action class to use. Must extend the base class.
+    * @param Application_Admin_Skeleton $adminScreen The administration screen in which the grid is used.
+    * @param UI_DataGrid $grid The grid to apply the action to.
+    * @param string $label The label of the item.
+    * @param string $redirectURL The URL to redirect to when this action completes.
+    * @param boolean $confirm Whether this is an action that displays a confirmation message.
+    * @return Application_RevisionableCollection_DataGridMultiAction
+    */
+    public function createListMultiAction($className, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, $label, $redirectURL, $confirm=false)
+    {
+        $obj = new $className($this, $adminScreen, $grid, $label, $redirectURL, $confirm);
+        
+        if(!$obj instanceof Application_RevisionableCollection_DataGridMultiAction) 
+        {
+            throw new Application_Exception(
+                'Invalid multi action class',
+                sprintf(
+                    'The object [%s] does not extend the [%s] class.',
+                    get_class($obj),
+                    'Application_RevisionableCollection_DataGridMultiAction'
+                ),
+                self::ERROR_INVALID_MULTI_ACTION_CLASS
+            );
+        }
+        
+        return $obj;
+    }
+}

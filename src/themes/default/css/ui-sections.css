@@ -1,0 +1,182 @@
+/* -------------------------------------------------------------------
+   CONTENT SECTIONS
+   ------------------------------------------------------------------- */
+
+.content-section > DIV:last-child,
+.content-section > P:last-child,
+.content-subsection > DIV:last-child,
+.content-subsection > P:last-child{
+margin-bottom: 0;
+}
+
+.content-section.nopadding .body-wrapper{
+padding:0;
+}
+
+.body-wrapper .tab-content,
+.body-wrapper .tab-toolbar{
+background:#fff;
+clear:right;
+}
+
+.body-wrapper .tab-content{
+padding-top:20px;
+}
+
+.body-wrapper > DIV:last-child,
+.body-wrapper > TABLE:last-child,
+.body-wrapper > SECTION:last-child{
+margin-bottom:0;
+}
+
+.content-section,
+.content-subsection{
+border-bottom:dotted 1px #ccc;
+}
+
+.content-section.last,
+.content-subsection.last{
+border-bottom:0;
+}
+
+.content-section.solid-background-light{
+background:#fff;	
+}
+
+.content-section .body-wrapper > P.abstract{
+margin-top:13px;
+font-size:16px;
+}
+
+.content-section-header,
+.content-subsection-header{
+font-weight:normal;
+font-size:16px;
+text-transform:uppercase;
+line-height:44px;
+padding:0 0 0 8px;
+margin:0 0 13px 0;
+background:#f0f0f0;	
+}
+
+.content-section-tagline,
+.content-subsection-tagline{
+display:block;
+text-transform:none;	
+position:relative;
+top:-12px;
+}
+
+.section-collapsible .section-header,
+.content-section-header.collapsible,
+.content-subsection-header.collapsible{
+cursor:pointer;
+}
+
+.content-section-header.collapsed,
+.content-subsection-header.collapsed{
+background:rgba(248, 248, 248, 0.6);
+margin-bottom:0;
+}
+
+.content-section-header.collapsed:hover,
+.content-subsection-header.collapsed:hover{
+background:#f0f0f0;	
+}
+
+.content-subsection-body{
+
+}
+
+.content-section-body .body-wrapper,
+.content-subsection-body .body-wrapper{
+padding:0 0 30px 0;
+}
+
+.content-subsection.last .body-wrapper{
+padding:0;
+}
+
+.content-section.form-section-error .content-section-header,
+.content-subsection.form-section-error .content-subsection-header{
+color:#b94a48;
+background:#feeded;
+}
+
+.content-section.form-section-error .content-section-header.collapsed:hover,
+.content-subsection.form-section-error .content-subsection-header.collapsed:hover{
+background:#fedfdf;	
+}
+
+/* the error-styled section: see the frame.content.section template */
+.content-section.error {
+border: solid 2px #cc0000;
+background: #ffe0e0;
+}
+
+.content-section.error .content-section-header{
+color: #cc0000;
+font-size: 120%;
+}
+
+.content-section.with-tabs.with-abstract .tabs-section{
+margin-bottom:0;
+}
+
+SECTION SPAN.error-code {
+float: right;
+}
+
+/* -------------------------------------------------------------------
+   TABS BELOW THE SECTION HEADER
+   ------------------------------------------------------------------- */
+
+UL.tabs-section{
+clear:both;
+text-align:right;
+margin:0 0 30px 0;
+padding:0 0 0 0;
+background:#fff;
+border:solid 1px #f0f0f0;
+border-top-color:#e9e9e9;
+border-bottom-left-radius:4px;
+border-bottom-right-radius:4px;
+}
+
+UL.tabs-section LI.tab{
+display:inline-block;
+}
+
+UL.tabs-section LI.tab.tab-default:hover{
+background:#e0e0e0;
+}
+
+
+UL.tabs-section LI.tab > A{
+display:inline-block;
+line-height:36px;
+padding:0 10px;
+text-decoration:none;
+color:#666;
+}
+
+
+UL.tabs-section LI.tab.tab-active{
+background:#5a5a5a;
+}
+
+UL.tabs-section LI.tab.tab-active > A{
+color:#fff;
+}
+
+/* -------------------------------------------------------------------
+   CONTEXT BUTTONS
+   ------------------------------------------------------------------- */
+
+.content-section.with-context-buttons .content-section-header{
+font-size:18px;
+}
+
+.content-section > DIV.btn-toolbar{
+margin:9px 13px 0 0;
+}

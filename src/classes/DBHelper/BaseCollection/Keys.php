@@ -1,0 +1,68 @@
+<?php
+
+declare(strict_types=1);
+
+class DBHelper_BaseCollection_Keys
+{
+    const ERROR_KEY_ALREADY_REGISTERED = 71401;
+
+    /**
+     * @var DBHelper_BaseCollection
+     */
+    private $collection;
+
+    /**
+     * @var array<string,DBHelper_BaseCollection_Keys_Key>
+     */
+    private $keys = array();
+
+    public function __construct(DBHelper_BaseCollection $collection)
+    {
+        $this->collection = $collection;
+    }
+
+    /**
+     * @return DBHelper_BaseCollection_Keys_Key[]
+     */
+    public function getAll() : array
+    {
+        return array_values($this->keys);
+    }
+
+    /**
+     * @return DBHelper_BaseCollection_Keys_Key[]
+     */
+    public function getRequired() : array
+    {
+        $result = array();
+
+        foreach($this->keys as $key)
+        {
+            if($key->isRequired())
+            {
+                $result[] = $key;
+            }
+        }
+
+        return $result;
+    }
+
+    public function register(string $name) : DBHelper_BaseCollection_Keys_Key
+    {
+        if(isset($this->keys[$name]))
+        {
+            throw new DBHelper_Exception(
+                'Key has already been registered.',
+                sprintf(
+                    'The key [%s] has already been registered, and cannot be registered again.',
+                    $name
+                ),
+                self::ERROR_KEY_ALREADY_REGISTERED
+            );
+        }
+
+        $key = new DBHelper_BaseCollection_Keys_Key($this, $name);
+        $this->keys[$name] = $key;
+        return $key;
+    }
+}

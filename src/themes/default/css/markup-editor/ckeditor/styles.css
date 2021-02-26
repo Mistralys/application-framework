@@ -1,0 +1,31 @@
+/**
+ * Custom styles for the CKEditor WYSIWYG editor.
+ * 
+ * @package Application
+ * @subpackage MarkupEditor
+ * @see UI_MarkupEditor_CKEditor 
+ */
+
+/*
+ * Fix the dropdown not having a maximum height, 
+ * which can cause to be endlessly long if there
+ * are many links to choose from.
+ */
+.ck-link-form .ck-dropdown__panel{
+max-height: 350px;
+overflow-y: auto;
+}
+
+.ck-dropdown .ck-button{
+cursor:pointer;
+}
+
+.ck-button.dropdown-header,
+.ck-button.dropdown-header:hover{
+cursor:default;
+padding-top:0 !important;
+padding-bottom:0 !important;
+color:#777 !important;
+background:#ddd !important;
+}
+
