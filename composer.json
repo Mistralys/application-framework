@@ -49,7 +49,8 @@
 		"ulrichsg/getopt-php" : "3.2.1",
 		"components/flag-icon-css" : "3.3.0",
         "hybridauth/hybridauth": ">=3.6.0",
-        "erusev\/parsedown": "1.7.4"
+        "erusev\/parsedown": "1.7.4",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit" : "8.2.5",
