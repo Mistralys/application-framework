@@ -67,6 +67,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/hybridauth/hybridauth" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/firebase/php-jwt" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpseclib/phpseclib" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/phpstan" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/sql" />
+      <excludeFolder url="file://$MODULE_DIR$/bin" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
