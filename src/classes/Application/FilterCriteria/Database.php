@@ -19,7 +19,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $joins = array();
 
     /**
-     * @var array<string,mixed>
+     * @var array<array<string,mixed>>
      */
     protected $queries = array();
 
@@ -115,7 +115,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     }
 
     /**
-     * @param false $isCount
+     * @param bool $isCount
      * @return string
      * @throws Application_Exception
      */
@@ -702,7 +702,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return $this
      * @throws Application_Exception
      */
-    public function addWhereColumnLIKE(string $column, string $value)
+    public function addWhereColumnLIKE(string $column, $value)
     {
         $column = $this->quoteColumnName($column);
 
