@@ -1,4 +1,4 @@
-v1.9.7
+v1.10.0
 - FilterCriteria: Split the database-specific filters into a separate abstract class, `Application_FilterCriteria_Database`.
 - FilterCriteria: The base class `Application_FilterCriteria` can now be used for non-database collections.
 
