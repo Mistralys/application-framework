@@ -43,7 +43,7 @@ require_once 'Application/FilterCriteria.php';
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria
+abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Database
 {
    /**
     * @var DBHelper_BaseCollection

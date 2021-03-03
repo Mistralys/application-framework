@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Application/FilterCriteria.php';
-
-abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria
+abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_Database
 {
    /**
     * 
@@ -61,7 +59,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         );
     }
     
-    protected function getCountColumn()
+    protected function getCountColumn() : string
     {
         return sprintf('`revs`.`%s`', $this->revisionKeyName);
     }

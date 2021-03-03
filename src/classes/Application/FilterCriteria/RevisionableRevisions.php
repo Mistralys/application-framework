@@ -24,7 +24,7 @@ require_once 'Application/FilterCriteria.php';
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see Application_FilterCriteria
  */
-class Application_FilterCriteria_RevisionableRevisions extends Application_FilterCriteria
+class Application_FilterCriteria_RevisionableRevisions extends Application_FilterCriteria_Database
 {
    /**
     * @var Application_RevisionStorage_DBStandardized
@@ -33,12 +33,10 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
     
     protected $stateless = true;
     
-    protected $orderField = '`date`';
-    
-    protected $orderDir = 'ASC';
-    
     public function __construct(Application_RevisionStorage_DBStandardized $storage)
     {
+        $this->setOrderBy('`date`', 'ASC');
+
         $this->storage = $storage;
         
         $revisionable = $this->storage->getRevisionable();

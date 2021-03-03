@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Application/FilterCriteria.php';
-
-class Application_Changelog_FilterCriteria extends Application_FilterCriteria
+class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Database
 {
    /**
     * @var Application_Changelog
@@ -11,12 +9,10 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria
     
     protected $objects = false;
     
-    protected $orderField = 'chlog.`changelog_date`';
-    
-    protected $orderDir = 'DESC';
-    
     public function __construct(Application_Changelog $changelog)
     {
+        $this->setOrderBy('chlog.`changelog_date`', 'DESC');
+
         $this->changelog = $changelog;
     }
     

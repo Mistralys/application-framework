@@ -15,7 +15,7 @@
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see Application_FilterCriteria
  */
-class Application_FilterCriteria_AppSettings extends Application_FilterCriteria
+class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_Database
 {
     /**
      * {@inheritDoc}
