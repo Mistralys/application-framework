@@ -176,75 +176,8 @@ if($this->user->canCreateMails()) {
 ### Request variables
 
 To access any variables from the current request, be they POST or GET, you may use the
-request class, which is available in `$this->request`. Anywhere else, it can be fetched
-via `Maileditor::getInstance()->getRequest()`.
-
-The request class allows validating the request variable before getting it. Here are a
-few common examples.
-
-#### Boolean values
-
-Treated as boolean values are: `yes`, `no`, `true`, `false`, `1`, `0`.
-
-```php
-if($this->request->getBool('boolean_variable')) {
-    // Is true
-}
-```
-
-#### Integers
-
-Fetching an integer. Note that the cast to int is necessary even though
-the `get()` method already ensures that an int is returned, to keep the
-PHP code analysis tools happy.
-
-```php
-$value = (int)$this->request
-  ->registerParam('integer_var')
-  ->setInteger()
-  ->get();
-```
-
-#### Value from a list
-
-Fetching a single value from a variable that allows a list of values: will
-return a value if it is present in the specified list of values.
-
-```php
-$value = (string)$this->request
-  ->registerParam('variable')
-  ->setEnum('value1', 'value2', 'value3')
-  ->get();
-```
-
-It is also possible to specify the list of variables as an array:
-
-```php
-$value = (string)$this->request
-  ->registerParam('variable')
-  ->setEnum(array('value1', 'value2', 'value3'))
-  ->get();
-```
-
-#### Regex check
-
-This allows specifying a regular expression to check the value against.
-This for example, expects an uppercase string with 4 letters.
-
-NOTE: You will typically want to add the beginning `\A` and end anchors `\z`
-to match the whole value.
-
-```php
-$value = (string)$this->request
-  ->registerParam('variable')
-  ->setRegex('/\A[A-Z]{4}\z/')
-  ->get();
-```
-
-#### Additional checks
-
-This list is not exhaustive - there are more validation methods that you can
-see with the IDE when registering a parameter.
+request class, which is available in `$this->request`. For details on the request class,
+see the "Accessing request data" chapter.
 
 ### Links and URLs
 
@@ -461,9 +394,9 @@ protected function _handleBreadcrumb()
 }
 ```
 
-NOTE: Items may be added without link, but it is recommended to always set
-a link, as new subscreens can always be added in the future, which would
-then leave a step linkless in the breadcrumb.
+  > NOTE: Items may be added without link, but it is recommended to always set
+    a link, as new subscreens can always be added in the future, which would
+    then leave a step linkless in the breadcrumb.
 
 ## The subnavigation
 
@@ -490,8 +423,8 @@ protected function _handleSubnavigation()
 
 #### Dropdown menus
 
-Note: dropdown menus cannot be automatically marked as active. You will have
-to manually set it as active (see "Marking as active").
+  > Note: dropdown menus cannot be automatically marked as active. You will have
+    to manually set it as active (see "Marking as active").
 
 ```php
 protected function _handleSubnavigation()
@@ -885,7 +818,119 @@ class Documentation_DataGrid_MultiSelect extends Application_Admin_Area_Mode
 }
 ```
 
+### Handling pagination
 
+### Introduction
+
+By default, a grid will display all items passed on to it. The pagination controls have to be 
+expressly activated, and the actual pagination mechanism handled - either manually, or automatically
+by using a FilterCriteria instance. 
+
+  > NOTE: The grid does not double-check that the amount of items
+    per page matches the amount of items given to it. You have to
+    ensure the offset and limit are used correctly when fetching
+    the matching items.
+
+#### Custom pagination example
+
+This example illustrates how to handle the offset and limit manually, given a list of items.
+
+```php
+$grid = $this->ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$grid->enableLimitOptionsDefault();
+
+// The total amount of items in the grid
+$total = 45;
+
+$grid->setTotal($total);
+
+// The current offset and limit selected in the grid
+$offset = $grid->getOffset();
+$limit = $grid->getLimit();
+
+$entries = array();
+
+// Generate dummy entries matching the selected range
+for($i=$offset; $i <= $offset + ($limit-1); $i++)
+{
+    $entries[] = array(
+        'name' => 'Otto '.($i+1),
+        'lastname' => 'Mustermann'
+    );
+}
+
+echo $grid->render($entries);
+```
+
+#### Example with filter criteria
+
+The filter criteria are made to work in tandem with data grids, to automate the fetching
+of records from the database according to the grid's offset and limit.
+
+```php
+$grid = $this->ui->createDataGrid('countries_list');
+$grid->addColumn('iso', t('ISO code'));
+$grid->addColumn('label', t('Name'));
+
+$grid->enableLimitOptionsDefault();
+
+// Get a filter criteria instance
+$filters = Application_Countries::getInstance()->getFilterCriteria();
+
+// Let the filters configure the grid (and vice versa)
+$filters->configure($grid);
+
+// Fetch the items: This is automatically limited using the grid's
+// current offset and items per page limit.
+$items = $filters->getItemsObjects();
+
+// Build the entries
+$entries = array();
+foreach($items as $item)
+{
+    $entries[] = array(
+        'iso' => $item->getISO(),
+        'label' => $item->getLocalizedLabel()
+    );
+}
+
+echo $grid->render($entries);
+```
+
+### Enabling compact mode
+
+In some cases, a more compact table layout may be needed. This can easily be enabled with the
+`enableCompactMode()` method, which will cause all cells to use less padding to reduce the 
+overall size of the grid.
+
+This can be further combined with turning off the footer line if it is not needed.
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$grid->enableCompactMode();
+$grid->disableFooter();
+```
+
+To make the grid even easier to integrate into specific layout cases, its margins can be 
+turned off (it will have no top or bottom margins anymore):
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$grid->disableMargins();
+```
 
 ## Icons
 
@@ -989,6 +1034,155 @@ $this->ui->createSection()
   ->collapse();
 ```
 
+# Accessing request data
+
+## The request class
+
+To access any variables from the current request, be they POST or GET, you may use the
+request class, which is available anywhere via `Application_Request::getInstance()`.
+It allows validating the request variable before getting it. 
+
+The request class is based on the request class included in the [Application Utils][] 
+GitHub package.
+
+## Fetching values
+
+The simplest way to fetch a request variable is to use the `getParam()` method.
+
+```php
+$request = Application_Request::getInstance();
+
+$value = $request->getParam('name');
+```
+
+However, this does not include any validation at all. It is recommended to always
+filter the values using the available validation methods.
+
+### Boolean values
+
+Treated as boolean values are: `yes`, `no`, `true`, `false`, `1`, `0`.
+
+```php
+$request = Application_Request::getInstance();
+
+if($request->getBool('boolean_variable')) {
+    // Is true
+}
+```
+
+  > NOTE: If the value is not a boolean, it will return `false` by default.
+
+### Integers
+
+Fetching an integer. Note that the cast to int is necessary even though
+the `get()` method already ensures that an int is returned, to keep the
+PHP code analysis tools happy.
+
+```php
+$request = Application_Request::getInstance();
+
+$value = (int)$request
+  ->registerParam('integer_var')
+  ->setInteger()
+  ->get();
+```
+
+### Callback
+
+The callback validation allows a method or function to be used to validate
+the request value, if at all present. The callback gets the value as first
+parameter, as well as any additional (optional) arguments that may have been
+specified.
+
+```php
+$request = Application_Request::getInstance();
+
+$value = (string)$request
+    ->registerParam('variable')
+    ->setCallback('callback_function', array('optionalArgument'))
+    ->get();
+
+/**
+ * @param mixed $value
+ * @param string $optional Optional parameter to the callback
+ * @return bool
+ */
+function callback_function($value, string $optional) : bool
+{
+    return strval($value);
+}
+```
+
+This callback function simply returns the value converted to string. 
+
+### Multiple choice
+
+Fetching a single value from a variable that allows a list of values: will
+return a value if it is present in the specified list of values.
+
+```php
+$request = Application_Request::getInstance();
+
+$value = (string)$request
+  ->registerParam('variable')
+  ->setEnum('value1', 'value2', 'value3')
+  ->get();
+```
+
+This will allow the `variable` parameter to be set to any of the three 
+specified values.
+
+It is also possible to specify the list of values as an array:
+
+```php
+$request = Application_Request::getInstance();
+
+$value = (string)$request
+  ->registerParam('variable')
+  ->setEnum(array('value1', 'value2', 'value3'))
+  ->get();
+```
+
+### Regex check
+
+This allows specifying a regular expression to check the value against.
+This for example, expects an uppercase string with 4 letters.
+
+  > NOTE: You will typically want to add the beginning `\A` and end anchors `\z`
+    to match the whole value.
+
+```php
+$request = Application_Request::getInstance();
+
+$value = (string)$request
+  ->registerParam('variable')
+  ->setRegex('/\A[A-Z]{4}\z/')
+  ->get();
+```
+
+### Comma-separated IDs
+
+This allows a list of IDs to be specified as a comma-separated string,
+like for example `45,14,8,147`. The request automatically parses this
+and returns an array of integers.
+
+```php
+$request = Application_Request::getInstance();
+
+$ids = (array)$request
+    ->registerParam('ids')
+    ->setIDList()
+    ->get();
+```
+
+  > NOTE: Whitespace is automatically stripped, so spaces after the commas
+    are allowed.
+
+### Additional validations
+
+This list is not exhaustive - there are more validation methods that you can
+see with the IDE when registering a parameter.
+
 # Forms
 
 ## Introduction
@@ -997,9 +1191,9 @@ The application framework uses the package `HTML_QuickForm2` to handle forms. Th
 is wrapped in what is called a _Formable_, a utility class that handles all the application's
 specifics around the forms package.
 
-Note: The fork https://github.com/Mistralys/HTML_QuickForm2 is used in the framework, as it 
-has a number of improvements regarding performance when using many forms in parallel, as well 
-as several quality of life improvements.
+  > Note: The fork https://github.com/Mistralys/HTML_QuickForm2 is used in the framework, as it 
+    has a number of improvements regarding performance when using many forms in parallel, as well 
+    as several quality of life improvements.
 
 No layouting work needs to be done: all forms are standardized for a streamlined user 
 experience. The framework offers methods for all relevant aspects:
@@ -1277,6 +1471,98 @@ class Documentation_Form_Element_Select extends Application_Admin_Area_Mode
 }
 ```
 
+# Debugging and Logging
+
+## Logging
+
+### The logger class
+
+The application's logger class is the central hub to access the logging system:
+
+```php
+$logger = Application::getLogger();
+```
+
+#### Log modes
+
+The log modes define what becomes of the log messages. By default, they are stored
+in memory, and discarded at the end of the request. The log is saved to disk only if
+an exception occurrs, in which case it is stored along with the exception details to
+view it in the error log.
+
+The log mode can be changed on the fly:
+
+```php
+$logger = Application::getLogger();
+
+// Direct all log messages to the logs/trace.log file
+$logger->logModeFile();
+
+// Echo all log messages to standard output
+$logger->logModeEcho();
+
+// Do not store any log messages at all
+$logger->logModeNone();
+```
+
+### Displaying the log in the UI
+
+When in UI mode, appending the parameter `&simulate_only=yes` will cause all
+log messages to be sent to the browser immediately. Alternatively, the log can 
+be printed in one block with the following call:
+
+```php
+// Print the log as plain text
+Application::getLogger()->printLog();
+
+// Print the log with HTML styling enabled
+Application::getLogger()->printLog(true);
+```
+
+### The loggable interface and trait
+
+Any class can implement the loggable interface, and use the corresponding trait
+to avoid having to implement all the methods:
+
+```php
+class Documentation_LoggableExample implements Application_Interfaces_Loggable
+{
+    use Application_Traits_Loggable;
+    
+    public function getLogIdentifier() : string
+    {
+        return 'Unique Identifier';
+    }
+    
+    public function addSomeLogs() : void
+    {
+        // Adding a simple log message
+        $this->log('Regular log message');
+        
+        // Logging data sets
+        $this->logData(array('data' => 'value'));
+        
+        // Visual header to separate major log sections
+        $this->logHeader('Header title');
+        
+        // Marking a log message as being related to an event
+        $this->logEvent('EventName', 'Message');
+        
+        // Add a log message marked as an error
+        $this->logError('An error message');
+    }
+}
+```
+
+  > NOTE: The log identifier will be used as prefix for all log messages.
+
+## Debugging
+
+The primary way to debug in the framework is logging: Log messages can be used to 
+track important events and changes, and can stay in the code indefinitely. Since 
+exceptions retain the log messages up to the error, they are a valuable source of 
+information.
+
 # Global utility methods & functions
 
 ## Global functions
@@ -1429,9 +1715,9 @@ The main hub for running queries is the DBHelper static class, which offers a ra
 of static methods for most use cases. It is configured automatically for the database
 defined in the application's configuration files.
 
-NOTE: For backwards compatibility, the DBHelper still offers methods that have been
-superseded by newer, more efficient alternatives. This documentation will focus on
-the newer implementations.
+  > NOTE: For backwards compatibility, the DBHelper still offers methods that have been
+    superseded by newer, more efficient alternatives. This documentation will focus on
+    the newer implementations.
 
 ## Examples
 
@@ -1642,7 +1928,9 @@ The connector has abstract classes for the following methods:
 - PUT - `Connectors_Connector_Method_Put`
 
 These can be extended to communicate with services based on HTTP methods.
-NOTE: They all expect the data format to be JSON.
+
+  > NOTE: All these expect the data format to be JSON. See "Custom methods"
+    below to see how to handle other cases.       
 
 ### Custom methods
 
@@ -1900,3 +2188,6 @@ sb()
 Developers can access the translation UI under _Manage > Translation_. This finds all instances
 of the translation methods, and allows adding the translations for all locales defined
 for the application.
+
+
+[Application Utils]: https://github.com/Mistralys/application-utils
