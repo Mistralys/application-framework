@@ -581,6 +581,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
 
     /**
      * @return Application_User_Recent
+     * @throws Application_Exception
      */
     public function getRecent() : Application_User_Recent
     {
@@ -592,6 +593,13 @@ abstract class Application_User implements Application_User_Interface, Applicati
         return $this->recent;
     }
 
+    /**
+     * Creates the application-specific instance of the user
+     * recent actions class.
+     *
+     * @return Application_User_Recent
+     * @throws Application_Exception
+     */
     private function createRecent() : Application_User_Recent
     {
         $class = APP_CLASS_NAME.'_User_Recent';
