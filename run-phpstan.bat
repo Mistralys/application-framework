@@ -1,6 +1,6 @@
 @echo off
 
-set AnalysisLevel=2
+set AnalysisLevel=5
 set OutputFile=docs\phpstan\result.txt
 set ConfigFile=docs\phpstan\config.neon
 set BinFolder=vendor\bin
