@@ -1,3 +1,10 @@
+v1.11.0
+- Sidebar: Added the possibility to collapse/expand the sidebar.
+- Navigation search: Added a layout mode that uses the full page width.
+- FilterSettings: Fixed not being able to modify the settings after adding them to the sidebar.
+- UI: Tweaked the maximized layout by decreasing the side margins somewhat.
+- Application settings: Fixed the filter settings increasing the width of the sidebar.
+
 v1.10.0
 - FilterCriteria: Split the database-specific filters into a separate abstract class, `Application_FilterCriteria_Database`.
 - FilterCriteria: The base class `Application_FilterCriteria` can now be used for non-database collections.
