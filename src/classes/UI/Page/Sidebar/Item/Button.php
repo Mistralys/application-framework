@@ -26,11 +26,20 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
     
     use Application_Traits_Iconizable;
-    
-    protected $title;
 
+    /**
+     * @var string
+     */
+    protected $title = '';
+
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var string
+     */
     protected $mode = 'none';
 
     protected $url = null;
@@ -51,12 +60,17 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      * @var UI_Page_Sidebar_Item_Button_ConfirmMessage|NULL
      */
     protected $confirmMessage;
-    
-    public function __construct(UI_Page_Sidebar $sidebar, $name, $title = null)
+
+    /**
+     * @param UI_Page_Sidebar $sidebar
+     * @param string $name
+     * @param string|UI_Renderable_Interface|int|float $title
+     */
+    public function __construct(UI_Page_Sidebar $sidebar, string $name, $title = '')
     {
         parent::__construct($sidebar);
         $this->name = $name;
-        $this->title = $title;
+        $this->title = toString($title);
         $this->id = 'button_' . $this->name;
 
         $this->init();
