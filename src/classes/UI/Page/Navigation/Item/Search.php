@@ -1,9 +1,14 @@
 <?php
 
+use AppUtils\ConvertHelper;
+
 class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 {
     const ERROR_INVALID_CALLBACK = 22101;
-    
+
+    /**
+     * @var callable
+     */
     protected $callback;
     
     protected $scopes = array();
@@ -14,23 +19,121 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     protected $request;
     
    /**
-    * @var array[string]string
+    * @var array<string,string>
     */
     protected $hiddens = array();
-    
-    public function __construct(UI_Page_Navigation $nav, $id, $callback)
+
+    /**
+     * @var string|NULL
+     */
+    protected $name = null;
+
+    /**
+     * @var bool
+     */
+    private $fullWidth = false;
+
+    /**
+     * @var int
+     */
+    protected $minLength = 2;
+
+    /**
+     * @param UI_Page_Navigation $nav
+     * @param string $id
+     * @param callable $callback
+     *
+     * @throws Application_Exception
+     * @see UI_Page_Navigation_Item_Search::ERROR_INVALID_CALLBACK
+     */
+    public function __construct(UI_Page_Navigation $nav, string $id, $callback)
     {
+        // ensure it contains no special characters
+        $id = ConvertHelper::transliterate($id);
+
         parent::__construct($nav, $id);
         $this->callback = $callback;
         
         Application::requireCallableValid($callback, self::ERROR_INVALID_CALLBACK);
     }
-    
-    public function initDone()
+
+    public function getTemplateName() : string
     {
-        if($this->request->getParam('navsearch-name') == $this->getName()) {
+        if($this->isFullWidth())
+        {
+            return 'ui/nav/search.full-width';
+        }
+
+        return 'ui/nav/search.inline';
+    }
+
+    public function getPosition() : string
+    {
+        if($this->isFullWidth())
+        {
+            return self::ITEM_POSITION_BELOW;
+        }
+
+        return self::ITEM_POSITION_INLINE;
+    }
+
+    private function createTemplate() : UI_Page_Template
+    {
+        return $this->ui->createTemplate($this->getTemplateName())
+            ->setVar('search', $this)
+            ->setVar('scope_id', $this->resolveScope());
+    }
+    
+    public function initDone() : void
+    {
+        echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
+        print_r($_REQUEST);
+        echo '</pre>';
+        
+        if($this->isSubmitted()) {
+
             $this->handleSubmitted();
         }
+    }
+
+    /**
+     * Retrieves the name of the currently selected
+     * scope, if any. When not using scopes, this
+     * will always return an empty string.
+     *
+     * @return string
+     */
+    public function getSelectedScopeID() : string
+    {
+        $scope = strval($this->resolveScope());
+
+        if(!empty($scope))
+        {
+            return $scope;
+        }
+
+        if(empty($this->scopes))
+        {
+            return '';
+        }
+
+        return $this->scopes[0]['name'];
+    }
+
+    /**
+     * Retrieves the current search terms, if any.
+     *
+     * @param string $scopeID
+     * @return string
+     */
+    public function getSearchTerms(string $scopeID='') : string
+    {
+        if(empty($scopeID))
+        {
+            $scopeID = $this->getSelectedScopeID();
+        }
+
+        return $this->resolveTerms($scopeID);
     }
     
     public function getType()
@@ -38,84 +141,130 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return 'search';
     }
     
-    protected $name;
-    
-    public function getName()
+    public function getName() : string
     {
-        if(!isset($this->name)) {
+        if(!isset($this->name))
+        {
             $driver = Application_Driver::getInstance();
-            $this->name = $driver->getActiveScreen()->getURLPath().'.nav.'.$this->nav->getID().'.search';
+            $this->name = str_replace('.', '_', $driver->getActiveScreen()->getURLPath().'_navsearch_'.$this->nav->getID());
         }
         
         return $this->name;
     }
-    
-    public function render($attributes = array())
+
+    /**
+     * @param array<string,string> $attributes (Unused)
+     * @return string
+     *
+     * @see template_default_ui_nav_search_inline
+     * @see template_default_ui_nav_search_full_width
+     */
+    public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
         {
             return '';
         }
 
-        $this->ui->addStylesheet('ui-nav-search.css');
+        $this->addHiddenVar($this->getSubmitElementName(), 'yes');
         
-        $this->addHiddenVar('navsearch-name', $this->getName());
-        
-        $html =
-        '<form method="post" class="nav-search '.implode(' ', $this->classes).'">'.
-            $this->renderHiddens().
-            '<div class="search-inputs">'.
-                '<input name="search" type="text" class="search-input search-input-terms" placeholder="'.t('Search...').'"/>';
-                if(!empty($this->scopes)) {
-                    $html .= 
-                    '<select name="scope" class="search-input search-input-scope">';
-                        foreach($this->scopes as $scope) {
-                            $html .= 
-                            '<option value="'.$scope['name'].'">'.
-                                $scope['label'].
-                            '</option>';
-                        }
-                        $html .=
-                    '</select>';
-                }
-                $html .=
-            '</div>'.
-            '<div class="search-button">'.
-                UI::button()
-                ->setIcon(UI::icon()->search())
-                ->makeSubmit('run_search', 'yes').
-            '</div>'.
-        '</form>';
-        
-        return $html;
+        return $this->createTemplate()->render();
     }
-    
-    protected function renderHiddens()
+
+    public function getSubmitElementName() : string
     {
-        $html = 
-        '<div class="form-hiddens" style="display:none">';
-            foreach($this->hiddens as $name => $value) {
-                $html .= sprintf(
-                    '<input type="hidden" name="%s" value="%s"/>',
-                    $name,
-                    $value
-                );
+        return $this->getName().'_submit';
+    }
+
+    public function getSearchElementName(string $scope) : string
+    {
+        $name = $this->getName().'_input';
+
+        if($this->isFullWidth())
+        {
+            if(empty($scope))
+            {
+                return $name;
             }
-            $html .=
-        '</div>';
-        
-        return $html;
+
+            return $name.'_'.$scope;
+        }
+
+        return $name;
+    }
+
+    public function getScopeElementName() : string
+    {
+        return $this->getName().'_scope';
+    }
+
+    /**
+     * Retrieves all variables needed to persist the
+     * current search settings, when it is needed to
+     * inject these into another form for example.
+     *
+     * @return array<string,string>
+     */
+    public function getPersistVars() : array
+    {
+        $scopeID = $this->getSelectedScopeID();
+
+        $vars = array(
+            $this->getSearchElementName($scopeID) => $this->resolveTerms($scopeID),
+            $this->getScopeElementName() => $scopeID
+        );
+
+        if($this->isSubmitted())
+        {
+            $vars[$this->getSubmitElementName()] = 'yes';
+        }
+
+        return $vars;
+    }
+
+    public function isSubmitted() : bool
+    {
+        return $this->request->getBool($this->getSubmitElementName());
     }
     
    /**
     * Makes the search appear on the right hand side of the
     * navigation bar.
     * 
-    * @return UI_Page_Navigation_Item_Search
+    * @return $this
     */
     public function makeRightAligned()
     {
         return $this->addContainerClass('pull-right');
+    }
+
+    /**
+     * Makes the search bar appear in full width right below the navigation.
+     *
+     * @return $this
+     */
+    public function makeFullWidth()
+    {
+        $this->fullWidth = true;
+        return $this;
+    }
+
+    public function isFullWidth() : bool
+    {
+        return $this->fullWidth;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getHiddenVars() : array
+    {
+        return $this->hiddens;
+    }
+
+    public function getScopes() : array
+    {
+        return $this->scopes;
     }
     
    /**
@@ -125,9 +274,9 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     * @param string $value
     * @return UI_Page_Navigation_Item_Search
     */
-    public function addHiddenVar($name, $value)
+    public function addHiddenVar(string $name, $value)
     {
-        $this->hiddens[$name] = $value;
+        $this->hiddens[$name] = strval($value);
         return $this;
     }
     
@@ -166,16 +315,16 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         
         return $this;
     }
-    
-    protected $minLength = 2;
-    
+
    /**
     * Sets the minimum amount of characters for a search to be valid.
-    * @param string $length
+    * @param int $length
     * @return UI_Page_Navigation_Item_Search
     */
     public function setMinSearchLength($length)
     {
+        $length = intval($length);
+
         if($length < 0) {
             $length = 0;
         }
@@ -183,23 +332,47 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         $this->minLength = $length;
         return $this;
     }
-    
-    protected function handleSubmitted()
+
+    public function hasScopes() : bool
     {
-        $terms = $this->resolveTerms();
-        if(!empty($terms)) {
-            call_user_func(
-                $this->callback, 
-                $this, 
-                $terms, 
-                $this->resolveScope()
-            );
-        }
+        return !empty($this->scopes);
     }
     
-    protected function resolveTerms()
+    protected function handleSubmitted() : void
     {
-        $terms = $this->request->registerParam('search')
+        $scope = $this->resolveScope();
+
+        $this->log('The search has been submitted.');
+        $this->log(sprintf(
+            'Selected scope is [%s] (using scopes: %s).',
+            $scope,
+            ConvertHelper::bool2string($this->hasScopes(), true))
+        );
+
+        $terms = $this->resolveTerms($scope);
+        if(empty($terms)) {
+            $this->log('Ignoring, the search terms are empty.');
+            return;
+        }
+
+        $this->log(sprintf('Calling the search callback with search terms [%s].', $terms));
+
+        call_user_func(
+            $this->callback,
+            $this,
+            $terms,
+            $scope
+        );
+    }
+
+    /**
+     * @return string
+     */
+    protected function resolveTerms(string $scopeID) : string
+    {
+        $paramName = $this->getSearchElementName($scopeID);
+
+        $terms = (string)$this->request->registerParam($paramName)
         ->addFilterTrim()
         ->addStripTagsFilter()
         ->addHTMLSpecialcharsFilter()
@@ -209,22 +382,25 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             return $terms;
         }
         
-        return null;
+        return '';
     }
-    
-    protected function resolveScope()
+
+    /**
+     * @return string
+     */
+    protected function resolveScope() : string
     {
         if(empty($this->scopes)) {
-            return null;
+            return '';
         }
         
-        $scope = $this->request->getParam('scope');
+        $scopeID = $this->request->getParam($this->getScopeElementName());
         foreach($this->scopes as $def) {
-            if($def['name'] == $scope) {
-                return $scope;
+            if($def['name'] === $scopeID) {
+                return $scopeID;
             }
         }
         
-        return null;
+        return '';
     }
 }
