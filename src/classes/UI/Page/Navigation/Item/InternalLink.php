@@ -43,7 +43,7 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
         return 'internallink';
     }
 
-    public function render($attributes = array())
+    public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
         {
@@ -91,7 +91,7 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
         return implode('.', $tokens);
     }
 
-    public function isActive()
+    public function isActive() : bool
     {
         $active = $this->nav->getForcedActiveItem();
         if ($active && $active->getID() == $this->id) {

@@ -82,7 +82,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         $this->active = true;
     }
 
-    public function render()
+    public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
         {

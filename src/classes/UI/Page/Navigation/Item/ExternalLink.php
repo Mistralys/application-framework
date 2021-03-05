@@ -29,7 +29,7 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
         return $this->url;
     }
 
-    public function render($attributes = array())
+    public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
         {

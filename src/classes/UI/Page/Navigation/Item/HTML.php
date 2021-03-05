@@ -5,7 +5,7 @@ class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
    /**
     * @var string
     */
-    protected $html;
+    protected $html = '';
     
     public function __construct(UI_Page_Navigation $nav, $id, $html)
     {
@@ -18,7 +18,7 @@ class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
         return 'html';
     }
     
-    public function render($attributes = array())
+    public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
         {
