@@ -821,6 +821,15 @@ BODY.layout-maximized .container {
     width: 96% !important;
 }
 
+BODY.layout-maximized #content_area > .container {
+    width: 100% !important;
+}
+
+BODY.layout-maximized #content_frame {
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
 BODY.fontsize-bigger.zoomable{
 	zoom:110%;
 }
