@@ -169,11 +169,14 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
         $this->addFormablePageVars();
         
         $text = $this->addElementText('key', t('Data key'));
+        $text->addClass('input-block');
         $text->addFilterTrim();
         $this->makeLengthLimited($text, 1, 160);
         $this->makeRequired($text);
         
         $value = $this->addElementTextarea('value', t('Value'));
+        $value->removeClass('input-xxlarge');
+        $value->addClass('input-block');
         $value->addFilterTrim();
         $this->makeRequired($value);
         
