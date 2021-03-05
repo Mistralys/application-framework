@@ -210,7 +210,11 @@ class UI_Icon
         'TENANT' => 'award',
         'COLORS' => 'palette',
         'MONEY' => 'money-check-alt',
-        'PRICE' => 'money-check-alt'
+        'PRICE' => 'money-check-alt',
+        'COLLAPSE_RIGHT' => 'caret-square-right',
+        'COLLAPSE_LEFT' => 'caret-square-left',
+        'EXPAND_RIGHT' => 'caret-square-right',
+        'EXPAND_LEFT' => 'caret-square-left'
     );
 
     public function __construct()
@@ -245,6 +249,8 @@ class UI_Icon
     public function check() { return $this->setType('CHECK'); }
     public function code() { return $this->setType('CODE'); }
     public function collapse() { return $this->setType('COLLAPSE'); }
+    public function collapseLeft() { return $this->setType('COLLAPSE_LEFT'); }
+    public function collapseRight() { return $this->setType('COLLAPSE_RIGHT'); }
     public function colors() { return $this->setType('COLORS'); }
     public function combination() { return $this->setType('COMBINATION'); }
     public function combine() { return $this->setType('COMBINE'); }
@@ -277,6 +283,8 @@ class UI_Icon
     public function email() { return $this->setType('EMAIL'); }
     public function enabled() { return $this->setType('ENABLED'); }
     public function expand() { return $this->setType('EXPAND'); }
+    public function expandLeft() { return $this->setType('EXPAND_LEFT'); }
+    public function expandRight() { return $this->setType('EXPAND_RIGHT'); }
     public function export() { return $this->setType('EXPORT'); }
     public function exportArchive() { return $this->setType('EXPORT_ARCHIVE'); }
     public function featuretables() { return $this->setType('FEATURETABLES'); }
@@ -644,6 +652,16 @@ class UI_Icon
         return $this;
     }
 
+    public function removeStyle(string $name) : UI_Icon
+    {
+        if(isset($this->styles[$name]))
+        {
+            unset($this->styles[$name]);
+        }
+
+        return $this;
+    }
+
     protected $styles = array();
     
    /**
@@ -690,5 +708,15 @@ class UI_Icon
     public function display()
     {
         echo $this->render();
+    }
+
+    public function setHidden(bool $hidden=true) : UI_Icon
+    {
+        if($hidden)
+        {
+            return $this->setStyle('display', 'none');
+        }
+
+        return $this->removeStyle('display');
     }
 }
