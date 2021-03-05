@@ -128,20 +128,31 @@ abstract class UI_Renderable implements UI_Renderable_Interface
         
         return new UI_Page_Template($this->page, $templateID);
     }
-  
-   /**
-    * Creates a template, renders it and returns the generated contents.
-    * @param string $templateID
-    * @param array $params
-    * @return string
-    * @see createTemplate()
-    */
+
+    /**
+     * Creates a template, renders it and returns the generated contents.
+     * @param string $templateID
+     * @param array<string,mixed> $params
+     * @return string
+     * @throws Application_Exception
+     * @see createTemplate()
+     */
     public function renderTemplate(string $templateID, array $params = array()) : string
     {
         $tpl = $this->createTemplate($templateID);
         $tpl->setVars($params);
         
         return $tpl->render();
+    }
+
+    /**
+     * @param string $templateID
+     * @param array<string,mixed> $params
+     * @throws Application_Exception
+     */
+    public function displayTemplate(string $templateID, array $params=array()) : void
+    {
+        echo $this->renderTemplate($templateID, $params);
     }
     
    /**
