@@ -66,6 +66,7 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * and returns the generated HTML code.
      *
      * @return string
+     * @throws Application_Exception
      */
     protected function _render()
     {
@@ -205,12 +206,14 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
         return $this->addInternalLink($params['page'], $title, $params);
     }
 
-   /**
-    * Adds a search box to the navigation. Use the returned
-    * object to configure the widget further.
-    * 
-    * @return UI_Page_Navigation_Item_Search
-    */
+    /**
+     * Adds a search box to the navigation. Use the returned
+     * object to configure the widget further.
+     *
+     * @param callable $callback
+     * @return UI_Page_Navigation_Item_Search
+     * @throws Application_Exception
+     */
     public function addSearch($callback)
     {
         $this->counter++;
