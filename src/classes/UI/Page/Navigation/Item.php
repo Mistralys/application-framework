@@ -19,11 +19,15 @@ use AppUtils\Traits_Classable;
  * 
  * @method UI_Page_Navigation_Item addClass($class) addClass(string $class)
  */
-abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconizable, Interface_Classable, UI_Interfaces_Conditional
+abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconizable, Interface_Classable, UI_Interfaces_Conditional, Application_Interfaces_Loggable
 {
     use Application_Traits_Iconizable;
     use Traits_Classable;
     use UI_Traits_Conditional;
+    use Application_Traits_Loggable;
+
+    const ITEM_POSITION_INLINE = 'inline';
+    const ITEM_POSITION_BELOW = 'below';
     
     /**
      * @var Application_Request
@@ -35,46 +39,93 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      */
     protected $nav;
 
+    /**
+     * @var string
+     */
     protected $id;
 
+    /**
+     * @var bool
+     */
     protected $active = false;
 
+    /**
+     * @var string
+     */
     protected $title = '';
 
     protected $params = array();
 
-    protected $group = null;
-    
-    protected $alias = null;
+    /**
+     * @var string
+     */
+    protected $group = '';
+
+    /**
+     * @var string
+     */
+    protected $alias = '';
 
    /**
     * @var UI
     */
     protected $ui;
-    
+
+    /**
+     * @param UI_Page_Navigation $nav
+     * @param string|int $id
+     * @throws Application_Exception
+     */
     public function __construct(UI_Page_Navigation $nav, $id)
     {
         $this->nav = $nav;
-        $this->id = $id;
+        $this->id = strval($id);
         $this->request = Application_Request::getInstance();
         $this->ui = UI::getInstance();
     }
 
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->title;
     }
     
-    public function getAlias()
+    public function getAlias() : string
     {
         return $this->alias;
     }
 
+    /**
+     * Retrieves the positioning of the item. Some items may
+     * be positioned directly below the navigation, while the
+     * default is within the navigation.
+     *
+     * @return string
+     *
+     * @see UI_Page_Navigation_Item::ITEM_POSITION_BELOW
+     * @see UI_Page_Navigation_Item::ITEM_POSITION_INLINE
+     */
+    public function getPosition() : string
+    {
+        return self::ITEM_POSITION_INLINE;
+    }
+
+    /**
+     * Whether the item is placed below the navigation.
+     * @return bool
+     */
+    public function isPositionBelow() : bool
+    {
+        return $this->getPosition() === self::ITEM_POSITION_BELOW;
+    }
+
+    /**
+     * @var string[]
+     */
     protected $containerClasses = array();
     
    /**
@@ -84,7 +135,7 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     * @param string $class
     * @return $this
     */
-    public function addContainerClass($class)
+    public function addContainerClass(string $class)
     {
         if(!in_array($class, $this->containerClasses)) {
             $this->containerClasses[] = $class;
@@ -100,7 +151,11 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
 
     abstract public function getType();
 
-    abstract public function render();
+    /**
+     * @param array<string,string> $attributes
+     * @return string
+     */
+    abstract public function render(array $attributes = array()) : string;
 
     /**
      * Checks whether the current navigation item is
@@ -116,7 +171,7 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      * @return boolean
      * @see setActive()
      */
-    public function isActive()
+    public function isActive() : bool
     {
         $active = $this->nav->getForcedActiveItem();
         if($active && $active->getID() == $this->id) {
@@ -133,9 +188,9 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      * @param bool $active
      * @throws InvalidArgumentException
      * @see isActive()
-     * @return UI_Page_Navigation_Item
+     * @return $this
      */
-    public function setActive($active = true)
+    public function setActive(bool $active = true)
     {
         if (!is_bool($active)) {
             throw new InvalidArgumentException('Invalid value for setActive, boolean expected, ' . gettype($active) . ' given.');
@@ -151,9 +206,9 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      * label of the menu.
      *
      * @param string $title
-     * @return UI_Page_Navigation_Item
+     * @return $this
      */
-    public function setGroup($title)
+    public function setGroup(string $title)
     {
         $this->group = $title;
         return $this;
@@ -164,7 +219,7 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      *
      * @return string
      */
-    public function getGroup()
+    public function getGroup() : string
     {
         return $this->group;
     }
@@ -177,7 +232,7 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     * @return UI_Page_Navigation_Item
     * @see UI_Page_Navigation::getByAlias()
     */
-    public function setAlias($alias)
+    public function setAlias(string $alias)
     {
         $this->alias = $alias;
         return $this;
@@ -186,5 +241,14 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     public function initDone()
     {
         // can be extended by the items
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return sprintf(
+            'NavItem [%s #%s]',
+            $this->getType(),
+            $this->getID()
+        );
     }
 }
