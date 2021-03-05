@@ -11,6 +11,7 @@ if (!$this->user->canLogin()) {
 $nav = $this->getVar('navigation');
 $items = $nav->getItems();
 $trackGroups = array();
+$below = array();
 $dropdown = null;
 
 $nav->addClass('nav-pills');
@@ -39,8 +40,14 @@ if($menu)
         echo '<!-- start button dropdown -->'.$dropdown->render().'<!-- end button dropdown -->';
     }
 
-    foreach ($items as $item) 
+    foreach ($items as $item)
     {
+        if($item->isPositionBelow())
+        {
+            $below[] = $item;
+            continue;
+        }
+
         $group = $item->getGroup();
         
         if ($group && in_array($group, $trackGroups)) 
@@ -127,4 +134,12 @@ if($menu)
     }
 ?>
 </ul>
+<?php
+
+    foreach ($below as $item)
+    {
+        echo $item->render();
+    }
+
+?>
 <!-- end subnav -->
