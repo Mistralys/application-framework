@@ -207,12 +207,20 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     public function getPersistVars() : array
     {
-        $scopeID = $this->getSelectedScopeID();
+        $vars = array();
+        $vars[$this->getScopeElementName()] = $this->getSelectedScopeID();
 
-        $vars = array(
-            $this->getSearchElementName($scopeID) => $this->resolveTerms($scopeID),
-            $this->getScopeElementName() => $scopeID
-        );
+        if(!empty($this->scopes))
+        {
+            foreach ($this->scopes as $scope)
+            {
+                $vars[$this->getSearchElementName($scope['name'])] = $this->resolveTerms($scope['name']);
+            }
+        }
+        else
+        {
+            $vars[$this->getSearchElementName('')] = $this->resolveTerms('');
+        }
 
         if($this->isSubmitted())
         {
