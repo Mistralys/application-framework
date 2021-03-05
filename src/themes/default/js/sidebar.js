@@ -122,5 +122,30 @@ var Sidebar =
 		
 		var toc = new Sidebar_FormTOC(formName, containerID);
 		return toc;
+	},
+
+	Toggle:function()
+	{
+		var el = $('#sidebar');
+		var elToggle = $('#sidebar-toggle');
+		var elCollapse = $('#sidebar-toggle-icon-collapse');
+		var elExpand = $('#sidebar-toggle-icon-expand');
+
+		if(elToggle.hasClass('expanded'))
+		{
+			el.hide();
+			elToggle.removeClass('expanded');
+			elToggle.addClass('collapsed');
+			elCollapse.hide();
+			elExpand.show();
+		}
+		else
+		{
+			el.show();
+			elToggle.addClass('expanded');
+			elToggle.removeClass('collapsed');
+			elCollapse.show();
+			elExpand.hide();
+		}
 	}
 };

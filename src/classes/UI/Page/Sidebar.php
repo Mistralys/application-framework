@@ -14,6 +14,8 @@
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see template_default_frame_sidebar
  */
 class UI_Page_Sidebar implements Application_LockableItem_Interface
 {
@@ -32,22 +34,52 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
      */
     private $template;
 
+    /**
+     * @var string[]
+     */
     protected $classes = array();
-    
+
+    /**
+     * @var string
+     */
     protected $instanceID;
+
+    /**
+     * @var bool
+     */
+    private $collapsed = false;
+
+    private static $instanceCounter = 0;
 
     public function __construct(UI_Page $page)
     {
-        $this->instanceID = nextJSID();
+        self::$instanceCounter++;
+
+        $this->instanceID = 'sidebar'.self::$instanceCounter;
         $this->page = $page;
     }
     
-    public function getInstanceID()
+    public function getInstanceID() : string
     {
         return $this->instanceID;
     }
 
-    public function render()
+    public function isCollapsed() : bool
+    {
+        return $this->collapsed;
+    }
+
+    /**
+     * Collapses the sidebar.
+     * @return $this
+     */
+    public function makeCollapsed()
+    {
+        $this->collapsed = true;
+        return $this;
+    }
+
+    public function render() : string
     {
         $items = $this->getItems();
         
@@ -67,12 +99,12 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         return $template->render();
     }
 
-    public function display()
+    public function display() : void
     {
         echo $this->render();
     }
 
-    public function hasItems()
+    public function hasItems() : bool
     {
         $items = $this->getItems();
         return !empty($items);
@@ -80,6 +112,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
 
     /**
      * @return UI_Page_Template
+     * @throws Application_Exception
      */
     public function getTemplate() : UI_Page_Template
     {
@@ -93,17 +126,17 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     /**
      * @return UI_Page
      */
-    public function getPage()
+    public function getPage() : UI_Page
     {
         return $this->page;
     }
 
     /**
      * @param string $name
-     * @param string $title
+     * @param string|UI_Renderable_Interface|int|float $title
      * @return UI_Page_Sidebar_Item_Button
      */
-    public function addButton($name, $title = null)
+    public function addButton(string $name, $title = '')
     {
         $item = $this->createButton($name, $title);
         $this->items[] = $item;
@@ -130,39 +163,52 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     * @param string $name
     * @return UI_Page_Sidebar_Item_Button|NULL
     */
-    public function getButton($name)
+    public function getButton(string $name) : ?UI_Page_Sidebar_Item_Button
     {
-        $button = $this->hasButton($name);
-        if($button instanceof UI_Page_Sidebar_Item_Button) {
-            return $button;
+        foreach ($this->items as $item)
+        {
+            if($item instanceof UI_Page_Sidebar_Item_Button)
+            {
+                return $item;
+            }
         }
-        
+
         return null;
     }
     
    /**
     * Checks if a button with this name exists.
     * @param string $name
-    * @return UI_Page_Sidebar_Item_Button|boolean
+    * @return bool
     */
-    public function hasButton($name)
+    public function hasButton(string $name) : bool
     {
         $total = count($this->items);
         for($i=0; $i < $total; $i++) {
             if($this->items[$i] instanceof UI_Page_Sidebar_Item_Button && $this->items[$i]->getName() == $name) {
-                return $this->items[$i];
+                return true;
             }
         }
         
         return false;
     }
 
-    public function createButton($name, $title = null)
+    /**
+     * @param string $name
+     * @param string|UI_Renderable_Interface|int|float $title
+     * @return UI_Page_Sidebar_Item_Button
+     */
+    public function createButton(string $name, $title = '') : UI_Page_Sidebar_Item_Button
     {
         return new UI_Page_Sidebar_Item_Button($this, $name, $title);
     }
-    
-    public function createDropdownButton($name, $title = null)
+
+    /**
+     * @param string $name
+     * @param string|UI_Renderable_Interface|int|float $title
+     * @return UI_Page_Sidebar_Item_DropdownButton
+     */
+    public function createDropdownButton(string $name, $title = '') : UI_Page_Sidebar_Item_DropdownButton
     {
         return new UI_Page_Sidebar_Item_DropdownButton($this, $name, $title);
     }
@@ -170,7 +216,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     /**
      * @return UI_Page_Sidebar_Item_Separator|NULL
      */
-    public function addSeparator()
+    public function addSeparator() : ?UI_Page_Sidebar_Item_Separator
     {
         if (!$this->hasItems()) {
             return null;
@@ -190,7 +236,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     * @param Application_RevisionableCollection_DBRevisionable $revisionable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addRevisionableStateInfo(Application_RevisionableCollection_DBRevisionable $revisionable)
+    public function addRevisionableStateInfo(Application_RevisionableCollection_DBRevisionable $revisionable) : UI_Page_Sidebar_Item_Message
     {
         $message = $this->addInfoMessage(
             UI::icon()->information().' '.
