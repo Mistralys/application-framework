@@ -86,12 +86,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     
     public function initDone() : void
     {
-        echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
-        print_r($_REQUEST);
-        echo '</pre>';
-        
         if($this->isSubmitted()) {
-
             $this->handleSubmitted();
         }
     }
