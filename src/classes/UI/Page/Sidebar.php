@@ -159,15 +159,11 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
 
     public function createButton($name, $title = null)
     {
-        require_once 'UI/Page/Sidebar/Item/Button.php';
-
         return new UI_Page_Sidebar_Item_Button($this, $name, $title);
     }
     
     public function createDropdownButton($name, $title = null)
     {
-        require_once 'UI/Page/Sidebar/Item/DropdownButton.php';
-        
         return new UI_Page_Sidebar_Item_DropdownButton($this, $name, $title);
     }
 
@@ -179,8 +175,6 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         if (!$this->hasItems()) {
             return null;
         }
-
-        require_once 'UI/Page/Sidebar/Item/Separator.php';
 
         $item = new UI_Page_Sidebar_Item_Separator($this);
         $this->items[] = $item;
@@ -235,8 +229,6 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     */
     public function addFormTOC(UI_Form $form)
     {
-        require_once 'UI/Page/Sidebar/Item/FormTOC.php';
-
         $item = new UI_Page_Sidebar_Item_FormTOC($this, $form);
         $this->items[] = $item;
         
@@ -252,8 +244,6 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
      */
     public function addTemplate($templateID, $params = array())
     {
-        require_once 'UI/Page/Sidebar/Item/Template.php';
-
         $item = new UI_Page_Sidebar_Item_Template($this, $templateID, $params);
         $this->items[] = $item;
 
@@ -271,8 +261,6 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     */
     public function addHelp($title, $content, $startCollapsed=true)
     {
-        require_once 'UI/Page/Sidebar/Item/Template.php';
-
         $tmpl = new UI_Page_Sidebar_Item_Template($this, 'sidebar.helpblock');
         $tmpl->setVar('title', $title);
         $tmpl->setVar('content', $content);	
@@ -466,8 +454,6 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     */
     public function addDeveloperPanel()
     {
-        require_once 'UI/Page/Sidebar/Item/DeveloperPanel.php';
-        
         $panel = new UI_Page_Sidebar_Item_DeveloperPanel($this);
         $this->items[] = $panel;
         
@@ -480,8 +466,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
             'sidebar.filter-settings',
             array(
                 'settings' => $settings,
-                'title' => $title,
-                'html' => $settings->render(),
+                'title' => $title
             )
         );
     }
