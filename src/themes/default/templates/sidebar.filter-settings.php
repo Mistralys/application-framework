@@ -3,7 +3,7 @@
 	/* @var $this UI_Page_Template */
 	/* @var $settings Application_FilterSettings */
 
-	$settings = $this->getVar('settings');
+	$settings = $this->getObjectVar('settings', Application_FilterSettings::class);
 	
 	$title = $this->getVar('title');
 	if(empty($title)) {
@@ -14,7 +14,7 @@
 	
 	$this->page->createSidebarSection()
 	   ->setTitle($title)
-	   ->setContent($this->getVar('html'))
+	   ->setContent($settings->render())
 	   ->addContextButton(
 	       UI::button()
            ->setIcon(UI::icon()->add())
