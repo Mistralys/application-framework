@@ -6,31 +6,76 @@
  */
 
 UL.nav FORM.nav-search{
-margin:0 5px 0 50px;
-padding-top:4px;
+    margin:0 5px 0 50px;
+    padding-top:4px;
 }
 
 UL.nav FORM.nav-search .search-inputs{
-display:inline-block;
+    display:inline-block;
 }
 
 UL.nav FORM.nav-search .search-input{
-margin:0 3px 0 0;
+    margin:0 3px 0 0;
 }
 
 UL.nav FORM.nav-search .search-input-terms{
-width:120px;
+    width:120px;
 }
 
 UL.nav FORM.nav-search .search-input-terms:focus{
-width:220px;
+    width:220px;
 }
 
 UL.nav FORM.nav-search .search-input-scope{
-width:110px;
+    width:110px;
 }
 
 UL.nav FORM.nav-search .search-button{
-display:inline-block;
+    display:inline-block;
 }
 
+/* ----------------------------------------------------------------
+   FULL WIDTH SEARCH BAR
+   ---------------------------------------------------------------- */
+
+.search-fullwidth-tabs .nav{
+    margin-bottom:0;
+}
+
+.search-fullwidth-tabs{
+    margin-bottom:20px;
+}
+
+.search-fullwidth-tabs .nav-tabs>li>a{
+    line-height: 16px;
+    padding: 3px 9px;
+    font-size:77%;
+}
+
+.search-fullwidth-tabs .nav-tabs>.active>a{
+    background-color: #fafafa;
+}
+
+.search-fullwidth-tabs .tab-pane{
+    padding:9px;
+    background-color: #fafafa;
+    border:1px solid #ddd;
+    border-top:none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.search-fullwidth-tabs .search-inputs{
+    width:94%;
+    display:inline-block;
+}
+
+.search-fullwidth-tabs .search-input-terms{
+    width:100%;
+    margin: 0;
+}
+
+.search-fullwidth-tabs .search-button{
+    display:inline-block;
+    float: right;
+}
