@@ -675,6 +675,108 @@ $entries = array(
 $html = $grid->render($entries);
 ```
 
+### Customizing individual entries
+
+#### Using entry objects
+
+Instead of creating a list of associative arrays, it is possible to use entry objects,
+which allow further customization of the individual entries. To create an entry instance, 
+use the `createEntry()` method. This still requires specifying the entry data, but 
+enables easy access to the entry methods.
+
+The following example creates a list with two entries, that are styled as a successful
+and a failed operation respectively.
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+// Create an entry instance for each list entry
+$entries = array(
+    $grid->createEntry(array(
+        'name' => 'Max',
+        'lastname' => 'Mustermann'
+    ))
+    ->makeSuccess(),
+    $grid->createEntry(array(
+        'name' => 'Otto',
+        'lastname' => 'Mustermann'
+    ))
+    ->makeWarning()
+);
+
+$html = $grid->render($entries);
+```
+
+  > NOTE: Both entry styles can be freely mixed, so you may use array 
+    and object entries interchangeably.
+
+#### Styling options
+
+Beyond the `makeSuccess()` and `makeWarning()` methods, rows can be customized
+by adding custom classes using `addClass()`. The entries have all usual class
+related methods. These classes are added to the `<tr>` tag.
+
+#### Adding a merged row
+
+Merged rows may be added using a specialized entry object, which is created
+using the grid's `createMergedEntry()` method.
+
+The following example adds a regular entry row, and a merged row below it.
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$entries = array(
+    array(
+        'name' => 'Max',
+        'lastname' => 'Mustermann'
+    ),
+    // The merged row requires a single string parameter 
+    // which is used as the cell's content. This may contain
+    // HTML, so allows the use of complex elements.
+    $grid->createMergedEntry('(content here)')
+);
+
+$html = $grid->render($entries);
+```
+
+The merged entry has the same styling options as the regular entry class, but
+cannot use checkboxes to select them.
+
+#### Adding a header row
+
+A header row can be used to visually separate groups of entries within a grid.
+Not to mistake with the grid's column headers: this is a merged row with a single
+heading text.
+
+The following example adds a heading at the beginning of the table:
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$entries = array(
+    $grid->createHeadingEntry(t('Users list')),
+    array(
+        'name' => 'Max',
+        'lastname' => 'Mustermann'
+    )
+);
+
+$html = $grid->render($entries);
+```
+
 ### Using a grid as screen content
 
 In an admin screen, the principle is to create the grid in the `_handleActions()` method
@@ -702,6 +804,7 @@ class Maileditor_Area_Example_DataGrid extends Application_Admin_Area_Mode
             array(
                 'name' => 'Max',
                 'lastname' => 'Mustermann'
+                
             )
         );
         
@@ -820,7 +923,7 @@ class Documentation_DataGrid_MultiSelect extends Application_Admin_Area_Mode
 
 ### Handling pagination
 
-### Introduction
+#### Introduction
 
 By default, a grid will display all items passed on to it. The pagination controls have to be 
 expressly activated, and the actual pagination mechanism handled - either manually, or automatically
