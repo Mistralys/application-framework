@@ -6,21 +6,57 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * @var UI_Bootstrap_DropdownMenu
     */
     protected $menu;
-    
+
+    /**
+     * @var string
+     */
     protected $label;
-    
+
+    /**
+     * @var bool
+     */
     protected $active = false;
-    
-    public function __construct(UI_Page_Navigation $nav, $id, $label)
+
+    /**
+     * @var bool
+     */
+    protected $split = false;
+
+    /**
+     * @var string
+     */
+    protected $link = '';
+
+    /**
+     * @var string
+     */
+    protected $click = '';
+
+    /**
+     * UI_Page_Navigation_Item_DropdownMenu constructor.
+     * @param UI_Page_Navigation $nav
+     * @param string $id
+     * @param string|UI_Renderable_Interface|int|float $label
+     * @throws Application_Exception
+     */
+    public function __construct(UI_Page_Navigation $nav, string $id, $label)
     {
         parent::__construct($nav, $id);
         
-        $this->label = $label;
         $this->menu = UI::getInstance()->createDropdownMenu();
+        $this->setLabel($label);
     }
-    
-    protected $split = false;
-    
+
+    /**
+     * @param string|UI_Renderable_Interface|int|float $label
+     * @return $this
+     */
+    public function setLabel($label)
+    {
+        $this->label = toString($label);
+        return $this;
+    }
+
    /**
     * Creates a split button for the menu, the menu itself
     * opening by clicking the caret, and the main button label
@@ -29,16 +65,13 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * Use the {@link link()} or {@link click()} methods to
     * set the target of the button.
     * 
-    * @return UI_Page_Navigation_Item_DropdownMenu
-    * 
+    * @return $this
     */
     public function makeSplit()
     {
         $this->split = true;
         return $this;
     }
-    
-    protected $link;
     
    /**
     * Links the menu button to its own URL. Automatically
@@ -48,15 +81,13 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * @param string $url
     * @return UI_Page_Navigation_Item_DropdownMenu
     */
-    public function link($url)
+    public function link(string $url)
     {
         $this->makeSplit();
         $this->link = $url;
         return $this;
     }
 
-    protected $click;
-    
     /**
      * Links the menu button to its own javascript statement. 
      * Automatically turns the button into a split button with 
@@ -65,7 +96,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @param string $statement
      * @return UI_Page_Navigation_Item_DropdownMenu
      */
-    public function click($statement)
+    public function click(string $statement)
     {
         $this->makeSplit();
         $this->click = $statement;
@@ -76,10 +107,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     {
         return 'dropdownmenu';
     }
-    
+
+    /**
+     * Makes this the active menu item.
+     * @return $this
+     */
     public function makeActive()
     {
         $this->active = true;
+        return $this;
     }
 
     public function render(array $attributes = array()) : string
@@ -97,13 +133,13 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         
         $classes = $this->classes;
         
-        if($this->split && (isset($this->link) || isset($this->click) )) {
+        if($this->split && (!empty($this->link) || !empty($this->click) )) {
             $linkAtts = array(
                 'href' => 'javascript:void(0)',
                 'class' => 'dropdown-toggle split-link',
             );
             
-            if(isset($this->link)) {
+            if(!empty($this->link)) {
                 $linkAtts['href'] = $this->link;
             } else {
                 $linkAtts['onclick'] = $this->click;
@@ -140,11 +176,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
      */
-    public function addLink($label, $url)
+    public function addLink(string $label, string $url)
     {
         return $this->menu->addLink($label, $url);
     }
-    
+
+    /**
+     * @return UI_Bootstrap_DropdownMenu
+     * @throws Application_Exception
+     */
     public function addSeparator()
     {
         return $this->menu->addSeparator();
