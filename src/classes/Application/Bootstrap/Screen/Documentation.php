@@ -26,7 +26,8 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
             $files = FileHelper::createFileFinder($appDocFolder)
                 ->includeExtension('md')
                 ->makeRecursive()
-                ->setPathmodeAbsolute();
+                ->setPathmodeAbsolute()
+                ->getAll();
 
             foreach ($files as $file) {
                 $manager->addFile(FileHelper::removeExtension($file), $file);
@@ -42,7 +43,7 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
         // to the script. This is needed to load the clientside dependencies,
         // like jQuery and Bootstrap.
         (new DocsViewer($manager, '../vendor'))
-            ->setTitle('Documentation')
+            ->setTitle(sprintf('%1$s Documentation', $this->driver->getAppNameShort()))
             ->display();
 
         Application::exit('Documentation displayed');
