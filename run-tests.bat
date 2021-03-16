@@ -9,6 +9,7 @@ echo.
 echo Run specific testsuites with "--testsuite SuiteName"
 echo.
 echo - Application
+echo - DataGrids
 echo - Forms
 echo - Functions
 echo - OAuth

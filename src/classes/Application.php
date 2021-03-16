@@ -925,9 +925,14 @@ class Application
     * Retrieves the path to the application's class files folder.
     * @return string
     */
-    public function getClassesFolder()
+    public function getClassesFolder() : string
     {
         return APP_INSTALL_FOLDER.'/classes';
+    }
+
+    public function getVendorFolder() : string
+    {
+        return APP_ROOT.'/vendor';
     }
 
     public static function createErrorLog() : Application_ErrorLog

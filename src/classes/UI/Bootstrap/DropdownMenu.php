@@ -112,6 +112,10 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         return $link;
     }
 
+    /**
+     * @return $this
+     * @throws Application_Exception
+     */
     public function addSeparator()
     {
         if(empty($this->items)) {

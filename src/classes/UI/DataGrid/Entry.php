@@ -39,7 +39,12 @@ class UI_DataGrid_Entry implements Interface_Classable
      * @var string
      */
     protected $id;
-    
+
+    /**
+     * @var bool
+     */
+    private $countable = true;
+
     public function __construct(UI_DataGrid $grid, $data)
     {
         $this->id = nextJSID();
@@ -80,6 +85,26 @@ class UI_DataGrid_Entry implements Interface_Classable
     public function setColumnValue($name, $value)
     {
         $this->data[$name] = $value;
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeNonCountable()
+    {
+        $this->countable = false;
+        return $this;
+    }
+
+    /**
+     * Whether this entry can be included in the entries total.
+     *
+     * @return bool
+     * @see UI_DataGrid::countEntries()
+     */
+    public function isCountable() : bool
+    {
+        return $this->countable;
     }
     
    /**

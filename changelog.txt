@@ -4,6 +4,9 @@ v1.11.0
 - FilterSettings: Fixed not being able to modify the settings after adding them to the sidebar.
 - UI: Tweaked the maximized layout by decreasing the side margins somewhat.
 - Application settings: Fixed the filter settings increasing the width of the sidebar.
+- Bootstrap: Added the documentation bootstrap screen for Markdown documentation.
+- Application: Added the `getVendorFolder()` method.
+- Composer: Updated dependencies to fix some of the deprecated warnings.
 
 v1.10.0
 - FilterCriteria: Split the database-specific filters into a separate abstract class, `Application_FilterCriteria_Database`.

@@ -1,7 +1,5 @@
 <?php
 
-require_once ('UI/DataGrid/Entry.php');
-
 class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
 {
     protected $title;
@@ -12,7 +10,12 @@ class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
         $this->title = $title;
         $this->makeNonSortable();
     }
-    
+
+    public function isCountable() : bool
+    {
+        return false;
+    }
+
     public function render()
     {
         $this->addClass('row-heading');

@@ -214,24 +214,25 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * @return UI_Page_Navigation_Item_Search
      * @throws Application_Exception
      */
-    public function addSearch($callback)
+    public function addSearch($callback) : UI_Page_Navigation_Item_Search
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_Search($this, $this->counter, $callback);
+        $item = new UI_Page_Navigation_Item_Search($this, strval($this->counter), $callback);
         $this->items[] = $item;
         
         return $item;
     }
-    
-   /**
-    * Adds a dropdown menu item.
-    * @param string $label
-    * @return UI_Page_Navigation_Item_DropdownMenu
-    */
-    public function addDropdownMenu($label)
+
+    /**
+     * Adds a dropdown menu item.
+     * @param string|UI_Renderable_Interface|int|float $label
+     * @return UI_Page_Navigation_Item_DropdownMenu
+     * @throws Application_Exception
+     */
+    public function addDropdownMenu($label) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_DropdownMenu($this, $this->counter, $label);
+        $item = new UI_Page_Navigation_Item_DropdownMenu($this, strval($this->counter), $label);
         $this->items[] = $item;
         
         return $item;

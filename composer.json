@@ -42,6 +42,7 @@
         "mistralys/application-localization" : ">=1.3.0",
 		"mistralys/deepl-xml-translator" : ">=1.0.2",
 		"mistralys/subsetsum" : "1.0.0",
+        "mistralys/markdown-viewer": ">=1.0.0",
 		"pear/http_request2" : ">=v2.4.2",
 		"shark/simple_html_dom" : "dev-master",
         "ccampbell/mousetrap" : "dev-master",
