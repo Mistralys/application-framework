@@ -117,9 +117,25 @@ class UI_DataGrid
      */
     protected $sumsRow;
 
-    public function __construct(UI $ui, $id, $allowDuplicateID=false)
+    /**
+     * @var bool
+     */
+    protected $rendering = false;
+
+    /**
+     * @var UI_DataGrid_Entry[]
+     */
+    protected $entries = array();
+
+    /**
+     * @param UI $ui
+     * @param string|int $id
+     * @param bool $allowDuplicateID
+     * @throws Application_Exception
+     */
+    public function __construct(UI $ui, $id, bool $allowDuplicateID=false)
     {
-        $id = strtolower(str_replace(array(' ', '.', '-'), '_', $id));
+        $id = strtolower(str_replace(array(' ', '.', '-'), '_', strval($id)));
         
     	if(in_array($id, self::$ids) && !$allowDuplicateID) {
     		throw new Application_Exception(
@@ -833,53 +849,43 @@ class UI_DataGrid
         return $this;
     }
 
-    protected $rendering = false;
-    
-    protected $entries = array();
-
-   /**
-    * Renders the grid with the specified set of data rows.
-    * 
-    * Expects an indexed array with associative array entries
-    * containing key => value pairs of column data, or entry
-    * objects, or a mix of both.
-    * 
-    * If you need to customize individual rows in the grid, you
-    * have the possibility to create entry objects manually, 
-    * and mix these into the set of entries.
-    * 
-    * Example:
-    * 
-    * <pre>
-    * $entries = array();
-    * 
-    * // add a traditional entry
-    * $entries[] = array(
-    *    'title' => 'First product',
-    *    'state' => 'Published'
-    * );
-    * 
-    * // create a custom entry and give the table row a custom class
-    * $entries[] = $datagrid->createEntry(array(
-    *    'title' => 'Second product',
-    *    'state' => 'Draft'
-    * ))->addClass('custom-class');
-    * 
-    * $datagrid->render($entries);
-    * </pre>
-    * 
-    * @param array $entries
-    * @return string
-    */
+    /**
+     * Renders the grid with the specified set of data rows.
+     *
+     * Expects an indexed array with associative array entries
+     * containing key => value pairs of column data, or entry
+     * objects, or a mix of both.
+     *
+     * If you need to customize individual rows in the grid, you
+     * have the possibility to create entry objects manually,
+     * and mix these into the set of entries.
+     *
+     * Example:
+     *
+     * <pre>
+     * $entries = array();
+     *
+     * // add a traditional entry
+     * $entries[] = array(
+     *    'title' => 'First product',
+     *    'state' => 'Published'
+     * );
+     *
+     * // create a custom entry and give the table row a custom class
+     * $entries[] = $datagrid->createEntry(array(
+     *    'title' => 'Second product',
+     *    'state' => 'Draft'
+     * ))->addClass('custom-class');
+     *
+     * $datagrid->render($entries);
+     * </pre>
+     *
+     * @param array $entries
+     * @return string
+     * @throws Application_Exception
+     */
     public function render(array $entries) : string
     {
-        // if no specific total has been set, either manually or
-        // from filter criteria, we assume these entries are all
-        // the entries there are.
-        if(!$this->totalSet) {
-            $this->setTotal(count($entries));
-        }
-        
         $this->init();
         
         $this->rendering = true;
@@ -971,14 +977,15 @@ class UI_DataGrid
         
         return UI_Form::renderJSSubmitHandler($this, $simulate);
     }
-    
-   /**
-    * Sorts list entries manually, but only if the currently selected
-    * sorting column has a sorting callback. Otherwise, no sorting is
-    * made at all.
-    * 
-    * @param UI_DataGrid_Entry[] $entries
-    */
+
+    /**
+     * Sorts list entries manually, but only if the currently selected
+     * sorting column has a sorting callback. Otherwise, no sorting is
+     * made at all.
+     *
+     * @param UI_DataGrid_Entry[] $entries
+     * @return UI_DataGrid_Entry[]
+     */
     protected function sortEntries(array $entries) : array
     {
         $sortColumn = $this->getOrderColumn();
@@ -1232,7 +1239,7 @@ class UI_DataGrid
         $html =
         '<tfoot>';
             // show the duplicate headers only if there are enough entries
-            if(count($this->entries) >= $this->duplicateHeadersThreshold) {
+            if($this->countEntries() >= $this->duplicateHeadersThreshold) {
                 $html .=
                 '<tr class="column-headers duplicate-headers">';
                     for ($i = 0; $i < $this->columnCount; $i++) {
@@ -1366,7 +1373,7 @@ class UI_DataGrid
             return $this->total;
         }
         
-        return count($this->entries);
+        return $this->countEntries();
     }
     
     public function disableFooter() : UI_DataGrid
@@ -1377,6 +1384,28 @@ class UI_DataGrid
     public function enableFooter() : UI_DataGrid
     {
         return $this->setOption('footer-enabled', true);
+    }
+
+    /**
+     * Counts the amount of items that have been added to the
+     * grid. Note that this does not necessarily match the actual
+     * amount of rows, since these can be excluded from the count.
+     *
+     * @return int
+     * @see UI_DataGrid_Entry::isCountable()
+     */
+    public function countEntries() : int
+    {
+        $count = 0;
+
+        foreach ($this->entries as $entry)
+        {
+            if($entry->isCountable()) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
     
     protected function renderFooter_limitOptions() : string
@@ -1400,7 +1429,7 @@ class UI_DataGrid
         }
 
         $from = $this->getOffset();
-        $to = $this->getOffset() + count($this->entries);
+        $to = $this->getOffset() + $this->countEntries();
         
         if($from==0) {
             $from = 1;
