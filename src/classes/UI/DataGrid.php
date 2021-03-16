@@ -95,7 +95,8 @@ class UI_DataGrid
         'border' => true,
         'margins' => true,
         'multiselect-dropup' => false,
-        'form-enabled' => true
+        'form-enabled' => true,
+        'row-separator' => false
     );
 
     /**
@@ -588,6 +589,16 @@ class UI_DataGrid
         
         return $action;
     }
+
+    public function disableRowSeparator() : UI_DataGrid
+    {
+        return $this->setOption('row-separator', true);
+    }
+
+    public function enableRowSeparator() : UI_DataGrid
+    {
+        return $this->setOption('row-separator', false);
+    }
     
     public function disableBorder() : UI_DataGrid
     {
@@ -925,6 +936,10 @@ class UI_DataGrid
         
         if(!$this->getOption('margins')) {
             $this->addTableClass('table-nomargins');
+        }
+
+        if ($this->getOption('row-separator')) {
+            $this->addTableClass('table-remove-row-separator');
         }
 
         $id = $this->getID();
