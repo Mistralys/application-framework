@@ -96,7 +96,8 @@ class UI_DataGrid
         'margins' => true,
         'multiselect-dropup' => false,
         'form-enabled' => true,
-        'row-separator' => false
+        'row-separator' => false,
+        'fit-content' => false
     );
 
     /**
@@ -628,6 +629,15 @@ class UI_DataGrid
     {
         return $this->setOption('compact', true);
     }
+
+    /**
+     * Reduces the size of the columns to fit the content inside
+     * Alias for setting the "fit-content" option to true.
+     */
+    public function enableFitContent() : UI_DataGrid
+    {
+        return $this->setOption('fit-content', true);
+    }
     
    /**
     * If disabled, the datagrid will be rendered without an
@@ -940,6 +950,10 @@ class UI_DataGrid
 
         if ($this->getOption('row-separator')) {
             $this->addTableClass('table-remove-row-separator');
+        }
+
+        if ($this->getOption('fit-content')) {
+            $this->addTableClass('table-fit-content');
         }
 
         $id = $this->getID();

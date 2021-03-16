@@ -245,3 +245,18 @@ background-color:#ffe8c3 !important;
 .table-hide-header thead {
     display:none;
 }
+
+/** -------------------------------------------------------------------------
+    Column fit size of content
+    ------------------------------------------------------------------------- */
+
+.table-fit-content tbody>tr>td{
+    white-space: nowrap;
+}
+.table-fit-content tbody>tr>td:last-child{
+    width:100%;
+}
+
+.table-fit-content {
+    width: 1%;
+}
