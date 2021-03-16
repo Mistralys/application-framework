@@ -2342,15 +2342,17 @@ package of the application framework.
 
 A production release is tied to a version tag in GitHub.
 
-1) Add changes to the `changelog.txt` file
-2) Enter the matching version number in the `VERSION` file
-3) Push all changes in the framework
-4) Create a release on GitHub for the version number
-5) Update the SATIS repository
-6) Change the application to the version number of the release
-7) Run `composer update` in the application
-8) Commit the composer files
-9) Run `composer install` in the local working copies 
+01) Run PHPStan checks for coding issues
+02) Run the unit tests
+03) Add changes to the `changelog.txt` file
+04) Enter the matching version number in the `VERSION` file
+05) Push all changes in the framework
+06) Create a release on GitHub for the version number
+07) Update the SATIS repository
+08) Change the application to the version number of the release
+09) Run `composer update` in the application
+10) Commit the composer files
+11) Run `composer install` in the local working copies 
 
 ### Updating the SATIS repository
 
