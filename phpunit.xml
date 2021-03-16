@@ -12,6 +12,9 @@
         <testsuite name="Application">
             <directory suffix=".php">./tests/testsuites/Application</directory>
         </testsuite>
+        <testsuite name="DataGrids">
+            <directory suffix=".php">./tests/testsuites/DataGrids</directory>
+        </testsuite>
         <testsuite name="Forms">
             <directory suffix=".php">./tests/testsuites/Forms</directory>
         </testsuite>
