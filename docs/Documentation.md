@@ -2342,13 +2342,15 @@ package of the application framework.
 
 A production release is tied to a version tag in GitHub.
 
-1) Push all changes in the framework
-2) Create a release on GitHub
-3) Update the SATIS repository
-4) Change the application to the version number of the release
-5) Run `composer update` in the application
-6) Commit the composer files
-7) Run `composer install` in the local working copies 
+1) Add changes to the `changelog.txt` file
+2) Enter the matching version number in the `VERSION` file
+3) Push all changes in the framework
+4) Create a release on GitHub for the version number
+5) Update the SATIS repository
+6) Change the application to the version number of the release
+7) Run `composer update` in the application
+8) Commit the composer files
+9) Run `composer install` in the local working copies 
 
 ### Updating the SATIS repository
 
