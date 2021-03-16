@@ -97,7 +97,8 @@ class UI_DataGrid
         'multiselect-dropup' => false,
         'form-enabled' => true,
         'row-separator' => false,
-        'fit-content' => false
+        'fit-content' => false,
+        'mini' => false,
     );
 
     /**
@@ -631,6 +632,15 @@ class UI_DataGrid
     }
 
     /**
+     * Makes a mini table of the list by removing table borders and reducing padding/margin.
+     * Alias for setting the "mini" option to true.
+     */
+    public function enableMiniMode() : UI_DataGrid
+    {
+        return $this->setOption('mini', true);
+    }
+
+    /**
      * Reduces the size of the columns to fit the content inside
      * Alias for setting the "fit-content" option to true.
      */
@@ -954,6 +964,10 @@ class UI_DataGrid
 
         if ($this->getOption('fit-content')) {
             $this->addTableClass('table-fit-content');
+        }
+
+        if ($this->getOption('mini')) {
+            $this->addTableClass('table-mini');
         }
 
         $id = $this->getID();
