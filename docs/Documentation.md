@@ -2322,5 +2322,50 @@ Developers can access the translation UI under _Manage > Translation_. This find
 of the translation methods, and allows adding the translations for all locales defined
 for the application.
 
+## Releases and SATIS repository
+
+### Create a development release
+
+A development release is simply linking the composer.lock to a specific commit in the GitHub
+package of the application framework. 
+
+1) Push all changes in the framework
+2) Update the SATIS repository
+3) Run `composer update` in the application
+4) Commit the `composer.lock` file
+5) Run `composer install` in the local working copies
+
+  > NOTE: This assumes that the framework version is set to `dev-main` in the application's
+    `composer.json` file for development purposes.
+
+### Create a production release
+
+A production release is tied to a version tag in GitHub.
+
+1) Push all changes in the framework
+2) Create a release on GitHub
+3) Update the SATIS repository
+4) Change the application to the version number of the release
+5) Run `composer update` in the application
+6) Commit the composer files
+7) Run `composer install` in the local working copies 
+
+### Updating the SATIS repository
+
+The SATIS repository is a private composer packages repository like packagist.org.
+It is hosted by Mistralys and is available here:
+
+[AppFrameworkSATIS][Mistralys composer SATIS]
+
+The access credentials can be found in the application's `auth.json` file.
+
+The updater script to refresh the data for all available packages is here:
+
+[AppFrameworkSatisUpdater][Mistalys SATIS updater]
+
+
+
 
 [Application Utils]: https://github.com/Mistralys/application-utils
+[AppFrameworkSatis]: https://composer.mistralys-eva.systems
+[AppFrameworkSatisUpdater]: https://composer.mistralys-eva.systems/updater.php
