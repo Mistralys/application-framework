@@ -777,6 +777,36 @@ $entries = array(
 $html = $grid->render($entries);
 ```
 
+#### Excluding entries from the count
+
+When using entries in a grid for layout only purposes, like merged cells, it 
+is possible to mark them as excluded from the items count shown in the grid's 
+footer.
+
+```php
+$ui = UI::getInstance();
+
+$grid = $ui->createDataGrid('grid_name');
+$grid->addColumn('name', t('Name'));
+$grid->addColumn('lastname', t('Last name'));
+
+$entries = array(
+    $grid->createEntry(array(
+        'name' => 'Otto',
+        'lastname' => 'Beispielmann'
+    ))
+    ->makeNonCountable(),
+    array(
+        'name' => 'Max',
+        'lastname' => 'Mustermann'
+    )
+);
+
+$html = $grid->render($entries);
+```
+
+  > NOTE: Headings are always excluded from the count.
+
 ### Using a grid as screen content
 
 In an admin screen, the principle is to create the grid in the `_handleActions()` method
