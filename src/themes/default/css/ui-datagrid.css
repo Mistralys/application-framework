@@ -260,3 +260,11 @@ background-color:#ffe8c3 !important;
 .table-fit-content {
     width: 1%;
 }
+
+/** -------------------------------------------------------------------------
+    Remove line separator
+    ------------------------------------------------------------------------- */
+
+.table-remove-row-separator tbody>tr>td{
+    border: none;
+}
