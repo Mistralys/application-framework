@@ -234,3 +234,14 @@ TABLE.table.table-hover TR.row-type-warning:hover > TD{
 background-color:#ffe8c3 !important;
 }
 
+/** -------------------------------------------------------------------------
+    Hide header and footer
+    ------------------------------------------------------------------------- */
+
+.table-hide-footer tfoot {
+    display:none;
+}
+
+.table-hide-header thead {
+    display:none;
+}

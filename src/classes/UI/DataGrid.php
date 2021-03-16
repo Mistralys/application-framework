@@ -88,13 +88,14 @@ class UI_DataGrid
         'table-class' => 'table',
         'disable-header' => false,
         'disable-footer' => false,
+        'hide-footer' => false,
+        'hide-header' => false,
         'compact' => false,
         'hover' => true,
         'border' => true,
         'margins' => true,
         'multiselect-dropup' => false,
-        'form-enabled' => true,
-        'footer-enabled' => true
+        'form-enabled' => true
     );
 
     /**
@@ -906,6 +907,14 @@ class UI_DataGrid
             $this->addTableClass('table-condensed');
         }
 
+        if ($this->getOption('hide-footer')) {
+            $this->addTableClass('table-hide-footer');
+        }
+
+        if ($this->getOption('hide-header')) {
+            $this->addTableClass('table-hide-header');
+        }
+
         if ($this->getOption('hover')) {
             $this->addTableClass('table-hover');
         }
@@ -1223,6 +1232,21 @@ class UI_DataGrid
     
     protected $duplicateHeadersThreshold = 8;
 
+    public function hideFooter() : UI_DataGrid
+    {
+        return $this->setOption('hide-footer', true);
+    }
+
+    public function disableFooter() : UI_DataGrid
+    {
+        return $this->setOption('disable-footer', false);
+    }
+
+    public function enableFooter() : UI_DataGrid
+    {
+        return $this->setOption('disable-footer', true);
+    }
+
     protected function renderFooter() : string
     {
         if ($this->getOption('disable-footer') === true) {
@@ -1274,20 +1298,17 @@ class UI_DataGrid
                     '</td>' .
                 '</tr>';
             }
-            
-            if($this->getOption('footer-enabled') === true)
-            {
-                $html .=
-                '<tr class="actions actions-navigator">' .
-                    '<td colspan="' . $this->countColumns() . '">' .
-                        $this->renderFooter_limitOptions() .
-                        $this->renderFooter_actions() .
-                    '</td>' .
-                '</tr>';
-            }
-             
-            $html .=
-        '</tfoot>';
+
+        $html .=
+            '<tr class="actions actions-navigator">' .
+                '<td colspan="' . $this->countColumns() . '">' .
+                    $this->renderFooter_limitOptions() .
+                    $this->renderFooter_actions() .
+                '</td>' .
+            '</tr>';
+
+        $html .=
+            '</tfoot>';
 
         return $html;
     }
@@ -1367,16 +1388,6 @@ class UI_DataGrid
         }
         
         return count($this->entries);
-    }
-    
-    public function disableFooter() : UI_DataGrid
-    {
-        return $this->setOption('footer-enabled', false);
-    }
-    
-    public function enableFooter() : UI_DataGrid
-    {
-        return $this->setOption('footer-enabled', true);
     }
     
     protected function renderFooter_limitOptions() : string
@@ -1719,6 +1730,21 @@ class UI_DataGrid
         }
         
         return $this;
+    }
+
+    public function hideHeader() : UI_DataGrid
+    {
+        return $this->setOption('hide-header', true);
+    }
+
+    public function disableHeader() : UI_DataGrid
+    {
+        return $this->setOption('disable-header', false);
+    }
+
+    public function enableHeader() : UI_DataGrid
+    {
+        return $this->setOption('disable-header', true);
     }
 
     protected function renderHeader() : string
