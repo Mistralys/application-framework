@@ -2357,17 +2357,17 @@ A production release is tied to a version tag in GitHub.
 The SATIS repository is a private composer packages repository like packagist.org.
 It is hosted by Mistralys and is available here:
 
-[AppFrameworkSATIS][Mistralys composer SATIS]
+[Mistralys composer SATIS][]
 
 The access credentials can be found in the application's `auth.json` file.
 
 The updater script to refresh the data for all available packages is here:
 
-[AppFrameworkSatisUpdater][Mistalys SATIS updater]
+[Mistalys SATIS updater][]
 
 
 
 
 [Application Utils]: https://github.com/Mistralys/application-utils
-[AppFrameworkSatis]: https://composer.mistralys-eva.systems
-[AppFrameworkSatisUpdater]: https://composer.mistralys-eva.systems/updater.php
+[Mistralys composer SATIS]: https://composer.mistralys-eva.systems
+[Mistalys SATIS updater]: https://composer.mistralys-eva.systems/updater.php
