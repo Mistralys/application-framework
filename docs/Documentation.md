@@ -637,6 +637,146 @@ These methods include:
 - `getObjectVar('varname', 'Expected_Class_Name')`
 - `getStringVar('varname')`
 
+# UI
+
+## Adding clientside includes
+
+### JavaScript includes
+
+JavaScript include files must be stored in the application's theme under:
+
+```
+htdocs/themes/default/js
+```
+
+They can be organized into subfolders as necessary.
+
+#### Application-Internal
+
+To load an include in any page, use the `addJavascript()` method:
+
+```php
+UI::getInstance()->addJavascript('filename.js');
+```
+
+This automatically gets enqueued in the page depending on when it is called.
+Per default, includes are added in the page's `<head>` section. If they are
+added after the head has been rendered, or the `defer` parameter has been set
+to `true`, the script is added at the bottom of the `<body>` tag.
+
+  > NOTE: The same file can be safely added several times - each one only gets
+    added once in the page.
+
+#### External
+
+Any file name that contains an absolute URL is considered an external include.
+
+```php
+UI::getInstance()->addJavascript('https://domain/filename.js');
+```
+
+#### From a composer package
+
+Stylesheets can also be loaded directly from a composer dependency.
+
+```php
+UI::getInstance()->addVendorJavascript(
+    'mistralys/html_quickform2', // Package name 
+    'js/src/rules.js' // Relative path to the file
+);
+```
+
+### Stylesheet includes
+
+CSS include files must be stored in the application's themes folder, under:
+
+```
+htdocs/themes/default/css
+```
+
+They can be organized into subfolders as necessary.
+
+#### Application-internal
+
+To load an include in any page, use the `addJavascript()` method:
+
+```php
+// Add an include for all (screen & print)
+UI::getInstance()->addStylesheet('filename.css');
+
+// Add an include for screen only
+UI::getInstance()->addStylesheet('filename.css', 'screen');
+```
+
+This automatically gets enqueued in the page depending on when it is called.
+Per default, includes are added in the page's `<head>` section. If they are
+added after the head has been rendered the stylesheet is added at the bottom 
+of the `<body>` tag.
+
+  > NOTE: The same file can be safely added several times - each one only gets
+    added once in the page.
+
+#### External
+
+Any file name that contains an absolute URL is considered an external include.
+
+```php
+UI::getInstance()->addStylesheet('https://domain/filename.css');
+```
+
+#### From a composer package
+
+Stylesheets can also be loaded directly from a composer dependency. 
+
+```php
+UI::getInstance()->addVendorStylesheet(
+    'mistralys/application-utils', // Package name 
+    'css/urlinfo-highlight.css' // Relative path to the file
+);
+```
+
+## Adding JavaScript statements
+
+Like adding JavaScript includes, actual statements can be added to the page,
+either to the `<head>` for the page initialization, or specifically to be
+executed on page load.
+
+```php
+$ui = UI::getInstance();
+
+// To execute in the <head>, in the order statements are added
+$ui->addJavascriptHead("console.log('I have been called.')");
+
+// To execute on page load
+$ui->addJavascriptOnload("alert('The page has been loaded.')");
+```
+
+For adding complex function or method calls, they can be added with native PHP
+variable values, and converted into a javascript statement, including associative
+arrays.
+
+```php
+$ui = UI::getInstance();
+
+$ui->addJavascriptHeadStatement(
+    'functionName',
+    true,
+    42,
+    'String\'s the way to go',
+    array(
+        'key' => 'value'
+    )
+);
+```
+
+This creates the following JavaScript statement:
+
+```js
+functionName(true, 42, 'String\'s the way to go', {'key': 'value'});
+```
+
+To do the same on page load, use `addJavascriptOnloadStatement()`.
+
 # UI Elements
 
 ## Frontend CSS framework
@@ -1122,6 +1262,16 @@ UI::button(t('Click me'))->link('https://ionos.com');
 UI::button(t('Click me'))->link('https://ionos.com', '_blank');
 ```
 
+### Choosing a size
+
+The buttons come in several sizes, which come with dedicated methods:
+
+```php
+UI::button(t('Large'))->makeLarge();
+UI::button(t('Small'))->makeSmall();
+UI::button(t('Mini'))->makeMini();
+```
+
 ## Page sections
 
 Sections allow adding collapsible content blocks with a title bar. Instances can be
@@ -1315,6 +1465,88 @@ $ids = (array)$request
 
 This list is not exhaustive - there are more validation methods that you can
 see with the IDE when registering a parameter.
+
+# Data collections
+
+## Countries
+
+### Introduction
+
+Collection class: `Application_Countries`  
+Factory method: `Application_Countries::getInstance()`  
+
+The countries management handles all available countries for the application.
+It offers a number of methods around accessing countries, and make creating
+country selection use cases easy to handle.
+
+### Fetching countries
+
+```php
+$collection = Application_Countries::getInstance();
+
+// Getting all countries 
+$collection->getAll();
+```
+
+### The countries selector
+
+The `injectCountrySelector` can be used to add a country selection element 
+to a `UI_Form` instance. This means it can be used with a traditional form
+instance as well as a Formable.
+
+Inject from within a formable:
+
+```php
+class Documentation_CountrySelector extends Application_Formable
+{
+    public function inject_countries() : void
+    {
+        $selectElement = Application_Countries::getInstance()->injectCountrySelector(
+            $this->getFormInstance(),
+            'countries', // field name
+            t('Countries'), // field label
+            true, // required?
+            true, // Add the "Please select" entry?
+            false // Include the invariant country?
+        );
+    }
+}
+```
+
+### The invariant country
+
+#### Introduction
+
+The invariant country can be used in cases where a country must be selected,
+but the data can be valid for all countries. Its details are always the same:
+
+- ID: `9999` - See `Application_Countries_Country::COUNTRY_INDEPENDENT_ID`
+- ISO: `zz` - See `Application_Countries_Country::COUNTRY_INDEPENDENT_ISO`
+
+#### Fetching the country
+
+```php
+Application_Countries::getInstance()->getInvariantCountry();
+```
+
+#### Excluding from results
+
+By default, the invariant country is included in all results, but can be 
+excluded manually.
+
+When using the `getAll()` method:
+
+```php
+$collection = Application_Countries::getInstance();
+$countries = $collection->getAll(false);
+```
+
+When using the filter criteria:
+
+```php
+$criteria = Application_Countries::getInstance()->getFilterCriteria();
+$criteria->excludeInvariant();
+```
 
 # Forms
 
@@ -1760,6 +1992,66 @@ $info = \AppUtils\parseURL($url);
 $host = $info->getHost();
 $highlighted = $info->getHighlighted();
 ```
+
+### Operation results tracking
+
+The `OperationResult` and `OprationResult_Collection` classes can be used to keep track 
+of what happens during the processing of any kind of operation, to allow the process that
+started a task to check if the operation completed successfully, and to access information
+on errors that occurred.
+
+It is meant to be used for errors and warnings that are not critical enough for throwing 
+an exception.
+
+- `OperationResult` - Made to hold a single result message.
+- `OperationResult_Collection` - Made to hold several result messages.
+
+#### Single result example
+
+Instead of returning true or false, a method returns an operation result instance. This 
+allows specifying a human readable message when errors occur, as well as a machine readable 
+error code.
+
+```php
+use \AppUtils\OperationResult;
+
+class Documentation_OperationResult
+{
+    const ERROR_COULD_NOT_SAVE_FILE = 0000;
+
+    public function doSomething() : OperationResult
+    {
+        $result = new OperationResult($this);
+        
+        if(!file_put_contents('/path/to/file.txt', 'Content')) 
+        {
+            return $result->makeError(
+                t('The content could not be saved to file %1$s.', 'file.txt'),
+                self::ERROR_COULD_NOT_SAVE_FILE
+            );
+        } 
+        
+        return $result;
+    }
+}
+
+$instance = new Documentation_OperationResult();
+
+$result = $instance->doSomething();
+
+// The isValid methods checks if there are any error messages present.
+if(!$result->isValid())
+{
+    die(t('An error occurred:').' '.$result->getErrorMessage());
+}
+```
+
+#### Multiple results
+
+The `OperationResult_Collection` works exactly like the `OperationResult` class, except 
+that it can store multiple messages. Each call to `makeError()` adds an error message to
+the collection. This is very handy when a process works through several items, to keep 
+track of items that failed without stopping the whole process.
 
 ## The StringBuilder
 
