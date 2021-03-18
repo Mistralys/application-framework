@@ -142,7 +142,7 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         );
     }
     
-    public function copyTo(Application_Revisionable $revisionable)
+    public function copyTo(Application_Revisionable $revisionable) : void
     {
         throw new Application_Exception(
             'Not implemented',
