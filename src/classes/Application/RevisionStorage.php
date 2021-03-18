@@ -431,21 +431,22 @@ abstract class Application_RevisionStorage implements ArrayAccess
         $this->keyLoaders[$key] = $callback;
     }
 
-   /**
-    * Adds a new revision by copying the data from the
-    * specified revision. Returns the new revision number.
-    * If the source revision does not exist, an exception
-    * is triggered.
-    *
-    * All reference types get cloned to avoid reference
-    * issues in the data keys.
-    *
-    * @param int $sourceRevision
-    * @param int $ownerID
-    * @param string $ownerName
-    * @param string $comments
-    * @throws InvalidArgumentException
-    */
+    /**
+     * Adds a new revision by copying the data from the
+     * specified revision. Returns the new revision number.
+     * If the source revision does not exist, an exception
+     * is triggered.
+     *
+     * All reference types get cloned to avoid reference
+     * issues in the data keys.
+     *
+     * @param int $sourceRevision
+     * @param int $ownerID
+     * @param string $ownerName
+     * @param string $comments
+     * @return int
+     * @throws InvalidArgumentException|Application_Exception
+     */
     public function addByCopy($sourceRevision, $ownerID, $ownerName, $comments)
     {
         $newRev = $this->nextRevision();
@@ -453,22 +454,29 @@ abstract class Application_RevisionStorage implements ArrayAccess
         $this->selectRevision($sourceRevision);
         $this->copy($sourceRevision, $newRev, $ownerID, $ownerName, $comments);
 
+        $this->selectRevision($newRev);
+
+        // Ensure that we're using the correct author information.
+        $this->setOwnerID($ownerID);
+        $this->setOwnerName($ownerName);
+        $this->setComments($comments);
+
         return $newRev;
     }
 
-   /**
-    * Copies the data from the source revision to the
-    * target revision number. Uses the specialized 
-    * revision copy class instance by default.
-    *
-    * @param int $sourceRevision
-    * @param int $targetRevision
-    * @param int $targetOwnerID
-    * @param string $targetOwnerName
-    * @param string $targetComments
-    * @param DateTime $targetDate
-    * @throws Application_Exception
-    */
+    /**
+     * Copies the data from the source revision to the
+     * target revision number. Uses the specialized
+     * revision copy class instance by default.
+     *
+     * @param int $sourceRevision
+     * @param int $targetRevision
+     * @param int $targetOwnerID
+     * @param string $targetOwnerName
+     * @param string $targetComments
+     * @param DateTime|null $targetDate
+     * @throws Application_Exception
+     */
     public function copy($sourceRevision, $targetRevision, $targetOwnerID, $targetOwnerName, $targetComments, DateTime $targetDate=null)
     {
         $copy = $this->createCopyRevision(
@@ -482,15 +490,16 @@ abstract class Application_RevisionStorage implements ArrayAccess
 
         $copy->process();
     }
-    
-   /**
-    * Removes a revision. Note that only the latest
-    * revision may be removed. If you wish to remove
-    * an earlier revision, you will need to remove all
-    * revisions that came after it.
-    * 
-    * @param int $number
-    */
+
+    /**
+     * Removes a revision. Note that only the latest
+     * revision may be removed. If you wish to remove
+     * an earlier revision, you will need to remove all
+     * revisions that came after it.
+     *
+     * @param int $number
+     * @throws Application_Exception
+     */
     public function removeRevision($number)
     {
         $this->log(sprintf('Removing revision [%1$s].', $number));
@@ -507,14 +516,15 @@ abstract class Application_RevisionStorage implements ArrayAccess
 
         $this->selectRevision($this->getLatestRevision());
     }
-    
-   /**
-    * Removes all data that has been loaded for this revision,
-    * forcing it to be loaded again next time it is selected.
-    * If it is the active revision, it is reloaded automatically.
-    * 
-    * @param integer $number
-    */
+
+    /**
+     * Removes all data that has been loaded for this revision,
+     * forcing it to be loaded again next time it is selected.
+     * If it is the active revision, it is reloaded automatically.
+     *
+     * @param integer $number
+     * @throws Application_Exception
+     */
     public function unloadRevision($number)
     {
         if (isset($this->loadedRevisions[$number])) {
@@ -543,13 +553,14 @@ abstract class Application_RevisionStorage implements ArrayAccess
     */
     abstract protected function _removeRevision($number);
 
-   /**
-    * Replaces the target revision with the source revision, deleting
-    * the source revision in the process.
-    *
-    * @param integer $targetRevision
-    * @param integer $sourceRevision
-    */
+    /**
+     * Replaces the target revision with the source revision, deleting
+     * the source revision in the process.
+     *
+     * @param integer $targetRevision
+     * @param integer $sourceRevision
+     * @throws Application_Exception
+     */
     public function replaceRevision($targetRevision, $sourceRevision)
     {
         // select both revisions once to allow the custom
@@ -591,9 +602,10 @@ abstract class Application_RevisionStorage implements ArrayAccess
         return $this->getKey('__timestamp');
     }
 
-   /**
-    * @param string $name
-    */
+    /**
+     * @param string $name
+     * @throws Application_Exception
+     */
     public function setOwnerName($name)
     {
         $this->setKey('__ownerName', $name);
@@ -607,9 +619,10 @@ abstract class Application_RevisionStorage implements ArrayAccess
         return strval($this->getKey('__ownerName'));
     }
 
-   /**
-    * @param int $id
-    */
+    /**
+     * @param int $id
+     * @throws Application_Exception
+     */
     public function setOwnerID($id)
     {
         $this->setKey('__ownerID', $id);
@@ -618,7 +631,7 @@ abstract class Application_RevisionStorage implements ArrayAccess
    /**
     * @return int
     */
-    public function getOwnerID()
+    public function getOwnerID() : int
     {
         return intval($this->getKey('__ownerID'));
     }
@@ -676,7 +689,7 @@ abstract class Application_RevisionStorage implements ArrayAccess
     * @param string $name
     * @return boolean
     */
-    public function hasKey($name)
+    public function hasKey($name) : bool
     {
         $revision = $this->getRevision();
         if (!isset($this->data[$revision])) {
@@ -780,14 +793,15 @@ abstract class Application_RevisionStorage implements ArrayAccess
         Application::log($this->logFormat[$this->revision].$message);
     }
 
-   /**
-    * Must be implemented if the revisionable is to allow copying
-    * to another revisionable of the same type. The target class
-    * has to extend the <code>Application_RevisionStorage_TYPE_CopyRevision</code> 
-    * class, where <code>TYPE</code> is the storage type ID, e.g. <code>DB</code>.
-    * 
-    * @return string
-    */
+    /**
+     * Must be implemented if the revisionable is to allow copying
+     * to another revisionable of the same type. The target class
+     * has to extend the <code>Application_RevisionStorage_TYPE_CopyRevision</code>
+     * class, where <code>TYPE</code> is the storage type ID, e.g. <code>DB</code>.
+     *
+     * @return string
+     * @throws Application_Exception
+     */
     protected function getRevisionCopyClass()
     {
         throw new Application_Exception(
@@ -797,16 +811,17 @@ abstract class Application_RevisionStorage implements ArrayAccess
         );
     }
 
-   /**
-    * Copies the current revision of the owner revisionable over
-    * to the currently selected revision of the target revisionable
-    * instance.
-    * 
-    * NOTE: Only revisionables of the same class may be copied.
-    * 
-    * @param Application_Revisionable $revisionable
-    */
-    public function copyTo(Application_Revisionable $revisionable)
+    /**
+     * Copies the current revision of the owner revisionable over
+     * to the currently selected revision of the target revisionable
+     * instance.
+     *
+     * NOTE: Only revisionables of the same class may be copied.
+     *
+     * @param Application_Revisionable $revisionable
+     * @throws Application_Exception
+     */
+    public function copyTo(Application_Revisionable $revisionable) : void
     {
         $this->log(sprintf(
             'Copying %s [%s v%s] to %s [%s v%s].',
@@ -833,8 +848,7 @@ abstract class Application_RevisionStorage implements ArrayAccess
         );
         
         $copy->setTarget($revisionable);
-        
-        return $copy->process();
+        $copy->process();
     }
 
    /**
