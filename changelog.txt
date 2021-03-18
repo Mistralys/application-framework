@@ -2,6 +2,7 @@ v1.11.1
 - DataGrids: Added the "Mini" mode for slim grids via the `makeMini()` method.
 - DataGrids: Added the possibility to mark entries as non countable via `makeNonCountable()`.
 - DataGrids: Added a number of layout related methods to customize the look and feel.
+- RevisionStorage: Fixed issue where the revision author is not updated correctly.
 
 v1.11.0
 - Sidebar: Added the possibility to collapse/expand the sidebar.
