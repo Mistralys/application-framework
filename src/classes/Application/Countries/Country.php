@@ -18,6 +18,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     const ERROR_UNKNOWN_LANGUAGE_LABEL = 37802;
     
     const COUNTRY_INDEPENDENT_ID = 9999;
+    const COUNTRY_INDEPENDENT_ISO = 'zz';
     
    /**
     * @var \AppLocalize\Localization_Country
@@ -70,10 +71,15 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * @param boolean $emptyIfInvariant Whether to return an empty string when this is the country independent entry.
     * @return string
     */
-    public function getISO($emptyIfInvariant=false)
+    public function getISO(bool $emptyIfInvariant=false) : string
     {
-        if($this->isInvariant() && $emptyIfInvariant) {
-            return '';
+        if($this->isInvariant())
+        {
+            if($emptyIfInvariant) {
+                return '';
+            }
+
+            return self::COUNTRY_INDEPENDENT_ISO;
         }
         
         return $this->getRecordKey('iso');
