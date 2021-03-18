@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c3e0eacdb7024376a1104ee8135030e3",
+    "content-hash": "2f37f6fc471fec8e5bcdb9f4024fffb0",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -644,16 +644,16 @@
         },
         {
             "name": "mistralys/application-utils",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils.git",
-                "reference": "986f6cd741d9d98865ca7ce1e05574fec3b1f038"
+                "reference": "ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/986f6cd741d9d98865ca7ce1e05574fec3b1f038",
-                "reference": "986f6cd741d9d98865ca7ce1e05574fec3b1f038",
+                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338",
+                "reference": "ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338",
                 "shasum": ""
             },
             "require": {
@@ -696,9 +696,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils/issues",
-                "source": "https://github.com/Mistralys/application-utils/tree/1.4.0"
+                "source": "https://github.com/Mistralys/application-utils/tree/1.4.1"
             },
-            "time": "2021-03-12T10:01:34+00:00"
+            "time": "2021-03-16T20:56:55+00:00"
         },
         {
             "name": "mistralys/deepl-xml-translator",
@@ -873,23 +873,23 @@
         },
         {
             "name": "mistralys/markdown-viewer",
-            "version": "1.0.0",
+            "version": "1.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/markdown-viewer.git",
-                "reference": "c554dc9e4930619b351432bce5ea06af8ec0f75a"
+                "reference": "b08305f32e316e8a09f94d578a7aca5c0e8e413f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/markdown-viewer/zipball/c554dc9e4930619b351432bce5ea06af8ec0f75a",
-                "reference": "c554dc9e4930619b351432bce5ea06af8ec0f75a",
+                "url": "https://api.github.com/repos/Mistralys/markdown-viewer/zipball/b08305f32e316e8a09f94d578a7aca5c0e8e413f",
+                "reference": "b08305f32e316e8a09f94d578a7aca5c0e8e413f",
                 "shasum": ""
             },
             "require": {
                 "components/jquery": ">=3.5.1",
                 "erusev/parsedown": ">=1.7.4",
                 "erusev/parsedown-extra": ">=0.8.1",
-                "mistralys/application-utils": ">=1.4.0",
+                "mistralys/application-utils": ">=1.4.1",
                 "twbs/bootstrap": ">=v4.6.0"
             },
             "type": "library",
@@ -911,9 +911,9 @@
             "description": "PHP based viewer for Markdown files, to view them with fenced code highlighting and navigation.",
             "support": {
                 "issues": "https://github.com/Mistralys/markdown-viewer/issues",
-                "source": "https://github.com/Mistralys/markdown-viewer/tree/1.0.0"
+                "source": "https://github.com/Mistralys/markdown-viewer/tree/1.0.5"
             },
-            "time": "2021-03-15T16:42:23+00:00"
+            "time": "2021-03-18T16:36:51+00:00"
         },
         {
             "name": "mistralys/subsetsum",
@@ -2061,16 +2061,16 @@
         },
         {
             "name": "phpspec/prophecy",
-            "version": "1.12.2",
+            "version": "1.13.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy.git",
-                "reference": "245710e971a030f42e08f4912863805570f23d39"
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/245710e971a030f42e08f4912863805570f23d39",
-                "reference": "245710e971a030f42e08f4912863805570f23d39",
+                "url": "https://api.github.com/repos/phpspec/prophecy/zipball/be1996ed8adc35c3fd795488a653f4b518be70ea",
+                "reference": "be1996ed8adc35c3fd795488a653f4b518be70ea",
                 "shasum": ""
             },
             "require": {
@@ -2122,9 +2122,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy/issues",
-                "source": "https://github.com/phpspec/prophecy/tree/1.12.2"
+                "source": "https://github.com/phpspec/prophecy/tree/1.13.0"
             },
-            "time": "2020-12-19T10:15:11+00:00"
+            "time": "2021-03-17T13:42:18+00:00"
         },
         {
             "name": "phpstan/phpstan",
