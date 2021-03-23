@@ -12,6 +12,8 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     protected $callback;
     
     protected $scopes = array();
+
+    protected $regions = array();
     
    /**
     * @var Application_Request
@@ -32,6 +34,11 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      * @var bool
      */
     private $fullWidth = false;
+
+    /**
+     * @var bool
+     */
+    private $regionSelection = false;
 
     /**
      * @var int
@@ -193,6 +200,23 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->getName().'_scope';
     }
 
+    public function getRegionSelectionElementName(string $scope) : string
+    {
+        $name = $this->getName().'_region_selection';
+
+        if($this->isFullWidth())
+        {
+            if(empty($scope))
+            {
+                return $name;
+            }
+
+            return $name.'_'.$scope;
+        }
+
+        return $name;
+    }
+
     /**
      * Retrieves all variables needed to persist the
      * current search settings, when it is needed to
@@ -210,11 +234,13 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             foreach ($this->scopes as $scope)
             {
                 $vars[$this->getSearchElementName($scope['name'])] = $this->resolveTerms($scope['name']);
+                $vars[$this->getRegionSelectionElementName($scope['name'])] = $this->resolveRegion($scope['name']);
             }
         }
         else
         {
             $vars[$this->getSearchElementName('')] = $this->resolveTerms('');
+            $vars[$this->getRegionSelectionElementName('')] = $this->resolveRegion('');
         }
 
         if($this->isSubmitted())
@@ -319,6 +345,32 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this;
     }
 
+    public function getRegions() : array
+    {
+        return $this->regions;
+    }
+
+    public function addRegion($name, $label): UI_Page_Navigation_Item_Search
+    {
+        $this->regions[] = array(
+            'name' => $name,
+            'label' => $label
+        );
+
+        return $this;
+    }
+
+    public function enableRegionSelection(): UI_Page_Navigation_Item_Search
+    {
+        $this->regionSelection = true;
+        return $this;
+    }
+
+    public function hasRegionSelectionEnabled() : bool
+    {
+        return $this->regionSelection;
+    }
+
    /**
     * Sets the minimum amount of characters for a search to be valid.
     * @param int $length
@@ -343,9 +395,9 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     
     protected function handleSubmitted() : void
     {
-        $scope = $this->resolveScope();
-
         $this->log('The search has been submitted.');
+
+        $scope = $this->resolveScope();
         $this->log(sprintf(
             'Selected scope is [%s] (using scopes: %s).',
             $scope,
@@ -358,17 +410,26 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             return;
         }
 
+        $region = $this->resolveRegion($scope);
+        $this->log(sprintf(
+                'Selected region is [%s] (region selection was enabled: %s).',
+                $region,
+                ConvertHelper::bool2string($this->hasRegionSelectionEnabled(), true))
+        );
+
         $this->log(sprintf('Calling the search callback with search terms [%s].', $terms));
 
         call_user_func(
             $this->callback,
             $this,
             $terms,
-            $scope
+            $scope,
+            $region
         );
     }
 
     /**
+     * @param string $scopeID
      * @return string
      */
     protected function resolveTerms(string $scopeID) : string
@@ -404,6 +465,27 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             }
         }
         
+        return '';
+    }
+
+    /**
+     * @param string $scopeID
+     * @return string
+     */
+    protected function resolveRegion(string $scopeID) : string
+    {
+        if(empty($this->regions) || !$this->hasRegionSelectionEnabled()) {
+            return '';
+        }
+
+        $regionID = $this->request->getParam($this->getRegionSelectionElementName($scopeID));
+
+        foreach($this->regions as $def) {
+            if($def['name'] === $regionID) {
+                return $regionID;
+            }
+        }
+
         return '';
     }
 }

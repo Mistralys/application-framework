@@ -84,6 +84,30 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
         <?php
     }
 
+    protected function renderRegionSelection(string $scope)
+    {
+        if(!$this->search->hasRegionSelectionEnabled()) {
+            return;
+        }
+
+        $persistedRegion = $this->search->getPersistVars()[$this->search->getRegionSelectionElementName($scope)];
+
+        ?>
+            <div class="search-region-selection">
+                <select name="<?php echo $this->search->getRegionSelectionElementName($scope) ?>">
+                    <?php
+                    foreach($this->countries as $country)
+                    {
+                        ?>
+                            <option <?php echo ($persistedRegion == $country['name']) ? 'selected' : ''; ?> value="<?php echo $country['name'] ?>"><?php echo $country['label'] ?></option>
+                        <?php
+                    }
+                    ?>
+                </select>
+            </div>
+        <?php
+    }
+
     /**
      * @var UI_Page_Navigation_Item_Search
      */
@@ -99,10 +123,16 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
      */
     protected $scopeID;
 
+    /**
+     * @var array<int,array<string,string>>
+     */
+    protected $countries;
+
     protected function preRender() : void
     {
         $this->search = $this->getObjectVar('search', UI_Page_Navigation_Item_Search::class);
         $this->scopes = $this->search->getScopes();
+        $this->countries = $this->search->getRegions();
         $this->scopeID = $this->getStringVar('scope_id');
 
         $this->ui->addStylesheet('ui-nav-search.css');
