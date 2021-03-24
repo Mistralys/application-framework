@@ -52,7 +52,7 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
         }
 
         ?>
-            <select name="scope" class="search-input search-input-scope">
+            <select name="<?php echo $this->search->getScopeElementName() ?>" class="search-input search-input-scope">
                 <?php
                     foreach($this->scopes as $scope)
                     {
