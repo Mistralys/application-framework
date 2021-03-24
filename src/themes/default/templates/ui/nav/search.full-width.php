@@ -95,24 +95,32 @@ class template_default_ui_nav_search_full_width extends template_default_ui_nav_
     {
         ob_start();
         ?>
-            <div class="search-inputs">
-                <input  name="<?php echo $this->search->getSearchElementName($scope['name']) ?>"
-                        type="text"
-                        class="search-input search-input-terms scope-<?php echo $scope['name'] ?>"
-                        placeholder="<?php pt('Search...') ?>"
-                        value="<?php echo $this->search->getSearchTerms($scope['name']) ?>"/>
-            </div>
-            <?php
-                $this->renderCountrySelection($scope['name']);
-            ?>
-            <div class="search-button">
-                <?php
-                UI::button()
-                    ->setIcon(UI::icon()->search())
-                    ->makeSubmit('run_search', 'yes')
-                    ->display();
-                ?>
-            </div>
+            <table class="search-fullwidth-table">
+                <tbody>
+                    <tr>
+                        <td>
+                            <input  name="<?php echo $this->search->getSearchElementName($scope['name']) ?>"
+                                    type="text"
+                                    class="search-input-terms scope-<?php echo $scope['name'] ?>"
+                                    placeholder="<?php pt('Search...') ?>"
+                                    value="<?php echo $this->search->getSearchTerms($scope['name']) ?>"/>
+                        </td>
+                        <td>
+                            <?php
+                                $this->renderCountrySelection($scope['name']);
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                                UI::button()
+                                    ->setIcon(UI::icon()->search())
+                                    ->makeSubmit('run_search', 'yes')
+                                    ->display();
+                            ?>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         <?php
 
         return ob_get_clean();

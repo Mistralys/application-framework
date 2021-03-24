@@ -31,10 +31,8 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
                             placeholder="<?php pt('Search...') ?>"
                             value="<?php echo $this->search->getSearchTerms() ?>"/>
                     <?php $this->renderScopes() ?>
+                    <?php $this->renderCountrySelection($this->scopeID) ?>
                 </div>
-                <?php
-                    $this->renderCountrySelection($this->scopeID);
-                ?>
                 <div class="search-button">
                     <?php
                         UI::button()
@@ -89,25 +87,23 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
 
     protected function renderCountrySelection(string $scope)
     {
-        if(!$this->search->hasCountrySelectionEnabled()) {
+        if(!$this->search->hasCountries()) {
             return;
         }
 
         $persistedCountry = $this->search->getPersistVars()[$this->search->getCountrySelectionElementName($scope)];
 
         ?>
-            <div class="search-country-selection">
-                <select name="<?php echo $this->search->getCountrySelectionElementName($scope) ?>">
-                    <?php
-                    foreach($this->countries as $country)
-                    {
-                        ?>
-                            <option <?php echo ($persistedCountry == $country['name']) ? 'selected' : ''; ?> value="<?php echo $country['name'] ?>"><?php echo $country['label'] ?></option>
-                        <?php
-                    }
+            <select class="search-country-selection" name="<?php echo $this->search->getCountrySelectionElementName($scope) ?>">
+                <?php
+                foreach($this->countries as $country)
+                {
                     ?>
-                </select>
-            </div>
+                    <option <?php echo ($persistedCountry == $country['name']) ? 'selected' : ''; ?> value="<?php echo $country['name'] ?>"><?php echo $country['label'] ?></option>
+                    <?php
+                }
+                ?>
+            </select>
         <?php
     }
 
