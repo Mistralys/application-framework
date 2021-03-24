@@ -13,7 +13,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     
     protected $scopes = array();
 
-    protected $regions = array();
+    protected $countries = array();
     
    /**
     * @var Application_Request
@@ -38,7 +38,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     /**
      * @var bool
      */
-    private $regionSelection = false;
+    private $countrySelection = false;
 
     /**
      * @var int
@@ -200,9 +200,9 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->getName().'_scope';
     }
 
-    public function getRegionSelectionElementName(string $scope) : string
+    public function getCountrySelectionElementName(string $scope) : string
     {
-        $name = $this->getName().'_region_selection';
+        $name = $this->getName().'_country_selection';
 
         if($this->isFullWidth())
         {
@@ -234,13 +234,13 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             foreach ($this->scopes as $scope)
             {
                 $vars[$this->getSearchElementName($scope['name'])] = $this->resolveTerms($scope['name']);
-                $vars[$this->getRegionSelectionElementName($scope['name'])] = $this->resolveRegion($scope['name']);
+                $vars[$this->getCountrySelectionElementName($scope['name'])] = $this->resolveCountry($scope['name']);
             }
         }
         else
         {
             $vars[$this->getSearchElementName('')] = $this->resolveTerms('');
-            $vars[$this->getRegionSelectionElementName('')] = $this->resolveRegion('');
+            $vars[$this->getCountrySelectionElementName('')] = $this->resolveCountry('');
         }
 
         if($this->isSubmitted())
@@ -345,14 +345,14 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this;
     }
 
-    public function getRegions() : array
+    public function getCountries() : array
     {
-        return $this->regions;
+        return $this->countries;
     }
 
-    public function addRegion($name, $label): UI_Page_Navigation_Item_Search
+    public function addCountry($name, $label): UI_Page_Navigation_Item_Search
     {
-        $this->regions[] = array(
+        $this->countries[] = array(
             'name' => $name,
             'label' => $label
         );
@@ -360,15 +360,15 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this;
     }
 
-    public function enableRegionSelection(): UI_Page_Navigation_Item_Search
+    public function enableCountrySelection(): UI_Page_Navigation_Item_Search
     {
-        $this->regionSelection = true;
+        $this->countrySelection = true;
         return $this;
     }
 
-    public function hasRegionSelectionEnabled() : bool
+    public function hasCountrySelectionEnabled() : bool
     {
-        return $this->regionSelection;
+        return $this->countrySelection;
     }
 
    /**
@@ -410,11 +410,11 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             return;
         }
 
-        $region = $this->resolveRegion($scope);
+        $country = $this->resolveCountry($scope);
         $this->log(sprintf(
-                'Selected region is [%s] (region selection was enabled: %s).',
-                $region,
-                ConvertHelper::bool2string($this->hasRegionSelectionEnabled(), true))
+                'Selected country is [%s] (country selection was enabled: %s).',
+                $country,
+                ConvertHelper::bool2string($this->hasCountrySelectionEnabled(), true))
         );
 
         $this->log(sprintf('Calling the search callback with search terms [%s].', $terms));
@@ -424,7 +424,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             $this,
             $terms,
             $scope,
-            $region
+            $country
         );
     }
 
@@ -472,17 +472,17 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      * @param string $scopeID
      * @return string
      */
-    protected function resolveRegion(string $scopeID) : string
+    protected function resolveCountry(string $scopeID) : string
     {
-        if(empty($this->regions) || !$this->hasRegionSelectionEnabled()) {
+        if(empty($this->countries) || !$this->hasCountrySelectionEnabled()) {
             return '';
         }
 
-        $regionID = $this->request->getParam($this->getRegionSelectionElementName($scopeID));
+        $countryID = $this->request->getParam($this->getCountrySelectionElementName($scopeID));
 
-        foreach($this->regions as $def) {
-            if($def['name'] === $regionID) {
-                return $regionID;
+        foreach($this->countries as $def) {
+            if($def['name'] === $countryID) {
+                return $countryID;
             }
         }
 

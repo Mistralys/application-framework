@@ -103,7 +103,7 @@ class template_default_ui_nav_search_full_width extends template_default_ui_nav_
                         value="<?php echo $this->search->getSearchTerms($scope['name']) ?>"/>
             </div>
             <?php
-                $this->renderRegionSelection($scope['name']);
+                $this->renderCountrySelection($scope['name']);
             ?>
             <div class="search-button">
                 <?php

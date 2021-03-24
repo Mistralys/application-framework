@@ -32,6 +32,9 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
                             value="<?php echo $this->search->getSearchTerms() ?>"/>
                     <?php $this->renderScopes() ?>
                 </div>
+                <?php
+                    $this->renderCountrySelection($this->scopeID);
+                ?>
                 <div class="search-button">
                     <?php
                         UI::button()
@@ -84,22 +87,22 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
         <?php
     }
 
-    protected function renderRegionSelection(string $scope)
+    protected function renderCountrySelection(string $scope)
     {
-        if(!$this->search->hasRegionSelectionEnabled()) {
+        if(!$this->search->hasCountrySelectionEnabled()) {
             return;
         }
 
-        $persistedRegion = $this->search->getPersistVars()[$this->search->getRegionSelectionElementName($scope)];
+        $persistedCountry = $this->search->getPersistVars()[$this->search->getCountrySelectionElementName($scope)];
 
         ?>
-            <div class="search-region-selection">
-                <select name="<?php echo $this->search->getRegionSelectionElementName($scope) ?>">
+            <div class="search-country-selection">
+                <select name="<?php echo $this->search->getCountrySelectionElementName($scope) ?>">
                     <?php
                     foreach($this->countries as $country)
                     {
                         ?>
-                            <option <?php echo ($persistedRegion == $country['name']) ? 'selected' : ''; ?> value="<?php echo $country['name'] ?>"><?php echo $country['label'] ?></option>
+                            <option <?php echo ($persistedCountry == $country['name']) ? 'selected' : ''; ?> value="<?php echo $country['name'] ?>"><?php echo $country['label'] ?></option>
                         <?php
                     }
                     ?>
@@ -132,7 +135,7 @@ class template_default_ui_nav_search_inline extends UI_Page_Template_Custom
     {
         $this->search = $this->getObjectVar('search', UI_Page_Navigation_Item_Search::class);
         $this->scopes = $this->search->getScopes();
-        $this->countries = $this->search->getRegions();
+        $this->countries = $this->search->getCountries();
         $this->scopeID = $this->getStringVar('scope_id');
 
         $this->ui->addStylesheet('ui-nav-search.css');
