@@ -36,11 +36,6 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     private $fullWidth = false;
 
     /**
-     * @var bool
-     */
-    private $countrySelection = false;
-
-    /**
      * @var int
      */
     protected $minLength = 2;
@@ -202,7 +197,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 
     public function getCountrySelectionElementName(string $scope) : string
     {
-        $name = $this->getName().'_country_selection';
+        $name = $this->getName().'_country';
 
         if($this->isFullWidth())
         {
@@ -360,15 +355,9 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this;
     }
 
-    public function enableCountrySelection(): UI_Page_Navigation_Item_Search
+    public function hasCountries() : bool
     {
-        $this->countrySelection = true;
-        return $this;
-    }
-
-    public function hasCountrySelectionEnabled() : bool
-    {
-        return $this->countrySelection;
+        return !empty($this->countries);
     }
 
    /**
@@ -414,7 +403,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         $this->log(sprintf(
                 'Selected country is [%s] (country selection was enabled: %s).',
                 $country,
-                ConvertHelper::bool2string($this->hasCountrySelectionEnabled(), true))
+                ConvertHelper::bool2string($this->hasCountries(), true))
         );
 
         $this->log(sprintf('Calling the search callback with search terms [%s].', $terms));
@@ -474,7 +463,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveCountry(string $scopeID) : string
     {
-        if(empty($this->countries) || !$this->hasCountrySelectionEnabled()) {
+        if(empty($this->countries) || !$this->hasCountries()) {
             return '';
         }
 
