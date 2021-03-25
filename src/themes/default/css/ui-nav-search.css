@@ -34,6 +34,11 @@ UL.nav FORM.nav-search .search-button{
     display:inline-block;
 }
 
+UL.nav FORM.nav-search .search-country-selection{
+    margin: 0px;
+    width:110px;
+}
+
 /* ----------------------------------------------------------------
    FULL WIDTH SEARCH BAR
    ---------------------------------------------------------------- */
@@ -65,17 +70,19 @@ UL.nav FORM.nav-search .search-button{
     border-bottom-right-radius: 4px;
 }
 
-.search-fullwidth-tabs .search-inputs{
-    width:94%;
-    display:inline-block;
-}
-
 .search-fullwidth-tabs .search-input-terms{
     width:100%;
     margin: 0;
 }
 
-.search-fullwidth-tabs .search-button{
-    display:inline-block;
-    float: right;
+.search-fullwidth-tabs .search-country-selection{
+    margin: 0px;
+    width:110px;
 }
+
+.search-fullwidth-tabs tr:first-child td:first-child {
+    width: 100%;
+    padding-right: 15px;
+}
+
+

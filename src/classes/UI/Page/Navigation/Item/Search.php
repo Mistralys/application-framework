@@ -12,6 +12,8 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     protected $callback;
     
     protected $scopes = array();
+
+    protected $countries = array();
     
    /**
     * @var Application_Request
@@ -80,8 +82,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     private function createTemplate() : UI_Page_Template
     {
         return $this->ui->createTemplate($this->getTemplateName())
-            ->setVar('search', $this)
-            ->setVar('scope_id', $this->resolveScope());
+            ->setVar('search', $this);
     }
     
     public function initDone() : void
@@ -130,6 +131,11 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 
         return $this->resolveTerms($scopeID);
     }
+
+    public function getSelectedCountryID(string $scopeID='') : string
+    {
+        return $this->resolveCountry($scopeID);
+    }
     
     public function getType()
     {
@@ -171,7 +177,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->getName().'_submit';
     }
 
-    public function getSearchElementName(string $scope) : string
+    public function getSearchElementName(string $scope = '') : string
     {
         $name = $this->getName().'_input';
 
@@ -193,6 +199,23 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->getName().'_scope';
     }
 
+    public function getCountrySelectionElementName(string $scope) : string
+    {
+        $name = $this->getName().'_country';
+
+        if($this->isFullWidth())
+        {
+            if(empty($scope))
+            {
+                return $name;
+            }
+
+            return $name.'_'.$scope;
+        }
+
+        return $name;
+    }
+
     /**
      * Retrieves all variables needed to persist the
      * current search settings, when it is needed to
@@ -210,11 +233,13 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             foreach ($this->scopes as $scope)
             {
                 $vars[$this->getSearchElementName($scope['name'])] = $this->resolveTerms($scope['name']);
+                $vars[$this->getCountrySelectionElementName($scope['name'])] = $this->resolveCountry($scope['name']);
             }
         }
         else
         {
             $vars[$this->getSearchElementName('')] = $this->resolveTerms('');
+            $vars[$this->getCountrySelectionElementName('')] = $this->resolveCountry('');
         }
 
         if($this->isSubmitted())
@@ -319,6 +344,26 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this;
     }
 
+    public function getCountries() : array
+    {
+        return $this->countries;
+    }
+
+    public function addCountry($name, $label): UI_Page_Navigation_Item_Search
+    {
+        $this->countries[] = array(
+            'name' => $name,
+            'label' => $label
+        );
+
+        return $this;
+    }
+
+    public function hasCountries() : bool
+    {
+        return !empty($this->countries);
+    }
+
    /**
     * Sets the minimum amount of characters for a search to be valid.
     * @param int $length
@@ -343,9 +388,9 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     
     protected function handleSubmitted() : void
     {
-        $scope = $this->resolveScope();
-
         $this->log('The search has been submitted.');
+
+        $scope = $this->resolveScope();
         $this->log(sprintf(
             'Selected scope is [%s] (using scopes: %s).',
             $scope,
@@ -358,17 +403,26 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             return;
         }
 
+        $country = $this->resolveCountry($scope);
+        $this->log(sprintf(
+                'Selected country is [%s] (country selection was enabled: %s).',
+                $country,
+                ConvertHelper::bool2string($this->hasCountries(), true))
+        );
+
         $this->log(sprintf('Calling the search callback with search terms [%s].', $terms));
 
         call_user_func(
             $this->callback,
             $this,
             $terms,
-            $scope
+            $scope,
+            $country
         );
     }
 
     /**
+     * @param string $scopeID
      * @return string
      */
     protected function resolveTerms(string $scopeID) : string
@@ -404,6 +458,27 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
             }
         }
         
+        return '';
+    }
+
+    /**
+     * @param string $scopeID
+     * @return string
+     */
+    protected function resolveCountry(string $scopeID) : string
+    {
+        if(!$this->hasCountries()) {
+            return '';
+        }
+
+        $countryID = $this->request->getParam($this->getCountrySelectionElementName($scopeID));
+
+        foreach($this->countries as $def) {
+            if($def['name'] === $countryID) {
+                return $countryID;
+            }
+        }
+
         return '';
     }
 }
