@@ -1,3 +1,6 @@
+v1.12.3
+- DataGrid: Fixed an issue with counting items.
+
 v1.12.2
 - DataGrids: Added the "Mini" mode for slim grids via the `makeMini()` method.
 - DataGrids: Added the possibility to mark entries as non countable via `makeNonCountable()`.
