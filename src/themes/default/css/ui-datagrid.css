@@ -238,11 +238,11 @@ background-color:#ffe8c3 !important;
     Hide header and footer
     ------------------------------------------------------------------------- */
 
-.table-hide-footer tfoot {
+.table-footer-disabled tfoot {
     display:none;
 }
 
-.table-hide-header thead {
+.table-header-disabled thead {
     display:none;
 }
 

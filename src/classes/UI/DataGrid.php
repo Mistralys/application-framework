@@ -19,10 +19,10 @@
 class UI_DataGrid
 {
     const ERROR_MISSING_PRIMARY_KEY_NAME = 599901;
-    const ERROR_MISSING_PRIMARY_VALUE = 599902;
     const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
     const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
     const ERROR_DUPLICATE_DATAGRID_ID = 599905;
+    const ERROR_NO_TOTAL_SET = 5999006;
     
    /**
     * @var string
@@ -88,8 +88,6 @@ class UI_DataGrid
         'table-class' => 'table',
         'disable-header' => false,
         'disable-footer' => false,
-        'hide-footer' => false,
-        'hide-header' => false,
         'compact' => false,
         'hover' => true,
         'border' => true,
@@ -450,8 +448,8 @@ class UI_DataGrid
         }
 
         $props['BaseURL'] =  $this->buildURL(array('datagrid_page' => '_PGNR_'));
-        $props['TotalEntries'] = $this->total;
-        $props['TotalEntriesUnfiltered'] = $this->totalUnfiltered;
+        $props['TotalEntries'] = $this->getTotal();
+        $props['TotalEntriesUnfiltered'] = $this->getTotalUnfiltered();
         
         if(!empty($this->primaryKeyName)) {
             $this->ui->addJavascriptHeadStatement(
@@ -944,12 +942,12 @@ class UI_DataGrid
             $this->addTableClass('table-condensed');
         }
 
-        if ($this->getOption('hide-footer')) {
-            $this->addTableClass('table-hide-footer');
+        if (!$this->isFooterEnabled()) {
+            $this->addTableClass('table-footer-disabled');
         }
 
-        if ($this->getOption('hide-header')) {
-            $this->addTableClass('table-hide-header');
+        if (!$this->isHeaderEnabled()) {
+            $this->addTableClass('table-header-disabled');
         }
 
         if ($this->getOption('hover')) {
@@ -1112,10 +1110,12 @@ class UI_DataGrid
         $message = 
         UI::icon()->information() . ' ' .
         '<b>' . $this->emptyMessage . '</b>';
-        
-        if(isset($this->totalUnfiltered) && $this->totalUnfiltered != $this->total && $this->filterHint) 
+
+        $total = $this->getTotal();
+
+        if(isset($this->totalUnfiltered) && $this->totalUnfiltered != $total && $this->filterHint)
         {
-            $diff = $this->totalUnfiltered - $this->total;
+            $diff = $this->totalUnfiltered - $total;
             
             if($diff==1) {
                 $diffMessage = t('%1$s item is hidden by the current filter settings.', '<b>1</b>');     
@@ -1282,24 +1282,34 @@ class UI_DataGrid
     
     protected $duplicateHeadersThreshold = 8;
 
+    /**
+     * @return $this
+     * @deprecated
+     * @see UI_DataGrid::disableFooter()
+     */
     public function hideFooter() : UI_DataGrid
     {
-        return $this->setOption('hide-footer', true);
+        return $this->disableFooter();
     }
 
     public function disableFooter() : UI_DataGrid
     {
-        return $this->setOption('disable-footer', false);
+        return $this->setOption('disable-footer', true);
     }
 
     public function enableFooter() : UI_DataGrid
     {
-        return $this->setOption('disable-footer', true);
+        return $this->setOption('disable-footer', false);
+    }
+
+    public function isFooterEnabled() : bool
+    {
+        return $this->getOption('disable-footer') === false;
     }
 
     protected function renderFooter() : string
     {
-        if ($this->getOption('disable-footer') === true) {
+        if (!$this->isFooterEnabled()) {
             return '';
         }
 
@@ -1438,6 +1448,11 @@ class UI_DataGrid
         }
         
         return $this->countEntries();
+    }
+
+    public function getTotalUnfiltered() : ?int
+    {
+        return $this->totalUnfiltered;
     }
 
     /**
@@ -1728,20 +1743,16 @@ class UI_DataGrid
         return null;
     }
 
+    /**
+     * @return int
+     */
     public function countPages() : int
     {
-        if (!$this->totalSet) {
-            throw new Application_Exception(
-                'Cannot create data grid',
-                'Cannot count pages before the total amount of records is known. Use the setTotal() method to set it.'
-            );
-        }
-
         if ($this->limitCurrent < 1) {
             return 0;
         }
 
-        return intval(ceil($this->total / $this->limitCurrent));
+        return intval(ceil($this->getTotal() / $this->limitCurrent));
     }
 
     public function getPage() : int
@@ -1769,19 +1780,23 @@ class UI_DataGrid
         $this->totalSet = true;
         return $this;
     }
-    
-    protected $totalUnfiltered;
-    
-   /**
-    * Sets the total amount of records without any filtering.
-    * If no set, assumes the total is the unfiltered total.
-    * Otherwise, displays information about filtered item counts
-    * as needed.
-    * 
-    * Note: set automatically if a filter criteria instance is provided.
-    * 
-    * @param integer $total
-    */
+
+    /**
+     * @var int|NULL
+     */
+    protected $totalUnfiltered = null;
+
+    /**
+     * Sets the total amount of records without any filtering.
+     * If no set, assumes the total is the unfiltered total.
+     * Otherwise, displays information about filtered item counts
+     * as needed.
+     *
+     * Note: set automatically if a filter criteria instance is provided.
+     *
+     * @param integer $total
+     * @return UI_DataGrid
+     */
     public function setTotalUnfiltered(int $total) : UI_DataGrid
     {
         $this->totalUnfiltered = $total;
@@ -1804,6 +1819,12 @@ class UI_DataGrid
         return $this;
     }
 
+    /**
+     * @deprecated
+     * @return $this
+     * @throws Exception
+     * @see UI_DataGrid::disableHeader()
+     */
     public function hideHeader() : UI_DataGrid
     {
         return $this->setOption('hide-header', true);
@@ -1811,17 +1832,22 @@ class UI_DataGrid
 
     public function disableHeader() : UI_DataGrid
     {
-        return $this->setOption('disable-header', false);
+        return $this->setOption('disable-header', true);
     }
 
     public function enableHeader() : UI_DataGrid
     {
-        return $this->setOption('disable-header', true);
+        return $this->setOption('disable-header', false);
+    }
+
+    public function isHeaderEnabled() : bool
+    {
+        return $this->getOption('disable-header') === false;
     }
 
     protected function renderHeader() : string
     {
-        if ($this->getOption('disable-header') === true) {
+        if (!$this->isHeaderEnabled()) {
             return '';
         }
 
@@ -2038,6 +2064,7 @@ class UI_DataGrid
         $driver = Application_Driver::getInstance();
         $page = $this->ui->getPage();
         $varName = 'gproc'.nextJSID();
+        $total = $this->getTotal();
         
         $ajaxParams = $this->request->getRefreshParams(
             array(
@@ -2050,14 +2077,12 @@ class UI_DataGrid
         );
         
         // adjust the batch size somewhat to keep smaller amounts realistic
-        $batchSize = ceil($this->total / 10);
+        $batchSize = ceil($total / 10);
         if($batchSize < 1) {
             $batchSize = 1;
         } else if($batchSize > $this->selectAllBatchSize) {
             $batchSize = $this->selectAllBatchSize;
         }
-        
-        $this->request->getParams();
         
         $this->ui->addProgressBar();
         
@@ -2074,7 +2099,7 @@ class UI_DataGrid
             'content.datagrid.process-batches',
             array(
                 'grid' => $this,
-                'total' => $this->total,
+                'total' => $total,
                 'batch-size' => $batchSize
             )
         );
