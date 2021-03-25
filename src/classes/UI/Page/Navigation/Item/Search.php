@@ -82,8 +82,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     private function createTemplate() : UI_Page_Template
     {
         return $this->ui->createTemplate($this->getTemplateName())
-            ->setVar('search', $this)
-            ->setVar('scope_id', $this->resolveScope());
+            ->setVar('search', $this);
     }
     
     public function initDone() : void
@@ -132,6 +131,11 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 
         return $this->resolveTerms($scopeID);
     }
+
+    public function getSelectedCountryID(string $scopeID='') : string
+    {
+        return $this->resolveCountry($scopeID);
+    }
     
     public function getType()
     {
@@ -173,7 +177,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->getName().'_submit';
     }
 
-    public function getSearchElementName(string $scope) : string
+    public function getSearchElementName(string $scope = '') : string
     {
         $name = $this->getName().'_input';
 
@@ -463,7 +467,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveCountry(string $scopeID) : string
     {
-        if(empty($this->countries) || !$this->hasCountries()) {
+        if(!$this->hasCountries()) {
             return '';
         }
 

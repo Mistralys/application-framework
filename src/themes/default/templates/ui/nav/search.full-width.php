@@ -95,7 +95,7 @@ class template_default_ui_nav_search_full_width extends template_default_ui_nav_
     {
         ob_start();
         ?>
-            <table class="search-fullwidth-table">
+            <table>
                 <tbody>
                     <tr>
                         <td>
