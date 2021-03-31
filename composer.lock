@@ -270,22 +270,22 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.2.0",
+            "version": "7.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "0aa74dfb41ae110835923ef10a9d803a22d50e79"
+                "reference": "7008573787b430c1c1f650e3722d9bba59967628"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/0aa74dfb41ae110835923ef10a9d803a22d50e79",
-                "reference": "0aa74dfb41ae110835923ef10a9d803a22d50e79",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/7008573787b430c1c1f650e3722d9bba59967628",
+                "reference": "7008573787b430c1c1f650e3722d9bba59967628",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/promises": "^1.4",
-                "guzzlehttp/psr7": "^1.7",
+                "guzzlehttp/psr7": "^1.7 || ^2.0",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0"
             },
@@ -293,6 +293,7 @@
                 "psr/http-client-implementation": "1.0"
             },
             "require-dev": {
+                "bamarni/composer-bin-plugin": "^1.4.1",
                 "ext-curl": "*",
                 "php-http/client-integration-tests": "^3.0",
                 "phpunit/phpunit": "^8.5.5 || ^9.3.5",
@@ -306,7 +307,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "7.1-dev"
+                    "dev-master": "7.3-dev"
                 }
             },
             "autoload": {
@@ -348,7 +349,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.2.0"
+                "source": "https://github.com/guzzle/guzzle/tree/7.3.0"
             },
             "funding": [
                 {
@@ -368,7 +369,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-10-10T11:47:56+00:00"
+            "time": "2021-03-23T11:33:13+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -427,16 +428,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.7.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "53330f47520498c0ae1f61f7e2c90f55690c06a3"
+                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/53330f47520498c0ae1f61f7e2c90f55690c06a3",
-                "reference": "53330f47520498c0ae1f61f7e2c90f55690c06a3",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/35ea11d335fd638b5882ff1725228b3d35496ab1",
+                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1",
                 "shasum": ""
             },
             "require": {
@@ -496,9 +497,9 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.7.0"
+                "source": "https://github.com/guzzle/psr7/tree/1.8.1"
             },
-            "time": "2020-09-30T07:37:11+00:00"
+            "time": "2021-03-21T16:25:00+00:00"
         },
         {
             "name": "hybridauth/hybridauth",
@@ -644,16 +645,16 @@
         },
         {
             "name": "mistralys/application-utils",
-            "version": "1.4.1",
+            "version": "1.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils.git",
-                "reference": "ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338"
+                "reference": "604bcba0f33b4120d0ddc084a9b19f42062d0ac8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338",
-                "reference": "ae2e8a8f88ca69eb08a0d6eea7f2988e51c6e338",
+                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/604bcba0f33b4120d0ddc084a9b19f42062d0ac8",
+                "reference": "604bcba0f33b4120d0ddc084a9b19f42062d0ac8",
                 "shasum": ""
             },
             "require": {
@@ -696,9 +697,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils/issues",
-                "source": "https://github.com/Mistralys/application-utils/tree/1.4.1"
+                "source": "https://github.com/Mistralys/application-utils/tree/1.4.2"
             },
-            "time": "2021-03-16T20:56:55+00:00"
+            "time": "2021-03-25T09:58:11+00:00"
         },
         {
             "name": "mistralys/deepl-xml-translator",
@@ -873,16 +874,16 @@
         },
         {
             "name": "mistralys/markdown-viewer",
-            "version": "1.0.5",
+            "version": "1.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/markdown-viewer.git",
-                "reference": "b08305f32e316e8a09f94d578a7aca5c0e8e413f"
+                "reference": "1e19fcd8e97169834b22297cc627c1fc6b9607fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/markdown-viewer/zipball/b08305f32e316e8a09f94d578a7aca5c0e8e413f",
-                "reference": "b08305f32e316e8a09f94d578a7aca5c0e8e413f",
+                "url": "https://api.github.com/repos/Mistralys/markdown-viewer/zipball/1e19fcd8e97169834b22297cc627c1fc6b9607fc",
+                "reference": "1e19fcd8e97169834b22297cc627c1fc6b9607fc",
                 "shasum": ""
             },
             "require": {
@@ -911,9 +912,9 @@
             "description": "PHP based viewer for Markdown files, to view them with fenced code highlighting and navigation.",
             "support": {
                 "issues": "https://github.com/Mistralys/markdown-viewer/issues",
-                "source": "https://github.com/Mistralys/markdown-viewer/tree/1.0.5"
+                "source": "https://github.com/Mistralys/markdown-viewer/tree/1.0.6"
             },
-            "time": "2021-03-18T16:36:51+00:00"
+            "time": "2021-03-24T15:15:42+00:00"
         },
         {
             "name": "mistralys/subsetsum",
@@ -1247,23 +1248,23 @@
         },
         {
             "name": "pear/pear_exception",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/PEAR_Exception.git",
-                "reference": "dbb42a5a0e45f3adcf99babfb2a1ba77b8ac36a7"
+                "reference": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/dbb42a5a0e45f3adcf99babfb2a1ba77b8ac36a7",
-                "reference": "dbb42a5a0e45f3adcf99babfb2a1ba77b8ac36a7",
+                "url": "https://api.github.com/repos/pear/PEAR_Exception/zipball/b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
+                "reference": "b14fbe2ddb0b9f94f5b24cf08783d599f776fff0",
                 "shasum": ""
             },
             "require": {
-                "php": ">=4.4.0"
+                "php": ">=5.2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "phpunit/phpunit": "<9"
             },
             "type": "class",
             "extra": {
@@ -1302,7 +1303,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=PEAR_Exception",
                 "source": "https://github.com/pear/PEAR_Exception"
             },
-            "time": "2019-12-10T10:24:42+00:00"
+            "time": "2021-03-21T15:43:46+00:00"
         },
         {
             "name": "psr/http-client",
@@ -1455,22 +1456,22 @@
         },
         {
             "name": "scn/deepl-api-connector",
-            "version": "v2.1.2",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SC-Networks/deepl-api-connector.git",
-                "reference": "6c1533db97a1e84e836e325e3ed49e6d8c46a9a0"
+                "reference": "e1d8280d7c60cdb5e63cb7ad4e0dc194d5f254c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SC-Networks/deepl-api-connector/zipball/6c1533db97a1e84e836e325e3ed49e6d8c46a9a0",
-                "reference": "6c1533db97a1e84e836e325e3ed49e6d8c46a9a0",
+                "url": "https://api.github.com/repos/SC-Networks/deepl-api-connector/zipball/e1d8280d7c60cdb5e63cb7ad4e0dc194d5f254c8",
+                "reference": "e1d8280d7c60cdb5e63cb7ad4e0dc194d5f254c8",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/guzzle": "^7.0",
-                "php": "^7.2"
+                "php": "^7.2 || ^8.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^9"
@@ -1499,9 +1500,9 @@
             ],
             "support": {
                 "issues": "https://github.com/SC-Networks/deepl-api-connector/issues",
-                "source": "https://github.com/SC-Networks/deepl-api-connector/tree/v2.1.2"
+                "source": "https://github.com/SC-Networks/deepl-api-connector/tree/v2.2.0"
             },
-            "time": "2020-12-21T07:18:52+00:00"
+            "time": "2021-03-25T08:59:55+00:00"
         },
         {
             "name": "shark/simple_html_dom",
@@ -2128,16 +2129,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.81",
+            "version": "0.12.82",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8"
+                "reference": "3920f0fb0aff39263d3a4cb0bca120a67a1a6a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
-                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/3920f0fb0aff39263d3a4cb0bca120a67a1a6a11",
+                "reference": "3920f0fb0aff39263d3a4cb0bca120a67a1a6a11",
                 "shasum": ""
             },
             "require": {
@@ -2168,7 +2169,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.81"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.82"
             },
             "funding": [
                 {
@@ -2184,7 +2185,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-08T22:03:02+00:00"
+            "time": "2021-03-19T06:08:17+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
