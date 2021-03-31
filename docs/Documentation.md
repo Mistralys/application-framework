@@ -2657,11 +2657,40 @@ The access credentials can be found in the application's `auth.json` file.
 
 The updater script to refresh the data for all available packages is here:
 
-[Mistalys SATIS updater][]
+[Mistralys SATIS updater][]
+
+## The WHATSNEW.xml and VERSION files
+
+### WHATSNEW.xml
+
+#### Formatting 
+
+It is possible to use Markdown for formatting the texts.
+
+Variables may also be used in texts, to insert application specific data:
+
+- `$appURL` - URL to the application's htdocs folder.
+
+  > NOTE: The available variables are defined in 
+    `Application_Whatsnew_Version_Language_Category_Item::renderVariables()`.
+
+#### Inserting images
+
+Images specific to the WHATSNEW.xml file can be stored in the theme's `whatsnew`
+subfolder, and can be added with the command:
+
+```
+{image:filename.jpg}
+```
+
+### VERSION
+
+This contains the application's current version string. It must be generated
+automatically from the WHATSNEW.xml file on the production server. In local
+development copies, it is done automatically by the [Framework Manager][].
 
 
-
-
+[Framework Manager]: https://github.com/Mistralys/appframework-manager
 [Application Utils]: https://github.com/Mistralys/application-utils
 [Mistralys composer SATIS]: https://composer.mistralys-eva.systems
 [Mistalys SATIS updater]: https://composer.mistralys-eva.systems/updater.php
