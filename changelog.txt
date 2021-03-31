@@ -1,3 +1,7 @@
+v1.12.4
+- Navigation search: Added the optional countries selector.
+- Navigation search: Fixed a bug in the scopeless mode.
+
 v1.12.3
 - DataGrid: Fixed an issue with counting items.
 
