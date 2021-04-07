@@ -124,15 +124,21 @@ class UI_Form_Renderer_Sections_Section
         if($this->isRequired()) 
         {
             $this->section->addClass('form-section-required');
-            
-            $this->section->setTitle(
-                $this->section->getTitle().' '.
-                UI::icon()->required()
-                    ->addClass('icon-form-required')
-                    ->makeDangerous()
-                    ->setTooltip(t('Contains required form fields.'))
-                    ->cursorHelp()
-            );
+
+            // The required icons only make sense if the section
+            // is collapsible: if they are collapsed, it's easy to
+            // identify those that have required fields. Otherwise,
+            // nothing is hidden, and the visual aid is not needed.
+            if($this->section->isCollapsible()) {
+                $this->section->setTitle(
+                    $this->section->getTitle() . ' ' .
+                    UI::icon()->required()
+                        ->addClass('icon-form-required')
+                        ->makeDangerous()
+                        ->setTooltip(t('Contains required form fields.'))
+                        ->cursorHelp()
+                );
+            }
         }
         
         $anchor = strval($this->renderDef->getAttribute('data-anchor'));
