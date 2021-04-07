@@ -128,9 +128,10 @@ class UI_Form_Renderer_Sections_Section
             $this->section->setTitle(
                 $this->section->getTitle().' '.
                 UI::icon()->required()
-                ->makeMuted()
-                ->setTooltip(t('Contains required form fields.'))
-                ->cursorHelp()
+                    ->addClass('icon-form-required')
+                    ->makeDangerous()
+                    ->setTooltip(t('Contains required form fields.'))
+                    ->cursorHelp()
             );
         }
         
