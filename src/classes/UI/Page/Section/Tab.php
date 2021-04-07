@@ -122,23 +122,32 @@ class UI_Page_Section_Tab extends UI_Renderable implements UI_Renderable_Interfa
         return false;
     }
     
-    public function getURL()
+    public function getURL() : string
     {
         if($this->isLink()) {
-            return $this->target['config']['url'];
+            return strval($this->target['config']['url']);
         }
         
-        return null;
+        return '';
     }
 
-    public function isTarget($type)
+    public function getURLTarget() : string
     {
-        return isset($this->target) && $this->target['type'] == $type;
+        if($this->isLink()) {
+            return strval($this->target['config']['target']);
+        }
+
+        return '';
+    }
+
+    public function isTargetType(string $type) : bool
+    {
+        return isset($this->target) && $this->target['type'] === $type;
     }
     
-    public function isLink()
+    public function isLink() : bool
     {
-        return $this->isTarget(self::TARGET_LINK);
+        return $this->isTargetType(self::TARGET_LINK);
     }
     
     public function renderLabel()
