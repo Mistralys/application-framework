@@ -73,11 +73,12 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'section' => t('Basic usage'),
                     'section-adding-html' => t('Adding HTML contents'),
                     'section-info' => t('Informational message section'),
+                    'section-compact' => t('Compact mode'),
                     'section-itemslist' => t('Adding an items list'),
                     'section-form' => t('Adding a form'),
                     'section-quickselector' => t('Adding a quick selector'),
                     'section-subsection' => t('Adding a subsection'),
-                    'section-buttons' => t('Adding context buttons')
+                    'section-buttons' => t('Adding context buttons'),
                 )
             ),
             'forms' => array(
