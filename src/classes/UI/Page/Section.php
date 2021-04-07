@@ -16,9 +16,11 @@ use AppUtils\Interface_Classable;
  * 
  * @package Application
  * @subpackage UserInterface
- * @template frame.content.section
- * @see UI_Page::createSection()
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Page::createSection()
+ * @see template_default_frame_content_section
+ * @see template_default_frame_sidebar_section
  */
 abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_Interface, UI_Interfaces_Conditional, Application_LockableItem_Interface, UI_Page_Sidebar_ItemInterface, Application_Interfaces_Iconizable, Interface_Classable
 {
@@ -26,10 +28,14 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     use UI_Traits_Conditional;
     
     const ERROR_INVALID_CONTEXT_BUTTON = 511001;
-    
     const ERROR_TAB_ALREADY_EXISTS = 511002;
     
     protected $templateName = 'frame.content.section';
+
+    /**
+     * @var array<int,UI_Button|UI_Bootstrap_ButtonDropdown>
+     */
+    protected $contextButtons = array();
     
    /**
     * The section properties: these get submitted as is
@@ -53,7 +59,12 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
         'type' => 'content-section',
         'anchor' => ''
     );
-    
+
+    /**
+     * @var UI_QuickSelector|NULL
+     */
+    private $quickSelector = null;
+
     /**
      * Every section gets a dynamically created ID. This can
      * be overridden by setting the ID explicitly after creation
@@ -67,7 +78,12 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
         
         $this->addClass('content-section');
     }
-    
+
+    public function getType() : string
+    {
+        return (string)$this->getProperty('type');
+    }
+
    /**
     * Sets the name of the template that will be used to
     * render the section. Default is the <code>frame.content.section</code>
@@ -120,6 +136,11 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     public function setAnchor(string $anchor)
     {
         return $this->setProperty('anchor', $anchor);
+    }
+
+    public function getAnchor() : string
+    {
+        return strval($this->getProperty('anchor'));
     }
 
    /**
@@ -206,6 +227,16 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     {
         return $this->setProperty('tagline', toString($text));
     }
+
+    public function getTagline() : string
+    {
+        return strval($this->getProperty('tagline'));
+    }
+
+    public function hasTagline() : bool
+    {
+        return $this->getTagline() !== '';
+    }
     
    /**
     * Optional. Sets an abstract text that explains the contents of the section.
@@ -216,7 +247,12 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     {
         return $this->setProperty('abstract', toString($text));
     }
-    
+
+    public function getAbstract() : string
+    {
+        return (string)$this->getProperty('abstract');
+    }
+
    /**
     * Sets the markup to use as body for the section. If this is not set,
     * the section will not be rendered.
@@ -228,6 +264,11 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     public function setContent($content)
     {
         return $this->setProperty('content', toString($content));
+    }
+
+    public function getContent() : string
+    {
+        return strval($this->getProperty('content'));
     }
     
    /**
@@ -295,11 +336,12 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     public function getMaxBodyHeight() : int
     {
         $height = $this->getProperty('max-body-height');
-        if(empty($height)) {
-            return 0;
+
+        if(!empty($height)) {
+            return intval($height);
         }
         
-        return intval($height);
+        return 0;
     }
     
    /**
@@ -311,12 +353,31 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
         if(!$this->isValid()) {
             return '';
         }
-        
+
+        // The stylesheet needs to be loaded, even if this section is not displayed.
         $this->ui->addStylesheet('ui-sections.css');
-        
+
         // end capturing in case we're still capturing content
         $this->endCapture();
 
+        $content = $this->renderContent();
+
+        if(empty($content) && !$this->isVisibleIfEmpty()) {
+            return '';
+        }
+        
+        $params = $this->properties;
+        $params['content'] = $content;
+        $params['section'] = $this;
+
+        return $this->page->renderTemplate(
+            $this->templateName,
+            $params
+        );
+    }
+
+    private function renderContent() : string
+    {
         $content = '';
         if(!empty($this->contents)) {
             foreach($this->contents as $renderable) {
@@ -327,58 +388,28 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
                 $content .= $renderable->render();
             }
         }
-        
+
         $content .= $this->getProperty('content');
-        
-        if(empty($content) && !$this->isVisibleIfEmpty()) {
-            return '';
-        }
-        
-        $this->addClass('group-'.$this->getGroup());
-        
-        if($this->hasAbstract()) {
-            $this->addClass('with-abstract');
-        }
-        
-        if($this->hasTabs()) {
-            $this->addClass('with-tabs');
-        }
-        
-        if($this->hasContextButtons()) {
-            $this->addClass('with-context-buttons');
-        }
-        
-        $params = $this->properties;
-        $params['classes'] = $this->getClasses();
-        $params['content'] = $content;
-        $params['collapsed'] = $this->isCollapsed();
-        $params['_section'] = $this;
-        $params['anchor'] = $this->getProperty('anchor');
-        
-        return $this->page->renderTemplate(
-            $this->templateName,
-            $params
-        );
+
+        return $content;
     }
     
    /**
     * Whether the section has an abstract set.
     * @return boolean
     */
-    public function hasAbstract()
+    public function hasAbstract() : bool
     {
-        $abstract = $this->getProperty('abstract');
-        return !empty($abstract);
+        return $this->getAbstract() !== '';
     }
     
    /**
     * Whether the section has context buttons.
     * @return boolean
     */
-    public function hasContextButtons()
+    public function hasContextButtons() : bool
     {
-        $btns = $this->getProperty('context-buttons');
-        return !empty($btns);
+        return !empty($this->contextButtons);
     }
     
     protected $capturing = false;
@@ -414,14 +445,15 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
 
         return $this;
     }
-    
-   /**
-    * Turns the section into an empty section with just an informational message.
-    * The message is automatically set to not dismissable, and the message itself
-    * is prepended with an information icon.
-    * 
-    * @param string $message
-    */
+
+    /**
+     * Turns the section into an empty section with just an informational message.
+     * The message is automatically set to not dismissable, and the message itself
+     * is prepended with an information icon.
+     *
+     * @param string $message
+     * @return UI_Page_Section
+     */
     public function makeInfoMessage($message)
     {
         return $this->setContent(
@@ -442,7 +474,7 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     * 
     * @param boolean $collapsed Whether the section should start collapsed.
     * @return $this
-    * @see makeStatic()
+    * @see UI_Page_Section::makeStatic()
     */
     public function makeCollapsible($collapsed=false)
     {
@@ -486,7 +518,7 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     * @param string $name
     * @return boolean
     */
-    protected function hasProperty($name)
+    protected function hasProperty(string $name) : bool
     {
         $prop = $this->getProperty($name);
         return !empty($prop);
@@ -498,7 +530,7 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     * collapsible with the {@link makeCollapsible} method.
     * 
     * @return $this
-    * @see makeCollapsible()
+    * @see UI_Page_Section::makeCollapsible()
     */
     public function makeStatic()
     {
@@ -506,49 +538,79 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
         $this->setProperty('collapsed', false);
         return $this;
     }
-    
+
+    public function makeCompact()
+    {
+        return $this->setProperty('compact', true);
+    }
+
+    public function isCompact() : bool
+    {
+        return $this->getProperty('compact') === true;
+    }
+
+    /**
+     * @return $this
+     */
     public function expand()
     {
         return $this->makeCollapsible(false);
     }
 
+    /**
+     * @return $this
+     */
     public function collapse()
     {
         return $this->makeCollapsible(true);
     }
-    
-    public function setCollapsed($collapsed=true)
+
+    /**
+     * @param bool $collapsed
+     * @return $this
+     */
+    public function setCollapsed(bool $collapsed=true)
     {
         return $this->makeCollapsible($collapsed);
     }
     
     public function isExpanded()
     {
-        return !$this->getProperty('collapsed');
+        if(!$this->isCollapsible()) {
+            return true;
+        }
+
+        return $this->getProperty('collapsed') !== true;
     }
     
-    public function isCollapsed()
+    public function isCollapsed() : bool
     {
+        if(!$this->isCollapsible()) {
+            return false;
+        }
+
         if(isset($this->form) && $this->form->isSubmitted()){
             if(!$this->form->validate()) {
                 return false;
             }
         }
         
-        return $this->getProperty('collapsed');
+        return $this->getProperty('collapsed') === true;
     }
-    
-   /**
-    * Creates and adds a quick selector to the section, which
-    * is shown to the right of the section title. 
-    * 
-    * @param string $id
-    * @return UI_QuickSelector
-    */
-    public function addQuickSelector($id=null)
+
+    /**
+     * Creates and adds a quick selector to the section, which
+     * is shown to the right of the section title.
+     *
+     * @param string $id
+     * @return UI_QuickSelector
+     * @throws Application_Exception
+     */
+    public function addQuickSelector(string $id='') : UI_QuickSelector
     {
         $quick = UI::getInstance()->createQuickSelector($id);
         $this->setQuickSelector($quick);
+
         return $quick;
     }
     
@@ -561,19 +623,29 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     */
     public function setQuickSelector(UI_QuickSelector $quick)
     {
-        $quick->makeCompact();
-        $this->setProperty('quick-selector', $quick);
+        $this->quickSelector = $quick;
         return $this;
     }
-    
-   /**
-    * Adds a context button to the section. These are usually
-    * displayed around the title somewhere - it depends on the
-    * template.
-    * 
-    * @param mixed $button
-    * @return $this
-    */
+
+    public function hasQuickSelector() : bool
+    {
+        return isset($this->quickSelector);
+    }
+
+    public function getQuickSelector() : ?UI_QuickSelector
+    {
+        return $this->quickSelector;
+    }
+
+    /**
+     * Adds a context button to the section. These are usually
+     * displayed around the title somewhere - it depends on the
+     * template.
+     *
+     * @param UI_Button|UI_Bootstrap_ButtonDropdown $button
+     * @return $this
+     * @throws Application_Exception
+     */
     public function addContextButton($button)
     {
         if(!$button instanceof UI_Button && !$button instanceof UI_Bootstrap_ButtonDropdown) {
@@ -584,15 +656,17 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
             );
         } 
         
-        $buttons = $this->getProperty('context-buttons');
-        if(!is_array($buttons)) {
-            $buttons = array();
-        }
-        
-        $buttons[] = $button;
-        $this->setProperty('context-buttons', $buttons);
-        
+        $this->contextButtons[] = $button;
+
         return $this;
+    }
+
+    /**
+     * @return array<int,UI_Bootstrap_ButtonDropdown|UI_Button>
+     */
+    public function getContextButtons() : array
+    {
+        return $this->contextButtons;
     }
     
     protected $contents = array();
@@ -660,9 +734,9 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
         return "UI.CollapseSections('".$this->getGroup()."')";
     }
     
-    public function isCollapsible()
+    public function isCollapsible() : bool
     {
-        return $this->getProperty('collapsible');
+        return $this->getProperty('collapsible') === true;
     }
     
     public function addForm(UI_Form $form)
