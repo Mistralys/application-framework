@@ -213,12 +213,23 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         ));
         
         $this->ui->addJavascriptOnload(sprintf("%s.Start()", $jsName));
+
+        $classes = array(
+            'quick-selector',
+            'input-append',
+            'size-'.$this->getStringOption('size')
+        );
+
+        $label = $this->resolveLabel();
+        if(!empty($label)) {
+            $classes[] = 'input-prepend';
+        }
         
+        $classes = array_merge($classes, $this->getClasses());
+
         $html =
         '<form id="'.$this->elementID().'" class="form-inline">'.
-            '<div class="input-prepend input-append quick-selector size-'.$this->getStringOption('size').' '.$this->classesToString().'">';
-
-                $label = $this->resolveLabel();
+            '<div class="'.implode(' ', $classes).'">';
 
                 if(!empty($label))
                 {
