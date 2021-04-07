@@ -1,7 +1,8 @@
 <?php
 /* @var $this UI_Page_Template */
 
-$section = $this->createSection();
+$section = $this->createSection()
+->setTitle('Section title');
 
 // add content by capturing output
 $section->startCapture();
