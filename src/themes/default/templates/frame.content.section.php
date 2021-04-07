@@ -1,221 +1,418 @@
 <?php
 /**
- * Template for the section blocks in the content area: can have an
- * optional title and can be configured further using options. 
- * 
- * @package Application
+ * File containing the template class {@see template_default_frame_content_section}.
+ *
+ * @package UserInterface
  * @subpackage Templates
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @see UI_Page_Section
+ * @see template_default_frame_content_section
  */
 
-	/* @var $this UI_Page_Template */
-    /* @var $quick UI_QuickSelector */
-    /* @var $section UI_Page_Section */
-	
-	$title = $this->getVar('title');
-	$abstract = $this->getVar('abstract');
-	$tagline = $this->getVar('tagline');
-	$section = $this->getVar('_section');
-	$id = $this->getVar('id');
-	$type = $this->getVar('type');
-	$clientName = 'SC'.$id;
-	$hasTabs = $section->hasTabs();
-	
-	$sectionAtts = array();
-	$sectionAtts['id'] = $id;
-    $sectionAtts['class'] = implode(' ', $this->getVar('classes'));
-    
-    $quick = $this->getVar('quick-selector');
-    $contextButtons = $this->getVar('context-buttons');
-    $collapsible = $this->getVar('collapsible', false);
-    $collapsed = $this->getVar('collapsed', false);
-    
-    $toolbar = false;
-    if(!empty($quick) || !empty($contextButtons)) {
-        $toolbar = true;
-    }
-    
-    $this->ui->addJavascript('ui/section.js');
-    $this->ui->addJavascriptHeadStatement(
-        sprintf('var %s = UI.RegisterSection', $clientName), 
-        $id, 
-        $type, 
-        $collapsible, 
-        $collapsed,
-        $section->getGroup()
-    );
+declare(strict_types=1);
 
-    $anchor = $this->getStringVar('anchor');
-    if(empty($anchor))
+use AppUtils\ConvertHelper;
+
+/**
+ * Main template for the frame skeleton of all pages.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Page_Section
+ */
+class template_default_frame_content_section extends UI_Page_Template_Custom
+{
+    protected function generateOutput(): void
     {
-        $anchor = \AppUtils\ConvertHelper::transliterate(strip_tags($title));
+        ?>
+            <section <?php echo compileAttributes($this->resolveSectionAttributes()) ?>>
+                <?php
+                    $this->displayAnchor();
+                    $this->displayToolbar();
+                    $this->displayTitleBar();
+                    $this->displayTabs();
+                    $this->displayBody();
+                ?>
+            </section>
+        <?php
     }
-    
-	$html =
-	'<section'.AppUtils\ConvertHelper::array2attributeString($sectionAtts).'>'.
-        '<a id="'.$anchor.'" name="'.$anchor.'"></a>';
-	
-        // -----------------------------------------------------------------
-        // TOOLBAR
-        // -----------------------------------------------------------------
-        if($toolbar) {
-           $html .= 
-            '<div class="btn-toolbar pull-right">';
-                if($quick) {
-                    if(empty($title)) {
-                        $title = '&nbsp;';
-                    }
-                    
-                    $html .=
-        	       '<div class="btn-group">'.
-        	           $quick->render().
-                   '</div>';
-                }
-        
-                if(!empty($contextButtons)) {
-                    if(empty($title)) {
-                        $title = '&nbsp;';
-                    }
-                    
-                    foreach($contextButtons as $contextButton) {
-                        $contextButton->makeSmall();
-                    }
-                     
-                    $html .=
-                    '<div class="btn-group section-context-buttons">'.
-                        implode('', $contextButtons).
-                    '</div>';
-                }
-            
-                $html .=
-            '</div>';
+
+    protected function resolveSectionAttributes() : array
+    {
+        $classes = array();
+
+        $classes[] = 'section';
+        $classes[] = 'group-'.$this->section->getGroup();
+
+        if($this->section->isCollapsible()) {
+            $classes[] = 'collapsible';
         }
-        
-	    // -----------------------------------------------------------------
-	    // TITLE BAR
-	    // -----------------------------------------------------------------
-		if(!empty($title)) 
-		{
-		    $taglineHTML = '';
-		    $headerAtts = array();
-		    $headerClasses = array($type.'-header');
-			if(!empty($tagline)) {
-			    $headerClasses[] = 'with-tagline';
-			    $taglineHTML =
-			    '<small class="'.$type.'-tagline">'.$tagline.'</small>';
-			}	
-			
-			if($collapsible) {
-			    $headerClasses[] = 'collapsible';
-			    $headerAtts['id'] = $id.'-header';
-			    $headerAtts['data-toggle'] = 'collapse';
-			    $headerAtts['data-target'] = '#' . $id . '-body';
-			    
-			     
-			    if($collapsed) {
-			        $headerClasses[] = 'collapsed';
-			        $icon = UI::icon()->expand()
-			        ->makeMuted()
-			        ->setID($id.'-caret');
-			    } else {
-			        $icon = UI::icon()->collapse()
-			        ->makeMuted()
-			        ->setID($id.'-caret');
-			    }
-			    
-			    $title = $title.' '.$icon->render();
-			} else {
-			    $headerClasses[] = 'regular';
-			}
-			
-			$headerAtts['class'] = implode(' ', $headerClasses);
-			
-			if($section->hasIcon()) {
-			    $title = $section->getIcon().' '.$title;
-			}
-				
-		    $html .=
-			'<h3' . compileAttributes($headerAtts) . '>'.
-		        $title.
-		        $taglineHTML.
-		    '</h3>';
-		}
-		
-		// -----------------------------------------------------------------
-		// TABS NAVIGATION
-		// -----------------------------------------------------------------
-		if($hasTabs) 
-		{
-		    $tabs = $section->getTabs();
-		    
-		    $html .=
-		    '<ul class="tabs-section">';
-		        foreach($tabs as $tab) 
-		        {
-		            $classes = array(
-		                'tab',
-		                'tab-'.$tab->getName()
-		            );
-		            
-		            if($tab->isActive()) {
-		                $classes[] = 'tab-active';
-		            } else {
-		                $classes[] = 'tab-default';
-		            }
-		            
-		            $html .=
-		            '<li class="'.implode(' ', $classes).'">';
-		                if($tab->isLink()) {
-		                    $html .=
-		                    '<a href="'.$tab->getURL().'">'.$tab->renderLabel().'</a>';
-		                } else {
-		                    $html .= $tab->renderLabel();
-		                }
-		                $html .=
-		            '</li>';
-		        }
-		        $html .=
-	        '</ul>';
-		}
-		
-		// -----------------------------------------------------------------
-		// SECTION BODY
-		// -----------------------------------------------------------------
-		$bodyAtts = array();
-		$bodyClasses = array();
-		
-		$bodyAtts['id'] = $id . '-body';
-		$bodyClasses[] = $type.'-body';
-		
-		if($collapsible) {
-		    $bodyClasses[] = 'collapse';
-		    if(!$collapsed) {
-		        $bodyClasses[] = 'in';
-		    }
-		}
-		
-		$bodyAtts['class'] = implode(' ', $bodyClasses);
-		
-		$wrapperAtts = array();
-		$wrapperAtts['class'] = 'body-wrapper';
-		
-		$maxBodyHeight = $section->getMaxBodyHeight();
-		if($maxBodyHeight && $maxBodyHeight > 0) {
-		    $wrapperAtts['style'] = 'max-height:'.$maxBodyHeight.'px;overflow:auto';
-		}
-		
-		$html .=
-		'<div' . compileAttributes($bodyAtts) . '>'.
-		    '<div'.compileAttributes($wrapperAtts).'>';
-        		if(!empty($abstract)) {
-        		    $html .= 
-        		    '<p class="abstract">'.$abstract.'</p>';
-        		}
-        		$html .=
-        		$this->getVar('content').
-    		'</div>'.
-		'</div>'.
-	'</section>';
-		
-	echo $html;
+
+        if($this->section->hasAbstract()) {
+            $classes[] = 'with-abstract';
+        }
+
+        if($this->section->hasTabs()) {
+            $classes[] = 'with-tabs';
+        }
+
+        if($this->section->hasContextButtons()) {
+            $classes[] = 'with-context-buttons';
+        }
+
+        if($this->section->isCompact()) {
+            $classes[] = 'compact';
+        }
+
+        $classes = array_merge($classes, $this->section->getClasses());
+
+        return array(
+            'id' => $this->section->getID(),
+            'class' => implode(' ', $classes)
+        );
+    }
+
+    protected function displayAnchor() : void
+    {
+        $anchor = $this->resolveAnchor();
+
+        if(empty($anchor)) {
+            return;
+        }
+
+        ?>
+            <a id="<?php echo $anchor ?>" name="<?php echo $anchor ?>"></a>
+        <?php
+    }
+
+    protected function resolveAnchor() : string
+    {
+        $anchor = $this->section->getAnchor();
+
+        if (!empty($anchor)) {
+            return $anchor;
+        }
+
+        $title = $this->section->getTitle();
+        if(!empty($title)) {
+            return ConvertHelper::transliterate(strip_tags($title));
+        }
+
+        return '';
+    }
+
+    protected function displayBody() : void
+    {
+        ?>
+            <div <?php echo compileAttributes($this->resolveBodyAttributes()) ?>>
+                <div <?php echo compileAttributes($this->resolveWrapperAttributes()) ?>>
+                    <?php
+                        $this->displayAbstract();
+                        echo $this->getStringVar('content');
+                    ?>
+                </div>
+            </div>
+        <?php
+    }
+
+    protected function displayAbstract() : void
+    {
+        if (!$this->section->hasAbstract()) {
+            return;
+        }
+
+        ?>
+            <p class="abstract">
+                <?php echo $this->section->getAbstract() ?>
+            </p>
+        <?php
+    }
+
+    protected function resolveWrapperAttributes() : array
+    {
+        $attributes = array();
+        $classes = array('body-wrapper');
+
+        $maxBodyHeight = $this->section->getMaxBodyHeight();
+
+        if ($maxBodyHeight > 0) {
+            $classes[] = 'max-height';
+            $attributes['style'] = 'max-height:' . $maxBodyHeight . 'px;';
+        }
+
+        $attributes['class'] = implode(' ', $classes);
+
+        return $attributes;
+    }
+
+    protected function resolveBodyAttributes() : array
+    {
+        $attributes = array();
+        $classes = array();
+
+        $attributes['id'] = $this->section->getID() . '-body';
+        $classes[] = 'section-body';
+        $classes[] = $this->section->getType() . '-body';
+
+        if ($this->section->isCollapsible()) {
+            $classes[] = 'collapse';
+            if (!$this->section->isCollapsed()) {
+                $classes[] = 'in';
+            }
+        }
+
+        $attributes['class'] = implode(' ', $classes);
+
+        return $attributes;
+    }
+
+    protected function displayTabs() : void
+    {
+        if (!$this->section->hasTabs()) {
+            return;
+        }
+
+        $tabs = $this->section->getTabs();
+
+        ?>
+            <ul class="tabs-section">
+                <?php
+                    foreach ($tabs as $tab) {
+                        $this->displayTab($tab);
+                    }
+                ?>
+            </ul>
+        <?php
+    }
+
+    protected function displayTab(UI_Page_Section_Tab $tab) : void
+    {
+        $classes = array(
+            'tab',
+            'tab-' . $tab->getName()
+        );
+
+        if ($tab->isActive()) {
+            $classes[] = 'tab-active';
+        } else {
+            $classes[] = 'tab-default';
+        }
+
+        ?>
+            <li class="<?php echo implode(' ', $classes) ?>">
+                <?php
+
+                    if ($tab->isLink())
+                    {
+                        echo sb()->link(
+                            $tab->renderLabel(),
+                            $tab->getURL(),
+                            $tab->getURLTarget() !== ''
+                        );
+                    }
+                    else
+                    {
+                        echo $tab->renderLabel();
+                    }
+                ?>
+            </li>
+        <?php
+    }
+
+    protected function displayTitleBar() : void
+    {
+        $title = $this->resolveTitleText();
+
+        if(empty($title)) {
+            return;
+        }
+
+        ?>
+            <h3 <?php echo compileAttributes($this->resolveHeaderAttributes()) ?>>
+                <?php echo $title ?>
+                <?php $this->displayTitleTagline() ?>
+            </h3>
+        <?php
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    protected function resolveHeaderAttributes() : array
+    {
+        $attributes = array();
+        $headerClasses = array('section-header', $this->type . '-header');
+
+        if ($this->section->hasTagline()) {
+            $headerClasses[] = 'with-tagline';
+        }
+
+        if ($this->section->isCollapsible())
+        {
+            $id = $this->section->getID();
+
+            $headerClasses[] = 'collapsible';
+            $attributes['id'] = $id . '-header';
+            $attributes['data-toggle'] = 'collapse';
+            $attributes['data-target'] = '#' . $id . '-body';
+
+
+            if ($this->section->isCollapsed()) {
+                $headerClasses[] = 'collapsed';
+            }
+        }
+        else
+        {
+            $headerClasses[] = 'regular';
+        }
+
+        $attributes['class'] = implode(' ', $headerClasses);
+
+        return $attributes;
+    }
+
+    protected function resolveTitleText() : string
+    {
+        $title = $this->section->getTitle();
+
+        if(empty($title) && $this->isToolbarEnabled()) {
+            $title = '&nbsp;';
+        }
+
+        $result = sb()->add((string)$this->section->getIcon());
+
+        $result->add($title);
+
+        if($this->section->isCollapsible())
+        {
+            $id = $this->section->getID();
+
+            $result
+                ->icon(UI::icon()->caretDown()
+                    ->addClass('icon-toggle')
+                    ->addClass('toggle-expand')
+                    ->setHidden($this->section->isExpanded())
+                    ->setID($id.'-expand')
+                )
+                ->icon(UI::icon()->caretUp()
+                    ->addClass('icon-toggle')
+                    ->addClass('toggle-collapse')
+                    ->setHidden($this->section->isCollapsed())
+                    ->setID($id.'-collapse')
+                );
+        }
+
+        return $result->render();
+    }
+
+    protected function displayTitleTagline() : void
+    {
+        if(!$this->section->hasTagline()) {
+            return;
+        }
+
+        ?>
+            <small class="section-tagline <?php echo $this->section->getType() ?>-tagline">
+                <?php echo $this->section->getTagline() ?>
+            </small>
+        <?php
+    }
+
+    public function isToolbarEnabled() : bool
+    {
+        return $this->section->hasQuickSelector() || $this->section->hasContextButtons();
+    }
+
+    protected function displayToolbar() : void
+    {
+        if(!$this->isToolbarEnabled()) {
+            return;
+        }
+
+        ?>
+            <div class="btn-toolbar pull-right section-toolbar">
+                <?php
+                    $this->displayQuickSelector();
+                    $this->displayContextButtons();
+                ?>
+            </div>
+        <?php
+    }
+
+    protected function displayContextButtons() : void
+    {
+        if (!$this->section->hasContextButtons()) {
+            return;
+        }
+
+        $buttons = $this->section->getContextButtons();
+
+        // Ensure they are all the same size
+        foreach ($buttons as $contextButton) {
+            $this->configureButton($contextButton);
+        }
+
+        ?>
+            <div class="btn-group section-context-buttons">
+                <?php echo implode('', $buttons) ?>
+            </div>
+        <?php
+    }
+
+    /**
+     * @param UI_Button|UI_Bootstrap_ButtonDropdown $button
+     */
+    protected function configureButton($button) : void
+    {
+        $button->makeSmall();
+    }
+
+    protected function displayQuickSelector() : void
+    {
+        $quick = $this->section->getQuickSelector();
+
+        if ($quick === null) {
+            return;
+        }
+
+        $quick->makeCompact();
+
+        ?>
+            <div class="btn-group">
+                <?php $quick->display(); ?>
+            </div>
+        <?php
+    }
+
+    // region: Setup
+
+    /**
+     * @var UI_Page_Section
+     */
+    private $section;
+
+    /**
+     * @var string
+     */
+    private $type;
+
+    protected function preRender() : void
+    {
+        $this->section = $this->getObjectVar('section', UI_Page_Section::class);
+        $this->type = $this->section->getType();
+
+        $this->ui->addJavascript('ui/section.js');
+
+        $this->ui->addJavascriptHeadStatement(
+            sprintf('var %s = UI.RegisterSection', 'SC' . $this->section->getID()),
+            $this->section->getID(),
+            $this->section->getType(),
+            $this->section->isCollapsible(),
+            $this->section->isCollapsed(),
+            $this->section->getGroup()
+        );
+
+    }
+
+    // endregion
+}

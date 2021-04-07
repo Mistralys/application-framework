@@ -72,7 +72,7 @@ var UI_Section =
     */
 	MakeCompact:function()
 	{
-		return this.AddClass('section-compact');
+		return this.AddClass('compact');
 	},
 	
    /**
@@ -160,32 +160,47 @@ var UI_Section =
 	Render:function()
 	{
 		var title = this.title;
+		var sectionClasses = this.classes;
 		var headerAtts = {};
-		var headerClasses = ['section-header'];
-		if(this.collapsible) {
+		var headerClasses = [
+			'section-header',
+			this.type + '-section-header'
+		];
+
+		if(this.collapsible)
+		{
 			headerAtts['id'] = this.elementID('header');
 			headerAtts['data-toggle'] = 'collapse';
 			headerAtts['data-target'] = '#' +this.elementID('body');
-			
+			headerClasses.push('collapsible');
+			sectionClasses.push('collapsible');
+
 		    if(this.collapsed) {
 		        headerClasses.push('collapsed');
-		        icon = UI.Icon().Expand()
-		        .MakeMuted()
-		        .SetID(this.elementID('caret'));
-		    } else {
-		        icon = UI.Icon().Collapse()
-		        .MakeMuted()
-		        .SetID(this.elementID('caret'));
 		    }
-		    
-		    title += ' '+icon.Render();
+
+		    title += ' '+
+			UI.Icon().Expand()
+				.AddClass('icon-toggle')
+				.AddClass('toggle-expand')
+				.SetID(this.elementID('expand'))
+				.Render()+
+			UI.Icon().Collapse()
+				.AddClass('icon-toggle')
+				.AddClass('toggle-expand')
+				.SetID(this.elementID('collapse'))
+				.Render();
+		}
+		else
+		{
+			headerClasses.push('regular');
 		}
 		
 		headerAtts['class'] = headerClasses.join(' ');
 		
 		var bodyAtts = {'id': this.elementID('body')};
-		var bodyClasses = ['section-body'];
-		
+		var bodyClasses = ['section-body', 'section-'+this.type+'-body'];
+
 		if(this.collapsible) {
 		    bodyClasses.push('collapse');
 		    if(!this.collapsed) {
@@ -195,22 +210,21 @@ var UI_Section =
 		
 		bodyAtts['class'] = bodyClasses.join(' ');
 		
-		var sectionClasses = this.classes; 
+		sectionClasses.push('section');
 		sectionClasses.push(this.type+'-section');
-		
-		if(this.collapsible) {
-			sectionClasses.push('section-collapsible');
-		}
-		
+
+		var wrapperClasses = ['body-wrapper'];
 		var wrapperAtts = {
 			'id':this.elementID('body-wrapper'),
-			'class':'body-wrapper'
 		};
-		
+
 		if(this.maxBodyHeight > 0) {
-			wrapperAtts['style'] = 'max-height:'+this.maxBodyHeight+'px;overflow:auto';
+			wrapperClasses.push('max-height');
+			wrapperAtts['style'] = 'max-height:'+this.maxBodyHeight+'px;';
 		}
-		
+
+		wrapperAtts['class'] = wrapperClasses.join(' ');
+
 		var html = ''+
 		'<section class="'+sectionClasses.join(' ')+'" id="'+this.elementID()+'">'+
 			'<h3'+UI.CompileAttributes(headerAtts)+'>'+
@@ -324,14 +338,16 @@ var UI_Section =
 	Handle_Expanded:function()
 	{
 		this.collapsed = false;
-		this.element('caret').addClass('fa-minus-circle').removeClass('fa-plus-circle');
+		this.element('expand').hide();
+		this.element('collapse').show();
 		this.element().addClass('section-expanded').removeClass('section-collapsed');
 	},
 	
 	Handle_Collapsed:function()
 	{
 		this.collapsed = true;
-		this.element('caret').removeClass('fa-minus-circle').addClass('fa-plus-circle');
+		this.element('expand').show();
+		this.element('collapse').hide();
 		this.element().removeClass('section-expanded').addClass('section-collapsed');
 	},
 	
