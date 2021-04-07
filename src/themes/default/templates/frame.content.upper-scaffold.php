@@ -55,7 +55,13 @@
     // the page subtitle if present
     if($this->renderer->hasSubtitle())
     {
-        $this->renderer->getSubtitle()->display();
+        $sub = $this->renderer->getSubtitle();
+
+        if($this->page->hasSubnavigation()) {
+            $sub->addClass('with-subnav');
+        }
+
+        $sub->display();
     }
     
     // add the content tabs if present
