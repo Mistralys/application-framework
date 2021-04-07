@@ -1,6 +1,13 @@
+v1.12.5
+- Sections: Revamped the template, improved the layout somewhat.
+- Sections: Added `getURLTarget()` to the tab class.
+- QuickSelector: Fixed no rounded corners on the select when label is turned off.
+- Navigation: Fixed the too high spacing between subnav and subtitle.
+- Forms: Sections: Removed form required icon when section is not collapsible.
+
 v1.12.4
-- Navigation search: Added the optional countries selector.
-- Navigation search: Fixed a bug in the scopeless mode.
+- Navigation: Search: Added the optional countries selector.
+- Navigation: Search: Fixed a bug in the scopeless mode.
 
 v1.12.3
 - DataGrid: Fixed an issue with counting items.
