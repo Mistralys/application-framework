@@ -432,7 +432,6 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         $terms = (string)$this->request->registerParam($paramName)
         ->addFilterTrim()
         ->addStripTagsFilter()
-        ->addHTMLSpecialcharsFilter()
         ->get('');
         
         if(!empty($terms) || mb_strlen($terms) >= $this->minLength) {
