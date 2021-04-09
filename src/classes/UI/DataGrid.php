@@ -130,6 +130,11 @@ class UI_DataGrid
     protected $entries = array();
 
     /**
+     * @var string
+     */
+    protected $footerCountText = 'Showing entries';
+
+    /**
      * @param UI $ui
      * @param string|int $id
      * @param bool $allowDuplicateID
@@ -1508,7 +1513,7 @@ class UI_DataGrid
         '<div class="pull-right">' .
             '<span class="muted">' . 
                 t(
-                    'Showing entries %1$s to %2$s, %3$s total.', 
+                    $this->footerCountText . ' %1$s to %2$s, %3$s total.',
                     $from, 
                     $to, 
                     $total
@@ -2588,5 +2593,13 @@ class UI_DataGrid
         }
         
         return $this;
+    }
+
+    /**
+     * @param string $footerText
+     */
+    public function setFooterCountText(string $footerText): void
+    {
+        $this->footerCountText = $footerText;
     }
 }
