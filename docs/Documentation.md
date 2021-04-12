@@ -2610,9 +2610,20 @@ sb()
 
 ## Translation UI
 
+### Application texts
+
 Developers can access the translation UI under _Manage > Translation_. This finds all instances
 of the translation methods, and allows adding the translations for all locales defined
 for the application.
+
+  > NOTE: All translatable texts will be shown, including Composer libraries like the framework
+    or Application Utils. Avoid translating those, since they will be overwritten when those
+    libraries are updated.
+
+### Framework texts
+
+A translation UI is available for the framework's texts as well. Run a `composer install` in
+the framework's folder, then point your browser to the `localization` subfolder. 
 
 ## Releases and SATIS repository
 
