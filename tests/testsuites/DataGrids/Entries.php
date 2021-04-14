@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppLocalize\Localization;
+
 final class DataGrids_EntriesTest extends ApplicationTestCase
 {
     /**
@@ -88,13 +90,14 @@ final class DataGrids_EntriesTest extends ApplicationTestCase
 
     public function test_defaultFooterCountText_DE() : void
     {
-        \AppLocalize\Localization::selectAppLocale('de_DE');
+        Localization::selectAppLocale('de_DE');
         $grid = $this->ui->createDataGrid('grid'.$this->getTestCounter());
         $this->assertSame('Zeige Einträge 1 bis 2, 2 insgesamt.',$grid->getFooterCountText(1,2,2));
     }
 
     public function test_customFooterCountText_EN() : void
     {
+        Localization::selectAppLocale('en_UK');
         $grid = $this->ui->createDataGrid('grid'.$this->getTestCounter());
         $grid->setFooterCountText(t('Showing communication types [FROM] to [TO], [TOTAL] total.'));
         $this->assertSame('Showing communication types 1 to 2, 2 total.',$grid->getFooterCountText(1,2,2));
@@ -102,7 +105,7 @@ final class DataGrids_EntriesTest extends ApplicationTestCase
 
     public function test_customFooterCountText_DE() : void
     {
-        \AppLocalize\Localization::selectAppLocale('de_DE');
+        Localization::selectAppLocale('de_DE');
         $grid = $this->ui->createDataGrid('grid'.$this->getTestCounter());
         $grid->setFooterCountText(t('Showing communication types [FROM] to [TO], [TOTAL] total.'));
         $this->assertSame('Zeige Kommunikationstypen 1 bis 2, 2 insgesamt.',$grid->getFooterCountText(1,2,2));
