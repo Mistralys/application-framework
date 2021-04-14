@@ -2548,9 +2548,7 @@ class Connectors_Connector_Products_DataType_Product
 
 # Localization
 
-The localization is handled by the Git package `mistralys/application-localization`.
-
-Homepage: https://github.com/Mistralys/application-localization
+The localization is handled by the [Application Localization] package.
 
 ## The principle
 
@@ -2617,13 +2615,14 @@ of the translation methods, and allows adding the translations for all locales d
 for the application.
 
   > NOTE: All translatable texts will be shown, including Composer libraries like the framework
-    or Application Utils. Avoid translating those, since they will be overwritten when those
+    or [Application Utils][]. Avoid translating those, since they will be overwritten when those
     libraries are updated.
 
 ### Framework texts
 
-A translation UI is available for the framework's texts as well. Run a `composer install` in
-the framework's folder, then point your browser to the `localization` subfolder. 
+A translation UI is available for the translatable text within the framework itself. 
+Run a `composer install` in a local clone of the framework, then point your browser to the 
+`localization` subfolder. 
 
 ## Releases and SATIS repository
 
@@ -2703,5 +2702,6 @@ development copies, it is done automatically by the [Framework Manager][].
 
 [Framework Manager]: https://github.com/Mistralys/appframework-manager
 [Application Utils]: https://github.com/Mistralys/application-utils
+[Application Localization]: https://github.com/Mistralys/application-localization
 [Mistralys composer SATIS]: https://composer.mistralys-eva.systems
 [Mistalys SATIS updater]: https://composer.mistralys-eva.systems/updater.php
