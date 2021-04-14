@@ -1298,6 +1298,10 @@ class UI_DataGrid
         return $this->disableFooter();
     }
 
+    /**
+     * @return $this
+     * @throws Exception
+     */
     public function disableFooter() : UI_DataGrid
     {
         return $this->setOption('disable-footer', true);
