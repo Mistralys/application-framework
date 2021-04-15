@@ -1,5 +1,4 @@
 v1.12.7
-- Emailings: New column added to show upload status
 - Badges: Enum created for defining criticality of badge.
 
 v1.12.6
