@@ -1,6 +1,6 @@
 <?php
 
-abstract class UI_CriticalityEnum
+abstract class UI_CriticalityEnum extends BasicEnum
 {
     const DANGEROUS = 'important';
     const INFO = 'info';
