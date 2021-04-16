@@ -3,7 +3,7 @@
  * File containing the {@link Application_EventHandler} class.
  * 
  * @package Application
- * @subpackeage Core
+ * @subpackeage EventHandler
  * @see Application_EventHandler
  */
 
@@ -13,7 +13,7 @@
  * should be prefixed to ensure that the naming is unique.
  * 
  * @package Application
- * @subpackage Core
+ * @subpackage EventHandler
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class Application_EventHandler
@@ -44,8 +44,8 @@ class Application_EventHandler
     * @param string $eventName
     * @param mixed $callback
     * @param string $source A human readable label for the listener.
-    * @throws Application_EventHandler_Exception
-    * @return Application_EventHandler_Listener 
+    * @return Application_EventHandler_Listener
+    * @throws Application_EventHandler_Exception|Application_Exception
     */
     public static function addListener(string $eventName, $callback, string $source='') : Application_EventHandler_Listener
     {
@@ -84,14 +84,19 @@ class Application_EventHandler
         return isset(self::$events[$eventName]) && !empty(self::$events[$eventName]);
     }
 
-   /**
-    * Triggers the specified event, calling all registered listeners.
-    * 
-    * @param string $eventName
-    * @param array $args
-    * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
-    * @return Application_EventHandler_Event
-    */
+    /**
+     * Triggers the specified event, calling all registered listeners.
+     *
+     * @param string $eventName
+     * @param array $args
+     * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
+     * @return Application_EventHandler_Event
+     * @throws Application_EventHandler_Exception
+     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @see Application_EventHandler::ERROR_MISSING_EVENT_CLASS
+     * @see Application_EventHandler::ERROR_INVALID_EVENT_CLASS
+     */
     public static function trigger(string $eventName, array $args=array(), string $class=Application_EventHandler_Event::class)
     {
         if(!is_array($args)) {
@@ -164,15 +169,20 @@ class Application_EventHandler
         {
             unset(self::$events[$eventName][$key]);
         }
-        
-        return;
     }
     
     public static function listenerExists(int $listenerID) : bool
     {
         return isset(self::$listeners[$listenerID]);
     }
-    
+
+    /**
+     * @param int $listenerID
+     * @return Application_EventHandler_Listener
+     * @throws Application_EventHandler_Exception
+     *
+     * @see Application_EventHandler::ERROR_UNKNOWN_LISTENER
+     */
     public static function getListenerByID(int $listenerID) : Application_EventHandler_Listener
     {
         if(isset(self::$listeners[$listenerID])) 
