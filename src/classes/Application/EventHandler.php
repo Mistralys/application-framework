@@ -88,7 +88,7 @@ class Application_EventHandler
     * Triggers the specified event, calling all registered listeners.
     * 
     * @param string $eventName
-    * @param mixed[] $args
+    * @param array $args
     * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
     * @return Application_EventHandler_Event
     */
