@@ -126,7 +126,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     */
 	public function makeDangerous()
 	{
-		return $this->makeType('important');
+		return $this->makeType(UI_CriticalityEnum::DANGEROUS);
 	}
 	
    /**
@@ -136,7 +136,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     */
 	public function makeInfo()
 	{
-		return $this->makeType('info');
+		return $this->makeType(UI_CriticalityEnum::INFO);
 	}
 	
    /**
@@ -146,7 +146,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     */
 	public function makeSuccess()
 	{
-		return $this->makeType('success');
+		return $this->makeType(UI_CriticalityEnum::SUCCESS);
 	}
 	
    /**
@@ -156,7 +156,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     */
 	public function makeWarning()
 	{
-		return $this->makeType('warning');
+		return $this->makeType(UI_CriticalityEnum::WARNING);
 	}
 	
    /**
@@ -166,7 +166,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     */
 	public function makeInverse()
 	{
-		return $this->makeType('inverse');
+		return $this->makeType(UI_CriticalityEnum::INVERSE);
 	}
 
     /**
@@ -177,7 +177,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
      */
 	public function makeInactive()
 	{
-	    return $this->makeType('default');
+	    return $this->makeType(UI_CriticalityEnum::INACTIVE);
 	}
 
     /**

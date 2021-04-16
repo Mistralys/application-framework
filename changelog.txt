@@ -1,3 +1,6 @@
+v1.12.7
+- Badges: Enum created for defining criticality of badge.
+
 v1.12.6
 - DataGrid: Added a method to change the "Showing entries x of y" text in the footer.
 
