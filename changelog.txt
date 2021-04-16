@@ -1,9 +1,9 @@
 v1.12.7
 - Badges: Enum created for defining criticality of badge.
+- EventHandling: Added the "Eventable" trait and interface to let objects use events easily.
 
 v1.12.6
 - DataGrid: Added a method to change the "Showing entries x of y" text in the footer.
-- EventHandling: Added the "Eventable" trait and interface to let objects use events easily.
 
 v1.12.5
 - Sections: Revamped the template, improved the layout somewhat.
