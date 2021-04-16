@@ -51,6 +51,7 @@
 		"components/flag-icon-css" : "3.3.0",
         "hybridauth/hybridauth": ">=3.6.0",
         "erusev\/parsedown": "1.7.4",
+        "parsecsv/php-parsecsv": "1.2.1",
         "ext-json": "*",
         "ext-mbstring": "*"
     },

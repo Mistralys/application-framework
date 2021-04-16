@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f37f6fc471fec8e5bcdb9f4024fffb0",
+    "content-hash": "0ba824033e7bacf302ccb12f719dda01",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
