@@ -353,35 +353,13 @@ class UI_DataGrid_Column
             return '';
         }
         
-        $title = $this->title;
+        $title = sb()->add($this->title);
         
         $icons = array();
         
         if($this->isSortable()) 
         {
-            $clientName = $this->grid->getClientObjectName();
-            
-            $title .= ' &#160; ' . 
-            UI::icon()->sortAsc()
-            ->addClass('icon-sort')
-            ->addClass('icon-sort-asc')
-            ->setTooltip(t('Sort by %1$s ascending', $this->title))
-            ->makeClickable(sprintf(
-                "%s.SetOrderBy(%s, %s)",
-                $clientName,
-                AppUtils\ConvertHelper::string2attributeJS($this->getOrderKey()),
-                AppUtils\ConvertHelper::string2attributeJS('asc')
-            )) . ' ' .
-            UI::icon()->sortDesc()
-            ->addClass('icon-sort')
-            ->addClass('icon-sort-desc')
-            ->setTooltip(t('Sort by %1$s descending', $this->title))
-            ->makeClickable(sprintf(
-                "%s.SetOrderBy(%s, %s)",
-                $clientName,
-                AppUtils\ConvertHelper::string2attributeJS($this->getOrderKey()),
-                AppUtils\ConvertHelper::string2attributeJS('desc')
-            ));
+            $this->addSortIcons($title);
         }
         
         if(!empty($this->options['tooltip'])) {
@@ -408,6 +386,39 @@ class UI_DataGrid_Column
         }
         
         return '<th' . $this->renderAttributes(true) . '>' . $title . '</th>';
+    }
+
+    private function addSortIcons(\AppUtils\StringBuilder $text) : void
+    {
+        $clientName = $this->grid->getClientObjectName();
+
+        $text
+            ->add('<span class="sort-controls">')
+            ->icon(
+                UI::icon()->sortAsc()
+                    ->addClass('icon-sort')
+                    ->addClass('icon-sort-asc')
+                    ->setTooltip(t('Sort by %1$s ascending', $this->title))
+                    ->makeClickable(sprintf(
+                        "%s.SetOrderBy(%s, %s)",
+                        $clientName,
+                        AppUtils\ConvertHelper::string2attributeJS($this->getOrderKey()),
+                        AppUtils\ConvertHelper::string2attributeJS('asc')
+                    ))
+            )
+            ->icon(
+                UI::icon()->sortDesc()
+                    ->addClass('icon-sort')
+                    ->addClass('icon-sort-desc')
+                    ->setTooltip(t('Sort by %1$s descending', $this->title))
+                    ->makeClickable(sprintf(
+                        "%s.SetOrderBy(%s, %s)",
+                        $clientName,
+                        AppUtils\ConvertHelper::string2attributeJS($this->getOrderKey()),
+                        AppUtils\ConvertHelper::string2attributeJS('desc')
+                    ))
+            )
+            ->add('</span>');
     }
 
    /**
