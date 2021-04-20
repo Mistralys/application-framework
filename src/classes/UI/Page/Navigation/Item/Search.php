@@ -398,10 +398,6 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         );
 
         $terms = $this->resolveTerms($scope);
-        if(empty($terms)) {
-            $this->log('Ignoring, the search terms are empty.');
-            return;
-        }
 
         $country = $this->resolveCountry($scope);
         $this->log(sprintf(
