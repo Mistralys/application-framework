@@ -388,7 +388,7 @@ class UI_DataGrid_Column
         return '<th' . $this->renderAttributes(true) . '>' . $title . '</th>';
     }
 
-    private function addSortIcons(\AppUtils\StringBuilder $text) : void
+    private function addSortIcons(UI_StringBuilder $text) : void
     {
         $clientName = $this->grid->getClientObjectName();
 
