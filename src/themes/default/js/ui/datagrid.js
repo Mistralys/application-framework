@@ -525,21 +525,24 @@ var UI_Datagrid =
 	Maximize:function(datagrids)
 	{
 		var grid = this;
+
+		application.showLoader(t('Please wait, generating...'));
 		
 		// we let the HTML scaffold be built serverside, so we
 		// don't have to know the location of the required CSS
 		// and the like according to the current theme.
-		application.fetchHTML(
-			'GetGridFullViewHTML',
-			null,
-			function(html) {
-				console.log(html);
-				grid.Maximize_DisplayPage(datagrids, html);
-			}
-		);
+		application.createAJAX('GetGridFullViewHTML')
+			.SetPayload({
+				'grids':this.GetGrids(datagrids)
+			})
+			.Success(function(data) {
+				console.log(data.html);
+				grid.Maximize_DisplayPage(data.html);
+			})
+			.Send();
 	},
-	
-	Maximize_DisplayPage(datagrids, html)
+
+	GetGrids(datagrids)
 	{
 		// to be able to copy the whole table with all hidden cells visible,
 		// we temporarily make them all visible, and hide any action cells.
@@ -548,44 +551,37 @@ var UI_Datagrid =
 			$('#'+datagrid.GetFormID('table')+' .role-cell').show();
 			$('#'+datagrid.GetFormID('table')+' .role-actions').hide();
 		}
-		
-		var gridsHTML = '';
-		
-		for(var i=0; i<datagrids.length; i++) 
+
+		var grids = [];
+
+		for(var i=0; i<datagrids.length; i++)
 		{
-		    var datagrid = datagrids[i];
-		    var title = datagrid.GetFullViewTitle();
-		    
-		    if(title != null) {
-		    	gridsHTML += ''+
-		        '<div class="datagrid-title">'+
-		        	title+
-		        '</div>';
-		    }
-		    
-		    gridsHTML += ''+
-		    '<div class="datagrid">'+
-		    	'<table class="table table-bordered table-condensed table-hover">'+
-		    		$('#'+datagrid.GetFormID('table')).html()+
-				'</table>'+
-		    '</div>';
+			var datagrid = datagrids[i];
+
+			grids.push({
+				'title':datagrid.GetFullViewTitle(),
+				'html':$('#'+datagrid.GetFormID('table')).html()
+			});
 		}
-		
-		// build the HTML for the new document using the base framework 
-		// with only styles.
-		html = html.replace('{CONTENT}', gridsHTML);
-		
-		var w = window.open();
-		w.document.open();
-		w.document.write(html);
-		w.document.close();
-		
+
 		// restore hidden columns
 		for(var i=0; i<datagrids.length; i++) {
 			datagrid = datagrids[i];
 			$('#'+datagrid.GetFormID('table')+' .role-actions').show();
 			datagrid.UpdateColumns();
 		}
+
+		return grids;
+	},
+	
+	Maximize_DisplayPage(html)
+	{
+		application.hideLoader();
+
+		var w = window.open();
+		w.document.open();
+		w.document.write(html);
+		w.document.close();
 	},
 	
    /**
