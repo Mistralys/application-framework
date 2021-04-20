@@ -20,3 +20,7 @@ display:none;
 .role-actions{
 display:none;
 }
+
+.sort-controls{
+display:none !important;
+}
