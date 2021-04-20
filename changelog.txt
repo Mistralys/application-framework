@@ -1,3 +1,6 @@
+v1.12.8
+- Search: Allow search with empty strings.
+
 v1.12.7
 - Badges: Enum created for defining criticality of badge.
 - EventHandling: Added the "Eventable" trait and interface to let objects use events easily.
