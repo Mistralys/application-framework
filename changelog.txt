@@ -1,12 +1,16 @@
 v1.12.8
-- Search: Allow search with empty strings.
+- DataGrids: Search Widget: Allow search with empty strings.
+- DataGrids: Tweaked the wrapping of the sorting icons.
+- DataGrids: Added hover to the sorting icons.
+- DataGrids: Tweaked the positioning of the checkboxes in multi selection mode.
+- DataGrids: Fixed the full view feature layout.
 
 v1.12.7
 - Badges: Enum created for defining criticality of badge.
 - EventHandling: Added the "Eventable" trait and interface to let objects use events easily.
 
 v1.12.6
-- DataGrid: Added a method to change the "Showing entries x of y" text in the footer.
+- DataGrids: Added a method to change the "Showing entries x of y" text in the footer.
 
 v1.12.5
 - Sections: Revamped the template, improved the layout somewhat.
@@ -20,7 +24,7 @@ v1.12.4
 - Navigation: Search: Fixed a bug in the scopeless mode.
 
 v1.12.3
-- DataGrid: Fixed an issue with counting items.
+- DataGrids: Fixed an issue with counting items.
 
 v1.12.2
 - DataGrids: Added the "Mini" mode for slim grids via the `makeMini()` method.
