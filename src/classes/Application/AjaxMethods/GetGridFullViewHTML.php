@@ -1,5 +1,31 @@
 <?php
+/**
+ * File containing the class {@see Application_AjaxMethods_GetGridFullViewHTML}.
+ *
+ * @package Application
+ * @subpackage AjaxMethods
+ * @see Application_AjaxMethods_GetGridFullViewHTML
+ */
 
+declare(strict_types=1);
+
+/**
+ * Called by the clientside datagrid to generate the HTML for the
+ * full view window, which shows a grid in full screen view.
+ *
+ * It gets the title of the datagrid, as well as the body HTML,
+ * and transforms this into a full HTML document with adequate
+ * styling.
+ *
+ * @package Application
+ * @subpackage AjaxMethods
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see template_default_ui_datagrid_fullview
+ * @see Application_AjaxMethods_GetGridFullViewHTML_Grid
+ * @see Theme: js/ui/datagrid.js
+ * @see JavaScript: UI_DataGrid.Maximize()
+ */
 class Application_AjaxMethods_GetGridFullViewHTML extends Application_AjaxMethod
 {
     /**
