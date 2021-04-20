@@ -54,9 +54,15 @@ color:#000;
 margin:0;
 }
 
-/** ------------------------------------------------------------------------- 
+/** -------------------------------------------------------------------------
     COLUMN ORDERING
     ------------------------------------------------------------------------- */
+
+.table TH > .sort-controls{
+display: inline-block;
+margin-left: 5px;
+white-space: nowrap;
+}
 
 .role-cell.sorted{
 background:#f7fbff;
@@ -67,8 +73,14 @@ width:11px;
 color:#ccc;
 }
 
+.role-cell .icon-sort:hover{
+color:#005580;
+}
+
 .role-cell.sorted-asc .icon-sort-asc,
-.role-cell.sorted-desc .icon-sort-desc{
+.role-cell.sorted-desc .icon-sort-desc,
+.role-cell.sorted-asc .icon-sort-asc:hover,
+.role-cell.sorted-desc .icon-sort-desc:hover{
 color:#000;
 }
 
@@ -291,4 +303,13 @@ background-color:#ffe8c3 !important;
 .table-mini tfoot,
 .table-mini thead{
     display:none;
+}
+
+/** -------------------------------------------------------------------------
+    Multiselection
+    ------------------------------------------------------------------------- */
+
+.table TD.role-actions > INPUT[type="checkbox"] {
+    position: relative;
+    top:-3px;
 }
