@@ -24,3 +24,7 @@ display:none;
 .sort-controls{
 display:none !important;
 }
+
+.template-overlay-collapsed-button{
+    display: none;
+}
