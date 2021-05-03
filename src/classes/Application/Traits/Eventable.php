@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
+
 /**
  * Trait used to enable any class to use event handling.
  *
@@ -32,6 +34,8 @@ trait Application_Traits_Eventable
      */
     protected $eventListenerCounter = 0;
 
+    abstract protected function log(string $message) : void;
+
     /**
      * @param string $eventName
      * @param callable $callback
@@ -48,9 +52,21 @@ trait Application_Traits_Eventable
             $this
         );
 
-        $this->eventListeners[$eventName] = $listener;
+        $this->eventListeners[$eventName][] = $listener;
+
+        $this->logEventable('Added a listener.', $eventName);
 
         return $listener;
+    }
+
+    protected function logEventable(string $message, string $eventName='') : void
+    {
+        $prefix = 'Eventable | ';
+        if(!empty($eventName)) {
+            $prefix = sprintf('Event [%s] | ', $eventName);
+        }
+
+        $this->log($prefix.$message);
     }
 
     /**
@@ -63,6 +79,8 @@ trait Application_Traits_Eventable
     public function removeEventListener(Application_EventHandler_EventableListener $listener) : void
     {
         $eventName = $listener->getEventName();
+
+        $this->logEventable('Removing listener.', $eventName);
 
         if(!isset($this->eventListeners[$eventName])) {
             return;
@@ -93,7 +111,10 @@ trait Application_Traits_Eventable
      */
     protected function triggerEvent(string $eventName, array $args, string $eventClass='') : ?Application_EventHandler_EventableEvent
     {
+        $this->logEventable('Triggering event.', $eventName);
+
         if(!$this->hasEventListeners($eventName)) {
+            $this->logEventable('Ignoring event, no listeners added.', $eventName);
             return null;
         }
 
@@ -101,23 +122,36 @@ trait Application_Traits_Eventable
 
         $event->startTrigger();
 
+        $this->logEventable(sprintf('Trigger started, processing [%s] listeners.', $this->countEventListeners($eventName)), $eventName);
+
         foreach($this->eventListeners[$eventName] as $listener)
         {
             $event->selectListener($listener);
 
-            call_user_func_array($listener->getCallback(), $event->getArguments());
+            $callback = $listener->getCallback();
+            $args = $event->getArguments();
+            array_unshift($args, $event);
+
+            $this->logEventable(
+                sprintf(
+                    'Processing listener [#%s] | Callback [%s]',
+                    $listener->getID(),
+                    ConvertHelper::callback2string($listener->getCallback())
+                ),
+                $eventName
+            );
+
+            call_user_func_array($callback, $args);
 
             if($event->isCancelled()) {
-                Application::log(sprintf(
-                    'Event [%s] | Event has been cancelled by listener [%s].',
-                    $eventName,
-                    $listener->getID()
-                ));
+                $this->logEventable('CANCEL | Listener cancelled the event.', $eventName);
                 break;
             }
         }
 
         $event->stopTrigger();
+
+        $this->logEventable('Trigger ended.', $eventName);
 
         return $event;
     }
@@ -157,6 +191,15 @@ trait Application_Traits_Eventable
         return isset($this->eventListeners[$eventName]) && !empty($this->eventListeners[$eventName]);
     }
 
+    public function countEventListeners(string $eventName) : int
+    {
+        if(isset($this->eventListeners[$eventName])) {
+            return count($this->eventListeners[$eventName]);
+        }
+
+        return 0;
+    }
+
     /**
      * @param string $eventName
      * @return Application_EventHandler_EventableListener[]
@@ -168,5 +211,17 @@ trait Application_Traits_Eventable
         }
 
         return array();
+    }
+
+    public function clearEventListeners(string $eventName) : void
+    {
+        if(isset($this->eventListeners[$eventName])) {
+            unset($this->eventListeners[$eventName]);
+        }
+    }
+
+    public function clearAllEventListeners() : void
+    {
+        $this->eventListeners = array();
     }
 }
