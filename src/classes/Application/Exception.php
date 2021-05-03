@@ -50,6 +50,10 @@ class Application_Exception extends BaseException
      */
     public function __construct(string $message, string $developerInfo = '', int $code = 0, ?Exception $previous = null)
     {
+        if(defined('APP_TESTS_RUNNING') && constant('APP_TESTS_RUNNING') === true) {
+            $message .= PHP_EOL.$developerInfo;
+        }
+
         parent::__construct($message, $developerInfo, $code, $previous);
 
         $this->id = md5(strval(microtime(true)).'-exception-'.$code.'-'.$message);
