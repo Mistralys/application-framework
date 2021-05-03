@@ -1,3 +1,10 @@
+v1.12.9
+- Testsuites: Added the APP_TESTS_RUNNING constant when running the unit tests.
+- Testsuites: Exception messages now include the developer info by default when running unit tests.
+- DataGrids: Fixed the pagination menu input field closing the menu on click.
+- DataGrids: Added number formatting to the entries counters.
+- EventHandling: Bugfixes and enhancements in the Eventable trait.
+
 v1.12.8
 - DataGrids: Search Widget: Allow search with empty strings.
 - DataGrids: Tweaked the wrapping of the sorting icons.
