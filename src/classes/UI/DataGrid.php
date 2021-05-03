@@ -989,6 +989,12 @@ class UI_DataGrid
 
             if($this->isFormEnabled())
             {
+                $this->ui->addJavascriptOnload(sprintf(
+                    "$('#%s').submit(function(e) { %s.Handle_Submit(e); });",
+                    $this->getFormID(),
+                    $this->getClientObjectName()
+                ));
+
                 $html .=
                 '<form id="' . $this->getFormID() . '" method="post" class="form-inline">' .
                     $this->renderHiddenVars();
@@ -1362,7 +1368,7 @@ class UI_DataGrid
                         '</div>'.
                         '<div class="selectall-inactive">'.
                             '<a href="javascript:void(0)" onclick="'.$toggleStatement.'" class="selectall-link">'.
-                                t('Select all %1$s entries', $this->total).
+                                t('Select all %1$s entries', $this->formatAmount($this->total)).
                             '</a>'.
                         '</div>'.
                     '</td>' .
@@ -1630,16 +1636,24 @@ class UI_DataGrid
                             UI::icon()->last() . ' ' .
                             t('Last page'). ' ' .
                             '<span class="muted">' .
-                                '('.$totalPages.')'.
+                                '('.$this->formatAmount($totalPages).')'.
                             '</span>'.
                         '</a>'.
                     '</li>';
                 }
 
+                $elID = 'datagrid-'.$this->id.'-custompage';
+
+                $this->ui->addJavascriptOnload(sprintf(
+                    "$('#%s').keydown(function(e) { return %s.CheckJumpToCustom(e); })",
+                    $elID,
+                    $this->getClientObjectName()
+                ));
+
                 $html .=
                 '<li class="divider"></li>'.
-                '<li class="dropdown-form">' .
-                    '<input type="number" value="1" min="1" max="'.$totalPages.'" id="datagrid-'.$this->id.'-custompage" style="width:70px;"/> '.
+                '<li class="dropdown-form" onclick="event.stopPropagation()">' .
+                    '<input type="number" value="1" min="1" max="'.$totalPages.'" id="'.$elID.'" style="width:70px;"/> '.
                     UI::button()
                         ->setIcon(UI::icon()->ok())
                         ->setTooltipText(t('Jump to this page number'))
@@ -2616,8 +2630,13 @@ class UI_DataGrid
     public function getFooterCountText(int $from, int $to, int $total): string
     {
         $replacedFooter = $this->footerCountText;
-        $replacedFooter = str_replace('[FROM]',strval($from),$replacedFooter);
-        $replacedFooter = str_replace('[TO]',strval($to),$replacedFooter);
-        return str_replace('[TOTAL]',strval($total),$replacedFooter);
+        $replacedFooter = str_replace('[FROM]',$this->formatAmount($from),$replacedFooter);
+        $replacedFooter = str_replace('[TO]',$this->formatAmount($to),$replacedFooter);
+        return str_replace('[TOTAL]',$this->formatAmount($total),$replacedFooter);
+    }
+
+    private function formatAmount(int $amount) : string
+    {
+        return number_format($amount, 0, '.', ' ');
     }
 }

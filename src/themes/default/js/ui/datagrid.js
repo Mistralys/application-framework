@@ -942,7 +942,32 @@ var UI_Datagrid =
 	{
 		this.title = title;
 	},
-	
+
+	/**
+	 * @param Event e
+	 * @returns {boolean}
+	 */
+	Handle_Submit:function(e)
+	{
+		return true;
+	},
+
+	/**
+	 * @param Event e
+	 */
+	CheckJumpToCustom:function (e)
+	{
+		if(e.keyCode !== KeyCodes.Enter) {
+			return true;
+		}
+
+		e.preventDefault();
+		e.stopPropagation();
+		this.JumpToCustomPage();
+
+		return false;
+	},
+
    /**
     * When the advanced page navigation is shown, the user can enter a
     * custom page number to jump to. This takes that number and redirects
@@ -951,7 +976,7 @@ var UI_Datagrid =
     */
 	JumpToCustomPage:function()
 	{
-		var pageNr = this.GetFormID('custompage').val();
+		var pageNr = this.GetFormElement('custompage').val();
 		if(pageNr <= 0) {
 			pageNr = 1;
 		}
