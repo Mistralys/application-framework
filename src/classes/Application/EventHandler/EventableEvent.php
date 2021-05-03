@@ -25,7 +25,7 @@ class Application_EventHandler_EventableEvent extends Application_EventHandler_E
     /**
      * @var object
      */
-    private $subject;
+    protected $subject;
 
     public function __construct(string $name, object $subject, array $args = array())
     {
