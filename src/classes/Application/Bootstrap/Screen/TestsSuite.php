@@ -9,6 +9,8 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
 
         $this->createEnvironment();
 
+        define('APP_TESTS_RUNNING', true);
+
         $this->configureDatabase();
         $this->configurePaths();
         $this->configureUsers();
