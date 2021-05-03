@@ -19,7 +19,7 @@ declare(strict_types=1);
  *
  * @see Application_Traits_Eventable
  */
-interface Application_Interfaces_Eventable
+interface Application_Interfaces_Eventable extends Application_Interfaces_Loggable
 {
     const ERROR_INVALID_EVENT_CLASS = 84901;
 
@@ -61,4 +61,10 @@ interface Application_Interfaces_Eventable
      * @param Application_EventHandler_EventableListener $listener
      */
     public function removeEventListener(Application_EventHandler_EventableListener $listener) : void;
+
+    public function countEventListeners(string $eventName) : int;
+
+    public function clearEventListeners(string $eventName) : void;
+
+    public function clearAllEventListeners() : void;
 }
