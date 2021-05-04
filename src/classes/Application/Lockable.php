@@ -63,6 +63,7 @@ interface Application_LockableItem_Interface extends Application_Lockable_Interf
     * lock the item will not work.
     * 
     * @param bool $lockable
+    * @return Application_LockableItem_Interface
     */
     public function makeLockable($lockable=true);
     

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @property UI_Page_Sidebar $sidebar
+ *
+ */
 trait Application_Admin_RevisionableSettings
 {
     protected $formName;
