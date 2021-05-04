@@ -428,16 +428,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1"
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/35ea11d335fd638b5882ff1725228b3d35496ab1",
-                "reference": "35ea11d335fd638b5882ff1725228b3d35496ab1",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/dc960a912984efb74d0a90222870c72c87f10c91",
+                "reference": "dc960a912984efb74d0a90222870c72c87f10c91",
                 "shasum": ""
             },
             "require": {
@@ -497,9 +497,9 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/1.8.1"
+                "source": "https://github.com/guzzle/psr7/tree/1.8.2"
             },
-            "time": "2021-03-21T16:25:00+00:00"
+            "time": "2021-04-26T09:17:50+00:00"
         },
         {
             "name": "hybridauth/hybridauth",
@@ -645,23 +645,26 @@
         },
         {
             "name": "mistralys/application-utils",
-            "version": "1.4.3",
+            "version": "1.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils.git",
-                "reference": "a3e4b09f22f6d348f193097704e4d27b40040845"
+                "reference": "943848ceeb29aaa51c94cd1eac444a142694ada3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/a3e4b09f22f6d348f193097704e4d27b40040845",
-                "reference": "a3e4b09f22f6d348f193097704e4d27b40040845",
+                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/943848ceeb29aaa51c94cd1eac444a142694ada3",
+                "reference": "943848ceeb29aaa51c94cd1eac444a142694ada3",
                 "shasum": ""
             },
             "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
                 "geshi/geshi": ">=1.0.9.1",
                 "mistralys/html_quickform2": ">=2.1.2",
                 "neitanod/forceutf8": ">=2.0.4",
-                "parsecsv/php-parsecsv": ">=1.2.1",
+                "parsecsv/php-parsecsv": "1.2.*",
                 "php": ">=7.3"
             },
             "require-dev": {
@@ -697,9 +700,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils/issues",
-                "source": "https://github.com/Mistralys/application-utils/tree/1.4.3"
+                "source": "https://github.com/Mistralys/application-utils/tree/1.4.5"
             },
-            "time": "2021-04-06T07:46:36+00:00"
+            "time": "2021-04-26T05:52:11+00:00"
         },
         {
             "name": "mistralys/deepl-xml-translator",
@@ -1068,25 +1071,28 @@
         },
         {
             "name": "pear/html_common2",
-            "version": "v2.1.2",
+            "version": "v2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/HTML_Common2.git",
-                "reference": "a7867b8deb887765a431a5877d90d3430624dea7"
+                "reference": "b945e83eb1dc615d092a348e00623133856d8074"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/HTML_Common2/zipball/a7867b8deb887765a431a5877d90d3430624dea7",
-                "reference": "a7867b8deb887765a431a5877d90d3430624dea7",
+                "url": "https://api.github.com/repos/pear/HTML_Common2/zipball/b945e83eb1dc615d092a348e00623133856d8074",
+                "reference": "b945e83eb1dc615d092a348e00623133856d8074",
                 "shasum": ""
             },
+            "require": {
+                "php": ">=5.4.0"
+            },
             "require-dev": {
-                "phpunit/phpunit": "^3.7|^4.8|^5.7"
+                "phpunit/phpunit": "^4.8|^5.7"
             },
             "type": "library",
             "autoload": {
                 "psr-0": {
-                    "HTML": "./"
+                    "HTML_Common2": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1117,7 +1123,7 @@
                 "issues": "http://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTML_Common2",
                 "source": "https://github.com/pear/HTML_Common2"
             },
-            "time": "2019-04-07T10:59:56+00:00"
+            "time": "2021-04-25T13:27:00+00:00"
         },
         {
             "name": "pear/http_request2",
@@ -2129,16 +2135,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.84",
+            "version": "0.12.85",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "9c43f15da8798c8f30a4b099e6a94530a558cfd5"
+                "reference": "20e6333c0067875ad7697cd8acdf245c6ef69d03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9c43f15da8798c8f30a4b099e6a94530a558cfd5",
-                "reference": "9c43f15da8798c8f30a4b099e6a94530a558cfd5",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/20e6333c0067875ad7697cd8acdf245c6ef69d03",
+                "reference": "20e6333c0067875ad7697cd8acdf245c6ef69d03",
                 "shasum": ""
             },
             "require": {
@@ -2169,7 +2175,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.84"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.85"
             },
             "funding": [
                 {
@@ -2185,7 +2191,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-04-19T17:10:54+00:00"
+            "time": "2021-04-27T14:13:16+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
