@@ -7,6 +7,7 @@
  * @see UI_Page_Sidebar_Item_Button
  */
 
+use AppUtils\Traits_Classable;
 use function AppUtils\parseVariable;
 
 /**
@@ -15,17 +16,20 @@ use function AppUtils\parseVariable;
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
+ *
  * @method UI_Page_Sidebar_Item_Button requireChanging(Application_Revisionable $revisionable)
  * @method UI_Page_Sidebar_Item_Button requireTrue(mixed $condition, string $reason=null)
  * @method UI_Page_Sidebar_Item_Button requireFalse(mixed $condition, string $reason=null)
  * @method UI_Page_Sidebar_Item_Button setIcon($icon)
+ *
+ * @see UI_Traits_Conditional
  */
-class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements Application_Interfaces_Iconizable
+class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
 {
     const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
     
     use Application_Traits_Iconizable;
+    use Traits_Classable;
 
     /**
      * @var string
@@ -50,7 +54,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
 
     protected $style = 'normal';
 
-    protected $onclick = null;
+    protected $onclick = '';
 
     protected $design = null;
 
@@ -69,10 +73,11 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     public function __construct(UI_Page_Sidebar $sidebar, string $name, $title = '')
     {
         parent::__construct($sidebar);
+
         $this->name = $name;
-        $this->title = toString($title);
         $this->id = 'button_' . $this->name;
 
+        $this->setLabel($title);
         $this->init();
     }
     
@@ -87,12 +92,23 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     }
 
     /**
+     * @param string $url
+     * @param string $target
+     * @return $this
+     * @see UI_Page_Sidebar_Item_Button::makeLinked()
+     */
+    public function link(string $url, string $target = '')
+    {
+        return $this->makeLinked($url, !empty($target));
+    }
+
+    /**
      * Makes the button link to the specified URL.
      *
      * @param string|array $urlOrParams
      * @param boolean $newWindow Whether to open the link in a new tab/window
      */
-    public function makeLinked($urlOrParams, $newWindow=false)
+    public function makeLinked($urlOrParams, bool $newWindow=false)
     {
         $url = $urlOrParams;
         if (is_array($urlOrParams)) {
@@ -126,13 +142,22 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     {
         return $this->url;
     }
-    
+
+    /**
+     * @param string $statement
+     * @return $this
+     */
+    public function click(string $statement)
+    {
+        return $this->makeClickable($statement);
+    }
+
     /**
      * Turns the button into a javascript click button, which will
      * execute the specified javascript code when clicked.
      *
      * @param string $javascript
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function makeClickable($javascript)
     {
@@ -182,7 +207,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     * 
     * @param string|UI_Form|UI_DataGrid|Application_Formable $subject A form name, or supported form instance.
     * @param boolean $simulate Whether to submit in simulation mode.
-    * @return UI_Page_Sidebar_Item_Button
+    * @return $this
     */
     public function makeClickableSubmit($subject, $simulate=false)
     {
@@ -205,18 +230,38 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         );
     }
 
-    public function makePrimary()
+    public function makePrimary() : UI_Page_Sidebar_Item_Button
     {
-        $this->design = 'primary';
+        return $this->setDesign('primary');
+    }
+
+    public function makeInverse() : UI_Page_Sidebar_Item_Button
+    {
+        return $this->setDesign('inverse');
+    }
+
+    public function makeInfo() : UI_Page_Sidebar_Item_Button
+    {
+        return $this->setDesign('info');
+    }
+
+    /**
+     * @param string $design
+     * @return $this
+     */
+    private function setDesign(string $design) : UI_Page_Sidebar_Item_Button
+    {
+        $this->design = $design;
 
         return $this;
     }
 
-    public function makeDangerous()
+    /**
+     * @return $this
+     */
+    public function makeDangerous() : UI_Page_Sidebar_Item_Button
     {
-        $this->design = 'danger';
-
-        return $this;
+        return $this->setDesign('danger');
     }
     
    /**
@@ -228,7 +273,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     * 
     * @param string|number|UI_Renderable_Interface $message Can contain HTML code.
     * @param boolean $withInput Whether to have the user confirm the operation by typing a confirm string.
-    * @return UI_Page_Sidebar_Item_Button
+    * @return $this
     */
     public function makeConfirm($message, bool $withInput=false) : UI_Page_Sidebar_Item_Button
     {
@@ -259,38 +304,32 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     
     public function makeSuccess()
     {
-        $this->design = 'success';
-
-        return $this;
+        return $this->setDesign('success');
     }
 
     /**
      * Transforms the button into a button styled
      * for a warning before an action.
      *
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function makeWarning()
     {
-        $this->design = 'warning';
-
-        return $this;
+        return $this->setDesign('warning');
     }
 
     /**
      * Transforms the button into a developer button
      * that only developers have access to.
      *
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function makeDeveloper()
     {
-        $this->design = 'developer';
-
-        return $this;
+        return $this->setDesign('developer');
     }
 
-    public function setOnClick($statement)
+    public function setOnClick(string $statement)
     {
         $this->onclick = $statement;
 
@@ -301,7 +340,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     /**
      * Makes the button a submit button.
      *
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function makeSubmit()
     {
@@ -309,7 +348,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
 
         return $this;
     }
-    
+
    /**
     * @var string
     */
@@ -320,7 +359,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      *
      * @param string|number|UI_Renderable_Interface $helpText If specified, adds a tooltip that explains why the button is disabled.
      * @see enable()
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function disable($helpText='')
     {
@@ -339,7 +378,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      * Restore the button's function after a disable call.
      *
      * @see disable()
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function enable()
     {
@@ -371,7 +410,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      * template does with it, default is "normal".
      *
      * @param string $style
-     * @return UI_Page_Sidebar_Item_Button
+     * @return $this
      */
     public function setStyle($style)
     {
@@ -425,13 +464,12 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      * Sets the tooltip text for the button, which will be
      * shown in the UI as help for the button's function.
      *
-     * @since 3.3.5
-     * @param string $tooltip
-     * @return UI_Page_Sidebar_Item_Button
+     * @param number|string|UI_Renderable_Interface $tooltip
+     * @return $this
      */
     public function setTooltip($tooltip)
     {
-        $this->tooltip = $tooltip;
+        $this->tooltip = toString($tooltip);
 
         return $this;
     }
@@ -440,19 +478,36 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     * Sets the value of the button's id attribute, overwrites the default ID.
     * 
     * @param string $id
-    * @return UI_Page_Sidebar_Item_Button
+    * @return $this
     */
-    public function setID($id)
+    public function setID(string $id)
     {
         $this->id = $id;
         return $this;
     }
-    
-    protected $loadingText = null;
-    
+
+    /**
+     * @param string|number|UI_Renderable_Interface $label
+     * @return $this
+     */
+    public function setLabel($label)
+    {
+        $this->title = toString($label);
+        return $this;
+    }
+
+    /**
+     * @var string
+     */
+    protected $loadingText = '';
+
+    /**
+     * @param number|string|UI_Renderable_Interface $text
+     * @return $this
+     */
     public function setLoadingText($text)
     {
-        $this->loadingText = $text;
+        $this->loadingText = toString($text);
         return $this;
     }
 
@@ -469,7 +524,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         return !empty($this->tooltip);
     }
     
-    public function getTooltip()
+    public function getTooltip() : string
     {
         if($this->isDisabled()) {
             return $this->disabledTooltip;
@@ -478,12 +533,12 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         return $this->tooltip;
     }
 
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->title;
     }
