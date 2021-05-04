@@ -248,6 +248,11 @@ class UI_Page_Template extends UI_Renderable
         return isset($this->options[$name]);
     }
 
+    public function hasVarNonEmpty(string $name) : bool
+    {
+        return isset($this->options[$name]) && !empty($this->options[$name]);
+    }
+
     /**
      * Renders the content template with sidebar.
      *
@@ -255,6 +260,7 @@ class UI_Page_Template extends UI_Renderable
      * @param string $title
      * @param string $titleRight HTML content to float on the right of the title
      * @return string
+     * @throws Application_Exception
      */
     public function renderContentWithSidebar($content, $title = null, $titleRight = null)
     {
