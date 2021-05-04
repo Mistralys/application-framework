@@ -86,9 +86,8 @@ class Application_DBDumps
     * 
     * @param int $id
     * @return Application_DBDumps_Dump
-    * @throws Application_Exception
     */
-    public function getByID($id) : Application_DBDumps_Dump
+    public function getByID(int $id) : Application_DBDumps_Dump
     {
         return new Application_DBDumps_Dump($this, $id);
     }
@@ -98,7 +97,7 @@ class Application_DBDumps
     * @param int $id
     * @return string
     */
-    public function getDumpPath($id)
+    public function getDumpPath(int $id) : string
     {
         
         return sprintf(
@@ -109,7 +108,7 @@ class Application_DBDumps
         );
     }
     
-    public function getExtension()
+    public function getExtension() : string
     {
         if(isOSWindows()) {
             return 'sql';
@@ -138,7 +137,7 @@ class Application_DBDumps
         
         $result = array();
         foreach($files as $id) {
-            $result[] = $this->getByID($id);
+            $result[] = $this->getByID(intval($id));
         }
         
         usort($result, array($this, 'callback_sortDumps'));

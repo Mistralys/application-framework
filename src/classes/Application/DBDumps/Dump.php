@@ -1,5 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+use AppUtils\FileHelper;
+
 class Application_DBDumps_Dump
 {
    /**
@@ -18,59 +23,64 @@ class Application_DBDumps_Dump
     */
     protected $path;
     
-    public function __construct(Application_DBDumps $dumps, $id)
+    public function __construct(Application_DBDumps $dumps, int $id)
     {
         $this->dumps = $dumps;
         $this->id = $id;
         $this->path = $dumps->getDumpPath($id);
     }
     
-    public function getPath()
+    public function getPath() : string
     {
         return $this->path;
     }
     
-    public function getID()
+    public function getID() : int
     {
         return $this->id;
     }
     
-    public function getFileSize()
+    public function getFileSize() : int
     {
-        return filesize($this->path);
+        $size = filesize($this->path);
+        if($size !== false) {
+            return $size;
+        }
+
+        return 0;
     }
     
    /**
     * Retrieves a human readable label for the dump's file size.
     * @return string
     */
-    public function getFileSizePretty()
+    public function getFileSizePretty() : string
     {
-        return AppUtils\ConvertHelper::bytes2readable($this->getFileSize());
+        return ConvertHelper::bytes2readable($this->getFileSize());
     }
     
    /**
     * Retrieves a human readable label for the dump's creation date.
     * @return string
     */
-    public function getDatePretty()
+    public function getDatePretty() : string
     {
-        return AppUtils\ConvertHelper::date2listLabel($this->getDateCreated(), true, true);
+        return ConvertHelper::date2listLabel($this->getDateCreated(), true, true);
     }
     
    /**
     * @return DateTime
     */
-    public function getDateCreated()
+    public function getDateCreated() : DateTime
     {
-        return AppUtils\ConvertHelper::timestamp2date(filectime($this->path));
+        return ConvertHelper::timestamp2date(filectime($this->path));
     }
     
    /**
     * Retrieves the URL to download the dump.
     * @return string
     */
-    public function getURLDownload()
+    public function getURLDownload() : string
     {
         $req = Application_Request::getInstance();
         
@@ -85,15 +95,15 @@ class Application_DBDumps_Dump
    /**
     * Sends the dump file to the browser to be downloaded.
     */
-    public function sendFile()
+    public function sendFile() : void
     {
-        AppUtils\FileHelper::sendFile($this->path);
+        FileHelper::sendFile($this->path);
         
         Application::exit('Sent DB dump file.');
     }
     
-    public function delete()
+    public function delete() : void
     {
-        return unlink($this->path);
+        FileHelper::deleteFile($this->path);
     }
 }
