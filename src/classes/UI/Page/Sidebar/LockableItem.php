@@ -6,15 +6,20 @@ abstract class UI_Page_Sidebar_LockableItem extends UI_Page_Sidebar_Item impleme
     {
         return $this->lockable;
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $locked = false;
-    
-    protected $lockReason = null;
+
+    /**
+     * @var string
+     */
+    protected $lockReason = '';
     
    /**
-    * {@inheritDoc}
-    * @see Application_LockableItem_Interface::lock()
-    * @return UI_Page_Sidebar_LockableItem
+    * @param string $reason
+    * @return $this
     */
     public function lock($reason)
     {
@@ -38,7 +43,7 @@ abstract class UI_Page_Sidebar_LockableItem extends UI_Page_Sidebar_Item impleme
    /**
     * {@inheritDoc}
     * @see Application_LockableItem_Interface::unlock()
-    * @return UI_Page_Sidebar_LockableItem
+    * @return $this
     */
     public function unlock()
     {
@@ -58,7 +63,7 @@ abstract class UI_Page_Sidebar_LockableItem extends UI_Page_Sidebar_Item impleme
     * if the administration screen is locked by the lockmanager.
     * 
     * @param bool $lockable
-    * @return UI_Page_Sidebar_LockableItem
+    * @return $this
     */
     public function makeLockable($lockable=true)
     {
