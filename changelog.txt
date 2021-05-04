@@ -4,6 +4,9 @@ v1.12.9
 - DataGrids: Fixed the pagination menu input field closing the menu on click.
 - DataGrids: Added number formatting to the entries counters.
 - EventHandling: Bugfixes and enhancements in the Eventable trait.
+- Dialogs: Fixed the header text having too big paddings.
+- Buttons: Added a button interface to start unifying sidebar and UI buttons.
+- Sidebar: Revamped the button template.
 
 v1.12.8
 - DataGrids: Search Widget: Allow search with empty strings.
