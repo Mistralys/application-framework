@@ -1,22 +1,21 @@
 <?php
 
 use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
 
-class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Application_Interfaces_Iconizable, Interface_Classable, UI_Interfaces_Conditional
+class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Interfaces_Conditional
 {
     use Application_Traits_Iconizable;
     use UI_Traits_RenderableGeneric;
     use Traits_Classable;
     use UI_Traits_Conditional;
  
-    const ERROR_UNKNOWN_BOOSTSTRAP_SIZE_VERSION = 66601;
-    const ERROR_UNKNOWN_BOOSTSTRAP_SIZE = 66602;
+    const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
+    const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
     
    /**
     * @var string
     */
-    protected $label;
+    protected $label = '';
     
    /**
     * @var string
@@ -84,9 +83,10 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     */
     protected $disabledTooltip = '';
     
-    public function __construct(string $label='')
+    public function __construct($label='')
     {
-        $this->label = $label;
+        $this->setLabel($label);
+
         $this->id = 'btn'.nextJSID();
     }
 
@@ -95,7 +95,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * 
     * @param string $name
     * @param mixed $value
-    * @return UI_Button
+    * @return $this
     */
     public function setAttribute(string $name, $value) : UI_Button
     {
@@ -108,59 +108,72 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * 
     * @param string $name
     * @param mixed $value
-    * @return UI_Button
+    * @return $this
     */
     public function addStyle(string $name, $value)
     {
         return $this->setStyle($name, $value);
     }
-    
+
     public function setLabel(string $label) : UI_Button
     {
         $this->label = $label;
         return $this;
     }
-    
+
+    public function getLabel() : string
+    {
+        return $this->label;
+    }
+
+    /**
+     * @param string $id
+     * @return $this
+     */
     public function setID(string $id) : UI_Button
     {
         $this->id = $id;
         return $this;
     }
 
-   /**
-    * Makes the button into a small button.
-    * 
-    * @returns UI_Button
-    */
+    /**
+     * Makes the button into a small button.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
     public function makeSmall() : UI_Button
     {
         return $this->makeSize('small');
     }
-    
-   /**
-    * Makes the button into a large button.
-    * 
-    * @returns UI_Button
-    */
+
+    /**
+     * Makes the button into a large button.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
     public function makeLarge() : UI_Button
     {
         return $this->makeSize('large');
     }
-    
-   /**
-    * Makes the button into a miniature button.
-    * 
-    * @returns UI_Button
-    */
+
+    /**
+     * Makes the button into a miniature button.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
     public function makeMini() : UI_Button
     {
         return $this->makeSize('mini');
     }
-    
-   /**
-    * @param string $size
-    * @return UI_Button
-    */
+
+    /**
+     * @param string $size
+     * @return $this
+     * @throws Application_Exception
+     */
     public function makeSize(string $size) : UI_Button
     {
         $version = $this->getUI()->getBoostrapVersion();
@@ -173,7 +186,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
                     'No button sizes known for bootstrap version [%s].',
                     $version
                 ),
-                self::ERROR_UNKNOWN_BOOSTSTRAP_SIZE_VERSION
+                self::ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION
             );
         }
         
@@ -186,7 +199,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
                     $size,
                     $version
                 ),
-                self::ERROR_UNKNOWN_BOOSTSTRAP_SIZE
+                self::ERROR_UNKNOWN_BOOTSTRAP_SIZE
             );
         }
         
@@ -198,18 +211,18 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Styles the button as a primary button.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makePrimary() : UI_Button
     {
         return $this->makeType('primary');
     }
-    
-   /**
-    * Styles the button as a button for a dangerous operation, like deleting records.
-    * 
-    * @return UI_Button
-    */
+
+    /**
+     * Styles the button as a button for a dangerous operation, like deleting records.
+     *
+     * @return $this
+     */
     public function makeDangerous() : UI_Button
     {
         return $this->makeType('danger');
@@ -218,7 +231,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Styles the button for developers.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeDeveloper() : UI_Button
     {
@@ -232,18 +245,27 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     
    /**
     * Styles the button as an informational button.
-    * 
-    * @return UI_Button
+    *
+    * @deprecated
+    * @return $this
     */
     public function makeInformational() : UI_Button
     {
+        return $this->makeInfo();
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeInfo() : UI_Button
+    {
         return $this->makeType('info');
     }
-    
-   /**
+
+    /**
     * Styles the button as a success button.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeSuccess() : UI_Button
     {
@@ -253,7 +275,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Styles the button as a warning button for potentially dangerous operations.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeWarning() : UI_Button
     {
@@ -263,7 +285,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Styles the button as an inverted button.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeInverse() : UI_Button
     {
@@ -274,7 +296,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * Sets the button's layout to the specified type.
     * 
     * @param string $type
-    * @return UI_Button
+    * @return $this
     */
     protected function makeType(string $type) : UI_Button
     {
@@ -288,7 +310,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * 
     * @param string $name
     * @param mixed $value
-    * @return UI_Button
+    * @return $this
     */
     public function makeSubmit(string $name, $value) : UI_Button
     {
@@ -313,7 +335,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * Sets a javascript statement to use as click handler of the button.
     * 
     * @param string $statement
-    * @return UI_Button
+    * @return $this
     */
     public function click(string $statement) : UI_Button
     {
@@ -324,29 +346,44 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * Sets the title attribute of the button.
     * 
     * @param string|number|UI_Renderable_Interface $title
-    * @return UI_Button
+    * @return $this
     */
     public function setTitle($title) : UI_Button
     {
         return $this->setAttribute('title', toString($title));
     }
-    
-   /**
+
+    /**
+     * @param number|string|UI_Renderable_Interface $tooltip
+     * @return $this
+     */
+    public function setTooltip($tooltip)
+    {
+        $this->tooltipText = toString($tooltip);
+        return $this;
+    }
+
+    public function getTooltip() : string
+    {
+        return $this->tooltipText;
+    }
+
+    /**
     * Sets the tooltip text, to enable the button tooltip.
-    * 
+    *
+    * @deprecated
     * @param string|number|UI_Renderable_Interface $text
-    * @return UI_Button
+    * @return $this
     */
     public function setTooltipText($text) : UI_Button
     {
-        $this->tooltipText = toString($text);
-        return $this;
+        return $this->setTooltip($text);
     }
     
    /**
     * Styles the button like a regular link (but keeping the button size).
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeLink() : UI_Button
     {
@@ -359,7 +396,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * state can only be triggered clientside however.
     * 
     * @param string|number|UI_Renderable_Interface $text
-    * @return UI_Button
+    * @return $this
     */
     public function setLoadingText($text) : UI_Button
     {
@@ -457,7 +494,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Ensures that the text in the button does not wrap to the next line.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function setNowrap() : UI_Button
     {
@@ -526,7 +563,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * Sets the button as a block element that will fill 
     * all the available horizontal space.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function makeBlock() : UI_Button
     {
@@ -539,7 +576,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * 
     * @param string $style The style to set, e.g. <code>padding-top</code>
     * @param mixed $value The value to set the style to. 
-    * @return UI_Button
+    * @return $this
     */
     public function setStyle(string $style, $value) : UI_Button
     {
@@ -550,7 +587,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Enables the button's "pushed" state.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function push() : UI_Button
     {
@@ -560,7 +597,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
    /**
     * Removes the button's "pushed" state.
     * 
-    * @return UI_Button
+    * @return $this
     */
     public function unpush() : UI_Button
     {
@@ -573,7 +610,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * 
     * @param string $url
     * @param string $loaderText
-    * @return UI_Button
+    * @return $this
     */
     public function loaderRedirect(string $url, string $loaderText='') : UI_Button
     {
@@ -588,7 +625,7 @@ class UI_Button extends UI_BaseLockable implements UI_Renderable_Interface, Appl
     * Makes the button disabled.
     * 
     * @param string $helpText
-    * @return UI_Button
+    * @return $this
     */
     public function disable(string $helpText='') : UI_Button
     {
