@@ -11,6 +11,10 @@ margin-right:5px;
 margin:0;
 }
 
+.modal-header H3{
+padding:0;
+}
+
 .dialog_property_form,
 .dialog_property_edit_form{
 margin-top:14px;
