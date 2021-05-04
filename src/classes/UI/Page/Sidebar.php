@@ -398,68 +398,94 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         return $item;
     }
 
-    public function getItems()
+    /**
+     * @return UI_Page_Sidebar_Item[]
+     */
+    public function getItems() : array
     {
-        // first off, keep only enabled items
-        $keep = array();
-        foreach($this->items as $item) 
-        {
-            if($item instanceof UI_Interfaces_Conditional) 
-            {
-                if($item->isValid()) {
-                    $keep[] = $item;
-                }
-            } else {
-                $keep[] = $item;
-            }
-        }
+        $items = $this->normalizeSeparators();
+
+        $this->registerSiblings($items);
         
-        // ensure no double separators
-        $total = count($keep);
-        $previous = null;
-        $final = array();
+        return $items;
+    }
+
+    private function registerSiblings(array $items) : void
+    {
+        $total = count($items);
+
+        // now tell all items about their siblings
         for($i=0; $i < $total; $i++) {
-            $item = $keep[$i];
-            
+            $item = $items[$i];
+            $next = null;
+            $prev = null;
+
+            if(isset($items[($i+1)])) {
+                $next = $items[($i+1)];
+            }
+
+            if(isset($items[($i-1)])) {
+                $prev = $items[($i-1)];
+            }
+
+            $item->registerPosition($prev, $next);
+        }
+    }
+
+    /**
+     * @return UI_Page_Sidebar_Item[]
+     */
+    private function normalizeSeparators() : array
+    {
+        $items = $this->getValidItems();
+
+        // ensure no double separators
+        $total = count($items);
+        $previous = null;
+        $result = array();
+        for($i=0; $i < $total; $i++) {
+            $item = $items[$i];
+
             if($item->isSeparator() && $previous && $previous->isSeparator()) {
                 continue;
             }
-            
+
             $previous = $item;
-            $final[] = $item;
+            $result[] = $item;
         }
-        
+
         // items start with a separator, strip that
-        if(!empty($final) && $final[0]->isSeparator()) {
-            array_shift($final);
+        if(!empty($result) && $result[0]->isSeparator()) {
+            array_shift($result);
         }
-        
+
         // ensure that the list does not end with a separator
-        if(!empty($final)) {
-            $last = array_pop($final);
+        if(!empty($result)) {
+            $last = array_pop($result);
             if(!$last->isSeparator()) {
-                $final[] = $last;
+                $result[] = $last;
             }
         }
-        
-        // now tell all items about their siblings
-        for($i=0; $i < $total; $i++) {
-            $item = $keep[$i];
-            $next = null;
-            $prev = null;
-            
-            if(isset($keep[($i+1)])) {
-                $next = $keep[($i+1)];
+
+        return $result;
+    }
+
+    private function getValidItems() : array
+    {
+        $result = array();
+        foreach($this->items as $item)
+        {
+            if($item instanceof UI_Interfaces_Conditional)
+            {
+                if($item->isValid()) {
+                    $result[] = $item;
+                }
+            } else {
+                $result[] = $item;
             }
-            
-            if(isset($keep[($i-1)])) {
-                $prev = $keep[($i-1)];
-            }
-            
-            $item->registerPosition($prev, $next);
         }
-        
-        return $final;
+
+        return $result;
     }
 
     /**
