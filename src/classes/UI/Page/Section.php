@@ -642,7 +642,7 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
      * displayed around the title somewhere - it depends on the
      * template.
      *
-     * @param UI_Button|UI_Bootstrap_ButtonDropdown $button
+     * @param UI_Button|UI_Bootstrap_ButtonDropdown|mixed $button
      * @return $this
      * @throws Application_Exception
      */
