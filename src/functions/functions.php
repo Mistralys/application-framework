@@ -257,10 +257,10 @@ function isContentTypeHTML()
  * other than <code>text/html</code>, the output will automatically
  * be switched to plain text.
  *
- * @param Exception $e
+ * @param Throwable $e
  * @param string $output The output buffer up to this point, if available. 
  */
-function displayError(Exception $e, string $output='') : void
+function displayError(Throwable $e, string $output='') : void
 {
     $develinfo = false;
 
@@ -323,7 +323,7 @@ function displayError(Exception $e, string $output='') : void
     Application::exit();
 }
 
-function renderExceptionInfo(Exception $e, $develinfo=false, $html=false, $detailed=true)
+function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=false, bool $detailed=true) : string
 {
     $nl = PHP_EOL;
     if($html) {
@@ -403,7 +403,7 @@ function getRequestURI()
     return $_SERVER['REQUEST_URI'];
 }
 	
-function renderTrace(Exception $e)
+function renderTrace(Throwable $e) : string
 {
     $maxFolderDepth = 2; // how many folders to show of the path to the source file
     

@@ -30,7 +30,7 @@ class Application_ErrorDetails
     protected $sentContent;
 
     /**
-     * @var Exception
+     * @var Throwable
      */
     protected $exception;
 
@@ -49,7 +49,7 @@ class Application_ErrorDetails
     */
     protected $contentType;
     
-    public function __construct(string $title, string $abstract, string $themePath, string $themeURL, array $themeLocations, string $sentContent, string $contentType, Exception $e, bool $develinfo=false)
+    public function __construct(string $title, string $abstract, string $themePath, string $themeURL, array $themeLocations, string $sentContent, string $contentType, Throwable $e, bool $develinfo=false)
     {
         $this->title = $title;
         $this->abstract = $abstract;
@@ -87,7 +87,7 @@ class Application_ErrorDetails
         return $this->sentContent;
     }
     
-    public function getException() : Exception
+    public function getException() : Throwable
     {
         return $this->exception;
     }
@@ -125,7 +125,7 @@ class Application_ErrorDetails
         return $this->contentType === 'html';
     }
     
-    public function hasPreviousException() : ?Exception
+    public function hasPreviousException() : ?Throwable
     {
         return $this->getException()->getPrevious();
     }
