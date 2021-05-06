@@ -12,7 +12,7 @@ $error = ensureType(Application_ErrorDetails::class, $error);
 ?>
 
 ==============================================
-<?php echo strtoupper($error->getTitle()) ?>
+<?php echo strtoupper($error->getTitle()).PHP_EOL ?>
 ==============================================
 
 <?php echo $error->renderException() ?>
@@ -20,6 +20,16 @@ $error = ensureType(Application_ErrorDetails::class, $error);
 
 <?php echo $error->renderTrace() ?>
 
-Content sent before the error:
+-----------------------------------------------
+Content sent before the error
+-----------------------------------------------
 
-<?php $error->getSentContent() ?>
+<?php
+    $content = $error->getSentContent();
+
+    if(!empty($content)) {
+        echo $content;
+    } else {
+        echo '(empty string)';
+    }
+?>
