@@ -27,7 +27,10 @@ use function AppUtils\parseVariable;
 class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
 {
     const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
-    
+
+    const STATE_DISABLED = 'disabled';
+    const STATE_ENABLED = 'enabled';
+
     use Application_Traits_Iconizable;
     use Traits_Classable;
 
@@ -201,15 +204,16 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     {
         return !empty($this->formName);
     }
-    
-   /**
-    * Makes the button submit the specified form or datagrid on click.
-    * 
-    * @param string|UI_Form|UI_DataGrid|Application_Formable $subject A form name, or supported form instance.
-    * @param boolean $simulate Whether to submit in simulation mode.
-    * @return $this
-    */
-    public function makeClickableSubmit($subject, $simulate=false)
+
+    /**
+     * Makes the button submit the specified form or datagrid on click.
+     *
+     * @param string|UI_Form|UI_DataGrid|Application_Interfaces_Formable $subject A form name, or supported form instance.
+     * @param boolean $simulate Whether to submit in simulation mode.
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function makeClickableSubmit($subject, bool $simulate=false)
     {
         $formName = UI_Form::resolveFormName($subject);
         
@@ -230,16 +234,25 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         );
     }
 
+    /**
+     * @return $this
+     */
     public function makePrimary() : UI_Page_Sidebar_Item_Button
     {
         return $this->setDesign('primary');
     }
 
+    /**
+     * @return $this
+     */
     public function makeInverse() : UI_Page_Sidebar_Item_Button
     {
         return $this->setDesign('inverse');
     }
 
+    /**
+     * @return $this
+     */
     public function makeInfo() : UI_Page_Sidebar_Item_Button
     {
         return $this->setDesign('info');
@@ -301,7 +314,10 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         
         return $this->confirmMessage;
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeSuccess()
     {
         return $this->setDesign('success');
@@ -386,10 +402,6 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
 
         return $this;
     }
-    
-    const STATE_DISABLED = 'disabled';
-    
-    const STATE_ENABLED = 'enabled';
     
    /**
     * Whether the button is disabled.
