@@ -1,20 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 class Application_ErrorDetails
 {
+    /**
+     * @var string
+     */
     protected $title;
-    
+
+    /**
+     * @var string
+     */
     protected $abstract;
-    
+
+    /**
+     * @var string
+     */
     protected $themePath;
-    
+
+    /**
+     * @var string
+     */
     protected $themeURL;
-    
+
+    /**
+     * @var string
+     */
     protected $sentContent;
-    
+
+    /**
+     * @var Exception
+     */
     protected $exception;
-    
-    protected $develinfo;
+
+    /**
+     * @var bool
+     */
+    protected $develinfo = false;
     
    /**
     * @var string[]
@@ -26,7 +49,7 @@ class Application_ErrorDetails
     */
     protected $contentType;
     
-    public function __construct($title, $abstract, $themePath, $themeURL, $themeLocations, $sentContent, $contentType, Exception $e, $develinfo=false)
+    public function __construct(string $title, string $abstract, string $themePath, string $themeURL, array $themeLocations, string $sentContent, string $contentType, Exception $e, bool $develinfo=false)
     {
         $this->title = $title;
         $this->abstract = $abstract;
@@ -39,47 +62,47 @@ class Application_ErrorDetails
         $this->themeLocations = $themeLocations;
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->title;
     }
     
-    public function getAbstract()
+    public function getAbstract() : string
     {
         return $this->abstract;
     }
     
-    public function getThemePath()
+    public function getThemePath() : string
     {
         return $this->themePath;
     }
     
-    public function getThemeURL()
+    public function getThemeURL() : string
     {
         return $this->themeURL;
     }
     
-    public function getSentContent()
+    public function getSentContent() : string
     {
         return $this->sentContent;
     }
     
-    public function getException()
+    public function getException() : Exception
     {
         return $this->exception;
     }
     
-    public function isDeveloperInfoEnabled()
+    public function isDeveloperInfoEnabled() : bool
     {
         return $this->develinfo;
     }
     
-    public function renderException()
+    public function renderException() : string
     {
         return renderExceptionInfo($this->getException(), $this->isDeveloperInfoEnabled(), $this->isHTML());
     }
 
-    public function renderPreviousException()
+    public function renderPreviousException() : string
     {
         $prev = $this->getException()->getPrevious();
         if($prev) 
@@ -92,17 +115,17 @@ class Application_ErrorDetails
         return '';
     }
     
-    public function renderTrace()
+    public function renderTrace() : string
     {
         return renderTrace($this->getException());
     }
     
-    public function isHTML()
+    public function isHTML() : bool
     {
-        return $this->contentType == 'html';
+        return $this->contentType === 'html';
     }
     
-    public function hasPreviousException()
+    public function hasPreviousException() : ?Exception
     {
         return $this->getException()->getPrevious();
     }
@@ -115,7 +138,7 @@ class Application_ErrorDetails
     * @param string $file The relative path to the file, e.g. "img/logo-big.png"
     * @return Application_ErrorDetails_ThemeFile|NULL
     */
-    public function findFile($file)
+    public function findFile(string $file) : ?Application_ErrorDetails_ThemeFile
     {
         foreach($this->themeLocations as $location) {
             $path = $location[1].'/'.$file;
@@ -131,26 +154,3 @@ class Application_ErrorDetails
     }
 }
 
-class Application_ErrorDetails_ThemeFile
-{
-    protected $path;
-    
-    protected $url;
-    
-    public function __construct($path, $url)
-    {
-        $this->path = $path;
-        $this->url = $url;
-    }
-    
-    public function getURL()
-    {
-        return $this->url;
-    }
-    
-    public function getPath()
-    {
-        return $this->path;
-    }
-    
-}
