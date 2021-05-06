@@ -7,6 +7,8 @@
  * @see Application_EventHandler_Event
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Event class for individual events: an instance of this is
  * given as argument to event listener callbacks. May be extended
@@ -113,6 +115,27 @@ class Application_EventHandler_Event
         }
 
         return null;
+    }
+
+    public function getArgumentArray(int $index) : array
+    {
+        $arg = $this->getArgument($index);
+
+        if(is_array($arg)) {
+            return $arg;
+        }
+
+        return array();
+    }
+
+    public function getArgumentInt(int $index) : int
+    {
+        return intval($this->getArgument($index));
+    }
+
+    public function getArgumentBool(int $index) : bool
+    {
+        return ConvertHelper::string2bool($index);
     }
 
    /**
