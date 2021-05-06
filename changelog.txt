@@ -1,3 +1,9 @@
+v1.12.10
+- Collections: Added the BaseRecord for non-database array-based data sets.
+- DBHelper: Added the DataTable helper class used to handle record data tables.
+- TestSuites: Automatically turn on devel mode in the testsuites.
+- EventHandling: Added type flavored `getArgumentXXX` methods in the event class.
+
 v1.12.9
 - Testsuites: Added the APP_TESTS_RUNNING constant when running the unit tests.
 - Testsuites: Exception messages now include the developer info by default when running unit tests.
