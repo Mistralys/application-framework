@@ -59,7 +59,7 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
             $label = '<b>' . t('DEV:') . '</b> ' . $label;
         }
 
-        if (isset($this->menu) && $this->button->hasCaret()) {
+        if ($this->button instanceof UI_Page_Sidebar_Item_DropdownButton && $this->button->hasCaret()) {
             $label .= ' <span class="caret"></span>';
         }
 
