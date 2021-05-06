@@ -9,9 +9,9 @@ use AppUtils\ConvertHelper;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
-define('APP_ERROR_PAGE_TITLE', 'A system error occurred');
-define('ERROR_OBJECT_SORTBYWEIGHT_METHOD_MISSING', 64401);
-define('ERROR_OBJECT_SORTBYLABEL_METHOD_MISSING', 64402);
+const APP_ERROR_PAGE_TITLE = 'A system error occurred';
+const ERROR_OBJECT_SORTBYWEIGHT_METHOD_MISSING = 64401;
+const ERROR_OBJECT_SORTBYLABEL_METHOD_MISSING = 64402;
 
 /**
  * Sorts a collection of objects by their weight
@@ -264,10 +264,6 @@ function displayError(Exception $e, string $output='') : void
 {
     $develinfo = false;
 
-    if(boot_defined('APP_DEVEL_MODE') && boot_constant('APP_DEVEL_MODE') === true) {
-        $develinfo = true;
-    }
-    
     try
     {
         if(Application::isActive()) {
@@ -276,6 +272,10 @@ function displayError(Exception $e, string $output='') : void
         }
     }
     catch(Exception $ue) {}
+
+    if(isDevelMode()) {
+        $develinfo = true;
+    }
 
     $contentType = 'html';
     if(!isContentTypeHTML())
@@ -453,8 +453,12 @@ function renderTrace(Exception $e)
 		            $folder = implode('/', $parts);
 		        }
 		    }
-		    
-			$origin = '<span title="'.$entry['file'].'">'.$folder.'/'.$fileName.'</span>:'.$entry['line'];
+
+		    if($html) {
+                $origin = '<span title="' . $entry['file'] . '">' . $folder . '/' . $fileName . '</span>:' . $entry['line'];
+            } else {
+                $origin = $folder . '/' . $fileName . ':' . $entry['line'];
+            }
 		}
 
 		if($html) {
@@ -470,7 +474,7 @@ function renderTrace(Exception $e)
 		    if($html) {
 			    $content .= '<span style="color:#cf5e20">'.$entry['class'].'</span>'.$entry['type'];
 		    } else {
-		        
+		        $content .= $entry['class'].$entry['type'];
 		    }
 		}
 		
@@ -1027,6 +1031,10 @@ function ensureType(string $className, $object, int $code=0)
  */
 function isDevelMode() : bool
 {
+    if(boot_constant('APP_TESTS_RUNNING') === true) {
+        return true;
+    }
+
     return boot_constant('APP_DEVELOPER_MODE') === true;
 }
 
