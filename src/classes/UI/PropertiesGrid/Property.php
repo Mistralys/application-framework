@@ -1,7 +1,9 @@
 <?php
 
-abstract class UI_PropertiesGrid_Property
+abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
 {
+    use UI_Traits_Conditional;
+
    /**
     * @var UI_PropertiesGrid
     */
@@ -53,6 +55,10 @@ abstract class UI_PropertiesGrid_Property
     
     public function render()
     {
+        if(!$this->isValid()) {
+            return '';
+        }
+
         $text = $this->resolveText();
         $label = sb()->add($this->label);
         
@@ -65,9 +71,10 @@ abstract class UI_PropertiesGrid_Property
         {
             $label->icon(
                 UI::icon()->help()
-                ->makeInformation()
-                ->cursorHelp()
-                ->setTooltip($this->helpText)
+                    ->addClass('noprint')
+                    ->makeInformation()
+                    ->cursorHelp()
+                    ->setTooltip($this->helpText)
             );
         }
         

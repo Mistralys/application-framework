@@ -3,9 +3,10 @@
 use AppUtils\Traits_Optionable;
 use AppUtils\Interface_Optionable;
 
-class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable
+class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, UI_Interfaces_Conditional
 {
     use Traits_Optionable;
+    use UI_Traits_Conditional;
 
     const ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
     
@@ -15,7 +16,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable
     protected $id;
 
    /**
-    * @var array
+    * @var UI_PropertiesGrid_Property[]
     */
     protected $properties = array();
 
@@ -71,13 +72,20 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable
     */
     public function addMerged($content) : UI_PropertiesGrid_Property_Merged
     {
-        return ensureType(
-            UI_PropertiesGrid_Property_Merged::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_Merged(
-                $this,
-                toString($content)
-            ))
-        );
+        $prop =  new UI_PropertiesGrid_Property_Merged($this, toString($content));
+        $this->addProperty($prop);
+        return $prop;
+    }
+
+    /**
+     * @param string|number|UI_Renderable_Interface $message
+     * @return UI_PropertiesGrid_Property_Message
+     */
+    public function addMessage($message) : UI_PropertiesGrid_Property_Message
+    {
+        $prop = new UI_PropertiesGrid_Property_Message($this, toString($message));
+        $this->addProperty($prop);
+        return $prop;
     }
     
     public function addDate($label, ?DateTime $date=null) : UI_PropertiesGrid_Property_DateTime
@@ -277,18 +285,46 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable
 
         return $this;
     }
-    
+
+    /**
+     * @return UI_PropertiesGrid_Property[]
+     */
+    private function resolveProperties() : array
+    {
+        $result = array();
+
+        foreach ($this->properties as $property) {
+            if($property->isValid()) {
+                $result[] = $property;
+            }
+        }
+
+        return $result;
+    }
+
    /**
     * Returns the HTML markup for the grid.
     * @return string
     */
     protected function _render()
     {
+        if(!$this->isValid()) {
+            return '';
+        }
+
+        $this->ui->addStylesheet('ui-properties-grid.css');
+
+        $properties = $this->resolveProperties();
+
+        if(empty($properties)) {
+            return '';
+        }
+
         $html =
             '<a id="p"></a>' .
             '<table class="table table-condensed table-vertical properties-grid">' .
             '<tbody>';
-        foreach ($this->properties as $property) {
+        foreach ($properties as $property) {
             $html .= $property->render();
         }
         $html .=
