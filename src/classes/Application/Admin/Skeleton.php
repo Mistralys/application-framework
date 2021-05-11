@@ -524,7 +524,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * Retrieves the page request parameters specific to this
     * administration screen (mode / submode, etc...)
     * 
-    * @return string[]
+    * @return array<string,string>
     */
     public function getPageParams()
     {
