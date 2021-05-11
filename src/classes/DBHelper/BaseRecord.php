@@ -502,8 +502,6 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
         $this->log('Saving the record.');
 
-        $data = $this->recordData;
-        
         $sets = array();
         $keys = array_keys($this->recordData);
         foreach($keys as $key) {
