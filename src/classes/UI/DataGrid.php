@@ -431,9 +431,10 @@ class UI_DataGrid
         	$props['fullViewTitle'] = $this->fullViewTitle;
         }
 
-        /* @var $column UI_DataGrid_Column */
         foreach($this->columns as $column) {
-            $column->injectJavascript($this->ui, $objName);
+            if($column->isValid()) {
+                $column->injectJavascript($this->ui, $objName);
+            }
         }
 
         if($this->entriesSortable) {
@@ -515,7 +516,7 @@ class UI_DataGrid
         $count = 0;
         $total = count($this->columns);
         for ($i = 0; $i < $total; $i++) {
-            if (!$this->columns[$i]->isHidden()) {
+            if ($this->columns[$i]->isValid() && !$this->columns[$i]->isHidden()) {
                 $count++;
             }
         }
@@ -1336,7 +1337,9 @@ class UI_DataGrid
                 $html .=
                 '<tr class="column-headers duplicate-headers">';
                     for ($i = 0; $i < $this->columnCount; $i++) {
-                        $html .= $this->columns[$i]->renderHeaderCell();
+                        if($this->columns[$i]->isValid()) {
+                            $html .= $this->columns[$i]->renderHeaderCell();
+                        }
                     }
                     $html .=
                 '</tr>';
@@ -1878,7 +1881,9 @@ class UI_DataGrid
         '<thead>' .
             '<tr class="column-headers">';
                 for ($i = 0; $i < $this->columnCount; $i++) {
-                    $html .= $this->columns[$i]->renderHeaderCell();
+                    if($this->columns[$i]->isValid()) {
+                        $html .= $this->columns[$i]->renderHeaderCell();
+                    }
                 }
                 $html .=
             '</tr>' .
@@ -1924,11 +1929,14 @@ class UI_DataGrid
         $html = '';
         for ($i = 0; $i < $this->columnCount; $i++) {
             $column = $this->columns[$i];
-            $html .= $column->renderCell($cell);
 
             // remove action column data from the client data set.
             if($column->isAction()) {
                 unset($clientData[$column->getDataKey()]);
+            }
+
+            if($column->isValid()) {
+                $html .= $column->renderCell($cell);
             }
         }
 
@@ -2164,18 +2172,16 @@ class UI_DataGrid
      */
     public function makeEvenColumnWidths(bool $overwriteExisting = false)
     {
-        /* @var $column UI_DataGrid_Column */
-
         $leftover = 100;
         $distributeColumns = $this->columnCount;
         if (!$overwriteExisting) {
             for ($i = 0; $i < $this->columnCount; $i++) {
                 $column = $this->columns[$i];
-                if (!$column->hasWidth()) {
+                if (!$column->hasWidth() || !$column->isValid()) {
                     continue;
                 }
 
-                // this only works with percentange widths, so
+                // this only works with percentage widths, so
                 // if a column has a pixel width set, we reset
                 // its width so it can be set automatically.
                 if ($column->getWidthType() != 'percent') {
@@ -2190,7 +2196,7 @@ class UI_DataGrid
         } else {
             for ($i = 0; $i < $this->columnCount; $i++) {
                 $column = $this->columns[$i];
-                if ($column->hasWidth()) {
+                if ($column->hasWidth() && $column->isValid()) {
                     $column->resetWidth();
                 }
             }
@@ -2204,7 +2210,7 @@ class UI_DataGrid
 
         for ($i = 0; $i < $this->columnCount; $i++) {
             $column = $this->columns[$i];
-            if ($column->hasWidth()) {
+            if ($column->hasWidth() || !$column->isValid()) {
                 continue;
             }
 
@@ -2449,6 +2455,9 @@ class UI_DataGrid
             $total = count($this->columns);
             for($i=0; $i<$total; $i++) {
                 $column = $this->columns[$i];
+                if(!$column->isValid()) {
+                    continue;
+                }
                 if($column->isSortable()) {
                     $found = $column;
                     break;
