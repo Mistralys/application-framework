@@ -8,13 +8,22 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
     * @var UI_Interfaces_Bootstrap[]
     */
     protected $items = array();
-    
+
+    /**
+     * @var bool
+     */
+    private $left;
+
     protected function _render()
     {
         if(empty($this->items)) {
             return '';
         }
-        
+
+        if($this->left) {
+            $this->addClass('pull-right');
+        }
+
         $this->addClass('dropdown-menu');
         $this->setAttribute('class', implode(' ', $this->classes));
         
@@ -36,8 +45,20 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         
         return ob_get_clean();
     }
-    
-   /**
+
+    /**
+     * Makes the menu open on the left side of the toggle,
+     * instead of the default right side.
+     *
+     * @return $this
+     */
+    public function openLeft()
+    {
+        $this->left = true;
+        return $this;
+    }
+
+    /**
     * Adds a submenu item: creates the menu instance
     * and returns it to be configured.
     * 

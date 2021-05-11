@@ -21,7 +21,19 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
         $this->isLink = true;
         return $this;
     }
-    
+
+    /**
+     * Makes the menu open on the left side of the toggle,
+     * instead of the default right side.
+     *
+     * @return $this
+     */
+    public function openLeft()
+    {
+        $this->menu->openLeft();
+        return $this;
+    }
+
     protected $linkClasses = array(
         'dropdown-toggle'
     );
