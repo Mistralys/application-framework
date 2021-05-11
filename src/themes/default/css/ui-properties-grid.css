@@ -1,0 +1,4 @@
+/* Remove bottom margin on alert boxes in the message property type */
+.prop-merged.prop-message .alert{
+    margin-bottom: 0;
+}
