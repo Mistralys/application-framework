@@ -339,7 +339,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     /**
      * @param string|array<string,string|int|float> $paramsOrURL
      */
-    protected function redirectTo($paramsOrURL)
+    public function redirectTo($paramsOrURL)
     {
         if(!$this->adminMode) {
             return;
