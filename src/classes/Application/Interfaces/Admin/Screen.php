@@ -274,4 +274,16 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     * @param array|string $paramsOrURL
     */
     public function redirectWithInfoMessage($message, $paramsOrURL) : void;
+
+    /**
+     * @param string|array<string,string|int|float> $paramsOrURL
+     */
+    public function redirectTo($paramsOrURL);
+
+    /**
+     * Retrieves all app internal parameters for the screen (page, mode, submode, action).
+     *
+     * @return array<string,string>
+     */
+    public function getPageParams();
 }
