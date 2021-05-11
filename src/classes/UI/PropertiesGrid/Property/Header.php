@@ -2,7 +2,7 @@
 
 class UI_PropertiesGrid_Property_Header extends UI_PropertiesGrid_Property
 {
-    public function render()
+    public function render() : string
     {
         $html =
         '<tr class="prop-header">'.

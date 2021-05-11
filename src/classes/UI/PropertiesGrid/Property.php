@@ -23,8 +23,13 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     * @var string
     */
     protected $emptyText = '';
-    
-   /**
+
+    /**
+     * @var UI_Button[]
+     */
+    protected $buttons = array();
+
+    /**
     * @param UI_PropertiesGrid $grid
     * @param string|number|UI_Renderable_Interface $label
     * @param mixed $value
@@ -53,7 +58,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
         return sb()->add($this->emptyText);
     }
     
-    public function render()
+    public function render() : string
     {
         if(!$this->isValid()) {
             return '';
@@ -114,16 +119,19 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
    /**
     * Selects the text to show instead of the text if it is empty.
     * @param string|number|UI_Renderable_Interface $text
-    * @return UI_PropertiesGrid_Property
+    * @return $this
     */
     public function ifEmpty($text)
     {
         $this->emptyText = toString($text);
         return $this;
     }
-    
-    protected $buttons = array();
-    
+
+    /**
+     * @param UI_Button $button
+     * @return $this
+     * @throws Application_Exception
+     */
     public function addButton(UI_Button $button)
     {
         $button->makeMini();
@@ -137,7 +145,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     * Typcially shown inline next to the content of the property.
     *  
     * @param string $comment
-    * @return UI_PropertiesGrid_Property
+    * @return $this
     */
     public function setComment($comment)
     {
@@ -152,7 +160,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     * clicking on it.
     * 
     * @param string $help
-    * @return UI_PropertiesGrid_Property
+    * @return $this
     */
     public function setHelpText($help)
     {

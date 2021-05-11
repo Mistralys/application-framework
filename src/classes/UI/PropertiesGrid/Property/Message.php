@@ -21,7 +21,7 @@ class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merg
         return $this->message;
     }
 
-    public function render()
+    public function render() : string
     {
         $this->message->setMessage($this->label);
         $this->label = $this->message->render();

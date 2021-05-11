@@ -4,7 +4,7 @@ class UI_PropertiesGrid_Property_Merged extends UI_PropertiesGrid_Property
 {
     protected $classes = array();
 
-    public function render()
+    public function render() : string
     {
         ob_start();
         ?>
