@@ -134,4 +134,22 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface
 
         return $this->link($label, $url, $newTab);
     }
+
+    /**
+     * @param string|number|UI_Renderable_Interface $string
+     * @param string|number|UI_Renderable_Interface $tooltip
+     * @return $this
+     */
+    public function tooltip($string, $tooltip)
+    {
+        $jsID = nextJSID();
+        JSHelper::tooltipify($jsID);
+
+        return $this->sf(
+            '<span title="%s" id="%s" style="cursor: help">%s</span>',
+            $tooltip,
+            $jsID,
+            toString($string)
+        );
+    }
 }
