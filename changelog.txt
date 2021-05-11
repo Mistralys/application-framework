@@ -1,7 +1,15 @@
+v1.12.11
+- PropertiesGrid: Added conditional support to hide/show elements by criteria.
+- PropertiesGrid: Added the `addMessage()` method to add an alert box.
+- DataGrids: Added conditional support to columns to hide/show them by criteria.
+- StringBuilder: Added the `tooltip()` method to create a text with a tooltip.
+- AdminSkeleton: Made `redirectTo()` public.
+- PrintView: Hiding some non printable UI elements.
+
 v1.12.10
 - Collections: Added the BaseRecord for non-database array-based data sets.
 - DBHelper: Added the DataTable helper class used to handle record data tables.
-- TestSuites: Automatically turn on devel mode in the testsuites.
+- TestSuites: Automatically turn on devel mode in the test suites.
 - EventHandling: Added type flavored `getArgumentXXX` methods in the event class.
 
 v1.12.9
