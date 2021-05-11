@@ -76,8 +76,15 @@ class DBHelper_BaseCollection_Keys_Key
      * throw an exception if the value does not match, or it
      * will have no effect.
      *
+     * The callback method gets passed the following parameters:
+     *
+     * 1. The value to validate
+     * 2. The full data set being validated (for lookups)
+     * 3. The key instance
+     *
      * @param callable $callback
      * @return $this
+     * @throws Application_Exception
      */
     public function setValidation($callback) : DBHelper_BaseCollection_Keys_Key
     {
@@ -108,14 +115,15 @@ class DBHelper_BaseCollection_Keys_Key
      * Validates the value using the configured validation.
      *
      * @param mixed $value
+     * @param array<string,mixed> $dataSet The full data set being used, for looking up other values for the validation.
      */
-    public function validate($value) : void
+    public function validate($value, array $dataSet) : void
     {
         if($this->validation === null)
         {
             return;
         }
 
-        call_user_func($this->validation, $value);
+        call_user_func($this->validation, $value, $dataSet, $this);
     }
 }

@@ -788,7 +788,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         {
             $value = $data[$key->getName()];
 
-            $key->validate($value);
+            $key->validate($value, $data);
         }
     }
 
