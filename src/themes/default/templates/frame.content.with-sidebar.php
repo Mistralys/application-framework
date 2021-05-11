@@ -39,7 +39,7 @@ class template_default_frame_content_with_sidebar extends UI_Page_Template_Custo
                                   ?>
                               </div>
                            </td>
-                           <td id="sidebar-toggle" onclick="Sidebar.Toggle()" class="clickable <?php echo $this->sidebarState ?>">
+                           <td id="sidebar-toggle" onclick="Sidebar.Toggle()" class="noprint clickable <?php echo $this->sidebarState ?>">
                                <span id="sidebar-toggle-grip" title="<?php pt('Toggle the visibility of the sidebar') ?>">
                                    <?php
                                         UI::icon()->collapseRight()
