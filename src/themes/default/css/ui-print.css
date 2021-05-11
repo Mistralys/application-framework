@@ -85,6 +85,10 @@ color:#000;
 text-decoration:none;
 }
 
+.quick-selector{
+display:none !important;
+}
+
 /* DATA GRIDS */
 .cell-icons{
 display:none;
