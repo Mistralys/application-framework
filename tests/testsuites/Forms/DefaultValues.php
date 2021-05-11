@@ -14,8 +14,6 @@ final class Forms_DefaultValuesTest extends ApplicationTestCase
 
     public function test_default_afterCreate(): void
     {
-        $this->enableLogging();
-
         $this->startTest('Form default values after create');
 
         $form = UI::getInstance()->createForm('somename');
@@ -28,8 +26,6 @@ final class Forms_DefaultValuesTest extends ApplicationTestCase
 
     public function test_default_afterElement(): void
     {
-        $this->enableLogging();
-
         $this->startTest('Form default values after adding an element');
 
         $form = UI::getInstance()->createForm('somename');
