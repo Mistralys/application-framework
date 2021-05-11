@@ -178,13 +178,13 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
         DBHelper::requireTransaction(sprintf('Save data table keys in [%s]', $this->tableName));
 
-        foreach($this->modifiedKeys as $name => $value) {
+        foreach($this->modifiedKeys as $name) {
             DBHelper::insertOrUpdate(
                 $this->tableName,
                 array(
                     $this->primaryName => $this->primaryValue,
                     'name' => $name,
-                    'value' => $value
+                    'value' => $this->valueCache[$name]
                 ),
                 array($this->primaryName, 'name')
             );
