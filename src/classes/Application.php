@@ -947,6 +947,7 @@ class Application
     
    /**
     * @todo Handle shutdown tasks here.
+    * @return never-return
     */
     public static function exit(string $reason='')
     {
