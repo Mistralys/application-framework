@@ -6,6 +6,7 @@ v1.12.11
 - AdminSkeleton: Made `redirectTo()` public.
 - PrintView: Hiding some non printable UI elements.
 - DBHelper: Record keys validation callbacks now get the full data set as second parameter.
+- Revisionables: Fixed consecutive transactions not automatically changing the state.
 
 v1.12.10
 - Collections: Added the BaseRecord for non-database array-based data sets.
