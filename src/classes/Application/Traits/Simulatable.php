@@ -6,8 +6,12 @@ trait Application_Traits_Simulatable
     * @var bool
     */
     protected $simulation = false;
-    
-    public function setSimulation(bool $simulate=true) : Application_Interfaces_Simulatable 
+
+    /**
+     * @param bool $simulate
+     * @return $this
+     */
+    public function setSimulation(bool $simulate=true)
     {
         $this->simulation = $simulate;
         
