@@ -508,18 +508,18 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
         }
 
         $state = $this->getState();
-        $this->log(sprintf('Saving | Current state is [%1$s].', $state->getLabel()));
-        
+
         // automatically change the state if any structural changes were made
         if ($this->hasStructuralChanges()) {
             if (!$this->stateChanged && $state->hasStructuralStateChange()) {
-                $this->log(sprintf('Saving | Structural changes detected, automatically changing the state.'));
-                $this->setState($state->getStructuralChangeState());
+                $newState = $state->getStructuralChangeState();
+                $this->log(sprintf('Saving | Structural changes detected, automatically changing the state to [%s].', $newState->getName()));
+                $this->setState($newState);
             }
         }
 
         if ($this->stateChanged) {
-            $this->log('SAving | Calling the item\'s save implementation (with state change).');
+            $this->log(sprintf('Saving | Calling the item\'s save implementation (with state change).'));
             $this->_saveWithStateChange();
         } else {
             $this->log('Saving | Calling the item\'s save implementation (without state change).');
@@ -662,7 +662,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      * @param string $comments
      * @return boolean
      */
-    public function makeState(Application_StateHandler_State $state, $comments)
+    public function makeState(Application_StateHandler_State $state, string $comments) : bool
     {
         if($state->getName()==$this->getStateName()) {
             return false;
@@ -674,15 +674,22 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
             $transaction = true;
         }
         
-        $changed = $this->setState($state);
+        $this->setState($state);
         
         if($transaction) {
             $this->endTransaction();
         }
 
-        return $changed;
+        return true;
     }
-    
+
+    public function startTransaction($newOwnerID, $newOwnerName, $comments = '')
+    {
+        parent::startTransaction($newOwnerID, $newOwnerName, $comments);
+
+        $this->stateChanged = false;
+    }
+
     public function endTransaction()
     {
         if ($this->stateChanged) {
@@ -692,7 +699,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
         $result = parent::endTransaction();
         
         $this->triggerEvent('TransactionEnded');
-        
+
         return $result;
     }
 
