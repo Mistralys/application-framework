@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode.php';
-
 abstract class Application_Admin_Area_Mode_CollectionRecord extends Application_Admin_Area_Mode
 {
     /**
