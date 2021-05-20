@@ -1234,3 +1234,7 @@ H3.page-abstract {
     font-size: 1.1em;
     line-height: 1.2em;
 }
+
+.badge.badge-small {
+    line-height: 0.8em;
+}

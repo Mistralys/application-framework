@@ -233,4 +233,14 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
 	{
 	    return $this->addClass('badge-large');
 	}
+
+    /**
+     * Makes the whole badge small.
+     *
+     * @return UI_Badge
+     */
+    public function makeSmall()
+    {
+        return $this->addClass('badge-small');
+    }
 }
