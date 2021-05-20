@@ -6,6 +6,7 @@
  */
 
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
@@ -401,6 +402,43 @@ function getRequestURI()
     }
     
     return $_SERVER['REQUEST_URI'];
+}
+
+/**
+ * Shorthand for using the ConvertHelper bool2string
+ * method, which will return the false string if an
+ * exception occurs.
+ *
+ * @param boolean|string|int $bool
+ * @param bool $yesno
+ * @return string
+ */
+function bool2string($bool, bool $yesno=false) : string
+{
+    try
+    {
+        return ConvertHelper::bool2string($bool, $yesno);
+    }
+    catch (ConvertHelper_Exception $e)
+    {
+        return bool2string(false, $yesno);
+    }
+}
+
+/**
+ * @param mixed $string
+ * @return bool
+ */
+function string2bool($string) : bool
+{
+    try
+    {
+        return ConvertHelper::string2bool($string);
+    }
+    catch (ConvertHelper_Exception $e)
+    {
+        return string2bool('false');
+    }
 }
 	
 function renderTrace(Throwable $e) : string
