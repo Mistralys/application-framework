@@ -569,7 +569,15 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             $ex = new Connectors_Exception(
                 $this->connector,
                 'Remote API request failed, invalid response code',
-                '',
+                sprintf(
+                    'Got response code [%s], valid response codes are [%s].'.PHP_EOL.
+                    'Response message is [%s].'.PHP_EOL.
+                    'Accessed from API endpoint at [%s].',
+                    $response->getStatus(),
+                    implode(', ', $this->getCodesByMethod($this->HTTPMethod)),
+                    $response->getReasonPhrase(),
+                    $response->getEffectiveUrl()
+                ),
                 self::ERROR_REQUEST_FAILED
             );
             
@@ -690,12 +698,28 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     */
     public function isValidResponseCode(int $code) : bool
     {
+        $codes = $this->getCodesByMethod($this->HTTPMethod);
+
+        return in_array($code, $codes);
+    }
+
+    /**
+     * @param string $method
+     * @return int[]
+     *
+     * @see HTTP_Request2::METHOD_GET
+     * @see HTTP_Request2::METHOD_DELETE
+     * @see HTTP_Request2::METHOD_POST
+     * @see HTTP_Request2::METHOD_PUT
+     */
+    public function getCodesByMethod(string $method) : array
+    {
         if(isset($this->codesByMethod[$this->HTTPMethod]))
         {
-            return in_array($code, $this->codesByMethod[$this->HTTPMethod]);
+            return $this->codesByMethod[$this->HTTPMethod];
         }
-        
-        return $code === 200;
+
+        return array(200);
     }
     
     public function getConnector() : Connectors_Connector
