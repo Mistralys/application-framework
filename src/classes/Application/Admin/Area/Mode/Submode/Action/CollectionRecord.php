@@ -32,7 +32,11 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
         
         $this->validateRequest();
     }
-    
+
+    /**
+     * Called after the screen's `init()` method. Can be overwritten
+     * in the extending class as replacement for the `init()` method.
+     */
     protected function validateRequest() : void
     {
         
