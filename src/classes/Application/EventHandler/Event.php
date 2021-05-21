@@ -117,6 +117,11 @@ class Application_EventHandler_Event
         return null;
     }
 
+    public function getArgumentString(int $index) : string
+    {
+        return strval($this->getArgument($index));
+    }
+
     public function getArgumentArray(int $index) : array
     {
         $arg = $this->getArgument($index);
