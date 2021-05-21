@@ -20,6 +20,11 @@ declare(strict_types=1);
 class UI_Page_Sidebar_Item_Button_ConfirmMessage
 {
     const ERROR_UNSUPPORTED_BUTTON_MODE = 54401;
+
+    /**
+     * @var string
+     */
+    protected $commentsRequestVar = 'confirm_comments';
     
    /**
     * @var UI_Page_Sidebar_Item_Button
@@ -45,8 +50,18 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
     * @var UI
     */
     protected $ui;
-    
-   /**
+
+    /**
+     * @var bool
+     */
+    private $withComments;
+
+    /**
+     * @var string
+     */
+    private $commentsDesc = '';
+
+    /**
     * @param UI_Page_Sidebar_Item_Button $button
     * 
     */
@@ -74,7 +89,7 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
     * a confirmation text in to confirm the operation.
     * 
     * @param bool $withInput
-    * @return UI_Page_Sidebar_Item_Button_ConfirmMessage
+    * @return $this
     */
     public function makeWithInput(bool $withInput=true) : UI_Page_Sidebar_Item_Button_ConfirmMessage
     {
@@ -82,6 +97,38 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
         
         return $this;
     }
+
+    /**
+     * Whether to add a comments input field to enter comments regarding
+     * the operation.
+     *
+     * @param bool $withComments
+     * @return $this
+     *
+     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::setCommentsDescription()
+     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::getCommentsRequestVar()
+     */
+    public function makeWithComments(bool $withComments=true) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    {
+        $this->withComments = $withComments;
+
+        return $this;
+    }
+
+    /**
+     * Sets a description text for the comments field (used only if
+     * the comments field is enabled).
+     *
+     * @param string $description
+     * @return $this
+     */
+    public function setCommentsDescription(string $description) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    {
+        $this->commentsDesc = $description;
+
+        return $this;
+    }
+
     
    /**
     * Sets the text to display in the loader shown when the user 
@@ -95,6 +142,34 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
         
         return $this;
     }
+
+    /**
+     * Sets the name of the request variable that is used to add the
+     * comments text to the redirect URL when using the `makeWithComments()`
+     * method, and a linked button.
+     *
+     * @param string $name
+     * @return $this
+     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::getCommentsRequestVar()
+     */
+    public function setCommentsRequestVar(string $name) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    {
+        $this->commentsRequestVar = $name;
+        return $this;
+    }
+
+    /**
+     * Gets the name of the request variable that is used to add the
+     * comments text to the redirect URL when using the `makeWithComments()`
+     * method, and a linked button.
+     *
+     * @return string
+     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::setCommentsRequestVar()
+     */
+    public function getCommentsRequestVar() : string
+    {
+        return $this->commentsRequestVar;
+    }
     
     public function getJavaScript() : string
     {
@@ -102,21 +177,29 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
         
         $this->ui->addJavascriptHeadVariable($jsID, $this->message);
         
-        $js = '';
-        
+        $code = sprintf("application.createConfirmationDialog(%s)", $jsID);
+
+        $code .= sprintf(
+            ".SetCommentsRequestVar('%s')",
+            $this->commentsRequestVar
+        );
+
         if($this->button->isLinked())
         {
-            $js = sprintf(
-                "application.redirect('%s', '%s')",
-                $this->button->getURL(),
-                $this->loaderText
+            $code .= sprintf(
+                ".MakeLinked(%s, %s)",
+                JSHelper::phpVariable2AttributeJS($this->button->getURL()),
+                JSHelper::phpVariable2AttributeJS($this->loaderText)
             );
         }
         else if($this->button->isClickable())
         {
-            $js = $this->button->getJavascript();
+            $code .= sprintf(
+                ".MakeClickable(function(comments) {%s})",
+                $this->button->getJavascript()
+            );
         }
-        else 
+        else
         {
             throw new Application_Exception(
                 'Confirmation dialog not available for sidebar button configuration.',
@@ -124,13 +207,7 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
                 self::ERROR_UNSUPPORTED_BUTTON_MODE
             );
         }
-        
-        $code = sprintf(
-            "application.createConfirmationDialog(%s, function() { %s })",
-            $jsID,
-            $js
-        );
-        
+
         if($this->button->isDangerous())
         {
             $code .= ".MakeDangerous()";
@@ -139,6 +216,14 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
         if($this->withInput) 
         {
             $code .= '.MakeWithInput()';
+        }
+
+        if($this->withComments)
+        {
+            $code .= sprintf(
+                '.MakeWithComments(%s)',
+                JSHelper::phpVariable2AttributeJS($this->commentsDesc)
+            );
         }
         
         $code .= ".Show();";
