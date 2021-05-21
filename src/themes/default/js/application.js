@@ -734,13 +734,18 @@ var application =
      * opening it using its API.
      *
      * @param {String} message
-     * @param {Function} okHandler
+     * @param {Function|null} okHandler Handler function, or null to set it manually via `OK()`.
      * @returns {Dialog_Confirmation}
      */
-    createConfirmationDialog: function (message, okHandler) {
-        return new Dialog_Confirmation()
-            .OK(okHandler)
-            .SetContent(message);
+    createConfirmationDialog: function (message, okHandler)
+    {
+        var dialog = new Dialog_Confirmation().SetContent(message);
+
+        if(!isEmpty(okHandler)) {
+            dialog.OK(okHandler);
+        }
+
+        return dialog;
     },
 
     /**
@@ -749,7 +754,6 @@ var application =
      * data in the confirm_comments variable.
      *
      * @param message
-     * @param data
      * @param okHandler
      * @param cancelHandler
      */
@@ -1848,19 +1852,23 @@ var application =
      *
      * @param {String} source The source of the logging message, e.g. "Application"
      * @param {String} message The actual logging message
-     * @param {String} [category=misc] Possible values: misc, ui, data, error, event, debug
+     * @param {String|null} [category=misc] Possible values: misc, ui, data, error, event, debug
      * 
      * @see setUp()
      */
     log: function (source, message, category) 
     {
+        if(typeof(message) == 'undefined') {
+            message = '(No log message/data specified)';
+        }
+
         // log data types other than strings
         if (typeof(message) != 'string') {
             console.log(message);
             return;
         }
 
-        if (typeof(category) == 'undefined') {
+        if (typeof(category) == 'undefined' || isEmpty(category)) {
             category = 'misc';
         }
 
