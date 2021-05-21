@@ -9,6 +9,10 @@ v1.12.11
 - Revisionables: Fixed consecutive transactions not automatically changing the state.
 - Functions: Added the `bool2string()` and `string2bool()` global functions, which do not throw exceptions.
 - Countries: Restored the bottom margin with a subtitle present, since this has no margin top anymore.
+- Updaters: Added the application version in the title bar.
+- EventHandling: Added the `getArgumentString()` method in the event class.
+- UI: Sidebar: Added support for a comments input field in the confirm message dialog.
+- JavaScript: The `okHandler` parameter of `application.createConfirmationDialog()` is now optional.
 
 v1.12.10
 - Collections: Added the BaseRecord for non-database array-based data sets.
