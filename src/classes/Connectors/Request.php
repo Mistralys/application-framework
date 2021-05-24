@@ -564,46 +564,58 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     */
     protected function createResponse(HTTP_Request2_Response $response) : Connectors_Response
     {
-        if(!$this->isValidResponseCode($response->getStatus()))
-        {
-            $ex = new Connectors_Exception(
-                $this->connector,
-                'Remote API request failed, invalid response code',
-                sprintf(
-                    'Got response code [%s], valid response codes are [%s].'.PHP_EOL.
-                    'Response message is [%s].'.PHP_EOL.
-                    'Accessed from API endpoint at [%s].',
-                    $response->getStatus(),
-                    implode(', ', $this->getCodesByMethod($this->HTTPMethod)),
-                    $response->getReasonPhrase(),
-                    $response->getEffectiveUrl()
-                ),
-                self::ERROR_REQUEST_FAILED
-            );
-            
-            $ex->setResponse($response);
-            $ex->setRequest($this);
-            
-            throw $ex;
+        if(!$this->isValidResponseCode($response->getStatus())) {
+            throw $this->createResponseException($response);
         }
         
         $this->response = new Connectors_Response($this, $response);
         
         return $this->response;
     }
-    
-   /**
-    * Creates and configures the HTTP request instance used
-    * to send the request.
-    * 
-    * @return HTTP_Request2
-    */
+
+    private function createResponseException(HTTP_Request2_Response $response) : Connectors_Exception
+    {
+        $body = $response->getBody();
+
+        $ex = new Connectors_Exception(
+            $this->connector,
+            'Remote API request failed, invalid response code.',
+            sprintf(
+                'Got response code [%s], valid response codes are [%s].'.PHP_EOL.
+                'Response message is [%s].'.PHP_EOL.
+                'Accessed from API endpoint at [%s].'.PHP_EOL.
+                'Response body (%s characters):'.PHP_EOL.
+                '%s',
+                $response->getStatus(),
+                implode(', ', $this->getCodesByMethod($this->HTTPMethod)),
+                $response->getReasonPhrase(),
+                $response->getEffectiveUrl(),
+                strlen($body),
+                $body
+            ),
+            self::ERROR_REQUEST_FAILED
+        );
+
+        $ex->setResponse($response);
+        $ex->setRequest($this);
+
+        return $ex;
+    }
+
+    /**
+     * Creates and configures the HTTP request instance used
+     * to send the request.
+     *
+     * @return HTTP_Request2
+     * @throws Connectors_Exception
+     * @throws HTTP_Request2_LogicException
+     */
     protected function createRequest() : HTTP_Request2
     {
         $this->log('Creating and configuring request.');
         $this->log(sprintf('HTTP request method: [%s].', $this->HTTPMethod));
-        $this->log(sprintf('Simulation mode: [%s]', \AppUtils\ConvertHelper::bool2string($this->connector->isSimulationEnabled())));
-        $this->log(sprintf('Live requests: [%s] (turn on in simulation mode with parameter live-requests=yes)', \AppUtils\ConvertHelper::bool2string($this->connector->isLiveRequestsEnabled())));
+        $this->log(sprintf('Simulation mode: [%s]', bool2string($this->connector->isSimulationEnabled())));
+        $this->log(sprintf('Live requests: [%s] (turn on in simulation mode with parameter live-requests=yes)', bool2string($this->connector->isLiveRequestsEnabled())));
         
         $req = new HTTP_Request2($this->buildURL(), $this->HTTPMethod);
         $req->setAdapter('curl');
