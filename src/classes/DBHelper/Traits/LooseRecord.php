@@ -60,7 +60,15 @@ trait DBHelper_Traits_LooseRecord
     * @var string[]
     */
     protected $recordKeyNames;
-    
+
+    /**
+     * Creates the instance and loads the necessary data from the database.
+     *
+     * @param int $recordID
+     * @throws DBHelper_Exception If the record's data cannot be loaded.
+     *
+     * @see DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
+     */
     public function __construct(int $recordID)
     {
         $this->recordID = $recordID;
@@ -73,7 +81,12 @@ trait DBHelper_Traits_LooseRecord
         
         $this->init();
     }
-    
+
+    /**
+     * @throws DBHelper_Exception If the record's data set cannot be loaded.
+     *
+     * @see DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
+     */
     private final function loadData() : void
     {
         $this->recordData = DBHelper::createFetchOne($this->recordTable)
@@ -106,7 +119,15 @@ trait DBHelper_Traits_LooseRecord
     {
         return $this->recordID;
     }
-    
+
+    /**
+     * Saves the current data set of the record.
+     *
+     * @return bool Whether there were any changes to save.
+     * @throws DBHelper_Exception If the record data could not be saved to the database.
+     *
+     * @see DBHelper_Interface_LooseRecord::ERROR_COULD_NOT_SAVE_DATA
+     */
     public function save() : bool
     {
         if(!$this->isModified())
@@ -164,14 +185,33 @@ trait DBHelper_Traits_LooseRecord
     
     public function getDataKeyBool(string $name) : bool
     {
-        return ConvertHelper::string2bool($this->getDataKey($name));
+        return string2bool($this->getDataKey($name));
     }
-    
+
+    /**
+     * @param string $name
+     * @return DateTime
+     * @throws Exception If the date could not be parsed.
+     */
     public function getDataKeyDate(string $name) : DateTime
     {
         return new DateTime($this->getDataKey($name));
     }
-    
+
+    /**
+     * Sets a data key value.
+     *
+     * NOTE: The value is not saved directly in the database.
+     * The `save()` method needs to be called separately.
+     *
+     * @param string $name
+     * @param string $value
+     * @return bool
+     * @throws DBHelper_Exception If the data key is not known.
+     *
+     * @see DBHelper_Traits_LooseRecord::save()
+     * @see DBHelper_Interface_LooseRecord::ERROR_UNKNOWN_DATA_KEY
+     */
     public function setDataKey(string $name, string $value) : bool
     {
         $this->requireValidKey($name);
@@ -195,7 +235,11 @@ trait DBHelper_Traits_LooseRecord
 
         return true;
     }
-    
+
+    /**
+     * @param string $key
+     * @throws DBHelper_Exception
+     */
     protected function requireValidKey(string $key) : void
     {
         if(in_array($key, $this->recordKeyNames))
