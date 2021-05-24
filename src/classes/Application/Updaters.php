@@ -240,7 +240,11 @@ class Application_Updaters
 				 	<br/>
 				 	<div class="navbar">
 						<div class="navbar-inner">
-							<span class="pull-right instance-label">Instance: <?php echo strtoupper(APP_INSTANCE_ID) ?></span>
+							<span class="pull-right instance-label">
+                                <?php pts('Instance:'); echo strtoupper(APP_INSTANCE_ID) ?>
+                                |
+                                <?php pts('Version:'); echo $this->driver->getExtendedVersion() ?>
+                            </span>
 							<a class="brand" href="<?php echo $this->buildURL() ?>"><?php pt('%1$s maintenance', $this->driver->getAppNameShort()) ?></a>
 							<ul class="nav">
 								<li><a href="xml/monitor"><?php pt('Health Monitor') ?></a></li>

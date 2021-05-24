@@ -3,11 +3,6 @@ display:block;
 margin-bottom:20px;
 }
 
-/** Remove the margin when the page has a subtitle (which has a top margin) **/
-.countries-buttonbar.with-subtitle{
-margin-bottom:0;
-}
-
 .countries-buttonbar .wrapper{
 display:inline-block;
 background:#e5e5e5;

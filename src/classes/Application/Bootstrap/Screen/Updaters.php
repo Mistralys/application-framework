@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Application/Updaters.php';
+declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Updaters extends Application_Bootstrap_Screen
 {

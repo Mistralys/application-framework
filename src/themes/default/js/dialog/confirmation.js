@@ -9,8 +9,16 @@
  */
 var Dialog_Confirmation = 
 {
+	/**
+	 * @type {Array.<string,function[]>}
+	 */
 	'handlers':null,
+
+	/**
+	 * @type {Array.<string,function[]>}
+	 */
 	'defaultHandlers':null,
+
 	'dialog':null,
 	'jsID':null,
 	'content':null,
@@ -18,11 +26,22 @@ var Dialog_Confirmation =
 	'rendering':null,
 	'dangerous':null,
 	'shown':null,
-	'withInput':null,
+	'withInput':false,
+	'withComments':false,
+	'commentsDescription':'',
+	'commentsRequestVar':'',
 	'preventClosing':null,
 	'icon':null,
-	'simulationb':null,
+	'simulation':false,
 
+	/**
+	 * @type {string}
+	 */
+	'confirmLabel':'',
+
+	/**
+	 * @constructor
+	 */
 	init:function()
 	{
 		this.jsID = nextJSID();
@@ -34,10 +53,14 @@ var Dialog_Confirmation =
 		this.dangerous = false;
 		this.shown = false;
 		this.withInput = false;
+		this.withComments = false;
+		this.commentsDescription = '';
+		this.commentsRequestVar = 'confirm_comments';
 		this.preventClosing = false;
 		this.icon = null;
 		this.simulation = false;
-		
+		this.confirmLabel = '';
+
 		var dialog = this;
 		
 		this.defaultHandlers = {
@@ -59,7 +82,11 @@ var Dialog_Confirmation =
 	
    /**
     * Attaches a handler to the "ok" event, when the user clicks on the "Confirm" button.
-    * 
+    *
+	* The handler function gets the following parameters:
+	*
+	* 1. The user-specified comments text, or an empty string if comments are disabled.
+	*
     * @param {Function} handler
     * @returns {Dialog_Confirmation}
     */
@@ -167,10 +194,25 @@ var Dialog_Confirmation =
 	{
 		if(this.IsReady()) {
 			this.element('content').html(content);
-			return;
+			return this;
 		}
 		
 		this.content = content;		
+		return this;
+	},
+
+	/**
+	 * Sets the name of the GET request parameter that is used
+	 * to add the comments text to the URL when using the
+	 * `makeLinked()` method.
+	 *
+	 * @param {string} name
+	 * @returns {Dialog_Confirmation}
+	 * @constructor
+	 */
+	SetCommentsRequestVar:function(name)
+	{
+		this.commentsRequestVar = name;
 		return this;
 	},
 	
@@ -306,36 +348,72 @@ var Dialog_Confirmation =
 	{
 		var content = this.content;
 		
-		if(this.withInput) {
-			content += ''+
-			'<hr/>'+
-			'<p>'+
-				'<b class="text-warning">'+t('This is a critical operation, which will be logged.') + '</b> ' + 
-				t('Please make sure that you reviewed the consequences.') +
-			'</p>'+
-			'<p>'+
-				t('When ready, type the text "%1$s" into the field below (exactly as shown, without the quotes).', '<code>'+t('I_AM_SURE')+'</code>')+
-			'</p>'+
-			'<p>'+
-				'<form id="'+this.elementID('inputform')+'">'+
-					'<input type="text" id="'+this.elementID('inputmsg')+'" class="input-xxlarge" placeholder="'+t('I_AM_SURE')+'" autocomplete="off"/>'+
-					FormHelper.renderDummySubmit()+
-				'</form>'+
-			'</p>'
-		}
+		content += this.RenderInput();
+		content += this.RenderComments();
 		
 		return content;
 	},
 
-	HandleEvent:function(event)
+	RenderInput:function()
 	{
-		this.log('Handling event ['+event+'].', 'event');
-		
-		this.handlers[event].call(this);
-		this.defaultHandlers[event].call(this);
+		if(!this.withInput) {
+			return '';
+		}
+
+		return ''+
+		'<hr/>'+
+		'<p>'+
+			'<b class="text-warning">'+t('This is a critical operation, which will be logged.') + '</b> ' +
+			t('Please make sure that you reviewed the consequences.') +
+		'</p>'+
+		'<p>'+
+			t('When ready, type the text "%1$s" into the field below (exactly as shown, without the quotes).', '<code>'+t('I_AM_SURE')+'</code>')+
+		'</p>'+
+		'<form id="'+this.elementID('inputform')+'">'+
+			'<input type="text" id="'+this.elementID('inputmsg')+'" class="input-xxlarge" placeholder="'+t('I_AM_SURE')+'" autocomplete="off"/>'+
+				FormHelper.renderDummySubmit()+
+		'</form>';
 	},
-	
-	'confirmLabel':null,
+
+	RenderComments:function()
+	{
+		if(!this.withComments) {
+			return '';
+		}
+
+		var descrLine = '';
+		if(this.commentsDescription !== '') {
+			descrLine = '<p>'+this.commentsDescription+'</p>';
+		}
+
+		return ''+
+		'<hr/>'+
+		'<p>'+
+			'<b>'+t('Comments')+' <span class="muted">('+t('Optional')+')</span></b>'+
+		'</p>'+
+		descrLine+
+		'<form id="'+this.elementID('commentform')+'" class="input-xxlarge">'+
+			'<textarea rows="3" id="'+this.elementID('fieldComments')+'" class="input-xxlarge"></textarea>'+
+		'</form>';
+	},
+
+	/**
+	 * @param {String} event
+	 * @param {Array} args
+	 */
+	HandleEvent:function(event, args)
+	{
+		this.log('Handling event ['+event+']. Arguments:', 'event');
+		this.logData(args);
+		this.log(sprintf(
+			'Found [%s] listeners, and [%s] default handlers.',
+			this.handlers[event].length,
+			this.defaultHandlers[event].length
+		));
+
+		this.handlers[event].apply(this, args);
+		this.defaultHandlers[event].apply(this, args);
+	},
 	
 	SetConfirmLabel:function(label)
 	{
@@ -381,6 +459,53 @@ var Dialog_Confirmation =
 	MakeWithInput:function()
 	{
 		this.withInput = true;
+		return this;
+	},
+
+	MakeLinked:function(url, loaderText)
+	{
+		var dialog = this;
+
+		this.MakeClickable(function(comments)
+		{
+			if(typeof url == "object") {
+				url[dialog.commentsRequestVar] = comments;
+			} else {
+				url += '&'+dialog.commentsRequestVar+'=' + encodeURIComponent(comments);
+			}
+
+			application.redirect(url, loaderText);
+		});
+
+		return this;
+	},
+
+	/**
+	 * Sets a callback as target for the confirm button.
+	 *
+	 * The callback gets the following parameters:
+	 *
+	 * 1. User-entered comments string, or empty string if not enabled.
+	 *
+	 * @param {Function} callback
+	 * @returns {Dialog_Confirmation}
+	 */
+	MakeClickable:function(callback)
+	{
+		return this.OK(callback);
+	},
+
+	/**
+	 * Adds a comments field to enter comments regarding the
+	 * operation.
+	 *
+	 * @param {String} description
+	 * @returns {Dialog_Confirmation}
+	 */
+	MakeWithComments:function(description)
+	{
+		this.withComments = true;
+		this.commentsDescription = description;
 		return this;
 	},
 	
@@ -475,16 +600,39 @@ var Dialog_Confirmation =
 	
 	Handle_Confirm:function()
 	{
-		if(this.withInput) {
+		this.logEvent('The dialog has been confirmed.');
+
+		if(this.withInput)
+		{
 			var val = this.element('inputmsg').val().trim();
-			if(val != t('I_AM_SURE')) {
+			var match = t('I_AM_SURE');
+
+			this.log(sprintf('Input message is [%s].', val));
+
+			if(val !== match)
+			{
+				this.log(sprintf('Invalid message, does not match [%s].', match));
+
 				this.ShowAlertError('<b>'+t('The text you entered does not match.') + '</b> ' + t('Make sure to enter it exactly as shown, it is case sensitive.'));
 				this.element('inputmsg').focus();
 				return;
 			}
+
+			this.log('Message is a match.');
 		}
-		
-		this.HandleEvent('ok');
+
+		var args = [];
+
+		var comments = '';
+		if(this.withComments)
+		{
+			comments = this.element('fieldComments').val().trim();
+			this.log(sprintf('Comments are enabled. Given [%s].', comments));
+		}
+
+		args.push(comments);
+
+		this.HandleEvent('ok', args);
 	},
 	
 	Handle_Shown:function()
@@ -495,6 +643,8 @@ var Dialog_Confirmation =
 		
 		if(this.withInput) {
 			this.element('inputmsg').focus();
+		} else if(this.withComments) {
+			this.element('fieldComments').focus();
 		}
 		
 		this.HandleEvent('shown');
@@ -526,13 +676,26 @@ var Dialog_Confirmation =
 		this.icon = icon;
 		return this;
 	},
-	
+
+	/**
+	 * @param {string} part
+	 * @returns {jQuery}
+	 */
 	element:function(part)
 	{
-		var id = this.elementID(part);
-		return $('#'+id);
+		return $('#'+this.elementID(part));
 	},
-	
+
+	logEvent:function(message)
+	{
+		this.log(message, 'event');
+	},
+
+	logData:function(data)
+	{
+		this.log(data, 'data');
+	},
+
 	log:function(message, category)
 	{
 		application.log(
@@ -595,7 +758,7 @@ var Dialog_Confirmation =
 		
 		this.simulation = false;
 		
-		if(simulate == true) {
+		if(simulate === true) {
 			this.simulation = true;
 		} 
 		
