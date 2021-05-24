@@ -322,7 +322,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
                 continue;
             }
 
-            $result->setKey($name, $setting->filterForStorage($result->getKey($name),$result));
+            $result->setKey($setting->getStorageName(), $setting->filterForStorage($result->getKey($name),$result));
         }
 
         foreach ($settings as $setting)
@@ -331,7 +331,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
             // as they are destined to be used only within the form.
             if($setting->isInternal())
             {
-                $result->removeKey($setting->getName());
+                $result->removeKey($setting->getStorageName());
             }
         }
 

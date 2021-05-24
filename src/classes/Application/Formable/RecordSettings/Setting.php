@@ -69,12 +69,32 @@ class Application_Formable_RecordSettings_Setting
      */
     protected $virtual = false;
 
+    /**
+     * @var string
+     */
+    protected $storageName = '';
+
     public function __construct(Application_Formable_RecordSettings $settings, string $name)
     {
         $this->settings = $settings;
         $this->name = $name;
     }
-    
+
+    public function setStorageName(string $name) : Application_Formable_RecordSettings_Setting
+    {
+        $this->storageName = $name;
+        return $this;
+    }
+
+    public function getStorageName() : string
+    {
+        if(!empty($this->storageName)) {
+            return $this->storageName;
+        }
+
+        return $this->name;
+    }
+
     public function getName() : string
     {
         return $this->name;
