@@ -1,3 +1,6 @@
+v1.12.12
+- Connectors: Improved the failed request exception: Added response body info.
+
 v1.12.11
 - PropertiesGrid: Added conditional support to hide/show elements by criteria.
 - PropertiesGrid: Added the `addMessage()` method to add an alert box.
