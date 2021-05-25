@@ -152,4 +152,16 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface
             toString($string)
         );
     }
+
+    /**
+     * @param string|number|UI_Renderable_Interface $string
+     * @return $this
+     */
+    public function blockquote($string) : UI_StringBuilder
+    {
+        return $this->sf(
+            '<blockquote>&#8220;%s&#8221;</blockquote>',
+            toString($string)
+        );
+    }
 }
