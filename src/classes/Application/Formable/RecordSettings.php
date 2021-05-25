@@ -40,6 +40,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     use Application_Traits_Loggable;
 
     const ERROR_NOTHING_TO_INJECT = 44801;
+    const ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
     
    /**
     * @var DBHelper_BaseRecord|NULL
@@ -304,6 +305,34 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     }
 
     /**
+     * Retrieves a setting by its name or storage name (if any).
+     *
+     * @param string $name
+     * @return Application_Formable_RecordSettings_Setting
+     * @throws Application_Exception
+     */
+    public function getSettingByName(string $name) : Application_Formable_RecordSettings_Setting
+    {
+        $settings = $this->getSettings();
+
+        foreach($settings as $setting) {
+            if($setting->getName() === $name || $setting->getStorageName() === $name) {
+                return $setting;
+            }
+        }
+
+        throw new Application_Exception(
+            'Unknown form setting',
+            sprintf(
+                'Tried to fetch the setting [%s]. Available settings are [%s].',
+                $name,
+                implode(', ', $this->getSettingKeyNames(true))
+            ),
+            self::ERROR_SETTING_NAME_DOES_NOT_EXIST
+        );
+    }
+
+    /**
      * @param Application_Formable_RecordSettings_ValueSet $data
      * @throws Application_Exception
      * @return Application_Formable_RecordSettings_ValueSet A copy of the specified data, with the filtered values.
@@ -317,12 +346,16 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         {
             $name = $setting->getName();
 
-            if(!$data->keyExists($name))
+            if($data->keyExists($name))
             {
-                continue;
+                $value = $data->getKey($name);
+            }
+            else
+            {
+                $value = $setting->getDefaultValue();
             }
 
-            $result->setKey($setting->getStorageName(), $setting->filterForStorage($data->getKey($name),$result));
+            $result->setKey($setting->getStorageName(), $setting->filterForStorage($value, $data));
         }
 
         foreach ($settings as $setting)
