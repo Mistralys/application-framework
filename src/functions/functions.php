@@ -1007,23 +1007,26 @@ function sb() : UI_StringBuilder
 /**
  * Ensures that the subject is scalar or a renderable,
  * and converts it to a string.
- * 
+ *
  * @param mixed|UI_Renderable_Interface $subject
  * @return string
+ * @throws UI_Exception
+ *
+ * @see UI::ERROR_NOT_A_RENDERABLE
  */
 function toString($subject) : string
 {
     // avoid the additional function call
-    if(is_string($subject)) 
+    if(is_string($subject))
     {
         return $subject;
     }
-    
-    if($subject === null) 
+
+    if($subject === null)
     {
         return '';
     }
-    
+
     return (string)UI::requireRenderable($subject);
 }
 

@@ -1188,7 +1188,7 @@ class UI
     * Requires the subject to be a scalar value, or an object instance of the renderable interface.
     * 
     * @param mixed|UI_Renderable_Interface $subject
-    * @throws Application_Exception
+    * @throws UI_Exception
     * @return string|number|UI_Renderable_Interface
     * 
     * @see UI::ERROR_NOT_A_RENDERABLE
@@ -1199,7 +1199,7 @@ class UI
             return $subject;
         }
         
-        throw new Application_Exception(
+        throw new UI_Exception(
             'Not a renderable',
             sprintf(
                 'The subject is not a string or renderable object implementing the renderable interface: [%s].',
