@@ -12,6 +12,7 @@ echo - Application
 echo - DataGrids
 echo - Forms
 echo - Functions
+echo - Global
 echo - OAuth
 echo - UI
 echo - User

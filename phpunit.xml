@@ -24,6 +24,9 @@
         <testsuite name="Functions">
             <directory suffix=".php">./tests/testsuites/Functions</directory>
         </testsuite>
+        <testsuite name="Global">
+            <directory suffix=".php">./tests/testsuites/Global</directory>
+        </testsuite>
         <testsuite name="Installer">
             <directory suffix=".php">./tests/testsuites/Installer</directory>
         </testsuite>
