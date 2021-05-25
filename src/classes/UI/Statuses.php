@@ -13,10 +13,22 @@ declare(strict_types=1);
  * Base class for handling states of an object, with different
  * levels of criticality.
  *
- * This is meant to be extended so it can be customized, for
- * example by implementing a custom status class. If this is
- * not needed, look at the {@see UI_Statuses_Generic} class
- * instead, which can be used without extending it.
+ * There are several ways to use this:
+ *
+ * 1) Extending this class
+ *
+ * This allows optionally using a custom status class, as well
+ * as adding any custom functionality.
+ *
+ * 2) Generic usage without extending the class:
+ *
+ * The {@see UI_Statuses_Generic} class allows defining and working
+ * with states without having to extend this class.
+ *
+ * 3) With selectable statuses
+ *
+ * The {@see UI_Statuses_Selectable} class is made to be extended,
+ * and adds the possibility to select an active state.
  *
  * @package User Interface
  * @subpackage Statuses
@@ -145,5 +157,16 @@ abstract class UI_Statuses
         sort($ids);
 
         return $ids;
+    }
+
+    /**
+     * Checks whether the status ID exists.
+     *
+     * @param string $id
+     * @return bool
+     */
+    public function idExists(string $id) : bool
+    {
+        return in_array($id, $this->getIDs(), true);
     }
 }
