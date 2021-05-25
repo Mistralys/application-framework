@@ -311,18 +311,18 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     public final function filterForStorage(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
     {
         $settings = $this->getSettings();
-        $result = new Application_Formable_RecordSettings_ValueSet($data->getValues());
+        $result = new Application_Formable_RecordSettings_ValueSet(array());
 
         foreach ($settings as $setting)
         {
             $name = $setting->getName();
 
-            if(!$result->keyExists($name))
+            if(!$data->keyExists($name))
             {
                 continue;
             }
 
-            $result->setKey($setting->getStorageName(), $setting->filterForStorage($result->getKey($name),$result));
+            $result->setKey($setting->getStorageName(), $setting->filterForStorage($data->getKey($name),$result));
         }
 
         foreach ($settings as $setting)
