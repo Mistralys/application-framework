@@ -39,6 +39,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     const SORT_DIR_ASC = 'ASC';
     const SORT_DIR_DESC = 'DESC';
 
+    const VALUE_UNDEFINED = '__undefined';
+
     /**
      * @return string
      */
@@ -807,14 +809,35 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         {
             $name = $key->getName();
 
-            if($key->hasDefault() && !array_key_exists($name, $data))
+            if(array_key_exists($name, $data)) {
+                continue;
+            }
+
+            $value = $this->resolveDefaultValue($key, $data);
+
+            if($value !== self::VALUE_UNDEFINED)
             {
-                $data[$name] = $key->getDefault();
+                $data[$name] = $value;
             }
         }
     }
-    
-   /**
+
+    private function resolveDefaultValue(DBHelper_BaseCollection_Keys_Key $key, array $data)
+    {
+        if($key->hasGenerator())
+        {
+            return $key->generateValue($data);
+        }
+
+        if($key->hasDefault())
+        {
+            return $key->getDefault();
+        }
+
+        return self::VALUE_UNDEFINED;
+    }
+
+    /**
     * Adds a listener to the BeforeCreateRecord event.
     * 
     * @param callable $callback

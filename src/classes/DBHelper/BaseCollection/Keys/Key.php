@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class DBHelper_BaseCollection_Keys_Key
 {
+    const ERROR_CANNOT_GENERATE_VALUE = 87601;
+
     /**
      * @var DBHelper_BaseCollection_Keys
      */
@@ -33,6 +35,11 @@ class DBHelper_BaseCollection_Keys_Key
      * @var callable|null
      */
     private $validation = null;
+
+    /**
+     * @var callable|null
+     */
+    private $generator = null;
 
     public function __construct(DBHelper_BaseCollection_Keys $manager, string $name)
     {
@@ -109,6 +116,57 @@ class DBHelper_BaseCollection_Keys_Key
         $this->hasDefault = true;
         $this->default = $default;
         return $this;
+    }
+
+    /**
+     * Sets a generation callback function that will be used to generate
+     * the key's value if none has been specified. Takes precedence before
+     * any value set via {@see DBHelper_BaseCollection_Keys_Key::setDefault()}.
+     *
+     * The callback method gets the following parameters:
+     *
+     * 1. The key instance, {@see DBHelper_BaseCollection_Keys_Key}
+     * 2. The full data set array (to enable lookups)
+     *
+     * The method must return the generated value.
+     *
+     * @param callable $callback
+     * @return $this
+     */
+    public function setGenerator(callable $callback) : DBHelper_BaseCollection_Keys_Key
+    {
+        $this->generator = $callback;
+        return $this;
+    }
+
+    public function hasGenerator() : bool
+    {
+        return isset($this->generator);
+    }
+
+    /**
+     * Generates the key's value according to the generation
+     * callback that was set via {@see DBHelper_BaseCollection_Keys_Key::setGenerator()}.
+     *
+     * @param array $data
+     * @return mixed
+     * @throws DBHelper_Exception
+     *
+     * @see DBHelper_BaseCollection_Keys_Key::setGenerator()
+     * @see DBHelper_BaseCollection_Keys_Key::ERROR_CANNOT_GENERATE_VALUE
+     */
+    public function generateValue(array $data)
+    {
+        if(isset($this->generator))
+        {
+            return call_user_func($this->generator, $this, $data);
+        }
+
+        throw new DBHelper_Exception(
+            'Cannot generate value, no generator present',
+            'No callback has been set for generating the value.',
+            self::ERROR_CANNOT_GENERATE_VALUE
+        );
     }
 
     /**
