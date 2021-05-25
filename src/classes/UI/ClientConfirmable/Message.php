@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the {@see UI_Page_Sidebar_Item_Button_ConfirmMessage} class.
+ * File containing the {@see UI_ClientConfirmable_Message} class.
  *
+ * @see UI_ClientConfirmable_Message
+ *@subpackage UserInterface
  * @package Application
- * @subpackage UserInterface
- * @see UI_Page_Sidebar_Item_Button_ConfirmMessage
  */
 
 declare(strict_types=1);
@@ -17,9 +17,9 @@ declare(strict_types=1);
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Page_Sidebar_Item_Button_ConfirmMessage
+class UI_ClientConfirmable_Message
 {
-    const ERROR_UNSUPPORTED_BUTTON_MODE = 54401;
+    const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
 
     /**
      * @var string
@@ -27,9 +27,9 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
     protected $commentsRequestVar = 'confirm_comments';
     
    /**
-    * @var UI_Page_Sidebar_Item_Button
+    * @var UI_Interfaces_ClientConfirmable
     */
-    protected $button;
+    protected $uiElement;
     
    /**
     * @var string
@@ -62,22 +62,22 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
     private $commentsDesc = '';
 
     /**
-    * @param UI_Page_Sidebar_Item_Button $button
-    * 
-    */
-    public function __construct(UI_Page_Sidebar_Item_Button $button)
+     * @param UI_Interfaces_ClientConfirmable $uiElement
+     */
+    public function __construct(UI_Interfaces_ClientConfirmable $uiElement)
     {
-        $this->button = $button;
-        $this->ui = $button->getUI();
+        $this->uiElement = $uiElement;
+        $this->ui = $uiElement->getUI();
     }
-    
-   /**
-    * Sets the message body of the dialog. May contain HTML.
-    * 
-    * @param string|number|UI_Renderable_Interface $message
-    * @return UI_Page_Sidebar_Item_Button_ConfirmMessage
-    */
-    public function setMessage($message) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+
+    /**
+     * Sets the message body of the dialog. May contain HTML.
+     *
+     * @param scalar|UI_Renderable_Interface $message
+     * @return UI_ClientConfirmable_Message
+     * @throws UI_Exception
+     */
+    public function setMessage($message) : UI_ClientConfirmable_Message
     {
         $this->message = toString($message);
         
@@ -91,7 +91,7 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
     * @param bool $withInput
     * @return $this
     */
-    public function makeWithInput(bool $withInput=true) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    public function makeWithInput(bool $withInput=true) : UI_ClientConfirmable_Message
     {
         $this->withInput = $withInput;
         
@@ -105,10 +105,10 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
      * @param bool $withComments
      * @return $this
      *
-     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::setCommentsDescription()
-     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::getCommentsRequestVar()
+     * @see UI_ClientConfirmable_Message::setCommentsDescription()
+     * @see UI_ClientConfirmable_Message::getCommentsRequestVar()
      */
-    public function makeWithComments(bool $withComments=true) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    public function makeWithComments(bool $withComments=true) : UI_ClientConfirmable_Message
     {
         $this->withComments = $withComments;
 
@@ -122,21 +122,22 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
      * @param string $description
      * @return $this
      */
-    public function setCommentsDescription(string $description) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    public function setCommentsDescription(string $description) : UI_ClientConfirmable_Message
     {
         $this->commentsDesc = $description;
 
         return $this;
     }
 
-    
-   /**
-    * Sets the text to display in the loader shown when the user 
-    * confirms (to replace the default loading text).
-    * 
-    * @param string|number|UI_Renderable_Interface $text 
-    */
-    public function setLoaderText($text) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+
+    /**
+     * Sets the text to display in the loader shown when the user
+     * confirms (to replace the default loading text).
+     *
+     * @param scalar|UI_Renderable_Interface $text
+     * @throws UI_Exception
+     */
+    public function setLoaderText($text) : UI_ClientConfirmable_Message
     {
         $this->loaderText = toString($text);
         
@@ -150,9 +151,9 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
      *
      * @param string $name
      * @return $this
-     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::getCommentsRequestVar()
+     * @see UI_ClientConfirmable_Message::getCommentsRequestVar()
      */
-    public function setCommentsRequestVar(string $name) : UI_Page_Sidebar_Item_Button_ConfirmMessage
+    public function setCommentsRequestVar(string $name) : UI_ClientConfirmable_Message
     {
         $this->commentsRequestVar = $name;
         return $this;
@@ -164,7 +165,7 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
      * method, and a linked button.
      *
      * @return string
-     * @see UI_Page_Sidebar_Item_Button_ConfirmMessage::setCommentsRequestVar()
+     * @see UI_ClientConfirmable_Message::setCommentsRequestVar()
      */
     public function getCommentsRequestVar() : string
     {
@@ -184,31 +185,34 @@ class UI_Page_Sidebar_Item_Button_ConfirmMessage
             $this->commentsRequestVar
         );
 
-        if($this->button->isLinked())
+        if($this->uiElement->isLinked())
         {
             $code .= sprintf(
                 ".MakeLinked(%s, %s)",
-                JSHelper::phpVariable2AttributeJS($this->button->getURL()),
+                JSHelper::phpVariable2AttributeJS($this->uiElement->getURL()),
                 JSHelper::phpVariable2AttributeJS($this->loaderText)
             );
         }
-        else if($this->button->isClickable())
+        else if($this->uiElement->isClickable())
         {
             $code .= sprintf(
                 ".MakeClickable(function(comments) {%s})",
-                $this->button->getJavascript()
+                $this->uiElement->getJavascript()
             );
         }
         else
         {
             throw new Application_Exception(
-                'Confirmation dialog not available for sidebar button configuration.',
-                'It is only available for linked or clickable buttons.',
-                self::ERROR_UNSUPPORTED_BUTTON_MODE
+                'Confirmation dialog not available for UI element configuration.',
+                sprintf(
+                'It is only available for linked or clickable elements: either the isClickable() or isLinked() methods must return true in the [%s] class.',
+                    get_class($this->uiElement)
+                ),
+                self::ERROR_UNSUPPORTED_ELEMENT_MODE
             );
         }
 
-        if($this->button->isDangerous())
+        if($this->uiElement->isDangerous())
         {
             $code .= ".MakeDangerous()";
         }
