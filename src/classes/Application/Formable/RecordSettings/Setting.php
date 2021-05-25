@@ -74,6 +74,11 @@ class Application_Formable_RecordSettings_Setting
      */
     protected $storageName = '';
 
+    /**
+     * @var bool
+     */
+    private $static = false;
+
     public function __construct(Application_Formable_RecordSettings $settings, string $name)
     {
         $this->settings = $settings;
@@ -154,6 +159,27 @@ class Application_Formable_RecordSettings_Setting
     public function isInternal() : bool
     {
         return $this->internal;
+    }
+
+    /**
+     * Marks the setting as static, which means it does not need
+     * to have a value in the form. It can be used for visual only
+     * elements, like static content to display information.
+     *
+     * NOTE: It does not exclude the setting from having a value.
+     *
+     * @return $this
+     */
+    public function makeStatic() : Application_Formable_RecordSettings_Setting
+    {
+        $this->static = true;
+
+        return $this;
+    }
+
+    public function isStatic() : bool
+    {
+        return $this->static;
     }
 
     /**

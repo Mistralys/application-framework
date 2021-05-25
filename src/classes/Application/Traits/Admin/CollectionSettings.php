@@ -381,7 +381,12 @@ trait Application_Traits_Admin_CollectionSettings
         $result = array();
         foreach($keys as $keyName) 
         {
-            if(!array_key_exists($keyName, $values)) {
+            $setting = $this->settingsManager->getSettingByName($keyName);
+
+            // All values must be present, except static settings, which
+            // do not necessarily have a value (they are cosmetic only,
+            // like static form elements for displaying information)
+            if(!array_key_exists($keyName, $values) && !$setting->isStatic()) {
                 throw new Application_Exception(
                     'Unknown setting key',
                     sprintf(
