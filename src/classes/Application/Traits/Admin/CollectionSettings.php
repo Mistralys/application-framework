@@ -368,6 +368,10 @@ trait Application_Traits_Admin_CollectionSettings
         $this->_handleAfterSave($record, $data);
     }
 
+    /**
+     * @return array<string,mixed>
+     * @throws Application_Exception
+     */
     public function getSettingsFormValues() : array
     {
         $keys = $this->resolveKeyNames(true);
@@ -386,7 +390,11 @@ trait Application_Traits_Admin_CollectionSettings
             // All values must be present, except static settings, which
             // do not necessarily have a value (they are cosmetic only,
             // like static form elements for displaying information)
-            if(!array_key_exists($keyName, $values) && !$setting->isStatic()) {
+            if($setting->isStatic()) {
+                continue;
+            }
+
+            if(!array_key_exists($keyName, $values)) {
                 throw new Application_Exception(
                     'Unknown setting key',
                     sprintf(
@@ -414,6 +422,7 @@ trait Application_Traits_Admin_CollectionSettings
      *
      * @param Application_Formable_RecordSettings_ValueSet $values
      * @return Application_Formable_RecordSettings_ValueSet
+     * @throws Application_Exception
      */
     protected final function filterFormValues(Application_Formable_RecordSettings_ValueSet $values)
     {
