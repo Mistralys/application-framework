@@ -344,6 +344,10 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         foreach ($settings as $setting)
         {
+            if($setting->isStatic() || $setting->isInternal()) {
+                continue;
+            }
+
             $name = $setting->getName();
 
             if($data->keyExists($name))
@@ -356,16 +360,6 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
             }
 
             $result->setKey($setting->getStorageName(), $setting->filterForStorage($value, $data));
-        }
-
-        foreach ($settings as $setting)
-        {
-            // Form-internal settings are not transmitted to the record,
-            // as they are destined to be used only within the form.
-            if($setting->isInternal())
-            {
-                $result->removeKey($setting->getStorageName());
-            }
         }
 
         return $result;
