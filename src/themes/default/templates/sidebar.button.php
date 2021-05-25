@@ -185,7 +185,7 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
         }
 
         $confirmMessage = $this->getVar('confirmMessage');
-        if($confirmMessage instanceof UI_Page_Sidebar_Item_Button_ConfirmMessage) {
+        if($confirmMessage instanceof UI_ClientConfirmable_Message) {
             $this->mode = 'clickable';
             $this->setVar('javascript', $confirmMessage->getJavaScript());
         }

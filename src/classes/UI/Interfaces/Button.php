@@ -2,7 +2,7 @@
 
 use AppUtils\Interface_Classable;
 
-interface UI_Interfaces_Button extends UI_Renderable_Interface, Application_Interfaces_Iconizable, Interface_Classable, Application_LockableItem_Interface
+interface UI_Interfaces_Button extends UI_Renderable_Interface, Application_Interfaces_Iconizable, Interface_Classable, Application_LockableItem_Interface, UI_Interfaces_ClientConfirmable
 {
     /**
      * Styles the button as a button for a dangerous operation, like deleting records.

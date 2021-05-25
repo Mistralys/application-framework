@@ -33,6 +33,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
 
     use Application_Traits_Iconizable;
     use Traits_Classable;
+    use UI_Traits_ClientConfirmable;
 
     /**
      * @var string
@@ -49,8 +50,14 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      */
     protected $mode = 'none';
 
-    protected $url = null;
+    /**
+     * @var string
+     */
+    protected $url = '';
 
+    /**
+     * @var string
+     */
     protected $javascript = '';
 
     protected $state = 'enabled';
@@ -62,11 +69,6 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     protected $design = null;
 
     protected $id;
-
-    /**
-     * @var UI_Page_Sidebar_Item_Button_ConfirmMessage|NULL
-     */
-    protected $confirmMessage;
 
     /**
      * @param UI_Page_Sidebar $sidebar
@@ -132,16 +134,16 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     * Whether the button's action is to open an URL.
     * @return boolean
     */
-    public function isLinked()
+    public function isLinked() : bool
     {
         return $this->mode == 'linked';
     }
     
    /**
     * The URL the button links to (if any).
-    * @return string|NULL
+    * @return string
     */
-    public function getURL()
+    public function getURL() : string
     {
         return $this->url;
     }
@@ -169,8 +171,11 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
 
         return $this;
     }
-    
-    public function getJavascript()
+
+    /**
+     * @return string
+     */
+    public function getJavascript() : string
     {
         return $this->javascript;
     }
@@ -195,7 +200,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     * Whether the button's action is a javascript statement.
     * @return boolean
     */
-    public function isClickable()
+    public function isClickable() : bool
     {
         return $this->mode == 'clickable';
     }
@@ -277,44 +282,6 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
         return $this->setDesign('danger');
     }
     
-   /**
-    * Adds a confirmation dialog with the specified message
-    * before the button action is executed. Automatically
-    * styles the confirmation dialog according to the button
-    * style, e.g. if it's a danger button the dialog will be
-    * a dangerous operation dialog.
-    * 
-    * @param string|number|UI_Renderable_Interface $message Can contain HTML code.
-    * @param boolean $withInput Whether to have the user confirm the operation by typing a confirm string.
-    * @return $this
-    */
-    public function makeConfirm($message, bool $withInput=false) : UI_Page_Sidebar_Item_Button
-    {
-        $this->getConfirmMessage()
-        ->setMessage($message)
-        ->makeWithInput($withInput);
-        
-        return $this;
-    }
-    
-   /**
-    * Returns the confirm message instance to be able to configure it further.
-    * If none exists yet, it is created.
-    * 
-    * @return UI_Page_Sidebar_Item_Button_ConfirmMessage
-    */
-    public function getConfirmMessage() : UI_Page_Sidebar_Item_Button_ConfirmMessage
-    {
-        if(isset($this->confirmMessage))
-        {
-            return $this->confirmMessage;
-        }
-        
-        $this->confirmMessage = new UI_Page_Sidebar_Item_Button_ConfirmMessage($this);
-        
-        return $this->confirmMessage;
-    }
-
     /**
      * @return $this
      */
@@ -436,6 +403,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     /**
      * Renders the button using the <code>sidebar.button</code> template.
      * @return string
+     * @see template_default_sidebar_button
      */
     protected function _render()
     {

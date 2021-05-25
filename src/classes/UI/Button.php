@@ -8,11 +8,15 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     use UI_Traits_RenderableGeneric;
     use Traits_Classable;
     use UI_Traits_Conditional;
+    use UI_Traits_ClientConfirmable;
  
     const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
     const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
-    
-   /**
+
+    const MODE_CLICKABLE = 'clickable';
+    const MODE_LINKED = 'linked';
+
+    /**
     * @var string
     */
     protected $label = '';
@@ -82,7 +86,22 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     * @var string
     */
     protected $disabledTooltip = '';
-    
+
+    /**
+     * @var string
+     */
+    private $mode = '';
+
+    /**
+     * @var string
+     */
+    private $urlTarget = '';
+
+    /**
+     * @var string
+     */
+    private $javascript = '';
+
     public function __construct($label='')
     {
         $this->setLabel($label);
@@ -339,23 +358,28 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     */
     public function click(string $statement) : UI_Button
     {
-        return $this->setAttribute('onclick', $statement);
+        $this->mode = self::MODE_CLICKABLE;
+        $this->javascript = $statement;
+
+        return $this;
     }
-    
-   /**
-    * Sets the title attribute of the button.
-    * 
-    * @param string|number|UI_Renderable_Interface $title
-    * @return $this
-    */
+
+    /**
+     * Sets the title attribute of the button.
+     *
+     * @param scalar|UI_Renderable_Interface $title
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setTitle($title) : UI_Button
     {
         return $this->setAttribute('title', toString($title));
     }
 
     /**
-     * @param number|string|UI_Renderable_Interface $tooltip
+     * @param scalar|UI_Renderable_Interface $tooltip
      * @return $this
+     * @throws UI_Exception
      */
     public function setTooltip($tooltip)
     {
@@ -467,10 +491,28 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         if(!empty($title)) {
             $atts['title'] = $title;
         }
+
+        if($this->confirmMessage !== null)
+        {
+            $atts['onclick'] = $this->confirmMessage->getJavaScript();
+        }
+        else
+        {
+            switch ($this->mode)
+            {
+                case self::MODE_LINKED:
+                    $atts['href'] = $this->getURL();
+                    $atts['target'] = $this->urlTarget;
+                    break;
+
+                case self::MODE_CLICKABLE:
+                    $atts['onclick'] = $this->getJavascript();
+                    break;
+            }
+        }
         
         if($this->locked) 
         {
-            $this->url = 'javascript:void(0)';
             $atts['onclick'] = "LockManager.DialogActionDisabled()";
         } 
         else if($this->disabled) 
@@ -479,13 +521,6 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
             unset($atts['href']);
             unset($atts['type']);
             unset($atts['target']);
-            
-            $this->url = 'javascript:void(0)';
-        }
-        
-        if(!empty($this->url)) 
-        {
-            $atts['href'] = $this->url;
         }
         
         return $atts;
@@ -549,12 +584,9 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     
     public function link(string $url, string $target='') : UI_Button
     {
-        if(!empty($target)) 
-        {
-            $this->setAttribute('target', $target);
-        }
-        
         $this->url = $url;
+        $this->urlTarget = $target;
+        $this->mode = self::MODE_LINKED;
         
         return $this;
     }
@@ -633,5 +665,40 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         $this->disabledTooltip = $helpText;
         
         return $this;
+    }
+
+    public function getURL() : string
+    {
+        return $this->url;
+    }
+
+    public function isClickable() : bool
+    {
+        $js = $this->getJavascript();
+        return !empty($js);
+    }
+
+    public function isLinked() : bool
+    {
+        return !empty($this->url);
+    }
+
+    public function getJavascript() : string
+    {
+        return $this->getAttribute('onclick');
+    }
+
+    public function isDangerous() : bool
+    {
+        return $this->layout === 'danger';
+    }
+
+    private function getAttribute(string $name) : string
+    {
+        if(isset($this->attributes[$name])) {
+            return $this->attributes[$name];
+        }
+
+        return '';
     }
 }
