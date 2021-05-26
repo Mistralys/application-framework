@@ -19,7 +19,7 @@ use AppUtils\Interface_Classable;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_DataGrid_Entry implements Interface_Classable
+class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
 {
     use Traits_Classable;
 
@@ -113,7 +113,7 @@ class UI_DataGrid_Entry implements Interface_Classable
     */
     public function makeWarning()
     {
-        return $this->addClass('row-type-warning');
+        return $this->addClass('row-type-warning')->addClass('warning');
     }
 
    /**
@@ -122,7 +122,7 @@ class UI_DataGrid_Entry implements Interface_Classable
     */
     public function makeSuccess()
     {
-        return $this->addClass('row-type-success');
+        return $this->addClass('row-type-success')->addClass('success');
     }
     
    /**
@@ -229,4 +229,34 @@ class UI_DataGrid_Entry implements Interface_Classable
         
         return $html;
     }
+
+    // region: Array access interface
+
+    public function offsetExists($offset)
+    {
+        return isset($this->data[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        if(isset($this->data[$offset])) {
+            return $this->data[$offset];
+        }
+
+        return null;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        $this->data[$offset] = $value;
+    }
+
+    public function offsetUnset($offset)
+    {
+        if(array_key_exists($offset, $this->data)) {
+            unset($this->data[$offset]);
+        }
+    }
+
+    // endregion
 }
