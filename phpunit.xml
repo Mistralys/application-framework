@@ -15,6 +15,9 @@
         <testsuite name="Collection">
             <directory suffix=".php">./tests/testsuites/Collection</directory>
         </testsuite>
+        <testsuite name="Countries">
+            <directory suffix=".php">./tests/testsuites/Countries</directory>
+        </testsuite>
         <testsuite name="DataGrids">
             <directory suffix=".php">./tests/testsuites/DataGrids</directory>
         </testsuite>
