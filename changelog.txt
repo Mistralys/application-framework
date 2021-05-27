@@ -8,6 +8,8 @@ v1.13.0
 - Enums: Revamped the `BasicEnum` class to streamline the internals; Removed non-strict checks.
 - DBHelper: Added key default value generation by callback via `setGenerator()`.
 - DataGrid: Added the array access interface to the `UI_DataGrid_Entry` class.
+- Countries: Added the locale code parser utility, accessible via `parseLocaleCode()`.
+- Countries: Added the `getByLocaleCode()` method.
 
 v1.12.11
 - PropertiesGrid: Added conditional support to hide/show elements by criteria.
