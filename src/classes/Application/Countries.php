@@ -5,6 +5,8 @@
  * @subpackage Countries
  */
 
+use function AppUtils\parseVariable;
+
 /**
  * Country management class, used to retrieve information
  * about available countries and add or delete individiual
@@ -22,6 +24,7 @@ class Application_Countries extends DBHelper_BaseCollection
 {
     const ERROR_UNKNOWN_ISO_CODE = 21901;
     const ERROR_INVALID_COUNTRY_ID = 21902;
+    const ERROR_UNKNOWN_LOCALE_CODE = 21903;
     
     /**
      * @var Application_Countries
@@ -253,9 +256,7 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         $iso = strtolower($iso);
         
-        $isos = $this->getSupportedISOs();
-        
-        return in_array($iso, $isos);
+        return in_array($iso, $this->getSupportedISOs());
     }
 
    /**
@@ -338,6 +339,29 @@ class Application_Countries extends DBHelper_BaseCollection
         );
     }
 
+    /**
+     * @param string $code The locale code, e.g. "de_DE"
+     * @return Application_Countries_Country
+     * @throws Application_Countries_Exception
+     */
+    public function getByLocaleCode(string $code) : Application_Countries_Country
+    {
+        return $this->parseLocaleCode($code)->getCountry();
+    }
+
+    /**
+     * Parses a locale code to access information on its
+     * constituent parts.
+     *
+     * @param string $code The locale code, e.g. "de_DE"
+     * @return Application_Countries_LocaleCode
+     * @throws Application_Countries_Exception
+     */
+    public function parseLocaleCode(string $code) : Application_Countries_LocaleCode
+    {
+        return new Application_Countries_LocaleCode($code);
+    }
+
    /**
     * The navigator can be used to create a navigation
     * element to switch between countries.
@@ -354,8 +378,8 @@ class Application_Countries extends DBHelper_BaseCollection
     * For a list of string or integer IDs, returns 
     * all matching countries by their ID.
     * 
-    * @param array $ids
-    * @throws Application_Exception
+    * @param string[]|int[] $ids
+    * @throws Application_Countries_Exception
     * @return Application_Countries_Country[]
     */
     public function getInstancesByIDs(array $ids) : array
@@ -368,11 +392,11 @@ class Application_Countries extends DBHelper_BaseCollection
             
             if($countryID === 0 || !$this->idExists($countryID)) 
             {
-                throw new Application_Exception(
+                throw new Application_Countries_Exception(
                     'Invalid or unknown country ID.',
                     sprintf(
                         'The country ID [%s] is not a valid ID, or could not be found in the database.',
-                        \AppUtils\parseVariable($id)->enableType()->toString()
+                        parseVariable($id)->enableType()->toString()
                     ),
                     self::ERROR_INVALID_COUNTRY_ID
                 );
