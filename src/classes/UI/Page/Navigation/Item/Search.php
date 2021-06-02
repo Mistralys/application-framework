@@ -41,6 +41,16 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     protected $minLength = 2;
 
     /**
+     * @var string
+     */
+    private $preSelectedSearchTerms;
+
+    /**
+     * @var string
+     */
+    private $preSelectedScope;
+
+    /**
      * @param UI_Page_Navigation $nav
      * @param string $id
      * @param callable $callback
@@ -423,6 +433,12 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveTerms(string $scopeID) : string
     {
+        //If the search terms where pre-set for a specific scope
+        if(!empty($this->preSelectedScope) && !empty($this->preSelectedSearchTerms) && $this->preSelectedScope == $scopeID)
+        {
+            return $this->preSelectedSearchTerms;
+        }
+        
         $paramName = $this->getSearchElementName($scopeID);
 
         $terms = (string)$this->request->registerParam($paramName)
@@ -442,6 +458,12 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveScope() : string
     {
+        //If we pre-set the selected scope
+        if(!empty($this->preSelectedScope))
+        {
+            return $this->preSelectedScope;
+        }
+
         if(empty($this->scopes)) {
             return '';
         }
@@ -475,5 +497,29 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         }
 
         return '';
+    }
+
+    public function setPreSelectedScope(string $preSelectedScope)
+    {
+        if(in_array($preSelectedScope, array_column($this->scopes, 'name')))
+        {
+            $this->preSelectedScope = $preSelectedScope;
+        }
+
+        //TODO: Throw Error??
+//        throw new Application_Exception(
+//            'Can\'t set the pre selected scope!',
+//            sprintf(
+//                'The pre selected scope [%s] must be part of the available scopes [%s].',
+//                $preSelectedScope,
+//                print_r($this->scopes)
+//            ),
+//            self::ERROR_INVALID_CALLBACK
+//        );
+    }
+
+    public function setPreSelectedSearchTerms(string $preSelectedSearchTerms)
+    {
+        $this->preSelectedSearchTerms = $preSelectedSearchTerms;
     }
 }
