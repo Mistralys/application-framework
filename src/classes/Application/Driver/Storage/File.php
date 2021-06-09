@@ -33,6 +33,13 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
         
         $this->data[$name] = $value;
     }
+
+    public function setExpiry($name, $date)
+    {
+        $this->load();
+
+        $this->data[$name] =$date->format('Y-m-d H:i:s');
+    }
     
     public function delete($name)
     {

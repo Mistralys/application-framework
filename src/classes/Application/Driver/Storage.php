@@ -17,4 +17,6 @@ abstract class Application_Driver_Storage
     abstract public function set($name, $value, $role);
     
     abstract public function delete($name);
+
+    abstract public function setExpiry($name, $date);
 }
