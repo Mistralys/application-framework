@@ -437,15 +437,15 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         //If the search terms where pre-set for a specific scope
         if(!empty($this->preSelectedScope) && !empty($this->preSelectedSearchTerms) && $this->preSelectedScope == $scopeID)
         {
-            return $this->preSelectedSearchTerms;
-        }
-        
-        $paramName = $this->getSearchElementName($scopeID);
+            $terms = $this->preSelectedSearchTerms;
+        }else{
+            $paramName = $this->getSearchElementName($scopeID);
 
-        $terms = (string)$this->request->registerParam($paramName)
-        ->addFilterTrim()
-        ->addStripTagsFilter()
-        ->get('');
+            $terms = (string)$this->request->registerParam($paramName)
+                ->addFilterTrim()
+                ->addStripTagsFilter()
+                ->get('');
+        }
         
         if(!empty($terms) || mb_strlen($terms) >= $this->minLength) {
             return $terms;
