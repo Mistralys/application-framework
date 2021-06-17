@@ -5,6 +5,7 @@ use AppUtils\ConvertHelper;
 class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 {
     const ERROR_INVALID_CALLBACK = 22101;
+    const ERROR_INVALID_SCOPE = 22102;
 
     /**
      * @var callable
@@ -39,6 +40,16 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      * @var int
      */
     protected $minLength = 2;
+
+    /**
+     * @var string
+     */
+    private $preSelectedSearchTerms;
+
+    /**
+     * @var string
+     */
+    private $preSelectedScope;
 
     /**
      * @param UI_Page_Navigation $nav
@@ -423,12 +434,18 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveTerms(string $scopeID) : string
     {
-        $paramName = $this->getSearchElementName($scopeID);
+        //If the search terms where pre-set for a specific scope
+        if(!empty($this->preSelectedScope) && !empty($this->preSelectedSearchTerms) && $this->preSelectedScope == $scopeID)
+        {
+            $terms = $this->preSelectedSearchTerms;
+        }else{
+            $paramName = $this->getSearchElementName($scopeID);
 
-        $terms = (string)$this->request->registerParam($paramName)
-        ->addFilterTrim()
-        ->addStripTagsFilter()
-        ->get('');
+            $terms = (string)$this->request->registerParam($paramName)
+                ->addFilterTrim()
+                ->addStripTagsFilter()
+                ->get('');
+        }
         
         if(!empty($terms) || mb_strlen($terms) >= $this->minLength) {
             return $terms;
@@ -442,6 +459,12 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
      */
     protected function resolveScope() : string
     {
+        //If we pre-set the selected scope
+        if(!empty($this->preSelectedScope))
+        {
+            return $this->preSelectedScope;
+        }
+
         if(empty($this->scopes)) {
             return '';
         }
@@ -475,5 +498,29 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         }
 
         return '';
+    }
+
+    public function setPreSelectedScope(string $preSelectedScope)
+    {
+        if(in_array($preSelectedScope, array_column($this->scopes, 'name')))
+        {
+            $this->preSelectedScope = $preSelectedScope;
+            return;
+        }
+
+        throw new Application_Exception(
+            'Can\'t set the pre selected scope!',
+            sprintf(
+                'The pre selected scope [%s] must be part of the available scopes [%s].',
+                $preSelectedScope,
+                print_r($this->scopes, true)
+            ),
+            self::ERROR_INVALID_SCOPE
+        );
+    }
+
+    public function setPreSelectedSearchTerms(string $preSelectedSearchTerms)
+    {
+        $this->preSelectedSearchTerms = $preSelectedSearchTerms;
     }
 }
