@@ -144,19 +144,28 @@ abstract class Application_Driver implements Application_Driver_Interface
             return;
         }
 
-        $type = self::STORAGE_TYPE_FILE;
+        $storageClass = Application_Driver_Storage::class. '_' . self::getStorageType();
+        $storage = new $storageClass();
 
-        if (Application::isDatabaseEnabled())
-        {
-            $type = self::STORAGE_TYPE_DB;
+        if($storage instanceof Application_Driver_Storage) {
+            self::$storage = $storage;
+            return;
         }
 
-        $storageClass = 'Application_Driver_Storage_' . $type;
-
-        self::$storage = ensureType(
+        throw new Application_Exception_UnexpectedInstanceType(
             Application_Driver_Storage::class,
-            new $storageClass()
+            $storage
         );
+    }
+
+    public static function getStorageType() : string
+    {
+        if (Application::isDatabaseEnabled())
+        {
+            return self::STORAGE_TYPE_DB;
+        }
+
+        return self::STORAGE_TYPE_FILE;
     }
 
     /**
@@ -678,9 +687,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         return Application::getTempFile($name, $extension);
     }
 
-    protected static $settings = array();
-    protected static $settingsExpiry = array();
-
     /**
      * Retrieves a persistent application setting by its name.
      * @param string $name
@@ -689,19 +695,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function getSetting($name, $default = null)
     {
-        if (isset(self::$settings[$name]) &&
-            (!isset(self::$settingsExpiry[$name])
-                || self::$settingsExpiry[$name] >= new DateTime())
-            )
-        {
-            return self::$settings[$name];
-        }
-
         $value = self::$storage->get($name);
 
         if ($value !== null)
         {
-            self::$settings[$name] = $value;
             return $value;
         }
 
@@ -752,8 +749,6 @@ abstract class Application_Driver implements Application_Driver_Interface
             );
         }
 
-        self::$settings[$name] = $value;
-
         self::$storage->set($name, $value, $role);
     }
 
@@ -778,12 +773,6 @@ abstract class Application_Driver implements Application_Driver_Interface
             );
         }
 
-        if (isset(self::$settings[$name]))
-        {
-            unset(self::$settings[$name]);
-            unset(self::$settingsExpiry[$name]);
-        }
-
         self::$storage->delete($name);
     }
 
@@ -794,12 +783,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function setSettingExpiry(string $name, DateTime $date) : bool
     {
-        if (isset(self::$settings[$name]))
-        {
-            self::$storage->setExpiry($name, $date);
-            self::$settingsExpiry[$name] = $date;
-            return true;
-        }
+        self::$storage->setExpiry($name, $date);
+
         return false;
     }
 
