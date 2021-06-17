@@ -1,10 +1,20 @@
 <?php
 
+use AppUtils\FileHelper;
+
 class Application_Driver_Storage_File extends Application_Driver_Storage
 {
+    const COL_EXPIRY = 'expiry';
+    const COL_KEYS = 'keys';
+
     protected $dataFile;
 
     protected $data;
+
+    /**
+     * @var string
+     */
+    private $dateFormat = 'Y-m-d H:i:s';
 
     protected function init()
     {
@@ -20,8 +30,8 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
     {
         $this->load();
 
-        if(isset($this->data[$name])) {
-            return $this->data[$name];
+        if(isset($this->data[self::COL_KEYS][$name])) {
+            return $this->data[self::COL_KEYS][$name];
         }
 
         return null;
@@ -31,22 +41,37 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
     {
         $this->load();
 
-        $this->data[$name] = $value;
+        $this->data[self::COL_KEYS][$name] = $value;
     }
 
     public function setExpiry(string $name, DateTime $date) : void
     {
         $this->load();
 
-        $this->data[$name] =$date->format('Y-m-d H:i:s');
+        $this->data[self::COL_EXPIRY][$name] = $date->format($this->dateFormat);
+    }
+
+    public function getExpiry(string $name) : ?DateTime
+    {
+        $this->load();
+
+        if(isset($this->data[self::COL_EXPIRY][$name])) {
+            return new DateTime($this->data[self::COL_EXPIRY][$name]);
+        }
+
+        return null;
     }
 
     public function delete($name)
     {
         $this->load();
 
-        if(isset($this->data[$name])) {
-            unset($this->data[$name]);
+        if(isset($this->data[self::COL_KEYS][$name])) {
+            unset($this->data[self::COL_KEYS][$name]);
+        }
+
+        if(isset($this->data[self::COL_EXPIRY][$name])) {
+            unset($this->data[self::COL_EXPIRY][$name]);
         }
     }
 
@@ -56,10 +81,13 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
             return;
         }
 
-        $this->data = array();
+        $this->data = array(
+            self::COL_KEYS => array(),
+            self::COL_EXPIRY => array()
+        );
 
         if(file_exists($this->dataFile)) {
-            $this->data = AppUtils\FileHelper::parseJSONFile($this->dataFile);
+            $this->data = FileHelper::parseJSONFile($this->dataFile);
         }
     }
 
