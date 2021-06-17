@@ -5,6 +5,7 @@ use AppUtils\ConvertHelper;
 class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 {
     const ERROR_INVALID_CALLBACK = 22101;
+    const ERROR_INVALID_SCOPE = 22102;
 
     /**
      * @var callable
@@ -504,18 +505,18 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         if(in_array($preSelectedScope, array_column($this->scopes, 'name')))
         {
             $this->preSelectedScope = $preSelectedScope;
+            return;
         }
 
-        //TODO: Throw Error??
-//        throw new Application_Exception(
-//            'Can\'t set the pre selected scope!',
-//            sprintf(
-//                'The pre selected scope [%s] must be part of the available scopes [%s].',
-//                $preSelectedScope,
-//                print_r($this->scopes)
-//            ),
-//            self::ERROR_INVALID_CALLBACK
-//        );
+        throw new Application_Exception(
+            'Can\'t set the pre selected scope!',
+            sprintf(
+                'The pre selected scope [%s] must be part of the available scopes [%s].',
+                $preSelectedScope,
+                print_r($this->scopes, true)
+            ),
+            self::ERROR_INVALID_SCOPE
+        );
     }
 
     public function setPreSelectedSearchTerms(string $preSelectedSearchTerms)
