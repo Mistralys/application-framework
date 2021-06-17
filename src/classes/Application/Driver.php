@@ -788,11 +788,11 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param DateTime $date
      * @return bool
      */
-    public static function setSettingExpiry($name, DateTime $date)
+    public static function setSettingExpiry(string $name, DateTime $date) : bool
     {
         if (isset(self::$settings[$name]))
         {

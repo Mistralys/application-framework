@@ -48,7 +48,7 @@ class Application_Driver_Storage_DB extends Application_Driver_Storage
         );
     }
 
-    public function setExpiry($name, $date)
+    public function setExpiry(string $name, DateTime $date) : void
     {
         DBHelper::update(
             "UPDATE
