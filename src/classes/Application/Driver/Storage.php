@@ -6,15 +6,17 @@ abstract class Application_Driver_Storage
     {
         $this->init();
     }
-    
+
     protected function init()
     {
-        
+
     }
-    
+
     abstract public function get($name);
-    
+
     abstract public function set($name, $value, $role);
-    
+
     abstract public function delete($name);
+
+    abstract public function setExpiry(string $name, DateTime $date) : void;
 }
