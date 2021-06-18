@@ -10,3 +10,6 @@
 --
 
 ALTER TABLE `app_settings` ADD `expiry_date` datetime null;
+
+-- Allow email aliases for the same InsideNet ID
+ALTER TABLE `known_users` DROP INDEX `foreign_id_2`;
