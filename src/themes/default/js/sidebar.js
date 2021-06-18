@@ -32,7 +32,7 @@ var Sidebar =
 			var $sidebar = $('#sidebar .sidebar-wrap, #quickjump');
 
 			// some pages do not have a sidebar
-			if(this.element.length==0) {
+			if($sidebar.length==0) {
 				return;
 			}
 
