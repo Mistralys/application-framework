@@ -29,8 +29,16 @@ var Sidebar =
 		 */
 		Start:function()
 		{
-			var $window = $(window);
 			var $sidebar = $('#sidebar .sidebar-wrap, #quickjump');
+
+			// some pages do not have a sidebar
+			if(this.element.length==0) {
+				return;
+			}
+
+			application.log('Sidebar', 'Sidebar found, setting up automatic scrolling.', 'ui');
+
+			var $window = $(window);
 			var $sidebarContainer = $('.with-sidebar');
 			var sidebarOffsetTop = $sidebarContainer.offset().top;
 			var navbarHeight = $('#app-mainnav').height();
