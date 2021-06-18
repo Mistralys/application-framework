@@ -1,3 +1,6 @@
+v1.13.1
+- UI: Sidebar: Check if the sidebar exists on the page.
+
 v1.13.0
 - UI: Added the `UI_Statuses` related classes to handle and render object state information.
 - UI: Added a dedicated exception class, `UI_Exception`, based on `Application_Exception`.
