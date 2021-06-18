@@ -1,3 +1,6 @@
+v1.13.2
+- UI: Sidebar: Use the correct element to check if the sidebar exists.
+
 v1.13.1
 - UI: Sidebar: Check if the sidebar exists on the page.
 
