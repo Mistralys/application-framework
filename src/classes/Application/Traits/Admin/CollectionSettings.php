@@ -375,8 +375,8 @@ trait Application_Traits_Admin_CollectionSettings
     public function getSettingsFormValues() : array
     {
         $keys = $this->resolveKeyNames(true);
-        $values = $this->getFormValues();
 
+        $values = $this->getFormValues();
         if(isset($this->settingsManager))
         {
             $values = array_merge($values, $this->settingsManager->getVirtualValues());
@@ -385,13 +385,17 @@ trait Application_Traits_Admin_CollectionSettings
         $result = array();
         foreach($keys as $keyName) 
         {
-            $setting = $this->settingsManager->getSettingByName($keyName);
+            if(isset($this->settingsManager))
+            {
+                $setting = $this->settingsManager->getSettingByName($keyName);
 
-            // All values must be present, except static settings, which
-            // do not necessarily have a value (they are cosmetic only,
-            // like static form elements for displaying information)
-            if($setting->isStatic()) {
-                continue;
+                // All values must be present, except static settings, which
+                // do not necessarily have a value (they are cosmetic only,
+                // like static form elements for displaying information)
+                if ($setting->isStatic())
+                {
+                    continue;
+                }
             }
 
             if(!array_key_exists($keyName, $values)) {
