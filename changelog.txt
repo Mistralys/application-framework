@@ -1,3 +1,6 @@
+v1.13.3
+- UI: Buttons: Fixed javascript onclick handlers not being rendered to HTML.
+
 v1.13.2
 - UI: Sidebar: Use the correct element to check if the sidebar exists.
 
