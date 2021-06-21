@@ -506,7 +506,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
                     break;
 
                 case self::MODE_CLICKABLE:
-                    $atts['onclick'] = $this->getJavascript();
+                    $atts['onclick'] = $this->getJavaScript();
                     break;
             }
         }
@@ -685,7 +685,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
 
     public function getJavascript() : string
     {
-        return $this->getAttribute('onclick');
+        return $this->javascript;
     }
 
     public function isDangerous() : bool
