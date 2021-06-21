@@ -1,3 +1,6 @@
+v1.13.4
+- Areas: CollectionSettings: Fixed a PHP error when not using a settings manager instance.
+
 v1.13.3
 - UI: Buttons: Fixed javascript onclick handlers not being rendered to HTML.
 
