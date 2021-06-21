@@ -1,7 +1,24 @@
 <?php
+/**
+ * File containing the interface {@see Application_Interfaces_Admin_CollectionSettings}.
+ *
+ * @package Application
+ * @subpackage Admin
+ * @see Application_Interfaces_Admin_CollectionSettings
+ */
 
 declare(strict_types=1);
 
+/**
+ * Interface for admin screens that display a settings form for
+ * a DB item collection record.
+ *
+ * @package Application
+ * @subpackage Admin
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Traits_Admin_CollectionSettings
+ */
 interface Application_Interfaces_Admin_CollectionSettings extends Application_Admin_ScreenInterface
 {
     const ERROR_UNKNOWN_SETTING_KEY = 17901;
