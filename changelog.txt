@@ -1,3 +1,6 @@
+v1.13.5
+- Session: Fixed not being able to switch roles in simulated session.
+
 v1.13.4
 - Areas: CollectionSettings: Fixed a PHP error when not using a settings manager instance.
 
