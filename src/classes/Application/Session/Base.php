@@ -101,17 +101,20 @@ abstract class Application_Session_Base implements Application_Session
             $this->logOut();
         }
 
+        $userID = $this->getUserID();
+
+        $this->initSimulatedSession($userID);
+
         // Starts the authentication process. This ends either by
         // storing the user ID in the session via `storeUser()`,
         // or via a redirect to an error page.
-        if ($this->getUserID() === 0)
+        if ($userID === 0)
         {
             $this->log('No user ID stored, starting authentication.');
 
-            $this->initSimulatedSession();
             $this->initAuthentication();
         }
-
+        
         $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
 
         // A user is present in the session and can be unpacked.
@@ -247,42 +250,70 @@ abstract class Application_Session_Base implements Application_Session
         }
     }
 
-    protected function initSimulatedSession() : void
+    /**
+     * Initializes the session when in simulation mode. Has no
+     * effect if simulation mode is disabled.
+     *
+     * @param int $userID The currently logged in user ID
+     * @throws Application_Exception
+     */
+    protected function initSimulatedSession(int $userID) : void
     {
-        // in simulated session mode we use the dummy user.
+        // Ignore this if we are not in simulation mode.
         if (!Application::isSessionSimulated()) {
             return;
         }
 
         $this->log('Session is in simulated mode.');
 
-        $user_id = $this->defaultSimulatedUser;
+        // Store the name of the rights preset we want to use.
+        if (isset($_REQUEST[self::KEY_NAME_RIGHTS_PRESET]) && array_key_exists($_REQUEST[self::KEY_NAME_RIGHTS_PRESET], $this->rightPresets))
+        {
+            $presetName = $_REQUEST[self::KEY_NAME_RIGHTS_PRESET];
+
+            $this->log(sprintf('Selected rights preset [%s].', $presetName));
+
+            $this->setValue(self::KEY_NAME_RIGHTS_PRESET, $presetName);
+        }
+
+        $simulateID = $this->getSimulatedUserID();
+
+        // Switch the simulated user?
+        if($simulateID !== $userID)
+        {
+            $this->log(sprintf('Using the user ID [%s] for the simulated session.', $simulateID));
+
+            $this->storeUser(Application_Driver::createUsers()->getByID($simulateID));
+        }
+    }
+
+    private function getSimulatedUserID() : int
+    {
+        $simulateID = $this->defaultSimulatedUser;
 
         // Is a user already simulated in the session?
         if(isset($_SESSION[self::KEY_NAME_SIMULATED_ID]) && isset($this->simulateableUsers[$_SESSION[self::KEY_NAME_SIMULATED_ID]]))
         {
-            $user_id = $_SESSION[self::KEY_NAME_SIMULATED_ID];
+            $simulateID = intval($_SESSION[self::KEY_NAME_SIMULATED_ID]);
         }
 
         // A user has been selected in the request.
         if(isset($_REQUEST[self::KEY_NAME_SIMULATED_ID]) && isset($this->simulateableUsers[$_REQUEST[self::KEY_NAME_SIMULATED_ID]]))
         {
-            $user_id = $_REQUEST[self::KEY_NAME_SIMULATED_ID];
+            $simulateID = intval($_REQUEST[self::KEY_NAME_SIMULATED_ID]);
         }
 
-        if (isset($_REQUEST[self::KEY_NAME_RIGHTS_PRESET]) && array_key_exists($_REQUEST[self::KEY_NAME_RIGHTS_PRESET], $this->rightPresets))
-        {
-            $this->setValue(self::KEY_NAME_RIGHTS_PRESET, $_REQUEST[self::KEY_NAME_RIGHTS_PRESET]);
-        }
-
-        $this->log(sprintf('Using the user ID [%s] for the simulated session.', $user_id));
-
-        $this->storeUser(Application_Driver::createUsers()->getByID($user_id));
+        return $simulateID;
     }
 
     protected function unpackRights() : array
     {
         $rights = strval($this->getValue(self::KEY_NAME_USER_RIGHTS));
+
+        if(Application::isSessionSimulated())
+        {
+            $rights = $this->getCurrentRights();
+        }
 
         return explode(',', $rights);
     }
