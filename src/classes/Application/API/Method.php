@@ -423,9 +423,9 @@ abstract class Application_API_Method
         $this->serveJSON($json);
     }
 
-    protected function sendJSONError($message)
+    protected function sendJSONError($message, $httpResponseCode = 200)
     {
-        $this->sendError(self::DATA_TYPE_JSON, $message);
+        $this->sendError(self::DATA_TYPE_JSON, $message, $httpResponseCode);
     }
 
     protected function sendJSONResponse($data)
@@ -433,8 +433,10 @@ abstract class Application_API_Method
         $this->sendResponse(self::DATA_TYPE_JSON, $data);
     }
 
-    protected function sendError($format, $message)
+    protected function sendError($format, $message, int $httpResponseCode = 200)
     {
+        http_response_code($httpResponseCode);
+
         $method = 'serveError_' . $format;
         if (method_exists($this, $method)) {
             $this->$method($message);
