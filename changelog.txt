@@ -1,3 +1,6 @@
+v1.13.6
+- API: Allow setting http response code when sending errors back.
+
 v1.13.5
 - Session: Fixed not being able to switch roles in simulated session.
 
