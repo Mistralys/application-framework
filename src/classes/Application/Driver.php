@@ -1112,6 +1112,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * none is set specifically in the request.
      *
      * @return string
+     * @throws Application_Exception
+     *
+     * @see Application_Driver::ERROR_CANNOT_GET_PAGEID_BEFORE_PREPARE
+     * @see Application_Driver::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
      */
     public function getPageID()
     {
@@ -1138,27 +1142,47 @@ abstract class Application_Driver implements Application_Driver_Interface
         $area = $this->createArea($areaID);
         if (!$area->isUserAllowed())
         {
-            $areas = $this->getAllowedAreas();
-            if (empty($areas))
-            {
-                $ids = array_keys($this->enabledAreas);
-                throw new Application_Exception(
-                    'User is not authorized for any administration screens',
-                    sprintf(
-                        'The user [%s] (ID [%s]) with the rights [%s] is not authorized for any administration screen. Available screens: [%s].',
-                        $this->user->getName(),
-                        $this->user->getID(),
-                        implode(', ', $this->user->getRights()),
-                        implode(', ', $ids)
-                    ),
-                    self::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
-                );
-            }
-            $areaID = $areas[0]->getURLName();
+            $this->log(sprintf('User [%s] is not allowed to access area [%s]. Choosing one of those they are allowed for instead.', $this->user->getID(), $areaID));
+
+            $areaID = $this->resolveDefaultArea()->getURLName();
+
+            $this->log(sprintf('Using area [%s] instead.', $areaID));
         }
 
         $this->request->setParam('page', $areaID);
         return $areaID;
+    }
+
+    /**
+     * @return Application_Admin_Area
+     * @throws Application_Exception
+     *
+     * @see Application_Driver::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
+     */
+    private function resolveDefaultArea() : Application_Admin_Area
+    {
+        $areas = $this->getAllowedAreas();
+        if (!empty($areas))
+        {
+            $this->log(sprintf('Found [%s] areas that the user is allowed for.', count($areas)));
+            return array_shift($areas);
+        }
+
+        $this->log(sprintf('The user is not allowed for any of the [%s] enabled areas.', count($this->enabledAreas)));
+
+        $ids = array_keys($this->enabledAreas);
+
+        throw new Application_Exception(
+            'User is not authorized for any administration screens',
+            sprintf(
+                'The user [%s] (ID [%s]) with the rights [%s] is not authorized for any administration screen. Available screens: [%s].',
+                $this->user->getName(),
+                $this->user->getID(),
+                implode(', ', $this->user->getRights()),
+                implode(', ', $ids)
+            ),
+            self::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
+        );
     }
 
     protected function log($message)
