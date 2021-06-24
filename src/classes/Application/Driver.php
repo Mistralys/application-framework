@@ -1145,9 +1145,10 @@ abstract class Application_Driver implements Application_Driver_Interface
                 throw new Application_Exception(
                     'User is not authorized for any administration screens',
                     sprintf(
-                        'The user [%s] (ID [%s]) is not authorized for any administration screen. Available screens: [%s].',
+                        'The user [%s] (ID [%s]) with the rights [%s] is not authorized for any administration screen. Available screens: [%s].',
                         $this->user->getName(),
                         $this->user->getID(),
+                        implode(', ', $this->user->getRights()),
                         implode(', ', $ids)
                     ),
                     self::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
