@@ -1,9 +1,7 @@
-v1.13.6
-- API: Allow setting http response code when sending errors back.
-- Driver: Log user rights if the user is not allowed for any admin areas.
-
 v1.13.5
 - Session: Fixed not being able to switch roles in simulated session.
+- API: Allow setting http response code when sending errors back.
+- Driver: Log user rights if the user is not allowed for any admin areas.
 
 v1.13.4
 - Areas: CollectionSettings: Fixed a PHP error when not using a settings manager instance.
