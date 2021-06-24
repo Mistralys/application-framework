@@ -409,7 +409,7 @@ abstract class Application_API_Method
             exit;
         }
 
-        header('HTTP/1.1 200');
+        header('HTTP/1.1 ' . Connectors_ResponseCode::HTTP_OK);
         exit;
     }
 
@@ -423,9 +423,9 @@ abstract class Application_API_Method
         $this->serveJSON($json);
     }
 
-    protected function sendJSONError($message)
+    protected function sendJSONError($message, $responseCode = Connectors_ResponseCode::HTTP_BAD_REQUEST)
     {
-        $this->sendError(self::DATA_TYPE_JSON, $message);
+        $this->sendError(self::DATA_TYPE_JSON, $message, $responseCode);
     }
 
     protected function sendJSONResponse($data)
@@ -433,15 +433,17 @@ abstract class Application_API_Method
         $this->sendResponse(self::DATA_TYPE_JSON, $data);
     }
 
-    protected function sendError($format, $message)
+    protected function sendError($format, $message, int $responseCode = Connectors_ResponseCode::HTTP_BAD_REQUEST)
     {
+        http_response_code($responseCode);
+
         $method = 'serveError_' . $format;
         if (method_exists($this, $method)) {
             $this->$method($message);
             exit;
         }
 
-        header('HTTP/1.1 500 ' . $message);
+        header('HTTP/1.1 ' . $responseCode . ' ' . $message);
         exit;
     }
 
