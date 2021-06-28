@@ -112,8 +112,9 @@ font-size:36px;
 line-height:180%;
 }
 
-.visel-item{
+.visel-item.checkered{
 background: url(../../img/forms/VisualSelect/bg-image.png);
+
 }
 
 .visel-item.no-icon{
