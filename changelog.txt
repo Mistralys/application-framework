@@ -1,5 +1,6 @@
 v1.13.6
 - Forms: VisualSelect: Added a checkered background to images to account for white on white images.
+- CLIScreen: Fixed GetOpt return type validation message in PHPStan with new v4.0.0 release.
 
 v1.13.5
 - Session: Fixed not being able to switch roles in simulated session.
