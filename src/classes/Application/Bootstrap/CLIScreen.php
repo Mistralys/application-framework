@@ -1,14 +1,14 @@
 <?php
 
+use GetOpt\Command;
 use GetOpt\Option;
 use GetOpt\ArgumentException;
 use GetOpt\GetOpt;
-use GetOpt\Command;
 
 abstract class Application_Bootstrap_CLIScreen extends Application_Bootstrap_Screen
 {
    /**
-    * @var \GetOpt\GetOpt
+    * @var GetOpt
     */
     protected $opt;
     
@@ -60,9 +60,13 @@ abstract class Application_Bootstrap_CLIScreen extends Application_Bootstrap_Scr
     
     private function resolveCommand() : ?Command
     {
-        // this is wrongly documented in getopt: getCommand can
-        // return null, but is documented as always returning a command.
-        return $this->opt->getCommand();
+        $command = $this->opt->getCommand();
+
+        if($command instanceof Command) {
+            return $command;
+        }
+
+        return null;
     }
     
    /**
