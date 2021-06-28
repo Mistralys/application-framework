@@ -1,3 +1,6 @@
+v1.13.6
+- Forms: VisualSelect: Added a checkered background to images to account for white on white images.
+
 v1.13.5
 - Session: Fixed not being able to switch roles in simulated session.
 - API: Allow setting http response code when sending errors back.
