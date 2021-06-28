@@ -22,13 +22,27 @@
 class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select
 {
     const ERROR_XXXXX = 33601;
-    
+
+    /**
+     * @var int
+     */
     protected $thumbnailSizeL = 80;
-    
+
+    /**
+     * @var int
+     */
     protected $thumbnailSizeS = 60;
-    
+
+    /**
+     * @var int
+     */
     protected $filterThreshold = 20;
-    
+
+    /**
+     * @var bool
+     */
+    private $checkered;
+
     protected function initNode() 
     {
         $this->setSortingEnabled();
@@ -273,7 +287,20 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
         $this->filterThreshold = $amount;
         return $this;
     }
-    
+
+    /**
+     * Adds a checkered background to the images, to be able to
+     * see when they have transparency.
+     *
+     * @param bool $checkered
+     * @return $this
+     */
+    public function makeCheckered(bool $checkered=true)
+    {
+        $this->checkered = $checkered;
+        return $this;
+    }
+
     protected function renderOptionsList($options)
     {
         foreach($options as $option)
@@ -300,6 +327,7 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
                 $imgAtts = array(
                     'id' => nextJSID(),
                     'title' => $option['text'],
+                    'alt' => $option['text'],
                     'src' => $option['attr']['image-url'],
                     'class' => 'visel-item-image',
                     'style' => 'width:'.$this->getThumbnailSize().'px'
@@ -311,10 +339,15 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
                 
                 if($option['attr']['value'] === '') {
                     $class .= ' no-icon';
-                } 
+                }
+
+                if($this->checkered) {
+                    $class .= ' checkered';
+                }
+
                 ?>
                     <li class="<?php echo $class ?>" data-value="<?php echo $option['attr']['value'] ?>">
-                        <img <?php echo compileAttributes($imgAtts) ?> class="visel-item-image"/>
+                        <img <?php echo compileAttributes($imgAtts) ?>/>
                     </li>
                 <?php
             }
@@ -381,25 +414,5 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
         );
         $this->loadOptionsFromArray($this->optionContainer, $options);
         return $this;
-    }
-}
-
-class HTML_QuickForm2_Element_VisualSelect_OptionContainer extends HTML_QuickForm2_Element_Select_OptionContainer
-{
-    public function addOptgroup($label, $attributes = null)
-    {
-        $optgroup = new HTML_QuickForm2_Element_VisualSelect_Optgroup(
-            $this->values, $this->possibleValues, $label, $attributes
-        );
-        $this->options[] = $optgroup;
-        return $optgroup;
-    }
-}
-
-class HTML_QuickForm2_Element_VisualSelect_Optgroup extends HTML_QuickForm2_Element_Select_Optgroup
-{
-    public function addImage($label, $value, $url)
-    {
-        $this->addOption($label, $value, array('image-url' => $url));
     }
 }
