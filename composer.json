@@ -47,7 +47,7 @@
 		"shark/simple_html_dom" : "dev-master",
         "ccampbell/mousetrap" : "dev-master",
         "medialize/uri.js" : "^1.19.2",
-		"ulrichsg/getopt-php" : "^3.2.1",
+		"ulrichsg/getopt-php" : "^4.0.0",
 		"components/flag-icon-css" : "^3.3.0",
         "hybridauth/hybridauth": "^3.7.1",
         "erusev\/parsedown": "^1.7.4",
