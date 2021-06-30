@@ -21,6 +21,9 @@
         <testsuite name="DataGrids">
             <directory suffix=".php">./tests/testsuites/DataGrids</directory>
         </testsuite>
+        <testsuite name="DBHelper">
+            <directory suffix=".php">./tests/testsuites/DBHelper</directory>
+        </testsuite>
         <testsuite name="Forms">
             <directory suffix=".php">./tests/testsuites/Forms</directory>
         </testsuite>
