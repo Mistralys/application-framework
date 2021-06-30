@@ -1,3 +1,7 @@
+v1.13.7
+- DataTable: Added support for date values with microseconds.
+- DataTable: Fixed a log message with missing data.
+
 v1.13.6
 - Forms: VisualSelect: Added a checkered background to images to account for white on white images.
 - CLIScreen: Fixed GetOpt return type validation message in PHPStan with new v4.0.0 release.
