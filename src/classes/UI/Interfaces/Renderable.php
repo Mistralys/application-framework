@@ -30,6 +30,4 @@ interface UI_Renderable_Interface extends StringBuilder_Interface
     function getInstanceID() : string;
     
     function getRenderer() : UI_Themes_Theme_ContentRenderer;
-    
-    function __toString();
 }
