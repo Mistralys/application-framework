@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interface_Optionable;
+use AppUtils\Interface_Stringable;
 use AppUtils\Traits_Optionable;
 
 /**
@@ -18,7 +19,7 @@ use AppUtils\Traits_Optionable;
  * @subpackage MarkupEditor
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
  */
-abstract class UI_MarkupEditor implements Interface_Optionable
+abstract class UI_MarkupEditor implements Interface_Optionable, Interface_Stringable
 {
     use Traits_Optionable;
     
