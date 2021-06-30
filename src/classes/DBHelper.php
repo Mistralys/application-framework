@@ -6,6 +6,12 @@
  * @see DBHelper
  */
 
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
+use AppUtils\Interface_Stringable;
+use AppUtils\Microtime;
+use function AppUtils\parseVariable;
+
 /**
  * Simple database utility class used tu run queries against
  * the database using the main PDO object. Does not abstract
@@ -63,6 +69,9 @@ class DBHelper
     const ERROR_INVALID_COLUMN_NAME = 338701018;
     const ERROR_DB_NOT_REGISTERED = 338701019;
     const ERROR_INVALID_LOG_CALLBACK = 338701020;
+    const ERROR_CANNOT_CONVERT_OBJECT = 338701021;
+    const ERROR_CANNOT_CONVERT_ARRAY = 338701022;
+    const ERROR_CANNOT_CONVERT_RESOURCE = 338701023;
     
     protected static $startTime;
     
@@ -72,20 +81,23 @@ class DBHelper
     {
         return boot_constant('APP_TRACK_QUERIES') === true;
     }
-    
+
     /**
      * Executes a query string with the specified variables. Uses
      * the PDO->prepare() method, and returns the result of the
      * PDOStatement->execute() method. If the query fails, the
      * error information can be accessed via {@link getErrorMessage()}.
      *
+     * @param string $operationType
      * @param string $statement The full SQL query to run with placeholders for variables
      * @param array $variables Associative array with placeholders and values to replace in the query
+     * @param bool $exceptionOnError
      * @return boolean
-     * @see getErrorMessage()
+     * @throws DBHelper_Exception
      * @see getErrorCode()
+     * @see getErrorMessage()
      */
-    public static function execute($operationType, $statement, $variables = array(), $exceptionOnError=true)
+    public static function execute(string $operationType, string $statement, array $variables = array(), bool $exceptionOnError=true) : bool
     {
         if(self::isQueryTrackingEnabled()) {
             self::$startTime = microtime(true);
@@ -122,21 +134,15 @@ class DBHelper
         
         self::$activeStatement = $stmt;
         
-        foreach($variables as $name => $value) {
-            if($value instanceof DateTime) {
-                $variables[$name] = $value->format('Y-m-d H:i:s');
-            }
-        }
-        
         try
         {
-            $result = self::$activeStatement->execute($variables);
+            $result = self::$activeStatement->execute(self::filterVariablesForDB($variables));
             
             if (!$result && $exceptionOnError) 
             {
                 throw self::createException(
                     self::ERROR_EXECUTING_QUERY,
-                    'Query execution failed'
+                    'Query execution failed',
                 );
             }
         } 
@@ -151,6 +157,92 @@ class DBHelper
         }
 
         return $result;
+    }
+
+    /**
+     * Converts all values in the variable collection to
+     * database compatible values, converting them as
+     * necessary.
+     *
+     * @param array<string,mixed> $variables
+     * @return array<string,string>
+     */
+    public static function filterVariablesForDB(array $variables) : array
+    {
+        $result = array();
+
+        foreach($variables as $name => $value)
+        {
+            $result[$name] = self::filterValueForDB($value);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     * @throws DBHelper_Exception
+     * @throws ConvertHelper_Exception
+     *
+     * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
+     * @see DBHelper::ERROR_CANNOT_CONVERT_OBJECT
+     * @see DBHelper::ERROR_CANNOT_CONVERT_ARRAY
+     */
+    public static function filterValueForDB($value) : string
+    {
+        if($value instanceof Microtime)
+        {
+            return $value->getMySQLDate();
+        }
+
+        if($value instanceof DateTime)
+        {
+            return $value->format('Y-m-d H:i:s');
+        }
+
+        if(is_bool($value))
+        {
+            return ConvertHelper::bool2string($value);
+        }
+
+        if($value instanceof Interface_Stringable)
+        {
+            return strval($value);
+        }
+
+        if(is_object($value))
+        {
+            throw new DBHelper_Exception(
+                'Invalid database storage value',
+                sprintf(
+                    'An object of class [%s] cannot be converted to string. Only object that implement the [%s] interface may be used as values.',
+                    parseVariable($value)->enableType()->toString(),
+                    Interface_Stringable::class
+                ),
+                self::ERROR_CANNOT_CONVERT_OBJECT
+            );
+        }
+
+        if(is_array($value))
+        {
+            throw new DBHelper_Exception(
+                'Invalid database storage value',
+                'Arrays cannot be used as database values. To store JSON or serialized strings, convert the value to string first.',
+                self::ERROR_CANNOT_CONVERT_ARRAY
+            );
+        }
+
+        if(is_resource($value))
+        {
+            throw new DBHelper_Exception(
+                'Invalid database storage value',
+                'Resources cannot be used as database values.',
+                self::ERROR_CANNOT_CONVERT_RESOURCE
+            );
+        }
+
+        return strval($value);
     }
 
     static protected $queryLogging = false;
