@@ -301,12 +301,13 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         return $default;
     }
 
-   /**
-    * Retrieves a data key as a DateTime object.
-    * @param string $name
-    * @param DateTime $default
-    * @return DateTime|NULL
-    */
+    /**
+     * Retrieves a data key as a DateTime object.
+     * @param string $name
+     * @param DateTime|null $default
+     * @return DateTime|null
+     * @throws Exception
+     */
     public function getRecordDateKey(string $name, DateTime $default=null) : ?DateTime
     {
         $value = $this->getRecordKey($name);
