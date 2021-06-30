@@ -1,8 +1,9 @@
 <?php
 
 use AppUtils\ConvertHelper;
+use AppUtils\Interface_Stringable;
 
-class UI_Icon
+class UI_Icon implements Interface_Stringable
 {
     protected $type = null;
 
