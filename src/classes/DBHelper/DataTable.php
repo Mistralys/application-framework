@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
+use AppUtils\Microtime;
 
 class DBHelper_DataTable implements Application_Interfaces_Loggable, Application_Interfaces_Eventable
 {
@@ -102,7 +103,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return intval($this->getKey($name));
     }
 
-    public function getDateTimeKey(string $name) : ?DateTime
+    public function getDateTimeKey(string $name) : ?Microtime
     {
         $value = $this->getKey($name);
 
@@ -112,7 +113,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
         try
         {
-            return new DateTime($value);
+            return new Microtime($value);
         }
         catch (Exception $e)
         {
@@ -135,9 +136,9 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return $this->setKey($name, ConvertHelper::bool2string($value));
     }
 
-    public function setDateTimeKey(string $name, DateTime $value) : bool
+    public function setDateTimeKey(string $name, Microtime $value) : bool
     {
-        return $this->setKey($name, $value->format('Y-m-d H:i:s'));
+        return $this->setKey($name, $value->getMySQLDate());
     }
 
     public function setKey(string $name, string $value) : bool
@@ -148,7 +149,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
             return false;
         }
 
-        $this->log('DataTable | Key [%s] | Value modified.');
+        $this->log(sprintf('DataTable | Key [%s] | Value modified.', $name));
 
         if(!in_array($name, $this->modifiedKeys)) {
             $this->modifiedKeys[] = $name;
