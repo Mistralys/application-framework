@@ -38,6 +38,11 @@ final class DBHelper_Core_TestCase extends ApplicationTestCase
                 'label' => 'Stringable object',
                 'value' => sb()->add('text'),
                 'expected' => 'text'
+            ),
+            array(
+                'label' => 'NULL',
+                'value' => null,
+                'expected' => null
             )
         );
 
