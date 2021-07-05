@@ -164,4 +164,14 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface
             toString($string)
         );
     }
+
+    /**
+     * @param string|number|UI_Renderable_Interface $string
+     * @return UI_StringBuilder
+     * @throws UI_Exception
+     */
+    public function parentheses($string) : UI_StringBuilder
+    {
+        return $this->sf('(%s)', toString($string));
+    }
 }
