@@ -1,6 +1,8 @@
 v1.13.7
 - DataTable: Added support for date values with microseconds.
 - DataTable: Fixed a log message with missing data.
+- Media: Fixed the application not exiting after sending media data.
+- StringBuilder: Added `parentheses()` method to add "(text)" snippets.
 
 v1.13.6
 - Forms: VisualSelect: Added a checkered background to images to account for white on white images.
@@ -299,7 +301,7 @@ v1.7.1
 
 v1.7.0
 - Print: Removed the obsolete print version management.
-- Print: Improved the existing ui-print.css to make use of the browser's default print view. 
+- Print: Improved the existing ui-print.css to make use of the browser's default print view.
 
 v1.6.6
 - Media: Fixed media files not being displayed correctly because script mode was not turned on in the Media bootstrap.
@@ -791,7 +793,7 @@ v1.1.19
 - JS Class: Added the base RequireMethod() Method used to ensure classes implement a specific method
 - Wizards: Added the wizard parameter to allow several parallel wizard sessions
 - UI: Added the setTitleSubline() method to the content renderer class
-- Revisionables: Added revision data support to save revision-specific data 
+- Revisionables: Added revision data support to save revision-specific data
 - Revisionables: Revamped the setKey() method to make the comparison more solid; renamed it to setRevisionKey()
 - Revisionables: Moved the interface to a separate include file
 - ConvertHelper: Added the areVariablesEqual() method
@@ -813,7 +815,7 @@ v1.1.19
 - Media: Added the getFilename() method to the interface
 - ConvertHelper: Added the callback2string() method to dump a callback variable
 - Forms: Added the UI_Form:setDefaultValues() method to set these after creating a form
-- Forms: Added the addRuleFilename() method and auto-validation hints 
+- Forms: Added the addRuleFilename() method and auto-validation hints
 - Traits: Added the "Iconizable" trait for all elements that can have an icon set
 
 v1.1.18
@@ -830,7 +832,7 @@ v1.1.16
 
 v1.1.15
 - ImageHelper: Added the createFromPath method
-- ImageUploader: Added rules for even dimensions validation, and minimum size 
+- ImageUploader: Added rules for even dimensions validation, and minimum size
 - NumberInfo: Added the new parseNumber() function to create a NumberInfo instance
 
 v1.1.13
@@ -903,7 +905,7 @@ v1.1.3
 - DataGrid: Added the possibility to style rows with the entry class
 - DataGrid: Added the addTableClass() method
 - Connector: Improved the response's throwException() method with optional message and error code
-- Themes: Added the content renderer class 
+- Themes: Added the content renderer class
 - Themes: revamped the frame structure to allow more flexibility
 - Themes: Moved some aspects of the layout to separate templates
 - UI: Improved content section layout
@@ -926,7 +928,7 @@ v1.1.2
 - HealthMonitor: Fixed the class loading
 - HealthMonitor: Made it possible to add custom application components
 - Print mode: fixed URLs being shown next to links
-- Print mode: Fixed data grids paging being disabled 
+- Print mode: Fixed data grids paging being disabled
 - Print mode: Removed column sorting icons in data grids
 - UI: Added the country navigator UI helper
 - UI: Added the addWarningMessage method.
@@ -935,7 +937,7 @@ v1.1.2
 - Connector: Added the getRawJSON() method
 - Connector: Fixed checking the returned JSON; Empty arrays are no longer considered invalid
 - ConvertHelper: Added the print_r method
-- JSHelper: Avoided duplicate tooltipify calls 
+- JSHelper: Avoided duplicate tooltipify calls
 - UI: Added the possibility to append includes to the bottom of the body in case some get added too late for the header
 
 v1.1.1
