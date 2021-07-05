@@ -1,5 +1,4 @@
 <?php
-
 /**
  * File containing the {@link Application_Uploads_Upload} class.
  *
@@ -9,8 +8,6 @@
  */
 
 use AppUtils\ImageHelper;
-
-require_once 'Application/Media/DocumentInterface.php';
 
 /**
  * Upload object: used to represent a single uploaded file. Can
@@ -23,8 +20,9 @@ require_once 'Application/Media/DocumentInterface.php';
  */
 class Application_Uploads_Upload implements Application_Media_DocumentInterface
 {
+    use Application_Traits_Loggable;
+
     const ERROR_NO_TRANSACTION_STARTED = 532001;
-    
     const ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
     
     /**
@@ -204,16 +202,23 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
             $helper->save($targetFile);
         }
 
-        ImageHelper::displayImage($targetFile); 
+        ImageHelper::displayImage($targetFile);
+
+        Application::exit($this->getLogIdentifier().' | Sent document contents to stdout.');
     }
 
     /**
      * Retrieves the size of the media file on disk, in bytes.
-     * @return number
+     * @return int
      */
     public function getFilesize()
     {
-        return filesize($this->getPath());
+        $size = filesize($this->getPath());
+        if($size !== false) {
+            return $size;
+        }
+
+        return 0;
     }
 
     /**
@@ -267,14 +272,15 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
         );
     }
     
-    /**
-     * Logs messages for the document.
-     * @param string $message
-     */
-    protected function log($message)
+    public function getLogIdentifier() : string
     {
-        Application::log('Media document ['.$this->getID().'] | '.$message);
-    }    
+        return sprintf(
+            'Media document [#%s] | Name [%s] | Size [%s]',
+            $this->getID(),
+            $this->getFilename(),
+            $this->getFilesizeReadable()
+        );
+    }
 
     public function isVector()
     {

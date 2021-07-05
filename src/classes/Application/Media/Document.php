@@ -1,13 +1,11 @@
 <?php
 
-require_once 'Application/Media/DocumentInterface.php';
-
 abstract class Application_Media_Document implements Application_Media_DocumentInterface
 {
+    use Application_Traits_Loggable;
+
     const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
-    
-    const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002; 
-    
+    const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
     const ERROR_NO_TRANSACTION_STARTED = 650003;
     
     protected $data;
@@ -141,7 +139,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      */
     public function getFilesize()
     {
-        return filesize($this->getPath());
+        $size = filesize($this->getPath());
+        if($size !== false) {
+            return $size;
+        }
+
+        return 0;
     }
 
     /**
@@ -567,5 +570,15 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public function isVector()
     {
         return $this->isTypeSVG();
+    }
+
+    public function getLogIdentifier() : string
+    {
+        return sprintf(
+            'Media document [#%s] | Name [%s] | Size [%s]',
+            $this->getID(),
+            $this->getFilename(),
+            $this->getFilesizeReadable()
+        );
     }
 }

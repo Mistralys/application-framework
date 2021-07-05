@@ -1,6 +1,6 @@
 <?php
 
-interface Application_Media_DocumentInterface
+interface Application_Media_DocumentInterface extends Application_Interfaces_Loggable
 {
     /**
      * Retrieves the ID of the document.
@@ -54,7 +54,7 @@ interface Application_Media_DocumentInterface
     
    /**
     * Retrieves the size of the file on disk, in bytes.
-    * @return number
+    * @return int
     */
     public function getFilesize();
     

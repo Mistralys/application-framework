@@ -107,7 +107,7 @@ class Application_Media_Document_Image extends Application_Media_Document
 
         ImageHelper::displayImage($targetFile);
         
-        Application::exit();
+        Application::exit($this->getLogIdentifier().' | Sent image contents to stdout.');
     }
 
     /**
