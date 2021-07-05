@@ -111,7 +111,9 @@ class DBHelper
                 return true;
             }
         }
-        
+
+        $filteredVariables = self::filterVariablesForDB($variables);
+
         try{
             $stmt = self::$activeDB->prepare($statement);
             if (!$stmt) 
@@ -136,7 +138,7 @@ class DBHelper
         
         try
         {
-            $result = self::$activeStatement->execute(self::filterVariablesForDB($variables));
+            $result = self::$activeStatement->execute($filteredVariables);
             
             if (!$result && $exceptionOnError) 
             {
@@ -166,6 +168,12 @@ class DBHelper
      *
      * @param array<string,mixed> $variables
      * @return array<string,string>
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     *
+     * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
+     * @see DBHelper::ERROR_CANNOT_CONVERT_OBJECT
+     * @see DBHelper::ERROR_CANNOT_CONVERT_ARRAY
      */
     public static function filterVariablesForDB(array $variables) : array
     {
@@ -181,7 +189,7 @@ class DBHelper
 
     /**
      * @param mixed $value
-     * @return string
+     * @return string|null
      * @throws DBHelper_Exception
      * @throws ConvertHelper_Exception
      *
@@ -189,8 +197,13 @@ class DBHelper
      * @see DBHelper::ERROR_CANNOT_CONVERT_OBJECT
      * @see DBHelper::ERROR_CANNOT_CONVERT_ARRAY
      */
-    public static function filterValueForDB($value) : string
+    public static function filterValueForDB($value) : ?string
     {
+        if($value === null)
+        {
+            return null;
+        }
+
         if($value instanceof Microtime)
         {
             return $value->getMySQLDate();
