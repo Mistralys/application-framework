@@ -11,6 +11,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     use Application_Traits_Eventable;
 
     const EVENT_KEYS_SAVED = 'KeysSaved';
+    const EVENT_KEYS_DELETED = 'KeysDeleted';
 
     /**
      * @var array<string,string>
@@ -52,6 +53,11 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
      */
     private $autoSave = false;
 
+    /**
+     * @var string[]
+     */
+    protected $deletedKeys = array();
+
     public function __construct(string $tableName, string $primaryName, int $primaryValue, string $logPrefix)
     {
         $this->tableName = $tableName;
@@ -59,8 +65,9 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         $this->primaryValue = $primaryValue;
         $this->logIdentifier = sprintf('DataTable [%s]', $this->tableName);
 
-        if(!empty($logPrefix)) {
-            $this->logIdentifier = $logPrefix.' | '.$this->logIdentifier;
+        if (!empty($logPrefix))
+        {
+            $this->logIdentifier = $logPrefix . ' | ' . $this->logIdentifier;
         }
     }
 
@@ -78,24 +85,40 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return $this;
     }
 
-    public function getLogIdentifier(): string
+    public function getLogIdentifier() : string
     {
         return $this->logIdentifier;
     }
 
     public function getKey(string $name) : string
     {
-        if(isset($this->valueCache[$name])) {
+        if ((array_search($name, $this->deletedKeys)) !== false)
+        {
+            $this->valueCache[$name] = '';
+        }
+
+        if (isset($this->valueCache[$name]))
+        {
             return $this->valueCache[$name];
         }
 
         $value = DBHelper::createFetchKey('value', $this->tableName)
-        ->whereValue($this->primaryName, $this->primaryValue)
-        ->fetchString();
+            ->whereValue($this->primaryName, $this->primaryValue)
+            ->fetchString();
 
         $this->valueCache[$name] = $value;
 
         return $value;
+    }
+
+    public function isKeyExists(string $name) : bool
+    {
+        if (isset($this->valueCache[$name]))
+        {
+            return true;
+        }
+        return DBHelper::createFetchKey('value', $this->tableName)
+            ->whereValues(array($this->primaryName => $this->primaryValue, 'name' => $name))->exists();
     }
 
     public function getIntKey(string $name) : int
@@ -107,7 +130,8 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     {
         $value = $this->getKey($name);
 
-        if(empty($value)) {
+        if (empty($value))
+        {
             return null;
         }
 
@@ -145,19 +169,56 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     {
         $this->getKey($name);
 
-        if($this->valueCache[$name] === $value) {
+        if (($key = array_search($name, $this->deletedKeys)) !== false)
+        {
+            unset($this->deletedKeys[$key]);
+        }
+
+        if ($this->valueCache[$name] === $value)
+        {
             return false;
         }
 
         $this->log(sprintf('DataTable | Key [%s] | Value modified.', $name));
 
-        if(!in_array($name, $this->modifiedKeys)) {
+        if (!in_array($name, $this->modifiedKeys))
+        {
             $this->modifiedKeys[] = $name;
         }
 
         $this->valueCache[$name] = $value;
 
-        if($this->autoSave) {
+        if ($this->autoSave)
+        {
+            return $this->save();
+        }
+
+        return true;
+    }
+
+    public function deleteKey(string $name) : bool
+    {
+        if (!$this->isKeyExists($name))
+        {
+            return false;
+        }
+
+        $this->log(sprintf('DataTable | Key [%s] | deleted.', $name));
+
+        if (!in_array($name, $this->deletedKeys))
+        {
+            $this->deletedKeys[] = $name;
+        }
+
+        if (($key = array_search($name, $this->modifiedKeys)) !== false)
+        {
+            unset($this->modifiedKeys[$key]);
+        }
+
+        unset($this->valueCache[$name]);
+
+        if ($this->autoSave)
+        {
             return $this->save();
         }
 
@@ -169,39 +230,78 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return !empty($this->modifiedKeys);
     }
 
+    public function isDeleted() : bool
+    {
+        return !empty($this->deletedKeys);
+    }
+
     public function save() : bool
     {
-        if(!$this->isModified()) {
+        if (!$this->isModified() && !$this->isDeleted())
+        {
             return false;
         }
 
-        $this->log(sprintf('DataTable | Saving [%s] modified keys.', count($this->modifiedKeys)));
-
-        DBHelper::requireTransaction(sprintf('Save data table keys in [%s]', $this->tableName));
-
-        foreach($this->modifiedKeys as $name) {
-            DBHelper::insertOrUpdate(
-                $this->tableName,
-                array(
-                    $this->primaryName => $this->primaryValue,
-                    'name' => $name,
-                    'value' => $this->valueCache[$name]
-                ),
-                array($this->primaryName, 'name')
-            );
-        }
-
-        $this->triggerEvent(
-            self::EVENT_KEYS_SAVED,
-            array($this, $this->modifiedKeys),
-            DBHelper_DataTable_Events_KeysSaved::class
-        );
-
-        $this->modifiedKeys = array();
+        $this->saveModifiedKeys();
+        $this->saveDeletedKeys();
 
         $this->log('DataTable | Save complete.');
 
         return true;
+    }
+
+    private function saveModifiedKeys()
+    {
+        if ($this->isModified())
+        {
+            $this->log(sprintf('DataTable | Saving [%s] modified keys.', count($this->modifiedKeys)));
+
+            DBHelper::requireTransaction(sprintf('Save data table keys in [%s]', $this->tableName));
+
+            foreach ($this->modifiedKeys as $name)
+            {
+                DBHelper::insertOrUpdate(
+                    $this->tableName,
+                    array(
+                        $this->primaryName => $this->primaryValue,
+                        'name' => $name,
+                        'value' => $this->valueCache[$name]
+                    ),
+                    array($this->primaryName, 'name')
+                );
+            }
+
+            $this->triggerEvent(
+                self::EVENT_KEYS_SAVED,
+                array($this, $this->modifiedKeys),
+                DBHelper_DataTable_Events_KeysSaved::class
+            );
+
+            $this->modifiedKeys = array();
+        }
+    }
+
+    private function saveDeletedKeys()
+    {
+        if ($this->isDeleted())
+        {
+            $this->log(sprintf('DataTable | Deleting [%s] keys.', count($this->deletedKeys)));
+
+            DBHelper::requireTransaction(sprintf('Delete data table keys in [%s]', $this->tableName));
+
+            foreach ($this->deletedKeys as $name)
+            {
+                DBHelper::deleteRecords($this->tableName, array($this->primaryName => $this->primaryValue, 'name' => $name));
+            }
+
+            $this->triggerEvent(
+                self::EVENT_KEYS_DELETED,
+                array($this, $this->deletedKeys),
+                DBHelper_DataTable_Events_KeysDeleted::class
+            );
+
+            $this->deletedKeys = array();
+        }
     }
 
     /**
@@ -218,5 +318,21 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     public function addKeysSavedListener(callable $callback) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(self::EVENT_KEYS_SAVED, $callback);
+    }
+
+    /**
+     * Adds a listener for the `KeysDeleted` event.
+     *
+     * Listener arguments:
+     *
+     * 1. `DBHelper_DataTable` The data table instance
+     * 2. `string[]` The names of the keys that were deleted
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function addKeysDeletedListener(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_KEYS_DELETED, $callback);
     }
 }

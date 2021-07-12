@@ -310,6 +310,37 @@ CREATE TABLE `user_settings` (
   `setting_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `test_records`
+--
+
+CREATE TABLE `test_records` (
+  `record_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `label` varchar(180) NOT NULL,
+  `alias` varchar(160) NOT NULL,
+  PRIMARY KEY (`record_id`),
+  KEY `label` (`label`),
+  KEY `alias` (`alias`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `test_records_data`
+--
+
+CREATE TABLE `test_records_data` (
+  `record_id` int(11) unsigned NOT NULL,
+  `name` varchar(250) NOT NULL,
+  `value` mediumtext NOT NULL,
+  PRIMARY KEY (`record_id`,`name`),
+  KEY `record_id` (`record_id`),
+  KEY `name` (`name`),
+  CONSTRAINT `test_records_data_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `test_records` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Indexes for dumped tables
 --
