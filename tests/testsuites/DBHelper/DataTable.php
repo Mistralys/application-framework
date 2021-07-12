@@ -9,17 +9,17 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
      */
     private $dataTable;
 
-    private $recordTable = 'tenants';
+    private $recordTable = 'test_records';
 
-    private $recordTableData = 'tenants_data';
+    private $recordTableData = 'test_records_data';
 
-    private $recordPrimaryName = 'tenant_id';
+    private $recordPrimaryName = 'record_id';
 
-    private $recordTypeName = 'tenant';
+    private $recordTypeName = 'record';
 
-    private $testLabel = 'Test Tenant';
+    private $testLabel = 'Test Record';
 
-    private $testAlias = 'TESTTENANT';
+    private $testAlias = 'TESTRECORD';
 
     private $testDataName = 'testname';
 
