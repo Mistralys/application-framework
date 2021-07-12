@@ -1,3 +1,7 @@
+v1.13.8
+- DataTable: Added possibility to delete existing keys.
+- DataTable: Added testsuite with a special testing table in `/tests/testsuite.sql`.
+
 v1.13.7
 - DataTable: Added support for date values with microseconds.
 - DataTable: Fixed a log message with missing data.
