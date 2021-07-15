@@ -1121,7 +1121,6 @@ class Application
      * @param int $userID
      * @return Application_User
      * @throws Application_Exception
-     * @throws DBHelper_Exception
      *
      * @see Application::ERROR_USER_CLASS_DOES_NOT_EXIST
      * @see Application::ERROR_USER_DATA_NOT_FOUND
@@ -1202,7 +1201,6 @@ class Application
      * @param int $userID
      * @return array<string,string>
      * @throws Application_Exception
-     * @throws DBHelper_Exception
      *
      * @see Application::ERROR_USER_DATA_NOT_FOUND
      */
@@ -1218,23 +1216,27 @@ class Application
             return self::getDummyUserData();
         }
 
-        $data = DBHelper::fetch(
-            'SELECT
-            *
-            FROM
-                known_users
-            WHERE
-                user_id=:user_id',
-
-            array(
-                ':user_id' => $userID
-            )
-        );
-
-        if(!empty($data))
+        try
         {
-            return $data;
+            $data = DBHelper::fetch(
+                'SELECT
+                *
+                FROM
+                    known_users
+                WHERE
+                    user_id=:user_id',
+
+                array(
+                    ':user_id' => $userID
+                )
+            );
+
+            if (!empty($data))
+            {
+                return $data;
+            }
         }
+        catch (DBHelper_Exception $e){}
 
         throw new Application_Exception(
             'Cannot find user data',
