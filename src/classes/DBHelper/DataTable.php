@@ -135,6 +135,21 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return intval($this->getKey($name));
     }
 
+    /**
+     * @param string $name
+     * @return Application_User|null
+     * @throws Application_Exception
+     */
+    public function getUserKey(string $name) : ?Application_User
+    {
+        $id = $this->getIntKey($name);
+        if($id !== 0 && Application::userIDExists($id)) {
+            return Application::createUser($id);
+        }
+
+        return null;
+    }
+
     public function getDateTimeKey(string $name) : ?Microtime
     {
         $value = $this->getKey($name);
@@ -162,6 +177,11 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     public function setIntKey(string $name, int $value) : bool
     {
         return $this->setKey($name, strval($value));
+    }
+
+    public function setUserKey(string $name, Application_User $user) : bool
+    {
+        return $this->setIntKey($name, $user->getID());
     }
 
     public function setBoolKey(string $name, bool $value) : bool
