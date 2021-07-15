@@ -104,11 +104,19 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
         $value = DBHelper::createFetchKey('value', $this->tableName)
             ->whereValue($this->primaryName, $this->primaryValue)
+            ->whereValue('name', $name)
             ->fetchString();
 
         $this->valueCache[$name] = $value;
 
         return $value;
+    }
+
+    public function resetCache() : DBHelper_DataTable
+    {
+        $this->valueCache = array();
+
+        return $this;
     }
 
     public function isKeyExists(string $name) : bool
@@ -117,6 +125,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         {
             return true;
         }
+
         return DBHelper::createFetchKey('value', $this->tableName)
             ->whereValues(array($this->primaryName => $this->primaryValue, 'name' => $name))->exists();
     }
@@ -334,5 +343,10 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     public function addKeysDeletedListener(callable $callback) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(self::EVENT_KEYS_DELETED, $callback);
+    }
+
+    public function isAutoSaveEnabled() : bool
+    {
+        return $this->autoSave;
     }
 }
