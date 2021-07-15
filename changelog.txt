@@ -1,3 +1,6 @@
+v1.13.10
+- DataTable: Added the `setUserKey()` and `getUserKey()` methods.
+
 v1.13.9
 - DataTable: Fixed a bug causing `getKey()` to return the wrong key value.
 
