@@ -194,6 +194,20 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
         $this->assertSame('D', $this->dataTable->getKey('d'));
     }
 
+    public function test_setUserKey() : void
+    {
+        $this->startTest('Setting a user object key');
+
+        $user = Application::createSystemUser();
+
+        $this->dataTable->setUserKey('user_key', $user);
+
+        $value = $this->dataTable->getUserKey('user_key');
+
+        $this->assertNotNull($value);
+        $this->assertSame($user->getID(), $value->getID());
+    }
+
     // endregion
 
     // region: Support methods
