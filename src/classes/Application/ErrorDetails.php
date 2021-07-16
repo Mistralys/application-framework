@@ -104,15 +104,42 @@ class Application_ErrorDetails
 
     public function renderPreviousException() : string
     {
-        $prev = $this->getException()->getPrevious();
-        if($prev) 
+        $stack = $this->getExceptionStack();
+        $content = '';
+
+        foreach ($stack as $exception)
         {
-            return renderExceptionInfo($prev, $this->isDeveloperInfoEnabled(), $this->isHTML(), false).
-            '<h4 class="errorpage-header">Stack trace</h4>'.
-            renderTrace($prev);
+            $content .=
+                renderExceptionInfo($exception, $this->isDeveloperInfoEnabled(), $this->isHTML(), false).
+                '<h4 class="errorpage-header">Stack trace</h4>'.
+                renderTrace($exception);
         }
-        
-        return '';
+
+        return $content;
+    }
+
+    public function getExceptionStack() : array
+    {
+        return $this->getExceptionStackRecursive($this->getException());
+    }
+
+    /**
+     * @param Throwable $exception
+     * @param Throwable[] $stack
+     * @return Throwable[]
+     */
+    private function getExceptionStackRecursive(Throwable $exception, array $stack=array()) : array
+    {
+        $prev = $exception->getPrevious();
+
+        if($prev instanceof Throwable)
+        {
+            $stack[] = $prev;
+
+            $stack = $this->getExceptionStackRecursive($prev, $stack);
+        }
+
+        return $stack;
     }
     
     public function renderTrace() : string
