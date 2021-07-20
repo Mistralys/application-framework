@@ -570,16 +570,16 @@
         },
         {
             "name": "medialize/uri.js",
-            "version": "v1.19.6",
+            "version": "v1.19.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/medialize/URI.js.git",
-                "reference": "46c8ac0c7e6997daad8ff6859784b39f8892fa97"
+                "reference": "19e54c78d5864aec43986e8f96be8d15998daa80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/medialize/URI.js/zipball/46c8ac0c7e6997daad8ff6859784b39f8892fa97",
-                "reference": "46c8ac0c7e6997daad8ff6859784b39f8892fa97",
+                "url": "https://api.github.com/repos/medialize/URI.js/zipball/19e54c78d5864aec43986e8f96be8d15998daa80",
+                "reference": "19e54c78d5864aec43986e8f96be8d15998daa80",
                 "shasum": ""
             },
             "type": "library",
@@ -588,10 +588,10 @@
             ],
             "description": "URLs in JavaScript",
             "support": {
-                "source": "https://github.com/medialize/URI.js/tree/v1.19.6",
+                "source": "https://github.com/medialize/URI.js/tree/v1.19.7",
                 "issues": "https://github.com/medialize/URI.js/issues"
             },
-            "time": "2021-02-13T15:25:43+00:00"
+            "time": "2021-07-14T16:23:22+00:00"
         },
         {
             "name": "mistralys/application-localization",
@@ -1132,16 +1132,16 @@
         },
         {
             "name": "pear/http_request2",
-            "version": "v2.4.2",
+            "version": "v2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pear/HTTP_Request2.git",
-                "reference": "84da432fbbf615593bd8aa25408aca3478b77502"
+                "reference": "8c52c1343a709110b4080118bd99f53dcd2b052f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/84da432fbbf615593bd8aa25408aca3478b77502",
-                "reference": "84da432fbbf615593bd8aa25408aca3478b77502",
+                "url": "https://api.github.com/repos/pear/HTTP_Request2/zipball/8c52c1343a709110b4080118bd99f53dcd2b052f",
+                "reference": "8c52c1343a709110b4080118bd99f53dcd2b052f",
                 "shasum": ""
             },
             "require": {
@@ -1150,7 +1150,7 @@
                 "php": ">=5.6.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^3.7|^4.8|^5.7"
+                "yoast/phpunit-polyfills": "^1.0.0"
             },
             "suggest": {
                 "ext-curl": "Allows using cURL as a request backend.",
@@ -1184,10 +1184,10 @@
             ],
             "support": {
                 "docs": "https://pear.php.net/manual/en/package.http.http-request2.php",
-                "issues": "https://pear.php.net/bugs/search.php?cmd=display&package_name[]=HTTP_Request2",
+                "issues": "https://github.com/pear/HTTP_Request2/issues",
                 "source": "https://github.com/pear/HTTP_Request2"
             },
-            "time": "2020-09-24T22:07:33+00:00"
+            "time": "2021-07-12T14:10:17+00:00"
         },
         {
             "name": "pear/net_url2",
@@ -1860,16 +1860,16 @@
         },
         {
             "name": "phar-io/manifest",
-            "version": "2.0.1",
+            "version": "2.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/manifest.git",
-                "reference": "85265efd3af7ba3ca4b2a2c34dbfc5788dd29133"
+                "reference": "97803eca37d319dfa7826cc2437fc020857acb53"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/manifest/zipball/85265efd3af7ba3ca4b2a2c34dbfc5788dd29133",
-                "reference": "85265efd3af7ba3ca4b2a2c34dbfc5788dd29133",
+                "url": "https://api.github.com/repos/phar-io/manifest/zipball/97803eca37d319dfa7826cc2437fc020857acb53",
+                "reference": "97803eca37d319dfa7826cc2437fc020857acb53",
                 "shasum": ""
             },
             "require": {
@@ -1914,9 +1914,9 @@
             "description": "Component for reading phar.io manifest information from a PHP Archive (PHAR)",
             "support": {
                 "issues": "https://github.com/phar-io/manifest/issues",
-                "source": "https://github.com/phar-io/manifest/tree/master"
+                "source": "https://github.com/phar-io/manifest/tree/2.0.3"
             },
-            "time": "2020-06-27T14:33:11+00:00"
+            "time": "2021-07-20T11:28:43+00:00"
         },
         {
             "name": "phar-io/version",
@@ -2196,16 +2196,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.91",
+            "version": "0.12.93",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "8226701cd228a0d63c2df995de7ab6070c69ac6a"
+                "reference": "7b7602f05d340ffa418c59299f8c053ac6c3e7ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/8226701cd228a0d63c2df995de7ab6070c69ac6a",
-                "reference": "8226701cd228a0d63c2df995de7ab6070c69ac6a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/7b7602f05d340ffa418c59299f8c053ac6c3e7ea",
+                "reference": "7b7602f05d340ffa418c59299f8c053ac6c3e7ea",
                 "shasum": ""
             },
             "require": {
@@ -2236,7 +2236,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.91"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.93"
             },
             "funding": [
                 {
@@ -2256,7 +2256,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-04T15:31:48+00:00"
+            "time": "2021-07-20T10:49:53+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -2333,16 +2333,16 @@
         },
         {
             "name": "phpunit/php-file-iterator",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-file-iterator.git",
-                "reference": "4b49fb70f067272b659ef0174ff9ca40fdaa6357"
+                "reference": "28af674ff175d0768a5a978e6de83f697d4a7f05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/4b49fb70f067272b659ef0174ff9ca40fdaa6357",
-                "reference": "4b49fb70f067272b659ef0174ff9ca40fdaa6357",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-file-iterator/zipball/28af674ff175d0768a5a978e6de83f697d4a7f05",
+                "reference": "28af674ff175d0768a5a978e6de83f697d4a7f05",
                 "shasum": ""
             },
             "require": {
@@ -2381,7 +2381,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-file-iterator/issues",
-                "source": "https://github.com/sebastianbergmann/php-file-iterator/tree/2.0.3"
+                "source": "https://github.com/sebastianbergmann/php-file-iterator/tree/2.0.4"
             },
             "funding": [
                 {
@@ -2389,7 +2389,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-30T08:25:21+00:00"
+            "time": "2021-07-19T06:46:01+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -2557,16 +2557,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.5.17",
+            "version": "8.5.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "79067856d85421c56d413bd238d4e2cd6b0e54da"
+                "reference": "bd5fc77c869e8dd65040dacbad170f074c13796c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/79067856d85421c56d413bd238d4e2cd6b0e54da",
-                "reference": "79067856d85421c56d413bd238d4e2cd6b0e54da",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/bd5fc77c869e8dd65040dacbad170f074c13796c",
+                "reference": "bd5fc77c869e8dd65040dacbad170f074c13796c",
                 "shasum": ""
             },
             "require": {
@@ -2638,7 +2638,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.17"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/8.5.18"
             },
             "funding": [
                 {
@@ -2650,7 +2650,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-06-23T05:12:43+00:00"
+            "time": "2021-07-19T06:13:17+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -3583,5 +3583,5 @@
         "ext-pdo": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

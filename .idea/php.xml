@@ -64,6 +64,7 @@
       <path value="$PROJECT_DIR$/vendor/erusev/parsedown-extra" />
       <path value="$PROJECT_DIR$/vendor/twbs/bootstrap" />
       <path value="$PROJECT_DIR$/vendor/mistralys/markdown-viewer" />
+      <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.3">
