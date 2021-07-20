@@ -450,10 +450,12 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->log(sprintf('Resetting the collection. [%s] records were loaded.', count($this->records)));
 
         $this->records = array();
-        
+
+        // Also refresh the parent record, in case that collection
+        // has been reset as well.
         if(isset($this->parentRecord))
         {
-            $this->parentRecord = $this->getByID($this->parentRecord->getID());
+            $this->parentRecord = $this->parentRecord->getCollection()->getByID($this->parentRecord->getID());
         }
     }
 
