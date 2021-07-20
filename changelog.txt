@@ -1,6 +1,7 @@
 v1.13.10
 - DataTable: Added the `setUserKey()` and `getUserKey()` methods.
 - ErrorHandling: Added recursive display of previous exceptions in the exception page.
+- BaseCollection: Fixed an exception when resetting a collection with a parent record.
 
 v1.13.9
 - DataTable: Fixed a bug causing `getKey()` to return the wrong key value.
