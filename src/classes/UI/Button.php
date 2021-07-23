@@ -102,6 +102,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     private $javascript = '';
 
+    /**
+     * @var UI_Bootstrap_Popover|NULL
+     */
+    private $popover;
+
     public function __construct($label='')
     {
         $this->setLabel($label);
@@ -431,17 +436,25 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     {
         return $this->render();
     }
-    
-   /**
-    * @return array<string,string>
-    */
+
+    /**
+     * @return array<string,string>
+     * @throws Application_Exception
+     */
     protected function getAttributes() : array
     {
-        $atts = $this->attributes;
+        if(isset($this->popover))
+        {
+            $this->popover->setAttachToID($this->getID());
+            $this->click($this->popover->getToggleStatement());
+            $this->popover->render();
+        }
+
+        $attribs = $this->attributes;
     
-        $atts['id'] = $this->id;
-        $atts['type'] = $this->type;
-        $atts['autocomplete'] = 'off'; // avoid firefox autocompletion bug
+        $attribs['id'] = $this->id;
+        $attribs['type'] = $this->type;
+        $attribs['autocomplete'] = 'off'; // avoid firefox autocompletion bug
     
         $classes = $this->classes;
         $classes[] = 'btn';
@@ -461,10 +474,10 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
             $classes[] = 'disabled';
         }
         
-        $atts['class'] = implode(' ', $classes);
+        $attribs['class'] = implode(' ', $classes);
     
         if(!empty($this->styles)) {
-            $atts['style'] = compileStyles($this->styles);
+            $attribs['style'] = compileStyles($this->styles);
         }
         
         $title = '';
@@ -489,41 +502,41 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         }
     
         if(!empty($title)) {
-            $atts['title'] = $title;
+            $attribs['title'] = $title;
         }
 
         if($this->confirmMessage !== null)
         {
-            $atts['onclick'] = $this->confirmMessage->getJavaScript();
+            $attribs['onclick'] = $this->confirmMessage->getJavaScript();
         }
         else
         {
             switch ($this->mode)
             {
                 case self::MODE_LINKED:
-                    $atts['href'] = $this->getURL();
-                    $atts['target'] = $this->urlTarget;
+                    $attribs['href'] = $this->getURL();
+                    $attribs['target'] = $this->urlTarget;
                     break;
 
                 case self::MODE_CLICKABLE:
-                    $atts['onclick'] = $this->getJavaScript();
+                    $attribs['onclick'] = $this->getJavaScript();
                     break;
             }
         }
         
         if($this->locked) 
         {
-            $atts['onclick'] = "LockManager.DialogActionDisabled()";
+            $attribs['onclick'] = "LockManager.DialogActionDisabled()";
         } 
         else if($this->disabled) 
         {
-            unset($atts['onclick']);
-            unset($atts['href']);
-            unset($atts['type']);
-            unset($atts['target']);
+            unset($attribs['onclick']);
+            unset($attribs['href']);
+            unset($attribs['type']);
+            unset($attribs['target']);
         }
         
-        return $atts;
+        return $attribs;
     }
     
    /**
@@ -700,5 +713,51 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         }
 
         return '';
+    }
+
+    /**
+     * Makes the button use an existing popover instance.
+     * It will be reconfigured to be used with the button.
+     *
+     * @param UI_Bootstrap_Popover $popover
+     * @return $this
+     */
+    public function setPopover(UI_Bootstrap_Popover $popover) : UI_Button
+    {
+        $this->popover = $popover;
+        return $this;
+    }
+
+    /**
+     * Makes the button display a popover.
+     *
+     * NOTE: Button will only handle the popover.
+     * Setting a click handler or link will be ignored.
+     *
+     * @return UI_Button
+     * @throws UI_Exception
+     */
+    public function makePopover() : UI_Button
+    {
+        $this->getPopover();
+        return $this;
+    }
+
+    /**
+     * Retrieves the button's popover instance to
+     * configure it. Automatically makes the button
+     * a popover button.
+     *
+     * @return UI_Bootstrap_Popover
+     * @throws UI_Exception
+     */
+    public function getPopover() : UI_Bootstrap_Popover
+    {
+        if(!isset($this->popover))
+        {
+            $this->popover = UI::popover('');
+        }
+
+        return $this->popover;
     }
 }
