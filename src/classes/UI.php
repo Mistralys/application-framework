@@ -150,13 +150,13 @@ class UI
      * after that this can be called to retrieve the active instance.
      * 
      * @return UI
-     * @throws Application_Exception
+     * @throws UI_Exception
      * @see selectDummyInstance()
      */
     public static function getInstance() : UI
     {
         if(empty(self::$instances)) {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'No UI instance available',
                 'Tried getting a UI instance, but none has been created yet.',
                 self::ERROR_NO_UI_INSTANCE_AVAILABLE_YET    
@@ -1260,5 +1260,19 @@ class UI
     public static function isJavascriptMinified() : bool
     {
         return boot_constant('APP_JAVASCRIPT_MINIFIED') === true;
+    }
+
+    /**
+     * Creates a popover instance, which can be used to display
+     * a toggleable detailed popup. It is the big brother of the
+     * tooltip, but less detailed than a dialog.
+     *
+     * @param string $attachToID The ID of the element to attach to.
+     * @return UI_Bootstrap_Popover
+     * @throws UI_Exception
+     */
+    public static function popover(string $attachToID) : UI_Bootstrap_Popover
+    {
+        return (new UI_Bootstrap_Popover(self::getInstance()))->setAttachToID($attachToID);
     }
 }
