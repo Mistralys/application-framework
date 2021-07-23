@@ -35,22 +35,34 @@ class UI_BigSelection_Static
 	
 	UpdateFilters()
 	{
-		var terms = this.termsEL.val().trim();
+		var termsString = this.termsEL.val().trim();
 		
-		if(terms.length < 2) 
+		if(termsString.length < 2)
 		{
 			$('#'+this.elementID+' .bigselection-entry').show();
 			return;
 		}
+
+		var terms = termsString.split(' ');
 		
 		$('#'+this.elementID+' .bigselection-entry').each(function(idx, el) 
 		{
 			el = $(el);
-			
-			var reg = new RegExp(terms, 'i');
+
 			var haystack = el.attr('data-terms');
-			
-			if(reg.test(haystack)) 
+			var found = 0;
+
+			$.each(terms, function(idx2, term)
+			{
+				var reg = new RegExp(term, 'i');
+
+				if(reg.test(haystack))
+				{
+					found++;
+				}
+			});
+
+			if(found === terms.length)
 			{
 				el.show();
 			}
