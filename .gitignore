@@ -16,3 +16,4 @@ tests/.settings/org.eclipse.php.core.prefs
 src/dbhelper-upgrade.txt
 docs/phpstan/resultCache.php
 docs/phpstan/result.txt
+localization/storage.json
