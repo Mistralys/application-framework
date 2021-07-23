@@ -1,3 +1,9 @@
+v1.13.11
+- Popovers: Added the `UI::popover()` method to create popovers.
+- Buttons: Added popover capability to make buttons show popovers.
+- BigSelection: The search now supports several search terms.
+- BigSelection: Added a help button to explain the search capabilities.
+
 v1.13.10
 - DataTable: Added the `setUserKey()` and `getUserKey()` methods.
 - ErrorHandling: Added recursive display of previous exceptions in the exception page.
