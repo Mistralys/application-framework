@@ -48,10 +48,28 @@
             			<input class="bigselection-search-terms input-xxlarge" type="text" id="<?php echo $jsID ?>-search" value="" placeholder="<?php pt('Type your search here...') ?>">
             			<?php 
             			    UI::button('')
-            			    ->setID($jsID.'-btn')
-            			    ->addClass('bigselection-clear-btn')
-            			    ->setIcon(UI::icon()->delete()->makeMuted())
-            			    ->display()
+                                ->setID($jsID.'-btn')
+                                ->addClass('bigselection-clear-btn')
+                                ->setIcon(UI::icon()->delete()->makeMuted())
+                                ->display();
+
+                            $help = UI::button('')
+                                ->setStyle('cursor', 'help')
+                                ->setIcon(UI::icon()->help()->makeInformation());
+
+                            $help->getPopover()
+                                ->setTitle(t('Search howto'))
+                                ->setPlacementTop()
+                                ->setContent(sb()
+                                    ->ul(array(
+                                        t('Start typing to filter the list.'),
+                                        t('Separate search terms with spaces.'),
+                                        t('Searches in the label and description.'),
+                                        t('Search is case insensitive.')
+                                    ))
+                                );
+
+                            $help->display();
             			?>
         			</div>
             	</div>
