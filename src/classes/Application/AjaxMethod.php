@@ -277,8 +277,14 @@ abstract class Application_AjaxMethod
             $e->getCode()
         );
     }
-    
-    protected function sendError($message, $data=null, $code=null)
+
+    /**
+     * @param string $message
+     * @param array|NULL $data
+     * @param int|NULL $code
+     * @return never-returns
+     */
+    protected function sendError(string $message, ?array $data=null, ?int $code=null) : void
     {
         // fallback to avoid deadlocks calling the same method 
         if(empty($this->format)) {
@@ -305,9 +311,11 @@ abstract class Application_AjaxMethod
     * element.
     *  
     * @param string $elementLabel The label of the element type, for example <code>product type</code>
-    * @param mixed $data Data to include in the response
+    * @param array|NULL $data Data to include in the response
+    * @param int|NULL $code
+    * @return never-returns
     */
-    protected function sendErrorUnknownElement($elementLabel, $data=null, $code=null)
+    protected function sendErrorUnknownElement(string $elementLabel, ?array $data=null, ?int $code=null) : void
     {
         $this->sendError(t('Unknown %1$s specified.', $elementLabel), $data, $code);
     }
