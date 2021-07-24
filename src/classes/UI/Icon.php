@@ -215,7 +215,8 @@ class UI_Icon implements Interface_Stringable
         'COLLAPSE_RIGHT' => 'caret-square-right',
         'COLLAPSE_LEFT' => 'caret-square-left',
         'EXPAND_RIGHT' => 'caret-square-right',
-        'EXPAND_LEFT' => 'caret-square-left'
+        'EXPAND_LEFT' => 'caret-square-left',
+        'NOTEPAD' => 'far:sticky-note'
     );
 
     public function __construct()
@@ -338,6 +339,7 @@ class UI_Icon implements Interface_Stringable
     public function moveUpDown() { return $this->setType('MOVE_UP_DOWN'); }
     public function next() { return $this->setType('NEXT'); }
     public function no() { return $this->setType('NO'); }
+    public function notepad() { return $this->setType('NOTEPAD'); }
     public function notAvailable() { return $this->setType('NOT_AVAILABLE'); }
     public function notRequired() { return $this->setType('NOT_REQUIRED'); }
     public function ok() { return $this->setType('OK'); }
