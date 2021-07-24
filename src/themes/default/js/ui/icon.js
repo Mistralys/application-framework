@@ -137,6 +137,7 @@ var UI_Icon =
         'MOVE_UP_DOWN':'fas:arrows-alt-v',
         'NEXT':'chevron-right',
         'NO':'times',
+        'NOTEPAD':'sticky-note',
         'NOT_AVAILABLE':'ban',
         'NOT_REQUIRED':'minus',
         'OK':'check',
@@ -222,6 +223,7 @@ var UI_Icon =
     
    /**
     * @constructs
+    * @constructor
     */
 	init:function()
 	{
@@ -411,6 +413,7 @@ var UI_Icon =
     MoveUpDown:function() { return this.SetType('MOVE_UP_DOWN'); },
     Next:function() { return this.SetType('NEXT'); },
     No:function() { return this.SetType('NO'); },
+    Notepad:function() { return this.SetType('NOTEPAD'); },
     NotAvailable:function() { return this.SetType('NOT_AVAILABLE'); },
     NotRequired:function() { return this.SetType('NOT_REQUIRED'); },
     Ok:function() { return this.SetType('OK'); },
