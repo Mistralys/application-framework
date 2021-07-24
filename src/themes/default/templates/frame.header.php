@@ -13,20 +13,36 @@
             <?php
                 echo $this->renderTemplate('frame.header.developer-menu');
             
-                echo
-                '<li><a href="#" onclick="Driver.DialogLookup();">' .
-                        UI::icon()->search()
+                ?>
+                <li>
+                    <a href="#" onclick="Driver.DialogNotepad();">
+                        <?php UI::icon()->notepad()
+                            ->setTooltip(t('Your personal notepad for taking notes.'))
+                            ->makeTooltipBottom()
+                            ->makeInformation()
+                            ->setAttribute('data-placement', 'left')
+                        ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="Driver.DialogLookup();">
+                        <?php UI::icon()->search()
                         ->setTooltip(t('Look up an item'))
                         ->makeTooltipBottom()
-                        ->setAttribute('data-placement', 'left') .
-                        '</a></li>' .
-                '<li><a href="#" onclick="window.print();">' .
-                        UI::icon()->printer()
+                        ->setAttribute('data-placement', 'left')
+                            ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="window.print();">
+                        <?php UI::icon()->printer()
                         ->setTooltip(t('Print this page'))
                         ->makeTooltipBottom()
-                        ->setAttribute('data-placement', 'left') .
-                        '</a></li>';
-
+                        ->setAttribute('data-placement', 'left')
+                        ?>
+                    </a>
+                </li>
+                <?php
                 echo $this->renderTemplate('frame.header.user-menu');
             ?>
         </ul>
