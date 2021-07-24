@@ -189,7 +189,8 @@ class Application_Notepad_Note
         this.elTitleInput = $('<input type="text"/>')
             .addClass('form-control')
             .addClass('notepad-note-input-title')
-            .attr('placeholder', t('Enter a title here...'));
+            .attr('placeholder', t('Enter a title here...'))
+            .val(this.data.title);
 
         this.elTitleText.html(this.elTitleInput);
 
