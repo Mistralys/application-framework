@@ -96,6 +96,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
     protected $data;
 
     /**
+     * @var Application_User_Notepad|NULL
+     */
+    private $notepad = null;
+
+    /**
      * Application_User constructor.
      * @param int $userID
      * @param array<string,string> $data
@@ -749,5 +754,15 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public function isSystemUser() : bool
     {
         return Application::isSystemUserID($this->id);
+    }
+
+    public function getNotepad() : Application_User_Notepad
+    {
+        if(!isset($this->notepad))
+        {
+            $this->notepad = new Application_User_Notepad($this);
+        }
+
+        return $this->notepad;
     }
 }
