@@ -94,7 +94,13 @@ class Application_Notepad
         this.container.append(
             btnClose.Render()+
             btnAdd.Render()+
-            '<h1 class="notepad-header">'+t('Your personal notepad')+'</h1>'
+            '<h1 class="notepad-header">'+
+                t('Your personal notepad')+
+                ' '+
+                UI.Label(t('BETA'))
+                    .MakeWarning()
+                    .Render()+
+            '</h1>'
         );
 
         var body = $('<div/>');
