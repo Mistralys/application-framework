@@ -1300,6 +1300,10 @@ BODY.layout-maximized .notepad-note{
     top:8px;
 }
 
+.note-editing .notepad-note-body{
+    padding-bottom:0;
+}
+
 .notepad-note-icon.note-icon-edit{
     margin-right: 8px;
 }
