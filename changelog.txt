@@ -1,3 +1,6 @@
+v1.14.0
+- Notepad: Added the new notepad feature for taking notes.
+
 v1.13.11
 - Popovers: Added the `UI::popover()` method to create popovers.
 - Buttons: Added popover capability to make buttons show popovers.
