@@ -1,6 +1,7 @@
 var Driver = 
 {
 	'version':null, // Set serverside.
+	'notepad':null,
 	
 	GetVersion:function()
 	{
@@ -23,5 +24,34 @@ var Driver =
 				dialog.Show();
 			}
 		);
+	},
+
+	/**
+	 * Displays the Notepad UI to take notes that
+	 * are stored in the user's account.
+	 */
+	DialogNotepad:function()
+	{
+		var driver = this;
+
+		application.loadScripts(
+		[
+				'application/notepad.js',
+				'application/notepad/note.js'
+			],
+			function() {
+				driver.Handle_NotepadLoaded();
+			}
+		);
+	},
+
+	Handle_NotepadLoaded:function()
+	{
+		if(this.notepad === null)
+		{
+			this.notepad = new Application_Notepad();
+		}
+
+		this.notepad.Open();
 	}
 };
