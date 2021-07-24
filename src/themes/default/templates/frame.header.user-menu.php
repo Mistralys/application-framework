@@ -9,7 +9,12 @@ $menu = $this->ui->createButtonDropdown()
 ->setLabel($this->user->getName());
 
 $menu->addLink(t('Settings'), '?page=settings')
-->setIcon(UI::icon()->settings());
+    ->setTitle(t('Opens your %1$s user settings.', $this->driver->getAppNameShort()))
+    ->setIcon(UI::icon()->settings());
+
+$menu->addClickable(t('Notepad'), 'Driver.DialogNotepad()')
+    ->setTitle(t('Opens your personal notepad.'))
+    ->setIcon(UI::icon()->notepad());
 
 $menu->addSeparator();
 
