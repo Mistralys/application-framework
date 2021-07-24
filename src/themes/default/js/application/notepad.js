@@ -81,7 +81,8 @@ class Application_Notepad
                 notepad.Close();
             })
 
-        var btnAdd = UI.Button(t('Add note'))
+        var btnAdd = UI.Button(t('Add a note'))
+            .SetTooltip(t('Adds a new, empty note to the notepad.'))
             .SetIcon(UI.Icon().Add())
             .AddClass('pull-right')
             .SetStyle('margin-right', '10px')
