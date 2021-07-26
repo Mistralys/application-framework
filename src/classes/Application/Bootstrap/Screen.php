@@ -9,7 +9,9 @@ abstract class Application_Bootstrap_Screen
 {
     const ERROR_CONFIG_SETTING_ALREADY_DEFINED = 28201;
     const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
-    
+
+    const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
+
     protected $params = array();
     
     public function __construct($params)
@@ -166,13 +168,13 @@ abstract class Application_Bootstrap_Screen
                 }
             }
         }
-        else if(isset($_REQUEST['set_usersetting']) && isset($_REQUEST['value']))
+        else if(isset($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING]) && isset($_REQUEST['value']))
         {
             $updated = false;
             $value = $_REQUEST['value'];
             $settings = array();
             
-            switch($_REQUEST['set_usersetting'])
+            switch($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING])
             {
                 case  'layout_width':
                     if(in_array($value, array('standard', 'maximized'))) {
