@@ -15,6 +15,9 @@ declare(strict_types=1);
  * @package UserInterface
  * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see template_default_frame_sidebar
+ * @see template_default_frame_header_user_menu
  */
 class template_default_frame extends UI_Page_Template_Custom
 {
