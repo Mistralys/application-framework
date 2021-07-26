@@ -88,16 +88,16 @@ class DBHelper
      * PDOStatement->execute() method. If the query fails, the
      * error information can be accessed via {@link getErrorMessage()}.
      *
-     * @param string $operationType
+     * @param int $operationType
      * @param string $statement The full SQL query to run with placeholders for variables
      * @param array $variables Associative array with placeholders and values to replace in the query
      * @param bool $exceptionOnError
      * @return boolean
-     * @throws DBHelper_Exception
+     * @throws DBHelper_Exception|ConvertHelper_Exception
      * @see getErrorCode()
      * @see getErrorMessage()
      */
-    public static function execute(string $operationType, string $statement, array $variables = array(), bool $exceptionOnError=true) : bool
+    public static function execute(int $operationType, string $statement, array $variables = array(), bool $exceptionOnError=true) : bool
     {
         if(self::isQueryTrackingEnabled()) {
             self::$startTime = microtime(true);
@@ -107,7 +107,7 @@ class DBHelper
         
         if(DBHelper_OperationTypes::isWriteOperation($operationType) && self::hasListener('BeforeDBWriteOperation')) {
             $event = self::triggerEvent('BeforeDBWriteOperation', array($operationType, $statement, $variables));
-            if($event->isCancelled()) {
+            if($event !== null && $event->isCancelled()) {
                 return true;
             }
         }
