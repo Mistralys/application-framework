@@ -234,7 +234,7 @@ class Application_Notepad
     /**
      * @param {Application_Notepad_Note} note
      */
-    Handle_NoteDeleted(note)
+    Handle_NoteRemoved(note)
     {
         var deleteID = note.GetID();
         var keep = [];

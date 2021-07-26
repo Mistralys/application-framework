@@ -8,13 +8,13 @@ class Application_Notepad_Note
      */
     constructor(notepad, id)
     {
-        this.ERROR_CANNOT_LOAD_NOTE_DATA = 90301;
-        this.ERROR_CANNOT_DELETE_NOTE = 90302;
+        this.ERROR_CANNOT_DELETE_NOTE = 90301;
 
         this.notepad = notepad;
         this.id = id;
         this.loaded = false;
         this.loading = false;
+        this.deleting = false;
         this.elContainer = null;
         this.elTitle = null;
         this.elTitleText = null;
@@ -31,7 +31,7 @@ class Application_Notepad_Note
 
     Refresh()
     {
-        if(this.editMode)
+        if(this.editMode || this.deleting)
         {
             return;
         }
@@ -72,11 +72,18 @@ class Application_Notepad_Note
             .Success(function(data) {
                 notepad.Handle_DataLoaded(data);
             })
-            .Error(t('Could not load note data.'), this.ERROR_CANNOT_LOAD_NOTE_DATA)
+            .Failure(function () {
+                notepad.Handle_DataNotFound();
+            })
             .Always(function() {
                 notepad.loading = false;
             })
             .Send();
+    }
+
+    Handle_DataNotFound()
+    {
+        this.Remove();
     }
 
     Handle_DataLoaded(data)
@@ -91,8 +98,13 @@ class Application_Notepad_Note
 
     Handle_DeleteSuccess()
     {
+        this.Remove();
+    }
+
+    Remove()
+    {
         this.elContainer.remove();
-        this.notepad.Handle_NoteDeleted(this);
+        this.notepad.Handle_NoteRemoved(this);
     }
 
     ShowLoader()
@@ -102,11 +114,21 @@ class Application_Notepad_Note
         this.elLoader.show();
     }
 
+    DialogDelete()
+    {
+        if(confirm(t('This will delete the note.')+'\n'+t('This cannot be undone, are you sure?')) === true) {
+            this.Delete();
+        }
+    }
+
     Delete()
     {
-        if(confirm(t('This will delete the note.')+'\n'+t('This cannot be undone, are you sure?')) !== true) {
+        if(this.deleting)
+        {
             return;
         }
+
+        this.deleting = true;
 
         this.ShowLoader();
 
@@ -282,7 +304,7 @@ class Application_Notepad_Note
                 .MakeDangerous()
                 .SetTitle(t('Delete this note.'))
                 .Click(function () {
-                    note.Delete();
+                    note.DialogDelete();
                 })
                 .Render()
         );
