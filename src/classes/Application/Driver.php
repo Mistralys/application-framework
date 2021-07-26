@@ -7,6 +7,8 @@
  */
 
 use AppLocalize\Localization;
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
 
 /**
  * Base class for the application "driver", which is where the
@@ -693,13 +695,31 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string|NULL $default
      * @return string|NULL
      */
-    public static function getSetting($name, $default = null)
+    public static function getSetting(string $name, $default = null)
     {
         $value = self::$storage->get($name);
 
         if ($value !== null)
         {
             return $value;
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param string $name
+     * @param bool $default
+     * @return bool
+     *
+     * @throws ConvertHelper_Exception
+     * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
+     */
+    public static function getBoolSetting(string $name, bool $default=false) : bool
+    {
+        $value = self::getSetting($name);
+        if($value !== null) {
+            return ConvertHelper::string2bool($value);
         }
 
         return $default;
