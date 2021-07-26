@@ -17,7 +17,7 @@ use AppUtils\ConvertHelper;
  * @subpackage Administration
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mode
+abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mode
 {
    /**
     * @var string
@@ -28,7 +28,22 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
      * @var UI_DataGrid
      */
     protected $datagrid;
-    
+
+    /**
+     * @var array<string,array<string,mixed>>
+     */
+    protected $settings = array();
+
+    /**
+     * @var string
+     */
+    private $elDataKeyID = '';
+
+    /**
+     * @var string
+     */
+    private $elValueID = '';
+
     public function getURLName()
     {
         return 'appsettings';
@@ -74,9 +89,9 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
     {
         $this->filterSettings = new Application_FilterSettings_AppSettings('appsettings');
         $this->filterCriteria = new Application_FilterCriteria_AppSettings();
-        
+
         $this->createEditForm();
-        
+
         $this->createDatagrid();
         
         if($this->isFormValid())
@@ -152,12 +167,83 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
     {
         $this->sidebar->addFilterSettings($this->filterSettings);
         
-        $this->sidebar->addSeparator();
-        
+        $formSection = $this->sidebar->addSection()
+            ->setTitle('Add setting')
+            ->setAbstract(t('Allows adding or overwriting values (when using the same data key).'))
+            ->setContent($this->formableForm->renderHorizontal())
+            ->collapse();
+
+        $this->registerSettings();
+
         $this->sidebar->addSection()
-        ->setTitle('Add setting')
-        ->setAbstract(t('Allows adding or overwriting values (when using the same data key).'))
-        ->setContent($this->formableForm->renderHorizontal());
+            ->setTitle(t('Settings registry'))
+            ->setAbstract(sb()
+                ->t('These are known settings that can be used.')
+                ->t('Click on a name to insert it into the form.')
+            )
+            ->setContent($this->renderRegistry($formSection))
+            ->collapse();
+    }
+
+    private function registerSettings() : void
+    {
+        $this->registerSetting(
+            UI_Themes::OPTION_SHOW_USER_NAME,
+            'boolean',
+            t('Show user name in meta navigation?')
+        );
+
+        $this->_registerSettings();
+    }
+
+    abstract protected function _registerSettings() : void;
+
+    protected function registerSetting(string $name, string $type, string $description='') : void
+    {
+        $this->settings[$name] = array(
+            'name' => $name,
+            'type' => $type,
+            'description' => $description
+        );
+    }
+
+    protected function renderRegistry(UI_Page_Section $formSection) : string
+    {
+        ksort($this->settings);
+
+        ob_start();
+        ?>
+            <ul class="unstyled">
+            <?php
+            foreach($this->settings as $def)
+            {
+                ?>
+                <li style="padding-bottom: 6px">
+                    <i><?php echo $def['type'] ?></i>
+                    <code onclick="<?php echo $this->renderStatement($formSection, $def) ?>" class="clickable">
+                        <?php echo $def['name'] ?>
+                    </code>
+                    <br>
+                    <?php echo $def['description'] ?>
+                </li>
+                <?php
+            }
+            ?>
+            </ul>
+        <?php
+
+        return ob_get_clean();
+    }
+
+    protected function renderStatement(UI_Page_Section $formSection, array $def) : string
+    {
+        return sprintf(
+            "%s;$('#%s').val('%s');$('#%s').focus()",
+            $formSection->getJSExpand(),
+            $this->elDataKeyID,
+            $def['name'],
+            $this->elValueID
+        );
     }
     
     protected function createEditForm()
@@ -173,17 +259,21 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
         $text->addFilterTrim();
         $this->makeLengthLimited($text, 1, 160);
         $this->makeRequired($text);
+
+        $this->elDataKeyID = $text->getId();
         
         $value = $this->addElementTextarea('value', t('Value'));
         $value->removeClass('input-xxlarge');
         $value->addClass('input-block');
         $value->addFilterTrim();
         $this->makeRequired($value);
+
+        $this->elValueID = $value->getId();
         
         $this->formableForm->addPrimarySubmit(UI::icon()->add().' '.t('Add / overwrite setting'));
     }
     
-    private function createDatagrid()
+    private function createDatagrid() : void
     {
         $grid = $this->ui->createDataGrid('custom_appsettings_grid');
         $grid->enableMultiSelect('data_key');
@@ -194,7 +284,9 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
         $grid->addConfirmAction(
             'delete',
             t('Delete...'),
-            t('The selected values will be deleted.').' '.t('This cannot be undone, are you sure?')
+            sb()
+                ->t('The selected values will be deleted.')
+                ->cannotBeUndone()
         )
         ->makeDangerous()
         ->setIcon(UI::icon()->delete())
@@ -235,7 +327,7 @@ class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mo
         {
             $this->redirectWithSuccessMessage(
                 t(
-                    '%1$s settings have been successfull deleted at %2$s.',
+                    '%1$s settings have been successfully deleted at %2$s.',
                     $total,
                     date('H:i:s')
                 ),
