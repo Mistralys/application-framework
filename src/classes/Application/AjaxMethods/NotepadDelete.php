@@ -8,7 +8,7 @@ class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
     {
         $this->notepad->deleteNote($this->note);
 
-        $this->sendResponse(array('success' => 'yes'));
+        $this->sendSuccessResponse();
     }
 
     /**
@@ -27,12 +27,20 @@ class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
 
         $noteID = intval($this->request->registerParam('note_id')->setInteger()->get());
 
-        if($this->notepad->idExists($noteID))
+        // Note not found? Assume it's been deleted already.
+        if(!$this->notepad->idExists($noteID))
         {
-            $this->note = $this->notepad->getNoteByID($noteID);
-            return;
+            $this->sendSuccessResponse();
         }
 
-        $this->sendErrorUnknownElement(t('Notepad note'));
+        $this->note = $this->notepad->getNoteByID($noteID);
+    }
+
+    /**
+     * @return never-returns
+     */
+    private function sendSuccessResponse() : void
+    {
+        $this->sendResponse(array('success' => 'yes'));
     }
 }
