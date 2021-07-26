@@ -45,12 +45,10 @@ class Application_AjaxMethods_NotepadSave extends Application_AjaxMethod
 
         $this->title = (string)$this->request->registerParam('title')
             ->addFilterTrim()
-            ->addHTMLSpecialcharsFilter()
             ->get();
 
         $this->content = (string)$this->request->registerParam('content')
             ->addFilterTrim()
-            ->addHTMLSpecialcharsFilter()
             ->get();
     }
 }

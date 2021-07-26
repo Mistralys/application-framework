@@ -94,12 +94,17 @@ class Application_User_Notepad_Note
 
     public function setTitle(string $title) : void
     {
-        $this->data[self::KEY_TITLE] = $title;
+        $this->data[self::KEY_TITLE] = self::filterText($title);
     }
 
     public function setContent(string $content) : void
     {
-        $this->data[self::KEY_CONTENT] = $content;
+        $this->data[self::KEY_CONTENT] = self::filterText($content);
+    }
+
+    private static function filterText(string $text) : string
+    {
+        return $text;
     }
 
     public function save() : void
@@ -114,8 +119,8 @@ class Application_User_Notepad_Note
     {
         $data = array(
             self::KEY_ID => $id,
-            self::KEY_CONTENT => $content,
-            self::KEY_TITLE => $title,
+            self::KEY_CONTENT => self::filterText($content),
+            self::KEY_TITLE => self::filterText($title),
             self::KEY_DATE => (new Microtime())->getMySQLDate()
         );
 
