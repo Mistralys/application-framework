@@ -102,12 +102,4 @@ final class DataGrids_EntriesTest extends ApplicationTestCase
         $grid->setFooterCountText(t('Showing communication types [FROM] to [TO], [TOTAL] total.'));
         $this->assertSame('Showing communication types 1 to 2, 2 total.',$grid->getFooterCountText(1,2,2));
     }
-
-    public function test_customFooterCountText_DE() : void
-    {
-        Localization::selectAppLocale('de_DE');
-        $grid = $this->ui->createDataGrid('grid'.$this->getTestCounter());
-        $grid->setFooterCountText(t('Showing communication types [FROM] to [TO], [TOTAL] total.'));
-        $this->assertSame('Zeige Kommunikationstypen 1 bis 2, 2 insgesamt.',$grid->getFooterCountText(1,2,2));
-    }
 }
