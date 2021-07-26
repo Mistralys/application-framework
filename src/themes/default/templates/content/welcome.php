@@ -62,13 +62,18 @@ class template_default_content_welcome extends UI_Page_Template_Custom
 
     private function renderCategory(Application_User_Recent_Category $category) : void
     {
+        $entries = $category->getEntries();
+
+        if(empty($entries)) {
+            return;
+        }
+
         ?>
             <h3><?php echo $category->getLabel() ?></h3>
         <?php
 
         $sel = $this->ui->createBigSelection();
-
-        $entries = $category->getEntries();
+        $sel->makeSmall();
 
         foreach($entries as $entry)
         {
