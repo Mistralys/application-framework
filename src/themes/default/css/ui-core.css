@@ -1321,6 +1321,7 @@ BODY.layout-maximized .notepad-note{
 .notepad-note-body{
     padding: 13px;
     min-height: 60px;
+    word-break: break-word;
 }
 
 .notepad-note-loader{
