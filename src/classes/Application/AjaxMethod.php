@@ -179,6 +179,10 @@ abstract class Application_AjaxMethod
         return array_keys($this->supportedFormats);
     }
 
+    /**
+     * @param array|NULL $data
+     * @return never-returns
+     */
     protected function sendResponse($data = null)
     {
         if(DBHelper::isTransactionStarted()) {
