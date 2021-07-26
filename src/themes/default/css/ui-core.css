@@ -197,6 +197,16 @@ footer H2 {
    MISC ITEMS - BUTTONS, ETC
    ------------------------------------------------------------------- */
 
+CODE.clickable{
+    color:#08c;
+}
+
+CODE.clickable:active,
+CODE.clickable:hover{
+    color:#005580;
+    text-decoration: underline;
+}
+
 PRE.unstyled {
     border: 0;
     background: transparent;
