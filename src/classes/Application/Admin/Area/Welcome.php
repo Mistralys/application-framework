@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * @see template_default_content_welcome
+ */
 class Application_Admin_Area_Welcome extends Application_Admin_Area
 {
     public function getDefaultMode()
