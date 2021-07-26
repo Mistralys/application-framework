@@ -90,4 +90,16 @@ final class User_NotepadTest extends UserTestCase
 
         $this->assertEquals('<p>Text with <strong>bold</strong> style</p>', $note->renderContent());
     }
+
+    public function test_specialChars() : void
+    {
+        $this->startTest('Render markdown content');
+
+        $notepad = $this->user->getNotepad();
+
+        $note = $notepad->addNote("<Text with '", "<Title with '");
+
+        $this->assertEquals("<Text with '", $note->getContent());
+        $this->assertEquals("<p>&lt;Text with '</p>", $note->renderContent());
+    }
 }
