@@ -1,5 +1,8 @@
 v1.14.0
 - Notepad: Added the new notepad feature for taking notes.
+- AppSettings: Added registering of known settings to display in the UI.
+- AppSettings: The screens must now implement `_registerSettings()`.
+- Themes: Added option to show the user's name in the meta navigation.
 
 v1.13.11
 - Popovers: Added the `UI::popover()` method to create popovers.
