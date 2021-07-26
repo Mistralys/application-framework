@@ -58,9 +58,7 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
             $this->addLinkClass($this->size);
         }
         
-        $tagName = null;
-        
-        if($this->inNavigation) 
+        if($this->inNavigation)
         {
             $tagName = 'li';
             $this->addClass('dropdown');
