@@ -54,6 +54,11 @@ class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_
     {
         return Application_Driver::getSetting($name, $default);
     }
+
+    public function getBoolSetting(string $name, bool $default=false) : bool
+    {
+        return Application_Driver::getBoolSetting($name, $default);
+    }
     
     public function settingExists($name)
     {
