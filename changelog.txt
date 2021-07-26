@@ -3,8 +3,6 @@ v1.14.0
 - AppSettings: Added registering of known settings to display in the UI.
 - AppSettings: The screens must now implement `_registerSettings()`.
 - Themes: Added option to show the user's name in the meta navigation.
-
-v1.13.11
 - Popovers: Added the `UI::popover()` method to create popovers.
 - Buttons: Added popover capability to make buttons show popovers.
 - BigSelection: The search now supports several search terms.
