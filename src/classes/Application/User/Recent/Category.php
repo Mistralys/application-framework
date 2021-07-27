@@ -5,12 +5,15 @@ declare(strict_types=1);
 use AppUtils\Interface_Optionable;
 use AppUtils\Traits_Optionable;
 
-class Application_User_Recent_Category implements Interface_Optionable, Application_Interfaces_Loggable
+class Application_User_Recent_Category implements Interface_Optionable, Application_Interfaces_Loggable, Application_Interfaces_Iconizable
 {
     use Traits_Optionable;
     use Application_Traits_Loggable;
+    use Application_Traits_Iconizable;
 
     const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
+
+    const OPTION_MAX_ITEMS = 'max-items';
 
     /**
      * @var string
@@ -58,19 +61,19 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
     public function getDefaultOptions(): array
     {
         return array(
-            'max-items' => 10
+            self::OPTION_MAX_ITEMS => 10
         );
     }
 
     public function setMaxItems(int $max) : Application_User_Recent_Category
     {
-        $this->setOption('max-items', $max);
+        $this->setOption(self::OPTION_MAX_ITEMS, $max);
         return $this;
     }
 
     public function getMaxItems() : int
     {
-        return $this->getIntOption('max-items');
+        return $this->getIntOption(self::OPTION_MAX_ITEMS);
     }
 
     /**
@@ -85,6 +88,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
      * @param string $url An URL to open to view the item.
      * @param DateTime|null $date A specific date and time, or null to use the current time.
      * @return Application_User_Recent_Entry
+     * @throws Application_Exception
      */
     public function addEntry(string $id, string $label, string $url, ?DateTime $date=null) : Application_User_Recent_Entry
     {
@@ -207,6 +211,12 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         return in_array($id, $this->getEntryIDs());
     }
 
+    /**
+     * @param string $id
+     * @return Application_User_Recent_Entry
+     * @throws Application_Exception
+     * @see Application_User_Recent_Category::ERROR_RECENT_ENTRY_NOT_FOUND
+     */
     public function getEntryByID(string $id) : Application_User_Recent_Entry
     {
         foreach($this->entries as $entry)
@@ -266,5 +276,21 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
     public function hasEntries() : bool
     {
         return !empty($this->entries);
+    }
+
+    public function getAdminURLClear(array $params=array()) : string
+    {
+        $params['clear-category'] = $this->getAlias();
+
+        return $this->recent->getAdminURL($params);
+    }
+
+    public function clearEntries() : Application_User_Recent_Category
+    {
+        $this->entries = array();
+
+        $this->save();
+
+        return $this;
     }
 }
