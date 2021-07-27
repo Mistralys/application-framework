@@ -161,4 +161,11 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
             $this->user->getID()
         );
     }
+
+    public function getAdminURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Welcome::URL_NAME_WELCOME;
+
+        return Application_Driver::getInstance()->getRequest()->buildURL($params);
+    }
 }
