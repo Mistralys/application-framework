@@ -35,7 +35,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
     const ERROR_NO_SUCH_CHILD_ADMIN_SCREEN = 13003;
     const ERROR_CANNOT_RESOLVE_INCLUDE_PATH = 13004;
-    
+
     /**
      * @var Application_Driver
      */
@@ -532,25 +532,25 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         
         if ($this instanceof Application_Admin_Area) 
         {
-            $vars['page'] = $this->getURLName();
+            $vars[self::REQUEST_PARAM_PAGE] = $this->getURLName();
         } 
         else if ($this instanceof Application_Admin_Area_Mode) 
         {
-            $vars['page'] = $this->area->getURLName();
-            $vars['mode'] = $this->getURLName();
+            $vars[self::REQUEST_PARAM_PAGE] = $this->area->getURLName();
+            $vars[self::REQUEST_PARAM_MODE] = $this->getURLName();
         } 
         else if ($this instanceof Application_Admin_Area_Mode_Submode) 
         {
-            $vars['page'] = $this->area->getURLName();
-            $vars['mode'] = $this->mode->getURLName();
-            $vars['submode'] = $this->getURLName();
+            $vars[self::REQUEST_PARAM_PAGE] = $this->area->getURLName();
+            $vars[self::REQUEST_PARAM_MODE] = $this->mode->getURLName();
+            $vars[self::REQUEST_PARAM_SUBMODE] = $this->getURLName();
         } 
         else if ($this instanceof Application_Admin_Area_Mode_Submode_Action) 
         {
-            $vars['page'] = $this->area->getURLName();
-            $vars['mode'] = $this->mode->getURLName();
-            $vars['submode'] = $this->submode->getURLName();
-            $vars['action'] = $this->getURLName();
+            $vars[self::REQUEST_PARAM_PAGE] = $this->area->getURLName();
+            $vars[self::REQUEST_PARAM_MODE] = $this->mode->getURLName();
+            $vars[self::REQUEST_PARAM_SUBMODE] = $this->submode->getURLName();
+            $vars[self::REQUEST_PARAM_ACTION] = $this->getURLName();
         }
         
         return $vars;

@@ -27,7 +27,12 @@
  */
 interface Application_Admin_ScreenInterface extends Application_Interfaces_Formable, Application_Interfaces_Loggable
 {
-   /**
+    const REQUEST_PARAM_PAGE = 'page';
+    const REQUEST_PARAM_MODE = 'mode';
+    const REQUEST_PARAM_SUBMODE = 'submode';
+    const REQUEST_PARAM_ACTION = 'action';
+
+    /**
     * @return string
     */
     public function getID();
