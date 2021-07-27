@@ -33,17 +33,33 @@
 abstract class Application_RevisionStorage_DBStandardized extends Application_RevisionStorage_DB
 {
     const ERROR_LOADING_REVISION = 534001;
-
     const ERROR_LOADING_REVISION_USER = 534002;
 
+    const FREEFORM_KEY_PREFIX = 'freeform_';
+
+    /**
+     * @var int
+     */
     protected $revisionableID;
-    
+
+    /**
+     * @var string
+     */
     protected $revisionsTable;
-    
+
+    /**
+     * @var string
+     */
     protected $idColumn;
-    
+
+    /**
+     * @var string
+     */
     protected $revisionColumn;
-    
+
+    /**
+     * @var string
+     */
     protected $revdataTable;
     
     public function __construct(Application_RevisionableStateless $revisionable)
@@ -81,6 +97,11 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     */
     abstract public function getRevisionColumn();
 
+    /**
+     * @param int $number
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     */
     protected function _loadRevision($number)
     {
         $data = DBHelper::fetch(
@@ -148,8 +169,14 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         }
     }
 
+    /**
+     * @var int|null
+     */
     protected $cacheRevisionCount = null;
 
+    /**
+     * @return int
+     */
     public function countRevisions()
     {
         if ($this->cacheRevisionCount !== null) {
@@ -340,10 +367,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     
     public function getFilterCriteria()
     {
-        require_once 'Application/FilterCriteria/RevisionableRevisions.php';
-
-        $criteria = new Application_FilterCriteria_RevisionableRevisions($this);
-        return $criteria;
+        return new Application_FilterCriteria_RevisionableRevisions($this);
     }
     
     protected function log($message)
@@ -461,14 +485,28 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             )
         );
     }
+
+    /**
+     * Generates the internal data key name used for the
+     * freeform keys, using the base data key name. These
+     * names use a prefix, so they do not conflict with
+     * other keys if they have the same name.
+     *
+     * @param string $name
+     * @return string
+     */
+    public static function getFreeformKeyName(string $name) : string
+    {
+        return self::FREEFORM_KEY_PREFIX .$name;
+    }
     
     public function setFreeformKey(string $name, string $value) : void
     {
-        $this->_writeRevdataKey('freeform_'.$name, $value);
+        $this->_writeRevdataKey(self::getFreeformKeyName($name), $value);
     }
     
     public function getFreeformKey(string $name) : string
     {
-        return (string)$this->_loadRevdataKey('freeform_'.$name);
+        return (string)$this->_loadRevdataKey(self::getFreeformKeyName($name));
     }
 }
