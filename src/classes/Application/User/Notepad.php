@@ -195,4 +195,14 @@ class Application_User_Notepad
     {
         return in_array($noteID, $this->index['notes']);
     }
+
+    public static function getJSOpen() : string
+    {
+        return 'Driver.DialogNotepad();';
+    }
+
+    public static function getTooltipText() : string
+    {
+        return t('Your personal notepad for taking notes.');
+    }
 }
