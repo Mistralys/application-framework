@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
+
 /**
  * Renders the content of the welcome screen, with the user's
  * recent items lists.
@@ -21,6 +23,8 @@ class template_default_content_welcome extends UI_Page_Template_Custom
 {
     protected function generateOutput(): void
     {
+        $this->ui->addStylesheet('ui/welcome.css');
+
         $greeting = $this->getGreeting();
 
         if(!empty($greeting))
@@ -32,11 +36,17 @@ class template_default_content_welcome extends UI_Page_Template_Custom
 
         if(!$this->recent->hasEntries())
         {
+            $this->ui->createMessage(t('There are no items to show here yet.'))
+                ->makeInfo()
+                ->enableIcon()
+                ->makeNotDismissable()
+                ->display();
+
             ?>
+
                 <p><?php
-                    pts('There are no items to show here yet.');
                     pts(
-                        'We will keep track of the items you work on (for ex. %1$s), and show them here so you can access them easily.',
+                        'We will keep track of the items you work on (for ex. %1$s), and show them here so you can easily access them again.',
                         $this->getExampleItems()
                     );
                 ?></p>
@@ -49,15 +59,33 @@ class template_default_content_welcome extends UI_Page_Template_Custom
             <p>
                 <?php pt('These are the items you last worked on:') ?>
             </p>
+            <?php
+
+            $categories = $this->recent->getCategories();
+            $total = count($categories);
+            $cols = 2;
+            $rows = ceil($total/$cols);
+
+            for($row=0; $row < $rows; $row++)
+            {
+                $items = array_slice($categories, ($row*$cols), $cols);
+
+                ?>
+                <div class="row-fluid">
+                <?php
+                for($col=0; $col < $cols; $col++)
+                {
+                    if(isset($items[$col]))
+                    {
+                        $this->renderCategory($items[$col]);
+                    }
+                }
+                ?>
+                </div>
+                <?php
+            }
+            ?>
         <?php
-
-
-        $categories = $this->recent->getCategories();
-
-        foreach($categories as $category)
-        {
-            $this->renderCategory($category);
-        }
     }
 
     private function renderCategory(Application_User_Recent_Category $category) : void
@@ -69,18 +97,42 @@ class template_default_content_welcome extends UI_Page_Template_Custom
         }
 
         ?>
-            <h3><?php echo $category->getLabel() ?></h3>
+            <div class="span6">
+                <div class="welcome-category">
+                    <div class="welcome-toolbar">
+                        <a href="<?php echo $category->getAdminURLClear() ?>">
+                        <?php
+                            UI::icon()->deleteSign()
+                                ->makeDangerous()
+                                ->setTooltip(t('Clears the %1$s history.', $category->getLabel()))
+                                ->display();
+                        ?>
+                        </a>
+                    </div>
+                    <h3>
+                        <?php
+                            $icon = $category->getIcon();
+                            if($icon) { $icon->display(); }
+                        ?>
+                        <?php echo $category->getLabel() ?>
+                    </h3>
+                    <?php
+
+                    $sel = $this->ui->createBigSelection();
+                    $sel->makeSmall();
+
+                    foreach($entries as $entry)
+                    {
+                        $sel->addLink($entry->getLabel(), $entry->getUrl())
+                        ->setDescription(ConvertHelper::date2listLabel($entry->getDate(), true, true));
+                    }
+
+                    $sel->display();
+
+                    ?>
+                </div>
+            </div>
         <?php
-
-        $sel = $this->ui->createBigSelection();
-        $sel->makeSmall();
-
-        foreach($entries as $entry)
-        {
-            $sel->addLink($entry->getLabel(), $entry->getUrl());
-        }
-
-        $sel->display();
     }
 
     /**

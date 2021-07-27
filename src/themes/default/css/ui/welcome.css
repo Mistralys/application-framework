@@ -1,0 +1,12 @@
+.welcome-toolbar{
+    float: right;
+    padding-top: 10px;
+}
+
+.welcome-category > H3{
+    padding-top:0;
+}
+
+.welcome-category{
+    margin-bottom: 20px;
+}
