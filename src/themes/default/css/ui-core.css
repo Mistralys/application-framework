@@ -1119,6 +1119,11 @@ UL.unstyled.compact > LI {
    HEADINGS
    ------------------------------------------------------------------- */
 
+/* Avoid the help button displacing the title context elements when no breadcrumb is present */
+.title-wrapper-title{
+    clear:both;
+}
+
 H1.page-title,
 H2.page-subtitle {
     margin: 0;
