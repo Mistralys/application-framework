@@ -7,6 +7,16 @@
     padding-top:0;
 }
 
-.welcome-category{
+.welcome-category {
     margin-bottom: 20px;
+}
+
+.welcome-clear-link > A:link,
+.welcome-clear-link > A:visited{
+    color:#ccc;
+}
+
+.welcome-clear-link > A:active,
+.welcome-clear-link > A:hover{
+    color:#cc0000;
 }

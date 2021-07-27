@@ -96,18 +96,23 @@ class template_default_content_welcome extends UI_Page_Template_Custom
             return;
         }
 
+        $jsID = nextJSID();
+
+        JSHelper::tooltipify($jsID);
+
         ?>
             <div class="span6">
                 <div class="welcome-category">
                     <div class="welcome-toolbar">
-                        <a href="<?php echo $category->getAdminURLClear() ?>">
-                        <?php
-                            UI::icon()->deleteSign()
-                                ->makeDangerous()
-                                ->setTooltip(t('Clears the %1$s history.', $category->getLabel()))
-                                ->display();
-                        ?>
-                        </a>
+                        <div class="welcome-clear-link">
+                            <a href="<?php echo $category->getAdminURLClear() ?>" title="<?php pt('Clears the %1$s history.', $category->getLabel()); ?>" id="<?php echo $jsID ?>">
+                            <?php
+                                echo sb()
+                                    ->add(UI::icon()->deleteSign())
+                                    ->t('Clear history');
+                            ?>
+                            </a>
+                        </div>
                     </div>
                     <h3>
                         <?php
