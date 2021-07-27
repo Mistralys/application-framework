@@ -1153,6 +1153,43 @@ class Application
         );
     }
 
+    public static function getUserByForeignID(string $foreignID) : Application_User
+    {
+
+        try
+        {
+            $data = DBHelper::fetch(
+                'SELECT
+                *
+                FROM
+                    known_users
+                WHERE
+                    foreign_id=:foreign_id',
+
+                array(
+                    ':foreign_id' => $foreignID
+                )
+            );
+
+            if (!empty($data))
+            {
+                return self::createUser($data['user_id']);
+            }
+        }
+        catch (DBHelper_Exception $e)
+        {
+        }
+
+        throw new Application_Exception(
+            'Cannot find user data',
+            sprintf(
+                'Tried loading data for user foreign ID [%s], but it does not exist in the database.',
+                $foreignID
+            ),
+            self::ERROR_USER_DATA_NOT_FOUND
+        );
+    }
+
     public static function createSystemUser() : Application_User
     {
         return self::createUser(self::USER_ID_SYSTEM);
