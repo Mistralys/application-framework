@@ -2,10 +2,11 @@
 
 class Application_Admin_Area_Settings extends Application_Admin_Area
 {
+    const URL_NAME = 'settings';
 
     public function getURLName()
     {
-        return 'settings';
+        return self::URL_NAME;
     }
 
     public function getDefaultMode()
@@ -67,10 +68,10 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         $this->user->setSetting('startup_tab', $values['settings']['startup_tab']);
         $this->user->saveSettings();
 
-        $this->ui->addMessage(t('Your interface settings have been saved successfully at %1s.', date('H:i:s')));
-        $this->redirectTo(array(
-            'page' => 'settings',
-        ));
+        $this->redirectWithSuccessMessage(
+            t('Your interface settings have been saved successfully at %1s.', sb()->time()),
+            $this->user->getAdminSettingsURL()
+        );
     }
 
     public function _renderContent()
