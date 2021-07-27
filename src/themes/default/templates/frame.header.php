@@ -15,9 +15,9 @@
             
                 ?>
                 <li>
-                    <a href="#" onclick="Driver.DialogNotepad();">
+                    <a href="#" onclick="<?php echo Application_User_Notepad::getJSOpen() ?>">
                         <?php UI::icon()->notepad()
-                            ->setTooltip(t('Your personal notepad for taking notes.'))
+                            ->setTooltip(Application_User_Notepad::getTooltipText())
                             ->makeTooltipBottom()
                             ->makeInformation()
                             ->setAttribute('data-placement', 'left')
