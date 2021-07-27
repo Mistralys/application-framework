@@ -7,6 +7,13 @@ declare(strict_types=1);
  */
 class Application_Admin_Area_Welcome extends Application_Admin_Area
 {
+    const URL_NAME_WELCOME = 'welcome';
+
+    /**
+     * @var Application_User_Recent
+     */
+    private $recent;
+
     public function getDefaultMode()
     {
         return '';
@@ -34,7 +41,7 @@ class Application_Admin_Area_Welcome extends Application_Admin_Area
 
     public function getURLName()
     {
-        return 'welcome';
+        return self::URL_NAME_WELCOME;
     }
 
     public function getNavigationTitle()
@@ -52,6 +59,16 @@ class Application_Admin_Area_Welcome extends Application_Admin_Area
         return UI::icon()->home();
     }
 
+    protected function _handleActions()
+    {
+        $this->recent = $this->user->getRecent();
+
+        if($this->request->hasParam('clear-category'))
+        {
+            $this->handleClearCategory(strval($this->request->getParam('clear-category')));
+        }
+    }
+
     protected function _handleHelp()
     {
         $this->renderer->setTitle($this->getTitle())->getTitle()->setIcon($this->getNavigationIcon());
@@ -65,6 +82,17 @@ class Application_Admin_Area_Welcome extends Application_Admin_Area
 
         return $this->renderer
             ->appendTemplate($tpl)
-            ->makeWithSidebar();
+            ->makeWithoutSidebar();
+    }
+
+    private function handleClearCategory(string $categoryAlias) : void
+    {
+        $category = $this->recent->getCategoryByAlias($categoryAlias);
+        $category->clearEntries();
+
+        $this->redirectWithSuccessMessage(
+            t('The %1$s history has been cleared successfully.', $category->getLabel()),
+            $this->recent->getAdminURL()
+        );
     }
 }
