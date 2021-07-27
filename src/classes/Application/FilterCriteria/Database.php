@@ -5,6 +5,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     const ERROR_INVALID_WHERE_STATEMENT = 710001;
     const ERROR_EMPTY_SELECT_FIELDS_LIST = 710002;
     const ERROR_MISSING_SELECT_KEYWORD = 710004;
+    const ERROR_CUSTOM_COLUMN_NOT_REGISTERED = 710005;
 
     const DEFAULT_SELECT = 'SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
 
@@ -121,6 +122,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     protected function buildQuery(bool $isCount=false) : string
     {
+        $this->initQuery();
+
         $this->isCount = $isCount;
 
         $query = $this->addDistinctKeyword($this->getQuery());
@@ -145,6 +148,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $replaces['{WHAT}'] = $this->buildSelect();
 
         return str_replace(array_keys($replaces), array_values($replaces), $query);
+    }
+
+    protected function initQuery() : void
+    {
     }
 
     /**
@@ -476,6 +483,20 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return $this->getCountSelect();
         }
 
+        $selects = array_unique($this->collectSelects());
+
+        // in distinct queries, it is safer to add all select fields to the group by
+        if($this->distinct) {
+            foreach($selects as $field) {
+                $this->addGroupBy($field);
+            }
+        }
+
+        return implode(',', $selects);
+    }
+
+    protected function collectSelects() : array
+    {
         $selects = $this->getSelect();
         if(empty($selects)) {
             throw new Application_Exception(
@@ -498,16 +519,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             $selects[] = $this->orderField;
         }
 
-        $selects = array_unique($selects);
-
-        // in distinct queries, it is safer to add all select fields to the group by
-        if($this->distinct) {
-            foreach($selects as $field) {
-                $this->addGroupBy($field);
-            }
-        }
-
-        return implode(',', $selects);
+        return $selects;
     }
 
     /**
