@@ -1,8 +1,15 @@
 <?php
 
+use AppLocalize\Localization;
+
 class Application_Admin_Area_Settings extends Application_Admin_Area
 {
     const URL_NAME = 'settings';
+
+    /**
+     * @var string
+     */
+    protected $formName = 'usersettings';
 
     public function getURLName()
     {
@@ -36,7 +43,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
     
     public function getNavigationIcon() : ?UI_Icon
     {
-        return UI::icon()->settings();
+        return UI::icon()->tools();
     }
 
     public function isCore()
@@ -79,6 +86,11 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         return $this->renderForm(t('Your personal settings'), $this->formableForm);
     }
 
+    protected function _handleHelp()
+    {
+        $this->renderer->getTitle()->setIcon($this->getNavigationIcon());
+    }
+
     protected function _handleSidebar()
     {
         $this->sidebar->addButton('save', t('Save now'))
@@ -94,9 +106,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         ->makeClickable('application.dialogResetUsercache()');
     }
     
-    protected $formName = 'usersettings';
-
-    private function createSettingsForm()
+    private function createSettingsForm() : void
     {
         $defaultValues = array(
             'settings' => array(
@@ -109,7 +119,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         $this->createFormableForm($this->formName, $defaultValues);
 
         $settings = $this->formableForm->addTab('settings', t('User interface options'));
-        $locale = \AppLocalize\Localization::injectAppLocalesSelector('locale', $settings);
+        $locale = Localization::injectAppLocalesSelector('locale', $settings);
         $locale->addClass('input-xlarge');
         
         $startup = $this->addElementSelect('startup_tab', t('Startup tab'), $settings);
@@ -138,7 +148,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         $this->addElementHTML($rightsHTML, $rights);
     }
     
-    protected function resetUsercache()
+    protected function resetUsercache() : void
     {
         $this->startTransaction();
         $this->user->resetSettings();
