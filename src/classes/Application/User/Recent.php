@@ -50,6 +50,11 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         });
     }
 
+    public function getMaxItemsDefault() : int
+    {
+        return Application_User_Recent_Category::MAX_ITEMS_DEFAULT;
+    }
+
     abstract protected function registerCategories() : void;
 
     protected function registerCategory(string $alias, string $label) : Application_User_Recent_Category
@@ -167,5 +172,12 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Welcome::URL_NAME_WELCOME;
 
         return Application_Driver::getInstance()->getRequest()->buildURL($params);
+    }
+
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Welcome_Settings::URL_NAME_SETTINGS;
+
+        return $this->getAdminURL($params);
     }
 }
