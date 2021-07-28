@@ -14,6 +14,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
     const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
 
     const OPTION_MAX_ITEMS = 'max-items';
+    const MAX_ITEMS_DEFAULT = 10;
 
     /**
      * @var string
@@ -60,14 +61,19 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
 
     public function getDefaultOptions(): array
     {
-        return array(
-            self::OPTION_MAX_ITEMS => 10
+        return array_merge(
+            array(
+                self::OPTION_MAX_ITEMS => self::MAX_ITEMS_DEFAULT
+            ),
+            $this->user->getArraySetting($this->settingName.'-options')
         );
     }
 
     public function setMaxItems(int $max) : Application_User_Recent_Category
     {
         $this->setOption(self::OPTION_MAX_ITEMS, $max);
+        $this->saveOptions();
+
         return $this;
     }
 
@@ -247,6 +253,12 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         {
             $this->registerEntry($def['id'], $def['label'], $def['url'], new DateTime($def['date']));
         }
+    }
+
+    private function saveOptions() : void
+    {
+        $this->user->setArraySetting($this->settingName.'-options', $this->options);
+        $this->user->saveSettings();
     }
 
     private function save() : void
