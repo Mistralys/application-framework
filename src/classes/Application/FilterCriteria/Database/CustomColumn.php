@@ -45,6 +45,11 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     private $enabled = false;
 
+    /**
+     * @var string[]
+     */
+    private $joins = array();
+
     public function __construct(Application_FilterCriteria_Database $filters, string $name, NamedClosure $callback)
     {
         $this->filters = $filters;
@@ -65,8 +70,31 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->enabled;
     }
 
+    public function addJOIN(string $statement) : Application_FilterCriteria_Database_CustomColumn
+    {
+        $this->joins[] = $statement;
+        return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getJOINs() : array
+    {
+        return $this->joins;
+    }
+
+    public function hasJOINs() : bool
+    {
+        return !empty($this->joins);
+    }
+
     public function setEnabled(bool $enabled) : Application_FilterCriteria_Database_CustomColumn
     {
+        if($this->enabled === true && $enabled === false)  {
+            throw new Exception('Uh?');
+        }
+
         $this->enabled = $enabled;
         return $this;
     }

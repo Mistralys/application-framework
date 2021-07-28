@@ -22,6 +22,8 @@ use AppUtils\NamedClosure;
  */
 abstract class Application_FilterCriteria_DatabaseExtended extends Application_FilterCriteria_Database
 {
+    const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
+
     /**
      * @var bool
      */
@@ -46,7 +48,28 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
             return;
         }
 
+        $this->customInitialized = true;
+
         $this->_initCustomColumns();
+    }
+
+    protected function buildJoins() : string
+    {
+        foreach ($this->customColumns as $column)
+        {
+            if(!$column->isEnabled() || !$column->hasJOINs())
+            {
+                continue;
+            }
+
+            $joins = $column->getJOINs();
+            foreach($joins as $join)
+            {
+                $this->addJoin($join);
+            }
+        }
+
+        return parent::buildJoins();
     }
 
     protected function collectSelects() : array
@@ -79,7 +102,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
             $result[] = $column->getSelect();
         }
-
+        
         return $result;
     }
 
@@ -168,11 +191,43 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @param string $columnID
      * @param NamedClosure $callback
      * @return Application_FilterCriteria_Database_CustomColumn
+     *
+     * @throws Application_Exception
+     * @see Application_FilterCriteria_DatabaseExtended::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
      */
     protected function registerCustomColumn(string $columnID, NamedClosure $callback) : Application_FilterCriteria_Database_CustomColumn
     {
-        $column = new Application_FilterCriteria_Database_CustomColumn($this, $columnID, $callback);
-        $this->customColumns[$columnID] = $column;
-        return $column;
+        if(!isset($this->customColumns[$columnID]))
+        {
+            $column = new Application_FilterCriteria_Database_CustomColumn($this, $columnID, $callback);
+            $this->customColumns[$columnID] = $column;
+            return $column;
+        }
+
+        throw new Application_Exception(
+            'Can register custom columns only once',
+            sprintf(
+                'The column [%s] has already been registered.',
+                $columnID
+            ),
+            self::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
+        );
+    }
+
+    /**
+     * Fetches a custom column instance.
+     *
+     * @param string $columnID
+     * @return Application_FilterCriteria_Database_CustomColumn
+     * @throws Application_Exception
+     */
+    public function getCustomColumn(string $columnID) : Application_FilterCriteria_Database_CustomColumn
+    {
+        if(isset($this->customColumns[$columnID]))
+        {
+            return $this->customColumns[$columnID];
+        }
+
+        throw $this->createMissingColumnException($columnID);
     }
 }
