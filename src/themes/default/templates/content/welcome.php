@@ -18,6 +18,8 @@ use AppUtils\ConvertHelper;
  * @package UserInterface
  * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Admin_Area_Welcome_Overview
  */
 class template_default_content_welcome extends UI_Page_Template_Custom
 {
