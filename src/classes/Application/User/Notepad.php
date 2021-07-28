@@ -203,6 +203,6 @@ class Application_User_Notepad
 
     public static function getTooltipText() : string
     {
-        return t('Your personal notepad for taking notes.');
+        return t('Opens your personal notepad for taking notes.');
     }
 }
