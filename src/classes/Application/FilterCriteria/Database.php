@@ -286,7 +286,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function buildJoins() : string
     {
-        return implode(PHP_EOL, $this->joins);
+        $joins = array_unique($this->joins);
+
+        return implode(PHP_EOL, $joins);
     }
 
     protected function buildOrderby() : string
