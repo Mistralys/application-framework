@@ -70,6 +70,26 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     protected $connectors;
 
     /**
+     * @var int
+     */
+    protected $instanceID = 0;
+
+    /**
+     * @var int
+     */
+    protected static $instanceCounter = 0;
+
+    public function getInstanceID() : int
+    {
+        if($this->instanceID === 0) {
+            self::$instanceCounter++;
+            $this->instanceID = self::$instanceCounter;
+        }
+
+        return $this->instanceID;
+    }
+
+    /**
     * Sets the sorting order to ascending.
     * @return $this
     */
