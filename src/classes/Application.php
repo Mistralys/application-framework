@@ -1234,14 +1234,7 @@ class Application
      */
     public static function userForeignIDExists(string $foreignID) : bool
     {
-        try
-        {
-            return self::getUserIDByForeignID($foreignID) !== null;
-        }
-        catch (Exception $e)
-        {
-            return false;
-        }
+        return self::getUserIDByForeignID($foreignID) !== null;
     }
 
     public static function createSystemUser() : Application_User
