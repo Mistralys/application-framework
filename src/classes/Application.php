@@ -1176,47 +1176,22 @@ class Application
      * specified user foreign ID.
      *
      * @param string $foreignID
-     * @return Application_User
-     * @throws Application_Exception
-     *
-     * @see Application::ERROR_USER_CLASS_DOES_NOT_EXIST
-     * @see Application::ERROR_USER_DATA_NOT_FOUND
-     * @see Application::ERROR_INVALID_USER_CLASS
+     * @return Application_User|null
      */
-    public static function getUserByForeignID(string $foreignID) : Application_User
+    public static function getUserByForeignID(string $foreignID) : ?Application_User
     {
-        try
+        $userID = self::getUserIDByForeignID($foreignID);
+        if ($userID !== null)
         {
-            $data = DBHelper::fetch(
-                'SELECT
-                *
-                FROM
-                    known_users
-                WHERE
-                    foreign_id=:foreign_id',
-
-                array(
-                    ':foreign_id' => $foreignID
-                )
-            );
-
-            if (!empty($data))
+            try
             {
-                return self::createUser($data['user_id']);
+                return self::createUser($userID);
+            }
+            catch (Exception $e)
+            {
+                return null;
             }
         }
-        catch (DBHelper_Exception $e)
-        {
-        }
-
-        throw new Application_Exception(
-            'Cannot find user data',
-            sprintf(
-                'Tried loading data for user foreign ID [%s], but it does not exist in the database.',
-                $foreignID
-            ),
-            self::ERROR_USER_DATA_NOT_FOUND
-        );
     }
 
     /**
@@ -1228,15 +1203,23 @@ class Application
      */
     public static function getUserIDByForeignID(string $foreignID) : ?int
     {
-        try
+        $result = DBHelper::fetchKey(
+            'user_id',
+            "SELECT
+                user_id
+            FROM
+                known_users
+            WHERE
+                foreign_id=:foreign_id",
+            array(
+                'foreign_id' => $foreignID
+            )
+        );
+        if ($result !== null)
         {
-            $user = self::getUserByForeignID($foreignID);
-            return $user->getID();
+            return intval($result);
         }
-        catch (Exception $e)
-        {
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -1250,7 +1233,7 @@ class Application
     {
         try
         {
-            $user = self::getUserByForeignID($foreignID);
+            $user = self::getUserIDByForeignID($foreignID);
             return $user !== null;
         }
         catch (Exception $e)
