@@ -1,3 +1,11 @@
+v1.14.1
+- FilterCriteria: Database: Added `initQuery()` and `collectSelects()` for easy extension.
+- FilterCriteria: Added new database filters base class with OO custom column handling.
+- RevisionStorage: DBStandardized: Added `getFreeformKeyName()`.
+- Admin: Added constants for the page request parameters (`page`, `mode`...).
+- Welcome: Implemented a first beta version of the welcome screen.
+- User: Added `getAdminSettingsURL()`.
+
 v1.14.0
 - Notepad: Added the new notepad feature for taking notes.
 - AppSettings: Added registering of known settings to display in the UI.
