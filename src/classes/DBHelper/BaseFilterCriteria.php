@@ -43,7 +43,7 @@ require_once 'Application/FilterCriteria.php';
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Database
+abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_DatabaseExtended
 {
    /**
     * @var DBHelper_BaseCollection
@@ -68,6 +68,11 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     protected function init()
     {
         
+    }
+
+    protected function _initCustomColumns() : void
+    {
+
     }
     
     protected function getSearchFields()
