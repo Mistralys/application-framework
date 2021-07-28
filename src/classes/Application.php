@@ -1176,22 +1176,25 @@ class Application
      * specified user foreign ID.
      *
      * @param string $foreignID
-     * @return Application_User|null
+     * @return Application_User
+     * @throws Application_Exception
      */
-    public static function getUserByForeignID(string $foreignID) : ?Application_User
+    public static function getUserByForeignID(string $foreignID) : Application_User
     {
         $userID = self::getUserIDByForeignID($foreignID);
         if ($userID !== null)
         {
-            try
-            {
-                return self::createUser($userID);
-            }
-            catch (Exception $e)
-            {
-                return null;
-            }
+            return self::createUser($userID);
         }
+
+        throw new Application_Exception(
+            'Cannot find user data',
+            sprintf(
+                'Tried loading data for user foreign id [%s], but it does not exist in the database.',
+                $foreignID
+            ),
+            self::ERROR_USER_DATA_NOT_FOUND
+        );
     }
 
     /**
@@ -1233,8 +1236,7 @@ class Application
     {
         try
         {
-            $user = self::getUserIDByForeignID($foreignID);
-            return $user !== null;
+            return self::getUserIDByForeignID($foreignID) !== null;
         }
         catch (Exception $e)
         {
