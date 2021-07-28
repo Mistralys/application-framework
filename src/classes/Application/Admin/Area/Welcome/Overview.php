@@ -78,8 +78,10 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->t('Every time you visit the same element again, it is moved up to the top of the list.')
             ->t('This way, you can always see what you worked on last.')
             ->t(
-                'By default, up to %1$s elements are shown in each category (you can customize this in the settings).',
-                $this->recent->getMaxItemsDefault()
+                'By default, up to %1$s elements are shown in each category (you can customize this in the %2$ssettings%3$s).',
+                $this->recent->getMaxItemsDefault(),
+                '<a href="'.$this->recent->getAdminSettingsURL().'">',
+                '</a>'
             )
             ->t('The oldest elements are dropped off the end of the list when the maximum amount is reached.')
         );
