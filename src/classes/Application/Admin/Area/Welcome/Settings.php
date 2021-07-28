@@ -67,6 +67,12 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
             ->makeWithSidebar();
     }
 
+    protected function _handleBreadcrumb()
+    {
+        $this->breadcrumb->appendItem(t('Quickstart'))->makeLinked($this->recent->getAdminURL());
+        $this->breadcrumb->appendItem(t('Settings'))->makeLinked($this->recent->getAdminSettingsURL());
+    }
+
     protected function _handleSidebar()
     {
         $this->sidebar->addButton('save_settings', t('Save now'))
