@@ -35,13 +35,17 @@ class template_default_frame_header_user_menu extends UI_Page_Template_Custom
             $menu->setLabel($this->user->getName());
         }
 
-        $menu->addLink(t('Settings'), '?page=settings')
-            ->setTitle(t('Opens your %1$s user settings.', $this->driver->getAppNameShort()))
-            ->setIcon(UI::icon()->settings());
+        $menu->addLink(t('Quickstart'), $this->user->getRecent()->getAdminURL())
+            ->setTitle(t('Shows your personal quickstart screen with recently visited elements.'))
+            ->setIcon(UI::icon()->home());
 
-        $menu->addClickable(t('Notepad'), 'Driver.DialogNotepad()')
-            ->setTitle(t('Opens your personal notepad.'))
+        $menu->addClickable(t('Notepad'), Application_User_Notepad::getJSOpen())
+            ->setTitle(Application_User_Notepad::getTooltipText())
             ->setIcon(UI::icon()->notepad());
+
+        $menu->addLink(t('Settings'), $this->user->getAdminSettingsURL())
+            ->setTitle(t('Opens your personal %1$s settings.', $this->driver->getAppNameShort()))
+            ->setIcon(UI::icon()->tools());
 
         $menu->addSeparator();
 
