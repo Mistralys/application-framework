@@ -101,10 +101,14 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
             ->t('Pinned notes are shown among the existing quickstart categories.')
             ->t('Pinning a note is easy:')
             ->ol(array(
-                t('Open the notepad,'),
-                t('Click a note\'s pin icon.'),
+                t(
+                    'Open the %1$snotepad%2$s (will open above),',
+                    '<a href="#" onclick="'.Application_User_Notepad::getJSOpen().';return false;">',
+                    '</a>'
+                ),
+                sb()->t('Click a note\'s pin icon:')->add(UI::icon()->pin()->makeInformation()),
             ))
-            ->t('You can unpin the note again in the quickstart.')
+            ->t('You can unpin the note again from the quickstart screen.')
         );
 
         $this->help->addHeader(t('Turning off the quickstart'));
