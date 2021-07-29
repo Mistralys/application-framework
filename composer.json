@@ -49,6 +49,7 @@
         "medialize/uri.js" : "^1.19.2",
 		"ulrichsg/getopt-php" : "^4.0.0",
 		"components/flag-icon-css" : "^3.3.0",
+        "desandro/masonry": "v4.2.2",
         "hybridauth/hybridauth": "^3.7.1",
         "erusev\/parsedown": "^1.7.4",
         "twbs/bootstrap": "^v4.6.0",
