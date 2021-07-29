@@ -7,9 +7,9 @@ use AppLocalize\Localization;
 abstract class ApplicationTestCase extends TestCase
 {
     /**
-     * @var int
+     * @var array<string,int>
      */
-    private static $counter = 0;
+    private static $counter = array();
 
     protected function logHeader(string $testName) : void
     {
@@ -21,11 +21,19 @@ abstract class ApplicationTestCase extends TestCase
         return 'entry'.$this->getTestCounter();
     }
 
-    protected function getTestCounter() : int
+    protected function getTestCounter(string $name='') : int
     {
-        self::$counter++;
+        if(empty($name)) {
+            $name = '__default';
+        }
 
-        return self::$counter;
+        if(!isset(self::$counter[$name])) {
+            self::$counter[$name] = 0;
+        }
+
+        self::$counter[$name]++;
+
+        return self::$counter[$name];
     }
 
     protected function tearDown() : void
