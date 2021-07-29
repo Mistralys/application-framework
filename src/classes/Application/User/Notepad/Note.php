@@ -137,7 +137,15 @@ class Application_User_Notepad_Note
             self::KEY_CONTENT => $this->getContent(),
             'html' => $this->renderContent(),
             self::KEY_TITLE => $this->getTitle(),
-            self::KEY_DATE => $this->getDate()->getISODate()
+            self::KEY_DATE => $this->getDate()->getISODate(),
+            'isPinned' => $this->isPinned()
         );
+    }
+
+    public function isPinned() : bool
+    {
+        $recent = $this->notepad->getUser()->getRecent();
+
+        return in_array($this->getID(), $recent->getPinnedNoteIDs(), true);
     }
 }
