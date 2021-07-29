@@ -27,50 +27,74 @@ class Application_Formable_Header implements Application_Interfaces_Iconizable
     * @var Application_Formable
     */
     protected $formable;
-    
+
+    /**
+     * @var bool
+     */
     protected $collapsed = true;
 
    /**
-    * @var HTML_QuickForm2_Container
+    * @var HTML_QuickForm2_Container|NULL
     */
     protected $container = null;
-    
-    protected $label;
-    
+
+    /**
+     * @var string
+     */
+    protected $label = '';
+
+    /**
+     * @var string|NULL
+     */
     protected $anchor = null;
-    
-    protected $abstract;
-    
+
+    /**
+     * @var string
+     */
+    protected $abstract = '';
+
+    /**
+     * @var bool
+     */
     protected $readonlyHidden = false;
-    
+
+    /**
+     * @var string[]
+     */
     protected $abstractClasses = array();
-    
+
+    /**
+     * @param Application_Formable $formable
+     * @param string|UI_Renderable_Interface $label
+     * @throws UI_Exception
+     */
     public function __construct(Application_Formable $formable, $label)
     {
         $this->formable = $formable;
-        $this->label = $label;
+        $this->label = toString($label);
     }
     
    /**
     * Sets the container element to use (defaults to the form).
     * @param HTML_QuickForm2_Container $container
-    * @return Application_Formable_Header
+    * @return $this
     */
     public function setContainer(HTML_QuickForm2_Container $container)
     {
         $this->container = $container;
         return $this;
     }
-    
-   /**
-    * Sets the abstract text to show below the header.
-    * 
-    * @param string $abstract
-    * @return Application_Formable_Header
-    */
+
+    /**
+     * Sets the abstract text to show below the header.
+     *
+     * @param string|UI_Renderable_Interface $abstract
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setAbstract($abstract)
     {
-        $this->abstract = $abstract;
+        $this->abstract = toString($abstract);
         return $this;
     }
     
@@ -78,9 +102,9 @@ class Application_Formable_Header implements Application_Interfaces_Iconizable
     * Sets the name of the anchor that can be used to link to this header.
     * 
     * @param string $anchor
-    * @return Application_Formable_Header
+    * @return $this
     */
-    public function setAnchor($anchor)
+    public function setAnchor(string $anchor)
     {
         $this->anchor = $anchor;
         return $this;
@@ -88,7 +112,7 @@ class Application_Formable_Header implements Application_Interfaces_Iconizable
     
    /**
     * Hides the header when the form is in readonly mode.
-    * @return Application_Formable_Header
+    * @return $this
     */
     public function makeHiddenWhenReadonly()
     {
@@ -99,21 +123,28 @@ class Application_Formable_Header implements Application_Interfaces_Iconizable
    /**
     * Expands the header. It is collapsed by default.
     * 
-    * @return Application_Formable_Header
+    * @return $this
     */
     public function expand()
     {
         $this->collapsed = false;
         return $this;
     }
-    
+
+    /**
+     * @return $this
+     */
     public function collapse()
     {
         $this->collapsed = true;
         return $this;
     }
-    
-    public function setExpanded($expanded=true)
+
+    /**
+     * @param bool $expanded
+     * @return $this
+     */
+    public function setExpanded(bool $expanded=true)
     {
         if($expanded) {
             $this->expand();
@@ -132,7 +163,7 @@ class Application_Formable_Header implements Application_Interfaces_Iconizable
     * and if it is not called, the header will not
     * be added to the form.
     * 
-    * @return Application_Formable_Header
+    * @return $this
     */
     public function apply()
     {
