@@ -486,34 +486,6 @@ TD.nowrap {
 
 /**
  * ------------------------------------------------------------------
- * QUICK SELECTOR
- * ------------------------------------------------------------------
- */
-
-.title-wrapper-subtitle .title-right .quick-selector {
-    margin-top: 30px;
-}
-
-.quick-selector.size-small .quick-selector-select {
-    width: 160px;
-    height: 26px;
-    font-size: 12px;
-}
-
-.quick-selector.size-small .add-on {
-    height: 24px;
-    line-height: 24px;
-    padding: 0 4px;
-    font-size: 12px;
-}
-
-.quick-selector.size-small BUTTON {
-    padding-left: 4px !important;
-    padding-right: 4px !important;
-}
-
-/**
- * ------------------------------------------------------------------
  * SPLIT BUTTONS IN THE NAVS
  * ------------------------------------------------------------------
  */

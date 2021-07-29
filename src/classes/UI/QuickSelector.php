@@ -205,6 +205,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         $jsName = $this->getJSName();
         
         $this->ui->addJavascript('ui/quickselector.js');
+        $this->ui->addStylesheet('ui/quickselector.css');
         
         $this->ui->addJavascriptHead(sprintf(
             "var %s = new UI_QuickSelector(%s)",
