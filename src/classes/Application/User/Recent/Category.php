@@ -15,6 +15,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
 
     const OPTION_MAX_ITEMS = 'max-items';
     const MAX_ITEMS_DEFAULT = 10;
+    const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
 
     /**
      * @var string
@@ -34,7 +35,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
     /**
      * @var Application_User_Recent
      */
-    private $recent;
+    protected $recent;
 
     /**
      * @var string
@@ -292,7 +293,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
 
     public function getAdminURLClear(array $params=array()) : string
     {
-        $params['clear-category'] = $this->getAlias();
+        $params[self::REQUEST_PARAM_CLEAR_CATEGORY] = $this->getAlias();
 
         return $this->recent->getAdminURL($params);
     }
