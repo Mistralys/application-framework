@@ -8,6 +8,7 @@ declare(strict_types=1);
 class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mode
 {
     const URL_NAME_OVERVIEW = 'overview';
+    const AUTO_REFRESH_DELAY = 60;
 
     /**
      * @var Application_User_Recent
@@ -43,15 +44,22 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
     {
         $this->recent = $this->user->getRecent();
 
-        if($this->request->hasParam('clear-category'))
+        $clearParam = Application_User_Recent_Category::REQUEST_PARAM_CLEAR_CATEGORY;
+        $unpinParam = Application_User_Recent_NoteCategory::REQUEST_PARAM_UNPIN_NOTE;
+
+        if($this->request->hasParam($clearParam))
         {
-            $this->handleClearCategory(strval($this->request->getParam('clear-category')));
+            $this->handleClearCategory(strval($this->request->getParam($clearParam)));
+        }
+        else if($this->request->hasParam($unpinParam))
+        {
+            $this->handleUnpinNote(intval($this->request->getParam($unpinParam)));
         }
     }
 
     private function getCategoryLabels() : array
     {
-        $categories = $this->recent->getCategories();
+        $categories = $this->recent->getCategoriesWithNotes();
         $items = array();
         foreach ($categories as $category)
         {
@@ -122,6 +130,12 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
     public function _renderContent()
     {
+        $this->ui->addJavascriptOnload(sprintf(
+'// Auto-refresh the overview
+application.autoRefresh(%s)',
+            self::AUTO_REFRESH_DELAY * 1000
+        ));
+
         $tpl = $this->ui->createTemplate('content/welcome')
             ->setVar('user', $this->user)
             ->setVar('recent', $this->user->getRecent());
@@ -137,7 +151,24 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
         $category->clearEntries();
 
         $this->redirectWithSuccessMessage(
-            t('The %1$s history has been cleared successfully.', $category->getLabel()),
+            t('The %1$s history has been cleared.', $category->getLabel()),
+            $this->recent->getAdminURL()
+        );
+    }
+
+    private function handleUnpinNote(int $noteID) : void
+    {
+        $notepad = $this->user->getNotepad();
+
+        if(!$notepad->idExists($noteID))
+        {
+            return;
+        }
+
+        $this->recent->unpinNote($notepad->getNoteByID($noteID));
+
+        $this->redirectWithSuccessMessage(
+            t('The note has been unpinned.'),
             $this->recent->getAdminURL()
         );
     }
