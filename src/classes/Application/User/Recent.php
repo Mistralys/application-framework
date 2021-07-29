@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
+
 /**
  * Recent items manager, used to store and access recent items
  * that the user worked on, to display them in the welcome screen.
@@ -26,6 +28,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
     const ERROR_CATEGORY_ALIAS_NOT_FOUND = 72701;
     const ERROR_CATEGORY_ALIAS_EXISTS = 72702;
+    const SETTING_PINNED_NOTES = 'notepad-pinned-notes';
 
     /**
      * @var Application_User
@@ -179,5 +182,80 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Welcome_Settings::URL_NAME_SETTINGS;
 
         return $this->getAdminURL($params);
+    }
+
+    public function pinNote(Application_User_Notepad_Note $note) : void
+    {
+        $noteID = $note->getID();
+        $ids = $this->getPinnedNoteIDs();
+
+        if(!in_array($noteID, $ids, true))
+        {
+            $ids[] = $noteID;
+        }
+
+        $this->savePinnedNotes($ids);
+    }
+
+    public function unpinNote(Application_User_Notepad_Note $note) : void
+    {
+        $noteID = $note->getID();
+
+        $ids = ConvertHelper::arrayRemoveValues($this->getPinnedNoteIDs(), array($noteID));
+
+        $this->savePinnedNotes($ids);
+    }
+
+    private function savePinnedNotes(array $ids) : void
+    {
+        $this->user->setArraySetting(self::SETTING_PINNED_NOTES, $ids);
+        $this->user->saveSettings();
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getPinnedNoteIDs() : array
+    {
+        $ids = $this->user->getArraySetting(self::SETTING_PINNED_NOTES);
+        $result = array();
+        $notepad = $this->user->getNotepad();
+
+        foreach($ids as $id)
+        {
+            if($notepad->idExists($id))
+            {
+                $result[] = $id;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getPinnedNotes() : array
+    {
+        $result = array();
+        $notepad = $this->user->getNotepad();
+        $ids = $this->getPinnedNoteIDs();
+
+        foreach($ids as $id)
+        {
+            $result[] = $notepad->getNoteByID($id);
+        }
+
+        return $result;
+    }
+
+    public function getCategoriesWithNotes() : array
+    {
+        $categories = $this->getCategories();
+        $notes = $this->getPinnedNotes();
+
+        foreach ($notes as $note)
+        {
+            $categories[] = new Application_User_Recent_NoteCategory($this, $note);
+        }
+
+        return $categories;
     }
 }
