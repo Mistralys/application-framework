@@ -91,10 +91,6 @@ class Application_FilterCriteria_Database_CustomColumn
 
     public function setEnabled(bool $enabled) : Application_FilterCriteria_Database_CustomColumn
     {
-        if($this->enabled === true && $enabled === false)  {
-            throw new Exception('Uh?');
-        }
-
         $this->enabled = $enabled;
         return $this;
     }
