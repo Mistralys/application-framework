@@ -63,7 +63,7 @@ class template_default_content_welcome extends UI_Page_Template_Custom
             </p>
             <?php
 
-            $categories = $this->recent->getCategories();
+            $categories = $this->recent->getCategoriesWithNotes();
             $total = count($categories);
             $cols = 2;
             $rows = ceil($total/$cols);
@@ -79,7 +79,16 @@ class template_default_content_welcome extends UI_Page_Template_Custom
                 {
                     if(isset($items[$col]))
                     {
-                        $this->renderCategory($items[$col]);
+                        $category = $items[$col];
+
+                        if($category instanceof Application_User_Recent_NoteCategory)
+                        {
+                            $this->renderNote($category);
+                        }
+                        else if($category instanceof Application_User_Recent_Category)
+                        {
+                            $this->renderCategory($category);
+                        }
                     }
                 }
                 ?>
@@ -139,6 +148,43 @@ class template_default_content_welcome extends UI_Page_Template_Custom
                     ?>
                 </div>
             </div>
+        <?php
+    }
+
+    private function renderNote(Application_User_Recent_NoteCategory $category) : void
+    {
+        $jsID = nextJSID();
+
+        JSHelper::tooltipify($jsID);
+
+        ?>
+        <div class="span6">
+            <div class="welcome-category">
+                <div class="welcome-toolbar">
+                    <div class="welcome-clear-link">
+                        <a href="<?php echo $category->getAdminURLUnpin() ?>" title="<?php pt('Unpins the notepad note from the quickstart.', $category->getLabel()); ?>" id="<?php echo $jsID ?>">
+                            <?php
+                            echo sb()
+                                ->add(UI::icon()->pin())
+                                ->t('Unpin note');
+                            ?>
+                        </a>
+                    </div>
+                </div>
+                <h3>
+                    <?php
+                    $icon = $category->getIcon();
+                    if($icon) { $icon->display(); }
+                    ?>
+                    <?php echo $category->getLabel() ?>
+                </h3>
+                <?php
+
+                echo $category->renderContent();
+
+                ?>
+            </div>
+        </div>
         <?php
     }
 
