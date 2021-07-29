@@ -25,6 +25,8 @@ class Application_Notepad
     {
         this.log('Opening the notepad...');
 
+        application.notepadOpen = true;
+
         this.CreateContainer();
 
         this.container.show();
@@ -35,6 +37,8 @@ class Application_Notepad
     Close()
     {
         this.log('Closed the notepad.');
+
+        application.notepadOpen = false;
 
         this.container.hide();
 
