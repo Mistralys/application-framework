@@ -216,7 +216,8 @@ class UI_Icon implements Interface_Stringable
         'COLLAPSE_LEFT' => 'caret-square-left',
         'EXPAND_RIGHT' => 'caret-square-right',
         'EXPAND_LEFT' => 'caret-square-left',
-        'NOTEPAD' => 'far:sticky-note'
+        'NOTEPAD' => 'far:sticky-note',
+        'PIN' => 'thumbtack'
     );
 
     public function __construct()
@@ -348,6 +349,7 @@ class UI_Icon implements Interface_Stringable
     public function page() { return $this->setType('PAGE'); }
     public function pagemodel() { return $this->setType('PAGEMODEL'); }
     public function pause() { return $this->setType('PAUSE'); }
+    public function pin() { return $this->setType('PIN'); }
     public function play() { return $this->setType('PLAY'); }
     public function plus() { return $this->setType('PLUS'); }
     public function positionAny() { return $this->setType('POSITION_ANY'); }
