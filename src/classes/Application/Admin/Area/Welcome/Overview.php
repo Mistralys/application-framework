@@ -59,7 +59,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
     private function getCategoryLabels() : array
     {
-        $categories = $this->recent->getCategoriesWithNotes();
+        $categories = $this->recent->getCategories();
         $items = array();
         foreach ($categories as $category)
         {
@@ -92,6 +92,19 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
                 '</a>'
             )
             ->t('The oldest elements are dropped off the end of the list when the maximum amount is reached.')
+        );
+
+        $this->help->addHeader(t('Pinning notes'));
+
+        $this->help->addPara(sb()
+            ->t('You can pin notes from your personal notepad to the quickstart.')
+            ->t('Pinned notes are shown among the existing quickstart categories.')
+            ->t('Pinning a note is easy:')
+            ->ol(array(
+                t('Open the notepad,'),
+                t('Click a note\'s pin icon.'),
+            ))
+            ->t('You can unpin the note again in the quickstart.')
         );
 
         $this->help->addHeader(t('Turning off the quickstart'));
