@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\FileHelper_Exception;
 use AppUtils\Interface_Optionable;
 use AppUtils\Traits_Optionable;
 
@@ -46,6 +47,11 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
      * @var Application_User
      */
     private $user;
+
+    /**
+     * @var Application_LookupItems_Item|NULL
+     */
+    private $lookupItem = null;
 
     public function __construct(Application_User_Recent $recent, string $alias, string $label)
     {
@@ -305,5 +311,27 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         $this->save();
 
         return $this;
+    }
+
+    /**
+     * @param string $id
+     * @return $this
+     * @throws Application_Exception
+     * @throws FileHelper_Exception
+     */
+    public function setLookupItemID(string $id) : Application_User_Recent_Category
+    {
+        return $this->setLookupItem(Application::createLookupItems()->getItemByID($id));
+    }
+
+    public function setLookupItem(Application_LookupItems_Item $item) : Application_User_Recent_Category
+    {
+        $this->lookupItem = $item;
+        return $this;
+    }
+
+    public function getLookupItem() : ?Application_LookupItems_Item
+    {
+        return $this->lookupItem;
     }
 }

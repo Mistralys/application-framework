@@ -20,3 +20,7 @@
 .welcome-clear-link > A:hover{
     color:#cc0000;
 }
+
+.welcome-lookup .form-search{
+    margin-bottom:10px;
+}

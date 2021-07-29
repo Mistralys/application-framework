@@ -134,6 +134,29 @@ class template_default_content_welcome extends UI_Page_Template_Custom
                     </h3>
                     <?php
 
+                    $lookup = $category->getLookupItem();
+                    if($lookup)
+                    {
+                        $searchID = nextJSID();
+                        $js = $lookup->getJSSearch(sprintf("$('#%s').val()", $searchID));
+
+                        ?>
+                        <div class="welcome-lookup">
+                            <form class="form-search" onsubmit="<?php echo $js ?>;return false;">
+                                <input
+                                    id="<?php echo $searchID ?>"
+                                    type="search"
+                                    class="search-query input-xlarge"
+                                    placeholder="<?php pt('%1$s lookup...', $category->getLabel()) ?>"
+                                    onfocusin="application.disallowAutoRefresh('welcome-lookup')"
+                                    onfocusout="application.allowAutoRefresh('welcome-lookup')"
+                                />
+                                <input type="submit" name="dummy-submit" style="display: none"/>
+                            </form>
+                        </div>
+                        <?php
+                    }
+
                     $sel = $this->ui->createBigSelection();
                     $sel->makeSmall();
 
