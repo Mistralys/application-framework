@@ -1,41 +1,60 @@
 <?php
+/**
+ * File containing the template class {@see template_default_frame_page_help}.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @see template_default_frame_page_help
+ */
 
-    /* @var $this UI_Page_Template */
-    /* @var $help UI_Page_Help */
+declare(strict_types=1);
 
-    $help = $this->getVar('help');
-    
-    $this->ui->addStylesheet('ui-page-help.css');
-    $this->ui->addJavascript('ui/page-help.js');
-    $this->ui->addJavascriptOnload('UI_PageHelp.Start()');
-    
-    if(!$help->hasSummary() && !$help->hasItems()) {
-        return;
-    }
-    
-?>
+/**
+ * Handles the "Explain this screen" inline page help interface rendering.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see UI_Page_Help::_render()
+ */
+class template_default_frame_page_help extends UI_Page_Template_Custom
+{
+    protected function generateOutput() : void
+    {
+        $this->ui->addStylesheet('ui-page-help.css');
+
+        if(!$this->help->hasSummary() && !$this->help->hasItems()) {
+            return;
+        }
+
+        $this->ui->addJavascript('ui/page-help.js');
+        $this->ui->addJavascriptHead('var PageHelp = new UI_PageHelp()');
+        $this->ui->addJavascriptOnload('PageHelp.Start()');
+
+        ?>
 <div id="page-help">
-    <div class="help-opener">
-        <?php echo UI::label(UI::icon()->help().' '.t('Explain this screen'))->makeInfo()->cursorHelp() ?>
+    <div class="help-opener clickable">
+        <?php echo UI::label(UI::icon()->help().' '.t('Explain this screen'))->makeInfo() ?>
     </div>
 	<div class="help-contents">
 		<div class="help-contents-wrapper">
         	<?php 
-                if($help->hasSummary()) 
+                if($this->help->hasSummary())
                 {
                     ?>
                         <div class="help-summary">
-                            <?php echo $help->getSummary() ?>
+                            <?php echo $this->help->getSummary() ?>
                         </div>
                     <?php 
                 }
                 
-                if($help->hasItems())
+                if($this->help->hasItems())
                 {
                     ?>
-                    	<div class="help-body" display>    
+                    	<div class="help-body">
                             <?php 
-                                $items = $help->getItems(); 
+                                $items = $this->help->getItems();
                                 
                                 foreach($items as $item) 
                                 {
@@ -46,7 +65,7 @@
                             	<?php
                             	   UI::button(t('Close'))
                             	   ->setIcon(UI::icon()->delete())
-                            	   ->click("$('#page-help .help-contents').hide()")
+                            	   ->click("PageHelp.Close()")
                             	   ->display();
                             	?>
                             </p>
@@ -57,3 +76,24 @@
         </div>
     </div>
 </div>        
+<?php
+    }
+
+    /**
+     * @var UI_Page_Help
+     */
+    private $help;
+
+    protected function preRender() : void
+    {
+        $help = $this->getVar('help');
+
+        if($help instanceof UI_Page_Help)
+        {
+            $this->help = $help;
+            return;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Help::class, $help);
+    }
+}
