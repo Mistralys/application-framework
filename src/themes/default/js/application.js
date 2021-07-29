@@ -38,6 +38,8 @@ var application =
     'appNameShort': null, // shorthand of the application's name
     'className':null, // the driver class name, set serverside
     'instanceID':null, // set serverside. ID of the SPIN instance, "hosting" or "access".
+    'notepadOpen':false,
+    'autoRefreshTimer':null,
 
     // miliseconds to wait after the user typed into a form
     // to auto-validate the form
@@ -334,6 +336,28 @@ var application =
     	this.showLoader(loaderText);
     	
     	document.location.reload();
+    },
+
+    autoRefresh:function(delay)
+    {
+        var app = this;
+
+        this.autoRefreshTimer = setTimeout(
+            function()
+            {
+                if(!app.notepadOpen) {
+                    app.refreshPage();
+                } else {
+                    app.autoRefresh(delay);
+                }
+            },
+            delay
+        );
+    },
+
+    cancelAutoRefresh:function()
+    {
+        clearTimeout(this.autoRefreshTimer);
     },
 
     /**
