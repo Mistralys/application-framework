@@ -279,64 +279,123 @@ class Application_Notepad_Note
         );
     }
 
+    PinToQuickstart()
+    {
+        var note = this;
+        var payload ={
+            'note_id': this.id
+        };
+
+        application.createAJAX('NotepadPin')
+            .SetPayload(payload)
+            .Error(t('Could not pin the note, the request failed.'))
+            .Success(function() {
+                note.Handle_PinSuccess();
+            })
+            .Send();
+    }
+
+    Handle_PinSuccess()
+    {
+        var params = new URLSearchParams(window.location.search);
+        var dialog;
+
+        // Different message when we are already in the welcome screen.
+        if(params.has('page') && params.get('page') === 'welcome')
+        {
+            dialog = application.createDialogMessage(
+                '<p>'+
+                    '<strong>' + t('The note has been pinned.') + '</strong>' +
+                '</p>' +
+                '<p>'+
+                    t('It will appear the next time you reload the page.') +
+                '</p>'
+            );
+        }
+        else {
+            dialog = application.createConfirmationDialog(
+                '<p>' +
+                    '<strong>' + t('The note has been pinned to your quickstart screen.') + '</strong>' +
+                '</p>' +
+                '<p>' +
+                    t('Do you want to go there now?') +
+                '</p>'
+            )
+                .OK(function () {
+                    application.redirect(
+                        {
+                            'page': 'welcome'
+                        }
+                    )
+                });
+        }
+
+        dialog
+            .SetIcon(UI.Icon().Notepad())
+            .SetTitle(t('Notepad'))
+            .Show();
+    }
+
     CreateContainer()
     {
         this.log('Creating the note container.');
 
         var note = this;
 
-        var container = $('<div/>');
+        this.elContainer = $('<div/>')
+            .addClass('notepad-note')
+            .attr('data-note-id', this.id);
 
-        this.elContainer = $(container)
-            .addClass('notepad-note');
-
-        var title = $('<div/>');
-
-        this.elTitle = $(title)
-            .addClass('notepad-note-title')
-            .hide();
-
-        this.elTitle.append(
-            UI.Icon().DeleteSign()
-                .AddClass('pull-right')
-                .AddClass('notepad-note-icon')
-                .AddClass('note-icon-delete')
-                .MakeDangerous()
-                .SetTitle(t('Delete this note.'))
-                .Click(function () {
-                    note.DialogDelete();
-                })
-                .Render()
-        );
-
-        this.elTitle.append(
-            UI.Icon().Edit()
-                .AddClass('pull-right')
-                .AddClass('notepad-note-icon')
-                .AddClass('note-icon-edit')
-                .MakeInformation()
-                .SetTitle(t('Edit this note.'))
-                .Click(function () {
-                    note.Edit();
-                })
-                .Render()
-        );
-
-        var titleText = $('<span/>');
-        this.elTitleText = $(titleText)
+        this.elTitleText = $('<span/>')
             .addClass('notepad-note-title-text');
 
-        this.elTitle.append(this.elTitleText);
+        var toolbar = $('<div>')
+            .addClass('notepad-note-icons')
+            .append(
+                UI.Icon().Edit()
+                    .AddClass('notepad-note-icon')
+                    .AddClass('note-icon-edit')
+                    .MakeInformation()
+                    .SetTitle(t('Edit this note.'))
+                    .Click(function () {
+                        note.Edit();
+                    })
+                    .Render()
+            )
+            .append(
+                UI.Icon().Pin()
+                    .AddClass('notepad-note-icon')
+                    .AddClass('note-icon-pin')
+                    .MakeInformation()
+                    .SetTitle(t('Pin this note to your quickstart scree.'))
+                    .Click(function () {
+                        note.PinToQuickstart();
+                    })
+                    .Render()
+            )
+            .append(
+                UI.Icon().DeleteSign()
+                    .AddClass('notepad-note-icon')
+                    .AddClass('note-icon-delete')
+                    .MakeDangerous()
+                    .SetTitle(t('Delete this note.'))
+                    .Click(function () {
+                        note.DialogDelete();
+                    })
+                    .Render()
+            );
 
-        var body = $('<div/>');
+        this.elTitle = $('<div/>')
+            .addClass('notepad-note-title')
+            .append(toolbar)
+            .append(this.elTitleText)
+            .hide();
 
-        this.elBody = $(body)
+        this.elBody = $('<div/>')
             .addClass('notepad-note-body')
             .hide();
 
-        var loader = $('<div/>');
-
-        this.elLoader = $(loader)
+        this.elLoader = $('<div/>')
             .addClass('notepad-note-loader')
             .html(application.renderSpinner()+' '+t('Loading...'));
 
@@ -353,13 +412,23 @@ class Application_Notepad_Note
 
         var note = this;
         var content = this.data.html;
-        if(content.length === 0) {
+
+        if(content.length === 0)
+        {
             content = $('<span class="notepad-note-placeholder">'+t('Click to write some notes...')+'</span>');
             content = $(content)
                 .css('cursor', 'pointer')
                 .click(function () {
                     note.Edit();
                 });
+        }
+
+        var pinIcon = $('[data-note-id="'+this.id+'"] .note-icon-pin');
+
+        if(this.data.isPinned) {
+            pinIcon.hide();
+        } else {
+            pinIcon.show();
         }
 
         this.elTitleText.html(this.data.title);
