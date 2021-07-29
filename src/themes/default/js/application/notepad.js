@@ -25,7 +25,7 @@ class Application_Notepad
     {
         this.log('Opening the notepad...');
 
-        application.notepadOpen = true;
+        application.disallowAutoRefresh('notepad');
 
         this.CreateContainer();
 
@@ -38,7 +38,7 @@ class Application_Notepad
     {
         this.log('Closed the notepad.');
 
-        application.notepadOpen = false;
+        application.allowAutoRefresh('notepad');
 
         this.container.hide();
 
