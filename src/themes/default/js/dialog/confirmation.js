@@ -162,7 +162,9 @@ var Dialog_Confirmation =
 		
 		this.dialog.modal('show');
 		this.shown = true;
-		
+
+		application.disallowAutoRefresh('dialogs');
+
 		return this;
 	},
 	
@@ -178,7 +180,9 @@ var Dialog_Confirmation =
 		}
 		
 		this.shown = false;
-		
+
+		application.allowAutoRefresh('dialogs');
+
 		return this;
 	},
 	

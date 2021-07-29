@@ -136,8 +136,9 @@ var TabbedDialog =
 
 		this.ResolveActiveTab();
 		this.Handle_ActivateTab(this.activeTab);
-		
 		this.DisplayMessages();
+
+		application.disallowAutoRefresh('dialogs');
 	},
 	
 	ResolveActiveTab:function()
@@ -272,6 +273,8 @@ var TabbedDialog =
 	{
 		this.dialog.modal('hide');
 		this.shown = false;
+
+		application.allowAutoRefresh('dialogs');
 	},
 	
    /**

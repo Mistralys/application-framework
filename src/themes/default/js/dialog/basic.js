@@ -85,6 +85,9 @@ var Dialog_Basic =
 		this.dialog.modal('show');
 		this.HideAlerts();
 		this.Handle_Shown();
+
+		application.disallowAutoRefresh('dialogs');
+
 		return this;
 	},
 	
@@ -101,6 +104,8 @@ var Dialog_Basic =
 		if(this.dialog != null) {
 			this.dialog.modal('hide');
 		}
+
+		application.allowAutoRefresh('dialogs');
 		
 		return this;
 	},
