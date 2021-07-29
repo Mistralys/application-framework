@@ -64,4 +64,29 @@ abstract class Application_LookupItems_Item
     {
         return $this->results;
     }
+
+    /**
+     * Retrieves a javascript statement to open the lookup
+     * dialog for this item, with optional preset search
+     * terms.
+     *
+     * The value must be a JS statement that evaluates to
+     * a search terms string. Examples:
+     *
+     * <pre>
+     * getJSSearch("'search terms'");
+     * getJSSearch("$('#elementID').val()");
+     * </pre>
+     *
+     * @param string $valueStatement
+     * @return string
+     */
+    public function getJSSearch(string $valueStatement) : string
+    {
+        return sprintf(
+            "Driver.DialogLookup('%s:' + %s);",
+            $this->getID(),
+            $valueStatement
+        );
+    }
 }
