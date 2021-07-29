@@ -367,7 +367,7 @@ class Application_Notepad_Note
                     .AddClass('notepad-note-icon')
                     .AddClass('note-icon-pin')
                     .MakeInformation()
-                    .SetTitle(t('Pin this note to your quickstart scree.'))
+                    .SetTitle(t('Pin this note to your quickstart screen.'))
                     .Click(function () {
                         note.PinToQuickstart();
                     })
