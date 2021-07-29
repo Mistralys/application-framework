@@ -189,6 +189,74 @@ final class User_RecentTest extends UserTestCase
         $this->assertInstanceOf(Application_User_Recent_Entry::class, $entry);
     }
 
+    public function test_emptyPinnedNotes() : void
+    {
+        if($this->skipTests()) {
+            return;
+        }
+
+        $user = $this->user;
+        $recent = $this->user->getRecent();
+
+        $this->assertEmpty($recent->getPinnedNoteIDs());
+    }
+
+    public function test_pinNote() : void
+    {
+        if($this->skipTests()) {
+            return;
+        }
+
+        $user = $this->user;
+        $recent = $user->getRecent();
+        $notepad = $user->getNotepad();
+
+        $note = $notepad->addNote('Content');
+
+        $recent->pinNote($note);
+
+        $this->assertCount(1, $recent->getPinnedNoteIDs());
+    }
+
+    public function test_unpinNote() : void
+    {
+        if($this->skipTests()) {
+            return;
+        }
+
+        $user = $this->user;
+        $recent = $user->getRecent();
+        $notepad = $user->getNotepad();
+
+        $note = $notepad->addNote('Content');
+
+        $recent->pinNote($note);
+        $recent->unpinNote($note);
+
+        $this->assertCount(0, $recent->getPinnedNoteIDs());
+    }
+
+    public function test_noteIsPinned() : void
+    {
+        if($this->skipTests()) {
+            return;
+        }
+
+        $user = $this->user;
+        $recent = $user->getRecent();
+        $notepad = $user->getNotepad();
+
+        $note = $notepad->addNote('Content');
+
+        $recent->pinNote($note);
+
+        $this->assertTrue($note->isPinned());
+
+        $recent->unpinNote($note);
+
+        $this->assertFalse($note->isPinned());
+    }
+
     private function skipTests() : bool
     {
         if($this->user instanceof TestDriver_User)
@@ -197,6 +265,5 @@ final class User_RecentTest extends UserTestCase
         }
 
         $this->markTestSkipped('Not in framework testsuite environment.');
-        return true;
     }
 }
