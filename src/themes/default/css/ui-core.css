@@ -1306,21 +1306,8 @@ BODY.layout-maximized .notepad-note{
     display: inline-block;
 }
 
-.notepad-note-icon{
-    position: relative;
-    top:3px;
-}
-
-.note-editing .notepad-note-icon{
-    top:8px;
-}
-
 .note-editing .notepad-note-body{
     padding-bottom:0;
-}
-
-.notepad-note-icon.note-icon-edit{
-    margin-right: 8px;
 }
 
 .notepad-note-body{
@@ -1369,3 +1356,22 @@ BODY.layout-maximized .notepad-note-input-body{
     color:#a3a3a3;
     font-size: 90%;
 }
+
+.notepad-note-icons{
+    float:right;
+    position: relative;
+    top:3px;
+}
+
+.note-editing .notepad-note-icons{
+    top:8px;
+}
+
+.notepad-note-icons > I{
+    margin-right:4px;
+}
+
+.notepad-note-icons > I:last-child{
+    margin-right:0;
+}
+
