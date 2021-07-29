@@ -5,8 +5,9 @@ v1.14.1
 - Admin: Added constants for the page request parameters (`page`, `mode`...).
 - Welcome: Implemented a first beta version of the welcome screen.
 - User: Added `getAdminSettingsURL()`.
-- ApplicationJS: Added `autoRefresh()`.
+- ApplicationJS: Added `autoRefresh()` for automatic refreshing of screens by interval.
 - Notepad: Added pinning notes to the quickstart screen.
+- Tests: Added namespacing to the `getTestCounter()` method.
 
 v1.14.0
 - Notepad: Added the new notepad feature for taking notes.
