@@ -143,11 +143,13 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
     public function _renderContent()
     {
-        $this->ui->addJavascriptOnload(sprintf(
-'// Auto-refresh the overview
-application.autoRefresh(%s)',
-            self::AUTO_REFRESH_DELAY * 1000
-        ));
+        if($this->recent->isAutoRefreshEnabled())
+        {
+            $this->ui->addJavascriptOnload(sprintf(
+                'application.autoRefresh(%s)',
+                self::AUTO_REFRESH_DELAY * 1000
+            ));
+        }
 
         $tpl = $this->ui->createTemplate('content/welcome')
             ->setVar('user', $this->user)

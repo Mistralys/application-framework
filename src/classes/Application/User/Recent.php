@@ -29,6 +29,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
     const ERROR_CATEGORY_ALIAS_NOT_FOUND = 72701;
     const ERROR_CATEGORY_ALIAS_EXISTS = 72702;
     const SETTING_PINNED_NOTES = 'notepad-pinned-notes';
+    const SETTING_AUTO_REFRESH_ENABLED = 'recent-auto-refresh-enabled';
 
     /**
      * @var Application_User
@@ -257,5 +258,16 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         }
 
         return $categories;
+    }
+
+    public function isAutoRefreshEnabled() : bool
+    {
+        return $this->user->getBoolSetting(self::SETTING_AUTO_REFRESH_ENABLED, true);
+    }
+
+    public function setAutoRefreshEnabled(bool $enabled)
+    {
+        $this->user->setBoolSetting(self::SETTING_AUTO_REFRESH_ENABLED, $enabled);
+        $this->user->saveSettings();
     }
 }

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
+
 class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mode
 {
     const URL_NAME_SETTINGS = 'settings';
@@ -86,7 +88,9 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
 
     private function getDefaultFormValues() : array
     {
-        $result = array();
+        $result = array(
+            'auto_refresh' => ConvertHelper::boolStrict2string($this->recent->isAutoRefreshEnabled())
+        );
 
         foreach($this->categories as $category)
         {
@@ -100,7 +104,20 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
     {
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormValues());
 
+        $this->addElementHeaderII(t('Options'))
+            ->setIcon(UI::icon()->options());
+
+        $el = $this->addElementSwitch('auto_refresh', t('Automatic refresh?'));
+        $el->setComment((string)sb()
+            ->t(
+                'By default, the overview will automatically refresh itself every %1$s.',
+                ConvertHelper::time2string(Application_Admin_Area_Welcome_Overview::AUTO_REFRESH_DELAY)
+            )
+            ->t('If you prefer, you can disable this feature, and refresh it manually as needed.')
+        );
+
         $this->addElementHeaderII(t('Elements per category'))
+            ->setIcon(UI::icon()->list())
             ->setAbstract(sb()
                 ->t('This allows you to adjust how many items you wish to keep per category.')
                 ->t('We recommend using the same value for all.')
@@ -130,6 +147,8 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
     private function handleSaveSettings(array $formValues) : void
     {
         $this->startTransaction();
+
+        $this->recent->setAutoRefreshEnabled(ConvertHelper::string2bool($formValues['auto_refresh']));
 
         foreach($this->categories as $category)
         {
