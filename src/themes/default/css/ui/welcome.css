@@ -1,14 +1,20 @@
 .welcome-toolbar{
     float: right;
-    padding-top: 10px;
+    padding-top: 4px;
 }
 
 .welcome-category > H3{
-    padding-top:0;
+    padding-top: 0;
+    line-height: 24px;
 }
 
 .welcome-category {
     margin-bottom: 20px;
+    margin-right: 20px;
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 7px;
+    border: solid 1px #f0f0f0;
 }
 
 .welcome-clear-link > A:link,
@@ -23,4 +29,9 @@
 
 .welcome-lookup .form-search{
     margin-bottom:10px;
+}
+
+.welcome-categories .span6{
+    margin-left: 0 !important;
+    width: 50%;
 }

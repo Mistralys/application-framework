@@ -26,6 +26,7 @@ class template_default_content_welcome extends UI_Page_Template_Custom
     protected function generateOutput(): void
     {
         $this->ui->addStylesheet('ui/welcome.css');
+        $this->ui->addVendorJavascript('desandro/masonry', 'dist/masonry.pkgd.js');
 
         $greeting = $this->getGreeting();
 
@@ -61,41 +62,24 @@ class template_default_content_welcome extends UI_Page_Template_Custom
             <p>
                 <?php pt('These are the items you last worked on:') ?>
             </p>
-            <?php
-
-            $categories = $this->recent->getCategoriesWithNotes(false);
-            $total = count($categories);
-            $cols = 2;
-            $rows = ceil($total/$cols);
-
-            for($row=0; $row < $rows; $row++)
-            {
-                $items = array_slice($categories, ($row*$cols), $cols);
-
-                ?>
-                <div class="row-fluid">
+            <div class="welcome-categories" data-masonry='{"itemSelector": ".span6"}'>
                 <?php
-                for($col=0; $col < $cols; $col++)
-                {
-                    if(isset($items[$col]))
-                    {
-                        $category = $items[$col];
 
-                        if($category instanceof Application_User_Recent_NoteCategory)
-                        {
-                            $this->renderNote($category);
-                        }
-                        else if($category instanceof Application_User_Recent_Category)
-                        {
-                            $this->renderCategory($category);
-                        }
+                $categories = $this->recent->getCategoriesWithNotes(false);
+
+                foreach ($categories as $category)
+                {
+                    if($category instanceof Application_User_Recent_NoteCategory)
+                    {
+                        $this->renderNote($category);
+                    }
+                    else if($category instanceof Application_User_Recent_Category)
+                    {
+                        $this->renderCategory($category);
                     }
                 }
                 ?>
-                </div>
-                <?php
-            }
-            ?>
+            </div>
         <?php
     }
 
@@ -181,7 +165,7 @@ class template_default_content_welcome extends UI_Page_Template_Custom
         JSHelper::tooltipify($jsID);
 
         ?>
-        <div class="span6">
+            <div class="span6">
             <div class="welcome-category">
                 <div class="welcome-toolbar">
                     <div class="welcome-clear-link">
@@ -207,7 +191,7 @@ class template_default_content_welcome extends UI_Page_Template_Custom
 
                 ?>
             </div>
-        </div>
+            </div>
         <?php
     }
 
