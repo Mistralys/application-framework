@@ -315,7 +315,7 @@ var UI =
     * the height of the fixed top navigation. Returns false if the 
     * target element could not be found.
     * 
-    * @param {Integer} offset
+    * @param {jQuery|String} selectorOrElement
     * @param {Object} [options]
     * @param {Integer} [options.delay=500]
     * @return {Boolean}
@@ -323,13 +323,24 @@ var UI =
 	ScrollToElement:function(selectorOrElement, options)
 	{
 		var el = $(selectorOrElement);
-		if(el.length==0) {
+		if(el.length === 0) {
 			return false;
 		}
 
 		var offset = el.offset().top;
 		UI.ScrollToOffset(offset, options);
 		return true;
+	},
+
+	/**
+	 * Jumps to an element instantly, without animation.
+	 *
+	 * @param selectorOrElement
+	 * @return {Boolean}
+	 */
+	ScrollJumpToElement:function (selectorOrElement)
+	{
+		return this.ScrollToElement(selectorOrElement, {'delay':0});
 	},
 
 	/**
