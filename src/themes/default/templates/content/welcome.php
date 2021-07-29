@@ -63,7 +63,7 @@ class template_default_content_welcome extends UI_Page_Template_Custom
             </p>
             <?php
 
-            $categories = $this->recent->getCategoriesWithNotes();
+            $categories = $this->recent->getCategoriesWithNotes(false);
             $total = count($categories);
             $cols = 2;
             $rows = ceil($total/$cols);

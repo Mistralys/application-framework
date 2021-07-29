@@ -145,9 +145,23 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
     /**
      * @return Application_User_Recent_Category[]
      */
-    public function getCategories(): array
+    public function getCategories(bool $includeHidden=true): array
     {
-        return $this->categories;
+        if($includeHidden)
+        {
+            return $this->categories;
+        }
+
+        $result = array();
+        foreach ($this->categories as $category)
+        {
+            if($category->getMaxItems() > 0)
+            {
+                $result[] = $category;
+            }
+        }
+
+        return $result;
     }
 
     public function hasEntries() : bool
@@ -247,9 +261,9 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         return $result;
     }
 
-    public function getCategoriesWithNotes() : array
+    public function getCategoriesWithNotes(bool $includeHidden=true) : array
     {
-        $categories = $this->getCategories();
+        $categories = $this->getCategories($includeHidden);
         $notes = $this->getPinnedNotes();
 
         foreach ($notes as $note)
