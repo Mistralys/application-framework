@@ -14,6 +14,8 @@ v1.15.0
 - User: Added `Application::getUserByForeignID()` and support methods.
 - Themes: Converted some more templates to class based templates.
 - Connectors: Added missing valid response code `202` for PUT requests.
+- LookupItems: Added `idExists()` and `getItemByID()`.
+- LookupItems: Added `getJSSearch()` for items for opening a direct search.
 
 v1.14.0
 - Notepad: Added the new notepad feature for taking notes.
