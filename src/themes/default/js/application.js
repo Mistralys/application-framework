@@ -38,8 +38,9 @@ var application =
     'appNameShort': null, // shorthand of the application's name
     'className':null, // the driver class name, set serverside
     'instanceID':null, // set serverside. ID of the SPIN instance, "hosting" or "access".
-    'notepadOpen':false,
     'autoRefreshTimer':null,
+    'autoRefreshAllowed': {},
+    'autoRefreshActive':false,
 
     // miliseconds to wait after the user typed into a form
     // to auto-validate the form
@@ -338,14 +339,57 @@ var application =
     	document.location.reload();
     },
 
+    /**
+     * Sets that the auto refresh is not allowed for
+     * the specified owner script (like the Notepad,
+     * for example).
+     *
+     * @param ownerID
+     */
+    disallowAutoRefresh:function (ownerID)
+    {
+        this.autoRefreshAllowed[ownerID] = false;
+    },
+
+    allowAutoRefresh:function (ownerID)
+    {
+        this.autoRefreshAllowed[ownerID] = true;
+    },
+
+    /**
+     * Auto refresh is allowed if no script disallowed it.
+     *
+     * @returns {boolean}
+     */
+    isAutoRefreshAllowed:function ()
+    {
+        var allowed = true;
+
+        $.each(this.autoRefreshAllowed, function (ownerID, ownerAllowed) {
+            if(ownerAllowed === false) {
+                allowed = false;
+                return false;
+            }
+        });
+
+        return allowed;
+    },
+
+    isAutoRefreshActive:function ()
+    {
+        return this.autoRefreshActive;
+    },
+
     autoRefresh:function(delay)
     {
         var app = this;
 
+        this.autoRefreshActive = true;
+
         this.autoRefreshTimer = setTimeout(
             function()
             {
-                if(!app.notepadOpen) {
+                if(app.isAutoRefreshAllowed()) {
                     app.refreshPage();
                 } else {
                     app.autoRefresh(delay);
