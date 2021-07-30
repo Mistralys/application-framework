@@ -16,6 +16,12 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
 
     const OPTION_MAX_ITEMS = 'max-items';
     const MAX_ITEMS_DEFAULT = 10;
+
+    /**
+     * Maximum amount of entries to keep in storage
+     */
+    const STORAGE_MAX_ITEMS = 60;
+
     const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
 
     /**
@@ -131,17 +137,14 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         $this->entries[] = $entry;
 
         usort($this->entries, function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
-            if($a < $b) { return -1; }
-            if($b > $a) { return 1; }
-            return 0;
+            return $b->getDate() <=> $a->getDate();
         });
 
         $total = count($this->entries);
-        $max = $this->getMaxItems();
 
-        if($total > $max)
+        if($total > self::STORAGE_MAX_ITEMS)
         {
-            $this->entries = array_slice($this->entries, 0, $max);
+            $this->entries = array_slice($this->entries, 0, self::STORAGE_MAX_ITEMS);
         }
 
         return $entry;
@@ -260,6 +263,10 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         {
             $this->registerEntry($def['id'], $def['label'], $def['url'], new DateTime($def['date']));
         }
+
+        usort($this->entries, function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
+            return $b->getDate() <=> $a->getDate();
+        });
     }
 
     private function saveOptions() : void
