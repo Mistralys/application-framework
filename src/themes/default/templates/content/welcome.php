@@ -144,10 +144,19 @@ class template_default_content_welcome extends UI_Page_Template_Custom
                     $sel = $this->ui->createBigSelection();
                     $sel->makeSmall();
 
+                    $max = $category->getMaxItems();
+                    $count = 0;
+
                     foreach($entries as $entry)
                     {
+                        $count++;
+
                         $sel->addLink($entry->getLabel(), $entry->getUrl())
                         ->setDescription(ConvertHelper::date2listLabel($entry->getDate(), true, true));
+
+                        if($count === $max) {
+                            break;
+                        }
                     }
 
                     $sel->display();
