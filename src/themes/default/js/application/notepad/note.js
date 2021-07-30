@@ -346,6 +346,12 @@ class Application_Notepad_Note
             .addClass('notepad-note')
             .attr('data-note-id', this.id);
 
+        // Observe the note container element being
+        // resized, to automatically update the layout.
+        new ResizeSensor(this.elContainer, function() {
+            note.UpdateLayout();
+        });
+
         this.elTitleText = $('<span/>')
             .addClass('notepad-note-title-text');
 
@@ -437,6 +443,18 @@ class Application_Notepad_Note
         this.elLoader.hide();
         this.elTitle.show();
         this.elBody.show();
+
+        this.UpdateLayout();
+    }
+
+    /**
+     * Called whenever the note is resized, to let masonry
+     * adjust the layout accordingly. This includes resizing
+     * the textarea in edit mode.
+     */
+    UpdateLayout()
+    {
+        this.notepad.Masonry();
     }
 
     log(message, category)

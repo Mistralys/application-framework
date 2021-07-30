@@ -13,7 +13,7 @@ class Application_Notepad
         this.body = null;
         this.notesList = null;
         this.notes = [];
-        this.refreshDelay = 5; // Seconds
+        this.refreshDelay = 30; // Seconds
         this.refreshTimer = null;
     }
 
@@ -120,10 +120,9 @@ class Application_Notepad
             .addClass('notepad-notes-list');
 
         this.body.append(this.notesList);
+        this.body.append('<div style="clear:both"></div>');
 
         this.container.append(this.body);
-
-        this.container.append('<div style="clear:both"></div>');
 
         this.container.prependTo($('#content_area'));
     }
@@ -199,6 +198,13 @@ class Application_Notepad
         return found;
     }
 
+    Masonry()
+    {
+        this.notesList.masonry({
+            'itemSelector':'.notepad-note'
+        });
+    }
+
     Refresh()
     {
         this.log('Refreshing all notes...');
@@ -206,6 +212,8 @@ class Application_Notepad
         $.each(this.notes, function (idx, note) {
             note.Refresh();
         });
+
+        this.Masonry();
 
         var notepad = this;
 
