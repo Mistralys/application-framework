@@ -48,10 +48,6 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         $this->registerCategories();
 
         $this->log(sprintf('Registered [%s] categories.', count($this->categories)));
-
-        uasort($this->categories, function (Application_User_Recent_Category $a, Application_User_Recent_Category $b) {
-            return strnatcasecmp($a->getLabel(), $b->getLabel());
-        });
     }
 
     public function getMaxItemsDefault() : int
