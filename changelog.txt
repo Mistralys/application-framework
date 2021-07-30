@@ -1,3 +1,10 @@
+v1.15.1
+- Welcome: Storing up to 60 items independently of max items.
+- Welcome: Fixed sorting, now correctly ordered from most recent to oldest.
+- Welcome: Fixed most recent items not appearing on top.
+- UI: Added `ResizeSensor` javascript plugin for watching elements being resized.
+- Notepad: Added Masonry to the notes layout.
+
 v1.15.0
 - Welcome: Added the new welcome screen feature.
 - FilterCriteria: Database: Added `initQuery()` and `collectSelects()` for easy extension.
