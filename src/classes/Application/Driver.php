@@ -1454,6 +1454,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addStylesheet('ui-dialogs.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-icons.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-forms.css', 'all', $counter--);
+        $this->ui->addStylesheet('ui/notepad.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-print.css', 'print', $counter--);
         $this->ui->addStylesheet('driver.css', 'all', $counter--);
     }
@@ -1492,6 +1493,8 @@ abstract class Application_Driver implements Application_Driver_Interface
         'ui/menu/submenu.js',
         'ui/dropmenu.js',
         'ui/bigselection.js',
+        'application/notepad.js',
+        'application/notepad/note.js',
 
         // -----------------------------------------------------------
         // DIALOGS
@@ -1532,7 +1535,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     );
 
     /**
-     * Adds all javcascript include files required for the interface.
+     * Adds all javascript include files required for the interface.
      *
      * @see Application_Driver::configureAdminUIFramework()
      */
@@ -1561,6 +1564,10 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $this->ui->addVendorJavascript('medialize/uri.js', 'src/URI.min.js', $counter--);
         $this->ui->addVendorJavascript('ccampbell/mousetrap', 'mousetrap.min.js', $counter--);
+
+        // Used to observe elements being resized. Used by the Notepad.
+        // Search for `new ResizeSensor` to find occurrences.
+        $this->ui->addVendorJavascript('marcj/css-element-queries', 'src/ResizeSensor.js', $counter--);
 
         foreach ($this->coreScripts as $fileName)
         {

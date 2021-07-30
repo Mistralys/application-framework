@@ -32,21 +32,6 @@ var Driver =
 	 */
 	DialogNotepad:function()
 	{
-		var driver = this;
-
-		application.loadScripts(
-		[
-				'application/notepad.js',
-				'application/notepad/note.js'
-			],
-			function() {
-				driver.Handle_NotepadLoaded();
-			}
-		);
-	},
-
-	Handle_NotepadLoaded:function()
-	{
 		if(this.notepad === null)
 		{
 			this.notepad = new Application_Notepad();
