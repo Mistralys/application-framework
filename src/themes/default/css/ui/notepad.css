@@ -1,0 +1,117 @@
+
+.app-notepad {
+    padding: 20px 30px;
+    border-bottom:solid 3px #08c;
+    margin-bottom: 30px;
+    background: #ebf4ff;
+}
+
+BODY.layout-maximized .app-notepad {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.notepad-header{
+    font-size: 150%;
+    font-weight: normal;
+    line-height: 95%;
+}
+
+.notepad-note{
+    border:solid 1px #ccc;
+    border-radius: 5px;
+    width: 340px;
+    display: block;
+    /*float:left;*/
+    background: #fff;
+    margin-right: 13px;
+    margin-bottom: 13px;
+}
+
+BODY.layout-maximized .notepad-note{
+    width: 350px;
+}
+
+.notepad-note-title{
+    padding: 4px 13px;
+    border-bottom: solid 1px #ccc;
+    font-weight: bold;
+}
+
+.note-editing .notepad-note-title{
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.notepad-note-title-text{
+    display: inline-block;
+}
+
+.note-editing .notepad-note-body{
+    padding-bottom:0;
+}
+
+.notepad-note-body{
+    padding: 13px;
+    min-height: 60px;
+    word-break: break-word;
+}
+
+.notepad-note-loader{
+    padding: 3px;
+}
+
+.notepad-note-placeholder{
+    color:#ccc;
+    font-style: italic;
+}
+
+.notepad-note-input-title{
+    margin-bottom: 0 !important;
+    width:250px;
+}
+
+BODY.layout-maximized .notepad-note-input-title{
+    width:260px;
+}
+
+.notepad-note-input-body{
+    margin-bottom:0;
+    width:300px;
+    resize: vertical;
+}
+
+BODY.layout-maximized .notepad-note-input-body{
+    width:310px;
+}
+
+.notepad-note-text-para{
+    margin-bottom:4px;
+}
+
+.notepad-note-buttons{
+    text-align: right;
+}
+
+.notepad-note-hints{
+    color:#a3a3a3;
+    font-size: 90%;
+}
+
+.notepad-note-icons{
+    float:right;
+    position: relative;
+    top:3px;
+}
+
+.note-editing .notepad-note-icons{
+    top:8px;
+}
+
+.notepad-note-icons > I{
+    margin-right:4px;
+}
+
+.notepad-note-icons > I:last-child{
+    margin-right:0;
+}
