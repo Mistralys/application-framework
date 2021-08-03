@@ -115,7 +115,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     abstract public function render();
     
     abstract public function getAbstract();
-    
+
+    /**
+     * Optional icon for the step.
+     * @return UI_Icon|NULL
+     */
+    public function getIcon() : ?UI_Icon
+    {
+        return null;
+    }
+
     /**
      * Retrieves the name of the step, e.g. "StepName". 
      * 
