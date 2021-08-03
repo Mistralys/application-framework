@@ -22,6 +22,7 @@ declare(strict_types=1);
  * 
  * @see Application_Interfaces_Admin_Wizardable
  * @see Application_Admin_Wizard
+ * @see template_default_content_wizard
  * 
  * @property Application_Request $request
  * @property Application_User $user
@@ -84,7 +85,7 @@ trait Application_Traits_Admin_Wizard
     
     protected function getTemplateName() : string
     {
-        return 'content.wizard';
+        return 'content/wizard';
     }
     
     public function __construct(Application_Driver $driver, $screen)
@@ -312,7 +313,11 @@ trait Application_Traits_Admin_Wizard
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getTitle());
     }
-    
+
+    /**
+     * @return UI_Themes_Theme_ContentRenderer
+     * @see template_default_content_wizard
+     */
     protected function _renderContent()
     {
         $this->log(sprintf('Rendering content with active step [%s].', $this->activeStep->getID()));
