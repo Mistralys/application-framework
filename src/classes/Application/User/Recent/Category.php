@@ -331,6 +331,10 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
         return $this->setLookupItem(Application::createLookupItems()->getItemByID($id));
     }
 
+    /**
+     * @param Application_LookupItems_Item $item
+     * @return $this
+     */
     public function setLookupItem(Application_LookupItems_Item $item) : Application_User_Recent_Category
     {
         $this->lookupItem = $item;
