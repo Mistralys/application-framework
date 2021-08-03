@@ -1169,12 +1169,13 @@ class UI_DataGrid
     */
     protected $filterSettings;
 
-   /**
-    * Configures the datagrid using the specified filter settings and filter criteria.
-    *
-    * @param Application_FilterSettings $settings
-    * @param Application_FilterCriteria $criteria
-    */
+    /**
+     * Configures the data grid using the specified filter settings and filter criteria.
+     *
+     * @param Application_FilterSettings $settings
+     * @param Application_FilterCriteria $criteria
+     * @return UI_DataGrid
+     */
     public function configure(Application_FilterSettings $settings, Application_FilterCriteria $criteria) : UI_DataGrid
     {
         $this->filterSettings = $settings;
@@ -2593,30 +2594,36 @@ class UI_DataGrid
      *
      * @param Application_Admin_ScreenInterface $screen
      * @return UI_DataGrid
+     * @throws Application_Exception
      */
     public function configureForScreen(Application_Admin_ScreenInterface $screen)
     {
+        $page = Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE;
+        $mode = Application_Admin_ScreenInterface::REQUEST_PARAM_MODE;
+        $submode = Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE;
+        $action = Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION;
+
         if($screen instanceof Application_Admin_Area)
         {
-            $this->addHiddenVar('page', $screen->getURLName());
+            $this->addHiddenVar($page, $screen->getURLName());
         }
         else if($screen instanceof Application_Admin_Area_Mode)
         {
-            $this->addHiddenVar('page', $screen->getArea()->getURLName());
-            $this->addHiddenVar('mode', $screen->getURLName());
+            $this->addHiddenVar($page, $screen->getArea()->getURLName());
+            $this->addHiddenVar($mode, $screen->getURLName());
         }
         else if($screen instanceof Application_Admin_Area_Mode_Submode)
         {
-            $this->addHiddenVar('page', $screen->getArea()->getURLName());
-            $this->addHiddenVar('mode', $screen->getMode()->getURLName());
-            $this->addHiddenVar('submode', $screen->getURLName());
+            $this->addHiddenVar($page, $screen->getArea()->getURLName());
+            $this->addHiddenVar($mode, $screen->getMode()->getURLName());
+            $this->addHiddenVar($submode, $screen->getURLName());
         }
         else if($screen instanceof Application_Admin_Area_Mode_Submode_Action)
         {
-            $this->addHiddenVar('page', $screen->getArea()->getURLName());
-            $this->addHiddenVar('mode', $screen->getMode()->getURLName());
-            $this->addHiddenVar('submode', $screen->getSubmode()->getURLName());
-            $this->addHiddenVar('action', $screen->getURLName());
+            $this->addHiddenVar($page, $screen->getArea()->getURLName());
+            $this->addHiddenVar($mode, $screen->getMode()->getURLName());
+            $this->addHiddenVar($submode, $screen->getSubmode()->getURLName());
+            $this->addHiddenVar($action, $screen->getURLName());
         }
 
         return $this;
