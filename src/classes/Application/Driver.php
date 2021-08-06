@@ -1568,6 +1568,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // Used to observe elements being resized. Used by the Notepad.
         // Search for `new ResizeSensor` to find occurrences.
         $this->ui->addVendorJavascript('marcj/css-element-queries', 'src/ResizeSensor.js', $counter--);
+        $this->ui->addVendorJavascript('desandro/masonry', 'dist/masonry.pkgd.js');
 
         foreach ($this->coreScripts as $fileName)
         {

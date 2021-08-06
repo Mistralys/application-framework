@@ -1,3 +1,6 @@
+v1.15.3
+- Notepad: Fixed the layout when not in the welcome screen.
+
 v1.15.2
 - Wizards: Added the optional `getIcon()` to steps to show them in the stepper nav.
 - Wizards: Upgraded the template `content/wizard.php` to a class based template.

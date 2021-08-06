@@ -26,7 +26,6 @@ class template_default_content_welcome extends UI_Page_Template_Custom
     protected function generateOutput(): void
     {
         $this->ui->addStylesheet('ui/welcome.css');
-        $this->ui->addVendorJavascript('desandro/masonry', 'dist/masonry.pkgd.js');
 
         $greeting = $this->getGreeting();
 
