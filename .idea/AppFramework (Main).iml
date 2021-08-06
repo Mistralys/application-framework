@@ -75,6 +75,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/twbs/bootstrap" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/markdown-viewer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-factory" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/desandro/masonry" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/marcj/css-element-queries" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
