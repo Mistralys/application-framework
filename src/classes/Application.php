@@ -54,6 +54,7 @@ class Application
 
     const USER_ID_SYSTEM = 1;
     const USER_ID_DUMMY = 2;
+    const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
 
     /**
      * @var UI
@@ -229,10 +230,10 @@ class Application
 
         // let any tasks run that have to be done once the
         // driver object is ready.
-        if (Application_EventHandler::hasListener('DriverInstantiated'))
+        if (Application_EventHandler::hasListener(self::EVENT_DRIVER_INSTANTIATED))
         {
             Application_EventHandler::trigger(
-                'DriverInstantiated',
+                self::EVENT_DRIVER_INSTANTIATED,
                 array($this, $driver),
                 Application_EventHandler_Event_DriverInstantiated::class
             );
