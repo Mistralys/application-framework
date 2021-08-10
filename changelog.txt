@@ -1,3 +1,12 @@
+v1.15.4
+- Localization: Better labels for the application's translatable categories.
+- Localization: Updated AppLocalize package to v1.4.0.
+- Localization: Added back button and application name to the editor.
+- Dependencies: Updated AppUtils package to v1.6.0.
+- UI: Added the `layout-only` core class for `<table>` elements used for layout purposes.
+- Application: Added the constant `EVENT_DRIVER_INSTANTIATED` for the event name.
+
+
 v1.15.3
 - Notepad: Fixed the layout when not in the welcome screen.
 
