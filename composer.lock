@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cbbb0bc37ac90defd351b77732174eac",
+    "content-hash": "dcff0a473f1bd7eb510efc35f39537bd",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -648,16 +648,16 @@
         },
         {
             "name": "mistralys/application-localization",
-            "version": "1.4.0",
+            "version": "1.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-localization.git",
-                "reference": "824d3b15ac63185293cb0094cad3e41e893af820"
+                "reference": "ff0cce325c07a1999b1ddde567f4d133fc82ee82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-localization/zipball/824d3b15ac63185293cb0094cad3e41e893af820",
-                "reference": "824d3b15ac63185293cb0094cad3e41e893af820",
+                "url": "https://api.github.com/repos/Mistralys/application-localization/zipball/ff0cce325c07a1999b1ddde567f4d133fc82ee82",
+                "reference": "ff0cce325c07a1999b1ddde567f4d133fc82ee82",
                 "shasum": ""
             },
             "require": {
@@ -697,9 +697,9 @@
             "description": "PHP and Javascript localization library.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-localization/issues",
-                "source": "https://github.com/Mistralys/application-localization/tree/1.4.0"
+                "source": "https://github.com/Mistralys/application-localization/tree/1.4.1"
             },
-            "time": "2021-08-08T10:51:38+00:00"
+            "time": "2021-08-10T11:40:20+00:00"
         },
         {
             "name": "mistralys/application-utils",

@@ -52,7 +52,7 @@
   "prefer-stable": true,
   "require": {
     "mistralys/application-utils": "^1.6.0",
-    "mistralys/application-localization": "^1.4.0",
+    "mistralys/application-localization": "^1.4.1",
     "mistralys/deepl-xml-translator": "^1.0.5",
     "mistralys/subsetsum": "^1.0.0",
     "mistralys/markdown-viewer": "^1.0.6",
