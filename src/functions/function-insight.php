@@ -10,7 +10,7 @@
  */
 
 	// default defines
-	define('APP_CONTENT_LOCALES', null);
+	define('APP_CONTENT_LOCALES', '');
 	define('APP_AUTH_SALT', '');
 	define('APP_URL', '');
 	define('APP_ROOT', '');
