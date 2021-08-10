@@ -737,6 +737,14 @@ TABLE.table-nomargin {
     margin-bottom: 0;
 }
 
+TABLE.layout-only {
+    margin:0;
+}
+
+TABLE.layout-only TD{
+    padding:0;
+}
+
 .drag-helper {
     background: #08c;
     color: #fff;
