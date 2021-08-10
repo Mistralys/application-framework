@@ -62,8 +62,8 @@ class Connectors_Request_Method extends Connectors_Request
         $this->log(sprintf('Method: [%s]', $this->method));
         
         $this->setGETData($this->methodVar, $this->method);
-        $this->setGETData('locale', 'de_DE');
-        $this->setGETData('application_locale', 'de_DE');
+        $this->setGETData(Application_Localization::REQUEST_PARAM_CONTENT_LOCALE, 'de_DE');
+        $this->setGETData(Application_Localization::REQUEST_PARAM_APPLICATION_LOCALE, 'de_DE');
         
         return parent::getData();
     }
