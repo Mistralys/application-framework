@@ -1,5 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+use AppLocalize\Localization;
+use function AppLocalize\tex;
+
 abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
 {
     public function getURLName()
@@ -39,9 +44,12 @@ abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
     
     public function renderContent() : string
     {
-        $editor = \AppLocalize\Localization::createEditor();
+        $editor = Localization::createEditor();
         $editor->addRequestParam('page', $this->getURLName());
+        $editor->setAppName(tex('%1$s translations', 'Placeholder contains application name.', $this->driver->getAppNameShort()));
+        $editor->setBackURL(APP_URL, t('Back to %1$s', $this->driver->getAppNameShort()));
         $editor->display();
-        exit;
+
+        Application::exit('Translation editor finished');
     }
 }
