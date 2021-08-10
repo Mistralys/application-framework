@@ -1,7 +1,41 @@
 <?php
+/**
+ * File containing the class {@see Application_Localization}.
+ *
+ * @package Application
+ * @subpackage Localization
+ * @see Application_Localization
+ */
 
+declare(strict_types=1);
+
+use AppLocalize\Localization;
+use AppLocalize\Localization_Exception;
+use AppLocalize\Localization_Scanner_StringHash;
+use AppUtils\ConvertHelper;
+use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
+
+/**
+ * Handles the localization layer of the application: configures
+ * the Application Localization package for the driver, and handles
+ * other common localization related tasks.
+ *
+ * @package Application
+ * @subpackage Localization
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @link https://github.com/Mistralys/application-localization
+ */
 class Application_Localization
 {
+    const CUT_LENGTH = 80;
+    const REQUEST_PARAM_APPLICATION_LOCALE = 'application_locale';
+    const REQUEST_PARAM_CONTENT_LOCALE = 'locale';
+
+    /**
+     * @var string[]
+     */
     protected static $excludeFolders = array(
         'simpletest',
         'css',
@@ -21,7 +55,10 @@ class Application_Localization
         'xml',
         'vendor'
     );
-    
+
+    /**
+     * @var string[]
+     */
     protected static $excludeFiles = array(
         '.min.js',
         'uri.js',
@@ -34,8 +71,18 @@ class Application_Localization
         'ckeditor',
         'redactor'
     );
-    
-    public static function init()
+
+    /**
+     * Initializes the localization layer during boot.
+     *
+     * @throws Application_EventHandler_Exception
+     * @throws Application_Exception
+     * @throws UI_Exception
+     * @throws FileHelper_Exception
+     *
+     * @see Application_Bootstrap_Screen::createEnvironment()
+     */
+    public static function init() : void
     {
         self::initApplicationLocales();
         self::initContentLocales();
@@ -45,50 +92,53 @@ class Application_Localization
         $storageFile = Application::getTempFile('localization', 'json');
         $clientFolder = $theme->getDriverJavascriptsPath().'/localization';
         
-        \AppUtils\FileHelper::createFolder($clientFolder);
+        FileHelper::createFolder($clientFolder);
         
-        \AppLocalize\Localization::configure($storageFile, $clientFolder);
+        Localization::configure($storageFile, $clientFolder);
         
         // add an event handler for when the driver object
         // is instantiated.
         Application_EventHandler::addListener(
-            'DriverInstantiated', 
+            Application::EVENT_DRIVER_INSTANTIATED,
             array(self::class, 'handle_driverInstantiated')
         );
     }
-    
-    public static function select()
+
+    /**
+     * Selects the initial locales during boot.
+     *
+     * @see Application_Bootstrap_Screen::createEnvironment()
+     */
+    public static function select() : void
     {
         self::selectAppLocale();
         self::selectContentLocale();
     }
     
-    protected static function selectAppLocale()
+    protected static function selectAppLocale() : void
     {
         $user = Application::getUser();
         $select = null;
         
-        if($user instanceof Application_User)
+        $userLocale = $user->getSetting(self::REQUEST_PARAM_CONTENT_LOCALE);
+
+        if(!empty($userLocale) && Localization::appLocaleExists($userLocale))
         {
-            $userLocale = $user->getSetting('locale');
-            
-            if(!empty($userLocale) && \AppLocalize\Localization::appLocaleExists($userLocale))
-            {
-                $select = $userLocale;
-            }
+            $select = $userLocale;
+        }
+
+        if(isset($_REQUEST[self::REQUEST_PARAM_APPLICATION_LOCALE]) && Localization::appLocaleExists($_REQUEST[self::REQUEST_PARAM_APPLICATION_LOCALE]))
+        {
+            $select = $_REQUEST[self::REQUEST_PARAM_APPLICATION_LOCALE];
         }
         
-        if(isset($_REQUEST['application_locale']) && \AppLocalize\Localization::appLocaleExists($_REQUEST['application_locale']))
+        if($select !== null)
         {
-            $select = $_REQUEST['application_locale'];
-        }
-        
-        if($select !== null) {
-            \AppLocalize\Localization::selectAppLocale($select);
+            Localization::selectAppLocale($select);
         }
     }
     
-    protected static function selectContentLocale()
+    protected static function selectContentLocale() : void
     {
         $select = null;
         
@@ -96,20 +146,20 @@ class Application_Localization
         $session = Application::getSession();
         $stored = $session->getValue('contentLocale');
         
-        if(!empty($stored) && \AppLocalize\Localization::contentLocaleExists($stored)) {
+        if(!empty($stored) && Localization::contentLocaleExists($stored)) {
             $select = $stored;
         }
         
         // locale as selected via the request
-        if (isset($_REQUEST['locale']) && \AppLocalize\Localization::contentLocaleExists($_REQUEST['locale'])) {
-            $select = $_REQUEST['locale'];
+        if (isset($_REQUEST[self::REQUEST_PARAM_CONTENT_LOCALE]) && Localization::contentLocaleExists($_REQUEST[self::REQUEST_PARAM_CONTENT_LOCALE])) {
+            $select = $_REQUEST[self::REQUEST_PARAM_CONTENT_LOCALE];
         }
         
         // store the selected locale name
         $session->setValue('contentLocale', $select);
         
         if($select !== null) {
-            \AppLocalize\Localization::selectContentLocale($select);
+            Localization::selectContentLocale($select);
         }
     }
     
@@ -121,32 +171,41 @@ class Application_Localization
     * 
     * @param Application_EventHandler_Event_DriverInstantiated $event
     */
-    public static function handle_driverInstantiated(Application_EventHandler_Event_DriverInstantiated $event)
+    public static function handle_driverInstantiated(Application_EventHandler_Event_DriverInstantiated $event) : void
     {
         self::initCacheKey($event->getDriver());
     }
-    
-   /**
-    * The cache key uses the driver's version string: this way, the
-    * localization files are automatically refreshed with each release.
-    * 
-    * @param Application_Driver $driver
-    */
-    protected static function initCacheKey(Application_Driver $driver)
+
+    /**
+     * The cache key uses the driver's version string: this way, the
+     * localization files are automatically refreshed with each release.
+     *
+     * @param Application_Driver $driver
+     * @throws Application_Exception
+     * @throws Localization_Exception
+     */
+    protected static function initCacheKey(Application_Driver $driver) : void
     {
         $key = $driver->getExtendedVersion();
         
-        \AppLocalize\Localization::setClientLibrariesCacheKey($key);
-        \AppLocalize\Localization::writeClientFiles();
+        Localization::setClientLibrariesCacheKey($key);
+        Localization::writeClientFiles();
     }
-    
-    protected static function initSources()
+
+    /**
+     * Initializes the localization categories available in
+     * the translation UI for the application, for both the
+     * PHP classes and Theme related files.
+     *
+     * @throws UI_Exception
+     */
+    protected static function initSources() : void
     {
         $theme = UI::getInstance()->getTheme();
         
-        \AppLocalize\Localization::addSourceFolder(
+        Localization::addSourceFolder(
             'application',
-            'Classes and themes',
+            'Framework classes and themes',
             'Framework',
             APP_INSTALL_FOLDER.'/localization',
             APP_INSTALL_FOLDER
@@ -154,17 +213,17 @@ class Application_Localization
         ->excludeFolders(self::$excludeFolders)
         ->excludeFiles(self::$excludeFiles);
             
-        \AppLocalize\Localization::addSourceFolder(
+        Localization::addSourceFolder(
             'classes',
-            'Classes',
+            APP_CLASS_NAME.' classes',
             'Application',
             APP_ROOT.'/localization',
             APP_ROOT.'/assets'
         );
             
-        \AppLocalize\Localization::addSourceFolder(
+        Localization::addSourceFolder(
             'themes',
-            'Themes',
+            APP_CLASS_NAME.' themes',
             'Application',
             APP_ROOT.'/localization',
             $theme->getDriverPath()
@@ -173,7 +232,7 @@ class Application_Localization
         ->excludeFiles(self::$excludeFiles);
     }
     
-    protected static function initApplicationLocales()
+    protected static function initApplicationLocales() : void
     {
         if(!defined('APP_UI_LOCALES')) {
             return;
@@ -181,20 +240,20 @@ class Application_Localization
         
         $tokens = array_map('trim', explode(',', APP_UI_LOCALES));
         foreach ($tokens as $localeName) {
-            \AppLocalize\Localization::addAppLocale($localeName);
+            Localization::addAppLocale($localeName);
         }
     }
     
-    protected static function initContentLocales()
+    protected static function initContentLocales() : void
     {
         // add available content locales
         $tokens = array_map('trim', explode(',', APP_CONTENT_LOCALES));
         foreach ($tokens as $localeName) {
-            \AppLocalize\Localization::addContentLocale($localeName);
+            Localization::addContentLocale($localeName);
         }
     }
     
-    public static function getTranslationIcon(\AppLocalize\Localization_Scanner_StringHash $hash)
+    public static function getTranslationIcon(Localization_Scanner_StringHash $hash) : UI_Icon
     {
         if($hash->isTranslated()) {
             return UI::icon()->ok()->makeSuccess();
@@ -203,25 +262,21 @@ class Application_Localization
         return UI::icon()->notAvailable()->makeDangerous();
     }
 
-    public static function injectJS(\AppLocalize\Localization_Scanner_StringHash $hash)
+    public static function injectJS(Localization_Scanner_StringHash $hash) : void
     {
         UI::getInstance()->addJavascriptHead(
             sprintf(
                 "translator.addStringInfo('%1s', '%0s', '%0s', '%0s')",
                 $hash->getHash(),
-                addslashes($hash->getText()),
+                addslashes($hash->getText()->getText()),
                 addslashes($hash->getTranslatedText()),
                 ''
             )
         );
     }
     
-    const CUT_LENGTH = 80;
-    
-    public static function resolveDisplayText(\AppLocalize\Localization_Scanner_StringHash $hash)
+    public static function resolveDisplayText(Localization_Scanner_StringHash $hash) : string
     {
-        $rawText = '';
-        
         if ($hash->isTranslated())
         {
             $rawText = $hash->getTranslatedText();
@@ -232,8 +287,7 @@ class Application_Localization
         }
         
         $text = strip_tags(stripslashes($rawText));
-        $text = \AppUtils\ConvertHelper::text_cut($text, self::CUT_LENGTH, ' [...]');
-        
-        return $text;
+
+        return ConvertHelper::text_cut($text, self::CUT_LENGTH, ' [...]');
     }
 }
