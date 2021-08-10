@@ -51,17 +51,17 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "mistralys/application-utils": "^1.4.5",
-    "mistralys/application-localization": "^1.3.0",
-    "mistralys/deepl-xml-translator": "^1.0.2",
+    "mistralys/application-utils": "^1.6.0",
+    "mistralys/application-localization": "^1.4.0",
+    "mistralys/deepl-xml-translator": "^1.0.5",
     "mistralys/subsetsum": "^1.0.0",
-    "mistralys/markdown-viewer": "^1.0.5",
-    "pear/http_request2": "^v2.4.2",
+    "mistralys/markdown-viewer": "^1.0.6",
+    "pear/http_request2": "^v2.5.0",
     "shark/simple_html_dom": "dev-master",
     "ccampbell/mousetrap": "dev-master",
-    "medialize/uri.js": "^1.19.2",
+    "medialize/uri.js": "^1.19.7",
     "ulrichsg/getopt-php": "^4.0.0",
-    "components/flag-icon-css": "^3.3.0",
+    "components/flag-icon-css": "^3.5.0",
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
     "hybridauth/hybridauth": "^3.7.1",
@@ -72,7 +72,7 @@
     "ext-pdo": "*"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.2.5",
+    "phpunit/phpunit": "^8.5",
     "phpstan/phpstan": "^0.12"
   }
 }
