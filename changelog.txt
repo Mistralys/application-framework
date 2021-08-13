@@ -1,3 +1,9 @@
+v1.16.0
+- Disposables: Added the disposable interface and trait.
+- Logging: Added support for using placeholders in messages natively, without manual `sprintf` calls.
+- EventHandling: Added the possibility to turn events off (for disposables).
+- Revisionables: The event handling is now revision-specific to avoid versioning mixups.
+
 v1.15.4
 - Localization: Better labels for the application's translatable categories.
 - Localization: Updated AppLocalize package to v1.4.1.
