@@ -34,6 +34,11 @@ trait Application_Traits_Eventable
      */
     protected $eventListenerCounter = 0;
 
+    /**
+     * @var bool
+     */
+    protected $eventsDisabled = false;
+
     abstract protected function log(string $message) : void;
 
     /**
@@ -59,14 +64,15 @@ trait Application_Traits_Eventable
         return $listener;
     }
 
-    protected function logEventable(string $message, string $eventName='') : void
+    protected function logEventable(string $message, string $eventName = '') : void
     {
         $prefix = 'Eventable | ';
-        if(!empty($eventName)) {
+        if (!empty($eventName))
+        {
             $prefix = sprintf('Event [%s] | ', $eventName);
         }
 
-        $this->log($prefix.$message);
+        $this->log($prefix . $message);
     }
 
     /**
@@ -82,14 +88,17 @@ trait Application_Traits_Eventable
 
         $this->logEventable('Removing listener.', $eventName);
 
-        if(!isset($this->eventListeners[$eventName])) {
+        if (!isset($this->eventListeners[$eventName]))
+        {
             return;
         }
 
         $listenerID = $listener->getID();
         $keep = array();
-        foreach ($this->eventListeners[$eventName] as $check) {
-            if($check->getID() !== $listenerID) {
+        foreach ($this->eventListeners[$eventName] as $check)
+        {
+            if ($check->getID() !== $listenerID)
+            {
                 $keep[] = $listener;
             }
         }
@@ -101,7 +110,8 @@ trait Application_Traits_Eventable
      * Triggers the specified event: creates the event, and executes
      * all listeners that have been added for it.
      *
-     * Returns null if no listeners have been added.
+     * Returns null if no listeners have been added, or if events
+     * have been disabled.
      *
      * @param string $eventName
      * @param array $args
@@ -109,11 +119,17 @@ trait Application_Traits_Eventable
      * @return Application_EventHandler_EventableEvent|null
      * @throws Application_Exception
      */
-    protected function triggerEvent(string $eventName, array $args, string $eventClass='') : ?Application_EventHandler_EventableEvent
+    protected function triggerEvent(string $eventName, array $args, string $eventClass = '') : ?Application_EventHandler_EventableEvent
     {
+        if($this->eventsDisabled === true)
+        {
+            return null;
+        }
+
         $this->logEventable('Triggering event.', $eventName);
 
-        if(!$this->hasEventListeners($eventName)) {
+        if (!$this->hasEventListeners($eventName))
+        {
             $this->logEventable('Ignoring event, no listeners added.', $eventName);
             return null;
         }
@@ -124,7 +140,7 @@ trait Application_Traits_Eventable
 
         $this->logEventable(sprintf('Trigger started, processing [%s] listeners.', $this->countEventListeners($eventName)), $eventName);
 
-        foreach($this->eventListeners[$eventName] as $listener)
+        foreach ($this->eventListeners[$eventName] as $listener)
         {
             $event->selectListener($listener);
 
@@ -143,7 +159,8 @@ trait Application_Traits_Eventable
 
             call_user_func_array($callback, $args);
 
-            if($event->isCancelled()) {
+            if ($event->isCancelled())
+            {
                 $this->logEventable('CANCEL | Listener cancelled the event.', $eventName);
                 break;
             }
@@ -163,16 +180,18 @@ trait Application_Traits_Eventable
      * @return Application_EventHandler_EventableEvent
      * @throws Application_Exception
      */
-    protected function createEvent(string $eventName, array $args, string $eventClass='') : Application_EventHandler_EventableEvent
+    protected function createEvent(string $eventName, array $args, string $eventClass = '') : Application_EventHandler_EventableEvent
     {
-        if(empty($eventClass)) {
+        if (empty($eventClass))
+        {
             $eventClass = Application_EventHandler_EventableEvent::class;
         }
 
         $event = new $eventClass($eventName, $this, $args);
 
-        if($event instanceof Application_EventHandler_EventableEvent) {
-           return $event;
+        if ($event instanceof Application_EventHandler_EventableEvent)
+        {
+            return $event;
         }
 
         throw new Application_Exception(
@@ -193,7 +212,8 @@ trait Application_Traits_Eventable
 
     public function countEventListeners(string $eventName) : int
     {
-        if(isset($this->eventListeners[$eventName])) {
+        if (isset($this->eventListeners[$eventName]))
+        {
             return count($this->eventListeners[$eventName]);
         }
 
@@ -206,7 +226,8 @@ trait Application_Traits_Eventable
      */
     public function getEventListeners(string $eventName) : array
     {
-        if(isset($this->eventListeners[$eventName])) {
+        if (isset($this->eventListeners[$eventName]))
+        {
             return $this->eventListeners[$eventName];
         }
 
@@ -215,7 +236,8 @@ trait Application_Traits_Eventable
 
     public function clearEventListeners(string $eventName) : void
     {
-        if(isset($this->eventListeners[$eventName])) {
+        if (isset($this->eventListeners[$eventName]))
+        {
             unset($this->eventListeners[$eventName]);
         }
     }
@@ -223,5 +245,19 @@ trait Application_Traits_Eventable
     public function clearAllEventListeners() : void
     {
         $this->eventListeners = array();
+    }
+
+    public function areEventsDisabled() : bool
+    {
+        return $this->eventsDisabled;
+    }
+
+    protected function disableEvents() : void
+    {
+        if ($this->eventsDisabled)
+        {
+            return;
+        }
+        $this->eventsDisabled = true;
     }
 }
