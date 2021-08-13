@@ -320,9 +320,14 @@ class Application
         return self::getLogger()->log($message, $header);
     }
 
-    public static function logEvent(string $eventName, string $message = '') : Application_Logger
+    public static function logSF(string $message, ...$args) : Application_Logger
     {
-        return self::getLogger()->logEvent($eventName, $message);
+        return self::getLogger()->logSF($message, ...$args);
+    }
+
+    public static function logEvent(string $eventName, string $message = '', ...$args) : Application_Logger
+    {
+        return self::getLogger()->logEvent($eventName, $message, ...$args);
     }
 
     /**

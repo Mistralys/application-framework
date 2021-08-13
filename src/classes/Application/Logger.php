@@ -93,12 +93,34 @@ class Application_Logger
     {
         return $this->logMode;
     }
-    
+
+    public function getLastMessage() : ?string
+    {
+        if(!empty($this->log))
+        {
+            return array_value_get_last($this->log);
+        }
+
+        return null;
+    }
+
     /**
-     * Logs a message, but only if the application 
+     * Clears all log messages stored up to this point.
+     * @return $this
+     */
+    public function clearLog() : Application_Logger
+    {
+        $this->log = array();
+        return $this;
+    }
+
+    /**
+     * Logs a message, but only if the application
      * is in developer mode.
      *
-     * @param string|array $message Arrays are automatically dumped.
+     * @param string|number|array|null $message Arrays are automatically dumped.
+     * @param bool $header
+     * @return Application_Logger
      */
     public function log($message = null, bool $header=false) : Application_Logger
     {
@@ -108,17 +130,28 @@ class Application_Logger
         }
         else if (empty($message))
         {
-            return $this->addLogMessage($this->getTime().' |');
+            return $this->addLogMessage('', false);
         }
         else if(is_array($message))
         {
             return $this->logData($message);
         }
         
-        return $this->addLogMessage($this->getTime().' | '.(string)$message);
+        return $this->addLogMessage((string)$message, true);
     }
 
-    public function logEvent(string $eventName, string $message='') : Application_Logger
+    public function logSF(string $message, ...$args) : Application_Logger
+    {
+        return $this->addLogMessage($message, true, ...$args);
+    }
+
+    /**
+     * @param string $eventName
+     * @param string $message
+     * @param mixed ...$args
+     * @return $this
+     */
+    public function logEvent(string $eventName, string $message='', ...$args) : Application_Logger
     {
         $sep = ' | ';
 
@@ -127,7 +160,7 @@ class Application_Logger
             $sep = '';
         }
 
-        return $this->log('Event ['.$eventName.']'.$sep.$message);
+        return $this->addLogMessage('Event ['.$eventName.']'.$sep.$message, true, ...$args);
     }
     
    /**
@@ -149,13 +182,24 @@ class Application_Logger
     * Logs a message styled as a header.
     * 
     * @param string $message
+    * @param mixed ...$args
     * @return Application_Logger
     */
-    public function logHeader(string $message) : Application_Logger
+    public function logHeader(string $message, ...$args) : Application_Logger
     {
-        $this->addLogMessage($this->separator);
-        $this->addLogMessage(mb_strtoupper($message));
-        $this->addLogMessage($this->separator);
+        if($this->isLoggingEnabled() === false)
+        {
+            return $this;
+        }
+
+        if(!empty($args))
+        {
+            $message = sprintf($message, ...$args);
+        }
+
+        $this->addLogMessage($this->separator, false);
+        $this->addLogMessage(mb_strtoupper($message), false);
+        $this->addLogMessage($this->separator, false);
         
         return $this;
     }
@@ -171,31 +215,47 @@ class Application_Logger
         $json = json_encode($data, JSON_PRETTY_PRINT);
         $json = str_replace('\/', '/', $json);
 
-        $this->addLogMessage($this->getTime().' | Data dump:');
-        $this->addLogMessage($json);
+        $this->addLogMessage('Data dump:', true);
+        $this->addLogMessage($json, false);
         
         return $this;
     }
 
     /**
      * @param string $message
+     * @param mixed ...$args
      * @return $this
      */
-    public function logError(string $message) : Application_Logger
+    public function logError(string $message, ...$args) : Application_Logger
     {
-        $this->addLogMessage('ERROR | '.$message);
-        return $this;
+        return $this->addLogMessage('ERROR | '.$message, true, ...$args);
     }
-    
-    private function addLogMessage(string $message) : Application_Logger
+
+    /**
+     * @param string $message
+     * @param bool $withTime
+     * @param mixed ...$args
+     * @return Application_Logger
+     */
+    private function addLogMessage(string $message, bool $withTime, ...$args) : Application_Logger
     {
-        $this->log[] = $message;
-   
         if(!$this->isLoggingEnabled())
         {
             return $this;
         }
-        
+
+        if(!empty($args))
+        {
+            $message = sprintf($message, ...$args);
+        }
+
+        if($withTime === true)
+        {
+            $message = $this->getTime().' | '.$message;
+        }
+
+        $this->log[] = $message;
+   
         if($this->logMode === self::LOG_MODE_ECHO)
         {
             echo $this->format($message);
@@ -215,14 +275,12 @@ class Application_Logger
             return $message.PHP_EOL;
         }
         
-        if(strstr($message, "\n"))
+        if(strstr($message, "\n") !== false)
         {
             $message = '<pre>'.$message.'</pre>';
         }
         
-        $message = '<div class="log">'.$message.'</div>';
-        
-        return $message;
+        return '<div class="log">'.$message.'</div>';
     }
     
    /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use PHPUnit\Framework\TestCase;
 
 final class Application_LoggingTest extends TestCase
@@ -8,7 +10,7 @@ final class Application_LoggingTest extends TestCase
     * Ensure that regular exceptions get converted to application
     * exceptions, so they can be logged.
     */
-    public function test_convertException()
+    public function test_convertException() : void
     {
         try
         {
@@ -31,7 +33,7 @@ final class Application_LoggingTest extends TestCase
     * @see displayError()
     * @see Application_Bootstrap::bootClass()
     */
-    public function test_displayException()
+    public function test_displayException() : void
     {
         // disable exiting, since the error page calls exit.
         $restore = Application::setExitEnabled(false);
@@ -49,5 +51,39 @@ final class Application_LoggingTest extends TestCase
         
         // restore the exit setting to the previous value
         Application::setExitEnabled($restore);
+    }
+
+    /**
+     * The logging methods support adding arbitrary arguments,
+     * which are injected into the message using `sprintf()`.
+     * This must work with all methods.
+     */
+    public function test_loggable_messageArguments() : void
+    {
+        $logger = Application::getLogger();
+        $logger->clearLog();
+
+        $loggable = new TestLoggable();
+
+        $loggable->addLogMessage('Test message');
+        $this->assertStringContainsString('Test message', $logger->getLastMessage());
+
+        $loggable->addLogMessage('With %s injected values', 'foo');
+        $this->assertStringContainsString('With foo injected values', $logger->getLastMessage());
+
+        $loggable->addEventLog('EventName', 'Foo%s', 'bar');
+        $this->assertStringContainsString('Foobar', $logger->getLastMessage());
+
+        $loggable->addDataLog(array('FooBar' => 'Value'));
+        $this->assertStringContainsString('FooBar', $logger->getLastMessage());
+
+        $loggable->addErrorLog('%s error message', 'Foo');
+        $this->assertStringContainsString('Foo error message', $logger->getLastMessage());
+
+        // clear the log for checking the header result
+        $logger->clearLog();
+
+        $loggable->addHeaderLog('Supah %s header', 'foo');
+        $this->assertStringContainsString('SUPAH FOO HEADER', implode('', $logger->getLog()));
     }
 }
