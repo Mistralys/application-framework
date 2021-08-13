@@ -19,13 +19,15 @@
  */
 abstract class Application_Revisionable extends Application_RevisionableStateless
 {
+    const REVISION_KEY_EVENT_HANDLERS = '__eventHandlers';
+    const EVENT_BEFORE_SAVE = 'BeforeSave';
+    const REVISION_KEY_IGNORED_EVENTS = '__ignored_events';
     /**
      * @var Application_StateHandler
      */
     protected $stateHandler;
 
     const ERROR_SAVING_WITHOUT_TRANSACTION = 68439001;
-    
     const ERROR_INVALID_EVENT_CALLBACK = 68439002;
 
     /**
@@ -454,7 +456,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      *
      * @return boolean
      */
-    public function hasStructuralChanges()
+    public function hasStructuralChanges() : bool
     {
         return $this->structuralChanges;
     }
@@ -489,7 +491,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      */
     public function save()
     {
-        $this->triggerEvent('BeforeSave');
+        $this->triggerEvent(self::EVENT_BEFORE_SAVE);
 
         $this->log(sprintf(
             'Saving | Has changes: [%s] | Revision added in last transaction: [%s]',
@@ -534,18 +536,20 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
 
         return true;
     }
-    
-    protected $eventHandlers = array();
-    
-    protected function triggerEvent($name, $args=array())
+
+    // region: Event handling
+
+    protected function triggerEvent(string $name, array $args=array()) : void
     {
-        if(!isset($this->eventHandlers[$name]))
+        $handlers = $this->getRevisionEventHandlers();
+
+        if(!isset($handlers[$name]))
         {
             $this->log(sprintf('Event [%s] | Ignoring, no listeners found.', $name));
             return;
         }
         
-        if(isset($this->ignoredEvents[$name]))
+        if($this->isEventIgnored($name))
         {
             $this->log(sprintf('Event [%s] | On the ignore list, ignoring.', $name));
             return;
@@ -560,27 +564,76 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
         
         array_unshift($args, $this);
         
-        foreach($this->eventHandlers[$name] as $handler) {
+        foreach($handlers[$name] as $handler)
+        {
             call_user_func_array($handler, $args);
         }
 
         $this->log(sprintf('Event [%s] | Done', $name));
     }
-    
-    protected $ignoredEvents = array();
-    
-    protected function ignoreEvent($name)
+
+    /**
+     * @return array<string,bool>
+     */
+    private function getRevisionIgnoredEvents() : array
     {
-        $this->ignoredEvents[$name] = true;
-    }
-    
-    protected function unignoreEvent($name)
-    {
-        if(isset($this->ignoredEvents[$name])) {
-            unset($this->ignoredEvents[$name]);
+        $events = $this->revisions->getKey(self::REVISION_KEY_IGNORED_EVENTS);
+        if(is_array($events)) {
+            return $events;
         }
+
+        return array();
     }
-    
+
+    /**
+     * @param array<string,bool> $eventNames
+     * @return $this
+     * @throws Application_Exception
+     */
+    private function setRevisionIgnoredEvents(array $eventNames)
+    {
+        $this->revisions->setKey(self::REVISION_KEY_IGNORED_EVENTS, $eventNames);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     * @throws Application_Exception
+     */
+    protected function ignoreEvent(string $name)
+    {
+        $events = $this->getRevisionIgnoredEvents();
+        $events[$name] = true;
+
+        $this->setRevisionIgnoredEvents($events);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     * @throws Application_Exception
+     */
+    protected function unignoreEvent(string $name)
+    {
+        $events = $this->getRevisionIgnoredEvents();
+
+        if(isset($events[$name])) {
+            unset($events[$name]);
+        }
+
+        return $this->setRevisionIgnoredEvents($events);
+    }
+
+    public function isEventIgnored(string $name) : bool
+    {
+        $events = $this->getRevisionIgnoredEvents();
+
+        return isset($events[$name]);
+    }
+
    /**
     * Adds a callback to call before the revisionable is saved.
     * 
@@ -588,12 +641,12 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     * 
     * - The revisionable instance.
     * 
-    * @param array|string $callback
-    * @return Application_Revisionable
+    * @param callable $callback
+    * @return $this
     */
-    public function onBeforeSave($callback)
+    public function onBeforeSave(callable $callback)
     {
-        return $this->addEventHandler('BeforeSave', $callback);
+        return $this->addEventHandler(self::EVENT_BEFORE_SAVE, $callback);
     }
     
    /**
@@ -602,23 +655,51 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     * and any additional custom event parameters afterwards.
     * 
     * @param string $eventName
-    * @param array|string $callback
+    * @param callable $callback
     * @throws Application_Exception
-    * @return Application_Revisionable
+    * @return $this
     */
-    protected function addEventHandler($eventName, $callback)
+    protected function addEventHandler(string $eventName, callable $callback)
     {
-        Application::requireCallableValid($callback, self::ERROR_INVALID_EVENT_CALLBACK);
-        
-        if(!isset($this->eventHandlers[$eventName])) {
-            $this->eventHandlers[$eventName] = array();
+        $handlers = $this->getRevisionEventHandlers();
+
+        if(!isset($handlers[$eventName])) {
+            $handlers[$eventName] = array();
         }
         
         $this->log(sprintf('Event [%s] | Added a handler.', $eventName));
         
-        $this->eventHandlers[$eventName][] = $callback;
+        $handlers[$eventName][] = $callback;
+
+        return $this->setRevisionEventHandlers($handlers);
+    }
+
+    /**
+     * @return array<string,callable[]>
+     */
+    private function getRevisionEventHandlers() : array
+    {
+        $handlers = $this->revisions->getKey(self::REVISION_KEY_EVENT_HANDLERS);
+
+        if(!empty($handlers)) {
+            return $handlers;
+        }
+
+        return array();
+    }
+
+    /**
+     * @param array $handlers
+     * @return $this
+     * @throws Application_Exception
+     */
+    private function setRevisionEventHandlers(array $handlers)
+    {
+        $this->revisions->setKey(self::REVISION_KEY_EVENT_HANDLERS, $handlers);
         return $this;
     }
+
+    // endregion
     
    /**
     * Ensures that a transaction is active for operations that
