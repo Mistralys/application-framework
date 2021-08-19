@@ -174,4 +174,45 @@ abstract class DBHelper_FetchBase
         
         return implode(PHP_EOL.'AND'.PHP_EOL, $this->where);
     }
+
+    /**
+     * @param string $name
+     * @param array $values
+     * @return $this
+     */
+    public function whereValueIN(string $name, array $values)
+    {
+        return $this->buildIN('IN', $name, $values);
+    }
+
+    /**
+     * @param string $name
+     * @param array $values
+     * @return $this
+     */
+    public function whereValueNOT_IN(string $name, array $values)
+    {
+        return $this->buildIN('NOT IN', $name, $values);
+    }
+
+    private function buildIN(string $type, string $name, array $values)
+    {
+        $in = array();
+
+        foreach ($values as $value)
+        {
+            $placeholder = $this->createPlaceholder();
+            $this->data[$placeholder] = $value;
+            $in[] = ':'.$placeholder;
+        }
+
+        $this->where[] = sprintf(
+            "%s %s(%s)",
+            $this->escapeColumn($name),
+            $type,
+            implode(', ', $in)
+        );
+
+        return $this;
+    }
 }
