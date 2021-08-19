@@ -16,8 +16,11 @@
  * @subpackage Revisionable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_RevisionStorage implements ArrayAccess
+abstract class Application_RevisionStorage implements ArrayAccess, Application_Interfaces_Eventable
 {
+    use Application_Traits_Eventable;
+    use Application_Traits_Loggable;
+
     const KEY_TYPE_ARRAY = 'array';
     const KEY_TYPE_STRING = 'string';
 
@@ -31,8 +34,8 @@ abstract class Application_RevisionStorage implements ArrayAccess
     const ERROR_INVALID_COPY_REVISION_CLASS = 15557006;
     const ERROR_NO_REVISIONS_AVAILABLE = 15557007;
     const ERROR_REVISION_REQUIRED = 15557008;
-    
-   /**
+
+    /**
     * @var array<int,array<string,mixed>>
     */
     protected $data = array();
@@ -135,6 +138,8 @@ abstract class Application_RevisionStorage implements ArrayAccess
             '__ownerName' => $ownerName,
             '__comments' => $comments
         );
+
+        $this->triggerRevisionAdded($number, $timestamp, $ownerID, $ownerName, $comments);
     }
 
    /**
@@ -777,11 +782,17 @@ abstract class Application_RevisionStorage implements ArrayAccess
         return array_shift($revisions);
     }
 
+    /**
+     * @var string
+     */
     protected $logName;
-    
+
+    /**
+     * @var array<int,string>
+     */
     protected $logFormat = array();
     
-    protected function log($message)
+    public function getLogIdentifier() : string
     {
         // creating the base string once per revision for
         // performance reasons, and not using sprintf
@@ -790,7 +801,7 @@ abstract class Application_RevisionStorage implements ArrayAccess
             $this->logFormat[$this->revision] = $this->logName.' ['.$this->revisionable_id.'] | RevisionStorage ['.$this->revision.'] | '; 
         }
         
-        Application::log($this->logFormat[$this->revision].$message);
+        return $this->logFormat[$this->revision];
     }
 
     /**
@@ -1127,4 +1138,31 @@ abstract class Application_RevisionStorage implements ArrayAccess
     * @param mixed $value
     */
     abstract protected function _writeRevdataKey($key, $value);
+
+    // region: Event handling
+
+    const EVENT_REVISION_ADDED = 'RevisionAdded';
+
+    protected function triggerRevisionAdded(int $number, int $timestamp, int $ownerID, string $ownerName, string $comments) : void
+    {
+        $this->triggerEvent(
+            self::EVENT_REVISION_ADDED,
+            array($number, $timestamp, $ownerID, $ownerName, $comments),
+            Application_RevisionStorage_Event_RevisionAdded::class
+        );
+    }
+
+    /**
+     * The callback gets the event instance as single parameter.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     * @see Application_RevisionStorage_Event_RevisionAdded
+     */
+    public function onRevisionAdded(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_REVISION_ADDED, $callback);
+    }
+
+    // endregion
 }
