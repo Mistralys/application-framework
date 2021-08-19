@@ -7,6 +7,9 @@
  * @see Application_RevisionableStateless
  */
 
+use AppUtils\ConvertHelper;
+use AppUtils\NamedClosure;
+
 /**
  * Base class for stateless revisionable items: provides a
  * method skeleton with basic functionality for data types
@@ -77,7 +80,9 @@ abstract class Application_RevisionableStateless implements Application_Revision
                 self::ERROR_INVALID_REVISION_STORAGE
             );
         }
-        
+
+        $this->initRevisionEvents();
+
         $this->init();
         $this->initialized = true;
     }
@@ -1257,5 +1262,284 @@ abstract class Application_RevisionableStateless implements Application_Revision
     public function requireTransaction()
     {
     }
-}
 
+    // region: Event handling
+
+    const REVISION_KEY_EVENT_HANDLERS = '__eventHandlers';
+    const EVENT_BEFORE_SAVE = 'BeforeSave';
+    const EVENT_REVISION_ADDED = 'RevisionAdded';
+    const REVISION_KEY_IGNORED_EVENTS = '__ignored_events';
+
+    /**
+     * @var array<string,true>
+     */
+    protected static $revisionAgnosticEvents = array();
+
+    /**
+     * @var array<string,bool>
+     */
+    protected $agnosticIgnores = array();
+
+    private function initRevisionEvents() : void
+    {
+        self::registerRevisionAgnosticEvent(self::EVENT_BEFORE_SAVE);
+        self::registerRevisionAgnosticEvent(self::EVENT_REVISION_ADDED);
+
+        $callback = array($this, 'callback_revisionAdded');
+
+        $this->revisions->onRevisionAdded(NamedClosure::fromClosure(
+            Closure::fromCallable($callback),
+            ConvertHelper::callback2string($callback)
+        ));
+
+        $this->_registerEvents();
+    }
+
+    private function callback_revisionAdded(Application_RevisionStorage_Event_RevisionAdded $event) : void
+    {
+        $event = new Application_Revisionable_Event_RevisionAdded($this, $event);
+
+        $this->triggerEvent(
+            self::EVENT_REVISION_ADDED,
+            array($event)
+        );
+    }
+
+    abstract protected function _registerEvents() : void;
+
+    /**
+     * Registers the name of an event that is not revision-
+     * specific, and can be triggered regardless of the
+     * currently selected revision.
+     *
+     * @param string $name
+     */
+    protected static function registerRevisionAgnosticEvent(string $name) : void
+    {
+        self::$revisionAgnosticEvents[$name] = true;
+    }
+
+    /**
+     * Checks if the specified event name is not revision specific.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function isEventRevisionAgnostic(string $name) : bool
+    {
+        return isset(self::$revisionAgnosticEvents[$name]);
+    }
+
+    /**
+     * @param string $name
+     * @param array $args Indexed array of arguments for the callback function/method.
+     */
+    protected function triggerEvent(string $name, array $args=array()) : void
+    {
+        $handlers = $this->getRevisionEventHandlers($name);
+
+        if(!isset($handlers[$name]))
+        {
+            $this->log(sprintf('Event [%s] | Ignoring, no listeners found.', $name));
+            return;
+        }
+
+        if($this->isEventIgnored($name))
+        {
+            $this->log(sprintf('Event [%s] | On the ignore list, ignoring.', $name));
+            return;
+        }
+
+        $this->log(sprintf('Event [%s] | Listeners found, calling them...', $name));
+
+        if(!is_array($args))
+        {
+            $args = array($args);
+        }
+
+        array_unshift($args, $this);
+
+        foreach($handlers[$name] as $handler)
+        {
+            call_user_func_array($handler, $args);
+        }
+
+        $this->log(sprintf('Event [%s] | Done', $name));
+    }
+
+    /**
+     * @return array<string,bool>
+     */
+    private function getRevisionIgnoredEvents(string $name) : array
+    {
+        if($this->isEventRevisionAgnostic($name))
+        {
+            return $this->agnosticIgnores;
+        }
+
+        $events = $this->revisions->getKey(self::REVISION_KEY_IGNORED_EVENTS);
+        if(is_array($events)) {
+            return $events;
+        }
+
+        return array();
+    }
+
+    /**
+     * @param array<string,bool> $eventNames
+     * @return $this
+     * @throws Application_Exception
+     */
+    private function setRevisionIgnoredEvents(string $targetEvent, array $eventNames)
+    {
+        if($this->isEventRevisionAgnostic($targetEvent))
+        {
+            $this->agnosticIgnores = $eventNames;
+            return $this;
+        }
+
+        $this->revisions->setKey(self::REVISION_KEY_IGNORED_EVENTS, $eventNames);
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     * @throws Application_Exception
+     */
+    protected function ignoreEvent(string $name)
+    {
+        $events = $this->getRevisionIgnoredEvents($name);
+        $events[$name] = true;
+
+        $this->setRevisionIgnoredEvents($name, $events);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return $this
+     * @throws Application_Exception
+     */
+    protected function unignoreEvent(string $name)
+    {
+        $events = $this->getRevisionIgnoredEvents($name);
+
+        if(isset($events[$name])) {
+            unset($events[$name]);
+        }
+
+        return $this->setRevisionIgnoredEvents($name, $events);
+    }
+
+    public function isEventIgnored(string $name) : bool
+    {
+        $events = $this->getRevisionIgnoredEvents($name);
+
+        return isset($events[$name]);
+    }
+
+    /**
+     * Adds a callback to call before the revisionable is saved.
+     *
+     * This gets a single parameter:
+     *
+     * - The revisionable instance {@see Application_Revisionable_Interface}.
+     *
+     * @param callable $callback
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function onBeforeSave(callable $callback)
+    {
+        return $this->addEventHandler(self::EVENT_BEFORE_SAVE, $callback);
+    }
+
+    /**
+     * Adds a callback for when a new revision is added to the revisionable.
+     *
+     * The callback gets the following parameters:
+     *
+     * 1) The revisionable instance {@see Application_Revisionable_Interface}.
+     * 2) The event instance {@see Application_Revisionable_Event_RevisionAdded}.
+     *
+     * @param callable $callback
+     * @return $this
+     * @throws Application_Exception
+     * @see Application_Revisionable_Event_RevisionAdded
+     */
+    public function onRevisionAdded(callable $callback)
+    {
+        return $this->addEventHandler(self::EVENT_REVISION_ADDED, $callback);
+    }
+
+    /**
+     * Adds an event handler for the specified event. The callback
+     * always gets the revisionable instance as first parameter,
+     * and any additional custom event parameters afterwards.
+     *
+     * @param string $eventName
+     * @param callable $callback
+     * @throws Application_Exception
+     * @return $this
+     */
+    protected function addEventHandler(string $eventName, callable $callback)
+    {
+        $handlers = $this->getRevisionEventHandlers($eventName);
+
+        if(!isset($handlers[$eventName])) {
+            $handlers[$eventName] = array();
+        }
+
+        $this->log(sprintf('Event [%s] | Added a handler.', $eventName));
+
+        $handlers[$eventName][] = $callback;
+
+        return $this->setRevisionEventHandlers($eventName, $handlers);
+    }
+
+    /**
+     * @var array<string,callable[]>
+     */
+    protected $revisionAgnosticHandlers = array();
+
+    /**
+     * @return array<string,callable[]>
+     */
+    private function getRevisionEventHandlers(string $eventName) : array
+    {
+        if($this->isEventRevisionAgnostic($eventName))
+        {
+            return $this->revisionAgnosticHandlers;
+        }
+
+        $handlers = $this->revisions->getKey(self::REVISION_KEY_EVENT_HANDLERS);
+
+        if(!empty($handlers)) {
+            return $handlers;
+        }
+
+        return array();
+    }
+
+    /**
+     * @param string $eventName
+     * @param array<string,callable[]> $handlers
+     * @return $this
+     * @throws Application_Exception
+     */
+    private function setRevisionEventHandlers(string $eventName, array $handlers)
+    {
+        if($this->isEventRevisionAgnostic($eventName))
+        {
+            $this->revisionAgnosticHandlers = $handlers;
+            return $this;
+        }
+
+        $this->revisions->setKey(self::REVISION_KEY_EVENT_HANDLERS, $handlers);
+        return $this;
+    }
+
+    // endregion
+}
