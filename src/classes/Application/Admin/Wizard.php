@@ -9,21 +9,20 @@ abstract class Application_Admin_Wizard extends Application_Admin_Area_Mode impl
         return null;
     }
     
-    public function log(string $message) : void
+    public function getLogIdentifier() : string
     {
-        if(!empty($this->sessionID)) 
+        if(empty($this->sessionID))
         {
-            $message = sprintf(
-                'Wizard [%s] | %s',
-                $this->sessionID,
-                $message
+            return sprintf(
+                'Wizard [%s] | Session [%s]',
+                $this->getID(),
+                $this->sessionID
             );
         }
-        else
-        {
-            $message = 'Wizard | '.$message;
-        }
-        
-        parent::log($message);
+
+        return sprintf(
+            'Wizard [%s]',
+            $this->getID()
+        );
     }
 }
