@@ -498,8 +498,7 @@ trait Application_Traits_Admin_Screen
     {
         if (!isset($this->screenID)) 
         {
-            $tokens = explode('_', get_class($this));
-            $this->screenID = array_pop($tokens);
+            $this->screenID = getClassTypeName($this);
         }
         
         return $this->screenID;
