@@ -370,13 +370,13 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return new Application_FilterCriteria_RevisionableRevisions($this);
     }
     
-    protected function log($message)
+    public function getLogIdentifier() : string
     {
         if(!isset($this->logFormat[$this->revision])) {
             $this->logFormat[$this->revision] = $this->logName.' ['.$this->revisionableID.'] | RevisionStorage ['.$this->revision.'] | ';
         }
         
-        parent::log($message);
+        return parent::getLogIdentifier();
     }
 
    /**
