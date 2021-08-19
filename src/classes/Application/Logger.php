@@ -21,7 +21,9 @@ class Application_Logger
     const LOG_MODE_FILE = 1;
     const LOG_MODE_ECHO = 2;
     const LOG_MODE_NONE = 3;
-    
+
+    const LINE_LENGTH = 65;
+
    /**
     * Stores all log messages.
     * @var array
@@ -61,7 +63,7 @@ class Application_Logger
     
     public function __construct()
     {
-        $this->separator = str_repeat('-', 65);
+        $this->separator = str_repeat('-', self::LINE_LENGTH);
         $this->logFile = $this->getLogFolder().'/trace.log';
     }
     
@@ -197,13 +199,47 @@ class Application_Logger
             $message = sprintf($message, ...$args);
         }
 
-        $this->addLogMessage($this->separator, false);
+        $this->logEmptyLine();
+        $this->logSeparator();
         $this->addLogMessage(mb_strtoupper($message), false);
-        $this->addLogMessage($this->separator, false);
+        $this->logSeparator();
         
         return $this;
     }
-    
+
+    public function logSeparator() : Application_Logger
+    {
+        return $this->addLogMessage($this->separator, false);
+    }
+
+    public function logCloseSection(string $sectionLabel, ...$args) : Application_Logger
+    {
+        if($this->isLoggingEnabled() === false)
+        {
+            return $this;
+        }
+
+        if(!empty($args))
+        {
+            $sectionLabel = sprintf($sectionLabel, ...$args);
+        }
+
+        $sectionLabel = ' '.mb_strtoupper($sectionLabel).' --/';
+
+        $length = self::LINE_LENGTH - mb_strlen($sectionLabel);
+
+        $message = substr($this->separator, 0, $length).$sectionLabel;
+
+        return $this
+            ->addLogMessage($message, false)
+            ->logEmptyLine();
+    }
+
+    public function logEmptyLine() : Application_Logger
+    {
+        return $this->addLogMessage('', false);
+    }
+
    /**
     * Logs a data array.
     * 
@@ -235,7 +271,7 @@ class Application_Logger
      * @param string $message
      * @param bool $withTime
      * @param mixed ...$args
-     * @return Application_Logger
+     * @return $this
      */
     private function addLogMessage(string $message, bool $withTime, ...$args) : Application_Logger
     {
