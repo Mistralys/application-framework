@@ -50,8 +50,15 @@ class Application_Exception extends BaseException
      */
     public function __construct(string $message, string $developerInfo = '', int $code = 0, ?Exception $previous = null)
     {
-        if(defined('APP_TESTS_RUNNING') && constant('APP_TESTS_RUNNING') === true) {
+        if(defined('APP_TESTS_RUNNING') && constant('APP_TESTS_RUNNING') === true)
+        {
             $message .= PHP_EOL.$developerInfo;
+
+            if($previous)
+            {
+                $message .= PHP_EOL.
+                'Previous exception: [#'.$previous->getCode().'] '.$previous->getMessage();
+            }
         }
 
         parent::__construct($message, $developerInfo, $code, $previous);
