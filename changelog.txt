@@ -1,8 +1,21 @@
 v1.16.0
 - Disposables: Added the disposable interface and trait.
 - Logging: Added support for using placeholders in messages natively, without manual `sprintf` calls.
+- Logging: Added the method `logSeparator()`.
+- Logging: Added the method `logCloseSection()` for signaling when a section opened with a header is complete.
+- Logging: Added the method `logEmptyLine()`.
+- Loggables: Added `isLoggingEnabled()` and `getLogger()`.
 - EventHandling: Added the possibility to turn events off (for disposables).
-- Revisionables: The event handling is now revision-specific to avoid versioning mixups.
+- Eventables: Listeners can now be identified in logs with their callback signature.
+- Revisionables: **Breaking** The event handling is now selectively revision-specific or revision-agnostic.
+- Revisionables: **Breaking** Added the new abstract method `registerEvents()` for all revisionables.
+- Revisionables: Moved the event handling to the base revisionable stateless class.
+- Wizards: Improved logging, now using the loggable interface.
+- RevisionStorage: Added the `RevisionAdded` event.
+- DBHelper: Fetcher classes now support `whereValueIN()` and `whereValueNOT_IN()`.
+
+> To update the revisionables, the method `registerEvents()` must be implemented,
+> and register any events that are revision agnostic with `registerRevisionAgnosticEvent()`.
 
 v1.15.4
 - Localization: Better labels for the application's translatable categories.
