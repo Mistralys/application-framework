@@ -38,7 +38,7 @@ class DBHelper_FetchOne extends DBHelper_FetchBase
    /**
     * Selects several columns to fetch in the result.
     * 
-    * @param string[] ...$args
+    * @param string|array ...$args Either an array with column names (first parameter), or column names as method parameters.
     * @return $this
     */
     public function selectColumns(...$args)
