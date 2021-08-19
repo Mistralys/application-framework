@@ -39,7 +39,11 @@ trait Application_Traits_Eventable
      */
     protected $eventsDisabled = false;
 
-    abstract protected function log(string $message) : void;
+    /**
+     * @param string $message
+     * @param mixed ...$args
+     */
+    abstract protected function log(string $message, ...$args) : void;
 
     /**
      * @param string $eventName
@@ -59,7 +63,7 @@ trait Application_Traits_Eventable
 
         $this->eventListeners[$eventName][] = $listener;
 
-        $this->logEventable('Added a listener.', $eventName);
+        $this->logEventable('Added the listener ['.ConvertHelper::callback2string($callback).']', $eventName);
 
         return $listener;
     }
@@ -86,7 +90,7 @@ trait Application_Traits_Eventable
     {
         $eventName = $listener->getEventName();
 
-        $this->logEventable('Removing listener.', $eventName);
+        $this->logEventable(sprintf('Removing listener [%s].', ConvertHelper::callback2string($listener->getCallback())), $eventName);
 
         if (!isset($this->eventListeners[$eventName]))
         {
