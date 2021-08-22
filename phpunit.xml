@@ -24,6 +24,9 @@
         <testsuite name="DBHelper">
             <directory suffix=".php">./tests/testsuites/DBHelper</directory>
         </testsuite>
+        <testsuite name="Disposables">
+            <directory suffix=".php">./tests/testsuites/Disposables</directory>
+        </testsuite>
         <testsuite name="Forms">
             <directory suffix=".php">./tests/testsuites/Forms</directory>
         </testsuite>
@@ -41,6 +44,9 @@
         </testsuite>
         <testsuite name="Ratings">
             <directory suffix=".php">./tests/testsuites/Ratings</directory>
+        </testsuite>
+        <testsuite name="Revisionables">
+            <directory suffix=".php">./tests/testsuites/Revisionables</directory>
         </testsuite>
         <testsuite name="UI">
             <directory suffix=".php">./tests/testsuites/UI</directory>
