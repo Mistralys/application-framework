@@ -63,7 +63,12 @@ trait Application_Traits_Eventable
 
         $this->eventListeners[$eventName][] = $listener;
 
-        $this->logEventable('Added the listener ['.ConvertHelper::callback2string($callback).']', $eventName);
+        $this->logEvent(
+            $eventName,
+            'Listener [#%s] | Added the listener | Callback [%s]',
+            $listener->getID(),
+            ConvertHelper::callback2string($listener->getCallback())
+        );
 
         return $listener;
     }
@@ -90,7 +95,12 @@ trait Application_Traits_Eventable
     {
         $eventName = $listener->getEventName();
 
-        $this->logEventable(sprintf('Removing listener [%s].', ConvertHelper::callback2string($listener->getCallback())), $eventName);
+        $this->logEvent(
+            $eventName,
+            'Listener [#%s] | Removing listener | Callback [%s].',
+            $listener->getID(),
+            ConvertHelper::callback2string($listener->getCallback())
+        );
 
         if (!isset($this->eventListeners[$eventName]))
         {
@@ -154,7 +164,7 @@ trait Application_Traits_Eventable
 
             $this->logEventable(
                 sprintf(
-                    'Processing listener [#%s] | Callback [%s]',
+                    'Listener [#%s] | Processing | Callback [%s]',
                     $listener->getID(),
                     ConvertHelper::callback2string($listener->getCallback())
                 ),
