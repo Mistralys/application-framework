@@ -39,6 +39,10 @@ final class User_RecentTest extends UserTestCase
         $this->assertCount(2, $categories);
     }
 
+    /**
+     * Categories are not sorted by default, to allow setting
+     * a specific order by registering them in the desired sequence.
+     */
     public function test_category_getAliases() : void
     {
         if($this->skipTests()) {
@@ -51,8 +55,7 @@ final class User_RecentTest extends UserTestCase
 
         $aliases = $recent->getCategoryAliases();
 
-        // Categories get sorted by label, so bar must come before foo.
-        $this->assertEquals(array('bar', 'foo'), $aliases);
+        $this->assertEquals(array('foo', 'bar'), $aliases);
     }
 
     public function test_category_getByAlias() : void
