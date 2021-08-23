@@ -67,7 +67,7 @@ trait Application_Traits_Eventable
             $eventName,
             'Listener [#%s] | Added the listener | Callback [%s]',
             $listener->getID(),
-            ConvertHelper::callback2string($listener->getCallback())
+            $listener->getCallbackAsString()
         );
 
         return $listener;
@@ -113,7 +113,7 @@ trait Application_Traits_Eventable
         {
             if ($check->getID() !== $listenerID)
             {
-                $keep[] = $listener;
+                $keep[] = $check;
             }
         }
 
@@ -166,7 +166,7 @@ trait Application_Traits_Eventable
                 sprintf(
                     'Listener [#%s] | Processing | Callback [%s]',
                     $listener->getID(),
-                    ConvertHelper::callback2string($listener->getCallback())
+                    $listener->getCallbackAsString()
                 ),
                 $eventName
             );
@@ -175,7 +175,12 @@ trait Application_Traits_Eventable
 
             if ($event->isCancelled())
             {
-                $this->logEventable('CANCEL | Listener cancelled the event.', $eventName);
+                $this->logEvent(
+                    $eventName,
+                    'Listener [#%s] | CANCEL | Callback [%s].',
+                    $listener->getID(),
+                    $listener->getCallbackAsString()
+                );
                 break;
             }
         }
