@@ -1,7 +1,29 @@
 <?php
+/**
+ * File containing the class {@see Application_EventHandler_Listener}.
+ *
+ * @package Application
+ * @subpackage EventHandler
+ * @see Application_EventHandler_Listener
+ */
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
+
+/**
+ * Listener class for a specific event: Used to store information
+ * on the listener. It also allows removing specific listeners by
+ * their instance.
+ *
+ * @package Application
+ * @subpackage EventHandler
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_EventHandler::addListener()
+ * @see Application_Interfaces_Eventable::addEventListener()
+ *
+ */
 class Application_EventHandler_Listener
 {
    /**
@@ -24,7 +46,7 @@ class Application_EventHandler_Listener
     */
     private $id;
     
-    public function __construct(int $id, string $eventName, $callback, string $source='')
+    public function __construct(int $id, string $eventName, callable $callback, string $source='')
     {
         $this->id = $id;
         $this->eventName = $eventName;
@@ -65,8 +87,23 @@ class Application_EventHandler_Listener
    /**
     * @return callable
     */
-    public function getCallback() 
+    public function getCallback() : callable
     {
         return $this->callback;
+    }
+
+    /**
+     * @var string|NULL
+     */
+    private $humanReadable = null;
+
+    public function getCallbackAsString() : string
+    {
+        if(!isset($this->humanReadable))
+        {
+            $this->humanReadable = ConvertHelper::callback2string($this->callback);
+        }
+
+        return $this->humanReadable;
     }
 }
