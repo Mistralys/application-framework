@@ -43,14 +43,11 @@ class Application_EventHandler
     * 
     * @param string $eventName
     * @param mixed $callback
-    * @param string $source A human readable label for the listener.
+    * @param string $source A human-readable label for the listener.
     * @return Application_EventHandler_Listener
-    * @throws Application_EventHandler_Exception|Application_Exception
     */
-    public static function addListener(string $eventName, $callback, string $source='') : Application_EventHandler_Listener
+    public static function addListener(string $eventName, callable $callback, string $source='') : Application_EventHandler_Listener
     {
-        Application::requireCallableValid($callback, self::ERROR_INVALID_CALLBACK);
-        
         self::$listenerIDCounter++;
         $listenerID = self::$listenerIDCounter;
 
