@@ -7,6 +7,7 @@ v1.16.0
 - Loggables: Added `isLoggingEnabled()` and `getLogger()`.
 - EventHandling: Added the possibility to turn events off (for disposables).
 - Eventables: Listeners can now be identified in logs with their callback signature.
+- Eventables: Fixed the `removeEventListener()` replacing all listeners with the one to remove.
 - Revisionables: **Breaking** The event handling is now selectively revision-specific or revision-agnostic.
 - Revisionables: **Breaking** Added the new abstract method `registerEvents()` for all revisionables.
 - Revisionables: Moved the event handling to the base revisionable stateless class.
@@ -15,7 +16,8 @@ v1.16.0
 - DBHelper: Fetcher classes now support `whereValueIN()` and `whereValueNOT_IN()`.
 
 > To update the revisionables, the method `registerEvents()` must be implemented,
-> and register any events that are revision agnostic with `registerRevisionAgnosticEvent()`.
+> and use this method to register any events that are revision agnostic with
+> `registerRevisionAgnosticEvent()`.
 
 v1.15.4
 - Localization: Better labels for the application's translatable categories.
