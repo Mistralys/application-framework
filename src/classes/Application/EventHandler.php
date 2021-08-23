@@ -42,7 +42,7 @@ class Application_EventHandler
     * Adds a callback to the specified event.
     * 
     * @param string $eventName
-    * @param mixed $callback
+    * @param callable $callback
     * @param string $source A human-readable label for the listener.
     * @return Application_EventHandler_Listener
     */
