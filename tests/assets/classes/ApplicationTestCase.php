@@ -91,7 +91,6 @@ abstract class ApplicationTestCase extends TestCase
         if ($this->isRunViaApplication())
         {
             $this->markTestSkipped();
-            return true;
         }
 
         return false;
@@ -103,5 +102,25 @@ abstract class ApplicationTestCase extends TestCase
         $formable->createFormableForm('formable-'.$this->getTestCounter(), $defaultValues);
 
         return $formable;
+    }
+
+    /**
+     * @var UI|null
+     */
+    protected static $ui = null;
+
+    protected function createUI() : UI
+    {
+        if(!isset(self::$ui))
+        {
+            self::$ui = UI::getInstance();
+
+            if(!self::$ui->hasPage())
+            {
+                self::$ui->setPage(new UI_Page(self::$ui, 'unit-tests'));
+            }
+        }
+
+        return self::$ui;
     }
 }
