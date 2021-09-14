@@ -22,8 +22,10 @@ declare(strict_types=1);
  */
 class Application_Formable_RecordSelector_Entry
 {
+    const ERROR_NO_DB_RECORD_SET = 92801;
+
    /**
-    * @var DBHelper_BaseRecord
+    * @var DBHelper_BaseRecord|NULL
     */
     private $record;
     
@@ -47,16 +49,43 @@ class Application_Formable_RecordSelector_Entry
     */
     private $attributes = array();
     
-    public function __construct(DBHelper_BaseRecord $record)
+    public function __construct(string $id, string $label)
+    {
+        $this->label = $label;
+        $this->id = $id;
+    }
+
+    public function setRecord(DBHelper_BaseRecord $record) : Application_Formable_RecordSelector_Entry
     {
         $this->record = $record;
-        $this->label = $record->getLabel();
-        $this->id = (string)$record->getID();
+        return $this;
     }
-    
+
+    /**
+     * Retrieves the database record tied to this selector entry.
+     *
+     * NOTE: Available only if a record has been set, which will
+     * be the case for the RecordSelector, but not the base selector.
+     *
+     * @return DBHelper_BaseRecord
+     * @throws Application_Formable_Exception
+     */
     public function getRecord() : DBHelper_BaseRecord
     {
-        return $this->record;
+        if(isset($this->record))
+        {
+            return $this->record;
+        }
+
+        throw new Application_Formable_Exception(
+            'No selector DB record set',
+            sprintf(
+                'No DB record set for selector entry [%s] with label [%s].',
+                $this->getID(),
+                $this->getLabel()
+            ),
+            self::ERROR_NO_DB_RECORD_SET
+        );
     }
     
     public function setLabel(string $label) : Application_Formable_RecordSelector_Entry
