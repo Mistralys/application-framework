@@ -78,6 +78,10 @@ final class OAuth_StrategiesTest extends ApplicationTestCase
 
     public function test_hasStrategies() : void
     {
+        if($this->skipIfRunViaApplication()) {
+            return;
+        }
+
         $this->startTest('Are strategies enabled?');
 
         $this->assertTrue($this->oauth->hasStrategies());
