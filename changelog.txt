@@ -1,3 +1,8 @@
+v1.16.1
+- Formables: Added the class `Application_Formable_Selector` that works without DB records.
+- Formables: The RecordSelector now extends the base selector class.
+- Tests: Fixed a test class property conflict.
+
 v1.16.0
 - Disposables: Added the disposable interface and trait.
 - Logging: Added support for using placeholders in messages natively, without manual `sprintf` calls.
