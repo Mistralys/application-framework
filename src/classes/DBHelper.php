@@ -1078,12 +1078,7 @@ class DBHelper
         try
         {
             $db = new PDO(
-                sprintf(
-                    'mysql:host=%s;port=%s;dbname=%s',
-                    $def['host'],
-                    $def['port'],
-                    $def['name']
-                ),
+                self::getDBUri(),
                 $def['username'],
                 $def['password'],
                 array(
@@ -1107,7 +1102,11 @@ class DBHelper
             
             throw self::createException(
                 self::ERROR_CONNECTING,
-                'Could not connect to the database',
+                sprintf(
+                    'Could not connect to the database at %s. The database said: %s',
+                    self::getDBUri(),
+                    $e->getMessage()
+                ),
                 null,
                 $e
             );
@@ -1116,6 +1115,24 @@ class DBHelper
         self::$db[self::$selectedDB] = $db;
 
         return self::$db[self::$selectedDB];
+    }
+
+    /**
+     * Retrieves the active database's URI, without authentication information.
+     *
+     * @return string
+     * @throws DBHelper_Exception
+     */
+    public static function getDBUri() : string
+    {
+        $def = self::getSelectedDB();
+
+        return sprintf(
+            'mysql:host=%s;port=%s;dbname=%s',
+            $def['host'],
+            $def['port'],
+            $def['name']
+        );
     }
 
     /**
