@@ -107,6 +107,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     private $popover;
 
+    /**
+     * @var array<string,string>
+     */
+    private $dataAttributes = array();
+
     public function __construct($label='')
     {
         $this->setLabel($label);
@@ -450,7 +455,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
             $this->popover->render();
         }
 
-        $attribs = $this->attributes;
+        $attribs = array_merge($this->dataAttributes, $this->attributes);
     
         $attribs['id'] = $this->id;
         $attribs['type'] = $this->type;
@@ -759,5 +764,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         }
 
         return $this->popover;
+    }
+
+    public function addDataAttribute(string $name, string $value) : UI_Button
+    {
+        $this->dataAttributes['data-'.$name] = $value;
+        return $this;
     }
 }
