@@ -46,6 +46,19 @@
           "reference": "master"
         }
       }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "zenorocha/clipboardjs",
+        "version": "2.0.8",
+        "type": "library",
+        "source": {
+          "url": "https://github.com/zenorocha/clipboard.js.git",
+          "type": "git",
+          "reference": "master"
+        }
+      }
     }
   ],
   "minimum-stability": "dev",
@@ -67,6 +80,7 @@
     "hybridauth/hybridauth": "^3.7.1",
     "erusev\/parsedown": "^1.7.4",
     "twbs/bootstrap": "^v4.6.0",
+    "zenorocha/clipboardjs": "v2.0.8",
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*"
