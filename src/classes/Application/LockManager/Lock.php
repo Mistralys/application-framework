@@ -212,10 +212,10 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * 
     * NOTE: All dates are UTC to be compatible with the client.
     * 
-    * @param Application_User $visitor
-    * @return string[]
+    * @param Application_User|NULL $visitor
+    * @return array<string,mixed>
     */
-    public function toArray(Application_User $visitor = null)
+    public function toArray(Application_User $visitor = null) : array
     {
         $info = array(
             'lock_id' => $this->getID(),
