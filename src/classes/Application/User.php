@@ -607,6 +607,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
      */
     private function createRecent() : Application_User_Recent
     {
+        if(isset($this->recent))
+        {
+            return $this->recent;
+        }
+
         $class = APP_CLASS_NAME.'_User_Recent';
 
         if(!class_exists($class))
