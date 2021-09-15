@@ -1,3 +1,14 @@
+v1.17.0
+- StringBuilder: Added `clickable()` for clickable texts with JS statements.
+- StringBuilder: Added `codeCopy()` to add a "copy to clipboard" button for code texts.
+- UI: Texts with a tooltip are now styled accordingly.
+- UI: Buttons: Added `addDataAttribute()` to add `data-xxx` button attributes.
+- Admin Skeleton: The `redirectXXX` methods now correctly state that they `never-return`.
+- Application: Calling `Application::exit()` cannot be bypassed anymore.
+
+Breaking change: Turning off `Application::exit()` means that processing all items in
+a data grid multi-action is currently not possible anymore. This feature is under review.
+
 v1.16.1
 - Formables: Added the class `Application_Formable_Selector` that works without DB records.
 - Formables: The RecordSelector now extends the base selector class.
