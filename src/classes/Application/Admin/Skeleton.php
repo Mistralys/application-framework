@@ -290,13 +290,16 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL) : void
     {
+        /* TODO Redirect control needs review
         if(!$this->adminMode) {
             return;
         }
-        
+        */
+
         $this->simulationRedirect('Success', $message, $paramsOrURL);
         
         $this->driver->redirectWithSuccessMessage($message, $paramsOrURL);
@@ -307,13 +310,16 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithErrorMessage($message, $paramsOrURL) : void
     {
+        /* TODO Redirect control needs review
         if(!$this->adminMode) {
             return;
         }
-        
+        */
+
         $this->simulationRedirect('Error', $message, $paramsOrURL);
         
         $this->driver->redirectWithErrorMessage($message, $paramsOrURL);
@@ -324,12 +330,15 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithInfoMessage($message, $paramsOrURL) : void
     {
+        /* TODO Redirect control needs review
         if(!$this->adminMode) {
             return;
         }
+        */
         
         $this->simulationRedirect('Info', $message, $paramsOrURL);
         
@@ -338,12 +347,16 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
 
     /**
      * @param string|array<string,string|int|float> $paramsOrURL
+     * @return never-returns
+     * @throws Application_Exception
      */
     public function redirectTo($paramsOrURL)
     {
+        /* TODO Redirect control needs review
         if(!$this->adminMode) {
             return;
         }
+        */
         
         $this->simulationRedirect('', '(Simple redirect without message)', $paramsOrURL);
         

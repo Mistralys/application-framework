@@ -43,6 +43,7 @@ class Application
     const ERROR_USER_CLASS_DOES_NOT_EXIST = 1199543019;
     const ERROR_USER_DATA_NOT_FOUND = 1199543020;
     const ERROR_INVALID_USER_CLASS = 1199543021;
+    const ERROR_REDIRECT_EVENTS_FAILED = 1199543022;
 
     const RUN_MODE_UI = 'ui';
     const RUN_MODE_SCRIPT = 'script';
@@ -974,12 +975,16 @@ class Application
      */
     public static function exit(string $reason = '')
     {
+        /* TODO: Review the exit bypass handling
         if (self::$exitEnabled)
         {
-            self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
-            exit;
         }
+        */
+
+        self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
+
+        exit;
     }
 
     public static function setExitEnabled(bool $enabled = true) : bool
@@ -1071,8 +1076,34 @@ class Application
         return new Application_LDAP($conf);
     }
 
+    /**
+     * @param string $url
+     * @return never-returns
+     *
+     * @throws Application_Exception
+     * @see Application::ERROR_REDIRECT_EVENTS_FAILED
+     */
     public static function redirect(string $url) : void
     {
+        try
+        {
+            Application_EventHandler::trigger(
+                'Redirect',
+                array(
+                    'url' => $url
+                )
+            );
+        }
+        catch (Application_Exception $e)
+        {
+            throw new Application_Exception(
+                'Error while running redirect event handling.',
+            'Tried running the Redirect event, but an exception occurred.',
+                self::ERROR_REDIRECT_EVENTS_FAILED,
+                $e
+            );
+        }
+
         $simulation = Application::isSimulation();
 
         if (!headers_sent() && !$simulation)

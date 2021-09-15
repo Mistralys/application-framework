@@ -454,10 +454,12 @@ abstract class Application_Driver implements Application_Driver_Interface
      * // redirect to an external URL or any absolute URL
      * redirectTo('http://www.disney.com');
      *
-     * // redirect to an application internal URL by specifiying parameters
+     * // redirect to an application internal URL by specifying parameters
      * redirectTo(array('page' => 'home'));
      *
-     * @param string|array $paramsOrURL
+     * @param array|string|NULL $paramsOrURL
+     * @return never-returns
+     * @throws Application_Exception
      */
     public function redirectTo($paramsOrURL = null)
     {
@@ -475,13 +477,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         $url = str_replace('&amp;', '&', $url);
-
-        Application_EventHandler::trigger(
-            'Redirect',
-            array(
-                'url' => $url
-            )
-        );
 
         Application::redirect($url);
     }
@@ -828,9 +823,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $name
      * @param string $value
      */
-    public function setCache($name, $value)
+    public function setCache(string $name, $value) : void
     {
-        return self::setSetting($name, $value, self::SETTING_ROLE_CACHE);
+        self::setSetting($name, $value, self::SETTING_ROLE_CACHE);
     }
 
     /**
@@ -850,6 +845,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @throws Application_Exception
+     * @return never-returns
      */
     public function redirectWithInfoMessage($message, $paramsOrURL = null)
     {
@@ -863,6 +860,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @throws Application_Exception
+     * @return never-returns
      */
     public function redirectWithErrorMessage($message, $paramsOrURL = null)
     {
@@ -876,6 +875,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
+     * @throws Application_Exception
+     * @return never-returns
      */
     public function redirectWithSuccessMessage($message, $paramsOrURL = null)
     {
