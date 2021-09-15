@@ -51,6 +51,8 @@ interface Application_Interfaces_Admin_Wizardable extends Application_Admin_Scre
     * @return string
     */
     public function getSuccessMessage() : string;
+
+    public function initWizard() : void;
     
    /**
     * Returns the URL to send the user too once the

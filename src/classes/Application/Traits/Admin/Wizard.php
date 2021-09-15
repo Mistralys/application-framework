@@ -82,16 +82,14 @@ trait Application_Traits_Admin_Wizard
     abstract public function getClassBase() : string;
     
     abstract public function getSuccessMessage() : string;
-    
+
     protected function getTemplateName() : string
     {
         return 'content/wizard';
     }
     
-    public function __construct(Application_Driver $driver, $screen)
+    public function initWizard() : void
     {
-        parent::__construct($driver, $screen);
-        
         $this->wizardID = $this->getWizardID();
         $this->classBase = $this->getClassBase();
         
