@@ -460,6 +460,12 @@ TD.nowrap {
     font-family: monospace;
 }
 
+.text-tooltip{
+    cursor: help;
+    text-decoration: underline;
+    text-decoration-color: #e4ef9e;
+}
+
 .text-link {
     color: #08c;
     text-decoration: none;
