@@ -261,6 +261,7 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     * 
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithErrorMessage($message, $paramsOrURL) : void;
 
@@ -269,6 +270,7 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL) : void;
     
@@ -277,11 +279,13 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
+    * @return never-returns
     */
     public function redirectWithInfoMessage($message, $paramsOrURL) : void;
 
     /**
      * @param string|array<string,string|int|float> $paramsOrURL
+     * @return never-returns
      */
     public function redirectTo($paramsOrURL);
 
