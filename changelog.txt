@@ -1,3 +1,6 @@
+v1.17.1
+- Wizards: Fixed an issue causing test suites to fail.
+
 v1.17.0
 - StringBuilder: Added `clickable()` for clickable texts with JS statements.
 - StringBuilder: Added `codeCopy()` to add a "copy to clipboard" button for code texts.
