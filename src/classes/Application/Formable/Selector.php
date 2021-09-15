@@ -507,11 +507,11 @@ abstract class Application_Formable_Selector implements Interface_Optionable
     }
 
     /**
-     * Retrieves the entries that have been added.
+     * Retrieves the entries that are available in the selector.
      *
      * @return Application_Formable_RecordSelector_Entry[]
      */
-    protected function getEntries() : array
+    public function getEntries() : array
     {
         $this->loadEntries();
 
