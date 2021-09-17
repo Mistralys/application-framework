@@ -157,17 +157,17 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         return array();
     }
     
-    public function logInfo(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
+    public function addInfo(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
     {
         return $this->logMessage(self::MESSAGELOG_INFORMATION, $message, $category, $user);
     }
     
-    public function logError(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
+    public function addError(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
     {
         return $this->logMessage(self::MESSAGELOG_ERROR, $message, $category, $user);
     }
     
-    public function logWarning(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
+    public function addWarning(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
     {
         return $this->logMessage(self::MESSAGELOG_WARNING, $message, $category, $user);
     }
