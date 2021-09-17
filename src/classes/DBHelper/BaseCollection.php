@@ -6,6 +6,10 @@
  * @see DBHelper_BaseCollection
  */
 
+use AppUtils\ConvertHelper;
+use AppUtils\NamedClosure;
+use AppUtils\Request_Exception;
+
 /**
  * Base management class for a collection of database records
  * from the same table. Has methods to retrieve records, and
@@ -25,6 +29,10 @@
  */
 abstract class DBHelper_BaseCollection implements Application_CollectionInterface
 {
+    use Application_Traits_Disposable;
+    use Application_Traits_Eventable;
+    use Application_Traits_Loggable;
+
     const ERROR_IDTABLE_SAME_TABLE_NAME = 16501;
     const ERROR_COLLECTION_HAS_NO_PARENT = 16502;
     const ERROR_BINDING_RECORD_NOT_ALLOWED = 16503;
@@ -35,6 +43,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     const ERROR_INVALID_EVENT_TYPE = 16508;
     const ERROR_CREATE_RECORD_CANCELLED = 16509;
     const ERROR_MISSING_REQUIRED_KEYS = 16510;
+    const ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND = 16511;
+    const ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND = 16512;
 
     const SORT_DIR_ASC = 'ASC';
     const SORT_DIR_DESC = 'DESC';
@@ -190,7 +200,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     protected $recordSortDir;
     
    /**
-    * @var DBHelper_BaseRecord
+    * @var DBHelper_BaseRecord|NULL
     */
     protected $dummyRecord;
 
@@ -301,12 +311,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             );
         }
         
-        if($this->hasParentCollection()) {
+        if($this->hasParentCollection())
+        {
             $this->parentRecord = $record; 
             $this->setForeignKey(
                 $record->getRecordPrimaryName(), 
                 (string)$record->getID()
             );
+
+            $callback = array($this, 'callback_parentRecordDisposed');
+
+            $this->parentRecord->onDisposed(NamedClosure::fromClosure(
+                Closure::fromCallable($callback),
+                ConvertHelper::callback2string($callback)
+            ));
             return;
         }
         
@@ -319,6 +337,26 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             ),
             self::ERROR_BINDING_RECORD_NOT_ALLOWED
         );
+    }
+
+    /**
+     * Fetch a fresh instance of the parent record of the
+     * collection when that record instance has been disposed.
+     * If the record does not exist anymore, no changes are
+     * made - an exception will be thrown if the record is
+     * accessed.
+     */
+    private function callback_parentRecordDisposed() : void
+    {
+        $collection = $this->parentRecord->getCollection();
+
+        if($collection->idExists($this->parentRecord->getID()))
+        {
+            $this->parentRecord = $collection->getByID($this->parentRecord->getID());
+            return;
+        }
+
+        $this->dispose();
     }
     
     protected $started = false;
@@ -358,7 +396,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return $this->parentRecord;
     }
     
-    public function getInstanceID()
+    public function getInstanceID() : string
     {
         return $this->instanceID;
     }
@@ -374,7 +412,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * 
     * @param string $name
     * @param string $value
-    * @return DBHelper_BaseCollection
+    * @return $this
     */
     protected function setForeignKey(string $name, string $value)
     {
@@ -392,14 +430,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         return $this->foreignKeys;
     }
-    
-    public function getRecordSearchableKeys()
+
+    /**
+     * @return string[]
+     */
+    public function getRecordSearchableKeys() : array
     {
         $columns = $this->getRecordSearchableColumns();
         return array_keys($columns);
     }
-    
-    public function getRecordSearchableLabels()
+
+    /**
+     * @return string[]
+     */
+    public function getRecordSearchableLabels() : array
     {
         $columns = $this->getRecordSearchableColumns();
         return array_values($columns);
@@ -409,15 +453,19 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * @var DBHelper_BaseRecord[]
     */
     protected $records = array();
-    
-   /**
-    * Retrieves a record by its ID.
-    * 
-    * @param integer $record_id
-    * @return DBHelper_BaseRecord
-    */
+
+    /**
+     * Retrieves a record by its ID.
+     *
+     * @param integer $record_id
+     * @return DBHelper_BaseRecord
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function getByID(int $record_id)
     {
+        $this->requireNotDisposed('Get a record by its ID.');
+
         if(isset($this->records[$record_id])) {
             return $this->records[$record_id];
         }
@@ -430,8 +478,17 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return $record;
     }
 
+    /**
+     * Refreshes all loaded record's data from the database.
+     *
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function refreshRecordsData() : void
     {
+        $this->requireNotDisposed('Refresh records data from DB.');
+
         $this->log(sprintf('Refreshing data for [%s] records.', count($this->records)));
 
         foreach($this->records as $record)
@@ -442,12 +499,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
    /**
     * Resets the internal records instance cache.
-    * Forces records to be fetched anew from the 
+    * Forces all records to be fetched anew from the
     * database as requested.
+    *
+    * NOTE: Records that were already loaded are disposed,
+    * and may not be used anymore.
     */
-    public function resetCollection()
+    public function resetCollection() : void
     {
         $this->log(sprintf('Resetting the collection. [%s] records were loaded.', count($this->records)));
+
+        foreach($this->records as $record)
+        {
+            $record->dispose();
+        }
 
         $this->records = array();
 
@@ -459,7 +524,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         }
     }
 
-    protected function checkParentRecord()
+    /**
+     * @throws DBHelper_Exception
+     * @see DBHelper_BaseCollection::ERROR_NO_PARENT_RECORD_BOUND
+     */
+    protected function checkParentRecord() : void
     {
         if($this->requiresParent !== true) {
             return;
@@ -478,11 +547,14 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             self::ERROR_NO_PARENT_RECORD_BOUND
         );
     }
-    
-   /**
-    * Attempts to retrieve a record by its ID as specified in the request.
-    * @return DBHelper_BaseRecord|NULL
-    */
+
+    /**
+     * Attempts to retrieve a record by its ID as specified in the request.
+     * @return DBHelper_BaseRecord|NULL
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     * @throws Request_Exception
+     */
     public function getByRequest()
     {
         $request = Application_Request::getInstance();
@@ -498,17 +570,19 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         return null;
     }
-    
-   /**
-    * Retrieves a single record by a specific record key.
-    * Note that if the key is not unique, the first one
-    * in the result set is used, using the default sorting
-    * key.
-    * 
-    * @param string $key
-    * @param string $value
-    * @return DBHelper_BaseRecord|NULL
-    */
+
+    /**
+     * Retrieves a single record by a specific record key.
+     * Note that if the key is not unique, the first one
+     * in the result set is used, using the default sorting
+     * key.
+     *
+     * @param string $key
+     * @param string $value
+     * @return DBHelper_BaseRecord|NULL
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function getByKey(string $key, string $value) : ?DBHelper_BaseRecord
     {
         if($key == $this->recordPrimaryName) 
@@ -550,15 +624,18 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         return null;
     }
-    
-   /**
-    * Checks whether a record with the specified ID exists in the database.
-    * 
-    * @param integer $record_id
-    * @return boolean
-    */
+
+    /**
+     * Checks whether a record with the specified ID exists in the database.
+     *
+     * @param integer $record_id
+     * @return boolean
+     * @throws Application_Exception_DisposableDisposed
+     */
     public function idExists($record_id) : bool
     {
+        $this->requireNotDisposed('Check if record ID exists.');
+
         $record_id = intval($record_id);
         
         if(isset($this->records[$record_id])) {
@@ -592,18 +669,25 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         return false;
     }
-    
+
+    /**
+     * @var string
+     */
     protected $recordPrimaryName;
-    
+
+    /**
+     * @var string
+     */
     protected $recordTable;
-    
-   /**
-    * Creates a dummy record of this collection, which can
-    * be used to access the API that may not be available
-    * statically.
-    * 
-    * @return DBHelper_BaseRecord
-    */
+
+    /**
+     * Creates a dummy record of this collection, which can
+     * be used to access the API that may not be available
+     * statically.
+     *
+     * @return DBHelper_BaseRecord
+     * @throws Application_Exception|DBHelper_Exception
+     */
     public function createDummyRecord()
     {
         if(isset($this->dummyRecord)) {
@@ -627,68 +711,128 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return $this->dummyRecord;
     }
 
-   /**
-    * Retrieves all records from the database, ordered by the default sorting key.
-    * @return DBHelper_BaseRecord[]
-    */
+    /**
+     * Retrieves all records from the database, ordered by the default sorting key.
+     * @return DBHelper_BaseRecord[]
+     *
+     * @throws Application_Exception_DisposableDisposed
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception
+     */
     public function getAll()
     {
         return $this->getFilterCriteria()->getItemsObjects();
     }
-    
-   /**
-    * Counts the amount of records in total.
-    * @return int
-    */
+
+    /**
+     * Counts the amount of records in total.
+     * @return int
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function countRecords() : int
     {
+        $this->requireNotDisposed('Count the amount of records');
+
         return $this->getFilterCriteria()->countItems();
     }
-    
-   /**
-    * Creates the filter criteria for this records collection, 
-    * which is used to query the records.
-    * 
-    * @return DBHelper_BaseFilterCriteria
-    */
+
+    /**
+     * Creates the filter criteria for this collection of records,
+     * which is used to query the records.
+     *
+     * @return DBHelper_BaseFilterCriteria
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception|Application_Exception_DisposableDisposed
+     */
     public function getFilterCriteria() : DBHelper_BaseFilterCriteria
     {
-        if(!class_exists($this->recordFiltersClassName)) {
-            Application::requireClass($this->recordFiltersClassName);
+        $this->requireNotDisposed('Get filter criteria');
+
+        if(empty($this->recordFiltersClassName) || !class_exists($this->recordFiltersClassName))
+        {
+            throw new DBHelper_Exception(
+                'Filter criteria class not found.',
+                sprintf(
+                    'Filter criteria class [%s] not found for collection [%s].',
+                    $this->recordFiltersClassName,
+                    get_class($this)
+                ),
+                self::ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND
+            );
         }
-        
-        return new $this->recordFiltersClassName($this);
+
+        $filters = new $this->recordFiltersClassName($this);
+
+        if($filters instanceof DBHelper_BaseFilterCriteria)
+        {
+            return $filters;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(DBHelper_BaseFilterCriteria::class, $filters);
     }
-    
+
+    /**
+     * @return DBHelper_BaseFilterSettings
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception|Application_Exception_DisposableDisposed
+     */
     public function getFilterSettings() : DBHelper_BaseFilterSettings
     {
-        return new $this->recordFilterSettingsClassName($this);
+        $this->requireNotDisposed('Get filter settings.');
+
+        if(empty($this->recordFilterSettingsClassName) || !class_exists($this->recordFilterSettingsClassName))
+        {
+            throw new DBHelper_Exception(
+                'Filter settings class not found.',
+                sprintf(
+                    'Filter settings class [%s] not found for collection [%s].',
+                    $this->recordFilterSettingsClassName,
+                    get_class($this)
+                ),
+                self::ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND
+            );
+        }
+
+        $filters = new $this->recordFilterSettingsClassName($this);
+
+        if($filters instanceof DBHelper_BaseFilterSettings)
+        {
+            return $filters;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(DBHelper_BaseFilterSettings::class, $filters);
     }
-    
-   /**
-    * Creates a new record with the specified data.
-    * 
-    * NOTE: This does not do any kind of validation,
-    * you have to ensure that the required keys are
-    * all present in the data set.
-    * 
-    * NOTE: It is possible to use the onBeforeCreateRecord()
-    * method to verify the data, and cancel the event 
-    * as needed.
-    * 
-    * @param array $data
-    * @param bool $silent   Whether to not execute any events after
-    *                       creating the record. The _onCreated() method
-    *                       will still be called, but the context will
-    *                       reflect the silent flag to manually handle the
-    *                       situation.
-    * @param array<string,mixed> $options Options that are passed on to the record's
-    *                       onCreated() method, and which can be used for
-    *                       custom initialization routines.
-    * @return DBHelper_BaseRecord
-    */
+
+    /**
+     * Creates a new record with the specified data.
+     *
+     * NOTE: This does not do any kind of validation,
+     * you have to ensure that the required keys are
+     * all present in the data set.
+     *
+     * NOTE: It is possible to use the onBeforeCreateRecord()
+     * method to verify the data, and cancel the event
+     * as needed.
+     *
+     * @param array $data
+     * @param bool $silent Whether to not execute any events after
+     *                       creating the record. The _onCreated() method
+     *                       will still be called, but the context will
+     *                       reflect the silent flag to manually handle the
+     *                       situation.
+     * @param array<string,mixed> $options Options that are passed on to the record's
+     *                       onCreated() method, and which can be used for
+     *                       custom initialization routines.
+     * @return DBHelper_BaseRecord
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function createNewRecord(array $data=array(), bool $silent=false, array $options=array())
     {
+        $this->requireNotDisposed('Create a new record');
+
         $data = array_merge($data, $this->foreignKeys);
 
         $this->fillDefaults($data);
@@ -886,17 +1030,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             self::ERROR_INVALID_EVENT_TYPE
         );
     }
-    
+
     /**
-     * Checks whether a specific column value exists 
+     * Checks whether a specific column value exists
      * in any of the collection's records.
      *
      * @param string $keyName
      * @param string $value
      * @return integer|boolean The record's ID, or false if not found.
+     * @throws Application_Exception_DisposableDisposed
      */
     public function recordKeyValueExists(string $keyName, string $value)
     {
+        $this->requireNotDisposed('Check if a record key value exists.');
+
         $primary = $this->getRecordPrimaryName();
     
         $where = $this->foreignKeys;
@@ -940,17 +1087,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * Deletes a record.
      *
      * @param DBHelper_BaseRecord $record
-     * @param bool $silent  Whether to delete the record silently, without processing events afterwards.
+     * @param bool $silent Whether to delete the record silently, without processing events afterwards.
      *                      The _onDeleted method will still be called for cleanup tasks, but the context
      *                      will reflect the silent state. The method implementation must check this manually.
+     * @throws Application_Exception_DisposableDisposed
      * @throws DBHelper_Exception
      */
     public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void
     {
+        $this->requireNotDisposed('Delete a record.');
+
         $this->log(sprintf(
             'Deleting the record [%s] | Silent mode: [%s].',
             $record->getID(),
-            \AppUtils\ConvertHelper::bool2string($silent)
+            ConvertHelper::boolStrict2string($silent)
         ));
 
         DBHelper::requireTransaction('Delete a record');
@@ -997,6 +1147,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     
     public function describe()
     {
+        $this->requireNotDisposed('Describe the collection.');
+
         return array(
             'class' => get_class($this),
             'recordClassName' => $this->getRecordClassName(),
@@ -1019,20 +1171,37 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @var string
      */
     protected $logPrefix;
-    
-    protected function log($message)
-    {
-        if(!is_string($message))
-        {
-            Application::logData($message);
-            return;
-        }
 
+    public function getLogIdentifier() : string
+    {
+        return $this->getIdentification();
+    }
+
+    public function getIdentification() : string
+    {
         if(!isset($this->logPrefix))
         {
             $this->logPrefix = ucfirst($this->getRecordTypeName()).' collection | ';
         }
-        
-        Application::log($this->logPrefix.$message);
+
+        return $this->logPrefix;
     }
+
+    public function isRecordLoaded(int $recordID) : bool
+    {
+        return isset($this->records[$recordID]);
+    }
+
+     protected function _dispose() : void
+     {
+         unset($this->dummyRecord);
+     }
+
+     public function getChildDisposables() : array
+     {
+         $disposables = $this->records;
+         $disposables[] = $this->keys;
+
+         return $disposables;
+     }
 }
