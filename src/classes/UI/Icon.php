@@ -217,7 +217,8 @@ class UI_Icon implements Interface_Stringable
         'EXPAND_RIGHT' => 'caret-square-right',
         'EXPAND_LEFT' => 'caret-square-left',
         'NOTEPAD' => 'far:sticky-note',
-        'PIN' => 'thumbtack'
+        'PIN' => 'thumbtack',
+        'RECORD_TYPE' => 'bezier-curve'
     );
 
     public function __construct()
@@ -368,6 +369,7 @@ class UI_Icon implements Interface_Stringable
     public function publish() { return $this->setType('PUBLISH'); }
     public function published() { return $this->setType('PUBLISHED'); }
     public function rating() { return $this->setType('RATING'); }
+    public function recordType() { return $this->setType('RECORD_TYPE'); }
     public function refresh() { return $this->setType('REFRESH'); }
     public function required() { return $this->setType('REQUIRED'); }
     public function reset() { return $this->setType('RESET'); }
