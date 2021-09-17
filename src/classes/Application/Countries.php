@@ -223,11 +223,6 @@ class Application_Countries extends DBHelper_BaseCollection
         // obsolete
     }
     
-    protected function log($message)
-    {
-        Application::log('Countries collection | '.$message);
-    }
-    
     public function injectJS()
     {
         $ui = UI::getInstance();
