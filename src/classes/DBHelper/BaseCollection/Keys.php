@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
-class DBHelper_BaseCollection_Keys
+class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
 {
+    use Application_Traits_Loggable;
+    use Application_Traits_Eventable;
+    use Application_Traits_Disposable;
+
     const ERROR_KEY_ALREADY_REGISTERED = 71401;
 
     /**
@@ -47,6 +51,11 @@ class DBHelper_BaseCollection_Keys
         return $result;
     }
 
+    /**
+     * @param string $name
+     * @return DBHelper_BaseCollection_Keys_Key
+     * @throws DBHelper_Exception
+     */
     public function register(string $name) : DBHelper_BaseCollection_Keys_Key
     {
         if(isset($this->keys[$name]))
@@ -64,5 +73,28 @@ class DBHelper_BaseCollection_Keys
         $key = new DBHelper_BaseCollection_Keys_Key($this, $name);
         $this->keys[$name] = $key;
         return $key;
+    }
+
+    public function getIdentification() : string
+    {
+        return sprintf(
+            '%s | DataKeys',
+            $this->collection->getIdentification()
+        );
+    }
+
+    public function getChildDisposables() : array
+    {
+        return array();
+    }
+
+    protected function _dispose() : void
+    {
+        $this->keys = array();
+    }
+
+    public function getLogIdentifier() : string
+    {
+        return $this->getIdentification();
     }
 }
