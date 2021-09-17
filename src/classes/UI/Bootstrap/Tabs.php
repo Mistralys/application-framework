@@ -157,7 +157,60 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
         
         return $active;
     }
-    
+
+    /**
+     * Selects the active tab by fetching the tab name from
+     * a request variable.
+     *
+     * @param string $varName
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function selectByRequestVar(string $varName) : UI_Bootstrap_Tabs
+    {
+        $value = Application_Driver::getInstance()->getRequest()->getParam($varName);
+
+        if(!empty($value) && $this->hasTab($value))
+        {
+            $this->selectTab($this->getTabByName($value));
+        }
+
+        return $this;
+    }
+
+    /**
+     * Selects the active tab by fetching the name from the current `submode` request variable.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function selectBySubmode() : UI_Bootstrap_Tabs
+    {
+        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE);
+    }
+
+    /**
+     * Selects the active tab by fetching the name from the current `action` request variable.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function selectByAction() : UI_Bootstrap_Tabs
+    {
+        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION);
+    }
+
+    /**
+     * Selects the active tab by fetching the name from the current `mode` request variable.
+     *
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function selectByMode() : UI_Bootstrap_Tabs
+    {
+        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE);
+    }
+
     public function selectTab(UI_Bootstrap_Tab $target) : UI_Bootstrap_Tabs
     {
         $tabs = $this->getTabs();
