@@ -1,5 +1,16 @@
 v1.17.1
 - Wizards: Fixed an issue causing test suites to fail.
+- DBHelper: Records now implement the `Disposable` interface.
+- DBHelper: `resetCollection()` now automatically disposes all loaded records.
+- DBHelper: Collections now implement the `Disposable` interface.
+
+> DBHelper record classes should ideally review if they need to implement
+> the `getChildDisposables()` method for cleaning up when they are disposed.
+> The method has been added to stay backwards compatible, but currently does
+> nothing.
+
+> Messagelog methods have been renamed. Search for `Application::getMessageLog()`,
+> and replace `logXXX` with `addXXX`.
 
 v1.17.0
 - StringBuilder: Added `clickable()` for clickable texts with JS statements.
