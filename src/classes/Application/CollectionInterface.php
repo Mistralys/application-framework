@@ -1,6 +1,6 @@
 <?php
 
-interface Application_CollectionInterface
+interface Application_CollectionInterface extends Application_Interfaces_Disposable
 {
    /**
     * @return Application_FilterCriteria
