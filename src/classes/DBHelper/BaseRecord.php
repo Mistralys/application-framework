@@ -6,6 +6,9 @@
  * @see DBHelper_BaseRecord
  */
 
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
+
 /**
  * Base container class for a single record in a database. 
  * Has a skeleton to retrieve information about the records
@@ -15,9 +18,11 @@
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseRecord implements Application_CollectionItemInterface, Application_Interfaces_Loggable
+abstract class DBHelper_BaseRecord implements Application_CollectionItemInterface, Application_Interfaces_Loggable, Application_Interfaces_Disposable
 {
     use Application_Traits_Loggable;
+    use Application_Traits_Disposable;
+    use Application_Traits_Eventable;
 
     const ERROR_RECORD_DOES_NOT_EXIST = 13301;
     const ERROR_RECORD_KEY_UNKNOWN = 13302;
@@ -74,7 +79,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @param int $primary_id
      * @param DBHelper_BaseCollection $collection
-     * @throws Application_Exception
+     * @throws Application_Exception|DBHelper_Exception
      */
     public function __construct($primary_id, DBHelper_BaseCollection $collection)
     {
@@ -116,8 +121,15 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         return $this->instanceID;
     }
 
+    /**
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function refreshData() : void
     {
+        $this->requireNotDisposed('Refreshing the record\'s data from DB.');
+
         $where = $this->collection->getForeignKeys();
         $where[$this->recordPrimaryName] = $this->recordID;
 
@@ -231,31 +243,35 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     
     public function getID() : int
     {
-        return $this->getRecordIntKey($this->recordPrimaryName);
+        return $this->recordID;
     }
 
     /**
      * @param string $name
      * @param mixed $default
      * @return mixed
+     * @throws Application_Exception_DisposableDisposed
      */
     public function getRecordKey($name, $default=null)
     {
+        $this->requireNotDisposed('Get a record data key');
+
         if(isset($this->recordData[$name])) {
             return $this->recordData[$name];
         }
         
         return $default;
     }
-    
-   /**
-    * Retrieves a data key as an integer. Converts the value to int,
-    * so beware using this on non-integer keys.
-    * 
-    * @param string $name
-    * @param int $default
-    * @return int
-    */
+
+    /**
+     * Retrieves a data key as an integer. Converts the value to int,
+     * so beware using this on non-integer keys.
+     *
+     * @param string $name
+     * @param int $default
+     * @return int
+     * @throws Application_Exception_DisposableDisposed
+     */
     public function getRecordIntKey(string $name, int $default=0) : int
     {
         $value = $this->getRecordKey($name);
@@ -273,6 +289,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param float $default
      * @return float
+     * @throws Application_Exception_DisposableDisposed
      */
     public function getRecordFloatKey(string $name, float $default=0) : float
     {
@@ -283,14 +300,15 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
         return $default;
     }
-    
-   /**
-    * Retrieves a data key, ensuring that it is a string.
-    * 
-    * @param string $name
-    * @param string $default
-    * @return string
-    */
+
+    /**
+     * Retrieves a data key, ensuring that it is a string.
+     *
+     * @param string $name
+     * @param string $default
+     * @return string
+     * @throws Application_Exception_DisposableDisposed
+     */
     public function getRecordStringKey(string $name, string $default='') : string
     {
         $value = $this->getRecordKey($name);
@@ -317,15 +335,17 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         
         return $default;
     }
-    
-   /**
-    * Treats a key as a string boolean value and returns 
-    * the current value as a boolean.
-    * 
-    * @param string $name
-    * @param boolean $default
-    * @return boolean
-    */
+
+    /**
+     * Treats a key as a string boolean value and returns
+     * the current value as a boolean.
+     *
+     * @param string $name
+     * @param boolean $default
+     * @return boolean
+     * @throws Application_Exception_DisposableDisposed
+     * @throws ConvertHelper_Exception
+     */
     protected function getRecordBooleanKey($name, $default=false) : bool
     {
         $value = $this->getRecordKey($name, $default);
@@ -333,15 +353,18 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
             $value = $default;
         }
         
-        return AppUtils\ConvertHelper::string2bool($value);
+        return ConvertHelper::string2bool($value);
     }
 
     /**
      * @param string $name
      * @return bool
+     * @throws Application_Exception_DisposableDisposed
      */
-    protected function recordKeyExists($name)
+    protected function recordKeyExists(string $name) : bool
     {
+        $this->requireNotDisposed('Checking if a key exists.');
+
         return in_array($name, $this->recordKeys);
     }
 
@@ -349,51 +372,74 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @var string[]
      */
     protected $modified = array();
-    
-   /**
-    * Converts a boolean value to its string representation to use
-    * as internal value for a property. 
-    * 
-    * @param string $name
-    * @param boolean $boolean 
-    * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise "true/false" is used.
-    * @return boolean Whether the value has changed.
-    */
+
+    /**
+     * Converts a boolean value to its string representation to use
+     * as internal value for a property.
+     *
+     * @param string $name
+     * @param boolean $boolean
+     * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise "true/false" is used.
+     * @return boolean Whether the value has changed.
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws ConvertHelper_Exception
+     */
     public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno=true) : bool
     {
-        $value = AppUtils\ConvertHelper::bool2string($boolean, $yesno);
+        $value = ConvertHelper::boolStrict2string($boolean, $yesno);
         return $this->setRecordKey($name, $value);
     }
-    
+
+    /**
+     * @param string $name
+     * @param DateTime $date
+     * @return bool
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws ConvertHelper_Exception
+     */
     public function setRecordDateKey(string $name, DateTime $date) : bool
     {
         return $this->setRecordKey($name, $date->format('Y-m-d H:i:s'));
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     * @throws Application_Exception_DisposableDisposed
+     */
     public function hasKey(string $name) : bool
     {
+        $this->requireNotDisposed('Check if a data key is present.');
+
         return array_key_exists($name, $this->recordData);
     }
-    
-   /**
-    * Sets the value of a data key of the record. If the data key has been
-    * registered, the {@link recordKeyModified()} method is also called
-    * to notify of changes. 
-    * 
-    * @param string $name
-    * @param mixed $value
-    * @return boolean
-    */
+
+    /**
+     * Sets the value of a data key of the record. If the data key has been
+     * registered, the {@link recordKeyModified()} method is also called
+     * to notify of changes.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return boolean
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws ConvertHelper_Exception
+     */
     public function setRecordKey(string $name, $value) : bool
     {
         if($this->isDummy) {
             return false;
         }
+
+        $this->requireNotDisposed('Setting a record key');
         
         $this->requireKey($name);
         
         $previous = $this->getRecordKey($name);
-        if(AppUtils\ConvertHelper::areStringsEqual($value, $previous)) {
+        if(ConvertHelper::areStringsEqual($value, $previous)) {
             return false;
         }
 
@@ -481,23 +527,27 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     {
         return $this->modified;
     }
-    
-   /**
-    * Saves all changes in the record. Only the modified keys
-    * are saved each time using the internal changes tracking.
-    *
-    * @param bool $silent   Whether to not process the post save events.
-    *                       The postSave() method will still be called, but
-    *                       the context will reflect the silent mode. This
-    *                       has to be checked manually.
-    *
-    * @return boolean Whether there was anything to save.
-    */
+
+    /**
+     * Saves all changes in the record. Only the modified keys
+     * are saved each time using the internal changes tracking.
+     *
+     * @param bool $silent Whether to not process the post save events.
+     *                       The postSave() method will still be called, but
+     *                       the context will reflect the silent mode. This
+     *                       has to be checked manually.
+     *
+     * @return boolean Whether there was anything to save.
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
     public function save(bool $silent=false) : bool
     {
         if(!$this->isModified()) {
             return false;
         }
+
+        $this->requireNotDisposed('Save the record');
         
         DBHelper::requireTransaction(sprintf('Save %s record [%s]', $this->recordTypeName, $this->getID()));
 
@@ -589,7 +639,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     {
         foreach($this->recordData as $key => $value) {
             if(in_array($key, $columns)) {
-                $this->recordData[$key] = AppUtils\ConvertHelper::string2utf8($value);
+                $this->recordData[$key] = ConvertHelper::string2utf8($value);
             }
         }
     }
@@ -618,7 +668,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     * This is usually called in the record's {@link init()} method.
     * 
     * @param string $name The name of the key (of the database column)
-    * @param string $label Human readable label of the key
+    * @param string $label Human-readable label of the key
     * @param boolean $isStructural Whether changing this key means it's a structural (critical) change
     */
     protected function registerRecordKey($name, $label, $isStructural=false)
@@ -732,18 +782,38 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     /**
      * @return array<string,mixed>
+     * @throws Application_Exception_DisposableDisposed
      */
     public function getFormValues() : array
     {
+        $this->requireNotDisposed('Get form values');
+
         return $this->recordData;
     }
 
-    public function getLogIdentifier(): string
+    public function getIdentification() : string
     {
         return sprintf(
             '%s [#%s]',
             ucfirst($this->getRecordTypeName()),
             $this->getID()
         );
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->getIdentification();
+    }
+
+    protected function _dispose() : void
+    {
+        $this->recordData = array();
+        $this->registeredKeys = array();
+        $this->modified = array();
+    }
+
+    public function getChildDisposables() : array
+    {
+        return array();
     }
 }
