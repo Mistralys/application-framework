@@ -35,6 +35,9 @@ final class Application_LoggingTest extends TestCase
     */
     public function test_displayException() : void
     {
+        // TODO Review this test for the exit bypass
+        $this->markTestIncomplete();
+
         // disable exiting, since the error page calls exit.
         $restore = Application::setExitEnabled(false);
         

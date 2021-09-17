@@ -8,7 +8,7 @@ final class Application_MessagelogsTest extends TestCase
     {
         DBHelper::startTransaction();
         
-        $log = Application::getMessageLog()->logInfo('My message', 'category');
+        $log = Application::getMessageLog()->addInfo('My message', 'category');
         
         $user = Application::getUser();
         
