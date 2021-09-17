@@ -168,9 +168,9 @@ class Application_LockManager extends DBHelper_BaseCollection
         $this->primary = $primary;
     }
     
-    protected function log($message)
+    public function getIdentification() : string
     {
-        Application::log('LockManager | '.$message);
+        return 'LockManager';
     }
     
    /**
