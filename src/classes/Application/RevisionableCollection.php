@@ -1,13 +1,13 @@
 <?php
 
-abstract class Application_RevisionableCollection implements Application_CollectionInterface, Application_Interfaces_Loggable
+abstract class Application_RevisionableCollection implements Application_CollectionInterface
 {
     use Application_Traits_Loggable;
     
     const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
     const ERROR_REVISION_DOES_NOT_EXIST = 16102;
     const ERROR_CANNOT_INSTANTIATE_ABSTRACT_COLLECTION = 16103;
-    
+
     const DUMMY_ID = -1;
 
    /**
@@ -636,7 +636,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     {
         DBHelper::requireTransaction('Destroy a revisionable');
         
-        Application::getMessageLog()->logInfo(
+        Application::getMessageLog()->addInfo(
             t(
                 'Destroyed the %1$s %2$s.',
                 $this->getRecordReadableNameSingular(),
