@@ -270,9 +270,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
    /**
     * Sets the completed state of the step.
     * @param boolean $complete
-    * @return Application_Admin_Wizard_Step
+    * @return $this
     */
-    public function setComplete($complete=true)
+    public function setComplete(bool $complete=true)
     {
         $this->data['completed'] = $complete;
         return $this;
@@ -388,9 +388,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * 
     * @param string $name
     * @param mixed $value
-    * @return Application_Admin_Wizard_Step
+    * @return $this
     */
-    protected function setData($name, $value)
+    protected function setData(string $name, $value)
     {
         $old = null;
         if(isset($this->data[$name])) {
