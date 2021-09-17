@@ -3,6 +3,8 @@ v1.17.1
 - DBHelper: Records now implement the `Disposable` interface.
 - DBHelper: `resetCollection()` now automatically disposes all loaded records.
 - DBHelper: Collections now implement the `Disposable` interface.
+- UI: Icons: Added the `recordType()` icon style.
+- UI: Tabs: Added the `selectByRequestVar()` method, with page variable flavors.
 
 > DBHelper record classes should ideally review if they need to implement
 > the `getChildDisposables()` method for cleaning up when they are disposed.
