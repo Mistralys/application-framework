@@ -180,7 +180,7 @@ abstract class Application_AjaxMethod
     }
 
     /**
-     * @param array|NULL $data
+     * @param array<string|int,mixed>|string|NULL $data
      * @return never-returns
      */
     protected function sendResponse($data = null)
