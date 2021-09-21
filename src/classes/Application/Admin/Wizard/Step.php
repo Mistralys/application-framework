@@ -350,7 +350,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         }
 
         $el = $this->formableForm->addPrimarySubmit(
-            UI::icon()->ok().' '.$this->getButtonConfirmLabel(),
+            $this->getButtonConfirmIcon().' '.$this->getButtonConfirmLabel(),
             'save',
             $this->getButtonConfirmTooltip()
         );
@@ -378,6 +378,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
             UI::icon()->previous() . ' ' . t('Back'),
             t('Go back one step to %1$s.', $prev->getLabel())
         );
+    }
+
+    protected function getButtonConfirmIcon() : UI_Icon
+    {
+        return UI::icon()->ok();
     }
 
     protected function getButtonConfirmLoadingText() : string
