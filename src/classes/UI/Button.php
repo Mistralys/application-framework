@@ -771,4 +771,12 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         $this->dataAttributes['data-'.$name] = $value;
         return $this;
     }
+
+    public function presetView(string $url, string $target='') : UI_Button
+    {
+        return $this
+            ->setLabel(t('View'))
+            ->setIcon(UI::icon()->view())
+            ->link($url, $target);
+    }
 }
