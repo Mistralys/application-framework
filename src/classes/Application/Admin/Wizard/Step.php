@@ -114,7 +114,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     
     abstract public function render();
     
-    abstract public function getAbstract();
+    abstract public function getAbstract() : string;
 
     /**
      * Optional icon for the step.
@@ -177,7 +177,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
                 $this->setComplete();
             }
             // the step has been completed before, and
-            // some of the data has changed: we need to
+            // some data has changed: we need to
             // let the other steps adjust to the changes.
             else if($this->updateRequired) 
             {
@@ -225,7 +225,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * The step number (begins at 1).
     * @return int
     */
-    public function getNumber()
+    public function getNumber() : int
     {
         return $this->number;
     }
@@ -236,11 +236,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     */
     public function isActive() : bool
     {
-        if($this->wizard->getActiveStep()->getID() == $this->getID()) {
-            return true;
-        }
-        
-        return false;
+        return $this->wizard->getActiveStep()->getID() === $this->getID();
     }
     
    /**
@@ -249,20 +245,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * 
     * @return boolean
     */
-    public function isEnabled()
+    public function isEnabled() : bool
     {
-        if($this->isComplete()) {
-            return true;
-        }
-        
-        return false;
+        return $this->isComplete();
     }
     
    /**
     * Checks if this step has been completed.
     * @return boolean
     */
-    public function isComplete()
+    public function isComplete() : bool
     {
         return isset($this->data['completed']) && $this->data['completed'] === true;
     }
@@ -297,17 +289,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
    /**
     * Retrieves the step's session data collection, which is stored
     * by the wizard itself and restored on every request.
-    * 
-    * @return array
+    *
+    * @return array<string,mixed>
     */
-    public function getData()
+    public function getData() : array
     {
         return $this->data;
     }
     
    /**
-    * Retrieves the URL to cancel the wizard: cleans up the session
-    * data and redirects to the main campaigns management screen.
+    * Retrieves the URL to cancel the wizard.
     * 
     * @return string
     */
@@ -321,7 +312,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * form. Automatically detects where the step is in the
     * queue and adjusts the buttons accordingly.
     */
-    protected function injectNavigationButtons()
+    protected function injectNavigationButtons() : void
     {
         $this->requireFormableInitialized();
         
@@ -520,7 +511,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         $this->createFormableForm($this->getFormName(), $this->getFormData());
     }
     
-    protected function getFormName() : string
+    public function getFormName() : string
     {
         return 'wizard_'.$this->wizard->getWizardID().'_'.$this->getID();
     }
