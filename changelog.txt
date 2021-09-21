@@ -2,8 +2,9 @@ v1.18.0
 - Wizards: Fixed an issue causing test suites to fail.
 - Wizards: Added a trait for wizard steps that create a DB record.
 - Wizards: Added a trait for wizard steps that edit record settings.
-- Wizards: Added a loader dialog when wizard is confirmed.
-- Wizards: Loader text can be set by implementing `getButtonConfirmLoadingText()`.
+- Wizards: Added a loader dialog when wizard is confirmed via the confirm button.
+- Wizards: The confirm button loader text can be set by implementing `getButtonConfirmLoadingText()`.
+- Wizards: The confirm button icon can be changed by implementing `getButtonConfirmIcon()`.
 - DBHelper: Records now implement the `Disposable` interface.
 - DBHelper: `resetCollection()` now automatically disposes all loaded records.
 - DBHelper: Collections now implement the `Disposable` interface.
@@ -18,28 +19,24 @@ v1.18.0
 - UI: Tabs: Added the `selectByRequestVar()` method, with page variable flavors.
 - Stubs: Added stub classes for the formable record settings.
 
-*Breaking changes*
+**Breaking changes**
 
 1) DBHelper record classes
-
-DBHelper record classes should ideally review if they need to implement
-the `getChildDisposables()` method for cleaning up when they are disposed.
-The method has been added to stay backwards compatible, but currently does
-nothing.
+  The record classes should ideally review if they need to implement
+  the `getChildDisposables()` method for cleaning up when they are disposed.
+  The method has been added to stay backwards compatible, but currently does
+  nothing.
 
 2) Record setting classes
-
-Record setting classes must now implement the `isUserAllowedEditing()` and
-`processPostCreateSettings()` abstract methods.
+  Record setting classes must now implement the `isUserAllowedEditing()` and
+  `processPostCreateSettings()` abstract methods.
 
 3) Messagelog methods renamed
-
-Some messagelog methods have been renamed. Search for `Application::getMessageLog()`,
-and replace `logXXX` with `addXXX`.
+  Some messagelog methods have been renamed. Search for `Application::getMessageLog()`,
+  and replace `logXXX` with `addXXX`.
 
 4) Wizard method signature changes
-
-The method `getAbstract()` now requires the type hint: `getAbstract() : string`.
+  The method `getAbstract()` now requires the type hint: `getAbstract() : string`.
 
 v1.17.0
 - StringBuilder: Added `clickable()` for clickable texts with JS statements.
