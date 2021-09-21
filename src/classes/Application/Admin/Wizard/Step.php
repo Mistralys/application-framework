@@ -315,34 +315,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     protected function injectNavigationButtons() : void
     {
         $this->requireFormableInitialized();
-        
-        $prev = $this->wizard->getPreviousStep();
-        if($prev) 
-        {
-            $this->formableForm->addLinkButton(
-                $prev->getURLReview(), 
-                UI::icon()->previous().' '.t('Back'),
-                t('Go back one step to %1$s.', $prev->getLabel())
-            );
-        }
-        
-        $next = $this->wizard->getNextStep();
-        if($next) 
-        { 
-            $this->formableForm->addPrimarySubmit(
-                t('Next').' '.UI::icon()->next(),
-                'save',
-                t('Go forward to %1$s.', $next->getLabel())
-            );        
-        }
-        else
-        {
-            $this->formableForm->addPrimarySubmit(
-                UI::icon()->ok().' '.$this->getButtonConfirmLabel(),
-                'save',
-                $this->getButtonConfirmTooltip()
-            );  
-        }
+
+        $this->injectNavigationBack();
+        $this->injectNavigationPrimary();
         
         $this->formableForm->addLinkButton(
             $this->getCancelURL(), 
@@ -358,7 +333,58 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
             ->addClass('wizard-dev-submit');
         }
     }
-    
+
+    private function injectNavigationPrimary() : void
+    {
+        $next = $this->wizard->getNextStep();
+
+        if($next)
+        {
+            $this->formableForm->addPrimarySubmit(
+                t('Next').' '.UI::icon()->next(),
+                'save',
+                t('Go forward to %1$s.', $next->getLabel())
+            );
+
+            return;
+        }
+
+        $el = $this->formableForm->addPrimarySubmit(
+            UI::icon()->ok().' '.$this->getButtonConfirmLabel(),
+            'save',
+            $this->getButtonConfirmTooltip()
+        );
+
+        $el->setAttribute(
+            'onclick',
+            sprintf(
+                "application.showLoader(%s)",
+                JSHelper::phpVariable2AttributeJS($this->getButtonConfirmLoadingText())
+            )
+        );
+    }
+
+    private function injectNavigationBack() : void
+    {
+        $prev = $this->wizard->getPreviousStep();
+
+        if(!$prev)
+        {
+            return;
+        }
+
+        $this->formableForm->addLinkButton(
+            $prev->getURLReview(),
+            UI::icon()->previous() . ' ' . t('Back'),
+            t('Go back one step to %1$s.', $prev->getLabel())
+        );
+    }
+
+    protected function getButtonConfirmLoadingText() : string
+    {
+        return t('Please wait, processing tasks...');
+    }
+
     protected function getButtonConfirmLabel() : string
     {
         return t('Confirm');
