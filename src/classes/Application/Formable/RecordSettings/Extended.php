@@ -35,8 +35,8 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     * submitted and is valid, will create the record from
     * the form data and return it.
     * 
-    * @throws Application_Exception
     * @return DBHelper_BaseRecord
+    * @throws Application_Exception|DBHelper_Exception
     */
     public function createRecord() : DBHelper_BaseRecord
     {
@@ -51,22 +51,59 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
             );
         }
         
+        return $this->createRecordFromValues($this->getFormValues());
+    }
+
+    /**
+     * Creates a record using a set of form values independently
+     * of the settings manager's form submission.
+     *
+     * Usage example: A wizard where the form values are stored
+     * in one of the steps, and used later to create the record.
+     *
+     * @param array<string,mixed> $values
+     * @return DBHelper_BaseRecord
+     *
+     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
+    public function createRecordFromValues(array $values) : DBHelper_BaseRecord
+    {
         if($this->isEditMode())
         {
             throw new Application_Exception(
-                'Cannot create in edit mode',
+                'Cannot create records in edit mode',
                 '',
                 self::ERROR_CREATE_IN_EDIT_MODE
             );
         }
-        
-        DBHelper::requireTransaction('Create a new '.$this->collection->getRecordTypeName());
-        
-        $data = $this->getCreateData($this->getFormValues());
-        
-        return $this->collection->createNewRecord($data);
+
+        DBHelper::requireTransaction(sprintf('Create a new %s', $this->collection->getRecordTypeName()));
+
+        $data = $this->getCreateData($values);
+
+        $record = $this->collection->createNewRecord($data);
+
+        $this->processPostCreateSettings($record, $values);
+
+        $record->save();
+
+        return $record;
     }
-    
+
+    /**
+     * Called after the record has been created, and allows
+     * additional configuration from the form values that was
+     * not possible during creation, like options and the like.
+     *
+     * The record is saved again after this.
+     *
+     * @param DBHelper_BaseRecord $record
+     * @param array<string,mixed> $formValues
+     */
+    abstract protected function processPostCreateSettings(DBHelper_BaseRecord $record, array $formValues) : void;
+
    /**
     * Retrieves the data array to use to create the new record
     * using the collection's createNewRecord method. Use the 
@@ -82,8 +119,8 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     * submitted and is valid, updates the record using
     * the form values and saves it.
     * 
-    * @throws Application_Exception
     * @return bool
+    * @throws Application_Exception|DBHelper_Exception
     */
     public function saveRecord() : bool
     {
