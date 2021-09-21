@@ -1,12 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\OutputBuffering;
+
 class UI_PropertiesGrid_Property_Merged extends UI_PropertiesGrid_Property
 {
+    /**
+     * @var string[]
+     */
     protected $classes = array();
 
     public function render() : string
     {
-        ob_start();
+        OutputBuffering::start();
+
         ?>
             <tr class="prop-merged <?php echo implode(' ', $this->classes) ?>">
                 <td colspan="2">
@@ -14,10 +22,11 @@ class UI_PropertiesGrid_Property_Merged extends UI_PropertiesGrid_Property
                 </td>
             </tr>
         <?php
-        return ob_get_clean();
+
+        return OutputBuffering::get();
     }
     
-    protected function filterValue($text) : UI_StringBuilder
+    protected function filterValue($value) : UI_StringBuilder
     {
         return sb();
     }

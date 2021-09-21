@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merged
 {
     /**
@@ -7,9 +9,12 @@ class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merg
      */
     private $message;
 
+    /**
+     * @var string[]
+     */
     protected $classes = array('prop-message');
 
-    protected function init()
+    protected function init() : void
     {
         $this->message = $this->grid->getUI()->createMessage('')
             ->makeNotDismissable()
@@ -29,7 +34,7 @@ class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merg
         return parent::render();
     }
 
-    protected function filterValue($text) : UI_StringBuilder
+    protected function filterValue($value) : UI_StringBuilder
     {
         return sb();
     }

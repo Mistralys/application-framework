@@ -1,35 +1,52 @@
 <?php
 
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
+
 class UI_PropertiesGrid_Property_Boolean extends UI_PropertiesGrid_Property
 {
     const TYPE_TRUEFALSE = 'truefalse';
-    
     const TYPE_YESNO = 'yesno';
-    
     const TYPE_ENABLEDDISABLED = 'enableddisabled';
-    
     const TYPE_ACTIVEINACTIVE = 'activeinactive';
     
     const COLORS_DEFAULT = 'default';
-    
     const COLORS_NEUTRAL = 'neutral';
-    
+
+    /**
+     * @var string
+     */
     protected $labelTrue;
-    
+
+    /**
+     * @var string
+     */
     protected $labelFalse;
 
+    /**
+     * @var string
+     */
     protected $type = self::TYPE_TRUEFALSE;
-    
+
+    /**
+     * @var string
+     */
     protected $colors = self::COLORS_DEFAULT;
     
-    protected function init()
+    protected function init() : void
     {
         $this->setLabels(t('True'), t('False'));
     }
-    
+
+    /**
+     * @param mixed $value
+     * @return UI_StringBuilder
+     * @throws Application_Exception
+     * @throws ConvertHelper_Exception
+     */
     protected function filterValue($value) : UI_StringBuilder
     {
-        $bool = \AppUtils\ConvertHelper::string2bool($value);
+        $bool = ConvertHelper::string2bool($value);
         
         $result = sb();
         
@@ -71,26 +88,40 @@ class UI_PropertiesGrid_Property_Boolean extends UI_PropertiesGrid_Property
         $this->colors = self::COLORS_NEUTRAL;
         return $this;
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeYesNo()
     {
         $this->type = self::TYPE_YESNO;
         return $this->setLabels(t('Yes'), t('No'));
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeEnabledDisabled()
     {
         $this->type = self::TYPE_ENABLEDDISABLED;
         return $this->setLabels(t('Enabled'), t('Disabled'));
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeActiveInactive()
     {
         $this->type = self::TYPE_ACTIVEINACTIVE;
         return $this->setLabels(t('Active'), t('Inactive'));
     }
-    
-    public function setLabels($labelTrue, $labelFalse)
+
+    /**
+     * @param string $labelTrue
+     * @param string $labelFalse
+     * @return $this
+     */
+    public function setLabels(string $labelTrue, string $labelFalse)
     {
         $this->labelTrue = $labelTrue;
         $this->labelFalse = $labelFalse;

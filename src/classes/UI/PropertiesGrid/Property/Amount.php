@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_PropertiesGrid_Property_Amount extends UI_PropertiesGrid_Property
 {
-    protected function init()
+    protected function init() : void
     {
         $this->ifEmpty(sb()->muted('('.t('Empty').')'));
     }

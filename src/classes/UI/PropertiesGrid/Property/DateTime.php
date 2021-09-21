@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+
 class UI_PropertiesGrid_Property_DateTime extends UI_PropertiesGrid_Property_Regular
 {
    /**
@@ -12,7 +16,7 @@ class UI_PropertiesGrid_Property_DateTime extends UI_PropertiesGrid_Property_Reg
     */
     protected $withDiff = false;
     
-    protected function init()
+    protected function init() : void
     {
         $this->ifEmpty(sb()->muted('('.t('No date available').')'));
     }
@@ -46,7 +50,7 @@ class UI_PropertiesGrid_Property_DateTime extends UI_PropertiesGrid_Property_Reg
             {
                 $result->muted(sprintf(
                     '(%s)',
-                    \AppUtils\ConvertHelper::duration2string($value)
+                    ConvertHelper::duration2string($value)
                 ));
             }
         }

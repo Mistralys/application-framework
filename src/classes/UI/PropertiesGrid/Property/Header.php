@@ -1,18 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\OutputBuffering;
+
 class UI_PropertiesGrid_Property_Header extends UI_PropertiesGrid_Property
 {
     public function render() : string
     {
-        $html =
-        '<tr class="prop-header">'.
-            '<th colspan="2">'.$this->label.'</th>'.
-        '</tr>';
+        OutputBuffering::start();
 
-        return $html;
+        ?>
+        <tr class="prop-header">
+            <th colspan="2">
+                <?php echo $this->label ?>
+            </th>
+        </tr>
+        <?php
+
+        return OutputBuffering::get();
     }
     
-    protected function filterValue($text) : UI_StringBuilder
+    protected function filterValue($value) : UI_StringBuilder
     {
         return sb();
     }
