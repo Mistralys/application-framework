@@ -86,7 +86,12 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
             $this->settingsInitialized = true;
         }
     }
-    
+
+    public function getUser() : Application_User
+    {
+        return Application::getUser();
+    }
+
     /**
      * Retrieves a list of the names of all registered settings
      * (=the names of the form elements).
@@ -159,6 +164,8 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     */
     abstract public function getDefaultSettingName() : string;
 
+    abstract public function isUserAllowedEditing() : bool;
+
     // endregion
 
    /**
@@ -182,6 +189,11 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
                 $group->inject();
                 $injected = true;
             }
+        }
+
+        if(!$this->isUserAllowedEditing())
+        {
+            $this->makeReadonly();
         }
 
         if(!$injected)
