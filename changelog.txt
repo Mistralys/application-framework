@@ -1,18 +1,39 @@
-v1.17.1
+v1.18.0
 - Wizards: Fixed an issue causing test suites to fail.
+- Wizards: Added a trait for wizard steps that create a DB record.
+- Wizards: Added a trait for wizard steps that edit record settings.
 - DBHelper: Records now implement the `Disposable` interface.
 - DBHelper: `resetCollection()` now automatically disposes all loaded records.
 - DBHelper: Collections now implement the `Disposable` interface.
+- Formables: RecordSettings: Added `createRecordFromValues()` for manual creation in wizards.
+- Formables: RecordSettings: Added `isUserAllowedEditing()` for automatic readonly mode.
+- Formables: RecordSettings: Added `processPostCreateSettings()` for
+- Admin: Skeleton: Added the `getUser()` method.
+- User: Added `getIconLabel()` to the right class.
+- UI: PropertiesGrid: Added `addViewButton()` to the properties.
 - UI: Icons: Added the `recordType()` icon style.
+- UI: Icons: Added the `transmission` icon style.
 - UI: Tabs: Added the `selectByRequestVar()` method, with page variable flavors.
+- Stubs: Added stub classes for the formable record settings.
 
-> DBHelper record classes should ideally review if they need to implement
-> the `getChildDisposables()` method for cleaning up when they are disposed.
-> The method has been added to stay backwards compatible, but currently does
-> nothing.
+*Breaking changes*
 
-> Messagelog methods have been renamed. Search for `Application::getMessageLog()`,
-> and replace `logXXX` with `addXXX`.
+1) DBHelper record classes
+
+DBHelper record classes should ideally review if they need to implement
+the `getChildDisposables()` method for cleaning up when they are disposed.
+The method has been added to stay backwards compatible, but currently does
+nothing.
+
+2) Record setting classes
+
+Record setting classes must now implement the `isUserAllowedEditing()` and
+`processPostCreateSettings()` abstract methods.
+
+3) Messagelog methods renamed
+
+Some messagelog methods have been renamed. Search for `Application::getMessageLog()`,
+and replace `logXXX` with `addXXX`.
 
 v1.17.0
 - StringBuilder: Added `clickable()` for clickable texts with JS statements.
@@ -22,7 +43,7 @@ v1.17.0
 - Admin Skeleton: The `redirectXXX` methods now correctly state that they `never-return`.
 - Application: Calling `Application::exit()` cannot be bypassed anymore.
 
-Breaking change: Turning off `Application::exit()` means that processing all items in
+*Breaking change:* Turning off `Application::exit()` means that processing all items in
 a data grid multi-action is currently not possible anymore. This feature is under review.
 
 v1.16.1
