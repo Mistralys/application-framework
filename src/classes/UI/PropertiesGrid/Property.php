@@ -150,21 +150,6 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     }
 
     /**
-     * @param string $url
-     * @param string $target
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function addViewButton(string $url, string $target='')
-    {
-        return $this->addButton(
-            UI::button(t('View'))
-                ->setIcon(UI::icon()->view())
-                ->link($url, $target)
-        );
-    }
-
-    /**
      * @var string
      */
     protected $comment;
