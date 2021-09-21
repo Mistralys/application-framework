@@ -1154,7 +1154,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Checks if the form has been submitted and is valid.
     * @return boolean
     */
-    public function isFormValid()
+    public function isFormValid() : bool
     {
         if(!$this->formableForm->isSubmitted()) {
             return false;
@@ -1219,8 +1219,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         return $this->formableForm->getUI();
     }
-    
-   /**
+
+    public function getUser() : Application_User
+    {
+        return Application::getUser();
+    }
+
+    /**
     * Retrieves the form container to which elements are
     * currently added.
     * 
