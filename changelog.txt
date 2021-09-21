@@ -2,6 +2,8 @@ v1.18.0
 - Wizards: Fixed an issue causing test suites to fail.
 - Wizards: Added a trait for wizard steps that create a DB record.
 - Wizards: Added a trait for wizard steps that edit record settings.
+- Wizards: Added a loader dialog when wizard is confirmed.
+- Wizards: Loader text can be set by implementing `getButtonConfirmLoadingText()`.
 - DBHelper: Records now implement the `Disposable` interface.
 - DBHelper: `resetCollection()` now automatically disposes all loaded records.
 - DBHelper: Collections now implement the `Disposable` interface.
@@ -10,7 +12,7 @@ v1.18.0
 - Formables: RecordSettings: Added `processPostCreateSettings()` for
 - Admin: Skeleton: Added the `getUser()` method.
 - User: Added `getIconLabel()` to the right class.
-- UI: PropertiesGrid: Added `addViewButton()` to the properties.
+- UI: Button: Added `presetView()` for a canned, linked view button.
 - UI: Icons: Added the `recordType()` icon style.
 - UI: Icons: Added the `transmission` icon style.
 - UI: Tabs: Added the `selectByRequestVar()` method, with page variable flavors.
@@ -34,6 +36,10 @@ Record setting classes must now implement the `isUserAllowedEditing()` and
 
 Some messagelog methods have been renamed. Search for `Application::getMessageLog()`,
 and replace `logXXX` with `addXXX`.
+
+4) Wizard method signature changes
+
+The method `getAbstract()` now requires the type hint: `getAbstract() : string`.
 
 v1.17.0
 - StringBuilder: Added `clickable()` for clickable texts with JS statements.
