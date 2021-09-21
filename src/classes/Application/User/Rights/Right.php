@@ -374,4 +374,17 @@ class Application_User_Rights_Right
 
         return '';
     }
+
+    /**
+     * Icon label with the description in a tooltip.
+     *
+     * @return string
+     * @throws UI_Exception
+     */
+    public function getIconLabel() : string
+    {
+        return (string)sb()
+            ->add($this->getActionIcon())
+            ->tooltip($this->getLabel(), $this->getDescription());
+    }
 }
