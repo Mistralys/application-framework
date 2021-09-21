@@ -119,8 +119,13 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
             $this->startLocking();
         }
     }
-    
-   /**
+
+    public function getUser() : Application_User
+    {
+        return $this->user;
+    }
+
+    /**
     * Checks whether this administration screen supports locking,
     * and if it does, initializes the locking mechanisms.
     * 
