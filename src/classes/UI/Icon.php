@@ -218,7 +218,8 @@ class UI_Icon implements Interface_Stringable
         'EXPAND_LEFT' => 'caret-square-left',
         'NOTEPAD' => 'far:sticky-note',
         'PIN' => 'thumbtack',
-        'RECORD_TYPE' => 'bezier-curve'
+        'RECORD_TYPE' => 'bezier-curve',
+        'TRANSMISSION' => 'satellite-dish'
     );
 
     public function __construct()
@@ -404,6 +405,7 @@ class UI_Icon implements Interface_Stringable
     public function toggle() { return $this->setType('TOGGLE'); }
     public function tools() { return $this->setType('TOOLS'); }
     public function translation() { return $this->setType('TRANSLATION'); }
+    public function transmission() { return $this->setType('TRANSMISSION'); }
     public function uncombine() { return $this->setType('UNCOMBINE'); }
     public function uncombined() { return $this->setType('UNCOMBINED'); }
     public function undelete() { return $this->setType('UNDELETE'); }
