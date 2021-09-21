@@ -34,6 +34,8 @@ interface Application_Interfaces_Formable
 
     public function getFormableInstanceID();
 
+    public function getUser() : Application_User;
+
     /**
      * Sets the name of the default element of the form. Adds
      * a data attrribute to the form that can be used clientside
@@ -247,6 +249,9 @@ interface Application_Interfaces_Formable
      */
     public function makeRequired(HTML_QuickForm2_Node $element, $message = null);
 
+    /**
+     * @return string
+     */
     public function renderFormable();
 
     public function addRulePhone(HTML_QuickForm2_Element $element);
@@ -489,7 +494,7 @@ interface Application_Interfaces_Formable
      * Checks if the form has been submitted and is valid.
      * @return boolean
      */
-    public function isFormValid();
+    public function isFormValid() : bool;
 
     /**
      * Adds all page navigation variables as hidden variables to
