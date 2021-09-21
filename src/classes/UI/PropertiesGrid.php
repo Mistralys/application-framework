@@ -1,5 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
+use AppUtils\OutputBuffering;
+use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Optionable;
 use AppUtils\Interface_Optionable;
 
@@ -9,8 +15,10 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     use UI_Traits_Conditional;
 
     const ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
-    
-   /**
+    const OPTION_LABEL_WIDTH = 'label-width-percent';
+    const DEFAULT_LABEL_WIDTH = 20; // percent
+
+    /**
     * @var string
     */
     protected $id;
@@ -40,36 +48,41 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     public function getDefaultOptions() : array
     {
         return array(
-            'label-width-percent' => 20
+            self::OPTION_LABEL_WIDTH => self::DEFAULT_LABEL_WIDTH
         );
     }
-    
-   /**
-    * Adds a new property to the grid, and returns the new property instance.
-    *
-    * @param string|number|UI_Renderable_Interface $label
-    * @param string|number|UI_Renderable_Interface $text
-    * @return UI_PropertiesGrid_Property_Regular
-    */
+
+    //region: Property types
+
+    /**
+     * Adds a new property to the grid, and returns the new property instance.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @param string|number|UI_Renderable_Interface $text
+     * @return UI_PropertiesGrid_Property_Regular
+     * @throws UI_Exception
+     */
     public function add($label, $text) : UI_PropertiesGrid_Property_Regular
     {
-        return ensureType(
-            UI_PropertiesGrid_Property_Regular::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_Regular(
-                $this, 
-                toString($label), 
-                toString($text)
-            ))
+        $property = new UI_PropertiesGrid_Property_Regular(
+            $this,
+            toString($label),
+            toString($text)
         );
+
+        $this->addProperty($property);
+
+        return $property;
     }
-    
-   /**
-    * Adds a property without label, with all cells merged to be
-    * able to use the full width of the table.
-    * 
-    * @param string|number|UI_Renderable_Interface $content
-    * @return UI_PropertiesGrid_Property_Merged
-    */
+
+    /**
+     * Adds a property without label, with all cells merged to be
+     * able to use the full width of the table.
+     *
+     * @param string|number|UI_Renderable_Interface $content
+     * @return UI_PropertiesGrid_Property_Merged
+     * @throws UI_Exception
+     */
     public function addMerged($content) : UI_PropertiesGrid_Property_Merged
     {
         $prop =  new UI_PropertiesGrid_Property_Merged($this, toString($content));
@@ -80,6 +93,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     /**
      * @param string|number|UI_Renderable_Interface $message
      * @return UI_PropertiesGrid_Property_Message
+     * @throws UI_Exception
      */
     public function addMessage($message) : UI_PropertiesGrid_Property_Message
     {
@@ -87,107 +101,128 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
         $this->addProperty($prop);
         return $prop;
     }
-    
+
+    /**
+     * @param string|number|UI_Renderable_Interface $label
+     * @param DateTime|null $date
+     * @return UI_PropertiesGrid_Property_DateTime
+     * @throws UI_Exception
+     */
     public function addDate($label, ?DateTime $date=null) : UI_PropertiesGrid_Property_DateTime
     {
-        return ensureType(
-            UI_PropertiesGrid_Property_DateTime::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_DateTime(
-                $this,
-                toString($label),
-                $date
-            ))
+        $prop = new UI_PropertiesGrid_Property_DateTime(
+            $this,
+            toString($label),
+            $date
         );
+
+        $this->addProperty($prop);
+
+        return $prop;
     }
 
-   /**
-    * Adds a property for an amount of something.
-    * The empty text is added automatically.
-    * 
-    * @param string $label
-    * @param number $amount
-    * @return UI_PropertiesGrid_Property_Amount
-    */
+    /**
+     * Adds a property for an amount of something.
+     * The empty text is added automatically.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @param number $amount
+     * @return UI_PropertiesGrid_Property_Amount
+     * @throws UI_Exception
+     */
     public function addAmount($label, $amount) : UI_PropertiesGrid_Property_Amount
     {
-        return ensureType(
-            UI_PropertiesGrid_Property_Amount::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_Amount(
-                $this, 
-                toString($label), 
-                $amount
-            ))
+        $prop = new UI_PropertiesGrid_Property_Amount(
+            $this,
+            toString($label),
+            $amount
         );
+
+        $this->addProperty($prop);
+
+        return $prop;
     }
-    
-   /**
-    * Adds an amount of bytes, which are converted to a readable human format.
-    * 
-    * @param string|number|UI_Renderable_Interface $label
-    * @param int $bytes
-    * @return UI_PropertiesGrid_Property_ByteSize
-    */
+
+    /**
+     * Adds an amount of bytes, which are converted to a readable human format.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @param int $bytes
+     * @return UI_PropertiesGrid_Property_ByteSize
+     * @throws UI_Exception
+     */
     public function addByteSize($label, int $bytes) : UI_PropertiesGrid_Property_ByteSize
     {
-        return ensureType(
-            UI_PropertiesGrid_Property_ByteSize::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_ByteSize(
-                $this, 
-                toString($label), 
-                $bytes
-            ))
+        $prop = new UI_PropertiesGrid_Property_ByteSize(
+            $this,
+            toString($label),
+            $bytes
         );
+
+        $this->addProperty($prop);
+
+        return $prop;
     }
     
+    /**
+     * Adds a boolean value, which is visually styled.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @param bool $bool
+     * @return UI_PropertiesGrid_Property_Boolean
+     * @throws UI_Exception
+     */
+    public function addBoolean($label, bool $bool) : UI_PropertiesGrid_Property_Boolean
+    {
+        $prop = new UI_PropertiesGrid_Property_Boolean(
+            $this,
+            toString($label),
+            $bool
+        );
+
+        $this->addProperty($prop);
+
+        return $prop;
+    }
+
+    /**
+     * Adds a header to divide sets of properties.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_PropertiesGrid_Property_Header
+     * @throws UI_Exception
+     */
+    public function addHeader($label) : UI_PropertiesGrid_Property_Header
+    {
+        $prop = new UI_PropertiesGrid_Property_Header(
+            $this,
+            toString($label)
+        );
+
+        $this->addProperty($prop);
+
+        return $prop;
+    }
+
+    // endregion
+
     protected function addProperty(UI_PropertiesGrid_Property $property) : UI_PropertiesGrid_Property
     {
         $this->properties[] = $property;
-        
+
         return $property;
-    }
-    
-   /**
-    * Adds a boolean value, which is visually styled.
-    * 
-    * @param string|number|UI_Renderable_Interface $label
-    * @param bool $bool
-    * @return UI_PropertiesGrid_Property_Boolean
-    */
-    public function addBoolean($label, bool $bool) : UI_PropertiesGrid_Property_Boolean
-    {
-        return ensureType(
-            UI_PropertiesGrid_Property_Boolean::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_Boolean(
-                $this, 
-                toString($label), 
-                $bool
-            ))
-        );
-    }
-    
-   /**
-    * Adds a header to divide sets of properties.
-    * 
-    * @param string|number|UI_Renderable_Interface $label
-    * @return UI_PropertiesGrid_Property_Header
-    */
-    public function addHeader($label) : UI_PropertiesGrid_Property_Header
-    {
-        return ensureType(
-            UI_PropertiesGrid_Property_Header::class,
-            $this->addProperty(new UI_PropertiesGrid_Property_Header(
-                $this, 
-                toString($label)
-            ))
-        );
     }
 
     /**
      * Adds all relevant revision information for revisionable items.
      *
      * @param Application_Revisionable $revisionable
-     * @param string $changelogURL Optional URL to the changelog; Adds a button to view the changelog.
+     * @param string|NULL $changelogURL Optional URL to the changelog; Adds a button to view the changelog.
      * @return UI_PropertiesGrid
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     * @throws UI_Exception
+     * @throws ConvertHelper_Exception
      */
     public function injectRevisionDetails(Application_Revisionable $revisionable, $changelogURL = null)
     {
@@ -202,8 +237,8 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
             '<b>' . $revisionable->getPrettyRevision() . '</b> - ' .
             t(
                 'Added on %1$s (%2$s).',
-                AppUtils\ConvertHelper::date2listLabel($revisionable->getRevisionDate()),
-                AppUtils\ConvertHelper::duration2string($revisionable->getRevisionDate())
+                ConvertHelper::date2listLabel($revisionable->getRevisionDate()),
+                ConvertHelper::duration2string($revisionable->getRevisionDate())
             )
         );
         if ($user->isDeveloper()) {
@@ -247,8 +282,8 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
                     '<b>' . $revisionable->getPrettyRevision() . '</b> - ' .
                     t(
                         'Published on %1$s (%2$s).',
-                        AppUtils\ConvertHelper::date2listLabel($revisionable->getRevisionDate()),
-                        AppUtils\ConvertHelper::duration2string($revisionable->getRevisionDate())
+                        ConvertHelper::date2listLabel($revisionable->getRevisionDate()),
+                        ConvertHelper::duration2string($revisionable->getRevisionDate())
                     ) .
                     '</span>';
             } else {
@@ -277,8 +312,8 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
         $this->add(t('Author'), $revisionable->getOwnerName());
         $this->add(
             t('Date'),
-            AppUtils\ConvertHelper::date2listLabel($revisionable->getRevisionDate()) . ' ' .
-            '(' . AppUtils\ConvertHelper::duration2string($revisionable->getRevisionDate()) . ')'
+            ConvertHelper::date2listLabel($revisionable->getRevisionDate()) . ' ' .
+            '(' . ConvertHelper::duration2string($revisionable->getRevisionDate()) . ')'
         );
         
         $revisionable->selectLatestRevision();
@@ -302,10 +337,12 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
         return $result;
     }
 
-   /**
-    * Returns the HTML markup for the grid.
-    * @return string
-    */
+    /**
+     * Returns the HTML markup for the grid.
+     *
+     * @return string
+     * @throws OutputBuffering_Exception
+     */
     protected function _render()
     {
         if(!$this->isValid()) {
@@ -320,16 +357,23 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
             return '';
         }
 
-        $html =
-            '<a id="p"></a>' .
-            '<table class="table table-condensed table-vertical properties-grid">' .
-            '<tbody>';
-        foreach ($properties as $property) {
-            $html .= $property->render();
-        }
-        $html .=
-            '</tbody>' .
-            '</table>';
+        OutputBuffering::start();
+
+        ?>
+        <a id="properties-grid-<?php echo $this->id ?>"></a>
+        <table class="table table-condensed table-vertical properties-grid">
+            <tbody>
+                <?php
+                    foreach ($properties as $property)
+                    {
+                        echo $property->render();
+                    }
+                ?>
+            </tbody>
+        </table>
+        <?php
+
+        $html = OutputBuffering::get();
 
         if (isset($this->section)) {
             $this->section->setContent($html);
@@ -348,21 +392,21 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
      * Retrieves the current value of the label width
      * percentage, which is used for the labels column.
      *
-     * @return number
+     * @return int|float
      */
     public function getLabelWidth()
     {
-        return $this->getOption('label-width-percent');
+        return $this->getOption(self::OPTION_LABEL_WIDTH);
     }
 
     /**
      * Sets the percentual width of the labels column.
      *
-     * @param float $percent
+     * @param int|float $percent
      * @throws Application_Exception
      * @return UI_PropertiesGrid
      */
-    public function setLabelWidth($percent)
+    public function setLabelWidth($percent) : UI_PropertiesGrid
     {
         if (!is_numeric($percent)) {
             throw new Application_Exception(
@@ -383,7 +427,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
             $percent = 100;
         }
 
-        return $this->setOption('label-width-percent', $percent);
+        return $this->setOption(self::OPTION_LABEL_WIDTH, $percent);
     }
 
    /**
@@ -394,11 +438,11 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
    /**
     * Configures the grid to display in a content section.
     * 
-    * @param string $title
+    * @param string|number|UI_Renderable_Interface $title
     * @return UI_PropertiesGrid
     * @see collapse()
     */
-    public function makeSection($title=null)
+    public function makeSection($title='') : UI_PropertiesGrid
     {
         $this->section = Application_Driver::getInstance()->getPage()->createSection();
         
@@ -416,7 +460,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     * 
     * @return UI_Page_Section|NULL
     */
-    public function getSection()
+    public function getSection() : ?UI_Page_Section
     {
         return $this->section;
     }
@@ -425,20 +469,23 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     {
         return $this->render();
     }
-    
-    protected $collapsed;
+
+    /**
+     * @var bool|NULL
+     */
+    protected $collapsed = null;
     
    /**
-    * Collapses or uncollapses the grid. Has no effect
+    * Collapses or un-collapses the grid. Has no effect
     * unless the grid is configured as a content section.
     * 
     * @param boolean $collapse
     * @return UI_PropertiesGrid
     * @see makeSection()
     */
-    public function collapse($collapse=true)
+    public function collapse(bool $collapse=true) : UI_PropertiesGrid
     {
-        $this->collapsed = true;
+        $this->collapsed = $collapse;
         return $this;
     }
 }
