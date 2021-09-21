@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\OutputBuffering;
+
 abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
 {
     use UI_Traits_Conditional;
@@ -30,10 +34,11 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     protected $buttons = array();
 
     /**
-    * @param UI_PropertiesGrid $grid
-    * @param string|number|UI_Renderable_Interface $label
-    * @param mixed $value
-    */
+     * @param UI_PropertiesGrid $grid
+     * @param string|number|UI_Renderable_Interface $label
+     * @param mixed $value
+     * @throws UI_Exception
+     */
     public function __construct(UI_PropertiesGrid $grid, $label, $value=null)
     {
         $this->grid = $grid;
@@ -43,7 +48,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }
@@ -60,7 +65,8 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     
     public function render() : string
     {
-        if(!$this->isValid()) {
+        if(!$this->isValid())
+        {
             return '';
         }
 
@@ -83,18 +89,21 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
             );
         }
         
-        $html =
-        '<tr>'.
-            '<th class="align-right nowrap" style="width:'.$this->grid->getLabelWidth().'%">'.
-                $label.
-            '</th>'.
-            '<td>'.
-                $this->renderButtons().
-                $text.
-            '</td>'.
-        '</tr>';
-        
-        return $html;
+        OutputBuffering::start();
+
+        ?>
+        <tr>
+            <th class="align-right nowrap" style="width:<?php echo $this->grid->getLabelWidth() ?>%">
+                <?php echo $label ?>
+            </th>
+            <td>
+                <?php echo $this->renderButtons() ?>
+                <?php echo $text ?>
+            </td>
+        </tr>
+        <?php
+
+        return OutputBuffering::get();
     }
     
     protected function renderButtons() : string
@@ -115,12 +124,13 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
             
         return $buttons;
     }
-    
-   /**
-    * Selects the text to show instead of the text if it is empty.
-    * @param string|number|UI_Renderable_Interface $text
-    * @return $this
-    */
+
+    /**
+     * Selects the text to show instead of the text if it is empty.
+     * @param string|number|UI_Renderable_Interface $text
+     * @return $this
+     * @throws UI_Exception
+     */
     public function ifEmpty($text)
     {
         $this->emptyText = toString($text);
@@ -138,33 +148,56 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
         $this->buttons[] = $button;
         return $this;
     }
-    
+
+    /**
+     * @param string $url
+     * @param string $target
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function addViewButton(string $url, string $target='')
+    {
+        return $this->addButton(
+            UI::button(t('View'))
+                ->setIcon(UI::icon()->view())
+                ->link($url, $target)
+        );
+    }
+
+    /**
+     * @var string
+     */
     protected $comment;
-    
-   /**
-    * Typcially shown inline next to the content of the property.
-    *  
-    * @param string $comment
-    * @return $this
-    */
+
+    /**
+     * Typically shown inline next to the content of the property.
+     *
+     * @param string|number|UI_Renderable_Interface $comment
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setComment($comment)
     {
-        $this->comment = $comment;
+        $this->comment = toString($comment);
         return $this;
     }
-    
+
+    /**
+     * @var string
+     */
     protected $helpText;
-    
-   /**
-    * This text is typically shown with a help icon, and available by
-    * clicking on it.
-    * 
-    * @param string $help
-    * @return $this
-    */
+
+    /**
+     * This text is typically shown with a help icon, and available by
+     * clicking on it.
+     *
+     * @param string|number|UI_Renderable_Interface $help
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setHelpText($help)
     {
-        $this->helpText = $help;
+        $this->helpText = toString($help);
         return $this;
     }
     
