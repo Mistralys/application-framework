@@ -79,7 +79,12 @@ class Application_Environments_Environment
     {
         return $this->addRequirement(new Application_Environments_Environment_Requirement_CLI());
     }
-    
+
+    public function  requireLocalTest() : Application_Environments_Environment
+    {
+        return $this->addRequirement(new Application_Environments_Environment_Requirement_LocalTest());
+    }
+
     public function requireWindows() : Application_Environments_Environment
     {
         return $this->addRequirement(new Application_Environments_Environment_Requirement_Windows());

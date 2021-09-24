@@ -9,7 +9,10 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
 
         $this->createEnvironment();
 
-        define('APP_TESTS_RUNNING', true);
+        if (!defined('APP_TESTS_RUNNING'))
+        {
+            define('APP_TESTS_RUNNING', true);
+        }
 
         $this->configureDatabase();
         $this->configurePaths();
@@ -20,7 +23,8 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
     {
         $port = 0;
 
-        if (defined('APP_DB_TESTS_PORT')) {
+        if (defined('APP_DB_TESTS_PORT'))
+        {
             $port = intval(APP_DB_TESTS_PORT);
         }
 
@@ -45,31 +49,31 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
 
     private function configurePaths() : void
     {
-        $testsRoot = APP_ROOT.'/tests';
+        $testsRoot = APP_ROOT . '/tests';
 
-        if(boot_constant('APP_FRAMEWORK_TESTS') === true)
+        if (boot_constant('APP_FRAMEWORK_TESTS') === true)
         {
             $testsRoot = APP_ROOT;
         }
 
-        if(!is_dir($testsRoot))
+        if (!is_dir($testsRoot))
         {
             die('Cannot run tests: Could not find the application\'s [tests] folder.');
         }
 
         define('TESTS_ROOT', $testsRoot);
-        define('TESTS_ASSETS_FOLDER', TESTS_ROOT.'/assets');
-        define('TESTS_CLASSES_FOLDER', TESTS_ASSETS_FOLDER.'/classes');
+        define('TESTS_ASSETS_FOLDER', TESTS_ROOT . '/assets');
+        define('TESTS_CLASSES_FOLDER', TESTS_ASSETS_FOLDER . '/classes');
 
-        if(is_dir(TESTS_CLASSES_FOLDER))
+        if (is_dir(TESTS_CLASSES_FOLDER))
         {
             $names = \AppUtils\FileHelper::createFileFinder(TESTS_CLASSES_FOLDER)
                 ->getPHPClassNames();
 
             // load all classes that may be needed for the tests to run.
-            foreach($names as $name)
+            foreach ($names as $name)
             {
-                require_once TESTS_CLASSES_FOLDER.'/'.$name.'.php';
+                require_once TESTS_CLASSES_FOLDER . '/' . $name . '.php';
             }
         }
     }
