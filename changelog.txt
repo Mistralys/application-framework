@@ -1,3 +1,5 @@
+v1.19.0
+- New requirement is added for testing environment.
 v1.18.0
 - Wizards: Fixed an issue causing test suites to fail.
 - Wizards: Added a trait for wizard steps that create a DB record.
