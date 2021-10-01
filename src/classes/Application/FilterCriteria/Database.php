@@ -60,6 +60,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $selectAlias;
 
     /**
+     * @var DBHelper_StatementBuilder[]
+     */
+    protected $joinStatements = array();
+
+    /**
      * Counts the amount of matching records,
      * according to the current filter criteria.
      *
@@ -133,6 +138,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             if(!empty($searchTokens)) {
                 $this->addWhere($searchTokens);
             }
+        }
+
+        foreach ($this->joinStatements as $statement)
+        {
+            $this->addJoin((string)$statement);
         }
 
         $replaces = array(
@@ -789,16 +799,36 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     }
 
     /**
-     * @param string $statement
+     * @param string|DBHelper_StatementBuilder $statement
      * @return $this
+     * @throws UI_Exception
      */
-    public function addJoin(string $statement)
+    public function addJoin($statement)
     {
-        if(!in_array($statement, $this->joins)) {
+        $statement = toString($statement);
+
+        if(!in_array($statement, $this->joins))
+        {
             $this->joins[] = $statement;
         }
 
         return $this;
+    }
+
+    /**
+     * Adds a JOIN statement created using a statement
+     * builder instance. Specify the statement template,
+     * then add the necessary placeholder values using
+     * the returned instance.
+     *
+     * @param string $statementTemplate Statement template
+     * @return DBHelper_StatementBuilder
+     */
+    public function addJoinStatement(string $statementTemplate) : DBHelper_StatementBuilder
+    {
+        $builder = statementBuilder($statementTemplate);
+        $this->joinStatements[] = $builder;
+        return $builder;
     }
 
     /**
