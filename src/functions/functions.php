@@ -1173,3 +1173,16 @@ function displayJS(string $js) : void
     
     Application::exit();
 }
+
+/**
+ * Creates a new instance of the DBHelper's statement
+ * builder, used for generating SQL statements in an
+ * object-oriented way.
+ *
+ * @param string $statementTemplate
+ * @return DBHelper_StatementBuilder
+ */
+function statementBuilder(string $statementTemplate) : DBHelper_StatementBuilder
+{
+    return new DBHelper_StatementBuilder($statementTemplate);
+}
