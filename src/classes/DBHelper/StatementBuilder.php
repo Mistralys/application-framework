@@ -68,13 +68,13 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
 
     /**
      * @param string $alias
-     * @param $value
+     * @param string $value
      * @return $this
      *
      * @throws DBHelper_Exception
      * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
      */
-    public function alias(string $alias, $value) : DBHelper_StatementBuilder
+    public function alias(string $alias, string $value) : DBHelper_StatementBuilder
     {
         return $this->add($alias, $this->wrapTicks($value));
     }
@@ -94,13 +94,13 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
 
     /**
      * @param string $fieldName
-     * @param $value
+     * @param string $value
      * @return $this
      *
      * @throws DBHelper_Exception
      * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
      */
-    public function field(string $fieldName, $value) : DBHelper_StatementBuilder
+    public function field(string $fieldName, string $value) : DBHelper_StatementBuilder
     {
         return $this->add($fieldName, $this->wrapTicks($value));
     }
