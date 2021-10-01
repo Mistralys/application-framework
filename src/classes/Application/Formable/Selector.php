@@ -37,11 +37,12 @@ abstract class Application_Formable_Selector implements Interface_Optionable
     const OPTION_IS_PLEASE_SELECT_ENABLED = 'please-select';
     const OPTION_PLEASE_SELECT_LABEL = 'please-select-label';
     const OPTION_IS_REQUIRED = 'required';
-    const  OPTION_IS_MULTIPLE = 'multiple';
+    const OPTION_IS_MULTIPLE = 'multiple';
     const OPTION_EMPTY_MESSAGE = 'empty-message';
     const OPTION_COMMENTS = 'comment';
     const OPTION_LABEL = 'label';
     const OPTION_NAME = 'name';
+    const OPTION_ENABLED_IF_EMPTY = 'enabled-if-empty';
 
     /**
      * @var Application_Interfaces_Formable
@@ -87,6 +88,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
             self::OPTION_PLEASE_SELECT_LABEL => t('Please select...'),
             self::OPTION_IS_REQUIRED => false,
             self::OPTION_IS_MULTIPLE => false,
+            self::OPTION_ENABLED_IF_EMPTY => false,
             self::OPTION_EMPTY_MESSAGE => '',
             self::OPTION_COMMENTS => '',
             self::OPTION_LABEL => '',
@@ -272,6 +274,22 @@ abstract class Application_Formable_Selector implements Interface_Optionable
     }
 
     /**
+     * Whether to display the selector element even if there
+     * are no items to select. Automatically enables the please
+     * select item option.
+     *
+     * @param bool $enable
+     * @return $this
+     */
+    public function enableIfEmpty(bool $enable=true)
+    {
+        $this->enablePleaseSelect();
+
+        $this->setOption(self::OPTION_ENABLED_IF_EMPTY, $enable);
+        return $this;
+    }
+
+    /**
      * @param string $message
      * @return $this
      */
@@ -315,7 +333,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
     {
         $this->loadEntries();
 
-        if($this->isEmpty())
+        if($this->isEmpty() && !$this->getBoolOption(self::OPTION_ENABLED_IF_EMPTY))
         {
             $this->element = $this->injectEmpty();
         }
