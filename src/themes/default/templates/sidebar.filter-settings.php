@@ -20,13 +20,13 @@
            ->setIcon(UI::icon()->add())
            ->click(sprintf('%s.DialogSave()', $jsName))
            ->makeMini()
-           ->setTooltipText(t('Save current filter...'))
+           ->setTooltip(t('Save current filter...'))
        )
        ->addContextButton(
            UI::button()
            ->setIcon(UI::icon()->load())
            ->click(sprintf('%s.DialogLoad()', $jsName))
            ->makeMini()
-           ->setTooltipText(t('Load filter...'))
+           ->setTooltip(t('Load filter...'))
        )
 	   ->display();
