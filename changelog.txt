@@ -1,5 +1,25 @@
 v1.19.0
-- New requirement is added for testing environment.
+- Environments: Added the new requirement class for the unit tests suite.
+- Environments: Can now use `requireLocalTest()` method to detect unit tests running.
+- UnitTests: The `APP_TESTS_RUNNING` constant is now set in the application's `tests/config.php`.
+- RecordSelector: Added `enableIfEmpty()` to show the input element even if no records found.
+- DBHelper: Added the statement builder helper. See the global `statementBuilder()` for details.
+- DBHelper: FilterCriteria: Added the `addJoinStatement()` method with the statement builder.
+
+*Units tests changes*
+
+To run the unit tests, the application's configuration must be modified to
+detect the unit tests environment. This procedure is still under review and
+is likely to change in the near future.
+
+For now, these changes are necessary:
+
+1. In `config_detect_environment()`, register the unit tests environment:
+   `$environments->registerDev('unit-tests')->requireLocalTest();`
+2. Create the config file `config-env-test.php` (based on local dev config)
+3. In the config's environment cases, add the unit tests:
+   `case 'unit-tests': // code to load the tests config file`
+
 v1.18.0
 - Wizards: Fixed an issue causing test suites to fail.
 - Wizards: Added a trait for wizard steps that create a DB record.
