@@ -6,7 +6,7 @@ v1.19.0
 - DBHelper: Added the statement builder helper. See the global `statementBuilder()` for details.
 - DBHelper: FilterCriteria: Added the `addJoinStatement()` method with the statement builder.
 
-*Units tests changes*
+**Units tests changes**
 
 To run the unit tests, the application's configuration must be modified to
 detect the unit tests environment. This procedure is still under review and
