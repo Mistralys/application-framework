@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\OutputBuffering_Exception;
+
 abstract class Application_Updaters_Updater  implements Application_Updaters_Interface
 {
    /**
@@ -105,32 +107,23 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
 		
 		return in_array($version, $versions);
 	}
-	
-   /**
-    * Renders a page with the specified content and optional title.
-    * 
-    * @param string $content
-    * @param string $title
-    * @return string
-    */
-	protected function renderPage($content, $title=null)
+
+    /**
+     * Renders a page with the specified content and optional title.
+     *
+     * @param string|number|UI_Renderable_Interface $content
+     * @param string|number|UI_Renderable_Interface $title
+     * @return string
+     * @throws Application_Exception
+     * @throws OutputBuffering_Exception
+     */
+	protected function renderPage($content, $title='') : string
 	{
 		if(empty($title)) {
 			$title = $this->getLabel();
 		}
 		
 		return $this->updaters->renderPage($title, $content);
-	}
-	
-   /**
-    * Displays the page and exits.
-    * 
-    * @param string $content
-    * @param string $title
-    */
-	protected function displayPage($content, $title=null)
-	{
-	    displayHTML($this->renderPage($content, $title));
 	}
 	
     /**
@@ -375,7 +368,7 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
 
 interface Application_Updaters_Interface
 {
-	public function start();
+	public function start() : string;
 	public function getID();
 	public function getLabel() : string;
 	public function getCategory();

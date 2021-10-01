@@ -6,8 +6,11 @@
  * @subpackage Maintenance
  */
 
+use AppUtils\OutputBuffering;
+use AppUtils\OutputBuffering_Exception;
+
 /**
- * UI generator for the available maintenance scripts. Displays the 
+ * UI generator for the available maintenance scripts. Displays the
  * script details and dispatches actions to the selected scripts ("updaters").
  *
  * @package Application
@@ -20,14 +23,14 @@ class Application_Updaters
     * @var Application_Updaters_Updater[]
     */
 	protected $updaters;
-	
+
 	protected $classesFolder;
-	
+
    /**
     * @var Application_Driver
     */
 	protected $driver;
-	
+
    /**
     * @var Application_Request
     */
@@ -37,12 +40,12 @@ class Application_Updaters
     * @var UI
     */
 	protected $ui;
-	
+
    /**
     * @var UI_Themes_Theme
     */
 	protected $theme;
-	
+
 	public function __construct()
 	{
 		$this->driver = Application_Driver::getInstance();
@@ -54,29 +57,29 @@ class Application_Updaters
 		        APP_URL
 	        );
 		}
-		
+
 		$this->classesFolder = $this->driver->getClassesFolder().'/Updaters';
 		$this->request = $this->driver->getRequest();
 		$this->ui = $this->driver->getUI();
 		$this->theme = $this->ui->getTheme();
-		
+
 		$this->loadUpdaters();
-		
+
 		$this->request->registerParam('updater_id')->setEnum(array_keys($this->updaters));
 	}
-		
+
 	protected function loadUpdaters()
 	{
 		if(isset($this->updaters)) {
 			return;
 		}
-		
+
 		$this->updaters = array();
-		
+
 		if(!file_exists($this->classesFolder) || !is_dir($this->classesFolder)) {
 			return;
 		}
-		
+
 		$d = new DirectoryIterator($this->classesFolder);
 		foreach($d as $item) {
 			if(!$item->isFile()) {
@@ -101,19 +104,21 @@ class Application_Updaters
     * @var Application_Updaters_Updater
     */
 	protected $activeUpdater;
-	
-	public function start()
+
+	public function start() : void
 	{
 	    $updaterID = $this->request->getParam('updater_id');
-	    if(!empty($updaterID)) {
+
+	    if(!empty($updaterID))
+        {
 	        $this->activeUpdater = $this->getByID($updaterID);
-	        $this->activeUpdater->start();
+	        echo $this->activeUpdater->start();
 	        return;
 	    }
-	    
+
 	    $this->showSelectionScreen();
 	}
-	
+
 	protected function createUpdater($id)
 	{
 		$class = APP_CLASS_NAME.'_Updaters_'.$id;
@@ -129,7 +134,7 @@ class Application_Updaters
 	}
 
    /**
-    * @param string[] $exclude Optional list of version numbers to exclude 
+    * @param string[] $exclude Optional list of version numbers to exclude
     * @return Application_Updaters_Updater[]
     */
 	public function getAll($exclude=array())
@@ -137,30 +142,30 @@ class Application_Updaters
 		if(empty($exclude)) {
 			return $this->updaters;
 		}
-		
+
 		$result = array();
 		foreach($this->updaters as $updater) {
 			$valid = true;
 			foreach($exclude as $version) {
 				if($updater->hasSpecificVersion($version)) {
 					$valid = false;
-					break;					
+					break;
 				}
 			}
-			
+
 			if($valid) {
 				$result[] = $updater;
 			}
 		}
-		
+
 		usort($result, array($this, 'handle_sortUpdaters'));
-		
+
 		return $result;
 	}
-	
+
    /**
     * Retrieves all updater scripts for the specified version, if any.
-    * 
+    *
     * @param string $version
     * @return Application_Updaters_Updater[]
     */
@@ -172,9 +177,9 @@ class Application_Updaters
 				$result[] = $updater;
 			}
 		}
-		
+
 		usort($result, array($this, 'handle_sortUpdaters'));
-		
+
 		return $result;
 	}
 
@@ -191,10 +196,10 @@ class Application_Updaters
 		        'instance' => $this
 		    )
 	    );
-		
+
 		echo $this->renderPage(t('%1$s maintenance', $this->driver->getAppNameShort()), $html);
 	}
-	
+
 	public function handle_sortUpdaters($a, $b)
 	{
 	    return strnatcasecmp($a->getListLabel(), $b->getListLabel());
@@ -206,7 +211,7 @@ class Application_Updaters
 		if($versions=='*') {
 			return true;
 		}
-		
+
 		if(!is_array($versions)) {
 		    $versions = array($versions);
 		}
@@ -214,24 +219,39 @@ class Application_Updaters
 		return in_array($this->driver->getVersion(), $versions);
 	}
 
-	public function renderPage($title, $content)
+    /**
+     * @param string|number|UI_Renderable_Interface$title
+     * @param string|number|UI_Renderable_Interface $content
+     * @return string
+     * @throws Application_Exception
+     * @throws OutputBuffering_Exception
+     */
+	public function renderPage($title, $content) : string
 	{
-		echo $this->renderPageHeader($title);
-		echo $content;
-		echo $this->renderPageFooter();
+		return
+            $this->renderPageHeader($title).
+		    toString($content).
+		    $this->renderPageFooter();
 	}
 
-	public function renderPageHeader($title)
+    /**
+     * @param string|number|UI_Renderable_Interface $title
+     * @return string
+     * @throws Application_Exception|OutputBuffering_Exception
+     */
+	public function renderPageHeader($title) : string
 	{
 	    $this->ui->addStylesheet('ui-updaters.css');
-	    
+
+        OutputBuffering::start();
+
 		?><!DOCTYPE html>
 		<html lang="en">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-				<title><?php echo $title ?></title>
+				<title><?php echo toString($title) ?></title>
 				<link rel="shortcut icon" href="favicon.ico"/>
-				<?php 
+				<?php
 				    echo $this->ui->renderHeadIncludes();
 				?>
 			</head>
@@ -253,14 +273,23 @@ class Application_Updaters
 						</div>
 					</div>
 		          <?php
-      
-		if(isset($this->activeUpdater)) {
-		    echo 
-		    '<ul class="breadcrumb">'.
-		        '<li><a href="'.$this->buildURL().'">'.t('Dashboard').'</a> <span class="divider">/</span></li>'.
-		        '<li class="active">'.$this->activeUpdater->getLabel().'</li>'.
-		    '</ul>';
+
+		if(isset($this->activeUpdater))
+        {
+		    ?>
+		    <ul class="breadcrumb">
+		        <li>
+                    <a href="<?php echo $this->buildURL() ?>"><?php pt('Dashboard') ?></a>
+                    <span class="divider">/</span>
+                </li>
+		        <li class="active">
+                    <?php echo $this->activeUpdater->getLabel() ?>
+                </li>
+		    </ul>
+             <?php
 		}
+
+        return OutputBuffering::get();
 	}
 
 	public function buildURL($params=array())
@@ -269,17 +298,21 @@ class Application_Updaters
 	    if(!empty($params)) {
 	        $url .= '?'.http_build_query($params, '', '&amp;');
 	    }
-	    
+
 	    return $url;
 	}
-	
-	public function renderPageFooter()
+
+	public function renderPageFooter() : string
 	{
+        OutputBuffering::start();
+
 		?>
 					</div>
 					<p><br></p>
 				</body>
 			</html>
 		<?php
+
+        return OutputBuffering::get();
 	}
 }

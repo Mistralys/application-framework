@@ -37,7 +37,7 @@ abstract class Application_Updaters_Updater_SeveralSteps extends Application_Upd
     */
 	protected $currentStep;
 	
-	public function start()
+	public function start() : string
 	{
 	    // check if the upgrade has been completed
 	    if($this->isUpgradeDone()) {
@@ -102,7 +102,7 @@ abstract class Application_Updaters_Updater_SeveralSteps extends Application_Upd
             );
 	    }
 	    
-		$this->$method();
+		return $this->$method();
 	}	
 	
 	protected $hasAlterTablePrivileges;
@@ -164,7 +164,7 @@ abstract class Application_Updaters_Updater_SeveralSteps extends Application_Upd
 	    return $this->setSessionValue('data_'.$step, $data);
 	}
 	
-	protected function renderPage($content, $title=null)
+	protected function renderPage($content, $title=null) : string
 	{
 	    // add the step navigation to the content
 	    $content = 
@@ -175,7 +175,7 @@ abstract class Application_Updaters_Updater_SeveralSteps extends Application_Upd
 	    return parent::renderPage($content, $title);
 	}
 	
-	protected function renderStepAdvancement()
+	protected function renderStepAdvancement() : string
 	{
 	    if($this->isUpgradeDone()) {
 	        return '';
@@ -204,7 +204,7 @@ abstract class Application_Updaters_Updater_SeveralSteps extends Application_Upd
 	    return $html;
 	}
 	
-	protected function renderStepNavigation()
+	protected function renderStepNavigation() : string
 	{
 	    if($this->isUpgradeDone()) {
 	        return '';
