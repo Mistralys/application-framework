@@ -219,7 +219,8 @@ class UI_Icon implements Interface_Stringable
         'NOTEPAD' => 'far:sticky-note',
         'PIN' => 'thumbtack',
         'RECORD_TYPE' => 'bezier-curve',
-        'TRANSMISSION' => 'satellite-dish'
+        'TRANSMISSION' => 'satellite-dish',
+        'CONTENT_TYPES' => 'fab:elementor'
     );
 
     public function __construct()
@@ -262,6 +263,7 @@ class UI_Icon implements Interface_Stringable
     public function commands() { return $this->setType('COMMANDS'); }
     public function comment() { return $this->setType('COMMENT'); }
     public function comtypes() { return $this->setType('COMTYPES'); }
+    public function contentTypes() { return $this->setType('CONTENT_TYPES'); }
     public function convert() { return $this->setType('CONVERT'); }
     public function copy() { return $this->setType('COPY'); }
     public function countdown() { return $this->setType('COUNTDOWN'); }
