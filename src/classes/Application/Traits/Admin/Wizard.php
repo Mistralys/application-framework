@@ -419,8 +419,10 @@ trait Application_Traits_Admin_Wizard
             $this->requestedStep = $this->activeStep;
         }
         
-        foreach($this->steps as $step) {
+        foreach($this->steps as $step)
+        {
             $step->initDone();
+            $step->postInit();
         }
     }
     
