@@ -1,3 +1,13 @@
+v1.19.1
+- Wizards: Added a traits for selecting a country.
+- Wizards: Added a traits for a generic summary/confirmation step.
+- Wizards: Added registering completed steps to display the steps summary.
+- UI: BigSelection: Top-aligned labels when description is multiline.
+- UI: BigSelection: No margin on last paragraph in descriptions.
+- UI: Icons: Added the `ContentTypes` icon.
+- UI: Updated to use FontAwesome `v5.15.4`.
+- Application: Added static `isUnitTestingRunning()` method.
+
 v1.19.0
 - Environments: Added the new requirement class for the unit tests suite.
 - Environments: Can now use `requireLocalTest()` method to detect unit tests running.
