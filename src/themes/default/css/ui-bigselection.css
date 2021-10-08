@@ -15,6 +15,14 @@ display:inline-block;
 margin-left:13px;
 }
 
+.bigselection .bigselection-description > P:last-child{
+    margin-bottom: 0;
+}
+
+.bigselection .bigselection-label{
+    vertical-align: top;
+}
+
 .bigselection > LI{
 border:solid 1px #ddd;
 border-radius:4px;
