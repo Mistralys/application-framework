@@ -7,6 +7,7 @@
  * @see Application_Admin_Wizard_Step
  */
 
+use AppUtils\OutputBuffering;
 use function AppUtils\parseVariable;
 
 /**
@@ -656,6 +657,54 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
             '',
             self::ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION
         );
+    }
+    public function postInit() : void
+    {
+        $this->renderCompletedSteps();
+    }
+
+    /**
+     * @var array<int,array{icon:UI_Icon|null,label:string,value:string}>
+     */
+    protected $completedSteps = array();
+
+    protected function registerCompletedStep(string $label, string $value, ?UI_Icon $icon) : void
+    {
+        $this->completedSteps[] = array(
+            'icon' => $icon,
+            'label' => $label,
+            'value' => $value
+        );
+    }
+
+    protected function renderCompletedSteps() : void
+    {
+        if(empty($this->completedSteps))
+        {
+            return;
+        }
+
+        OutputBuffering::start();
+
+        ?>
+        <table class="wizard-completed-steps">
+            <tbody>
+            <?php
+            foreach ($this->completedSteps as $item)
+            {
+                ?>
+                <tr>
+                    <td class="align-center"><?php echo $item['icon'] ?></td>
+                    <td><?php echo $item['label'].' '.$item['value'] ?></td>
+                </tr>
+                <?php
+            }
+            ?>
+            </tbody>
+        </table>
+        <?php
+
+        $this->renderer->setTitleSubline(OutputBuffering::get());
     }
 
     // ----------------------------------------------------------------
