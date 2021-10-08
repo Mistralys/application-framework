@@ -1413,4 +1413,9 @@ class Application
     {
         return new Application_Installer();
     }
+
+    public static function isUnitTestingRunning() : bool
+    {
+        return defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true;
+    }
 }
