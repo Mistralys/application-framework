@@ -2,3 +2,8 @@
 .btn.wizard-dev-submit{
 margin-left:40px;
 }
+
+.wizard-completed-steps{
+    margin-top: 6px;
+    margin-left: 22px;
+}
