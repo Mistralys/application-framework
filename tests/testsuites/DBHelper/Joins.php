@@ -62,4 +62,42 @@ final class DBHelper_JoinsTests extends ApplicationTestCase
         $this->assertStringContainsString('JOIN', $query);
         $this->assertStringContainsString(Application_Feedback::TABLE_NAME, $query);
     }
+
+    /**
+     * When adding a JOIN statement, adding custom
+     * placeholder values must be possible alongside
+     * the existing values.
+     */
+    public function test_joinStatementCustomVars() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+
+        $criteria->addJoinStatement(
+            "JOIN
+                {table_custom} AS {custom}
+            ON
+                {custom}.{feedback_primary}={feedback}.{feedback_primary}"
+        )
+            ->table('{table_custom}', 'custom_table')
+            ->alias('{custom}', 'custom_alias');
+
+        $query = $criteria->renderQuery();
+
+        $this->assertStringContainsString('custom_table', $query);
+    }
+
+    public function test_joinRequiresOtherJoin() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+
+        $criteria->addJoin(
+            "JOIN `table_fantasy_join`",
+        )
+            ->requireJoin(TestDriver_FilterCriteria_TestCriteria::JOIN_OPTIONAL_TABLE);
+
+        $query = $criteria->renderQuery();
+
+        $this->assertStringContainsString('table_fantasy_join', $query);
+        $this->assertStringContainsString(TestDriver_FilterCriteria_TestCriteria::JOIN_OPTIONAL_TABLE, $query);
+    }
 }
