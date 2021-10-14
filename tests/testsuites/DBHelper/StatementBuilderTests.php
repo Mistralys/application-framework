@@ -52,7 +52,7 @@ final class DBHelper_StatementBuilderTests extends ApplicationTestCase
         $this->expectExceptionCode(DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND);
 
         statementBuilder("{placeholder-1}")
-            ->add('placeholder-2', 'value');
+            ->field('placeholder-2', 'value');
     }
 
     public function test_missingPlaceholders() : void
@@ -60,7 +60,7 @@ final class DBHelper_StatementBuilderTests extends ApplicationTestCase
         $this->expectExceptionCode(DBHelper_StatementBuilder::ERROR_UNFILLED_PLACEHOLDER_DETECTED);
 
         statementBuilder("{placeholder-1} {placeholder-2}")
-            ->add('placeholder-1', 'value')
+            ->field('placeholder-1', 'value')
             ->render();
     }
 
@@ -70,6 +70,35 @@ final class DBHelper_StatementBuilderTests extends ApplicationTestCase
             '`name` `name`',
             (string)statementBuilder('{table_name} {table_name}')
                 ->table('table_name', 'name')
+        );
+    }
+
+    public function test_container() : void
+    {
+        $result = (string)statementValues()
+            ->field('container_placeholder', 'container')
+            ->statement(
+            "{internal_placeholder} {container_placeholder}"
+            )
+            ->field('internal_placeholder', 'internal');
+
+        $this->assertEquals('`internal` `container`', $result);
+    }
+
+    public function test_caseSensitivity() : void
+    {
+        $result = (string)statementBuilder("{recognized} {NOTRECOGNIZED}")
+        ->field('recognized', 'OK');
+
+        $this->assertEquals('`OK` {NOTRECOGNIZED}', $result);
+    }
+
+    public function test_placeholderName() : void
+    {
+        $this->assertEquals(
+            '`found`',
+            (string)statementBuilder('{recognized}')
+                ->field('{recognized}', 'found')
         );
     }
 }
