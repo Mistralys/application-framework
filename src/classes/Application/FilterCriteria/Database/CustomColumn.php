@@ -28,7 +28,7 @@ class Application_FilterCriteria_Database_CustomColumn
     /**
      * @var NamedClosure
      */
-    private $callback;
+    private $source;
 
     /**
      * @var string
@@ -48,13 +48,18 @@ class Application_FilterCriteria_Database_CustomColumn
     /**
      * @var string[]
      */
-    private $joins = array();
+    private $requiredJoinIDs = array();
 
-    public function __construct(Application_FilterCriteria_Database $filters, string $name, NamedClosure $callback)
+    /**
+     * @param Application_FilterCriteria_Database $filters
+     * @param string $name
+     * @param NamedClosure|DBHelper_StatementBuilder $source
+     */
+    public function __construct(Application_FilterCriteria_Database $filters, string $name, $source)
     {
         $this->filters = $filters;
         $this->name = $name;
-        $this->callback = $callback;
+        $this->source = $source;
     }
 
     /**
@@ -70,25 +75,58 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->enabled;
     }
 
-    public function addJOIN(string $statement) : Application_FilterCriteria_Database_CustomColumn
+    /**
+     * Shorthand for registering the `JOIN` statement
+     * and requiring it for the column.
+     *
+     * @param string $joinID
+     * @param string|DBHelper_StatementBuilder $statement
+     * @return $this
+     * @throws DBHelper_Exception
+     */
+    public function addJoin(string $joinID, $statement) : Application_FilterCriteria_Database_CustomColumn
     {
-        $this->joins[] = $statement;
+        $join = $this->filters->registerJoin($joinID, $statement);
+
+        return $this->requireJoin($join->getID());
+    }
+
+    /**
+     * Marks the column as requiring a specific `JOIN` statement
+     * by its ID (as registered using {@see Application_FilterCriteria_Database::registerJoin()}).
+     *
+     * @return $this
+     */
+    public function requireJoin(string $joinID) : Application_FilterCriteria_Database_CustomColumn
+    {
+        $this->requiredJoinIDs[] = $joinID;
         return $this;
     }
 
     /**
      * @return string[]
      */
-    public function getJOINs() : array
+    public function getRequiredJoinIDs() : array
     {
-        return $this->joins;
+        return $this->requiredJoinIDs;
     }
 
-    public function hasJOINs() : bool
+    public function hasJoins() : bool
     {
-        return !empty($this->joins);
+        return !empty($this->requiredJoinIDs);
     }
 
+    /**
+     * Whether the column should be enabled in the filter
+     * criteria, and added to the query.
+     *
+     * NOTE: In most cases, this is done automatically as
+     * soon as the column is used in the query. It can be
+     * used manually to force the column to be present.
+     *
+     * @param bool $enabled
+     * @return $this
+     */
     public function setEnabled(bool $enabled) : Application_FilterCriteria_Database_CustomColumn
     {
         $this->enabled = $enabled;
@@ -96,16 +134,29 @@ class Application_FilterCriteria_Database_CustomColumn
     }
 
     /**
+     * Retrieves the SQL statement required to access the column's value.
+     *
+     * NOTE: This can be simply a field name, but also a full sub-query.
+     * To use this statement in a `SELECT`, use the method
+     * {@see Application_FilterCriteria_Database_CustomColumn::getSelect()}
+     * instead.
+     *
      * @return string
      * @throws Application_Exception
-     * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
+     * @see Application_FilterCriteria_Database_CustomColumn::getSelect()
      */
-    public function getSelect() : string
+    public function getStatement() : string
     {
-        $result = call_user_func($this->callback);
+        if($this->source instanceof DBHelper_StatementBuilder)
+        {
+            return (string)$this->source;
+        }
 
-        if(is_string($result)) {
-            return $result.' AS '.$this->name;
+        $result = call_user_func($this->source);
+
+        if(is_string($result))
+        {
+            return $result;
         }
 
         throw new Application_Exception(
@@ -117,5 +168,24 @@ class Application_FilterCriteria_Database_CustomColumn
             ),
             self::ERROR_SELECT_STATEMENT_NOT_A_STRING
         );
+    }
+
+    /**
+     * Gets the statement to use in the query's `SELECT` part:
+     * includes the alias `column AS alias` where `alias` is the
+     * column's name.
+     *
+     * NOTE: Use {@see Application_FilterCriteria_Database_CustomColumn::getStatement()}
+     * for the SQL to access the column's value.
+     *
+     * @return string
+     * @throws Application_Exception
+     *
+     * @see Application_FilterCriteria_Database_CustomColumn::getStatement()
+     * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
+     */
+    public function getSelect() : string
+    {
+        return $this->getStatement().' AS `'.$this->name.'`';
     }
 }
