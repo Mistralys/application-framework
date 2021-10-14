@@ -930,8 +930,12 @@ A[target="_blank"]:not([type="button"]) {
     color: #063aae;
 }
 
+/**
+ * Add the " »" after external links, with a non
+ * breaking space before it.
+ */
 A[target="_blank"]:not([type="button"]):after {
-    content: " \00bb";
+    content: "\00A0\00bb";
 }
 
 .text-warning {
