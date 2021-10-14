@@ -76,4 +76,12 @@ class Application_Countries_FilterCriteria extends DBHelper_BaseFilterCriteria
         
         return $this;
     }
+
+    protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
+    {
+    }
+
+    protected function _registerJoins() : void
+    {
+    }
 }
