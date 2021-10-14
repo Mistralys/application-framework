@@ -1,25 +1,64 @@
 <?php
+/**
+ * File containing the class {@see UI_Icon}.
+ *
+ * @package User Interface
+ * @see UI_Icon
+ */
 
 use AppUtils\ConvertHelper;
 use AppUtils\Interface_Stringable;
 
-class UI_Icon implements Interface_Stringable
+/**
+ * Icon class used to display FontAwesome icons in the
+ * user interface. Convertable to string, the class generates
+ * the according HTML code to display the selected icon.
+ *
+ * @package User Interface
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 {
-    protected $type = null;
+    const ERROR_INVALID_TYPE_SELECTED = 95601;
 
+    use UI_Traits_RenderableGeneric;
+
+    /**
+     * @var string
+     */
+    protected $type = '';
+
+    /**
+     * @var string[]
+     */
     protected $classes = array();
 
+    /**
+     * @var array{text:string,placement:string}
+     */
     protected $tooltip = array(
         'text' => '',
         'placement' => 'top'
     );
 
-    protected $id = null;
+    /**
+     * @var string
+     */
+    protected $id;
 
+    /**
+     * @var array<string,string|number>
+     */
     protected $attributes = array();
 
+    /**
+     * @var string
+     */
     protected $prefix = 'fa';
-    
+
+    /**
+     * @var array<string,string>
+     */
     protected $types = array(
         'ACTIONCODE' => 'rocket',
         'ACTIVATE' => 'far:sun',
@@ -442,13 +481,16 @@ class UI_Icon implements Interface_Stringable
      * @param string $type
      * @return UI_Icon
      */
-    public function setType($type)
+    public function setType(string $type) : UI_Icon
     {
         $this->type = $type;
         return $this;
     }
-    
-    public function getType()
+
+    /**
+     * @return string
+     */
+    public function getType() : string
     {
         return $this->type;
     }
@@ -532,13 +574,22 @@ class UI_Icon implements Interface_Stringable
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
     public function setAttribute(string $name, $value)
     {
         $this->attributes[$name] = $value;
 
         return $this;
     }
-    
+
+    /**
+     * @return string[]
+     * @throws UI_Exception
+     */
     private function resolveClasses() : array
     {
         $classes = array();
@@ -550,13 +601,40 @@ class UI_Icon implements Interface_Stringable
         
         return array_merge($classes, $this->classes);
     }
-    
+
+    /**
+     * Resolves the type to use to render the icon.
+     *
+     * @return string
+     * @throws UI_Exception
+     */
+    private function resolveType() : string
+    {
+        $type = $this->getType();
+
+        if(isset($this->types[$type]))
+        {
+            return $this->types[$type];
+        }
+
+        throw new UI_Exception(
+            'No icon type selected.',
+            sprintf(
+                'An icon does not have a type, or has an invalid type selected: [%s].',
+                $type
+            ),
+            self::ERROR_INVALID_TYPE_SELECTED
+        );
+    }
+
+    /**
+     * @return array{prefix:string,type:string}
+     * @throws UI_Exception
+     */
     private function parseType() : array
     {
-        $type = $this->types[$this->type];
-        
+        $type = $this->resolveType();
         $prefix = $this->prefix;
-        
         $pos = strpos($type, ':');
         
         if($pos !== false) 
@@ -716,11 +794,6 @@ class UI_Icon implements Interface_Stringable
         return $this->types; 
     }
     
-    public function display()
-    {
-        echo $this->render();
-    }
-
     public function setHidden(bool $hidden=true) : UI_Icon
     {
         if($hidden)
