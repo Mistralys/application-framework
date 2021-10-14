@@ -43,6 +43,11 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
         $this->template = $statementTemplate;
     }
 
+    public function getTemplate() : string
+    {
+        return $this->template;
+    }
+
     /**
      * @param string $placeholderName
      * @param string $value
