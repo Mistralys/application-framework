@@ -30,7 +30,14 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
         $ui->addJavascript('forms/multiselect.js');
 
         $this->addClass('select-multiselect');
-        
+        $this->addContainerClass('btn-group');
+        $this->addContainerClass('multiselect');
+
+        if($this->hasClass('btn-block'))
+        {
+            $this->addContainerClass('multiselect-block');
+        }
+
         $id = $this->getAttribute('id');
         if (empty($id)) {
             $id = 'multi' . nextJSID();
@@ -39,35 +46,39 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
 
         $html = parent::__toString();
 
-        if (!$this->frozen) {
-            $classes = explode(' ', $this->getAttribute('class'));
-            $classes[] = 'btn';
-            $this->multiOptions['buttonClass'] = implode(' ', $classes);
-
-            $this->multiOptions['selectAllText'] = t('Select all');
-            $this->multiOptions['filterPlaceholder'] = $this->getFilterPlaceholder();
-            $this->multiOptions['templates'] = array();
-            $this->multiOptions['buttonContainer'] = '<div class="btn-group multiselect '.implode(' ', $this->containerClasses).'" />';
-            
-            foreach($this->templates as $template => $code) {
-                $this->multiOptions['templates'][$template] = $code;
-            }
-            
-            if (!empty($this->multiOptions)) {
-                $options = json_encode($this->multiOptions);
-            } else {
-                $options = '{}';
-            }
-
-            $optid = 'opt' . nextJSID();
-            $ui->addJavascriptOnload('var ' . $optid . ' = ' . $options);
-
-            $ui->addJavascriptOnload($optid . '.buttonText = MultiSelect.Render_Label');
-
-            $ui->addJavascriptOnload(
-                "$('#" . $id . "').multiselect(" . $optid . ")"
-            );
+        if ($this->frozen)
+        {
+            return $html;
         }
+
+        $classes = explode(' ', $this->getAttribute('class'));
+        $classes[] = 'btn';
+
+        $this->multiOptions['buttonClass'] = implode(' ', $classes);
+        $this->multiOptions['selectAllText'] = t('Select all');
+        $this->multiOptions['filterPlaceholder'] = $this->getFilterPlaceholder();
+        $this->multiOptions['templates'] = array();
+        $this->multiOptions['buttonContainer'] = '<div class="'.implode(' ', $this->containerClasses).'" />';
+
+        foreach($this->templates as $template => $code)
+        {
+            $this->multiOptions['templates'][$template] = $code;
+        }
+
+        if (!empty($this->multiOptions)) {
+            $options = json_encode($this->multiOptions);
+        } else {
+            $options = '{}';
+        }
+
+        $optid = 'opt' . nextJSID();
+        $ui->addJavascriptOnload('var ' . $optid . ' = ' . $options);
+
+        $ui->addJavascriptOnload($optid . '.buttonText = MultiSelect.Render_Label');
+
+        $ui->addJavascriptOnload(
+            "$('#" . $id . "').multiselect(" . $optid . ")"
+        );
 
         return $html;
     }
@@ -160,7 +171,10 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
     {
         return $this->addContainerClass('inline-menu');
     }
-    
+
+    /**
+     * @var string[]
+     */
     protected $containerClasses = array();
     
    /**
