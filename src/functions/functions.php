@@ -1180,9 +1180,22 @@ function displayJS(string $js) : void
  * object-oriented way.
  *
  * @param string $statementTemplate
+ * @param DBHelper_StatementBuilder_ValuesContainer|null $valuesContainer
  * @return DBHelper_StatementBuilder
  */
-function statementBuilder(string $statementTemplate) : DBHelper_StatementBuilder
+function statementBuilder(string $statementTemplate, ?DBHelper_StatementBuilder_ValuesContainer $valuesContainer=null) : DBHelper_StatementBuilder
 {
-    return new DBHelper_StatementBuilder($statementTemplate);
+    $builder = new DBHelper_StatementBuilder($statementTemplate);
+
+    if($valuesContainer !== null)
+    {
+        $builder->setContainer($valuesContainer);
+    }
+
+    return $builder;
+}
+
+function statementValues() : DBHelper_StatementBuilder_ValuesContainer
+{
+    return new DBHelper_StatementBuilder_ValuesContainer();
 }
