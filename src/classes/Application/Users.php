@@ -24,6 +24,8 @@
 class Application_Users extends DBHelper_BaseCollection
 {
     const TABLE_USER_EMAILS = 'user_emails';
+    const TABLE_NAME = 'known_users';
+    const PRIMARY_NAME = 'user_id';
 
     /**
      * {@inheritDoc}
@@ -31,7 +33,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordClassName()
     {
-        return 'Application_Users_User';
+        return Application_Users_User::class;
     }
 
     /**
@@ -40,12 +42,12 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordFiltersClassName()
     {
-        return 'Application_Users_FilterCriteria';
+        return Application_Users_FilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName()
     {
-        return 'Application_Users_FilterSettings';
+        return '';
     }
     
     /**
@@ -76,7 +78,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordTableName()
     {
-        return 'known_users';
+        return self::TABLE_NAME;
     }
 
     /**
@@ -85,7 +87,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordPrimaryName()
     {
-        return 'user_id';
+        return self::PRIMARY_NAME;
     }
 
     /**
@@ -135,7 +137,7 @@ class Application_Users extends DBHelper_BaseCollection
         // TODO Remove this once the table has been created everywhere.
         if(DBHelper::tableExists(self::TABLE_USER_EMAILS))
         {
-            $id = DBHelper::createFetchKey('user_id', self::TABLE_USER_EMAILS)
+            $id = DBHelper::createFetchKey(self::PRIMARY_NAME, self::TABLE_USER_EMAILS)
                 ->whereValue('email', $email)
                 ->fetchInt();
 
