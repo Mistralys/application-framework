@@ -17,10 +17,17 @@ v1.20.0
 - DBHelper: Custom columns now support selecting localized country labels by country ID.
 - DBHelper: Custom columns now support selecting user names by user ID.
 - DBHelper: Added registering `JOIN` statements, so they are only added if needed.
+- DBHelper: Join statements can now require other joins.
 - Feedback: Added the missing `AddFeedback` AJAX method.
 - Feedback: Added some of the missing collection classes.
 - DataGrids: Moved the sorting icons out of the header cells for better readability.
 - DataGrids: Aligned header cells to the top.
+
+**Breaking changes**
+
+The database filter criteria `addJoin()` method now returns the join instance
+instead of the filter criteria instance. Please verify if any of these calls
+have been used for chaining in your application.
 
 v1.19.0
 - Environments: Added the new requirement class for the unit tests suite.
