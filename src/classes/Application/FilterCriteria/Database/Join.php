@@ -12,19 +12,38 @@ class Application_FilterCriteria_Database_Join implements Interface_Stringable
     private $id;
 
     /**
-     * @var string
+     * @var string|DBHelper_StatementBuilder
      */
     private $statement;
 
-    public function __construct(string $statement, string $joinID='')
+    /**
+     * @var string[]
+     */
+    private $requiredJoins = array();
+
+    public function __construct($statement, string $joinID='')
     {
         if(empty($joinID))
         {
-            $joinID = md5($statement);
+            $joinID = $this->generateID($statement);
         }
 
         $this->id = $joinID;
         $this->statement = $statement;
+    }
+
+    /**
+     * @param string|DBHelper_StatementBuilder $statement
+     * @return string
+     */
+    private function generateID($statement) : string
+    {
+        if($statement instanceof DBHelper_StatementBuilder)
+        {
+            return md5($statement->getTemplate());
+        }
+
+        return md5($statement);
     }
 
     /**
@@ -40,11 +59,31 @@ class Application_FilterCriteria_Database_Join implements Interface_Stringable
      */
     public function getStatement() : string
     {
-        return $this->statement;
+        return (string)$this->statement;
+    }
+
+    public function requireJoin(string $joinID) : Application_FilterCriteria_Database_Join
+    {
+        if(!in_array($joinID, $this->requiredJoins))
+        {
+            $this->requiredJoins[] = $joinID;
+        }
+
+        return $this;
+    }
+
+    public function hasJoins() : bool
+    {
+        return !empty($this->requiredJoins);
+    }
+
+    public function getRequiredJoinIDs() : array
+    {
+        return $this->requiredJoins;
     }
 
     public function __toString()
     {
-        return $this->statement;
+        return $this->getStatement();
     }
 }
