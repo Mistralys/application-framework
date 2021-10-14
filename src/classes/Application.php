@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -177,7 +178,7 @@ class Application
         $this->bootScreen = $bootScreen;
         $this->id = self::$counter;
         $this->ui = UI::createInstance($this);
-        $this->locale = \AppLocalize\Localization::getAppLocale();
+        $this->locale = Localization::getAppLocale();
     }
 
     /**
@@ -190,6 +191,23 @@ class Application
     public static function isActive() : bool
     {
         return isset(self::$session);
+    }
+
+    /**
+     * @return Application_Feedback
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception
+     */
+    public static function createFeedback() : Application_Feedback
+    {
+        $collection = DBHelper::createCollection(Application_Feedback::class);
+
+        if($collection instanceof Application_Feedback)
+        {
+            return $collection;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Feedback::class, $collection);
     }
 
     /**
@@ -883,13 +901,19 @@ class Application
      * which are used to handle user ratings of application screens.
      *
      * @return Application_Ratings
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception
      */
     public static function createRatings() : Application_Ratings
     {
-        return ensureType(
-            Application_Ratings::class,
-            DBHelper::createCollection('Application_Ratings')
-        );
+        $collection = DBHelper::createCollection(Application_Ratings::class);
+
+        if($collection instanceof Application_Ratings)
+        {
+            return $collection;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Ratings::class, $collection);
     }
 
     /**
