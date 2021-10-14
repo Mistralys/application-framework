@@ -262,7 +262,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * The array is preferred for performance reasons as well as
      * stability (the string is split by commas).
      *
-     * @return string|DBHelper_StatementBuilder[]
+     * @return string|array<int,string|DBHelper_StatementBuilder>
      */
     abstract protected function getSelect();
 
@@ -278,7 +278,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *     'tablename.`field_name`'
      * )
      *
-     * @return string|DBHelper_StatementBuilder[]
+     * @return array<int,string|DBHelper_StatementBuilder>
      */
     abstract protected function getSearchFields();
 
