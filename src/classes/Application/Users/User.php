@@ -2,6 +2,8 @@
 
 class Application_Users_User extends DBHelper_BaseRecord
 {
+    const COL_EMAIL = 'email';
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
         // nothing to do
@@ -29,12 +31,12 @@ class Application_Users_User extends DBHelper_BaseRecord
     
     public function getEmail()
     {
-        return $this->getRecordKey('email');
+        return $this->getRecordKey(self::COL_EMAIL);
     }
 
     public function setEmail(string $email) : bool
     {
-        return $this->setRecordKey('email', $email);
+        return $this->setRecordKey(self::COL_EMAIL, $email);
     }
 
     public function setFirstName(string $firstName) : bool
