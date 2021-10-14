@@ -1339,7 +1339,7 @@ class UI_DataGrid
                 '<tr class="column-headers duplicate-headers">';
                     for ($i = 0; $i < $this->columnCount; $i++) {
                         if($this->columns[$i]->isValid()) {
-                            $html .= $this->columns[$i]->renderHeaderCell();
+                            $html .= $this->columns[$i]->renderHeaderCell(true);
                         }
                     }
                     $html .=

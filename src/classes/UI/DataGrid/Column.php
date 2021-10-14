@@ -349,20 +349,22 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return '<td' . $this->renderAttributes(false, $value, $entry) . '>' . $value . '</td>';
     }
 
-    public function renderHeaderCell()
+    public function renderHeaderCell(bool $duplicate=false)
     {
         if ($this->isHidden()) {
             return '';
         }
         
-        $title = sb()->add($this->title);
+        $title = sb();
         
         $icons = array();
         
-        if($this->isSortable()) 
+        if(!$duplicate && $this->isSortable())
         {
             $this->addSortIcons($title);
         }
+
+        $title->add($this->title);
         
         if(!empty($this->options['tooltip'])) {
             $icons[] = UI::icon()->information()
