@@ -1181,7 +1181,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         if(!isset($this->logPrefix))
         {
-            $this->logPrefix = ucfirst($this->getRecordTypeName()).' collection | ';
+            $this->logPrefix = ucfirst($this->getRecordTypeName()).' collection';
         }
 
         return $this->logPrefix;
