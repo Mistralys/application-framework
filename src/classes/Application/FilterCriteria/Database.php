@@ -8,6 +8,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     const ERROR_CUSTOM_COLUMN_NOT_REGISTERED = 710005;
     const ERROR_JOIN_ID_NOT_FOUND = 710006;
     const ERROR_JOIN_ALREADY_REGISTERED = 710007;
+    const ERROR_JOIN_ALREADY_ADDED = 710008;
 
     const DEFAULT_SELECT = 'SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
 
@@ -17,7 +18,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $placeholderPrefix = 'PH';
 
     /**
-     * @var string[]
+     * @var array<string,Application_FilterCriteria_Database_Join>
      */
     protected $joins = array();
 
@@ -325,7 +326,32 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function buildJoins() : string
     {
-        $joins = array_unique($this->joins);
+        // First pass: determine if any of the
+        // joins require other joins to be added
+        // as well (non-recursive: only a single
+        // level is checked).
+        foreach($this->joins as $join)
+        {
+            if(!$join->hasJoins())
+            {
+                continue;
+            }
+
+            $joinIDs = $join->getRequiredJoinIDs();
+
+            foreach($joinIDs as $joinID)
+            {
+                $this->requireJoin($joinID);
+            }
+        }
+
+        $joins = array();
+
+        // Second pass: collect the actual statements.
+        foreach($this->joins as $join)
+        {
+            $joins[] = $join->getStatement();
+        }
 
         return implode(PHP_EOL, $joins);
     }
@@ -874,20 +900,28 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @param string|DBHelper_StatementBuilder $statement
      * @param string $joinID
-     * @return $this
+     * @return Application_FilterCriteria_Database_Join
      */
-    public function addJoin($statement, string $joinID='')
+    public function addJoin($statement, string $joinID='') : Application_FilterCriteria_Database_Join
     {
-        $statement = (string)$statement;
+        $join = new Application_FilterCriteria_Database_Join($statement, $joinID);
+        $id = $join->getID();
 
-        if(empty($joinID))
+        if(isset($this->joins[$id]))
         {
-            $joinID = md5($statement);
+            return $this->joins[$id];
         }
 
-        $this->joins[$joinID] = $statement;
+        // Used the registered version of the join,
+        // if one is available.
+        if(isset($this->registeredJoins[$id]))
+        {
+            $join = $this->registeredJoins[$id];
+        }
 
-        return $this;
+        $this->joins[$id] = $join;
+
+        return $join;
     }
 
     public function addJoinStatement($template, string $joinID='') : DBHelper_StatementBuilder
@@ -902,9 +936,12 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * Adds a `JOIN` statement that was previously registered
      * with {@see Application_FilterCriteria_Database::registerJoin()}.
+     *
      * Use this to add joins to a query only when they are needed,
      * as alternative to {@see Application_FilterCriteria_Database::addJoin()},
      * which adds it regardless of whether it is actually used.
+     *
+     * NOTE: If the join has already been added, this will be ignored.
      *
      * @param string $joinID
      * @return $this
@@ -913,19 +950,34 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function requireJoin(string $joinID)
     {
-        return $this->addJoin(
-            $this->getJoinByID($joinID),
-            $joinID
-        );
+        if($this->hasJoin($joinID))
+        {
+            return $this;
+        }
+
+        $join = $this->getJoinByID($joinID);
+
+        $this->joins[$joinID] = $join;
+
+        return $this;
+    }
+
+    protected function hasJoin($joinID) : bool
+    {
+        return isset($this->joins[$joinID]);
     }
 
     /**
+     * Gets a join statement, either from those that have
+     * been added, or who have been registered but not added
+     * yet.
+     *
      * @param string $joinID
-     * @return string
+     * @return Application_FilterCriteria_Database_Join
      * @throws DBHelper_Exception
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ID_NOT_FOUND
      */
-    public function getJoinByID(string $joinID) : string
+    public function getJoinByID(string $joinID) : Application_FilterCriteria_Database_Join
     {
         if(isset($this->joins[$joinID]))
         {
@@ -947,21 +999,41 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         );
     }
 
-    public function registerJoin(string $joinID, string $statement)
+    /**
+     * Registers a `JOIN` statement that can be referenced
+     * by its ID, to allow columns to require joins only
+     * when they are actually needed.
+     *
+     * @param string $joinID
+     * @param string|DBHelper_StatementBuilder $statement
+     * @return Application_FilterCriteria_Database_Join
+     *
+     * @throws DBHelper_Exception
+     * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_ADDED
+     * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_REGISTERED
+     */
+    public function registerJoin(string $joinID, $statement) : Application_FilterCriteria_Database_Join
     {
-        if(isset($this->joins[$joinID]))
-        {
+        $join = new Application_FilterCriteria_Database_Join($statement, $joinID);
+        $id = $join->getID();
 
+        if(isset($this->joins[$id]))
+        {
+            throw new DBHelper_Exception(
+                'JOIN statement already added.',
+                sprintf(
+                    'Cannot register JOIN statement [%s], it has already been added.',
+                    $joinID
+                ),
+                self::ERROR_JOIN_ALREADY_ADDED
+            );
         }
 
-        if(!isset($this->registeredJoins[$joinID]))
+        if(!isset($this->registeredJoins[$id]))
         {
-            $this->registeredJoins[$joinID] = new Application_FilterCriteria_Database_Join(
-                $statement,
-                $joinID
-            );
+            $this->registeredJoins[$id] = $join;
 
-            return $this->registeredJoins[$joinID];
+            return $join;
         }
 
         throw new DBHelper_Exception(
