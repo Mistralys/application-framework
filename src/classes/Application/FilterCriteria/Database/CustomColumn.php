@@ -26,7 +26,7 @@ class Application_FilterCriteria_Database_CustomColumn
     const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
     /**
-     * @var NamedClosure
+     * @var NamedClosure|DBHelper_StatementBuilder
      */
     private $source;
 
