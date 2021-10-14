@@ -269,8 +269,11 @@ font-size:16px;
 }
 
 .btn-group.multiselect{
-/*width:100%; Was causing layout issues with appended buttons */
 padding-left:0;
+}
+
+.btn-group.multiselect.multiselect-block{
+width:100%;
 }
 
 .element-icons{
