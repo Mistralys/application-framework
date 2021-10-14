@@ -5,6 +5,7 @@ declare(strict_types=1);
 final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCriteria_DatabaseExtended
 {
     const JOIN_FEEDBACK = 'feedback';
+    const JOIN_OPTIONAL_TABLE = 'table_optional_join';
 
     /**
      * Enables the custom column, which automatically
@@ -64,7 +65,7 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 
     public function getColFeedbackText() : string
     {
-        return $this->getCustomColumn('text')->getSelect();
+        return $this->getCustomColumn('text')->getStatement();
     }
 
     protected function _initCustomColumns() : void
@@ -78,12 +79,14 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         $container
             ->table('{table_users}', Application_Users::TABLE_NAME)
             ->table('{table_feedback}', Application_Feedback::TABLE_NAME)
+            ->table('{table_optional}', self::JOIN_OPTIONAL_TABLE)
 
             ->alias('{users}', 'users')
             ->alias('{feedback}', 'feedback')
 
             ->field('{email}', Application_Users_User::COL_EMAIL)
             ->field('{users_primary}', Application_Users::PRIMARY_NAME)
+            ->field('{feedback_primary}', Application_Feedback::PRIMARY_NAME)
             ->field('{feedback_text}', Application_Feedback_Report::COL_FEEDBACK);
     }
 
@@ -95,6 +98,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
                     {table_feedback} AS {feedback}
                 ON
                     {feedback}.{users_primary}={users}.{users_primary}"
+        );
+
+        $this->registerJoinStatement(
+            self::JOIN_OPTIONAL_TABLE,
+            "JOIN {table_optional}"
         );
     }
 }
