@@ -44,7 +44,7 @@ class UI_DataGrid_Column_MultiSelect extends UI_DataGrid_Column
         return $html;
     }
 
-    public function renderHeaderCell()
+    public function renderHeaderCell(bool $duplicate=false)
     {
         $html =
         '<th style="width:1%" class="role-actions">' .
