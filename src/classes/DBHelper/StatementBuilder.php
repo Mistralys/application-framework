@@ -26,7 +26,7 @@ declare(strict_types=1);
  * @subpackage Helpers
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class DBHelper_StatementBuilder implements UI_Renderable_Interface
+class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContainer implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
@@ -38,89 +38,24 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
      */
     private $template;
 
-    /**
-     * @var array<string,string>
-     */
-    private $vars = array();
-
     public function __construct(string $statementTemplate)
     {
         $this->template = $statementTemplate;
     }
 
-    private function wrapTicks(string $value) : string
-    {
-        return '`'.trim($value, '`').'`';
-    }
-
     /**
-     * @param string $tableName
+     * @param string $placeholderName
      * @param string $value
-     * @return $this
+     * @return DBHelper_StatementBuilder
      *
      * @throws DBHelper_Exception
      * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
      */
-    public function table(string $tableName, string $value) : DBHelper_StatementBuilder
+    protected function add(string $placeholderName, string $value)
     {
-        return $this->add($tableName, $this->wrapTicks($value));
-    }
+        $this->requirePlaceholderExists($placeholderName);
 
-    /**
-     * @param string $alias
-     * @param string $value
-     * @return $this
-     *
-     * @throws DBHelper_Exception
-     * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
-     */
-    public function alias(string $alias, string $value) : DBHelper_StatementBuilder
-    {
-        return $this->add($alias, $this->wrapTicks($value));
-    }
-
-    /**
-     * @param string $name
-     * @param int $value
-     * @return $this
-     *
-     * @throws DBHelper_Exception
-     * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
-     */
-    public function int(string $name, int $value) : DBHelper_StatementBuilder
-    {
-        return $this->add($name, (string)$value);
-    }
-
-    /**
-     * @param string $fieldName
-     * @param string $value
-     * @return $this
-     *
-     * @throws DBHelper_Exception
-     * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
-     */
-    public function field(string $fieldName, string $value) : DBHelper_StatementBuilder
-    {
-        return $this->add($fieldName, $this->wrapTicks($value));
-    }
-
-    /**
-     * @param string $varName
-     * @param string $value
-     * @return $this
-     *
-     * @throws DBHelper_Exception
-     * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
-     */
-    public function add(string $varName, string $value) : DBHelper_StatementBuilder
-    {
-        $placeholder = '{'.$varName.'}';
-
-        $this->requirePlaceholderExists($placeholder);
-
-        $this->vars[$placeholder] = $value;
-        return $this;
+        return parent::add($placeholderName, $value);
     }
 
     /**
@@ -157,23 +92,43 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
      */
     public function render() : string
     {
-        $this->analyzePlaceholders();
+        $placeholders = $this->collectPlaceholderValues();
 
         return str_replace(
-            array_keys($this->vars),
-            array_values($this->vars),
+            array_keys($placeholders),
+            array_values($placeholders),
             $this->template
         );
+    }
+
+    /**
+     * @return array<string,string>
+     * @throws DBHelper_Exception
+     */
+    private function collectPlaceholderValues() : array
+    {
+        $this->analyzePlaceholders();
+
+        $result = array();
+
+        $placeholders = self::detectPlaceholderNames($this->template);
+
+        foreach($placeholders as $placeholderName)
+        {
+            $result['{'.$placeholderName.'}'] = $this->getValue($placeholderName);
+        }
+
+        return $result;
     }
 
     /**
      * @param string $subject
      * @return string[]
      */
-    public static function detectPlaceholders(string $subject) : array
+    public static function detectPlaceholderNames(string $subject) : array
     {
-        preg_match_all('/{([a-zA-Z0-9_-]+)}/sU', $subject, $result, PREG_PATTERN_ORDER);
-        return $result[0];
+        preg_match_all('/{([a-z0-9_-]+)}/sU', $subject, $result, PREG_PATTERN_ORDER);
+        return $result[1];
     }
 
     /**
@@ -181,15 +136,14 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
      */
     private function detectMissingPlaceholders() : array
     {
-        $placeholders = self::detectPlaceholders($this->template);
-
+        $names = self::detectPlaceholderNames($this->template);
         $missing = array();
 
-        foreach($placeholders as $placeholder)
+        foreach($names as $placeholderName)
         {
-            if(!array_key_exists($placeholder, $this->vars))
+            if(!$this->hasValue($placeholderName))
             {
-                $missing[] = $placeholder;
+                $missing[] = $placeholderName;
             }
         }
 
@@ -210,14 +164,15 @@ class DBHelper_StatementBuilder implements UI_Renderable_Interface
         }
 
         throw new DBHelper_Exception(
-            'Unfilled placeholder in statement.',
+            'Unfilled placeholder in statement.'.
             sprintf(
                 'The placeholders %1$s have not been filled.'.PHP_EOL.
                 'Statement:'.PHP_EOL.
                 '%2$s',
-                implode(', ', $missing),
+                '{'.implode('}, {', $missing).'}',
                 $this->template
             ),
+            '',
             self::ERROR_UNFILLED_PLACEHOLDER_DETECTED
         );
     }
