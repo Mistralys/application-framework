@@ -1,12 +1,26 @@
-v1.19.1
+v1.20.0
 - Wizards: Added a traits for selecting a country.
 - Wizards: Added a traits for a generic summary/confirmation step.
 - Wizards: Added registering completed steps to display the steps summary.
 - UI: BigSelection: Top-aligned labels when description is multiline.
 - UI: BigSelection: No margin on last paragraph in descriptions.
 - UI: Icons: Added the `ContentTypes` icon.
+- UI: Icons: Now implementing the `UI_Renderable_Interface`.
 - UI: Updated to use FontAwesome `v5.15.4`.
+- UI: Forms: Fixed block-styled multiselect inputs not shown as block elements.
+- UI: Styles: Fixed external links right angle quote wrapping to the next line.
 - Application: Added static `isUnitTestingRunning()` method.
+- DBHelper: Added the statement builder's value container.
+- DBHelper: Added the global `statementValues()` function.
+- DBHelper: Updated the extended filter criteria to support the use of statement builders.
+- DBHelper: Custom columns are now enabled automatically if used in the query.
+- DBHelper: Custom columns now support selecting localized country labels by country ID.
+- DBHelper: Custom columns now support selecting user names by user ID.
+- DBHelper: Added registering `JOIN` statements, so they are only added if needed.
+- Feedback: Added the missing `AddFeedback` AJAX method.
+- Feedback: Added some of the missing collection classes.
+- DataGrids: Moved the sorting icons out of the header cells for better readability.
+- DataGrids: Aligned header cells to the top.
 
 v1.19.0
 - Environments: Added the new requirement class for the unit tests suite.
