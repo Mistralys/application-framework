@@ -8,12 +8,6 @@
  */
 
 /**
- * The base class for filter criteria
- * @see Application_FilterCriteria
- */
-require_once 'Application/FilterCriteria.php';
-
-/**
  * Generic filter criteria implementation for revisionable
  * revisions. Allows selecting and fetching revision data
  * automatically without configuration if the revisionable
@@ -35,6 +29,8 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
     
     public function __construct(Application_RevisionStorage_DBStandardized $storage)
     {
+        parent::__construct($storage);
+
         $this->setOrderBy('`date`', 'ASC');
 
         $this->storage = $storage;
@@ -148,5 +144,15 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         }
         
         return $this;
+    }
+
+    protected function _registerJoins() : void
+    {
+        // TODO: Implement _registerJoins() method.
+    }
+
+    protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
+    {
+        // TODO: Implement _registerStatementValues() method.
     }
 }
