@@ -1,5 +1,21 @@
 <?php
+/**
+ * File containing the class {@see Application_FilterCriteria_Database}.
+ *
+ * @package Application
+ * @subpackage FilterCriteria
+ * @see Application_FilterCriteria_Database
+ */
 
+/**
+ * Database-specific filter criteria base class: allows
+ * selecting data from tables in the database, with database-
+ * specific methods for handling JOIN statements and the like.
+ *
+ * @package Application
+ * @subpackage FilterCriteria
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 abstract class Application_FilterCriteria_Database extends Application_FilterCriteria
 {
     const ERROR_INVALID_WHERE_STATEMENT = 710001;
@@ -16,11 +32,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @var string
      */
     protected $placeholderPrefix = 'PH';
-
-    /**
-     * @var array<string,Application_FilterCriteria_Database_Join>
-     */
-    protected $joins = array();
 
     /**
      * @var array<array<string,mixed>>
@@ -63,11 +74,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $selectAlias;
 
     /**
-     * @var DBHelper_StatementBuilder[]
-     */
-    protected $joinStatements = array();
-
-    /**
      * @var DBHelper_StatementBuilder_ValuesContainer|NULL
      */
     protected $statementValues;
@@ -78,9 +84,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $selectStatements = array();
 
     /**
-     * @var array<string,Application_FilterCriteria_Database_Join>
+     * @var string[]
      */
-    private $registeredJoins = array();
+    protected $where = array();
 
     /**
      * Counts the amount of matching records,
@@ -138,53 +144,35 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         return '*';
     }
 
-    /**
-     * @param bool $isCount
-     * @return string
-     * @throws Application_Exception
-     */
-    protected function buildQuery(bool $isCount=false) : string
+    // region: Finalizing the query filters
+
+    protected function _applyFilters() : void
     {
-        $this->initQuery();
+        $this->createStatementValues();
+        $this->finalizeWhere();
+        $this->registerJoins();
+    }
 
-        $this->isCount = $isCount;
-
-        $query = $this->addDistinctKeyword($this->getQuery());
-
-        if (isset($this->search)) {
-            $searchTokens = $this->resolveSearchTokens();
-            if(!empty($searchTokens)) {
-                $this->addWhere($searchTokens);
-            }
-        }
-
-        foreach ($this->joinStatements as $statement)
+    protected function finalizeWhere() : void
+    {
+        if (!isset($this->search))
         {
-            $this->addJoin((string)$statement);
+            return;
         }
 
-        $replaces = array(
-            '{WHAT}' => null,
-            '{WHERE}' => $this->buildWhere(),
-            '{GROUPBY}' => $this->buildGroupBy(),
-            '{ORDERBY}' => $this->buildOrderby(),
-            '{JOINS}' => $this->buildJoins(),
-            '{LIMIT}' => $this->buildLimit()
-        );
+        $searchTokens = $this->buildSearchTokens();
 
-        // do this at the end, so selects can be added dynamically
-        $replaces['{WHAT}'] = $this->buildSelect();
-
-        return str_replace(array_keys($replaces), array_values($replaces), $query);
+        if(!empty($searchTokens))
+        {
+            $this->addWhere($searchTokens);
+        }
     }
 
-    public function renderQuery() : string
-    {
-        return $this->buildQuery();
-    }
+    // endregion
 
-    protected function initQuery() : void
+    public function getWheres() : array
     {
+        return $this->where;
     }
 
     /**
@@ -194,8 +182,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * already been added manually.
      *
      * @param string|DBHelper_StatementBuilder $query
-     * @throws Application_Exception
      * @return string
+     *
+     * @throws Application_Exception
+     * @throws Application_FilterCriteria_FinalizedException
+     * @see Application_FilterCriteria_Database::ERROR_MISSING_SELECT_KEYWORD
      */
     protected function addDistinctKeyword($query) : string
     {
@@ -298,194 +289,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     abstract protected function getQuery();
 
-    protected function buildLimit() : string
-    {
-        if(!$this->isCount && ($this->limit > 0 || $this->offset > 0)) {
-            return sprintf(" LIMIT %s,%s", $this->limit, $this->offset);
-        }
-
-        return '';
-    }
-
-    /**
-     * @var string[]
-     */
-    protected $where = array();
-
-    protected function buildWhere() : string
-    {
-        if (empty($this->where)) {
-            return '';
-        }
-
-        return
-            PHP_EOL .
-            'WHERE' . PHP_EOL .
-            implode(PHP_EOL . 'AND' . PHP_EOL, $this->where);
-    }
-
-    protected function buildJoins() : string
-    {
-        // First pass: determine if any of the
-        // joins require other joins to be added
-        // as well (non-recursive: only a single
-        // level is checked).
-        foreach($this->joins as $join)
-        {
-            if(!$join->hasJoins())
-            {
-                continue;
-            }
-
-            $joinIDs = $join->getRequiredJoinIDs();
-
-            foreach($joinIDs as $joinID)
-            {
-                $this->requireJoin($joinID);
-            }
-        }
-
-        $joins = array();
-
-        // Second pass: collect the actual statements.
-        foreach($this->joins as $join)
-        {
-            $joins[] = $join->getStatement();
-        }
-
-        return implode(PHP_EOL, $joins);
-    }
-
-    protected function buildOrderby() : string
-    {
-        // no ordering in count queries
-        if ($this->isCount || !isset($this->orderField)) {
-            return '';
-        }
-
-        $field = $this->orderField;
-
-        // leave the name be if it has a dot (meaning it has a table or alias specified)
-        if(!strstr($field, '.') && !strstr($field, '\\'))
-        {
-            $field = $this->quoteColumnName($this->orderField);
-
-            // add the table alias if it is present
-            if(isset($this->selectAlias) && substr($field, 0, 1) != '\\') {
-                $field = $this->selectAlias.'.'.$field;
-            }
-        }
-
-        $field = str_replace('\\', '', $field);
-
-        return
-            PHP_EOL .
-            'ORDER BY' . PHP_EOL .
-            "     ".$field." ".$this->orderDir;
-    }
-
-    /**
-     * @param string|DBHelper_StatementBuilder $name
-     * @return string
-     */
-    protected function quoteColumnName($name) : string
-    {
-        if($name instanceof DBHelper_StatementBuilder)
-        {
-            return (string)$name;
-        }
-
-        if(substr($name, 0, 1) == '`') {
-            return $name;
-        }
-
-        return '`'.$name.'`';
-    }
-
-    protected function resolveSearchTokens() : string
-    {
-        $this->initQuery();
-
-        $searchFields = $this->getSearchFields();
-        if (empty($searchFields)) {
-            return '';
-        }
-
-        $searchTerms = $this->getSearchTerms();
-        if(empty($searchTerms)) {
-            return '';
-        }
-
-        $totalTerms = count($searchTerms);
-        $totalFields = count($searchFields);
-
-        $parts = array();
-        $connectorAdded = false;
-        $like = true;
-        $cnt = 0;
-
-        for($i=0; $i<$totalTerms; $i++)
-        {
-            $term = $searchTerms[$i];
-
-            // escape the underscore characters, which have special
-            // meaning in SQL and will not give the expected results
-            $term = str_replace('_', '\_', $term);
-
-            if($term=='NOT' || $term==t('NOT')) {
-                $like = false;
-                continue;
-            }
-
-            $connector = $this->getConnector($term);
-            if ($connector) {
-                // search terms may not start with a connector
-                if($i==0) {
-                    $this->addWarning('The search terms may not start with a logical operator.');
-                    continue;
-                }
-
-                if($i==($totalTerms-1)) {
-                    $this->addWarning('The search terms may not end with a logical operator.');
-                    continue;
-                }
-
-                $parts[] = $connector;
-                $connectorAdded = true;
-                continue;
-            } else {
-                if ($i > 0 && $i < $totalTerms) {
-                    if (!$connectorAdded && !empty($parts)) {
-                        $parts[] = ' AND ';
-                    } else {
-                        $connectorAdded = false;
-                    }
-                }
-            }
-
-            $concatenator = 'OR';
-            $likeToken = 'LIKE';
-            if(!$like) {
-                $likeToken = 'NOT LIKE';
-                $concatenator = 'AND';
-                $like = true;
-            }
-
-            $cnt++;
-            $fieldTokens = array();
-            for($j=0; $j<$totalFields; $j++) {
-                $fieldName = (string)$searchFields[$j];
-                $placeholder = $this->generatePlaceholder('%'.$term.'%');
-                $fieldTokens[] = $fieldName.' '.$likeToken.' '.$placeholder;
-            }
-
-
-            $parts[] = '('.implode(' '.$concatenator.' ', $fieldTokens).')';
-        }
-
-        return '('.implode(' ', $parts).')';
-    }
-
     /**
      * @var array<string,string>
      */
@@ -496,9 +299,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * For placeholders that should not be reset with each query,
      * set the persistent parameter to true.
      *
-     * @var string|int|float $value
-     * @var string $name
+     * @param string|int|float $value
+     * @param string $name
      * @return $this
+     *
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addPlaceholder(string $name, $value)
     {
@@ -536,6 +341,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @param string|DBHelper_StatementBuilder $columnSelect
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addSelectColumn($columnSelect)
     {
@@ -547,39 +353,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     }
 
     /**
-     * Builds the list of column names to select in
-     * the query. This automatically adds columns as
-     * needed according to the settings, like whether
-     * this is a distinct query.
-     *
-     * @throws Application_Exception
-     * @return string The list of columns to select, without the SELECT keyword.
-     * @see getSelect()
-     * @see addSelectColumn()
-     */
-    protected function buildSelect()
-    {
-        if($this->isCount) {
-            return $this->getCountSelect();
-        }
-
-        $selects = array_unique($this->collectSelects());
-
-        // in distinct queries, it is safer to add all select fields to the group by
-        if($this->distinct) {
-            foreach($selects as $field) {
-                $this->addGroupBy($field);
-            }
-        }
-
-        return implode(',', $selects);
-    }
-
-    /**
      * @return string[]
      * @throws Application_Exception
      */
-    protected function collectSelects() : array
+    public function getSelects() : array
     {
         $selects = $this->getSelect();
         if(empty($selects)) {
@@ -613,6 +390,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * fields for compatibility reasons for example.
      *
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function makeDistinct()
     {
@@ -624,7 +402,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * Retrieves all matching items as an indexed array containing
      * associative array entries with the item data.
      *
-     * @return mixed[]
+     * @return array<int,array{sql:string,vars:array<string,mixed>}>
      * @throws Application_Exception|DBHelper_Exception
      * @see getItem()
      */
@@ -678,8 +456,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * Adds a where statement (without the `WHERE`).
      *
      * @param string|DBHelper_StatementBuilder $statement
-     * @throws Application_Exception
      * @return $this
+     *
+     * @throws Application_Exception
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addWhere($statement)
     {
@@ -711,46 +491,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public function addWhereStatement(string $template)
     {
         return $this->addWhere($this->statement($template));
-    }
-
-    /**
-     * Generates a placeholder name unique for the specified value:
-     * will return the same placeholder name for every same value
-     * within the same request.
-     *
-     * Returns the placeholder name.
-     *
-     * @param string|int|float|null $value
-     * @return string
-     */
-    protected function generatePlaceholder($value) : string
-    {
-        $value = strval($value);
-        $hash = md5($value);
-
-        if(isset($this->placeholderHashes[$hash]))
-        {
-            $pl = $this->placeholderHashes[$hash];
-
-            // ensure that the placeholder value still exists
-            if(!isset($this->placeholders[$pl[0]])) {
-                $this->addPlaceholder($pl[0], $pl[1]);
-            }
-
-            return $pl[0];
-        }
-
-        $this->placeholderCounter++;
-
-        // to avoid a placeholder like PH1 interfering with a
-        // longer placeholder like PH11, we add zero padding.
-        $name = ':'.$this->placeholderPrefix.sprintf('%04d', $this->placeholderCounter);
-
-        $this->placeholderHashes[$hash] = array($name, $value);
-
-        $this->addPlaceholder($name, $value);
-
-        return $name;
     }
 
     /**
@@ -897,14 +637,140 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         ));
     }
 
+    // region: JOIN statements handling
+
+    /**
+     * @var array<string,Application_FilterCriteria_Database_Join>
+     */
+    protected $joins = array();
+
+    /**
+     * @var DBHelper_StatementBuilder[]
+     */
+    protected $joinStatements = array();
+
+    /**
+     * @var array<string,Application_FilterCriteria_Database_Join>
+     */
+    private $registeredJoins = array();
+
+    private $joinsRegistered = false;
+
+    abstract protected function _registerJoins() : void;
+
+    protected final function registerJoins() : void
+    {
+        if($this->joinsRegistered === true)
+        {
+            return;
+        }
+
+        $this->joinsRegistered = true;
+
+        $this->_registerJoins();
+    }
+
+    /**
+     * Retrieves all join statements that are currently
+     * in use in the criteria. Includes all dependencies
+     * if a join requires another one, even if that has
+     * only been registered so far.
+     *
+     * @return Application_FilterCriteria_Database_Join[]
+     * @throws DBHelper_Exception
+     */
+    public function getJoins(bool $includeRegistered=false) : array
+    {
+        $this->registerJoins();
+
+        $result = array();
+
+        foreach($this->joins as $join)
+        {
+            $id = $join->getID();
+            $result[$id] = $join;
+
+            if(!$join->hasJoins())
+            {
+                continue;
+            }
+
+            $joinIDs = $join->getRequiredJoinIDs();
+
+            foreach($joinIDs as $joinID)
+            {
+                $result[$joinID] = $this->getJoinByID($joinID);
+            }
+        }
+
+        if($includeRegistered)
+        {
+            $result = array_merge($result, $this->registeredJoins);
+        }
+
+        return array_values($result);
+    }
+
+    /**
+     * Retrieves all join statements currently used in
+     * the criteria, ordered to ensure that joins that
+     * depend on each other are added in the correct
+     * sequence.
+     *
+     * @return Application_FilterCriteria_Database_Join[]
+     * @throws DBHelper_Exception
+     */
+    public function getJoinsOrdered(bool $includeRegistered=false) : array
+    {
+        $joins = $this->getJoins($includeRegistered);
+
+        // Sort the joins so that all joins that depend
+        // on another are above their dependent joins.
+        // All other, independent joins get appended and
+        // sorted by their ID at the end of the list.
+        usort($joins, function(Application_FilterCriteria_Database_Join $a, Application_FilterCriteria_Database_Join $b)
+        {
+            if($a->dependsOn($b))
+            {
+                return 1;
+            }
+            else if($b->dependsOn($a))
+            {
+                return -1;
+            }
+
+            $aJoins = $a->hasJoins() || $a->hasDependentJoins();
+            $bJoins = $b->hasJoins() || $b->hasDependentJoins();
+
+            if($aJoins && !$bJoins)
+            {
+                return -1;
+            }
+            else if(!$aJoins && $bJoins)
+            {
+                return 1;
+            }
+
+            if(!$bJoins && !$aJoins)
+            {
+                return strnatcasecmp($a->getID(), $b->getID());
+            }
+
+            return 0;
+        });
+
+        return $joins;
+    }
+
     /**
      * @param string|DBHelper_StatementBuilder $statement
      * @param string $joinID
      * @return Application_FilterCriteria_Database_Join
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addJoin($statement, string $joinID='') : Application_FilterCriteria_Database_Join
     {
-        $join = new Application_FilterCriteria_Database_Join($statement, $joinID);
+        $join = new Application_FilterCriteria_Database_Join($this, $statement, $joinID);
         $id = $join->getID();
 
         if(isset($this->joins[$id]))
@@ -924,7 +790,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         return $join;
     }
 
-    public function addJoinStatement($template, string $joinID='') : DBHelper_StatementBuilder
+    /**
+     * @param string $template
+     * @param string $joinID
+     * @return DBHelper_StatementBuilder
+     * @throws Application_FilterCriteria_FinalizedException
+     */
+    public function addJoinStatement(string $template, string $joinID='') : DBHelper_StatementBuilder
     {
         $statement = $this->statement($template);
 
@@ -946,6 +818,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $joinID
      * @return $this
      * @throws DBHelper_Exception
+     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ID_NOT_FOUND
      */
     public function requireJoin(string $joinID)
@@ -964,6 +837,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function hasJoin($joinID) : bool
     {
+        $this->registerJoins();
+
         return isset($this->joins[$joinID]);
     }
 
@@ -979,6 +854,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function getJoinByID(string $joinID) : Application_FilterCriteria_Database_Join
     {
+        $this->registerJoins();
+
         if(isset($this->joins[$joinID]))
         {
             return $this->joins[$joinID];
@@ -1009,12 +886,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return Application_FilterCriteria_Database_Join
      *
      * @throws DBHelper_Exception
+     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_ADDED
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_REGISTERED
      */
     public function registerJoin(string $joinID, $statement) : Application_FilterCriteria_Database_Join
     {
-        $join = new Application_FilterCriteria_Database_Join($statement, $joinID);
+        $join = new Application_FilterCriteria_Database_Join($this, $statement, $joinID);
         $id = $join->getID();
 
         if(isset($this->joins[$id]))
@@ -1056,15 +934,20 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $joinID
      * @param string $statementTemplate Statement template
      * @return Application_FilterCriteria_Database_Join
+     * @throws Application_FilterCriteria_FinalizedException
+     * @throws DBHelper_Exception
      */
     public function registerJoinStatement(string $joinID, string $statementTemplate) : Application_FilterCriteria_Database_Join
     {
         return $this->registerJoin($joinID, $this->statement($statementTemplate));
     }
 
+    // endregion
+
     /**
      * @param string|DBHelper_StatementBuilder $statement
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addHaving($statement)
     {
@@ -1074,6 +957,89 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
         return $this;
     }
+
+    // region: Utility methods
+
+    /**
+     * Returns the internal SQL statement values container
+     * that is used to store all placeholder values for
+     * statements managed by the filter criteria class methods.
+     *
+     * @return DBHelper_StatementBuilder_ValuesContainer
+     */
+    protected final function createStatementValues() : DBHelper_StatementBuilder_ValuesContainer
+    {
+        if(!isset($this->statementValues))
+        {
+            $this->statementValues = statementValues();
+            $this->_registerStatementValues($this->statementValues);
+        }
+
+        return $this->statementValues;
+    }
+
+    abstract protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void;
+
+    /**
+     * @param string|DBHelper_StatementBuilder $name
+     * @return string
+     */
+    protected function quoteColumnName($name) : string
+    {
+        if($name instanceof DBHelper_StatementBuilder)
+        {
+            return (string)$name;
+        }
+
+        if(substr($name, 0, 1) == '`') {
+            return $name;
+        }
+
+        return '`'.$name.'`';
+    }
+
+    /**
+     * Generates a placeholder name unique for the specified value:
+     * will return the same placeholder name for every same value
+     * within the same request.
+     *
+     * Returns the placeholder name.
+     *
+     * @param string|int|float|null $value
+     * @return string
+     */
+    protected function generatePlaceholder($value) : string
+    {
+        $value = strval($value);
+        $hash = md5($value);
+
+        if(isset($this->placeholderHashes[$hash]))
+        {
+            $pl = $this->placeholderHashes[$hash];
+
+            // ensure that the placeholder value still exists
+            if(!isset($this->placeholders[$pl[0]])) {
+                $this->addPlaceholder($pl[0], $pl[1]);
+            }
+
+            return $pl[0];
+        }
+
+        $this->placeholderCounter++;
+
+        // to avoid a placeholder like PH1 interfering with a
+        // longer placeholder like PH11, we add zero padding.
+        $name = ':'.$this->placeholderPrefix.sprintf('%04d', $this->placeholderCounter);
+
+        $this->placeholderHashes[$hash] = array($name, $value);
+
+        $this->addPlaceholder($name, $value);
+
+        return $name;
+    }
+
+    // endregion
+
 
     /**
      * @return $this
@@ -1094,6 +1060,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @param string|DBHelper_StatementBuilder $groupBy
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupBy($groupBy)
     {
@@ -1107,6 +1074,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     /**
      * @param string|DBHelper_StatementBuilder ...$args
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupBys(...$args)
     {
@@ -1120,6 +1088,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @param string ...$args
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupByStatements(...$args)
     {
@@ -1131,13 +1100,235 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         return $this;
     }
 
-    protected function buildGroupBy() : string
+    public function getGroupBys() : array
     {
-        if(empty($this->groupBy)) {
+        return $this->groupBy;
+    }
+
+    // region: Building and rendering the query
+
+    /**
+     * @param bool $isCount
+     * @return string
+     * @throws Application_Exception
+     */
+    protected function buildQuery(bool $isCount=false) : string
+    {
+        $query = $this->getQuery();
+
+        $this->applyFilters();
+
+        $this->isCount = $isCount;
+
+        $query = $this->addDistinctKeyword($query);
+
+        $replaces = array(
+            '{WHAT}' => null,
+            '{WHERE}' => $this->buildWhere(),
+            '{GROUPBY}' => $this->buildGroupBy(),
+            '{ORDERBY}' => $this->buildOrderby(),
+            '{JOINS}' => $this->buildJoins(),
+            '{LIMIT}' => $this->buildLimit()
+        );
+
+        // do this at the end, so selects can be added dynamically
+        $replaces['{WHAT}'] = $this->buildSelect();
+
+        return str_replace(array_keys($replaces), array_values($replaces), $query);
+    }
+
+    public function renderQuery() : string
+    {
+        return $this->buildQuery();
+    }
+
+    /**
+     * Builds the list of column names to select in
+     * the query. This automatically adds columns as
+     * needed according to the settings, like whether
+     * this is a distinct query.
+     *
+     * @throws Application_Exception
+     * @return string The list of columns to select, without the SELECT keyword.
+     * @see getSelect()
+     * @see addSelectColumn()
+     */
+    protected function buildSelect() : string
+    {
+        if($this->isCount)
+        {
+            return $this->getCountSelect();
+        }
+
+        $selects = array_unique($this->getSelects());
+
+        // in distinct queries, it is safer to add all select fields to the group by
+        if($this->distinct) {
+            foreach($selects as $field) {
+                $this->addGroupBy($field);
+            }
+        }
+
+        return implode(',', $selects);
+    }
+
+    protected function buildSearchTokens() : string
+    {
+        $searchFields = $this->getSearchFields();
+        if (empty($searchFields)) {
             return '';
         }
 
-        return " GROUP BY ".implode(', ', $this->groupBy).$this->buildHavings();
+        $searchTerms = $this->getSearchTerms();
+        if(empty($searchTerms)) {
+            return '';
+        }
+
+        $totalTerms = count($searchTerms);
+        $totalFields = count($searchFields);
+
+        $parts = array();
+        $connectorAdded = false;
+        $like = true;
+        $cnt = 0;
+
+        for($i=0; $i<$totalTerms; $i++)
+        {
+            $term = $searchTerms[$i];
+
+            // escape the underscore characters, which have special
+            // meaning in SQL and will not give the expected results
+            $term = str_replace('_', '\_', $term);
+
+            if($term=='NOT' || $term==t('NOT')) {
+                $like = false;
+                continue;
+            }
+
+            $connector = $this->getConnector($term);
+            if ($connector) {
+                // search terms may not start with a connector
+                if($i==0) {
+                    $this->addWarning('The search terms may not start with a logical operator.');
+                    continue;
+                }
+
+                if($i==($totalTerms-1)) {
+                    $this->addWarning('The search terms may not end with a logical operator.');
+                    continue;
+                }
+
+                $parts[] = $connector;
+                $connectorAdded = true;
+                continue;
+            } else {
+                if ($i > 0 && $i < $totalTerms) {
+                    if (!$connectorAdded && !empty($parts)) {
+                        $parts[] = ' AND ';
+                    } else {
+                        $connectorAdded = false;
+                    }
+                }
+            }
+
+            $concatenator = 'OR';
+            $likeToken = 'LIKE';
+            if(!$like) {
+                $likeToken = 'NOT LIKE';
+                $concatenator = 'AND';
+                $like = true;
+            }
+
+            $cnt++;
+            $fieldTokens = array();
+            for($j=0; $j<$totalFields; $j++) {
+                $fieldName = (string)$searchFields[$j];
+                $placeholder = $this->generatePlaceholder('%'.$term.'%');
+                $fieldTokens[] = $fieldName.' '.$likeToken.' '.$placeholder;
+            }
+
+
+            $parts[] = '('.implode(' '.$concatenator.' ', $fieldTokens).')';
+        }
+
+        return '('.implode(' ', $parts).')';
+    }
+
+    protected function buildJoins() : string
+    {
+        $joins = $this->getJoinsOrdered();
+
+        $result = array();
+
+        // Second pass: collect the actual statements.
+        foreach($joins as $join)
+        {
+            $result[] = $join->getStatement();
+        }
+
+        return implode(PHP_EOL, $result);
+    }
+
+    protected function buildOrderby() : string
+    {
+        // no ordering in count queries
+        if ($this->isCount || !isset($this->orderField)) {
+            return '';
+        }
+
+        $field = $this->orderField;
+
+        // leave the name be if it has a dot (meaning it has a table or alias specified)
+        if(!strstr($field, '.') && !strstr($field, '\\'))
+        {
+            $field = $this->quoteColumnName($this->orderField);
+
+            // add the table alias if it is present
+            if(isset($this->selectAlias) && substr($field, 0, 1) != '\\') {
+                $field = $this->selectAlias.'.'.$field;
+            }
+        }
+
+        $field = str_replace('\\', '', $field);
+
+        return
+            PHP_EOL .
+            'ORDER BY' . PHP_EOL .
+            "     ".$field." ".$this->orderDir;
+    }
+
+    protected function buildLimit() : string
+    {
+        if(!$this->isCount && ($this->limit > 0 || $this->offset > 0)) {
+            return sprintf(" LIMIT %s,%s", $this->limit, $this->offset);
+        }
+
+        return '';
+    }
+
+    protected function buildWhere() : string
+    {
+        $wheres = $this->getWheres();
+
+        if (empty($wheres)) {
+            return '';
+        }
+
+        return
+            PHP_EOL .
+            'WHERE' . PHP_EOL .
+            implode(PHP_EOL . 'AND' . PHP_EOL, $wheres);
+    }
+
+    protected function buildGroupBy() : string
+    {
+        $groupBy = $this->getGroupBys();
+
+        if(empty($groupBy)) {
+            return '';
+        }
+
+        return " GROUP BY ".implode(', ', $groupBy).$this->buildHavings();
     }
 
     protected function buildHavings() : string
@@ -1148,6 +1339,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
         return '';
     }
+
+    // endregion
 
     /**
      * @param string $alias
@@ -1211,24 +1404,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     }
 
     /**
-     * Returns the internal SQL statement values container
-     * that is used to store all placeholder values for
-     * statements managed by the filter criteria class methods.
-     *
-     * @return DBHelper_StatementBuilder_ValuesContainer
-     */
-    protected function createStatementValues() : DBHelper_StatementBuilder_ValuesContainer
-    {
-        if(!isset($this->statementValues))
-        {
-            $this->statementValues = statementValues();
-            $this->initQuery();
-        }
-
-        return $this->statementValues;
-    }
-
-    /**
      * Adds an SQL statement from a statement builder
      * template. It uses the internal statement values
      * container for filling the placeholders.
@@ -1246,8 +1421,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $orderDir
      * @return $this
      * @throws Application_Exception
+     * @throws Application_FilterCriteria_FinalizedException
      */
-    public function setOrderBy($fieldName, string $orderDir = 'ASC')
+    public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
     {
         return parent::setOrderBy((string)$fieldName, $orderDir);
     }
@@ -1261,6 +1437,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $template
      * @param bool $groupBy Whether to add the column to the "GROUP BY" statement.
      * @return DBHelper_StatementBuilder
+     * @throws Application_FilterCriteria_FinalizedException
      */
     protected function addSelectStatement(string $template, bool $groupBy=true) : DBHelper_StatementBuilder
     {
