@@ -1,4 +1,9 @@
 v1.20.0
+- DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
+- DBHelper: Fixed order by and group by statements not using the custom column's value statement.
+- FilterCriteria: Removed the no constructor limitation.
+
+v1.20.0
 - Wizards: Added a traits for selecting a country.
 - Wizards: Added a traits for a generic summary/confirmation step.
 - Wizards: Added registering completed steps to display the steps summary.
