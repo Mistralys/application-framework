@@ -49,13 +49,21 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     * @var DBHelper_BaseCollection
     */
     protected $collection;
-    
+
+    /**
+     * @var string
+     */
     protected $recordTableName;
-    
+
+    /**
+     * @var string
+     */
     protected $recordPrimaryName;
     
     public function __construct(DBHelper_BaseCollection $collection)
     {
+        parent::__construct($collection);
+
         $this->collection = $collection;
         $this->recordTableName = $collection->getRecordTableName();
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
@@ -64,7 +72,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         
         $this->init();
     }
-    
+
     protected function init()
     {
         
@@ -92,12 +100,6 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         }
         
         return $result;
-    }
-    
-    protected function createPristine()
-    {
-        $class = get_class($this);
-        return new $class($this->collection);
     }
     
    /**
