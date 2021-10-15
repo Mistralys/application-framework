@@ -36,7 +36,7 @@ class Application_FilterCriteria_Database_CustomColumn
     private $name;
 
     /**
-     * @var Application_FilterCriteria_Database
+     * @var Application_FilterCriteria_DatabaseExtended
      */
     private $filters;
 
@@ -51,11 +51,11 @@ class Application_FilterCriteria_Database_CustomColumn
     private $requiredJoinIDs = array();
 
     /**
-     * @param Application_FilterCriteria_Database $filters
+     * @param Application_FilterCriteria_DatabaseExtended $filters
      * @param string $name
      * @param NamedClosure|DBHelper_StatementBuilder $source
      */
-    public function __construct(Application_FilterCriteria_Database $filters, string $name, $source)
+    public function __construct(Application_FilterCriteria_DatabaseExtended $filters, string $name, $source)
     {
         $this->filters = $filters;
         $this->name = $name;
@@ -186,6 +186,63 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     public function getSelect() : string
     {
-        return $this->getStatement().' AS `'.$this->name.'`';
+        return $this->getStatement().' AS '.$this->getSelectAlias();
+    }
+
+    public function isInSelect() : bool
+    {
+        return $this->filters->isColumnInSelect($this);
+    }
+
+    public function isSubQuery() : bool
+    {
+        return strstr((string)$this->source, 'SELECT') !== false;
+    }
+
+    /**
+     * Retrieves the statement required to access the
+     * value of the column. This is typically the alias
+     * used in the SELECT statement, if available. Otherwise,
+     * and if the column is a sub-query, this will be
+     * the full statement.
+     *
+     * @return string
+     * @throws Application_Exception
+     */
+    public function getValueStatement() : string
+    {
+        if($this->isSubQuery() || !$this->isInSelect())
+        {
+            return $this->getStatement();
+        }
+
+        return $this->getSelectAlias();
+    }
+
+    public function getGroupBy() : string
+    {
+        return $this->getValueStatement();
+    }
+
+    public function getOrderBy() : string
+    {
+        return $this->getValueStatement();
+    }
+
+    public function getWhere() : string
+    {
+        return $this->getValueStatement();
+    }
+
+    /**
+     * Retrieves the alias under which the column
+     * is saved in the query's select statement.
+     * Already includes the backtick quotes.
+     *
+     * @return string
+     */
+    public function getSelectAlias() : string
+    {
+        return '`'.$this->name.'`';
     }
 }
