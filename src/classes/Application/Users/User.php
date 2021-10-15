@@ -3,6 +3,8 @@
 class Application_Users_User extends DBHelper_BaseRecord
 {
     const COL_EMAIL = 'email';
+    const COL_FIRST_NAME = 'firstname';
+    const COL_LAST_NAME = 'lastname';
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
@@ -21,12 +23,12 @@ class Application_Users_User extends DBHelper_BaseRecord
     
     public function getFirstname()
     {
-        return $this->getRecordKey('firstname');
+        return $this->getRecordKey(self::COL_FIRST_NAME);
     }
     
     public function getLastname()
     {
-        return $this->getRecordKey('lastname');
+        return $this->getRecordKey(self::COL_LAST_NAME);
     }
     
     public function getEmail()
@@ -41,12 +43,12 @@ class Application_Users_User extends DBHelper_BaseRecord
 
     public function setFirstName(string $firstName) : bool
     {
-        return $this->setRecordKey('firstname', $firstName);
+        return $this->setRecordKey(self::COL_FIRST_NAME, $firstName);
     }
 
     public function setLastName(string $lastName) : bool
     {
-        return $this->setRecordKey('lastname', $lastName);
+        return $this->setRecordKey(self::COL_LAST_NAME, $lastName);
     }
 
     public function setForeignID(string $foreignID) : bool
