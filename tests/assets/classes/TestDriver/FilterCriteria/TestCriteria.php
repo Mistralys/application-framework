@@ -6,13 +6,14 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 {
     const JOIN_FEEDBACK = 'feedback';
     const JOIN_OPTIONAL_TABLE = 'table_optional_join';
+    const JOIN_PERMANENT_JOIN = 'join_permanent_join';
 
     /**
      * Enables the custom column, which automatically
      * adds it to the select statement, and ensures
      * joins get added as well.
      */
-    public function withFeedbackText()
+    public function enableFeedbackText()
     {
         $this->withCustomColumn('text');
     }
@@ -26,7 +27,17 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
      */
     public function addFeedbackManually()
     {
-        $this->addSelectColumn($this->getColFeedbackText());
+        $this->addSelectColumn($this->getColFeedbackText()->getSelect());
+    }
+
+    public function addFeedbackTextToSelect() : void
+    {
+        $this->addSelectStatement($this->getColFeedbackText()->getSelect(), false);
+    }
+
+    public function orderByFeedbackText()
+    {
+        $this->setOrderBy($this->getColFeedbackText()->getOrderBy());
     }
 
     protected function getSelect()
@@ -63,9 +74,9 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         );
     }
 
-    public function getColFeedbackText() : string
+    public function getColFeedbackText() : Application_FilterCriteria_Database_CustomColumn
     {
-        return $this->getCustomColumn('text')->getStatement();
+        return $this->getCustomColumn('text');
     }
 
     protected function _initCustomColumns() : void
@@ -80,6 +91,7 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
             ->table('{table_users}', Application_Users::TABLE_NAME)
             ->table('{table_feedback}', Application_Feedback::TABLE_NAME)
             ->table('{table_optional}', self::JOIN_OPTIONAL_TABLE)
+            ->table('{table_permanent_join}', self::JOIN_PERMANENT_JOIN)
 
             ->alias('{users}', 'users')
             ->alias('{feedback}', 'feedback')
@@ -92,6 +104,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 
     protected function _registerJoins() : void
     {
+        $this->addJoinStatement(
+            "JOIN {table_permanent_join}",
+            self::JOIN_PERMANENT_JOIN
+        );
+
         $this->registerJoinStatement(
             self::JOIN_FEEDBACK,
             "JOIN
