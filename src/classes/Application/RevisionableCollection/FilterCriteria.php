@@ -3,21 +3,34 @@
 abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_Database
 {
    /**
-    * 
     * @var Application_RevisionableCollection
     */
     protected $collection;
-    
+
+    /**
+     * @var string
+     */
     protected $primaryKeyName;
-    
+
+    /**
+     * @var string
+     */
     protected $revisionsTable;
-    
+
+    /**
+     * @var string
+     */
     protected $revisionKeyName;
-    
+
+    /**
+     * @var string
+     */
     protected $currentRevisionsTable;
     
     public function __construct(Application_RevisionableCollection $collection)
     {
+        parent::__construct($collection);
+
         $this->collection = $collection;
         $this->primaryKeyName = $collection->getPrimaryKeyName();
         $this->revisionsTable = $collection->getRevisionsTableName();
@@ -141,12 +154,6 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         return $this->selectCriteriaValue($name, $stateName);
     }
     
-    protected function createPristine()
-    {
-        $class = get_class($this);
-        return new $class($this->collection);
-    }
-
    /**
     * Retrieves all revisionable IDs for the current filters.
     * @return integer[]

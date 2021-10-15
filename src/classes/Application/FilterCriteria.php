@@ -2,15 +2,23 @@
 
 use function AppUtils\parseVariable;
 
+/**
+ * @package Application
+ * @subpackage FilterCriteria
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 abstract class Application_FilterCriteria implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
     const ERROR_INVALID_SORTING_ORDER = 710003;
     const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
+    const ERROR_FILTER_CRITERIA_FINALIZED = 710006;
 
     const MESSAGE_TYPE_INFO = 'info';
     const MESSAGE_TYPE_WARNING = 'warning';
+    const ORDER_DIR_ASCENDING = 'ASC';
+    const ORDER_DIR_DESCENDING = 'DESC';
 
     /**
      * @var string|NULL
@@ -20,7 +28,7 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     /**
      * @var string
      */
-    protected $orderDir = 'ASC';
+    protected $orderDir = self::ORDER_DIR_ASCENDING;
 
     /**
      * @var string
@@ -79,9 +87,28 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      */
     protected static $instanceCounter = 0;
 
-    public function getInstanceID() : int
+    /**
+     * @var array<int,mixed>
+     */
+    private $constructorArguments;
+
+    /**
+     * The arguments are free, and are stored internally:
+     * When using the {@see Application_FilterCriteria::createPristine()}
+     * method, the same arguments are passed on the new
+     * instance.
+     *
+     * @see Application_FilterCriteria::createPristine()
+     */
+    public function __construct(...$args)
     {
-        if($this->instanceID === 0) {
+        $this->constructorArguments = $args;
+    }
+
+    public final function getInstanceID() : int
+    {
+        if($this->instanceID === 0)
+        {
             self::$instanceCounter++;
             $this->instanceID = self::$instanceCounter;
         }
@@ -90,31 +117,36 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     }
 
     /**
-    * Sets the sorting order to ascending.
-    * @return $this
-    */
+     * Sets the sorting order to ascending.
+     *
+     * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
+     */
     public function orderAscending()
     {
-        $this->orderDir = 'ASC';
+        $this->orderDir = self::ORDER_DIR_ASCENDING;
         return $this;
     }
-    
-   /**
-    * Sets the sorting order to descending.
-    * @return $this
-    */
+
+    /**
+     * Sets the sorting order to descending.
+     *
+     * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
+     */
     public function orderDescending()
     {
-        $this->orderDir = 'DESC';
+        $this->orderDir = self::ORDER_DIR_DESCENDING;
         return $this;
     }
-    
-   /**
-    * Sets the search terms string.
-    * 
-    * @param string $search
-    * @return $this
-    */
+
+    /**
+     * Sets the search terms string.
+     *
+     * @param string $search
+     * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
+     */
     public function setSearch(string $search)
     {
         $search = trim($search);
@@ -124,27 +156,30 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
         
         return $this;
     }
-    
+
     /**
      * Sets the limit for the list.
-     * 
+     *
      * @param int $offset
      * @param int $limit
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
-    public function setLimit($offset = 0, $limit = 0)
+    public function setLimit(int $offset = 0, int $limit = 0)
     {
-        $this->offset = intval($offset);
-        $this->limit = intval($limit);
+        $this->offset = $offset;
+        $this->limit = $limit;
+
         return $this;
     }
-    
+
     /**
      * Sets the limit for the list by using an existing data
      * grid object, which contains the current pagination details.
      *
      * @param UI_DataGrid $datagrid
      * @return $this
+     * @throws Application_FilterCriteria_FinalizedException
      */
     public function setLimitFromDatagrid(UI_DataGrid $datagrid)
     {
@@ -189,7 +224,8 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      */
     public final function countUnfiltered() : int
     {
-        if(isset($this->totalUnfiltered)) {
+        if(isset($this->totalUnfiltered))
+        {
             return $this->totalUnfiltered;
         }
         
@@ -207,13 +243,13 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      *
      * @return Application_FilterCriteria
      */
-    protected function createPristine()
+    protected function createPristine() : Application_FilterCriteria
     {
         $class = get_class($this);
-        return new $class();
+        return new $class(...$this->constructorArguments);
     }
     
-    protected function getConnector($searchTerm)
+    protected function getConnector(string $searchTerm) : ?string
     {
         if (!isset($this->connectors)) {
             $this->connectors = array(
@@ -249,10 +285,13 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      *
      * @param string $fieldName
      * @param string $orderDir
-     * @throws Application_Exception
      * @return $this
+     *
+     * @throws Application_Exception
+     * @throws Application_FilterCriteria_FinalizedException
+     * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
      */
-    public function setOrderBy(string $fieldName, string $orderDir = 'ASC')
+    public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
     {
         $this->orderField = $fieldName;
         $this->orderDir = $this->requireValidOrderDir($orderDir);
@@ -264,12 +303,13 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @param string $orderDir
      * @return string
      * @throws Application_Exception
+     * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
      */
     protected function requireValidOrderDir(string $orderDir) : string
     {
         $orderDir = strtoupper($orderDir);
 
-        if ($orderDir === 'ASC' || $orderDir === 'DESC') {
+        if ($orderDir === self::ORDER_DIR_ASCENDING || $orderDir === self::ORDER_DIR_DESCENDING) {
             return $orderDir;
         }
 
@@ -448,8 +488,11 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @param string $type
      * @param mixed $value
      * @return $this
+     * @see Application_FilterCriteria::selectCriteriaValues()
+     *
      * @throws Application_Exception
-     * @see selectCriteriaValues()
+     * @throws Application_FilterCriteria_FinalizedException
+     * @see Application_FilterCriteria::ERROR_NON_SCALAR_CRITERIA_VALUE
      */
     protected function selectCriteriaValue(string $type, $value)
     {
@@ -524,4 +567,19 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     {
         return isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type]);
     }
+
+    // region: Applying the filters
+
+    /**
+     * Applies all filter criteria and determines the exact
+     * composition needed for the filters.
+     */
+    public final function applyFilters() : void
+    {
+        $this->_applyFilters();
+    }
+
+    protected function _applyFilters() : void {}
+
+    // endregion
 }

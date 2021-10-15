@@ -11,6 +11,8 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
     
     public function __construct(Application_Changelog $changelog)
     {
+        parent::__construct($changelog);
+
         $this->setOrderBy('chlog.`changelog_date`', 'DESC');
 
         $this->changelog = $changelog;
@@ -38,11 +40,6 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $this->changelog->getOwner()->configureChangelogFilters($this);
         
         return $query;
-    }
-    
-    protected function createPristine()
-    {
-        return new Application_Changelog_FilterCriteria($this->changelog);
     }
     
     protected function getSearchFields()
@@ -88,5 +85,15 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         
         $this->objects = false;
         return $items;
+    }
+
+    protected function _registerJoins() : void
+    {
+        // TODO: Implement _registerJoins() method.
+    }
+
+    protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
+    {
+        // TODO: Implement _registerStatementValues() method.
     }
 }
