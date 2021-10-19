@@ -276,7 +276,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
             if(!empty($revs)) {
                 $found = true;
                 $rev = $revs[0];
-                $revisionable->selectRevision($rev['revisionable_revision']);
+                $revisionable->selectRevision((int)$rev['revisionable_revision']);
                 $text =
                     '<span class="text-success">' .
                     '<b>' . $revisionable->getPrettyRevision() . '</b> - ' .
