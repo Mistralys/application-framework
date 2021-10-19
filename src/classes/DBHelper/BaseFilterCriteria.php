@@ -62,18 +62,16 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     
     public function __construct(DBHelper_BaseCollection $collection)
     {
-        parent::__construct($collection);
-
         $this->collection = $collection;
         $this->recordTableName = $collection->getRecordTableName();
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
 
+        parent::__construct($collection);
+
         $this->setOrderBy($collection->getRecordDefaultSortKey(), $collection->getRecordDefaultSortDir());
-        
-        $this->init();
     }
 
-    protected function init()
+    protected function init() : void
     {
         
     }
@@ -186,7 +184,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
     /**
      * @return DBHelper_BaseFilterCriteria_Record[]
-     * @throws Application_Exception
+     * @throws Application_Exception|DBHelper_Exception
      */
     public function getItemsDetailed() : array
     {
@@ -195,10 +193,11 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         
         $total = count($items);
         $records = array();
-        for($i=0; $i < $total; $i++) {
+        for($i=0; $i < $total; $i++)
+        {
             $records[] = new DBHelper_BaseFilterCriteria_Record(
                 $items[$i],
-                $this->collection->getByID($items[$i][$primaryName])
+                $this->collection->getByID((int)$items[$i][$primaryName])
             );
         }
 
@@ -214,7 +213,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         $items = $this->getItems();
         $ids = array();
         foreach($items as $item) {
-            $ids[] = $item[$this->recordPrimaryName];
+            $ids[] = (int)$item[$this->recordPrimaryName];
         }
         
         return $ids;
