@@ -196,7 +196,7 @@ class Application_FilterCriteria_Database_CustomColumn
 
     public function isSubQuery() : bool
     {
-        return strstr((string)$this->source, 'SELECT') !== false;
+        return strstr($this->getStatement(), 'SELECT') !== false;
     }
 
     /**
@@ -211,7 +211,7 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     public function getValueStatement() : string
     {
-        if($this->isSubQuery() || !$this->isInSelect())
+        if($this->isSubQuery() || !$this->isInSelect() || $this->filters->isCount())
         {
             return $this->getStatement();
         }
