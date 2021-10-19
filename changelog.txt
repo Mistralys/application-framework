@@ -1,7 +1,14 @@
-v1.20.0
+v1.20.1
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
 - DBHelper: Fixed order by and group by statements not using the custom column's value statement.
+- DBHelper: Fixed order by being overwritten by other custom columns.
 - FilterCriteria: Removed the no constructor limitation.
+- FilterCriteria: Now automatically passing initial constructor arguments in `createPristine()`.
+
+**Breaking changes**
+
+Filter criteria classes with custom constructors **must** always
+call the parent constructor.
 
 v1.20.0
 - Wizards: Added a traits for selecting a country.
