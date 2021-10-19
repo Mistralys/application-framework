@@ -103,7 +103,11 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     public function __construct(...$args)
     {
         $this->constructorArguments = $args;
+
+        $this->init();
     }
+
+    protected function init() : void {}
 
     public final function getInstanceID() : int
     {
@@ -120,7 +124,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * Sets the sorting order to ascending.
      *
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function orderAscending()
     {
@@ -132,7 +135,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * Sets the sorting order to descending.
      *
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function orderDescending()
     {
@@ -145,7 +147,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      *
      * @param string $search
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function setSearch(string $search)
     {
@@ -163,7 +164,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @param int $offset
      * @param int $limit
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function setLimit(int $offset = 0, int $limit = 0)
     {
@@ -179,7 +179,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      *
      * @param UI_DataGrid $datagrid
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function setLimitFromDatagrid(UI_DataGrid $datagrid)
     {
@@ -288,7 +287,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @return $this
      *
      * @throws Application_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
      */
     public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
@@ -297,6 +295,16 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
         $this->orderDir = $this->requireValidOrderDir($orderDir);
         
         return $this;
+    }
+
+    public function getOrderField() : string
+    {
+        return (string)$this->orderField;
+    }
+
+    public function getOrderDir() : string
+    {
+        return $this->orderDir;
     }
 
     /**
@@ -491,7 +499,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @see Application_FilterCriteria::selectCriteriaValues()
      *
      * @throws Application_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria::ERROR_NON_SCALAR_CRITERIA_VALUE
      */
     protected function selectCriteriaValue(string $type, $value)
@@ -566,6 +573,11 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     protected function hasCriteriaValues(string $type) : bool
     {
         return isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type]);
+    }
+
+    public function isCount() : bool
+    {
+        return $this->isCount;
     }
 
     // region: Applying the filters
