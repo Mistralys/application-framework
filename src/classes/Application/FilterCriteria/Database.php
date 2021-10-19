@@ -185,7 +185,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return string
      *
      * @throws Application_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria_Database::ERROR_MISSING_SELECT_KEYWORD
      */
     protected function addDistinctKeyword($query) : string
@@ -302,8 +301,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|int|float $value
      * @param string $name
      * @return $this
-     *
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addPlaceholder(string $name, $value)
     {
@@ -341,7 +338,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @param string|DBHelper_StatementBuilder $columnSelect
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addSelectColumn($columnSelect)
     {
@@ -390,7 +386,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * fields for compatibility reasons for example.
      *
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function makeDistinct()
     {
@@ -402,7 +397,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * Retrieves all matching items as an indexed array containing
      * associative array entries with the item data.
      *
-     * @return array<int,array{sql:string,vars:array<string,mixed>}>
+     * @return array<int,array<string,string>>
      * @throws Application_Exception|DBHelper_Exception
      * @see getItem()
      */
@@ -459,7 +454,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return $this
      *
      * @throws Application_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addWhere($statement)
     {
@@ -766,7 +760,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|DBHelper_StatementBuilder $statement
      * @param string $joinID
      * @return Application_FilterCriteria_Database_Join
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addJoin($statement, string $joinID='') : Application_FilterCriteria_Database_Join
     {
@@ -794,7 +787,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $template
      * @param string $joinID
      * @return DBHelper_StatementBuilder
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addJoinStatement(string $template, string $joinID='') : DBHelper_StatementBuilder
     {
@@ -818,7 +810,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $joinID
      * @return $this
      * @throws DBHelper_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ID_NOT_FOUND
      */
     public function requireJoin(string $joinID)
@@ -886,7 +877,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return Application_FilterCriteria_Database_Join
      *
      * @throws DBHelper_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_ADDED
      * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_REGISTERED
      */
@@ -934,7 +924,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $joinID
      * @param string $statementTemplate Statement template
      * @return Application_FilterCriteria_Database_Join
-     * @throws Application_FilterCriteria_FinalizedException
      * @throws DBHelper_Exception
      */
     public function registerJoinStatement(string $joinID, string $statementTemplate) : Application_FilterCriteria_Database_Join
@@ -947,7 +936,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @param string|DBHelper_StatementBuilder $statement
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addHaving($statement)
     {
@@ -1060,7 +1048,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @param string|DBHelper_StatementBuilder $groupBy
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupBy($groupBy)
     {
@@ -1074,7 +1061,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     /**
      * @param string|DBHelper_StatementBuilder ...$args
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupBys(...$args)
     {
@@ -1088,7 +1074,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @param string ...$args
      * @return $this
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function addGroupByStatements(...$args)
     {
@@ -1421,7 +1406,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $orderDir
      * @return $this
      * @throws Application_Exception
-     * @throws Application_FilterCriteria_FinalizedException
      */
     public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
     {
@@ -1437,7 +1421,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $template
      * @param bool $groupBy Whether to add the column to the "GROUP BY" statement.
      * @return DBHelper_StatementBuilder
-     * @throws Application_FilterCriteria_FinalizedException
      */
     protected function addSelectStatement(string $template, bool $groupBy=true) : DBHelper_StatementBuilder
     {
