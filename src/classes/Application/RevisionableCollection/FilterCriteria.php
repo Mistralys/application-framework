@@ -77,7 +77,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         return sprintf('`revs`.`%s`', $this->revisionKeyName);
     }
     
-    protected function prepareFilters()
+    protected function prepareFilters() : void
     {
         $this->addJoin(
             sprintf(
@@ -125,29 +125,30 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
    /**
     * @return Application_RevisionableCollection_DBRevisionable[]
     */
-    public function getItemsObjects()
+    public function getItemsObjects() : array
     {
         $entries = $this->getItems();
         $result = array();
         $total = count($entries);
         for($i=0; $i<$total; $i++) {
-            $result[] = $this->collection->getByID($entries[$i][$this->primaryKeyName]);
+            $result[] = $this->collection->getByID((int)$entries[$i][$this->primaryKeyName]);
         }
         
         return $result;
     }
 
-   /**
-    * Selects only lists with or without the specified state.
-    * 
-    * @param string $stateName
-    * @param boolean $exlude Whether to exlude this state. Defaults to including it.
-    * @return Application_FilterCriteria
-    */
-    public function selectState($stateName, $exlude=false)
+    /**
+     * Selects only lists with or without the specified state.
+     *
+     * @param string $stateName
+     * @param boolean $exclude Whether to exclude this state. Defaults to including it.
+     * @return Application_FilterCriteria
+     * @throws Application_Exception
+     */
+    public function selectState(string $stateName, bool $exclude=false)
     {
         $name = 'include_state';
-        if($exlude) {
+        if($exclude) {
             $name = 'exclude_state';
         }
         
@@ -158,12 +159,12 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
     * Retrieves all revisionable IDs for the current filters.
     * @return integer[]
     */
-    public function getIDs()
+    public function getIDs() : array
     {
         $items = $this->getItems();
         $ids = array();
         foreach($items as $item) {
-            $ids[] = $item[$this->primaryKeyName];
+            $ids[] = (int)$item[$this->primaryKeyName];
         }
         
         return $ids;
@@ -175,12 +176,12 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
     * 
     * @return integer[]
     */
-    public function getRevisions()
+    public function getRevisions() : array
     {
         $items = $this->getItems();
         $revs = array();
         foreach($items as $item) {
-            $revs[] = $item[$this->revisionKeyName];
+            $revs[] = (int)$item[$this->revisionKeyName];
         }
         
         return $revs;
