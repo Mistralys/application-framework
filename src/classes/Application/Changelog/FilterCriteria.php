@@ -80,7 +80,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $items = array();
         $entries = $this->getItems();
         foreach($entries as $entry) {
-            $items[] = $this->changelog->getByID($entry['changelog_id']);
+            $items[] = $this->changelog->getByID((int)$entry['changelog_id']);
         }
         
         $this->objects = false;
