@@ -294,11 +294,17 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         throw $this->createMissingColumnException($columnID);
     }
 
-    public function setOrderBy($fieldName, string $orderDir = 'ASC')
+    /**
+     * @param DBHelper_StatementBuilder|string $fieldName
+     * @param string $orderDir
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
     {
         foreach($this->customColumns as $column)
         {
-            if(strstr($fieldName, $column->getSelectAlias()) || strstr($fieldName, $column->getStatement()))
+            if($fieldName === $column->getSelectAlias() || $fieldName === $column->getStatement())
             {
                 $column->setEnabled(true);
                 $this->addSelectColumn($column->getSelect());
