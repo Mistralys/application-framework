@@ -24,7 +24,7 @@ class DBHelper_CaseStatement implements Interface_Stringable
     private $sourceColumn;
 
     /**
-     * @var string
+     * @var string[]
      */
     private $cases = array();
 
