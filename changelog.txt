@@ -1,3 +1,10 @@
+v1.20.2
+- FilterCriteria: Improved the custom columns handling further.
+- FilterCriteria: Custom columns now automate even more tasks.
+- FilterCriteria: Custom columns detected and auto-enabled more reliably.
+- FilterCriteria: Added protected `handleCriteriaChanged()` to handle the event.
+- Traits: Added the Instanceable trait and matching interface.
+
 v1.20.1
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
 - DBHelper: Fixed order by and group by statements not using the custom column's value statement.
