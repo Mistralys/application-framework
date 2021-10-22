@@ -20,7 +20,7 @@ final class DBHelper_JoinsTests extends ApplicationTestCase
         $criteria = new TestDriver_FilterCriteria_TestCriteria();
 
         $this->assertEquals('`users`.`email`', $criteria->getColEmail());
-        $this->assertEquals('`feedback`.`feedback`', $criteria->getColFeedbackText()->getStatement());
+        $this->assertEquals('`feedback`.`feedback`', $criteria->getColFeedbackText()->getSQLStatement());
 
         $query = $criteria->renderQuery();
 

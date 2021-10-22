@@ -79,10 +79,20 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         return $this->getCustomColumn('text');
     }
 
+    public function getColSubquery() : Application_FilterCriteria_Database_CustomColumn
+    {
+        return $this->getCustomColumn('subquery');
+    }
+
     protected function _initCustomColumns() : void
     {
         $this->registerCustomSelect('{feedback}.{feedback_text}', 'text')
            ->requireJoin(self::JOIN_FEEDBACK);
+
+        $this->registerCustomSelect(
+            '(SELECT `field` FROM `subquery_table`)',
+            'subquery'
+        );
     }
 
     protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
