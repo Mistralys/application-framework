@@ -64,7 +64,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $havings = array();
 
     /**
-     * @var string[]
+     * @var array<string,string|DBHelper_StatementBuilder>
      */
     protected $groupBy = array();
 
@@ -104,10 +104,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public function countItems() : int
     {
         $sql = $this->buildQuery(true);
-        if (!$sql) {
-            return 0;
-        }
-
         $vars = $this->getQueryVariables();
         $items = DBHelper::fetchAll($sql, $vars);
 
@@ -304,11 +300,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function addPlaceholder(string $name, $value)
     {
-        if (!substr($name, 0) == ':') {
+        if (!substr($name, 0) == ':')
+        {
             $name = ':' . $name;
         }
 
         $this->placeholders[$name] = strval($value);
+
         return $this;
     }
 
@@ -341,8 +339,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function addSelectColumn($columnSelect)
     {
-        if(!in_array($columnSelect, $this->columnSelects)) {
+        if(!in_array($columnSelect, $this->columnSelects))
+        {
             $this->columnSelects[] = (string)$columnSelect;
+            $this->handleCriteriaChanged();
         }
 
         return $this;
@@ -404,10 +404,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public function getItems() : array
     {
         $query = $this->buildQuery(false);
-        if (!$query) {
-            return array();
-        }
-
         $vars = $this->getQueryVariables();
         $this->resetQueryVariables();
 
@@ -470,8 +466,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             );
         }
 
-        if(!in_array($statement, $this->where)) {
+        if(!in_array($statement, $this->where))
+        {
             $this->where[] = $statement;
+            $this->handleCriteriaChanged();
         }
 
         return $this;
@@ -780,6 +778,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
         $this->joins[$id] = $join;
 
+        $this->handleCriteriaChanged();
+
         return $join;
     }
 
@@ -900,6 +900,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         if(!isset($this->registeredJoins[$id]))
         {
             $this->registeredJoins[$id] = $join;
+            $this->handleCriteriaChanged();
 
             return $join;
         }
@@ -939,8 +940,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function addHaving($statement)
     {
-        if(!in_array($statement, $this->havings)) {
+        if(!in_array($statement, $this->havings))
+        {
             $this->havings[] = (string)$statement;
+            $this->handleCriteriaChanged();
         }
 
         return $this;
@@ -979,7 +982,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return (string)$name;
         }
 
-        if(substr($name, 0, 1) == '`') {
+        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == '$$')
+        {
             return $name;
         }
 
@@ -996,7 +1000,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|int|float|null $value
      * @return string
      */
-    protected function generatePlaceholder($value) : string
+    public function generatePlaceholder($value) : string
     {
         $value = strval($value);
         $hash = md5($value);
@@ -1051,12 +1055,31 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function addGroupBy($groupBy)
     {
-        if(!in_array($groupBy, $this->groupBy))
+        if($groupBy instanceof DBHelper_StatementBuilder)
         {
-            $this->groupBy[] = (string)$groupBy;
+            $key = $groupBy->getTemplate();
+        }
+        else
+        {
+            $key = $groupBy;
+        }
+
+        if(!isset($this->groupBy[$key]))
+        {
+            $this->groupBy[$key] = $groupBy;
+            $this->handleCriteriaChanged();
         }
 
         return $this;
+    }
+
+    public function addGroupByStatement(string $template) : DBHelper_StatementBuilder
+    {
+        $statement = $this->statement($template);
+
+        $this->addGroupBy($statement);
+
+        return $statement;
     }
 
     /**
@@ -1087,7 +1110,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     public function getGroupBys() : array
     {
-        return $this->groupBy;
+        $items = array_values($this->groupBy);
+
+        return array_map('strval', $items);
     }
 
     // region: Building and rendering the query
@@ -1147,6 +1172,8 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
         $selects = array_unique($this->getSelects());
 
+        $selects = array_map('trim', $selects);
+
         // in distinct queries, it is safer to add all select fields to the group by
         if($this->distinct) {
             foreach($selects as $field) {
@@ -1154,7 +1181,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             }
         }
 
-        return implode(',', $selects);
+        return implode(','.PHP_EOL.'    ', $selects);
     }
 
     protected function buildSearchTokens() : string
@@ -1333,7 +1360,12 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     protected function setSelectAlias(string $alias)
     {
-        $this->selectAlias = $alias;
+        if($this->selectAlias !== $alias)
+        {
+            $this->selectAlias = $alias;
+            $this->handleCriteriaChanged();
+        }
+
         return $this;
     }
 
@@ -1396,7 +1428,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string $template
      * @return DBHelper_StatementBuilder
      */
-    protected function statement(string $template) : DBHelper_StatementBuilder
+    public function statement(string $template) : DBHelper_StatementBuilder
     {
         return $this->createStatementValues()->statement($template);
     }
