@@ -99,7 +99,11 @@ class Application_ErrorDetails
     
     public function renderException() : string
     {
-        return renderExceptionInfo($this->getException(), $this->isDeveloperInfoEnabled(), $this->isHTML());
+        return renderExceptionInfo(
+            $this->getException(),
+            $this->isDeveloperInfoEnabled(),
+            $this->isHTML()
+        );
     }
 
     public function renderPreviousException() : string
