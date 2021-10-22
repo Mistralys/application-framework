@@ -57,6 +57,11 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      */
     private $buildInitialQuery = '';
 
+    /**
+     * @var array<string,Application_FilterCriteria_Database_ColumnUsage>
+     */
+    private $columnUsage = array();
+
     abstract protected function _initCustomColumns() : void;
 
     private function initCustomColumns() : void
@@ -370,9 +375,24 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         return $query;
     }
 
+    protected function handleCriteriaChanged() : void
+    {
+        parent::handleCriteriaChanged();
+
+        // Reset the column usage cache
+        $this->columnUsage = array();
+    }
+
     public function checkColumnUsage(Application_FilterCriteria_Database_CustomColumn $column) : Application_FilterCriteria_Database_ColumnUsage
     {
-        return new Application_FilterCriteria_Database_ColumnUsage($this, $column);
+        $name = $column->getName();
+
+        if(!isset($this->columnUsage[$name]))
+        {
+            $this->columnUsage[$name] = new Application_FilterCriteria_Database_ColumnUsage($this, $column);
+        }
+
+        return $this->columnUsage[$name];
     }
 
     protected function _applyFilters() : void
