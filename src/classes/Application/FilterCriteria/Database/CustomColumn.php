@@ -25,6 +25,9 @@ class Application_FilterCriteria_Database_CustomColumn
 {
     const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
+    const COMPONENT_VALUE = 'value';
+    const COMPONENT_SELECT = 'select';
+
     /**
      * @var NamedClosure|DBHelper_StatementBuilder
      */
@@ -49,6 +52,16 @@ class Application_FilterCriteria_Database_CustomColumn
      * @var string[]
      */
     private $requiredJoinIDs = array();
+
+    /**
+     * @var array<string,mixed>
+     */
+    private $placeholders = array();
+
+    /**
+     * @var string
+     */
+    private $statement = '';
 
     /**
      * @param Application_FilterCriteria_DatabaseExtended $filters
@@ -134,25 +147,31 @@ class Application_FilterCriteria_Database_CustomColumn
     }
 
     /**
-     * Retrieves the SQL statement required to access the column's value.
-     *
-     * NOTE: This can be simply a field name, but also a full sub-query.
-     * To use this statement in a `SELECT`, use the method
-     * {@see Application_FilterCriteria_Database_CustomColumn::getSelect()}
-     * instead.
+     * Retrieves the SQL statement required to access the column's value,
+     * without appended `AS` statement.
      *
      * @return string
      * @throws Application_Exception
      * @see Application_FilterCriteria_Database_CustomColumn::getSelect()
      */
-    public function getStatement() : string
+    public function getSQLStatement() : string
+    {
+        if(empty($this->statement))
+        {
+            $this->statement = $this->renderStatement();
+        }
+
+        return $this->statement;
+    }
+
+    private function renderStatement() : string
     {
         if($this->source instanceof DBHelper_StatementBuilder)
         {
             return (string)$this->source;
         }
 
-        $result = call_user_func($this->source);
+        $result = call_user_func($this->source, $this);
 
         if(is_string($result))
         {
@@ -175,28 +194,27 @@ class Application_FilterCriteria_Database_CustomColumn
      * includes the alias `column AS alias` where `alias` is the
      * column's name.
      *
-     * NOTE: Use {@see Application_FilterCriteria_Database_CustomColumn::getStatement()}
+     * NOTE: Use {@see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()}
      * for the SQL to access the column's value.
      *
      * @return string
-     * @throws Application_Exception
      *
-     * @see Application_FilterCriteria_Database_CustomColumn::getStatement()
+     * @see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()
      * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
      */
     public function getSelect() : string
     {
-        return $this->getStatement().' AS '.$this->getSelectAlias();
+        return $this->generateMarker(self::COMPONENT_SELECT);
     }
 
-    public function isInSelect() : bool
+    public function getUsage() : Application_FilterCriteria_Database_ColumnUsage
     {
-        return $this->filters->isColumnInSelect($this);
+        return $this->filters->checkColumnUsage($this);
     }
 
     public function isSubQuery() : bool
     {
-        return strstr($this->getStatement(), 'SELECT') !== false;
+        return strstr($this->getSQLStatement(), 'SELECT') !== false;
     }
 
     /**
@@ -207,16 +225,10 @@ class Application_FilterCriteria_Database_CustomColumn
      * the full statement.
      *
      * @return string
-     * @throws Application_Exception
      */
     public function getValueStatement() : string
     {
-        if($this->isSubQuery() || !$this->isInSelect() || $this->filters->isCount())
-        {
-            return $this->getStatement();
-        }
-
-        return $this->getSelectAlias();
+        return $this->generateMarker(self::COMPONENT_VALUE);
     }
 
     public function getGroupBy() : string
@@ -234,6 +246,28 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->getValueStatement();
     }
 
+    public function getSelectMarker() : string
+    {
+        return $this->generateMarker(self::COMPONENT_SELECT);
+    }
+
+    public function getValueMarker() : string
+    {
+        return $this->generateMarker(self::COMPONENT_VALUE);
+    }
+
+    private function generateMarker(string $component='') : string
+    {
+        $name = '$$'.$this->getName();
+
+        if(!empty($component))
+        {
+            return $name.'_'.$component.'$$';
+        }
+
+        return $name.'$$';
+    }
+
     /**
      * Retrieves the alias under which the column
      * is saved in the query's select statement.
@@ -244,5 +278,105 @@ class Application_FilterCriteria_Database_CustomColumn
     public function getSelectAlias() : string
     {
         return '`'.$this->name.'`';
+    }
+
+    /**
+     * @param array<string,mixed> $placeholders
+     * @return $this
+     */
+    public function addCustomPlaceholders(array $placeholders)
+    {
+        foreach ($placeholders as $name => $value)
+        {
+            $this->addCustomPlaceholder($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a placeholder and its value, which is tied
+     * to this column. If the column is used in a query,
+     * these values will automatically be added to the
+     * query values.
+     *
+     * NOTE: Must be a placeholder name, for example added
+     * via {@see Application_FilterCriteria_Database::generatePlaceholder()}.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function addCustomPlaceholder(string $name, $value)
+    {
+        $this->placeholders[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getPlaceholders() : array
+    {
+        return $this->placeholders;
+    }
+
+    public function hasPlaceholders() : bool
+    {
+        return !empty($this->placeholders);
+    }
+
+    /**
+     * Whether the target string contains any placeholders
+     * of the custom column.
+     *
+     * @param string $subject
+     * @return bool
+     */
+    public function isFoundInString(string $subject) : bool
+    {
+        return
+            strstr($subject, $this->getValueMarker()) !== false
+            ||
+            strstr($subject, $this->getSelectMarker()) !== false;
+    }
+
+    public function replacePlaceholders(string $query) : string
+    {
+        if(!$this->isFoundInString($query))
+        {
+            return $query;
+        }
+
+        $replaces = array(
+            $this->getValueMarker() => $this->renderValue()
+        );
+
+        if($this->getUsage()->isInSelect())
+        {
+            $replaces[$this->getSelectMarker()] = $this->renderSelect();
+        }
+
+        return str_replace(array_keys($replaces), array_values($replaces), $query);
+    }
+
+    public function canUseAlias() : bool
+    {
+        return $this->getUsage()->isInSelect() && !$this->isSubQuery();
+    }
+
+    private function renderSelect() : string
+    {
+        return $this->getSQLStatement().' AS '.$this->getSelectAlias();
+    }
+
+    private function renderValue() : string
+    {
+        if($this->canUseAlias())
+        {
+            return $this->getSelectAlias();
+        }
+
+        return $this->getSQLStatement();
     }
 }

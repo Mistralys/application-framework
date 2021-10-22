@@ -16,6 +16,19 @@ use AppUtils\NamedClosure;
  * by defining abstract methods to set up the custom columns to
  * use.
  *
+ * **How this works**
+ *
+ * In a first step, custom columns only add a placeholder string
+ * to the query. When the final query is built, these placeholders
+ * are replaced with the actual SQL statements.
+ *
+ * This makes it possible to easily detect which custom columns
+ * are used in the query string, and to enable them accordingly
+ * if they have not been enabled manually.
+ *
+ * It also makes it possible to allow custom columns to require
+ * JOINs and other columns, and the like.
+ *
  * @package Application
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
@@ -33,6 +46,16 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @var array<string,Application_FilterCriteria_Database_CustomColumn>
      */
     protected $customColumns = array();
+
+    /**
+     * @var int
+     */
+    private $buildIteration = 0;
+
+    /**
+     * @var string
+     */
+    private $buildInitialQuery = '';
 
     abstract protected function _initCustomColumns() : void;
 
@@ -80,22 +103,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
         
         return $result;
-    }
-
-    public function isColumnInSelect(Application_FilterCriteria_Database_CustomColumn $column) : bool
-    {
-        $selects = $this->getSelects();
-        $search = $column->getStatement();
-
-        foreach($selects as $select)
-        {
-            if(strstr($select, $search) !== false)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -249,6 +256,9 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * Registers a new custom column that is used to add
      * additional, dynamic select statements to the query.
      *
+     * NOTE: When using a closure, the callback method gets
+     * the custom column instance as argument.
+     *
      * @param string $columnID
      * @param NamedClosure|DBHelper_StatementBuilder $source
      * @return Application_FilterCriteria_Database_CustomColumn
@@ -294,73 +304,75 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         throw $this->createMissingColumnException($columnID);
     }
 
-    /**
-     * @param DBHelper_StatementBuilder|string $fieldName
-     * @param string $orderDir
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
+    protected function buildQuery(bool $isCount=false) : string
     {
+        $query = parent::buildQuery($isCount);
+
+        if($this->dumpQuery && $this->buildIteration === 0)
+        {
+            $this->buildInitialQuery = $query;
+        }
+
+        // Automatically detect which custom columns
+        // are used in the query, and enable them as
+        // needed.
+        $this->autoEnableColumns($query);
+
+        // Re-build the query, since newly added columns
+        // may have dependencies (like JOINs) that require
+        // additional columns.
+        $adjusted = parent::buildQuery($isCount);
+
+        // If the query does not change, it means all columns
+        // have all dependencies ready.
+        if($adjusted !== $query)
+        {
+            $this->buildIteration++; // Signify that we are in a recursive build
+            return $this->buildQuery($isCount);
+        }
+
+        if($this->dumpQuery)
+        {
+            $different = $query !== $this->buildInitialQuery;
+
+            echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
+            if($different) {echo '----------------';}
+            echo 'Query built by the filters';
+            echo PHP_EOL;
+            echo PHP_EOL;
+            print_r($this->buildInitialQuery);
+
+            if($different)
+            {
+                echo PHP_EOL;
+                echo PHP_EOL;
+                echo '----------------';
+                echo 'Query after adding required custom columns';
+                echo PHP_EOL;
+                echo PHP_EOL;
+                print_r($query);
+            }
+
+            echo '</pre>';
+        }
+
+        // Reset the recursion properties
+        $this->buildInitialQuery = '';
+        $this->buildIteration = 0;
+
+        // Let all the custom columns replace their
+        // placeholders with the actual SQL statements.
         foreach($this->customColumns as $column)
         {
-            if($fieldName === $column->getSelectAlias() || $fieldName === $column->getStatement())
-            {
-                $column->setEnabled(true);
-                $this->addSelectColumn($column->getSelect());
-
-                $fieldName = $column->getOrderBy();
-                break;
-            }
+            $query = $column->replacePlaceholders($query);
         }
 
-        return parent::setOrderBy($fieldName, $orderDir);
+        return $query;
     }
 
-    public function isColumnInUse(Application_FilterCriteria_Database_CustomColumn $column) : bool
+    public function checkColumnUsage(Application_FilterCriteria_Database_CustomColumn $column) : Application_FilterCriteria_Database_ColumnUsage
     {
-        $statement = $column->getStatement();
-        $alias = $column->getSelectAlias();
-
-        $selects = $this->getSelects();
-        foreach($selects as $select)
-        {
-            if(strstr($select, $statement) || strstr($select, $alias))
-            {
-                return true;
-            }
-        }
-
-        $wheres = $this->getWheres();
-        foreach($wheres as $where)
-        {
-            if(strstr($where, $statement) || strstr($where, $alias))
-            {
-                return true;
-            }
-        }
-
-        $groupBys = $this->getGroupBys();
-        foreach($groupBys as $groupBy)
-        {
-            if(strstr($groupBy, $statement) || strstr($groupBy, $alias))
-            {
-                return true;
-            }
-        }
-
-        $joins = $this->getJoins();
-        foreach($joins as $join)
-        {
-            $joinStatement = $join->getStatement();
-
-            if(strstr($joinStatement, $statement) || strstr($joinStatement, $alias))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return new Application_FilterCriteria_Database_ColumnUsage($this, $column);
     }
 
     protected function _applyFilters() : void
@@ -368,7 +380,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         parent::_applyFilters();
 
         $this->initCustomColumns();
-        $this->autoEnableColumns();
         $this->initJoins();
     }
 
@@ -390,39 +401,34 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
     }
 
-    protected function autoEnableColumns() : void
+    protected function autoEnableColumns(string $query) : void
     {
         foreach($this->customColumns as $column)
         {
-            if($column->isEnabled())
-            {
-                continue;
-            }
-
-            if($this->isColumnInUse($column))
-            {
-                $column->setEnabled(true);
-            }
+            $column->setEnabled($column->isFoundInString($query));
         }
     }
 
     public function getGroupBys() : array
     {
-        $groupBy = $this->groupBy;
+        $groupBys = parent::getGroupBys();
 
-        $custom = $this->detectCustomColumnUsage();
-
-        foreach($custom as $column)
+        foreach($this->customColumns as $column)
         {
+            if(!$column->isEnabled())
+            {
+                continue;
+            }
+
             $statement = $column->getGroupBy();
 
-            if(!in_array($statement, $groupBy))
+            if(!in_array($statement, $groupBys))
             {
-                $groupBy[] = $statement;
+                $groupBys[] = $statement;
             }
         }
 
-        return $groupBy;
+        return $groupBys;
     }
 
     /**
@@ -431,37 +437,38 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * columns.
      *
      * @return Application_FilterCriteria_Database_CustomColumn[]
-     * @throws Application_Exception
      */
-    public function detectCustomColumnUsage() : array
+    public function getActiveCustomColumns() : array
     {
         $this->initCustomColumns();
 
-        $select = $this->getSelects();
-        $custom = array();
+        $columns = array();
 
-        foreach($select as $statement)
+        foreach ($this->customColumns as $column)
         {
-            foreach($this->customColumns as $column)
+            if($this->checkColumnUsage($column)->isInUse())
             {
-                if(strstr($statement, $column->getSelect()))
-                {
-                    $custom[$column->getName()] = $column;
-                }
+                $columns[] = $column;
             }
         }
 
-        if(!empty($this->orderField))
+        return $columns;
+    }
+
+    protected function getQueryVariables()
+    {
+        $vars = parent::getQueryVariables();
+
+        foreach ($this->customColumns as $column)
         {
-            foreach ($this->customColumns as $column)
+            if(!$column->isEnabled() || !$column->hasPlaceholders())
             {
-                if($this->orderField === $column->getStatement())
-                {
-                    $custom[$column->getName()] = $column;
-                }
+                continue;
             }
+
+            $vars = array_merge($vars, $column->getPlaceholders());
         }
 
-        return array_values($custom);
+        return $vars;
     }
 }
