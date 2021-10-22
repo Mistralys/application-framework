@@ -19,7 +19,7 @@ use AppUtils\NamedClosure;
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_FilterCriteria_Database::registerCustomColumn()
+ * @see Application_FilterCriteria_DatabaseExtended::registerCustomColumn()
  */
 class Application_FilterCriteria_Database_CustomColumn
 {
@@ -124,14 +124,14 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->requiredJoinIDs;
     }
 
-    public function hasJoins() : bool
+    public function hasRequiredJoins() : bool
     {
         return !empty($this->requiredJoinIDs);
     }
 
     /**
      * Whether the column should be enabled in the filter
-     * criteria, and added to the query.
+     * criteria, and added to the query's SELECT statement.
      *
      * NOTE: In most cases, this is done automatically as
      * soon as the column is used in the query. It can be
@@ -148,7 +148,7 @@ class Application_FilterCriteria_Database_CustomColumn
 
     /**
      * Retrieves the SQL statement required to access the column's value,
-     * without appended `AS` statement.
+     * without the appended `AS` statement.
      *
      * @return string
      * @throws Application_Exception
@@ -164,6 +164,10 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->statement;
     }
 
+    /**
+     * @return string
+     * @throws Application_Exception
+     */
     private function renderStatement() : string
     {
         if($this->source instanceof DBHelper_StatementBuilder)
