@@ -52,31 +52,32 @@
 			<?php
 				if($error->isDeveloperInfoEnabled())
 				{
-				    $sentContent = $error->getSentContent();
-					if(empty($sentContent)) {
-					    $sentContent = '<i style="color:#aaa">(no content sent)</i>';
-					}
-					
-					echo
-					'<h4 class="errorpage-header">Stack trace</h4>'.
-					$error->renderTrace();
-					
-					if($error->hasPreviousException())
-					{
-					    echo 
-					    '<h4 class="errorpage-header">Previous exception</h4>'.
-					    '<p>This exception was thrown originally.</p>'.
-					    $error->renderPreviousException();
-					}
-					
-				?>
-					<h4 class="errorpage-header">Standard output</h4>
-					<p>The following content has been sent to standard output up to this point:</p>
-					<div class="errorpage-sent-content">
-						<?php echo $sentContent ?>
-					</div>
-				<?php 
-				
+                    $sentContent = $error->getSentContent();
+                    if(empty($sentContent)) {
+                        $sentContent = '<i style="color:#aaa">(no content sent)</i>';
+                    }
+
+                    ?>
+                        <h4 class="errorpage-header">Stack trace</h4>
+                        <?php echo $error->renderTrace(); ?>
+
+                        <h4 class="errorpage-header">Standard output</h4>
+                        <p>The following content has been sent to standard output up to this point:</p>
+                        <div class="errorpage-sent-content">
+                            <?php echo $sentContent ?>
+                        </div>
+
+                    <?php
+
+                    if($error->hasPreviousException())
+                    {
+                        ?>
+                            <h4 class="errorpage-header">Previous exception</h4>
+                            <p>This exception was thrown originally.</p>
+                            <?php echo $error->renderPreviousException(); ?>
+                        <?php
+                    }
+
 				    $logger = Application::getLogger();
 				    
 				    if($logger->isLoggingEnabled() && $logger->getLogMode() !== Application_Logger::LOG_MODE_ECHO)
