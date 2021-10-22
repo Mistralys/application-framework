@@ -12,6 +12,10 @@
  * selecting data from tables in the database, with database-
  * specific methods for handling JOIN statements and the like.
  *
+ * NOTE: For new projects, it is recommended to use the
+ * {@see Application_FilterCriteria_DatabaseExtended} class,
+ * which automates more tasks.
+ *
  * @package Application
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>

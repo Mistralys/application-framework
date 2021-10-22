@@ -1,11 +1,28 @@
 <?php
+/**
+ * File containing the class {@see Application_FilterCriteria}.
+ *
+ * @package Application
+ * @subpackage FilterCriteria
+ * @see Application_FilterCriteria
+ */
 
 use function AppUtils\parseVariable;
 
 /**
+ * Base class for filtering record collections: allows
+ * selecting criteria to filter the records with, and
+ * fetch the matching records.
+ *
+ * This is means to be extended. For database-related
+ * filtering, use the specialized class {@see Application_FilterCriteria_Database}.
+ *
  * @package Application
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_FilterCriteria_Database
+ * @see Application_FilterCriteria_DatabaseExtended
  */
 abstract class Application_FilterCriteria
     implements

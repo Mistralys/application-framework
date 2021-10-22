@@ -16,18 +16,32 @@ use AppUtils\NamedClosure;
  * by defining abstract methods to set up the custom columns to
  * use.
  *
- * **How this works**
+ * **What are custom columns?**
+ *
+ * Any columns not directly present in the target tables, or
+ * columns that are the result of more complex selections like
+ * sub-queries or CASE statements.
+ *
+ * **Custom column features**
+ *
+ * - Specify JOIN statements that the column needs
+ * - Add custom placeholder values only used when enabled
+ * - Automatically detect if the column is used in the query
+ * - Recursively detect and add all dependencies
+ * - Object-Oriented interface to handle the columns
+ * - Automatic support for sub-queries in `GROUP BY` and `ORDER BY`
+ *
+ * **How the technical side works**
  *
  * In a first step, custom columns only add a placeholder string
- * to the query. When the final query is built, these placeholders
- * are replaced with the actual SQL statements.
+ * to the query, called "markers". When the final query is built,
+ * these markers are replaced with the actual SQL statements.
  *
  * This makes it possible to easily detect which custom columns
- * are used in the query string, and to enable them accordingly
- * if they have not been enabled manually.
- *
- * It also makes it possible to allow custom columns to require
- * JOINs and other columns, and the like.
+ * are actually used in the query string, and to enable them
+ * as needed if they have not been enabled manually. Example:
+ * enabling a custom column if it is used in the `ORDER BY`
+ * statement.
  *
  * @package Application
  * @subpackage FilterCriteria
@@ -76,6 +90,10 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         $this->_initCustomColumns();
     }
 
+    /**
+     * @return string[]
+     * @throws Application_Exception
+     */
     public function getSelects() : array
     {
         $selects = array_merge(parent::getSelects(), $this->getCustomSelects());
@@ -87,9 +105,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * Fetches all select statements for custom columns.
      *
      * @return string[]
-     *
-     * @throws Application_Exception
-     * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
      */
     protected function getCustomSelects() : array
     {
@@ -215,6 +230,15 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         );
     }
 
+    /**
+     * Adds a custom column to select a username, given
+     * a user ID column value, ideal for sorting purposes
+     * for example.
+     *
+     * @param string|DBHelper_StatementBuilder $userIDColumn
+     * @param string $columnID
+     * @return Application_FilterCriteria_Database_CustomColumn
+     */
     protected function registerUserNameSelect($userIDColumn, string $columnID) : Application_FilterCriteria_Database_CustomColumn
     {
         $query = statementBuilder(
@@ -240,6 +264,10 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     }
 
     /**
+     * Adds a column to select translated country labels
+     * given a country ID column value, ideal for sorting
+     * purposes for example.
+     *
      * @param string|DBHelper_StatementBuilder $countryIDColumn
      * @return string
      */
@@ -407,7 +435,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     {
         foreach ($this->customColumns as $column)
         {
-            if(!$column->isEnabled() || !$column->hasJoins())
+            if(!$column->isEnabled() || !$column->hasRequiredJoins())
             {
                 continue;
             }

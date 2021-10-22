@@ -1,7 +1,26 @@
 <?php
+/**
+ * File containing the class {@see Application_FilterCriteria_Database_ColumnUsage}.
+ *
+ * @package Application
+ * @subpackage FilterCriteria
+ * @see Application_FilterCriteria_Database_ColumnUsage
+ */
 
 declare(strict_types=1);
 
+/**
+ * Column usage utility class: offers an easy-to-use interface
+ * to get the usage status of a custom column. Easily check if
+ * a custom column is used in the filter criteria, and where
+ * exactly.
+ *
+ * @package Application
+ * @subpackage FilterCriteria
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_FilterCriteria_DatabaseExtended::checkColumnUsage()
+ */
 class Application_FilterCriteria_Database_ColumnUsage
 {
     /**
