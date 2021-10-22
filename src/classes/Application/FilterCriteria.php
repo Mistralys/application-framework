@@ -7,9 +7,13 @@ use function AppUtils\parseVariable;
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_FilterCriteria implements Application_Interfaces_Loggable
+abstract class Application_FilterCriteria
+    implements
+    Application_Interfaces_Loggable,
+    Application_Interfaces_Instanceable
 {
     use Application_Traits_Loggable;
+    use Application_Traits_Instanceable;
 
     const ERROR_INVALID_SORTING_ORDER = 710003;
     const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
@@ -78,16 +82,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     protected $connectors;
 
     /**
-     * @var int
-     */
-    protected $instanceID = 0;
-
-    /**
-     * @var int
-     */
-    protected static $instanceCounter = 0;
-
-    /**
      * @var array<int,mixed>
      */
     private $constructorArguments;
@@ -109,17 +103,6 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
 
     protected function init() : void {}
 
-    public final function getInstanceID() : int
-    {
-        if($this->instanceID === 0)
-        {
-            self::$instanceCounter++;
-            $this->instanceID = self::$instanceCounter;
-        }
-
-        return $this->instanceID;
-    }
-
     /**
      * Sets the sorting order to ascending.
      *
@@ -127,8 +110,7 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      */
     public function orderAscending()
     {
-        $this->orderDir = self::ORDER_DIR_ASCENDING;
-        return $this;
+        return $this->setOrderDir(self::ORDER_DIR_ASCENDING);
     }
 
     /**
@@ -138,7 +120,22 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      */
     public function orderDescending()
     {
-        $this->orderDir = self::ORDER_DIR_DESCENDING;
+        return $this->setOrderDir(self::ORDER_DIR_DESCENDING);
+    }
+
+    /**
+     * @param string $orderDir
+     * @return $this
+     *
+     * @throws Application_Exception
+     * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
+     */
+    public function setOrderDir(string $orderDir)
+    {
+        $this->requireValidOrderDir($orderDir);
+
+        $this->orderDir = $orderDir;
+
         return $this;
     }
 
@@ -151,8 +148,10 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     public function setSearch(string $search)
     {
         $search = trim($search);
-        if(!empty($search)) {
+        if(!empty($search) && $this->search !== $search)
+        {
             $this->search = $search;
+            $this->handleCriteriaChanged();
         }
         
         return $this;
@@ -286,13 +285,17 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
      * @param string $orderDir
      * @return $this
      *
-     * @throws Application_Exception
      * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
      */
     public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
     {
-        $this->orderField = $fieldName;
-        $this->orderDir = $this->requireValidOrderDir($orderDir);
+        if($this->orderField !== $fieldName)
+        {
+            $this->orderField = $fieldName;
+            $this->handleCriteriaChanged();
+        }
+
+        $this->setOrderDir($orderDir);
         
         return $this;
     }
@@ -520,12 +523,15 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
             );
         }
         
-        if(!isset($this->criteriaItems[$type])) {
+        if(!isset($this->criteriaItems[$type]))
+        {
             $this->criteriaItems[$type] = array();
         }
         
-        if(!in_array($value, $this->criteriaItems[$type])) {
+        if(!in_array($value, $this->criteriaItems[$type]))
+        {
             $this->criteriaItems[$type][] = $value;
+            $this->handleCriteriaChanged();
         }
         
         return $this;
@@ -594,4 +600,9 @@ abstract class Application_FilterCriteria implements Application_Interfaces_Logg
     protected function _applyFilters() : void {}
 
     // endregion
+
+    protected function handleCriteriaChanged() : void
+    {
+
+    }
 }
