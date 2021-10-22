@@ -542,7 +542,15 @@ class DBHelper
         return $result;
     }
 
-    private static function createException($code, $title=null, $errorMessage=null, PDOException $e=null) : DBHelper_Exception
+    /**
+     * @param int $code
+     * @param string|null $title
+     * @param string|null $errorMessage
+     * @param PDOException|null $e
+     * @return DBHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    private static function createException(int $code, ?string $title=null, ?string $errorMessage=null, PDOException $e=null) : DBHelper_Exception
     {
         if(empty($title)) {
             $title = 'Query failed';
@@ -595,7 +603,7 @@ class DBHelper
                     $tokenInfo = '<i class="text-error">Placeholder not specified in values list</i>';
                 }
                 
-                $tokens[] = $name .= ' = ' . $tokenInfo;
+                $tokens[] = $name . ' = ' . $tokenInfo;
             }
             
             if(isset(self::$activeQuery[1])) {
