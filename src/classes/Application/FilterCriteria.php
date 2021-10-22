@@ -601,6 +601,15 @@ abstract class Application_FilterCriteria
 
     // endregion
 
+    /**
+     * Called whenever a method is called that influences
+     * the selection criteria: anything that modifies which
+     * items are fetched.
+     *
+     * NOTE: This does not include settings like sorting order,
+     * selection limits and the like, as they do not modify
+     * the item filters.
+     */
     protected function handleCriteriaChanged() : void
     {
 
