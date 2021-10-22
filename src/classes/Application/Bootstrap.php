@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\BaseException;
+
 class Application_Bootstrap
 {
     const ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
@@ -314,7 +316,7 @@ class Application_Bootstrap
 
         // Convert AppUtils base exceptions, retaining the
         // details if present.
-        if($e instanceof AppUtils\BaseException)
+        if($e instanceof BaseException)
         {
             return new Application_Exception(
                 $e->getMessage(),
