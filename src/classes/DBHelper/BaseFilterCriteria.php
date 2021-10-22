@@ -7,12 +7,6 @@
  */
 
 /**
- * The application skeleton for filter criteria classes.
- * @see Application_FilterCriteria
- */
-require_once 'Application/FilterCriteria.php';
-
-/**
  * Base class for filter criteria to be used in conjunction
  * with DB record collections. Automatically configures the
  * application filter criteria class to be used with a records
