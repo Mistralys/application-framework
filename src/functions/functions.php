@@ -313,7 +313,7 @@ function displayError(Throwable $e, string $output='') : void
         $themeLocation[1],
         $themeLocation[0],
         $locations,
-        trim($output),
+        $output,
         $contentType,
         $e, 
         $develinfo
@@ -341,7 +341,7 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
     
     $lines = array();
     $lines[] = 'Error number: #<b>'.$e->getCode().'</b> of type '.$type;
-	$lines[] = 'Error Message: <b>'.AppUtils\ConvertHelper::string2utf8($e->getMessage()).'</b>';
+	$lines[] = 'Error Message: <b>'. ConvertHelper::string2utf8($e->getMessage()).'</b>';
 	
 	if($detailed) 
 	{
@@ -350,8 +350,8 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
 	}
 	
 	$lines[] = 'Source file: <b>'.basename($e->getFile()).' line '.$e->getLine().'</b>';
-    
-	if($detailed) 
+
+	if($detailed)
 	{
         $lines[] = 'Source URL: '.getRequestURI();
 	}
