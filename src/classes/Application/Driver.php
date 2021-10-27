@@ -47,6 +47,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     const STORAGE_TYPE_DB = 'DB';
     const STORAGE_TYPE_FILE = 'File';
+    const SETTING_USER_LAST_USED_VERSION = 'last_used_version';
 
     /**
      * @var Application
@@ -1361,7 +1362,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->configureScriptIncludes();
         $this->configureScripts();
 
-        $lastVersion = $this->user->getSetting('last_used_version');
+        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
         $minorVersion = $this->getMinorVersion();
 
         // handle the what's new? Dialog: only if the user has used the
@@ -1376,7 +1377,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             ));
         }
 
-        $this->user->setSetting('last_used_version', $minorVersion);
+        $this->user->setSetting(self::SETTING_USER_LAST_USED_VERSION, $minorVersion);
         $this->user->saveSettings();
     }
 
@@ -1436,7 +1437,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $this->ui->addJavascriptHeadStatement('application.selectLocale', $activeContentLocale->getName());
 
-        $lastVersion = $this->user->getSetting('last_used_version');
+        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
         $this->ui->addJavascriptHeadVariable('User.last_used_version', $lastVersion);
     }
 
