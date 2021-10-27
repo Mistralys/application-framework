@@ -118,6 +118,12 @@ class Application_FilterCriteria_Database_ColumnUsage
 
     private function checkSelects() : void
     {
+        // No select columns are available in COUNT mode.
+        if($this->filters->isCount())
+        {
+            return;
+        }
+
         $selects = $this->filters->getSelects();
 
         foreach ($selects as $select)

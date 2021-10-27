@@ -50,6 +50,9 @@ use AppUtils\NamedClosure;
 abstract class Application_FilterCriteria_DatabaseExtended extends Application_FilterCriteria_Database
 {
     const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
+    const ERROR_MAX_BUILD_ITERATIONS_REACHED = 90502;
+
+    const MAX_BUILD_ITERATIONS = 40;
 
     /**
      * @var bool
@@ -106,7 +109,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      *
      * @return string[]
      */
-    protected function getCustomSelects() : array
+    public function getCustomSelects() : array
     {
         $this->initCustomColumns();
 
@@ -119,7 +122,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 continue;
             }
 
-            $result[] = $column->getSelect();
+            $result[] = $column->getSelectMarker();
         }
         
         return $result;
@@ -140,7 +143,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         if(isset($this->customColumns[$columnID]))
         {
-            return $this->customColumns[$columnID]->getSelect();
+            return $this->customColumns[$columnID]->getSelectValue();
         }
 
         throw $this->createMissingColumnException($columnID);
@@ -361,6 +364,27 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         if($adjusted !== $query)
         {
             $this->buildIteration++; // Signify that we are in a recursive build
+
+            if($this->buildIteration > self::MAX_BUILD_ITERATIONS)
+            {
+                throw new DBHelper_Exception(
+                    'Query max build iteration exceeded',
+                    sprintf(
+                        'Reached the maximum of [%s] query build iterations.'.
+                        PHP_EOL.
+                        '--------------------------------'.PHP_EOL.
+                        'Current query SQL:'.PHP_EOL.
+                        $query.
+                        PHP_EOL.
+                        '--------------------------------'.PHP_EOL.
+                        'Adjusted query SQL:'.PHP_EOL.
+                        $adjusted,
+                        self::MAX_BUILD_ITERATIONS
+                    ),
+                    self::ERROR_MAX_BUILD_ITERATIONS_REACHED
+                );
+            }
+
             return $this->buildQuery($isCount);
         }
 
@@ -397,7 +421,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         // placeholders with the actual SQL statements.
         foreach($this->customColumns as $column)
         {
-            $query = $column->replacePlaceholders($query);
+            $query = $column->replaceMarkers($query);
         }
 
         return $query;
@@ -421,6 +445,11 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
 
         return $this->columnUsage[$name];
+    }
+
+    public function handleColumnModified(Application_FilterCriteria_Database_CustomColumn $column) : void
+    {
+        $this->handleCriteriaChanged();
     }
 
     protected function _applyFilters() : void
@@ -468,7 +497,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 continue;
             }
 
-            $statement = $column->getGroupBy();
+            $statement = $column->getGroupByValue();
 
             if(!in_array($statement, $groupBys))
             {
@@ -494,7 +523,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         foreach ($this->customColumns as $column)
         {
-            if($this->checkColumnUsage($column)->isInUse())
+            if($column->isEnabled() || $this->checkColumnUsage($column)->isInUse())
             {
                 $columns[] = $column;
             }

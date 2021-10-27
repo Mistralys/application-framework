@@ -25,8 +25,13 @@ class Application_FilterCriteria_Database_CustomColumn
 {
     const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
-    const COMPONENT_VALUE = 'value';
+    const COMPONENT_WHERE = 'where';
+    const COMPONENT_ORDER_BY = 'order_by';
+    const COMPONENT_GROUP_BY = 'group_by';
     const COMPONENT_SELECT = 'select';
+    const COMPONENT_JOIN = 'join';
+
+    const PLACEHOLDER_CHAR = '$$';
 
     /**
      * @var NamedClosure|DBHelper_StatementBuilder
@@ -142,7 +147,12 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     public function setEnabled(bool $enabled) : Application_FilterCriteria_Database_CustomColumn
     {
-        $this->enabled = $enabled;
+        if($enabled !== $this->enabled)
+        {
+            $this->enabled = $enabled;
+            $this->filters->handleColumnModified($this);
+        }
+
         return $this;
     }
 
@@ -152,7 +162,7 @@ class Application_FilterCriteria_Database_CustomColumn
      *
      * @return string
      * @throws Application_Exception
-     * @see Application_FilterCriteria_Database_CustomColumn::getSelect()
+     * @see Application_FilterCriteria_Database_CustomColumn::getSelectValue()
      */
     public function getSQLStatement() : string
     {
@@ -206,7 +216,7 @@ class Application_FilterCriteria_Database_CustomColumn
      * @see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()
      * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
      */
-    public function getSelect() : string
+    public function getSelectValue() : string
     {
         return $this->generateMarker(self::COMPONENT_SELECT);
     }
@@ -214,6 +224,16 @@ class Application_FilterCriteria_Database_CustomColumn
     public function getUsage() : Application_FilterCriteria_Database_ColumnUsage
     {
         return $this->filters->checkColumnUsage($this);
+    }
+
+    public function isComplexQuery() : bool
+    {
+        return $this->isSubQuery() || $this->isCaseQuery();
+    }
+
+    public function isCaseQuery() : bool
+    {
+        return strstr($this->getSQLStatement(), 'CASE') !== false;
     }
 
     public function isSubQuery() : bool
@@ -230,24 +250,95 @@ class Application_FilterCriteria_Database_CustomColumn
      *
      * @return string
      */
-    public function getValueStatement() : string
+    public function getJoinValue() : string
     {
-        return $this->generateMarker(self::COMPONENT_VALUE);
+        return $this->generateMarker(self::COMPONENT_JOIN);
     }
 
-    public function getGroupBy() : string
+    public function getGroupByValue() : string
     {
-        return $this->getValueStatement();
+        return $this->generateMarker(self::COMPONENT_GROUP_BY);
     }
 
-    public function getOrderBy() : string
+    public function getOrderByValue() : string
     {
-        return $this->getValueStatement();
+        return $this->generateMarker(self::COMPONENT_ORDER_BY);
     }
 
-    public function getWhere() : string
+    public function getWhereValue() : string
     {
-        return $this->getValueStatement();
+        return $this->generateMarker(self::COMPONENT_WHERE);
+    }
+
+    // region: Managing markers
+
+    /**
+     * @var string
+     */
+    private $markerRegex = '';
+
+    private function generateMarkerRegex() : string
+    {
+        if($this->markerRegex !== '')
+        {
+            return $this->markerRegex;
+        }
+
+        $components = array(
+            self::COMPONENT_SELECT,
+            self::COMPONENT_WHERE,
+            self::COMPONENT_ORDER_BY,
+            self::COMPONENT_GROUP_BY,
+            self::COMPONENT_JOIN
+        );
+
+        $this->markerRegex = sprintf(
+            '/%1$s%2$s_(%3$s)%1$s/sU',
+            preg_quote(self::PLACEHOLDER_CHAR),
+            preg_quote($this->getName()),
+            implode('|', $components)
+        );
+
+        return $this->markerRegex;
+    }
+
+    public function replaceMarkers(string $query) : string
+    {
+        if(!$this->isFoundInString($query))
+        {
+            return $query;
+        }
+
+        $usage = $this->getUsage();
+
+        $replaces = array();
+
+        if($usage->isInWhere())
+        {
+            $replaces[$this->getWhereMarker()] = $this->renderWhereValue();
+        }
+
+        if($usage->isInSelect())
+        {
+            $replaces[$this->getSelectMarker()] = $this->renderSelectValue();
+        }
+
+        if($usage->isInGroupBy())
+        {
+            $replaces[$this->getGroupByMarker()] = $this->renderGroupByValue();
+        }
+
+        if($usage->isInOrderBy())
+        {
+            $replaces[$this->getOrderByMarker()] = $this->renderOrderByValue();
+        }
+
+        if($usage->isInJoin())
+        {
+            $replaces[$this->getJoinMarker()] = $this->renderJoinValue();
+        }
+
+        return str_replace(array_keys($replaces), array_values($replaces), $query);
     }
 
     public function getSelectMarker() : string
@@ -255,22 +346,39 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->generateMarker(self::COMPONENT_SELECT);
     }
 
-    public function getValueMarker() : string
+    public function getOrderByMarker() : string
     {
-        return $this->generateMarker(self::COMPONENT_VALUE);
+        return $this->generateMarker(self::COMPONENT_ORDER_BY);
+    }
+
+    public function getGroupByMarker() : string
+    {
+        return $this->generateMarker(self::COMPONENT_GROUP_BY);
+    }
+
+    public function getWhereMarker() : string
+    {
+        return $this->generateMarker(self::COMPONENT_WHERE);
+    }
+
+    public function getJoinMarker() : string
+    {
+        return $this->generateMarker(self::COMPONENT_JOIN);
     }
 
     private function generateMarker(string $component='') : string
     {
-        $name = '$$'.$this->getName();
+        $name = self::PLACEHOLDER_CHAR .$this->getName();
 
         if(!empty($component))
         {
-            return $name.'_'.$component.'$$';
+            return $name.'_'.$component. self::PLACEHOLDER_CHAR;
         }
 
-        return $name.'$$';
+        return $name. self::PLACEHOLDER_CHAR;
     }
+
+    // endregion
 
     /**
      * Retrieves the alias under which the column
@@ -339,29 +447,7 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     public function isFoundInString(string $subject) : bool
     {
-        return
-            strstr($subject, $this->getValueMarker()) !== false
-            ||
-            strstr($subject, $this->getSelectMarker()) !== false;
-    }
-
-    public function replacePlaceholders(string $query) : string
-    {
-        if(!$this->isFoundInString($query))
-        {
-            return $query;
-        }
-
-        $replaces = array(
-            $this->getValueMarker() => $this->renderValue()
-        );
-
-        if($this->getUsage()->isInSelect())
-        {
-            $replaces[$this->getSelectMarker()] = $this->renderSelect();
-        }
-
-        return str_replace(array_keys($replaces), array_values($replaces), $query);
+        return preg_match($this->generateMarkerRegex(), $subject) === 1;
     }
 
     public function canUseAlias() : bool
@@ -369,13 +455,40 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->getUsage()->isInSelect() && !$this->isSubQuery();
     }
 
-    private function renderSelect() : string
+    // region: Rendering markers
+
+    private function renderSelectValue() : string
     {
         return $this->getSQLStatement().' AS '.$this->getSelectAlias();
     }
 
-    private function renderValue() : string
+    private function renderWhereValue() : string
     {
+        return $this->renderValue(false);
+    }
+
+    private function renderJoinValue() : string
+    {
+        return $this->renderValue(false);
+    }
+
+    private function renderOrderByValue() : string
+    {
+        return $this->renderValue(true);
+    }
+
+    private function renderGroupByValue() : string
+    {
+        return $this->renderValue(false);
+    }
+
+    private function renderValue(bool $complexAliasAllowed) : string
+    {
+        if($this->isComplexQuery() && !$complexAliasAllowed)
+        {
+            return $this->getSQLStatement();
+        }
+
         if($this->canUseAlias())
         {
             return $this->getSelectAlias();
@@ -383,4 +496,6 @@ class Application_FilterCriteria_Database_CustomColumn
 
         return $this->getSQLStatement();
     }
+
+    // endregion
 }

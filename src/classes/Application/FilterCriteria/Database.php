@@ -7,6 +7,8 @@
  * @see Application_FilterCriteria_Database
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Database-specific filter criteria base class: allows
  * selecting data from tables in the database, with database-
@@ -43,7 +45,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected $queries = array();
 
     /**
-     * @var string[]
+     * @var array<string,string|DBHelper_StatementBuilder>
      */
     protected $columnSelects = array();
 
@@ -343,9 +345,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function addSelectColumn($columnSelect)
     {
-        if(!in_array($columnSelect, $this->columnSelects))
+        $key = self::getUniqueKey($columnSelect);
+
+        if(!isset($this->columnSelects[$key]))
         {
-            $this->columnSelects[] = (string)$columnSelect;
+            $this->columnSelects[$key] = $columnSelect;
             $this->handleCriteriaChanged();
         }
 
@@ -359,7 +363,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public function getSelects() : array
     {
         $selects = $this->getSelect();
-        if(empty($selects)) {
+
+        if(empty($selects))
+        {
             throw new Application_Exception(
                 'Select fields list cannot be empty',
                 'The method call [getSelect] returned an empty value.',
@@ -367,11 +373,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             );
         }
 
-        if(!is_array($selects)) {
-            $selects = explode(',', $selects);
+        if(!is_array($selects))
+        {
+            $selects = ConvertHelper::explodeTrim(',', $selects);
         }
 
-        if(!empty($this->columnSelects)) {
+        if(!empty($this->columnSelects))
+        {
             $selects = array_merge($selects, $this->columnSelects);
         }
 
@@ -380,7 +388,23 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             $selects[] = $this->orderField;
         }
 
-        return array_map('strval', $selects);
+        $selects = array_map('strval', $selects);
+
+        return array_unique($selects);
+    }
+
+    /**
+     * @param string|DBHelper_StatementBuilder $statement
+     * @return string
+     */
+    public static function getUniqueKey($statement) : string
+    {
+        if($statement instanceof DBHelper_StatementBuilder)
+        {
+            return $statement->getTemplate();
+        }
+
+        return $statement;
     }
 
     /**
@@ -986,7 +1010,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return (string)$name;
         }
 
-        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == '$$')
+        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR)
         {
             return $name;
         }
@@ -1285,6 +1309,16 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         return implode(PHP_EOL, $result);
     }
 
+    protected function canAddTableAlias(string $field) : bool
+    {
+        return
+            !strstr($field, '.')
+                &&
+            !strstr($field, '\\')
+                &&
+            !strstr($field, Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR);
+    }
+
     protected function buildOrderby() : string
     {
         // no ordering in count queries
@@ -1295,7 +1329,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $field = $this->orderField;
 
         // leave the name be if it has a dot (meaning it has a table or alias specified)
-        if(!strstr($field, '.') && !strstr($field, '\\'))
+        if($this->canAddTableAlias($field))
         {
             $field = $this->quoteColumnName($this->orderField);
 
