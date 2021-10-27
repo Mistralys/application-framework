@@ -25,7 +25,9 @@ class Application_Countries extends DBHelper_BaseCollection
     const ERROR_UNKNOWN_ISO_CODE = 21901;
     const ERROR_INVALID_COUNTRY_ID = 21902;
     const ERROR_UNKNOWN_LOCALE_CODE = 21903;
-    
+    const PRIMARY_NAME = 'country_id';
+    const TABLE_NAME = 'countries';
+
     /**
      * @var Application_Countries
      */
@@ -38,17 +40,17 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordClassName()
     {
-        return 'Application_Countries_Country';
+        return Application_Countries_Country::class;
     }
     
     public function getRecordFiltersClassName()
     {
-        return 'Application_Countries_FilterCriteria';
+        return Application_Countries_FilterCriteria::class;
     }
     
     public function getRecordFilterSettingsClassName()
     {
-        return 'Application_Countries_FilterSettings';
+        return '';
     }
     
     public function getRecordSearchableColumns()
@@ -61,7 +63,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordPrimaryName()
     {
-        return 'country_id';
+        return self::PRIMARY_NAME;
     }
     
     public function getRecordTypeName()
@@ -71,7 +73,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordTableName()
     {
-        return 'countries';
+        return self::TABLE_NAME;
     }
     
     /**
@@ -123,7 +125,7 @@ class Application_Countries extends DBHelper_BaseCollection
         /* @var $country Application_Countries_Country */
 
         if(empty($fieldName)) {
-           $fieldName = 'country_id'; 
+           $fieldName = self::PRIMARY_NAME;
         }
         
         if (empty($fieldLabel)) {
