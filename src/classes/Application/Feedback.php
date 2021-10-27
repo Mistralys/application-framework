@@ -116,26 +116,54 @@ class Application_Feedback extends DBHelper_BaseCollection
         return array();
     }
 
+    public function addBug(string $scope, string $text, string $url='', ?Application_User $user=null) : Application_Feedback_Report
+    {
+        return $this->addFeedback(
+            self::TYPE_BUG,
+            $scope,
+            $url,
+            $text,
+            $user
+        );
+    }
+
+    public function addImprovement(string $scope, string $text, string $url='', ?Application_User $user=null) : Application_Feedback_Report
+    {
+        return $this->addFeedback(
+            self::TYPE_IMPROVEMENT,
+            $scope,
+            $url,
+            $text,
+            $user
+        );
+    }
+
     /**
-     * @param string $type
-     * @param string $scope
-     * @param string $url
+     * @param string $type The type of feedback, e.g. {@see Application_Feedback::TYPE_IMPROVEMENT}.
+     * @param string $scope The scope for the feedback, e.g. {@see Application_Feedback::SCOPE_PAGE}.
+     * @param string $url URL to the relevant page, if any
      * @param string $text
+     * @param Application_User|null $user If other user than the logged-in user.
      * @return Application_Feedback_Report|DBHelper_BaseRecord
      * @throws Application_Exception
      * @throws Application_Exception_DisposableDisposed
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws DBHelper_Exception
      */
-    public function addFeedback(string $type, string $scope, string $url, string $text)
+    public function addFeedback(string $type, string $scope,string $text, string $url='', ?Application_User $user=null) : Application_Feedback_Report
     {
+        if($user === null)
+        {
+            $user = Application::getUser();
+        }
+
         $record = $this->createNewRecord(array(
             Application_Feedback_Report::COL_TYPE => $type,
             Application_Feedback_Report::COL_SCOPE => $scope,
             Application_Feedback_Report::COL_REQUEST_PARAMS => $url,
             Application_Feedback_Report::COL_DATE => new DateTime(),
             Application_Feedback_Report::COL_FEEDBACK => $text,
-            Application_Feedback_Report::COL_USER_ID => Application::getUser()->getID()
+            Application_Feedback_Report::COL_USER_ID => $user->getID()
         ));
 
         if($record instanceof Application_Feedback_Report)
