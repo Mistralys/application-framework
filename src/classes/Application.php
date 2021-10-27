@@ -1440,6 +1440,9 @@ class Application
 
     public static function isUnitTestingRunning() : bool
     {
-        return defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true;
+        return
+            (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
+            ||
+            (defined('APP_FRAMEWORK_TESTS') && APP_FRAMEWORK_TESTS === true);
     }
 }
