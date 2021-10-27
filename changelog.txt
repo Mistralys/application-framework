@@ -4,6 +4,9 @@ v1.20.2
 - FilterCriteria: Custom columns detected and auto-enabled more reliably.
 - FilterCriteria: Added protected `handleCriteriaChanged()` to handle the event.
 - Traits: Added the Instanceable trait and matching interface.
+- UnitTests: `Application::isUnitTestingRunning()` now also true in the framework's test suites.
+- Feedback: Added `addBug()` and `addImprovement()` methods.
+- User: Fixed `createDummyUser()` returning the system user.
 
 v1.20.1
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
