@@ -7,9 +7,11 @@
  * @see Application_User_Storage_DB
  */
 
+declare(strict_types=1);
+
 /**
  * DB storage for users: saves all user-related data to the
- * database in the <code>user_settings</cide> table.
+ * database in the <code>user_settings</code> table.
  *
  * @package Application
  * @subpackage User
@@ -17,16 +19,31 @@
  */
 class Application_User_Storage_DB extends Application_User_Storage
 {
-    public function load()
+    const TABLE_NAME = 'user_settings';
+
+    const COL_SETTING_NAME = 'setting_name';
+    const COL_SETTING_VALUE = 'setting_value';
+    const COL_USER_ID = Application_Users::PRIMARY_NAME;
+
+    /**
+     * @return array<string,string>
+     * @throws DBHelper_Exception
+     */
+    public function load() : array
     {
-        $items = DBHelper::fetchAll(
-            'SELECT
-                setting_name,
-                setting_value
+        $items = DBHelper::fetchAll((string)statementBuilder("
+            SELECT
+                {name},
+                {value}
             FROM
-                user_settings
+                {table_settings}
             WHERE
-                user_id=:user_id',
+                {users_primary}=:user_id"
+            )
+                ->table('{table_settings}', self::TABLE_NAME)
+                ->field('{users_primary}', Application_Users::PRIMARY_NAME)
+                ->field('{name}', self::COL_SETTING_NAME)
+                ->field('{value}', self::COL_SETTING_VALUE),
             array(
                 ':user_id' => $this->userID
             )
@@ -34,25 +51,29 @@ class Application_User_Storage_DB extends Application_User_Storage
         
         $data = array();
         foreach ($items as $item) {
-            $data[$item['setting_name']] = $item['setting_value'];
+            $data[$item[self::COL_SETTING_NAME]] = $item[self::COL_SETTING_VALUE];
         }
         
         return $data;
     }
     
-    public function reset()
+    public function reset() : void
     {
         DBHelper::requireTransaction('Reset user settings');
         
         DBHelper::deleteRecords(
-            'user_settings',
+            self::TABLE_NAME,
             array(
-                'user_id' => $this->userID
+                self::COL_USER_ID => $this->userID
             )
         );
     }
-    
-    public function save($data)
+
+    /**
+     * @param array<string,string> $data
+     * @throws DBHelper_Exception
+     */
+    public function save(array $data) : void
     {
         $transaction = false;
         
@@ -64,13 +85,16 @@ class Application_User_Storage_DB extends Application_User_Storage
         foreach($data as $name => $value) 
         {
             DBHelper::insertOrUpdate(
-                'user_settings',
+                self::TABLE_NAME,
                 array(
-                    'user_id' => $this->userID,
-                    'setting_name' => $name,
-                    'setting_value' => $value
+                    self::COL_USER_ID => $this->userID,
+                    self::COL_SETTING_NAME => $name,
+                    self::COL_SETTING_VALUE => $value
                 ),
-                array('user_id', 'setting_name')
+                array(
+                    self::COL_USER_ID,
+                    self::COL_SETTING_NAME
+                )
             );
         }
         
@@ -79,13 +103,13 @@ class Application_User_Storage_DB extends Application_User_Storage
         }
     }
     
-    public function removeKey($name)
+    public function removeKey(string $name) : void
     {
         DBHelper::deleteRecords(
-            'user_settings',
+            self::TABLE_NAME,
             array(
-                'user_id' => $this->userID,
-                'setting_name' => $name
+                self::COL_USER_ID => $this->userID,
+                self::COL_SETTING_NAME => $name
             )
         );
     }

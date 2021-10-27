@@ -7,6 +7,11 @@
  * @see Application_User_Storage_File
  */
 
+declare(strict_types=1);
+
+use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
+
 /**
  * File storage for users: saves all user-related data to a JSON
  * file in the application's <code>storage/userdata</code> folder.
@@ -17,57 +22,84 @@
  */
 class Application_User_Storage_File extends Application_User_Storage
 {
-    protected $dataFile;
-    
-    protected $data;
-    
-    protected function init()
+    /**
+     * @var string
+     */
+    private $dataFile;
+
+    /**
+     * @var array<string,string>
+     */
+    private $data = array();
+
+    /**
+     * @var bool
+     */
+    private $loaded = false;
+
+    protected function init() : void
     {
         $this->dataFile = Application::getStorageSubfolderPath('userdata').'/'.$this->userID.'.json';
     }
-    
-    public function load()
+
+    /**
+     * @return array<string,string>
+     * @throws FileHelper_Exception
+     */
+    public function load() : array
     {
-        if(!isset($this->data)) 
+        if($this->loaded)
         {
-            $this->data = array();
-            
-            if(file_exists($this->dataFile)) {
-                $this->data = AppUtils\FileHelper::parseJSONFile($this->dataFile);
-            }
+            return $this->data;
         }
-        
+
+        $this->loaded = true;
+
+        if(file_exists($this->dataFile))
+        {
+            $this->data = FileHelper::parseJSONFile($this->dataFile);
+        }
+
         return $this->data;
     }
-    
-    public function reset()
+
+    /**
+     * @throws FileHelper_Exception
+     */
+    public function reset() : void
     {
         if(file_exists($this->dataFile)) 
         {
-            unlink($this->dataFile);
+            FileHelper::deleteFile($this->dataFile);
         }
         
-        $this->data = null;
+        $this->data = array();
     }
-    
-    public function save($data)
+
+    /**
+     * @param array<string,string> $data
+     */
+    public function save(array $data) : void
     {
         $this->data = array_merge($this->data, $data);
+
         $this->dumpToDisk();
     }
     
-    public function removeKey($name)
+    public function removeKey(string $name) : void
     {
-        if(!isset($this->data[$name])) {
+        if(!isset($this->data[$name]))
+        {
             return;
         }
         
         unset($this->data[$name]);
+
         $this->dumpToDisk();       
     }
     
-    protected function dumpToDisk()
+    protected function dumpToDisk() : void
     {
-        AppUtils\FileHelper::saveAsJSON($this->data, $this->dataFile);
+        FileHelper::saveAsJSON($this->data, $this->dataFile);
     }
 }

@@ -7,6 +7,8 @@
  * @see Application_User_Storage
  */
 
+declare(strict_types=1);
+
 /**
  * Base class for user data storage: this defines the API
  * for storage implementations. The user class uses a storage
@@ -37,16 +39,22 @@ abstract class Application_User_Storage
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }
+
+    /**
+     * @return array<string,string>
+     */
+    abstract public function load() : array;
     
-    abstract public function load();
+    abstract public function reset() : void;
+
+    /**
+     * @param array<string,string> $data
+     */
+    abstract public function save(array $data) : void;
     
-    abstract public function reset();
-    
-    abstract public function save($data);
-    
-    abstract public function removeKey($name);
+    abstract public function removeKey(string $name) : void;
 }
