@@ -150,7 +150,7 @@ final class DBHelper_JoinsTests extends ApplicationTestCase
         $this->assertEquals('1_first_one', $joins[$position]->getID(), $label); $position++;
         $this->assertEquals('2_second_one', $joins[$position]->getID(), $label); $position++;
         $this->assertEquals('3_third_one', $joins[$position]->getID(), $label); $position++;
-        $this->assertEquals(TestDriver_FilterCriteria_TestCriteria::JOIN_PERMANENT_JOIN, $joins[$position]->getID(), $label); $position++;
+        $this->assertEquals(TestDriver_FilterCriteria_TestCriteria::JOIN_LAST_USED_VERSION, $joins[$position]->getID(), $label); $position++;
         $this->assertEquals('z_last_one', $joins[$position]->getID(), $label);
     }
 

@@ -6,7 +6,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 {
     const JOIN_FEEDBACK = 'feedback';
     const JOIN_OPTIONAL_TABLE = 'table_optional_join';
-    const JOIN_PERMANENT_JOIN = 'join_permanent_join';
+    const JOIN_LAST_USED_VERSION = 'join_last_used_version';
+
+    const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
+    const CUSTOM_COL_LAST_USED_VERSION = 'last_used_version';
+    const CUSTOM_COL_TEXT = 'text';
 
     /**
      * Enables the custom column, which automatically
@@ -15,7 +19,7 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
      */
     public function enableFeedbackText()
     {
-        $this->withCustomColumn('text');
+        $this->withCustomColumn(self::CUSTOM_COL_TEXT);
     }
 
     /**
@@ -27,17 +31,17 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
      */
     public function addFeedbackManually()
     {
-        $this->addSelectColumn($this->getColFeedbackText()->getSelect());
+        $this->addSelectColumn($this->getColFeedbackText()->getSelectValue());
     }
 
     public function addFeedbackTextToSelect() : void
     {
-        $this->addSelectStatement($this->getColFeedbackText()->getSelect(), false);
+        $this->addSelectStatement($this->getColFeedbackText()->getSelectValue(), false);
     }
 
     public function orderByFeedbackText()
     {
-        $this->setOrderBy($this->getColFeedbackText()->getOrderBy());
+        $this->setOrderBy($this->getColFeedbackText()->getOrderByValue());
     }
 
     protected function getSelect()
@@ -76,23 +80,45 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 
     public function getColFeedbackText() : Application_FilterCriteria_Database_CustomColumn
     {
-        return $this->getCustomColumn('text');
+        return $this->getCustomColumn(self::CUSTOM_COL_TEXT);
     }
 
-    public function getColSubquery() : Application_FilterCriteria_Database_CustomColumn
+    public function getColUserFeedbackAmount() : Application_FilterCriteria_Database_CustomColumn
     {
-        return $this->getCustomColumn('subquery');
+        return $this->getCustomColumn(self::CUSTOM_COL_USER_FEEDBACK_AMOUNT);
+    }
+
+    public function getColLastUsedVersion() : Application_FilterCriteria_Database_CustomColumn
+    {
+        return $this->getCustomColumn(self::CUSTOM_COL_LAST_USED_VERSION);
     }
 
     protected function _initCustomColumns() : void
     {
-        $this->registerCustomSelect('{feedback}.{feedback_text}', 'text')
+        $this->registerCustomSelect(
+            '{feedback}.{feedback_text}',
+            self::CUSTOM_COL_TEXT
+        )
            ->requireJoin(self::JOIN_FEEDBACK);
 
         $this->registerCustomSelect(
-            '(SELECT `field` FROM `subquery_table`)',
-            'subquery'
-        );
+            '{last_used_version}.{setting_value}',
+            self::CUSTOM_COL_LAST_USED_VERSION
+        )
+            ->requireJoin(self::JOIN_LAST_USED_VERSION);
+
+        $this->registerCustomSelect(
+            "(
+            SELECT 
+                COUNT({feedback_primary}) AS {amount_feedbacks} 
+            FROM 
+                {table_feedback}
+            WHERE
+                {table_feedback}.{users_primary}={feedback}.{users_primary}
+            )",
+            self::CUSTOM_COL_USER_FEEDBACK_AMOUNT
+        )
+            ->requireJoin(self::JOIN_FEEDBACK);
     }
 
     protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
@@ -101,11 +127,15 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
             ->table('{table_users}', Application_Users::TABLE_NAME)
             ->table('{table_feedback}', Application_Feedback::TABLE_NAME)
             ->table('{table_optional}', self::JOIN_OPTIONAL_TABLE)
-            ->table('{table_permanent_join}', self::JOIN_PERMANENT_JOIN)
+            ->table('{table_permanent_join}', self::JOIN_LAST_USED_VERSION)
+            ->table('{table_settings}', Application_Users::TABLE_USER_SETTINGS)
 
             ->alias('{users}', 'users')
             ->alias('{feedback}', 'feedback')
+            ->alias('{last_version}', 'last_used_version')
 
+            ->field('{setting_name}', Application_User_Storage_DB::COL_SETTING_NAME)
+            ->field('{amount_feedbacks}', self::CUSTOM_COL_USER_FEEDBACK_AMOUNT)
             ->field('{email}', Application_Users_User::COL_EMAIL)
             ->field('{users_primary}', Application_Users::PRIMARY_NAME)
             ->field('{feedback_primary}', Application_Feedback::PRIMARY_NAME)
@@ -115,8 +145,16 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
     protected function _registerJoins() : void
     {
         $this->addJoinStatement(
-            "JOIN {table_permanent_join}",
-            self::JOIN_PERMANENT_JOIN
+            sprintf("
+                RIGHT OUTER JOIN 
+                    {table_settings} AS {last_version}
+                ON
+                    {last_version}.{users_primary} = {users}.{users_primary}
+                AND
+                    {last_version}.{setting_name} = %s",
+                $this->generatePlaceholder(Application_Driver::SETTING_USER_LAST_USED_VERSION)
+            ),
+            self::JOIN_LAST_USED_VERSION
         );
 
         $this->registerJoinStatement(

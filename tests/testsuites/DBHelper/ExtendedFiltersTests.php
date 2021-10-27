@@ -4,11 +4,80 @@ declare(strict_types=1);
 
 final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 {
-    protected function setUp() : void
+    public function test_getCustomSelects() : void
     {
-        parent::setUp();
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $col = $criteria->getColFeedbackText();
 
-        $this->startTransaction();
+        $this->assertCount(0, $criteria->getCustomSelects());
+
+        $col->setEnabled(true);
+
+        $this->assertCount(1, $criteria->getCustomSelects());
+        $this->assertContains($col->getSelectMarker(), $criteria->getCustomSelects());
+    }
+
+    public function test_getSelects() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $col = $criteria->getColFeedbackText();
+
+        $this->assertCount(1, $criteria->getSelects());
+
+        $col->setEnabled(true);
+
+        $this->assertCount(2, $criteria->getSelects());
+        $this->assertContains($col->getSelectMarker(), $criteria->getCustomSelects());
+    }
+
+    /**
+     * Ensure that the foundInString methods actually finds all
+     * relevant instances of the available markers.
+     */
+    public function test_foundInString() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $col = $criteria->getColFeedbackText();
+
+        $this->assertFalse($col->isFoundInString('Some text'));
+        $this->assertTrue($col->isFoundInString($col->getSelectMarker()));
+        $this->assertTrue($col->isFoundInString($col->getWhereMarker()));
+        $this->assertTrue($col->isFoundInString($col->getGroupByMarker()));
+        $this->assertTrue($col->isFoundInString($col->getOrderByMarker()));
+        $this->assertTrue($col->isFoundInString($col->getJoinMarker()));
+    }
+
+    /**
+     * The filters must be aware of changes to the column
+     * configuration, in order to update the internal cache
+     * of the column usage.
+     */
+    public function test_usageCacheRenewed() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $col = $criteria->getColFeedbackText();
+
+        $usage = $col->getUsage();
+
+        $col->setEnabled(true);
+
+        $newUsage = $col->getUsage();
+
+        $this->assertNotSame($usage, $newUsage);
+    }
+
+    public function test_getUsage() : void
+    {
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $col = $criteria->getColFeedbackText();
+
+        $usage = $col->getUsage();
+        $this->assertFalse($usage->isInUse());
+
+        $col->setEnabled(true);
+
+        $usage = $col->getUsage();
+        $this->assertTrue($usage->isInUse());
     }
 
     /**
@@ -93,7 +162,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addWhere($col->getValueStatement()." = 'value'");
+        $criteria->addWhere($col->getWhereValue()." = 'value'");
 
         $this->assertTrue($col->getUsage()->isInWhere());
     }
@@ -104,7 +173,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addSelectColumn($col->getSelect());
+        $criteria->addSelectColumn($col->getSelectValue());
 
         $this->assertTrue($col->getUsage()->isInSelect());
     }
@@ -115,7 +184,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addGroupBy($col->getOrderBy());
+        $criteria->addGroupBy($col->getOrderByValue());
 
         $this->assertTrue($col->getUsage()->isInUse());
         $this->assertFalse($col->canUseAlias());
@@ -127,23 +196,41 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addSelectColumn($col->getSelect());
+        $criteria->addSelectColumn($col->getSelectValue());
 
         $this->assertTrue($col->getUsage()->isInUse());
         $this->assertTrue($col->canUseAlias());
     }
 
+    /**
+     * When working with sub-queries, the columns must
+     * know that they cannot use the alias in group by,
+     * where or even order fields.
+     */
     public function test_canUseAlias_subquery() : void
     {
         $criteria = new TestDriver_FilterCriteria_TestCriteria();
 
-        $col = $criteria->getColSubquery();
+        $col = $criteria->getColUserFeedbackAmount();
 
-        $criteria->addSelectColumn($col->getSelect());
+        $criteria->addSelectColumn($col->getSelectValue());
 
         $this->assertTrue($col->isSubQuery());
         $this->assertTrue($col->getUsage()->isInUse());
+        $this->assertTrue($col->getUsage()->isInSelect());
         $this->assertFalse($col->canUseAlias());
+
+        $query = $criteria->renderQuery();
+
+        // The rendered query must not contain any placeholders anymore
+        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR, $query);
+
+        // The column must automatically be added to the group
+        // by statement, because it is a sub-query.
+        $this->assertTrue($col->getUsage()->isInGroupBy());
+
+        // Fetch results: this must not trigger an exception.
+        $criteria->getItems();
     }
 
     public function test_bypassColumnSelection() : void
@@ -152,7 +239,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $col = $criteria->getColFeedbackText();
 
         $criteria->addJoin(sprintf(
-            "JOIN `custom_join_table` WHERE %s='test'", $col->getValueStatement()
+            "JOIN `custom_join_table` WHERE %s='test'", $col->getJoinValue()
         ));
 
         $this->assertTrue($col->getUsage()->isInUse());
@@ -174,4 +261,66 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $this->assertTrue($col->getUsage()->isInSelect());
         $this->assertStringContainsString('`feedback`.`feedback` AS `text`', $sql);
     }
+
+    // region: Support methods
+
+    /**
+     * @var Application_Feedback_Report
+     */
+    private static $systemFeedback;
+
+    /**
+     * @var Application_Feedback_Report
+     */
+    private static $dummyFeedback;
+
+    /**
+     * @var Application_User
+     */
+    private static $systemUser;
+
+    /**
+     * @var Application_User
+     */
+    private static $dummyUser;
+
+    private function createTestRecords() : void
+    {
+        if(isset(self::$systemFeedback))
+        {
+            return;
+        }
+
+        DBHelper::deleteRecords(Application_Feedback::TABLE_NAME);
+
+        self::$systemUser = Application::createSystemUser();
+        self::$dummyUser = Application::createDummyUser();
+
+        $feedback = Application::createFeedback();
+
+        self::$systemFeedback = $feedback->addImprovement(
+            Application_Feedback::SCOPE_APPLICATION,
+            'Needs some improvement',
+            '',
+            self::$systemUser
+        );
+
+        self::$dummyFeedback = $feedback->addBug(
+            Application_Feedback::SCOPE_PAGE,
+            'Does not work!',
+            '',
+            self::$dummyUser
+        );
+    }
+
+    protected function setUp() : void
+    {
+        parent::setUp();
+
+        $this->startTransaction();
+
+        $this->createTestRecords();
+    }
+
+    // endregion
 }
