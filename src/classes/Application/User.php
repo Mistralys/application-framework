@@ -533,7 +533,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
     * @param int $user_id
     * @return Application_User
     * @throws Application_Exception|DBHelper_Exception
-    * @deprecated
+    * @deprecated Use {@see Application::createUser()} instead.
     */
     public static function createByID(int $user_id) : Application_User
     {
@@ -542,7 +542,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
 
     /**
      * @return Application_User
-     * @deprecated
+     * @deprecated Use {@see Application::createSystemUser()} instead.
      */
     public static function createSystemUser() : Application_User
     {
@@ -555,11 +555,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
      * used in any other cases.
      *
      * @return Application_User
-     * @deprecated
+     * @deprecated Use {@see Application::createDummyUser()} instead.
      */
     public static function createDummyUser() : Application_User
     {
-        return Application::createSystemUser();
+        return Application::createDummyUser();
     }
 
     /**
