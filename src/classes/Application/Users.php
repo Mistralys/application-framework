@@ -25,6 +25,8 @@ class Application_Users extends DBHelper_BaseCollection
 {
     const TABLE_USER_EMAILS = 'user_emails';
     const TABLE_NAME = 'known_users';
+    const TABLE_USER_SETTINGS = Application_User_Storage_DB::TABLE_NAME;
+    
     const PRIMARY_NAME = 'user_id';
 
     /**
