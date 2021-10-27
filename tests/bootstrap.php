@@ -32,7 +32,7 @@
     define('APP_FRAMEWORK_TESTS', true);
 
     /**
-     * The boostrapper class that configures the
+     * The bootstrapper class that configures the
      * application environment.
      * @see Application_Bootstrap
      */
