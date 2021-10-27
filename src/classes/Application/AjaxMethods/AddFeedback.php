@@ -9,8 +9,8 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
         $report = $this->collection->addFeedback(
             $this->type,
             $this->scope,
-            $this->url,
-            $this->text
+            $this->text,
+            $this->url
         );
 
         $this->sendResponse(array(
