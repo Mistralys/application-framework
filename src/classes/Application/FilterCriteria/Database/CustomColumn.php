@@ -227,7 +227,7 @@ class Application_FilterCriteria_Database_CustomColumn
 
     public function isComplexQuery() : bool
     {
-        return $this->isSubQuery() || $this->isCaseQuery();
+        return $this->isSubQuery();
     }
 
     public function isCaseQuery() : bool
@@ -509,6 +509,17 @@ class Application_FilterCriteria_Database_CustomColumn
 
     private function renderValue(bool $complexAliasAllowed) : string
     {
+        // When counting records, no column aliases may be
+        // used, since the select statements are not present.
+        // We have to use the full SQL statement instead.
+        if($this->filters->isCount())
+        {
+            return $this->getSQLStatement();
+        }
+
+        // Complex queries are sub-queries for example, which
+        // do not allow using the field alias. We have to duplicate
+        // the full SQL statement.
         if($this->isComplexQuery() && !$complexAliasAllowed)
         {
             return $this->getSQLStatement();
