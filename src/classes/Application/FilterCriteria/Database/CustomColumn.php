@@ -25,15 +25,6 @@ class Application_FilterCriteria_Database_CustomColumn
 {
     const ERROR_SELECT_STATEMENT_NOT_A_STRING = 90401;
 
-    const COMPONENT_WHERE = 'where';
-    const COMPONENT_ORDER_BY = 'order_by';
-    const COMPONENT_GROUP_BY = 'group_by';
-    const COMPONENT_SELECT_PRIMARY = 'select_primary';
-    const COMPONENT_SELECT_SECONDARY = 'select_secondary';
-    const COMPONENT_JOIN = 'join';
-
-    const PLACEHOLDER_CHAR = '$$';
-
     /**
      * @var NamedClosure|NULL
      */
@@ -144,6 +135,23 @@ class Application_FilterCriteria_Database_CustomColumn
     }
 
     /**
+     * @var string[]
+     */
+    private $groupBys = array();
+
+    public function requireGroupBy($groupBy) : Application_FilterCriteria_Database_CustomColumn
+    {
+        $statement = (string)$groupBy;
+
+        if(!in_array($statement, $this->groupBys))
+        {
+            $this->groupBys[] = $statement;
+        }
+
+        return $this;
+    }
+
+    /**
      * Whether the column should be enabled in the filter
      * criteria, and added to the query's SELECT statement.
      *
@@ -212,29 +220,6 @@ class Application_FilterCriteria_Database_CustomColumn
         );
     }
 
-    /**
-     * Gets the statement to use in the query's `SELECT` part:
-     * includes the alias `column AS alias` where `alias` is the
-     * column's name.
-     *
-     * NOTE: Use {@see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()}
-     * for the SQL to access the column's value.
-     *
-     * @return string
-     *
-     * @see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()
-     * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
-     */
-    public function getPrimarySelectValue() : string
-    {
-        return $this->generateMarker(self::COMPONENT_SELECT_PRIMARY);
-    }
-
-    public function getSecondarySelectValue() : string
-    {
-        return $this->generateMarker(self::COMPONENT_SELECT_SECONDARY);
-    }
-
     public function getUsage() : Application_FilterCriteria_Database_ColumnUsage
     {
         return $this->filters->checkColumnUsage($this);
@@ -254,6 +239,8 @@ class Application_FilterCriteria_Database_CustomColumn
     {
         return strstr($this->getSQLStatement(), 'SELECT') !== false;
     }
+
+    // region: Getting flavored markers
 
     /**
      * Retrieves the statement required to access the
@@ -284,7 +271,41 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->generateMarker(self::COMPONENT_WHERE);
     }
 
+    /**
+     * Gets the statement to use in the query's `SELECT` part:
+     * includes the alias `column AS alias` where `alias` is the
+     * column's name.
+     *
+     * NOTE: Use {@see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()}
+     * for the SQL to access the column's value.
+     *
+     * @return string
+     *
+     * @see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()
+     * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
+     */
+    public function getPrimarySelectValue() : string
+    {
+        return $this->generateMarker(self::COMPONENT_SELECT_PRIMARY);
+    }
+
+    public function getSecondarySelectValue() : string
+    {
+        return $this->generateMarker(self::COMPONENT_SELECT_SECONDARY);
+    }
+
+    // endregion
+
     // region: Managing markers
+
+    const COMPONENT_WHERE = 'where';
+    const COMPONENT_ORDER_BY = 'order_by';
+    const COMPONENT_GROUP_BY = 'group_by';
+    const COMPONENT_SELECT_PRIMARY = 'select_primary';
+    const COMPONENT_SELECT_SECONDARY = 'select_secondary';
+    const COMPONENT_JOIN = 'join';
+
+    const MARKER_SUFFIX = '$$';
 
     /**
      * @var string
@@ -309,7 +330,7 @@ class Application_FilterCriteria_Database_CustomColumn
 
         $this->markerRegex = sprintf(
             '/%1$s%2$s_(%3$s)%1$s/sU',
-            preg_quote(self::PLACEHOLDER_CHAR),
+            preg_quote(self::MARKER_SUFFIX),
             preg_quote($this->getName()),
             implode('|', $components)
         );
@@ -349,14 +370,14 @@ class Application_FilterCriteria_Database_CustomColumn
 
     private function generateMarker(string $component='') : string
     {
-        $name = self::PLACEHOLDER_CHAR .$this->getName();
+        $name = self::MARKER_SUFFIX .$this->getName();
 
         if(!empty($component))
         {
-            return $name.'_'.$component. self::PLACEHOLDER_CHAR;
+            return $name.'_'.$component. self::MARKER_SUFFIX;
         }
 
-        return $name. self::PLACEHOLDER_CHAR;
+        return $name. self::MARKER_SUFFIX;
     }
 
     // endregion
