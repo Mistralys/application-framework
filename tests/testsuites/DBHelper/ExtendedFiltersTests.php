@@ -15,6 +15,8 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $this->assertCount(1, $criteria->getCustomSelects());
         $this->assertContains($col->getPrimarySelectMarker(), $criteria->getCustomSelects());
+
+        $this->verifyFetchingWorks($criteria);
     }
 
     public function test_getSelects() : void
@@ -108,6 +110,8 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $sql = $criteria->renderQuery();
 
         $this->assertStringContainsString($col->getSQLStatement(), $sql);
+
+        $this->verifyFetchingWorks($criteria);
     }
 
     /**
@@ -139,6 +143,8 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         // enabled, since it was present in a select statement.
         $this->assertTrue($col->isEnabled());
         $this->assertCount(1, $criteria->getActiveCustomColumns(), $query);
+
+        $this->verifyFetchingWorks($criteria);
     }
 
     public function test_detectOrderBy() : void
@@ -155,6 +161,8 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $this->assertTrue($col->isEnabled());
         $this->assertCount(1, $criteria->getActiveCustomColumns(), $query);
+
+        $this->verifyFetchingWorks($criteria);
     }
 
     public function test_detectWhere() : void
@@ -224,7 +232,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $query = $criteria->renderQuery();
 
         // The rendered query must not contain any placeholders anymore
-        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR, $query);
+        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX, $query);
 
         // The column must automatically be added to the group
         // by statement, because it is a sub-query.
@@ -263,29 +271,26 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $this->assertStringContainsString('`feedback`.`feedback` AS `text`', $sql);
     }
 
-    public function test_referenceInSelect() : void
+    public function test_referenceInSelect_caseStatement() : void
     {
-        $this->enableLogging();
-
         $criteria = new TestDriver_FilterCriteria_TestCriteria();
         $colText = $criteria->getColFeedbackText();
         $colEmpty = $criteria->getColCaseTextEmpty();
 
         $colEmpty->setEnabled(true);
 
-        //$this->assertTrue($colText->getUsage()->isInSelect());
-
         $query = $criteria->renderQuery();
 
-        // The rendered query must not contain any placeholders anymore
-        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR, $query);
+        $this->assertTrue($colText->getUsage()->isInSelect());
 
         // The column must automatically be added to the group
         // by statement, because it is a sub-query.
         $this->assertTrue($colEmpty->getUsage()->isInGroupBy());
 
-        // Fetch results: this must not trigger an exception.
-        $criteria->getItems();
+        // The rendered query must not contain any placeholders anymore
+        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX, $query);
+
+        $this->verifyFetchingWorks($criteria);
     }
 
     // region: Support methods
@@ -346,6 +351,21 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $this->startTransaction();
 
         $this->createTestRecords();
+    }
+
+    /**
+     * Verifies that the filter criteria's query works by fetching
+     * and counting records.
+     *
+     * @param TestDriver_FilterCriteria_TestCriteria $criteria
+     */
+    private function verifyFetchingWorks(TestDriver_FilterCriteria_TestCriteria $criteria) : void
+    {
+        $criteria->getItems();
+        $this->addToAssertionCount(1);
+
+        $criteria->countItems();
+        $this->addToAssertionCount(1);
     }
 
     // endregion
