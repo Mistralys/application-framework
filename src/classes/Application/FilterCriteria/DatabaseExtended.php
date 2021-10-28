@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 
 /**
@@ -377,7 +378,11 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
     protected function buildQuery(bool $isCount=false) : string
     {
-        $this->log('Building query.');
+        $this->log(
+            'Building query: Iteration [%s], count: [%s].',
+            $this->buildIteration,
+            ConvertHelper::boolStrict2string($isCount)
+        );
 
         if(isset($this->buildCache[$isCount]))
         {
@@ -387,7 +392,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         $query = parent::buildQuery($isCount);
 
-        $this->logBuild('Processing build iteration ['.$this->buildIteration.'].');
         $this->logBuild('Current query:');
         $this->logQuery($query);
 
@@ -479,7 +483,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         // The query is complete when there are no further
         // column markers left to replace.
-        if(strstr($query, Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR) === false)
+        if(strstr($query, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === false)
         {
             $this->logBuild('OK: No placeholders left in the query.');
 
