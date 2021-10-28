@@ -109,14 +109,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function countItems() : int
     {
-        $sql = $this->buildQuery(true);
-        $vars = $this->getQueryVariables();
-        $items = DBHelper::fetchAll($sql, $vars);
-
-        $this->queries[] = array(
-            'sql' => $sql,
-            'vars' => $vars
-        );
+        $items = $this->fetchResults(true);
 
         $count = 0;
         $total = count($items);
@@ -125,6 +118,35 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         }
 
         return $count;
+    }
+
+    /**
+     * @param bool $isCount
+     * @return array<int,array<string,string>>
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     */
+    private function fetchResults(bool $isCount) : array
+    {
+        $sql = $this->buildQuery($isCount);
+        $vars = $this->getQueryVariables();
+
+        $this->queries[] = array(
+            'sql' => $sql,
+            'vars' => $vars
+        );
+
+        if($this->dumpQuery) {
+            DBHelper::enableDebugging();
+        }
+
+        $items = DBHelper::fetchAll($sql, $vars);
+
+        if($this->dumpQuery) {
+            DBHelper::disableDebugging();
+        }
+
+        return $items;
     }
 
     protected function getCountSelect() : string
@@ -431,26 +453,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function getItems() : array
     {
-        $query = $this->buildQuery(false);
-        $vars = $this->getQueryVariables();
-        $this->resetQueryVariables();
-
-        $this->queries[] = array(
-            'sql' => $query,
-            'vars' => $vars
-        );
-
-        if($this->dumpQuery) {
-            DBHelper::enableDebugging();
-        }
-
-        $result = DBHelper::fetchAll($query, $vars);
-
-        if($this->dumpQuery) {
-            DBHelper::disableDebugging();
-        }
-
-        return $result;
+        return $this->fetchResults(false);
     }
 
     /**
@@ -1010,7 +1013,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return (string)$name;
         }
 
-        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR)
+        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX)
         {
             return $name;
         }
@@ -1316,7 +1319,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
                 &&
             !strstr($field, '\\')
                 &&
-            !strstr($field, Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR);
+            !strstr($field, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX);
     }
 
     protected function buildOrderby() : string
