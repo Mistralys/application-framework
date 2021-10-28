@@ -28,15 +28,16 @@ class Application_FilterCriteria_Database_CustomColumn
     const COMPONENT_WHERE = 'where';
     const COMPONENT_ORDER_BY = 'order_by';
     const COMPONENT_GROUP_BY = 'group_by';
-    const COMPONENT_SELECT = 'select';
+    const COMPONENT_SELECT_PRIMARY = 'select_primary';
+    const COMPONENT_SELECT_SECONDARY = 'select_secondary';
     const COMPONENT_JOIN = 'join';
 
     const PLACEHOLDER_CHAR = '$$';
 
     /**
-     * @var NamedClosure|DBHelper_StatementBuilder
+     * @var NamedClosure|NULL
      */
-    private $source;
+    private $closure = null;
 
     /**
      * @var string
@@ -77,7 +78,15 @@ class Application_FilterCriteria_Database_CustomColumn
     {
         $this->filters = $filters;
         $this->name = $name;
-        $this->source = $source;
+
+        if($source instanceof DBHelper_StatementBuilder)
+        {
+            $this->statement = (string)$source;
+        }
+        else
+        {
+            $this->closure = $source;
+        }
     }
 
     /**
@@ -162,7 +171,7 @@ class Application_FilterCriteria_Database_CustomColumn
      *
      * @return string
      * @throws Application_Exception
-     * @see Application_FilterCriteria_Database_CustomColumn::getSelectValue()
+     * @see Application_FilterCriteria_Database_CustomColumn::getPrimarySelectValue()
      */
     public function getSQLStatement() : string
     {
@@ -180,12 +189,12 @@ class Application_FilterCriteria_Database_CustomColumn
      */
     private function renderStatement() : string
     {
-        if($this->source instanceof DBHelper_StatementBuilder)
+        if(!isset($this->closure))
         {
-            return (string)$this->source;
+            return $this->statement;
         }
 
-        $result = call_user_func($this->source, $this);
+        $result = call_user_func($this->closure, $this);
 
         if(is_string($result))
         {
@@ -216,9 +225,14 @@ class Application_FilterCriteria_Database_CustomColumn
      * @see Application_FilterCriteria_Database_CustomColumn::getSQLStatement()
      * @see Application_FilterCriteria_Database_CustomColumn::ERROR_SELECT_STATEMENT_NOT_A_STRING
      */
-    public function getSelectValue() : string
+    public function getPrimarySelectValue() : string
     {
-        return $this->generateMarker(self::COMPONENT_SELECT);
+        return $this->generateMarker(self::COMPONENT_SELECT_PRIMARY);
+    }
+
+    public function getSecondarySelectValue() : string
+    {
+        return $this->generateMarker(self::COMPONENT_SELECT_SECONDARY);
     }
 
     public function getUsage() : Application_FilterCriteria_Database_ColumnUsage
@@ -285,7 +299,8 @@ class Application_FilterCriteria_Database_CustomColumn
         }
 
         $components = array(
-            self::COMPONENT_SELECT,
+            self::COMPONENT_SELECT_PRIMARY,
+            self::COMPONENT_SELECT_SECONDARY,
             self::COMPONENT_WHERE,
             self::COMPONENT_ORDER_BY,
             self::COMPONENT_GROUP_BY,
@@ -302,48 +317,14 @@ class Application_FilterCriteria_Database_CustomColumn
         return $this->markerRegex;
     }
 
-    public function replaceMarkers(string $query) : string
+    public function getPrimarySelectMarker() : string
     {
-        if(!$this->isFoundInString($query))
-        {
-            return $query;
-        }
-
-        $usage = $this->getUsage();
-
-        $replaces = array();
-
-        if($usage->isInWhere())
-        {
-            $replaces[$this->getWhereMarker()] = $this->renderWhereValue();
-        }
-
-        if($usage->isInSelect())
-        {
-            $replaces[$this->getSelectMarker()] = $this->renderSelectValue();
-        }
-
-        if($usage->isInGroupBy())
-        {
-            $replaces[$this->getGroupByMarker()] = $this->renderGroupByValue();
-        }
-
-        if($usage->isInOrderBy())
-        {
-            $replaces[$this->getOrderByMarker()] = $this->renderOrderByValue();
-        }
-
-        if($usage->isInJoin())
-        {
-            $replaces[$this->getJoinMarker()] = $this->renderJoinValue();
-        }
-
-        return str_replace(array_keys($replaces), array_values($replaces), $query);
+        return $this->generateMarker(self::COMPONENT_SELECT_PRIMARY);
     }
 
-    public function getSelectMarker() : string
+    public function getSecondarySelectMarker() : string
     {
-        return $this->generateMarker(self::COMPONENT_SELECT);
+        return $this->generateMarker(self::COMPONENT_SELECT_SECONDARY);
     }
 
     public function getOrderByMarker() : string
@@ -457,9 +438,32 @@ class Application_FilterCriteria_Database_CustomColumn
 
     // region: Rendering markers
 
-    private function renderSelectValue() : string
+    public function replaceMarkers(string $query) : string
+    {
+        if(!$this->isFoundInString($query))
+        {
+            return $query;
+        }
+
+        $replaces = array();
+        $replaces[$this->getWhereMarker()] = $this->renderWhereValue();
+        $replaces[$this->getPrimarySelectMarker()] = $this->renderPrimarySelectValue();
+        $replaces[$this->getSecondarySelectMarker()] = $this->renderSecondarySelectValue();
+        $replaces[$this->getGroupByMarker()] = $this->renderGroupByValue();
+        $replaces[$this->getOrderByMarker()] = $this->renderOrderByValue();
+        $replaces[$this->getJoinMarker()] = $this->renderJoinValue();
+
+        return str_replace(array_keys($replaces), array_values($replaces), $query);
+    }
+
+    private function renderPrimarySelectValue() : string
     {
         return $this->getSQLStatement().' AS '.$this->getSelectAlias();
+    }
+
+    private function renderSecondarySelectValue() : string
+    {
+        return $this->getSQLStatement();
     }
 
     private function renderWhereValue() : string
