@@ -9,8 +9,9 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
     const JOIN_LAST_USED_VERSION = 'join_last_used_version';
 
     const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
-    const CUSTOM_COL_LAST_USED_VERSION = 'last_used_version';
+    const CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
     const CUSTOM_COL_TEXT = 'text';
+    const CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
 
     /**
      * Enables the custom column, which automatically
@@ -31,12 +32,12 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
      */
     public function addFeedbackManually()
     {
-        $this->addSelectColumn($this->getColFeedbackText()->getSelectValue());
+        $this->addSelectColumn($this->getColFeedbackText()->getPrimarySelectValue());
     }
 
     public function addFeedbackTextToSelect() : void
     {
-        $this->addSelectStatement($this->getColFeedbackText()->getSelectValue(), false);
+        $this->addSelectStatement($this->getColFeedbackText()->getPrimarySelectValue(), false);
     }
 
     public function orderByFeedbackText()
@@ -93,6 +94,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         return $this->getCustomColumn(self::CUSTOM_COL_LAST_USED_VERSION);
     }
 
+    public function getColCaseTextEmpty() : Application_FilterCriteria_Database_CustomColumn
+    {
+        return $this->getCustomColumn(self::CUSTOM_COL_CASE_TEXT_EMPTY);
+    }
+
     protected function _initCustomColumns() : void
     {
         $this->registerCustomSelect(
@@ -100,6 +106,23 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
             self::CUSTOM_COL_TEXT
         )
            ->requireJoin(self::JOIN_FEEDBACK);
+
+        $case = <<<'EOT'
+(
+    CASE %1$s
+    WHEN '' THEN '(Empty)'
+    ELSE %1$s
+    END
+)
+EOT;
+
+        $this->registerCustomSelect(
+            sprintf(
+                $case,
+                $this->getColFeedbackText()->getSecondarySelectValue()
+            ),
+            self::CUSTOM_COL_CASE_TEXT_EMPTY
+        );
 
         $this->registerCustomSelect(
             '{last_used_version}.{setting_value}',
@@ -132,9 +155,10 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
 
             ->alias('{users}', 'users')
             ->alias('{feedback}', 'feedback')
-            ->alias('{last_version}', 'last_used_version')
+            ->alias('{last_used_version}', 'last_used_version')
 
             ->field('{setting_name}', Application_User_Storage_DB::COL_SETTING_NAME)
+            ->field('{setting_value}', Application_User_Storage_DB::COL_SETTING_VALUE)
             ->field('{amount_feedbacks}', self::CUSTOM_COL_USER_FEEDBACK_AMOUNT)
             ->field('{email}', Application_Users_User::COL_EMAIL)
             ->field('{users_primary}', Application_Users::PRIMARY_NAME)
@@ -147,11 +171,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         $this->addJoinStatement(
             sprintf("
                 RIGHT OUTER JOIN 
-                    {table_settings} AS {last_version}
+                    {table_settings} AS {last_used_version}
                 ON
-                    {last_version}.{users_primary} = {users}.{users_primary}
+                    {last_used_version}.{users_primary} = {users}.{users_primary}
                 AND
-                    {last_version}.{setting_name} = %s",
+                    {last_used_version}.{setting_name} = %s",
                 $this->generatePlaceholder(Application_Driver::SETTING_USER_LAST_USED_VERSION)
             ),
             self::JOIN_LAST_USED_VERSION

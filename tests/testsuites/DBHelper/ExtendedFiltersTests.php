@@ -14,7 +14,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $col->setEnabled(true);
 
         $this->assertCount(1, $criteria->getCustomSelects());
-        $this->assertContains($col->getSelectMarker(), $criteria->getCustomSelects());
+        $this->assertContains($col->getPrimarySelectMarker(), $criteria->getCustomSelects());
     }
 
     public function test_getSelects() : void
@@ -27,7 +27,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $col->setEnabled(true);
 
         $this->assertCount(2, $criteria->getSelects());
-        $this->assertContains($col->getSelectMarker(), $criteria->getCustomSelects());
+        $this->assertContains($col->getPrimarySelectMarker(), $criteria->getCustomSelects());
     }
 
     /**
@@ -40,7 +40,8 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
         $col = $criteria->getColFeedbackText();
 
         $this->assertFalse($col->isFoundInString('Some text'));
-        $this->assertTrue($col->isFoundInString($col->getSelectMarker()));
+        $this->assertTrue($col->isFoundInString($col->getPrimarySelectMarker()));
+        $this->assertTrue($col->isFoundInString($col->getSecondarySelectMarker()));
         $this->assertTrue($col->isFoundInString($col->getWhereMarker()));
         $this->assertTrue($col->isFoundInString($col->getGroupByMarker()));
         $this->assertTrue($col->isFoundInString($col->getOrderByMarker()));
@@ -173,7 +174,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addSelectColumn($col->getSelectValue());
+        $criteria->addSelectColumn($col->getPrimarySelectValue());
 
         $this->assertTrue($col->getUsage()->isInSelect());
     }
@@ -196,7 +197,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColFeedbackText();
 
-        $criteria->addSelectColumn($col->getSelectValue());
+        $criteria->addSelectColumn($col->getPrimarySelectValue());
 
         $this->assertTrue($col->getUsage()->isInUse());
         $this->assertTrue($col->canUseAlias());
@@ -213,7 +214,7 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $col = $criteria->getColUserFeedbackAmount();
 
-        $criteria->addSelectColumn($col->getSelectValue());
+        $criteria->addSelectColumn($col->getPrimarySelectValue());
 
         $this->assertTrue($col->isSubQuery());
         $this->assertTrue($col->getUsage()->isInUse());
@@ -260,6 +261,31 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
 
         $this->assertTrue($col->getUsage()->isInSelect());
         $this->assertStringContainsString('`feedback`.`feedback` AS `text`', $sql);
+    }
+
+    public function test_referenceInSelect() : void
+    {
+        $this->enableLogging();
+
+        $criteria = new TestDriver_FilterCriteria_TestCriteria();
+        $colText = $criteria->getColFeedbackText();
+        $colEmpty = $criteria->getColCaseTextEmpty();
+
+        $colEmpty->setEnabled(true);
+
+        //$this->assertTrue($colText->getUsage()->isInSelect());
+
+        $query = $criteria->renderQuery();
+
+        // The rendered query must not contain any placeholders anymore
+        $this->assertStringNotContainsString(Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR, $query);
+
+        // The column must automatically be added to the group
+        // by statement, because it is a sub-query.
+        $this->assertTrue($colEmpty->getUsage()->isInGroupBy());
+
+        // Fetch results: this must not trigger an exception.
+        $criteria->getItems();
     }
 
     // region: Support methods
