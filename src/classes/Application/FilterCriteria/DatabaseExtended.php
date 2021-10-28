@@ -51,8 +51,10 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 {
     const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
     const ERROR_MAX_BUILD_ITERATIONS_REACHED = 90502;
+    const ERROR_MAX_REPLACE_ITERATIONS_REACHED = 90503;
 
-    const MAX_BUILD_ITERATIONS = 40;
+    const MAX_BUILD_ITERATIONS = 20;
+    const MAX_REPLACE_ITERATIONS = 4;
 
     /**
      * @var bool
@@ -78,6 +80,11 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @var array<string,Application_FilterCriteria_Database_ColumnUsage>
      */
     private $columnUsage = array();
+
+    /**
+     * @var array<bool,string>
+     */
+    private $buildCache;
 
     abstract protected function _initCustomColumns() : void;
 
@@ -122,7 +129,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 continue;
             }
 
-            $result[] = $column->getSelectMarker();
+            $result[] = $column->getPrimarySelectMarker();
         }
         
         return $result;
@@ -143,7 +150,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         if(isset($this->customColumns[$columnID]))
         {
-            return $this->customColumns[$columnID]->getSelectValue();
+            return $this->customColumns[$columnID]->getPrimarySelectValue();
         }
 
         throw $this->createMissingColumnException($columnID);
@@ -340,9 +347,49 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         throw $this->createMissingColumnException($columnID);
     }
 
+    /**
+     * @param bool $debug
+     * @return $this
+     */
+    public function debugBuild(bool $debug=true)
+    {
+        $this->debugBuild = $debug;
+        return $this;
+    }
+
+    private $debugBuild = false;
+
+    private function logBuild(string $message) : void
+    {
+        if($this->debugBuild === true)
+        {
+            $this->log($message);
+        }
+    }
+
+    private function logQuery(string $query) : void
+    {
+        if($this->debugBuild === true)
+        {
+            echo $query.PHP_EOL;
+        }
+    }
+
     protected function buildQuery(bool $isCount=false) : string
     {
+        $this->log('Building query.');
+
+        if(isset($this->buildCache[$isCount]))
+        {
+            $this->log('Using existing cached query.');
+            return $this->buildCache[$isCount];
+        }
+
         $query = parent::buildQuery($isCount);
+
+        $this->logBuild('Processing build iteration ['.$this->buildIteration.'].');
+        $this->logBuild('Current query:');
+        $this->logQuery($query);
 
         if($this->dumpQuery && $this->buildIteration === 0)
         {
@@ -363,7 +410,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         // have all dependencies ready.
         if($adjusted !== $query)
         {
-            $this->buildIteration++; // Signify that we are in a recursive build
+            $this->logBuild('Adjusted query is not the same, rebuilding.');
 
             if($this->buildIteration > self::MAX_BUILD_ITERATIONS)
             {
@@ -385,38 +432,123 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 );
             }
 
+            $this->buildIteration++; // Signify that we are in a recursive build
+
             return $this->buildQuery($isCount);
         }
 
-        if($this->dumpQuery)
+        // Now we replace all custom column's markers with the
+        // actual SQL statements.
+        //
+        $query = $this->replaceMarkers($query);
+
+        // Now that all markers have been replaced, there is
+        // one issue: The SQL statements may have revealed
+        // new, nested markers of columns that have not been
+        // enabled yet.
+        //
+        // This is handled with replacement iterations: Each
+        // iteration replaces newly revealed markers, and auto-
+        // enables any new columns that are detected.
+        //
+        // Example with markers nested 2 times:
+        //
+        // 1) Replace markers 1 time -> new markers revealed
+        // 2) Auto-Enable new columns
+        // 3) Re-build the query *recursion*
+        // 4) Replace markers 2 times -> new markers revealed
+        // 5) Auto-Enable new columns
+        // 6) Re-build the query *recursion*
+        // 7) Replace markers 3 times -> no new markers
+        // 8) Query fully built
+
+        // Are we in an additional marker replacement iteration?
+        // Then do one replacement run for each iteration.
+        if($this->replaceIteration > 0)
         {
-            $different = $query !== $this->buildInitialQuery;
+            $this->logBuild('Replacing markers for ['.$this->replaceIteration.'] total iterations.');
 
-            echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
-            if($different) {echo '----------------';}
-            echo 'Query built by the filters';
-            echo PHP_EOL;
-            echo PHP_EOL;
-            print_r($this->buildInitialQuery);
-
-            if($different)
+            for ($i = 1; $i <= $this->replaceIteration; $i++)
             {
-                echo PHP_EOL;
-                echo PHP_EOL;
-                echo '----------------';
-                echo 'Query after adding required custom columns';
-                echo PHP_EOL;
-                echo PHP_EOL;
-                print_r($query);
+                $query = $this->replaceMarkers($query);
             }
-
-            echo '</pre>';
         }
 
-        // Reset the recursion properties
-        $this->buildInitialQuery = '';
-        $this->buildIteration = 0;
+        $this->logBuild('Query after replacing markers:');
+        $this->logQuery($query);
 
+        // The query is complete when there are no further
+        // column markers left to replace.
+        if(strstr($query, Application_FilterCriteria_Database_CustomColumn::PLACEHOLDER_CHAR) === false)
+        {
+            $this->logBuild('OK: No placeholders left in the query.');
+
+            if($this->dumpQuery)
+            {
+                $different = $query !== $this->buildInitialQuery;
+
+                echo '<pre style="color:#444;font-family:monospace;font-size:14px;background:#f0f0f0;border-radius:5px;border:solid 1px #333;padding:16px;margin:12px 0;">';
+                if($different) {echo '----------------';}
+                echo 'Query built by the filters';
+                echo PHP_EOL;
+                echo PHP_EOL;
+                print_r($this->buildInitialQuery);
+
+                if($different)
+                {
+                    echo PHP_EOL;
+                    echo PHP_EOL;
+                    echo '----------------';
+                    echo 'Query after adding required custom columns';
+                    echo PHP_EOL;
+                    echo PHP_EOL;
+                    print_r($query);
+                }
+
+                echo '</pre>';
+            }
+
+            // Reset the recursion properties
+            $this->buildInitialQuery = '';
+            $this->buildIteration = 0;
+            $this->replaceIteration = 0;
+
+            $this->buildCache[$isCount] = $query;
+            return $query;
+        }
+
+        // Column markers have been found in the query, which means
+        // that we need to re-check the new markers and enable any
+        // columns accordingly.
+
+        $this->logBuild('Markers found, processing replace iteration ['.$this->replaceIteration.'].');
+
+        // Failsafe: Nesting columns further than this is not allowed.
+        if($this->replaceIteration > self::MAX_REPLACE_ITERATIONS)
+        {
+            throw new Application_Exception(
+                'Column markers are nested too deep.',
+                sprintf(
+                    'Reached replace iteration [%s]. Query: %s',
+                    $this->replaceIteration,
+                    $query
+                ),
+                self::ERROR_MAX_REPLACE_ITERATIONS_REACHED
+            );
+        }
+
+        $this->autoEnableColumns($query, true);
+
+        $this->replaceIteration++;
+        $this->buildIteration++;
+
+        return $this->buildQuery($isCount);
+    }
+
+    private $replaceIteration = 0;
+
+    protected function replaceMarkers(string $query) : string
+    {
         // Let all the custom columns replace their
         // placeholders with the actual SQL statements.
         foreach($this->customColumns as $column)
@@ -433,6 +565,8 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         // Reset the column usage cache
         $this->columnUsage = array();
+
+        $this->buildCache = array();
     }
 
     public function checkColumnUsage(Application_FilterCriteria_Database_CustomColumn $column) : Application_FilterCriteria_Database_ColumnUsage
@@ -478,11 +612,15 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         }
     }
 
-    protected function autoEnableColumns(string $query) : void
+    protected function autoEnableColumns(string $query, bool $iteration=false) : void
     {
         foreach($this->customColumns as $column)
         {
-            $column->setEnabled($column->isFoundInString($query));
+            if(!$column->isEnabled() && $column->isFoundInString($query))
+            {
+                $this->log('Auto-enabling column [%s].', $column->getName());
+                $column->setEnabled(true);
+            }
         }
     }
 
