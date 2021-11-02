@@ -126,23 +126,28 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     */
     public function appendChild(UI_Bootstrap $child)
     {
-        if($this->hasChild($child->getName())) {
-            throw new Application_Exception(
-                'A child with the same name already exists',
-                sprintf(
-                    'A child of type [%s] cannot be added: a child with the name [%s] already exists in the parent of type [%s]. Names have to be unique within a parent.',    
-                    get_class($child),
-                    $child->getName(),
-                    get_class($this)
-                ),
-                self::ERROR_CHILD_NAME_ALREADY_EXISTS
-            );
-        }
-        
+        $this->requireNotHasChild($child);
+
         $this->children[] = $child;
         
         $child->setParent($this);
         
+        return $this;
+    }
+
+    /**
+     * @param UI_Bootstrap $child
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function prependChild(UI_Bootstrap $child)
+    {
+        $this->requireNotHasChild($child);
+
+        array_unshift($this->children, $child);
+
+        $child->setParent($this);
+
         return $this;
     }
     
@@ -154,20 +159,8 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     */
     public function setParent(UI_Bootstrap $parent)
     {
-        if(!$parent->hasChild($this->getName())) {
-            throw new Application_Exception(
-                'Child element has no such parent',
-                sprintf(
-                    'Cannot add element [%s] of type [%s] as parent of element [%s] of type [%s]: It is not a child of the parent element.',
-                    $parent->getName(),
-                    get_class($parent),
-                    $this->getName(),
-                    get_class($this)
-                ),
-                self::ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT
-            );
-        }
-        
+        $this->requireParentHasChild($parent);
+
         $this->parent = $parent;
         return $this;
     }
@@ -236,5 +229,52 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
         }
 
         return '';
+    }
+
+    /**
+     * @param UI_Bootstrap $child
+     * @throws Application_Exception
+     */
+    private function requireNotHasChild(UI_Bootstrap $child) : void
+    {
+        if (!$this->hasChild($child->getName()))
+        {
+            return;
+        }
+
+        throw new Application_Exception(
+            'A child with the same name already exists',
+            sprintf(
+                'A child of type [%s] cannot be added: a child with the name [%s] already exists in the parent of type [%s]. Names have to be unique within a parent.',
+                get_class($child),
+                $child->getName(),
+                get_class($this)
+            ),
+            self::ERROR_CHILD_NAME_ALREADY_EXISTS
+        );
+    }
+
+    /**
+     * @param UI_Bootstrap $parent
+     * @throws Application_Exception
+     */
+    private function requireParentHasChild(UI_Bootstrap $parent) : void
+    {
+        if ($parent->hasChild($this->getName()))
+        {
+            return;
+        }
+
+        throw new Application_Exception(
+            'Child element has no such parent',
+            sprintf(
+                'Cannot add element [%s] of type [%s] as parent of element [%s] of type [%s]: It is not a child of the parent element.',
+                $parent->getName(),
+                get_class($parent),
+                $this->getName(),
+                get_class($this)
+            ),
+            self::ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT
+        );
     }
 }
