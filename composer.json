@@ -64,7 +64,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "mistralys/application-utils": "^1.7.1",
+    "mistralys/application-utils": "^1.8.1",
     "mistralys/application-localization": "^1.4.1",
     "mistralys/deepl-xml-translator": "^1.0.5",
     "mistralys/subsetsum": "^1.0.0",
