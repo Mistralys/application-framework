@@ -38,7 +38,7 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
     */
     protected $entry;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->errorlog = Application::createErrorLog();
         $this->log = $this->errorlog->getByRequest();
@@ -56,7 +56,7 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
         $this->createDatagrid();
     }
 
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->mode->getNavigationTitle())->makeLinkedFromMode($this->mode);

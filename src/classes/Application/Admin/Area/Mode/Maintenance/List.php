@@ -32,7 +32,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
     */
     protected $maintenance;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->maintenance = $this->driver->getMaintenance();
         
@@ -79,7 +79,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
         return $this->renderDatagrid($this->getTitle(), $this->grid, $entries);
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('add_plan', t('Add new plan'))
         ->setIcon(UI::icon()->add())
@@ -94,7 +94,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
         );
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle());

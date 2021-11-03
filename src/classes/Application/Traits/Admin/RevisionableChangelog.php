@@ -32,7 +32,7 @@ trait Application_Traits_Admin_RevisionableChangelog
     
     abstract protected function isUserAuthorized();
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'changelog';
     }
@@ -42,7 +42,7 @@ trait Application_Traits_Admin_RevisionableChangelog
         return t('Changelog');
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Changelog');
     }
@@ -69,7 +69,7 @@ trait Application_Traits_Admin_RevisionableChangelog
         }
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->selectRevision();
         
@@ -90,7 +90,7 @@ trait Application_Traits_Admin_RevisionableChangelog
         }
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('switch_revision', t('Switch revision...'))
         ->makePrimary()

@@ -32,7 +32,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
         return t('Create maintenance plan');
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->createSettingsForm();
         
@@ -90,7 +90,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
         );
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('create_plan', t('Create now'))
         ->setIcon(UI::icon()->add())
@@ -159,7 +159,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
         }
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem(t('Maintenance plans'))->makeLinked($this->mode->getURL());

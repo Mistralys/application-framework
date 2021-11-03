@@ -30,7 +30,7 @@ class Application_Traits_Stubs_Admin_Wizard_WithCountryStepStub
         return '';
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return '';
     }
@@ -40,7 +40,7 @@ class Application_Traits_Stubs_Admin_Wizard_WithCountryStepStub
         return false;
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return '';
     }

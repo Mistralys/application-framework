@@ -44,7 +44,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         $this->createDatagrid();
     }
 
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->mode->getNavigationTitle())->makeLinkedFromMode($this->mode);
@@ -74,7 +74,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         );
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('clear_all', t('Delete all'))
         ->makeDangerous()

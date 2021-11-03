@@ -27,7 +27,7 @@ class Application_Admin_Area_Devel_Overview extends Application_Admin_Area_Mode
         return $this->user->isDeveloper();
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
