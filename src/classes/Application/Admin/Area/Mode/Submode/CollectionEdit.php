@@ -18,8 +18,8 @@ abstract class Application_Admin_Area_Mode_Submode_CollectionEdit extends Applic
         return true;
     }
 
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }

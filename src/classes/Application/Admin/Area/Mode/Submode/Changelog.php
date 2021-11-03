@@ -18,8 +18,8 @@ abstract class Application_Admin_Area_Mode_Submode_Changelog extends Application
 {
     use Application_Traits_Admin_RevisionableChangelog;
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }

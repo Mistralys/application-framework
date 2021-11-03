@@ -4,8 +4,8 @@ abstract class Application_Admin_Area_Mode_Submode_CollectionDelete extends Appl
 {
     use Application_Traits_Admin_CollectionDelete;
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }

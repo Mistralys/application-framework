@@ -4,9 +4,9 @@ abstract class Application_Admin_Area_Mode_Submode_CollectionList extends Applic
 {
     use Application_Traits_Admin_CollectionList;
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }
 

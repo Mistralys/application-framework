@@ -14,8 +14,8 @@ abstract class Application_Admin_Area_Mode_Submode_CollectionCreate extends Appl
         return false;
     }
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }
