@@ -47,7 +47,7 @@ trait Application_Traits_Admin_RevisionableChangelog
         return t('Changelog');
     }
     
-    protected function init()
+    protected function init() : void
     {
         parent::init();
         
