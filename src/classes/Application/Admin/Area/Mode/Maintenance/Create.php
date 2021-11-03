@@ -1,5 +1,7 @@
 <?php
 
+use AppLocalize\Localization;
+
 abstract class Application_Admin_Area_Mode_Maintenance_Create extends Application_Admin_Area_Mode_Submode
 {
    /**
@@ -57,12 +59,12 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
                     '<b>'.t('Invalid configuration:').'</b> '.
                     t('With these settings, the maintenance would end at %1$s, which is already past.', $end->format('d.m.Y H:i'))
                 );
-                return;
+                return true;
             }
             
             $maintenance = $this->driver->getMaintenance();
             $plan = $maintenance->addPlan($start, $values['duration']);
-            $locales = \AppLocalize\Localization::getAppLocales();
+            $locales = Localization::getAppLocales();
             foreach($locales as $locale) {
                 $plan->setInfoText($locale, $values['reasons_'.$locale->getName()]);
             }
@@ -80,6 +82,8 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
                 $this->mode->getURL()    
             );
         }
+
+        return true;
     }
     
     protected function _renderContent()
@@ -147,7 +151,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
         $duration->addRule('callback', t('Duration must be a positive value.'), array($this, 'callback_validateDuration'));
         $this->makeRequired($duration);
         
-        $locales = \AppLocalize\Localization::getAppLocales();
+        $locales = Localization::getAppLocales();
         foreach($locales as $locale) {
             $reasons = $this->addElementTextarea('reasons_'.$locale->getName(), t('Information - %1$s', $locale->getLabel()));
             $reasons->addFilter('trim');

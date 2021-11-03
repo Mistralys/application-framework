@@ -79,6 +79,8 @@ trait Application_Traits_Admin_RevisionableChangelog
         if($this->filterForm->isSubmitted() && $this->filterForm->validate()) {
             $this->handle_filtersSubmitted();
         }
+
+        return true;
     }
     
     protected function selectRevision()
