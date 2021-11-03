@@ -12,7 +12,7 @@ class TypeHinter
     private $rootPath;
 
     /**
-     * @var array<string,string>
+     * @var array<string,array{regex:string,type:string}>
      */
     private $methods = array();
 
