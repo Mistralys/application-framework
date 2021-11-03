@@ -19,5 +19,21 @@ class TypeHinterTestClass
     {
 
     }
+
+    public function _handleActions() : bool
+    {
+        foreach($variable as $var)
+        {
+             $doSomething = '';
+        }
+    }
+
+    public function _handleActions()
+    {
+        foreach($variable as $var)
+        {
+             $doSomething = '';
+        }
+    }
 }
 */
