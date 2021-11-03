@@ -48,7 +48,7 @@ class TypeHinter
     {
         $this->methods[$methodName] = array(
             'regex' => sprintf(
-                '/function[ ]*%s\((.*)\)\s*{/sU',
+                '/function[ ]*%s\(([^{]*)\)\s*{/sU',
                 preg_quote($methodName, '/')
             ),
             'type' => $type
@@ -73,6 +73,7 @@ class TypeHinter
     public function getFilesList() : array
     {
         return FileHelper::createFileFinder($this->rootPath)
+            ->makeRecursive()
             ->setPathmodeAbsolute()
             ->getPHPFiles();
     }
