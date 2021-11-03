@@ -64,7 +64,7 @@ class Application_Traits_Stubs_Admin_Wizard_WithCountryStepStub
     {
     }
 
-    protected function _initSteps()
+    protected function _initSteps() : void
     {
         $this->addStepCountry();
     }

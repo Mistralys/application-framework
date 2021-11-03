@@ -37,7 +37,7 @@ trait Application_Traits_Admin_RevisionableChangelog
         return 'changelog';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Changelog');
     }

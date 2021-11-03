@@ -141,7 +141,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         
         $this->registerItem($urlName, $label, $categoryLabel);
     }
-    protected function _handleSubnavigation()
+    protected function _handleSubnavigation() : void
     {
         $this->injectSubnavigation($this->subnav);
     }

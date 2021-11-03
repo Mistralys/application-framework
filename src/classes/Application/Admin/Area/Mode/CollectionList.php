@@ -4,8 +4,8 @@ abstract class Application_Admin_Area_Mode_CollectionList extends Application_Ad
 {
     use Application_Traits_Admin_CollectionList;
     
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
 }
