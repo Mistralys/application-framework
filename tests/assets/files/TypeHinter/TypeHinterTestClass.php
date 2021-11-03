@@ -35,5 +35,10 @@ class TypeHinterTestClass
              $doSomething = '';
         }
     }
+
+    public function getDefaultAction() : string
+    {
+        return null;
+    }
 }
 */
