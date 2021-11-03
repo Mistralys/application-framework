@@ -26,6 +26,11 @@ class TypeHinter
      */
     private $fileSuffix;
 
+    /**
+     * @var array<string,string>
+     */
+    private $replaces = array();
+
     public function __construct(string $rootPath)
     {
         $this->rootPath = $rootPath;
@@ -53,6 +58,12 @@ class TypeHinter
             ),
             'type' => $type
         );
+        return $this;
+    }
+
+    public function addReplace(string $search, string $replace) : TypeHinter
+    {
+        $this->replaces[$search] = $replace;
         return $this;
     }
 
@@ -102,7 +113,9 @@ class TypeHinter
             $replaces[$matchedText] = $this->generateMethod($name, $this->methods[$name]['type'], $matches[1][$idx]);
         }
 
-        return str_replace(array_keys($replaces), array_values($replaces), $content);
+        $content = str_replace(array_keys($replaces), array_values($replaces), $content);
+
+        return str_replace(array_keys($this->replaces), array_values($this->replaces), $content);
     }
 
     private function generateMethod(string $name, string $type, string $paramsString) : string
