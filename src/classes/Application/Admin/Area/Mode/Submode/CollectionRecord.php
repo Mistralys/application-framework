@@ -20,9 +20,9 @@ abstract class Application_Admin_Area_Mode_Submode_CollectionRecord extends Appl
    /**
     * @return string
     */
-    abstract protected function getRecordMissingURL();
+    abstract protected function getRecordMissingURL() : string;
     
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->createCollection();
         $this->record = $this->collection->getByRequest();

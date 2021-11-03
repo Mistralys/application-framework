@@ -14,9 +14,9 @@ abstract class Application_Admin_Area_Mode_CollectionRecord extends Application_
     
     abstract protected function createCollection();
 
-    abstract protected function getRecordMissingURL();
+    abstract protected function getRecordMissingURL() : string;
     
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->createCollection();
         $this->record = $this->collection->getByRequest();
