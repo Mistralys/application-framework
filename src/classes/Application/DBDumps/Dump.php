@@ -94,6 +94,7 @@ class Application_DBDumps_Dump
     
    /**
     * Sends the dump file to the browser to be downloaded.
+    * @return never-returns
     */
     public function sendFile() : void
     {
