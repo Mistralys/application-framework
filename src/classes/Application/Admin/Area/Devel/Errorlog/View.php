@@ -54,6 +54,8 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
         $this->entry = $this->log->getEntryByRequest();
 
         $this->createDatagrid();
+
+        return true;
     }
 
     protected function _handleBreadcrumb() : void

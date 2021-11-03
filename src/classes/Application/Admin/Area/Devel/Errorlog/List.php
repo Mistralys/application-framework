@@ -42,6 +42,8 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         }
         
         $this->createDatagrid();
+
+        return true;
     }
 
     protected function _handleBreadcrumb() : void

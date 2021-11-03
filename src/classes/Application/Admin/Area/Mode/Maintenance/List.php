@@ -45,6 +45,8 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
         }
         
         $this->createDataGrid();
+
+        return true;
     }
     
     protected function _renderContent()
