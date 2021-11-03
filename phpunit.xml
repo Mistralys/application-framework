@@ -51,6 +51,9 @@
         <testsuite name="Revisionables">
             <directory suffix=".php">./tests/testsuites/Revisionables</directory>
         </testsuite>
+        <testsuite name="TypeHinter">
+            <directory suffix=".php">./tests/testsuites/TypeHinter</directory>
+        </testsuite>
         <testsuite name="UI">
             <directory suffix=".php">./tests/testsuites/UI</directory>
         </testsuite>

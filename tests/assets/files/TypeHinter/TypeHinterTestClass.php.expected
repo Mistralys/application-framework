@@ -1,0 +1,24 @@
+<?php
+/*
+
+class TypeHinterTestClass
+{
+    public function _handleActions() : bool
+    {
+
+    }
+
+    public function _handleActions() : bool
+    {}
+
+    public function _handleActions(?array $param=null) : bool
+    {
+
+    }
+
+    public function _handleActions() : bool
+    {
+
+    }
+}
+*/
