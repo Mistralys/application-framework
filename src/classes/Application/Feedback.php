@@ -144,7 +144,7 @@ class Application_Feedback extends DBHelper_BaseCollection
      * @param string $url URL to the relevant page, if any
      * @param string $text
      * @param Application_User|null $user If other user than the logged-in user.
-     * @return Application_Feedback_Report|DBHelper_BaseRecord
+     * @return Application_Feedback_Report
      * @throws Application_Exception
      * @throws Application_Exception_DisposableDisposed
      * @throws Application_Exception_UnexpectedInstanceType

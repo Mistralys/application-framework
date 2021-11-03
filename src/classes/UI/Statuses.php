@@ -78,7 +78,7 @@ abstract class UI_Statuses
      * @return UI_Interfaces_Statuses_Status
      * @throws UI_Exception
      */
-    protected final function registerStatus(string $id, string $label) : UI_Interfaces_Statuses_Status
+    final protected function registerStatus(string $id, string $label) : UI_Interfaces_Statuses_Status
     {
         $status = $this->createStatus($id, $label);
 
@@ -93,7 +93,7 @@ abstract class UI_Statuses
      * @return UI_Interfaces_Statuses_Status
      * @throws UI_Exception
      */
-    protected final function createStatus(string $id, string $label) : UI_Interfaces_Statuses_Status
+    final protected function createStatus(string $id, string $label) : UI_Interfaces_Statuses_Status
     {
         $class = $this->getStatusClass();
 

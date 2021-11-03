@@ -20,34 +20,34 @@ trait Application_Traits_Admin_CollectionDelete
    /**
     * @return DBHelper_BaseCollection
     */
-    abstract protected function createCollection();
+    abstract protected function createCollection() : DBHelper_BaseCollection;
 
    /**
     * @return string
     */
-    abstract public function getBackOrCancelURL();
+    abstract public function getBackOrCancelURL() : string;
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Delete');
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Delete');
     }
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'delete';
     }
     
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->createCollection();
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->record = $this->collection->getByRequest();
         if(!$this->record) {

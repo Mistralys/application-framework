@@ -27,20 +27,20 @@
  */
 interface Application_Admin_ScreenInterface extends Application_Interfaces_Formable, Application_Interfaces_Loggable
 {
-    const REQUEST_PARAM_PAGE = 'page';
-    const REQUEST_PARAM_MODE = 'mode';
-    const REQUEST_PARAM_SUBMODE = 'submode';
-    const REQUEST_PARAM_ACTION = 'action';
+    public const REQUEST_PARAM_PAGE = 'page';
+    public const REQUEST_PARAM_MODE = 'mode';
+    public const REQUEST_PARAM_SUBMODE = 'submode';
+    public const REQUEST_PARAM_ACTION = 'action';
 
     /**
     * @return string
     */
-    public function getID();
+    public function getID() : string;
     
    /**
     * @return UI 
     */
-    public function getUI();
+    public function getUI() : UI;
     
    /**
     * @return UI_Themes_Theme_ContentRenderer
@@ -55,49 +55,49 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
    /**
     * Allows configuring the breadcrumb instance for the current page.
     */
-    public function handleBreadcrumb();
+    public function handleBreadcrumb() : void;
     
    /**
     * Allows configuring the help instance for the current page.
     * 
     * @param UI_Page_Help $help
     */
-    public function handleHelp(UI_Page_Help $help);
+    public function handleHelp(UI_Page_Help $help) : void;
     
    /**
     * Allows configuring the sidebar instance for the current page.
     * 
     * @param UI_Page_Sidebar $sidebar
     */
-    public function handleSidebar(UI_Page_Sidebar $sidebar);
+    public function handleSidebar(UI_Page_Sidebar $sidebar) : void;
     
    /**
     * Allows configuring the subnavigation for the current page.
     * 
     * @param UI_Page_Navigation $subnav
     */
-    public function handleSubnavigation(UI_Page_Navigation $subnav);
+    public function handleSubnavigation(UI_Page_Navigation $subnav) : void;
     
    /**
     * Allows configuring the context menu in the subnavigation for the current page.
     * 
     * @param UI_Bootstrap_DropdownMenu $menu
     */
-    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu);
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void;
     
    /**
     * Allows configuring the content tabs for the current page.
     *
     * @param UI_Bootstrap_Tabs $tabs
     */
-    public function handleTabs(UI_Bootstrap_Tabs $tabs);
+    public function handleTabs(UI_Bootstrap_Tabs $tabs) : void;
     
    /**
     * Whether the current user is allowed to access this screen / feature.
     * 
     * @return bool
     */
-    public function isUserAllowed();
+    public function isUserAllowed() : bool;
     
    /**
     * Whether the screens are running in admin mode, and actions may be executed.
@@ -105,7 +105,7 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     * @return bool
     * @see Application_Admin_Skeleton::isAdminMode()
     */
-    public function isAdminMode();
+    public function isAdminMode() : bool;
     
    /**
     * Retrieves the current screen's subscreen, if any.
@@ -124,12 +124,12 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
    /**
     * @return string
     */
-    public function getURLName();
+    public function getURLName() : string;
     
    /**
     * @return string
     */
-    public function getURLPath();
+    public function getURLPath() : string;
     
    /**
     * Retrieves the name of the parameter used to select this screen
@@ -139,9 +139,9 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     */
     public function getURLParam() : string;
     
-    public function startTransaction();
+    public function startTransaction() : void;
     
-    public function endTransaction();
+    public function endTransaction() : void;
     
    /**
     * @param string[] $params
@@ -152,12 +152,12 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
    /**
     * @return string
     */
-    public function getNavigationTitle();
+    public function getNavigationTitle() : string;
     
    /**
     * @return string
     */
-    public function getTitle();
+    public function getTitle() : string;
     
    /**
     * Whether this class is an administration area class.
@@ -244,9 +244,9 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
    /**
     * Retrieves the default subscreen ID, if any.
     * 
-    * @return string|NULL
+    * @return string
     */
-    public function getDefaultSubscreenID() : ?string;
+    public function getDefaultSubscreenID() : string;
     
     public function renderContent() : string;
     
@@ -287,12 +287,12 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
      * @param string|array<string,string|int|float> $paramsOrURL
      * @return never-returns
      */
-    public function redirectTo($paramsOrURL);
+    public function redirectTo($paramsOrURL) : void;
 
     /**
      * Retrieves all app internal parameters for the screen (page, mode, submode, action).
      *
      * @return array<string,string>
      */
-    public function getPageParams();
+    public function getPageParams() : array;
 }

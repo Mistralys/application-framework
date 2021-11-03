@@ -2,47 +2,27 @@
 
 abstract class Application_Admin_Area_Mode_Users extends Application_Admin_Area_Mode
 {
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::getDefaultSubmode()
-     */
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
         return 'list';
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::getNavigationTitle()
-     */
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Users');
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::isUserAllowed()
-     */
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getURLName()
-     */
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'users';
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getTitle()
-     */
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Users');
     }

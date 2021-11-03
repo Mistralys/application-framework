@@ -2,32 +2,32 @@
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'devel';
     }
     
-    public function getDefaultMode()
+    public function getDefaultMode() : string
     {
         return 'overview';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Developer tools');
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Developer tools');
     }
     
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
     
-    public function getNavigationGroup()
+    public function getNavigationGroup() : string
     {
         return t('Manage');
     }
@@ -37,12 +37,12 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         return UI::icon()->developer();
     }
     
-    public function isCore()
+    public function isCore() : bool
     {
         return true;
     }
     
-    public function getDependencies()
+    public function getDependencies() : array
     {
         return array();
     }

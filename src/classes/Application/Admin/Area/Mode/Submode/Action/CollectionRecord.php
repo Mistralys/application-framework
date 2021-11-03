@@ -12,11 +12,11 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
      */
     protected $record;
     
-    abstract protected function createCollection();
+    abstract protected function createCollection() : DBHelper_BaseCollection;
     
-    abstract protected function getRecordMissingURL();
+    abstract protected function getRecordMissingURL() : string;
 
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->createCollection();
         $this->record = $this->collection->getByRequest();
@@ -45,7 +45,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
    /**
     * @return DBHelper_BaseRecord
     */
-    public function getRecord()
+    public function getRecord() : DBHelper_BaseRecord
     {
         return $this->record;
     }
@@ -53,7 +53,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
    /**
     * @return DBHelper_BaseCollection
     */
-    public function getCollection()
+    public function getCollection() : DBHelper_BaseCollection
     {
         return $this->collection;
     }

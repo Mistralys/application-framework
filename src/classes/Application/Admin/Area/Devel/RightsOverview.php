@@ -3,27 +3,27 @@
 
 abstract class Application_Admin_Area_Devel_RightsOverview extends Application_Admin_Area_Mode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'rightsoverview';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('User rights overview');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('User rights');
     }
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
         return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }

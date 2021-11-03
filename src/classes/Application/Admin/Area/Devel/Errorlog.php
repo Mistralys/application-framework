@@ -2,27 +2,27 @@
 
 abstract class Application_Admin_Area_Devel_Errorlog extends Application_Admin_Area_Mode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'errorlog';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Error log');
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return $this->getTitle();
     }
     
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
         return 'list';
     }
     
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }

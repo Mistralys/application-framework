@@ -75,7 +75,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         $this->collection = $collection;
     }
     
-    protected final function handleSettings() : void
+    final protected function handleSettings() : void
     {
         if(!$this->settingsInitialized)
         {
@@ -211,7 +211,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         return $this;
     }
     
-    protected final function initSettingsForm() : void
+    final protected function initSettingsForm() : void
     {
         if($this->settingsFormInitialized)
         {
@@ -307,7 +307,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         return $name.'-create';
     }
     
-    protected final function addGroup(string $label) : Application_Formable_RecordSettings_Group
+    final protected function addGroup(string $label) : Application_Formable_RecordSettings_Group
     {
         $group = new Application_Formable_RecordSettings_Group($this, $label);
             

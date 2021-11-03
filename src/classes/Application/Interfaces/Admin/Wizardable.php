@@ -2,8 +2,8 @@
 
 interface Application_Interfaces_Admin_Wizardable extends Application_Admin_ScreenInterface
 {
-    const ADMIN_WIZARD_ERROR_UNKNOWN_STEP = 557001;
-    const ADMIN_WIZARD_ERROR_STEP_ALREADY_EXISTS = 557002;
+    public const ADMIN_WIZARD_ERROR_UNKNOWN_STEP = 557001;
+    public const ADMIN_WIZARD_ERROR_STEP_ALREADY_EXISTS = 557002;
     
     /**
      * @return Application_Admin_Wizard_Step
@@ -109,7 +109,7 @@ interface Application_Interfaces_Admin_Wizardable extends Application_Admin_Scre
      * Whether the current page is in simulation mode.
      * @return bool
      */
-    public function isSimulationEnabled();
+    public function isSimulationEnabled() : bool;
     
     /**
      * Checks whether the step is valid and can be jumped to.
@@ -120,15 +120,11 @@ interface Application_Interfaces_Admin_Wizardable extends Application_Admin_Scre
     
     public function processCancelWizard() : void;
     
-    public function processCompleteWizard();
+    public function processCompleteWizard() : void;
     
     public function reset() : void;
     
     public function stepExists(string $name) : bool;
-    
-    public function getURLPath();
-    
-    public function getURL(array $params=array()) : string;
     
    /**
     * Returns the URL to which the user should be sent

@@ -83,7 +83,11 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
     private $columnUsage = array();
 
     /**
-     * @var array<bool,string>
+     * Actually boolean keys in the array, but since
+     * booleans are converted to int, documenting it
+     * as int here.
+     *
+     * @var array<int,string>
      */
     private $buildCache;
 

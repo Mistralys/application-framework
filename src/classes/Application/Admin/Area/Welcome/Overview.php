@@ -7,40 +7,40 @@ declare(strict_types=1);
  */
 class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mode
 {
-    const URL_NAME_OVERVIEW = 'overview';
-    const AUTO_REFRESH_DELAY = 60;
+    public const URL_NAME_OVERVIEW = 'overview';
+    public const AUTO_REFRESH_DELAY = 60;
 
     /**
      * @var Application_User_Recent
      */
     private $recent;
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
         return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return true;
     }
 
-    public function getURLName()
+    public function getURLName() : string
     {
         return self::URL_NAME_OVERVIEW;
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Quickstart');
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Quickstart');
     }
 
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->recent = $this->user->getRecent();
 
@@ -49,12 +49,14 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
         if($this->request->hasParam($clearParam))
         {
-            $this->handleClearCategory(strval($this->request->getParam($clearParam)));
+            $this->handleClearCategory((string)$this->request->getParam($clearParam));
         }
         else if($this->request->hasParam($unpinParam))
         {
-            $this->handleUnpinNote(intval($this->request->getParam($unpinParam)));
+            $this->handleUnpinNote((int)$this->request->getParam($unpinParam));
         }
+
+        return true;
     }
 
     private function getCategoryLabels() : array
@@ -69,7 +71,7 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
         return $items;
     }
 
-    protected function _handleHelp()
+    protected function _handleHelp() : void
     {
         $this->help->setSummary(t('Your personal activity tracker'));
 

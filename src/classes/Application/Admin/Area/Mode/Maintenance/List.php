@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode.php';
-
 abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_Admin_Area_Mode_Submode
 {
    /**
@@ -9,38 +7,22 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
     */
     protected $mode;
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode_Submode::getNavigationTitle()
-     */
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Maintenance plans');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode_Submode::getDefaultAction()
-     */
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getURLName()
-     */
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'list';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getTitle()
-     */
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Maintenance plans');
     }

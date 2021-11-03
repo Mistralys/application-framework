@@ -178,13 +178,15 @@ trait Application_Traits_Admin_Screen
         
         return true;
     }
-    
-    protected function _handleBeforeActions()
+
+    protected function _handleBeforeActions() : void
     {
-        return true;
     }
-    
-    protected function _handleActions()
+
+    /**
+     * @return bool
+     */
+    protected function _handleActions() : bool
     {
         return true;
     }
@@ -271,64 +273,66 @@ trait Application_Traits_Admin_Screen
     * The breadcrumb object is always present when the UI layer
     * is enabled, so it does not have to be passed to this method.
     * 
-    * @return boolean
     * @see Application_Admin_Skeleton::startUI()
     */
-    public function handleBreadcrumb()
+    public function handleBreadcrumb() : void
     {
-        return $this->_handleUIMethod('Breadcrumb');
+        $this->_handleUIMethod('Breadcrumb');
     }
-    
-    protected function  _handleBreadcrumb()
-    {
-        
-    }
-    
-    public function handleSidebar(UI_Page_Sidebar $sidebar)
-    {
-        return $this->_handleUIMethodObject('Sidebar', 'sidebar', $sidebar);
-    }
-    
-    protected function _handleSidebar()
-    {
-    }
-    
-    public function handleSubnavigation(UI_Page_Navigation $subnav)
-    {
-        return $this->_handleUIMethodObject('Subnavigation', 'subnav', $subnav);
-    }
-    
-    protected function _handleSubnavigation()
+
+    /**
+     * @return void
+     */
+    protected function  _handleBreadcrumb() : void
     {
         
     }
     
-    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu)
+    public function handleSidebar(UI_Page_Sidebar $sidebar) : void
     {
-        return $this->_handleUIMethodObject('ContextMenu', 'contextmenu', $menu);
+        $this->_handleUIMethodObject('Sidebar', 'sidebar', $sidebar);
     }
-    
-    protected function _handleContextMenu()
+
+    protected function _handleSidebar() : void
+    {
+    }
+
+    public function handleSubnavigation(UI_Page_Navigation $subnav) : void
+    {
+        $this->_handleUIMethodObject('Subnavigation', 'subnav', $subnav);
+    }
+
+    protected function _handleSubnavigation() : void
     {
         
     }
     
-    public function handleTabs(UI_Bootstrap_Tabs $tabs)
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void
     {
-        return $this->_handleUIMethodObject('Tabs', 'tabs', $tabs);
+        $this->_handleUIMethodObject('ContextMenu', 'contextmenu', $menu);
     }
-    
-    protected function _handleTabs()
+
+    protected function _handleContextMenu() : void
     {
         
     }
     
-    public function handleHelp(UI_Page_Help $help)
+    public function handleTabs(UI_Bootstrap_Tabs $tabs) : void
     {
-        return $this->_handleUIMethodObject('Help', 'help', $help);
+        $this->_handleUIMethodObject('Tabs', 'tabs', $tabs);
+    }
+
+    protected function _handleTabs() : void
+    {
+        
     }
     
-    protected function _handleHelp()
+    public function handleHelp(UI_Page_Help $help) : void
+    {
+        $this->_handleUIMethodObject('Help', 'help', $help);
+    }
+
+    protected function _handleHelp() : void
     {
         
     }
@@ -364,7 +368,10 @@ trait Application_Traits_Admin_Screen
         $this->log('Render content | No content has been rendered.');
         return '';
     }
-    
+
+    /**
+     * @return string|UI_Renderable_Interface
+     */
     protected function _renderContent()
     {
         return '';
@@ -834,9 +841,9 @@ trait Application_Traits_Admin_Screen
         return $this->subscreenURLParam;
     }
     
-    public function getDefaultSubscreenID() : ?string
+    public function getDefaultSubscreenID() : string
     {
-        return null;
+        return '';
     }
     
     public function getActiveSubscreen() : ?Application_Admin_ScreenInterface
@@ -876,7 +883,7 @@ trait Application_Traits_Admin_Screen
     * Can be extended by the screen for any required internal
     * initializations.
     */
-    protected function init()
+    protected function init() : void
     {
         
     }

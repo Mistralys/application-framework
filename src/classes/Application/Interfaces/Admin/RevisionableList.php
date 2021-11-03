@@ -9,7 +9,7 @@ interface Application_Interfaces_Admin_RevisionableList extends Application_Admi
    /**
     * @return string
     */
-    public function getBackOrCancelURL();
+    public function getBackOrCancelURL() : string;
 
     /**
      * @param string $className
@@ -18,5 +18,5 @@ interface Application_Interfaces_Admin_RevisionableList extends Application_Admi
      * @param boolean $confirm
      * @return Application_RevisionableCollection_DataGridMultiAction
      */
-    public function addMultiAction($className, $label, $redirectURL, $confirm=false);
+    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : Application_RevisionableCollection_DataGridMultiAction;
 }

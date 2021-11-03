@@ -1,27 +1,25 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode.php';
-
 class Application_Admin_Area_Devel_Appsets_Delete extends Application_Admin_Area_Mode_Submode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'delete';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Delete an application set');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Delete set');
     }
 
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 
    /**
@@ -34,7 +32,7 @@ class Application_Admin_Area_Devel_Appsets_Delete extends Application_Admin_Area
     */
     protected $set;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->sets = $this->driver->getApplicationSets();
         

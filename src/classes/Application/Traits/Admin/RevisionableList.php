@@ -8,7 +8,10 @@
  */
 trait Application_Traits_Admin_RevisionableList
 {
-    protected $gridName;
+    /**
+     * @var string
+     */
+    protected $gridName = '';
     
     /**
      * @var UI_DataGrid
@@ -20,17 +23,19 @@ trait Application_Traits_Admin_RevisionableList
      */
     protected $filterSettings;
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'list';
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->gridName = $this->recordTypeName.'-list';
         $this->filterSettings = $this->collection->getFilterSettings();
         
         $this->createDataGrid();
+
+        return true;
     }
     
     abstract protected function getEntryData(Application_RevisionableCollection_DBRevisionable $revisionable);
@@ -68,7 +73,7 @@ trait Application_Traits_Admin_RevisionableList
         return $this->renderDatagrid($this->getTitle(), $this->grid, $entries);
     }
     
-    protected function createDataGrid()
+    protected function createDataGrid() : void
     {
         $grid = $this->ui->createDataGrid($this->gridName);
         $this->grid = $grid;
@@ -82,7 +87,7 @@ trait Application_Traits_Admin_RevisionableList
         $grid->executeCallbacks();
     }
     
-    protected function configureGrid(UI_DataGrid $grid)
+    protected function configureGrid(UI_DataGrid $grid) : void
     {
         $this->configureColumns();
         $this->configureActions();
@@ -96,26 +101,29 @@ trait Application_Traits_Admin_RevisionableList
      * Adds the revisionable's state to the datagrid in the <code>state</code> column.
      * @return UI_DataGrid_Column
      */
-    protected function addStateColumn()
+    protected function addStateColumn() : UI_DataGrid_Column
     {
         return $this->grid->addColumn('state', t('State'))->setSortable();
     }
     
-    protected function addLastModifiedColumn()
+    protected function addLastModifiedColumn() : UI_DataGrid_Column
     {
         return $this->grid->addColumn('last_modified', t('Last modified'))->setSortable();
     }
     
-    abstract public function getBackOrCancelURL();
+    abstract public function getBackOrCancelURL() : string;
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->addFilterSettings();
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $filtersAdded = false;
     
-    protected function addFilterSettings()
+    protected function addFilterSettings() : void
     {
         if($this->filtersAdded) {
             return;
@@ -134,9 +142,15 @@ trait Application_Traits_Admin_RevisionableList
      * @param boolean $confirm
      * @return Application_RevisionableCollection_DataGridMultiAction
      */
-    public function addMultiAction($className, $label, $redirectURL, $confirm=false)
+    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : Application_RevisionableCollection_DataGridMultiAction
     {
-        $action = $this->collection->createListMultiAction($className, $this, $this->grid, $label, $redirectURL, $confirm);
-        return $action;
+        return $this->collection->createListMultiAction(
+            $className,
+            $this,
+            $this->grid,
+            $label,
+            $redirectURL,
+            $confirm
+        );
     }
 }

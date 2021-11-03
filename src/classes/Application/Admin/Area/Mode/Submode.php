@@ -8,7 +8,7 @@
  */
 
 /**
- * Base class for submode admin screens.
+ * Base class for sub-mode admin screens.
  * 
  * @package Application
  * @subpackage Admin
@@ -50,9 +50,9 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
         return $this->hasSubscreens();
     }
 
-    abstract public function getDefaultAction();
+    abstract public function getDefaultAction() : string;
 
-    public function getDefaultSubscreenID() : ?string
+    public function getDefaultSubscreenID() : string
     {
         return $this->getDefaultAction();
     }
@@ -60,9 +60,9 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
     /**
      * Retrieves the ID of the currently selected action.
      * 
-     * @return string|NULL
+     * @return string
      */
-    protected function getActionID() : ?string
+    protected function getActionID() : string
     {
         return $this->getActiveSubscreenID();
     }
@@ -92,7 +92,7 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
         );
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return true;
     }

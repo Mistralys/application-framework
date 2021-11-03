@@ -182,12 +182,12 @@ trait Application_Traits_Admin_CollectionSettings
         return $this->getSettingsKeyNames();
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Settings');
     }
     
-    public function getURLName()
+    public function getURLName() : string
     {
         if($this->isEditMode()) {
             return 'edit';
@@ -196,7 +196,7 @@ trait Application_Traits_Admin_CollectionSettings
         return 'create';
     }
     
-    protected final function init()
+    final protected function init() : void
     {
         $this->validateRequest();
         
@@ -215,7 +215,7 @@ trait Application_Traits_Admin_CollectionSettings
         return $this->createCollection()->getRecordTypeName().'_settings_'.$suffix;
     }
 
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         if($this->isEditMode())
         {
@@ -271,13 +271,15 @@ trait Application_Traits_Admin_CollectionSettings
             $this->log('Switching the form to readonly mode.');
 
             $this->makeReadonly();
-            return;
+            return true;
         }
         
         if($this->isFormValid())
         {
             $this->handleFormSubmitted();
         }
+
+        return true;
     }
 
     private function handleFormSubmitted() : void
@@ -356,7 +358,7 @@ trait Application_Traits_Admin_CollectionSettings
      * @param DBHelper_BaseRecord $record
      * @param Application_Formable_RecordSettings_ValueSet $data
      */
-    protected final function handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
+    final protected function handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $this->logEvent('AfterSave', 'The record has been created/updated.');
 
@@ -428,7 +430,7 @@ trait Application_Traits_Admin_CollectionSettings
      * @return Application_Formable_RecordSettings_ValueSet
      * @throws Application_Exception
      */
-    protected final function filterFormValues(Application_Formable_RecordSettings_ValueSet $values)
+    final protected function filterFormValues(Application_Formable_RecordSettings_ValueSet $values) : Application_Formable_RecordSettings_ValueSet
     {
         $this->log('Filtering the submitted form values.');
 
@@ -455,7 +457,7 @@ trait Application_Traits_Admin_CollectionSettings
         return new Application_Formable_RecordSettings_ValueSet($this->_filterFormValues($result));
     }
 
-    protected final function saveRecord(Application_Formable_RecordSettings_ValueSet $data) : void
+    final protected function saveRecord(Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $this->log('Updating the record.');
 
@@ -469,19 +471,19 @@ trait Application_Traits_Admin_CollectionSettings
         $this->record->save();
     }
 
-    protected final function createRecord(Application_Formable_RecordSettings_ValueSet $data)
+    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data)
     {
         $this->log('Creating a new record.');
 
         return $this->collection->createNewRecord($data->getValues());
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle());
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         if(!$this->isUserAllowedEditing() || $this->isReadonly())
         {
@@ -604,7 +606,7 @@ trait Application_Traits_Admin_CollectionSettings
         );
     }
 
-    protected final function traitGetCancelLabel() : string
+    final protected function traitGetCancelLabel() : string
     {
         return t('Cancel');
     }

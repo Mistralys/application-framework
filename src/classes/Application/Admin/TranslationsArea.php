@@ -7,22 +7,22 @@ use function AppLocalize\tex;
 
 abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'translations';
     }
 
-    public function getDefaultMode()
+    public function getDefaultMode() : string
     {
-        return null;
+        return '';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('UI Translation tools');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Translation');
     }
@@ -32,12 +32,12 @@ abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
         return UI::icon()->translation();
     }
 
-    public function isCore()
+    public function isCore() : bool
     {
         return true;
     }
 
-    public function getDependencies()
+    public function getDependencies() : array
     {
         return array();
     }

@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode/Action.php';
-
 abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends Application_Admin_Area_Mode_Submode_Action
 {
     const ERROR_INVALID_REVISIONABLE_ID = 15301;
@@ -15,9 +13,15 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
      * @var Application_RevisionableCollection
      */
     protected $collection;
-    
+
+    /**
+     * @var string
+     */
     protected $recordTypeName;
-    
+
+    /**
+     * @var int
+     */
     protected $revisionableID;
     
     /**
@@ -25,7 +29,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
      */
     protected $revisionable;
  
-    protected function _handleBeforeActions()
+    protected function _handleBeforeActions() : void
     {
         $this->requireRevisionable();
     }
@@ -38,7 +42,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
     * @throws Application_Exception
     * @return Application_RevisionableCollection_DBRevisionable
     */
-    protected function requireRevisionable()
+    protected function requireRevisionable() : Application_RevisionableCollection_DBRevisionable
     {   
         $this->collection = $this->createCollection();
         $this->recordTypeName = $this->collection->getRecordTypeName();
@@ -60,7 +64,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
         return $this->revisionable;
     }
 
-    protected function startSimulation($outputToConsole=false)
+    protected function startSimulation(bool $outputToConsole=false) : bool
     {
         if(isset($this->revisionable)) {
             $this->revisionable->setSimulation(true);
@@ -69,23 +73,23 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
         return parent::startSimulation($outputToConsole);
     }
     
-    protected function endSimulation()
+    protected function endSimulation() : void
     {
-        parent::endSimulation();
-        
         if(isset($this->revisionable)) {
             $this->revisionable->setSimulation(false);
         }
+
+        parent::endSimulation();
     }
 
-    protected function startRevisionableTransaction($comments='')
+    protected function startRevisionableTransaction(string $comments='') : void
     {
         parent::startTransaction();
         
         $this->revisionable->startCurrentUserTransaction($comments);
     }
     
-    protected function endRevisionableTransaction()
+    protected function endRevisionableTransaction() : void
     {
         $this->revisionable->endTransaction();
         

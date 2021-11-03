@@ -11,34 +11,34 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
      */
     protected $formName = 'usersettings';
 
-    public function getURLName()
+    public function getURLName() : string
     {
         return self::URL_NAME;
     }
 
-    public function getDefaultMode()
+    public function getDefaultMode() : string
     {
-        return null;
+        return '';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('User settings');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Settings');
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->canLogin();
     }
 
-    public function getNavigationGroup()
+    public function getNavigationGroup() : string
     {
-        return null;
+        return '';
     }
     
     public function getNavigationIcon() : ?UI_Icon
@@ -46,17 +46,17 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         return UI::icon()->tools();
     }
 
-    public function isCore()
+    public function isCore() : bool
     {
         return true;
     }
     
-    public function getDependencies()
+    public function getDependencies() : array
     {
         return array();
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         if($this->request->getBool('reset-usercache')) {
             $this->resetUsercache();
@@ -65,7 +65,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         $this->createSettingsForm();
 
         if (!$this->isFormValid()) {
-            return;
+            return true;
         }
 
         $values = $this->getFormValues();
@@ -86,12 +86,12 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
         return $this->renderForm(t('Your personal settings'), $this->formableForm);
     }
 
-    protected function _handleHelp()
+    protected function _handleHelp() : void
     {
         $this->renderer->getTitle()->setIcon($this->getNavigationIcon());
     }
 
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('save', t('Save now'))
         ->setIcon(UI::icon()->save())

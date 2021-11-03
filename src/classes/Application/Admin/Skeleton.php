@@ -355,7 +355,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
      * @return never-returns
      * @throws Application_Exception
      */
-    public function redirectTo($paramsOrURL)
+    public function redirectTo($paramsOrURL) : void
     {
         /* TODO Redirect control needs review
         if(!$this->adminMode) {
@@ -544,7 +544,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @return array<string,string>
     */
-    public function getPageParams()
+    public function getPageParams() : array
     {
         $vars = array();
         
@@ -642,7 +642,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @return boolean
     */
-    public function isSimulationEnabled()
+    public function isSimulationEnabled() : bool
     {
         return Application::isSimulation();
     }
@@ -686,7 +686,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * @param boolean $outputToConsole Whether to display the output in the developer console instead of echoing it. 
     * @see endSimulation()
     */
-    protected function startSimulation($outputToConsole=false)
+    protected function startSimulation(bool $outputToConsole=false) : bool
     {
         if(self::$simulationStarted || !$this->isSimulationEnabled()) {
             return false;
@@ -711,7 +711,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @see startSimulation()
     */
-    protected function endSimulation()
+    protected function endSimulation() : void
     {
         if(!$this->isSimulationEnabled()) {
             return;
@@ -724,7 +724,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
    /**
     * Starts a DB transaction safely, using current simulation settings.
     */
-    public function startTransaction()
+    public function startTransaction() : void
     {
         if(!DBHelper::isTransactionStarted()) {
             DBHelper::startTransaction();
@@ -734,7 +734,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
    /**
     * Ends a DB transaction safely, using current simulation settings.
     */
-    public function endTransaction()
+    public function endTransaction() : void
     {
         if(!DBHelper::isTransactionStarted()) {
             return;
@@ -772,7 +772,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         return $formable;
     }
     
-    public function isAdminMode()
+    public function isAdminMode() : bool
     {
         return $this->adminMode;
     }
@@ -781,7 +781,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * Retrieves the request-unique instance ID of the screen instance. 
     * @return string
     */
-    public function getInstanceID()
+    public function getInstanceID() : string
     {
         return $this->instanceID;
     }
@@ -791,11 +791,11 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     *  
     * @param string $name
     * @param string $value
-    * @return Application_Admin_Skeleton
+    * @return $this
     */
-    protected function setSetting($name, $value)
+    protected function setSetting(string $name, $value)
     {
-        $this->driver->setSetting($this->getSettingName($name), $value);
+        Application_Driver::setSetting($this->getSettingName($name), $value);
         return $this;
     }
     

@@ -35,7 +35,7 @@ class Application_Traits_Stubs_Admin_Wizard_WithCountryStepStub
         return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return false;
     }

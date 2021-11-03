@@ -20,7 +20,7 @@ abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Applicat
      */
     protected $revisionable;
     
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->createCollection();
         $this->recordTypeName = $this->collection->getRecordTypeName();

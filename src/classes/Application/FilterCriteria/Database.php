@@ -681,7 +681,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     abstract protected function _registerJoins() : void;
 
-    protected final function registerJoins() : void
+    final protected function registerJoins() : void
     {
         if($this->joinsRegistered === true)
         {
@@ -989,7 +989,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @return DBHelper_StatementBuilder_ValuesContainer
      */
-    protected final function createStatementValues() : DBHelper_StatementBuilder_ValuesContainer
+    final protected function createStatementValues() : DBHelper_StatementBuilder_ValuesContainer
     {
         if(!isset($this->statementValues))
         {

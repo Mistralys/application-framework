@@ -1,27 +1,25 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode.php';
-
 class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_Mode_Submode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'edit';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Create a new application set');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Create new set');
     }
 
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 
    /**
@@ -39,7 +37,7 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
     */
     protected $set;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->sets = $this->driver->getApplicationSets();
         $this->areas = $this->driver->getAdminAreaObjects();
@@ -54,7 +52,7 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
         $this->createSettingsForm();
         
         if(!$this->isFormValid()) {
-            return;
+            return true;
         }
 
         $this->set->updateFromForm($this->getFormValues());
@@ -70,7 +68,7 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
         );
     }
 
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('saveset', t('Save'))
         ->setIcon(UI::icon()->add())
@@ -99,7 +97,7 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
         );
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromSubmode($this);
@@ -112,10 +110,13 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
             $this->formableForm
         );
     }
-    
+
+    /**
+     * @var string
+     */
     protected $formName = 'appsets';
     
-    protected function createSettingsForm()
+    protected function createSettingsForm() : void
     {
         Application_Sets_Set::createSettingsForm($this, $this->set);
         

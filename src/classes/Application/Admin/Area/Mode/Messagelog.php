@@ -2,47 +2,27 @@
 
 abstract class Application_Admin_Area_Mode_Messagelog extends Application_Admin_Area_Mode
 {
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::getDefaultSubmode()
-     */
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::getNavigationTitle()
-     */
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Messagelog');
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Area_Mode::isUserAllowed()
-     */
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getURLName()
-     */
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'messagelog';
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getTitle()
-     */
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Application messagelog');
     }
@@ -62,16 +42,18 @@ abstract class Application_Admin_Area_Mode_Messagelog extends Application_Admin_
     */
     protected $filters;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->collection = Application::getMessageLog();
         $this->filterSettings = $this->collection->getFilterSettings();
         $this->filters = $this->collection->getFilterCriteria();
         
         $this->createDataGrid();
+
+        return true;
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addFilterSettings($this->filterSettings);
     }
@@ -104,7 +86,7 @@ abstract class Application_Admin_Area_Mode_Messagelog extends Application_Admin_
     */
     protected $grid;
     
-    protected function createDataGrid()
+    protected function createDataGrid() : void
     {
         $grid = $this->ui->createDataGrid('app_messagelog');
         $grid->addColumn('id', t('ID'))->setSortable()->setCompact();

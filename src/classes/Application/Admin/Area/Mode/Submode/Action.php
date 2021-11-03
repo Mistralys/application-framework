@@ -47,7 +47,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Ad
         return $this->mode;
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return true;
     }

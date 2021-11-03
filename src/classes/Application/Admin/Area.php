@@ -20,16 +20,16 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     }
     
    /**
-    * @return string|NULL
+    * @return string
     */
-    abstract public function getDefaultMode();
+    abstract public function getDefaultMode() : string;
 
     /**
-     * @return string|NULL
+     * @return string
      */
-    abstract public function getNavigationGroup();
+    abstract public function getNavigationGroup() : string;
 
-    abstract public function isUserAllowed();
+    abstract public function isUserAllowed() : bool;
     
    /**
     * Retrieves the names of administration areas this 
@@ -38,7 +38,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     * 
     * @return string[] The URL names of the areas
     */
-    abstract public function getDependencies();
+    abstract public function getDependencies() : array;
     
    /**
     * Whether this administration area is a core area that
@@ -46,9 +46,9 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     * 
     * @return boolean
     */
-    abstract public function isCore();
+    abstract public function isCore() : bool;
 
-    public function getDefaultSubscreenID() : ?string
+    public function getDefaultSubscreenID() : string
     {
         return $this->getDefaultMode();
     }

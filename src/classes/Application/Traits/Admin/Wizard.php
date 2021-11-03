@@ -162,12 +162,13 @@ trait Application_Traits_Admin_Wizard
         
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->startTransaction();
         
         // the user has requested to cancel: we reset all session data.
-        if($this->request->getParam('cancel')=='yes') {
+        if($this->request->getBool('cancel') === true)
+        {
             $this->processCancelWizard();
         }
         
@@ -214,6 +215,8 @@ trait Application_Traits_Admin_Wizard
         }
         
         $this->endTransaction();
+
+        return true;
     }
     
     public function processCancelWizard() : void
@@ -247,7 +250,7 @@ trait Application_Traits_Admin_Wizard
         return $this->getSuccessURL();
     }
     
-    public function processCompleteWizard()
+    public function processCompleteWizard() : void
     {
         $successURL = $this->getSuccessURL(); // do this before the reset
         $message = $this->getSuccessMessage();
@@ -271,7 +274,7 @@ trait Application_Traits_Admin_Wizard
         return $this->sessionData['sessionID'];
     }
     
-    protected function collectDebugData($timeline)
+    protected function collectDebugData(string $timelineLabel) : array
     {
         $debugData = array();
         foreach($this->steps as $step) {
@@ -295,18 +298,18 @@ trait Application_Traits_Admin_Wizard
         $debugData['data'] = $this->sessionData;
         
         $debug = array();
-        $debug[$timeline] = $debugData;
+        $debug[$timelineLabel] = $debugData;
         
         return $debug;
     }
     
-    protected function addDebugData($timeline)
+    protected function addDebugData(string $timelineLabel) : void
     {
-        $debug = $this->collectDebugData($timeline);
+        $debug = $this->collectDebugData($timelineLabel);
         $this->session->setValue('wizard-debug-'.$this->getWizardID(), $debug);
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getTitle());
@@ -316,7 +319,7 @@ trait Application_Traits_Admin_Wizard
      * @return UI_Themes_Theme_ContentRenderer
      * @see template_default_content_wizard
      */
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $this->log(sprintf('Rendering content with active step [%s].', $this->activeStep->getID()));
         
@@ -345,7 +348,7 @@ trait Application_Traits_Admin_Wizard
     {
         $next = $this->activeStep->getNumber() + 1;
         foreach($this->steps as $step) {
-            if($step->getNumber() == $next) {
+            if($step->getNumber() === $next) {
                 return $step;
             }
         }
@@ -382,7 +385,7 @@ trait Application_Traits_Admin_Wizard
         }
         
         foreach($this->steps as $step) {
-            if($step->getNumber() == $previous) {
+            if($step->getNumber() === $previous) {
                 return $step;
             }
         }
@@ -390,7 +393,7 @@ trait Application_Traits_Admin_Wizard
         return null;
     }
     
-    protected function initSteps(string $reason)
+    protected function initSteps(string $reason) : void
     {
         $this->log('Steps init | '.$reason);
         
@@ -426,7 +429,7 @@ trait Application_Traits_Admin_Wizard
         }
     }
     
-    abstract protected function _initSteps();
+    abstract protected function _initSteps() : void;
     
     public function hasStep(string $name) : bool
     {
@@ -439,12 +442,13 @@ trait Application_Traits_Admin_Wizard
             return false;
         }
         
-        if($name==$this->activeStep->getID()) {
+        if($name === $this->activeStep->getID())
+        {
             return true;
         }
         
         $nextIncomplete = $this->getNextIncompleteStep();
-        if($nextIncomplete && $name==$nextIncomplete->getID()) {
+        if($nextIncomplete && $name === $nextIncomplete->getID()) {
             return true;
         }
         
@@ -460,7 +464,7 @@ trait Application_Traits_Admin_Wizard
     * Retrieves all steps in the wizard, in the order they are processed.
     * @return Application_Admin_Wizard_Step[]
     */
-    public function getSteps()
+    public function getSteps() : array
     {
         return array_values($this->steps);
     }
@@ -568,7 +572,7 @@ trait Application_Traits_Admin_Wizard
      * @param mixed $value
      * @return $this
      */
-    protected function setSetting($name, $value)
+    protected function setSetting(string $name, $value)
     {
         $key = $this->settingPrefix.'-'.$name;
         
@@ -576,7 +580,7 @@ trait Application_Traits_Admin_Wizard
         return $this;
     }
     
-    protected function saveSettings()
+    protected function saveSettings() : void
     {
         // get a fresh copy of the data of each step
         foreach($this->steps as $step) {
@@ -586,7 +590,7 @@ trait Application_Traits_Admin_Wizard
         $this->session->setValue($this->sessionID, $this->sessionData);
     }
     
-    protected function setSettingPrefix($prefix)
+    protected function setSettingPrefix(string $prefix) : void
     {
         $this->settingPrefix = $prefix;
     }

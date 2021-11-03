@@ -45,7 +45,7 @@ trait Application_Admin_RevisionableSettings
      */
     protected $initialState;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->formName = $this->recordTypeName.'-settings';
         
@@ -57,7 +57,7 @@ trait Application_Admin_RevisionableSettings
         $this->createSettingsForm();
         
         if(!$this->isFormValid()) {
-            return;
+            return true;
         }
         
         $this->startTransaction();
@@ -115,9 +115,9 @@ trait Application_Admin_RevisionableSettings
         );
     }
     
-    abstract protected function getBackOrCancelURL();
+    abstract protected function getBackOrCancelURL() : string;
     
-    abstract protected function isEditMode();
+    abstract protected function isEditMode() : bool;
     
     /**
      * Uses the submitted form values to create/update the
@@ -153,7 +153,7 @@ trait Application_Admin_RevisionableSettings
         }
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $btn = null;
         

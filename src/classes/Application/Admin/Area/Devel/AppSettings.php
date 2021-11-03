@@ -44,32 +44,32 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
      */
     private $elValueID = '';
 
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'appsettings';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Application settings');
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Application settings');
     }
     
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
     
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
@@ -85,7 +85,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
     */
     protected $filterCriteria;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->filterSettings = new Application_FilterSettings_AppSettings('appsettings');
         $this->filterCriteria = new Application_FilterCriteria_AppSettings();
@@ -124,6 +124,8 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
                 $this->getURL()
             );
         }
+
+        return true;
     }
     
     protected function _renderContent()
@@ -163,7 +165,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         );
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addFilterSettings($this->filterSettings);
         
@@ -246,7 +248,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         );
     }
     
-    protected function createEditForm()
+    protected function createEditForm() : void
     {
         $this->createFormableForm($this->formName);
         $this->formableForm->makeCondensed();
@@ -297,7 +299,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         $this->datagrid = $grid;
     }
     
-    public function handle_multiDelete(UI_DataGrid_Action $action)
+    public function handle_multiDelete(UI_DataGrid_Action $action) : void
     {
         $ids = $action->getSelectedValues();
         

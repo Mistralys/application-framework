@@ -4,14 +4,14 @@ abstract class Application_Admin_Wizard extends Application_Admin_Area_Mode impl
 {
     use Application_Traits_Admin_Wizard;
 
-    protected function _handleBeforeActions()
+    protected function _handleBeforeActions() : void
     {
          $this->initWizard();
     }
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
     
     public function getLogIdentifier() : string

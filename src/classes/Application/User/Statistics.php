@@ -60,7 +60,7 @@ class Application_User_Statistics
      *
      * @param DateTime $loginTime
      */
-    protected final function registerLoginDate(DateTime $loginTime) : void
+    final protected function registerLoginDate(DateTime $loginTime) : void
     {
         $dates = $this->getDatesLoggedIn();
         $today = $loginTime->format('Y-m-d');
@@ -167,7 +167,7 @@ class Application_User_Statistics
      * @param DateTime $loginTime
      * @throws Exception
      */
-    protected final function calcLoginStatistics(DateTime $loginTime) : void
+    final protected function calcLoginStatistics(DateTime $loginTime) : void
     {
         $last = $this->getLastLogin();
         $isFirstLogin = $last === null;

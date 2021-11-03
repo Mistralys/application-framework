@@ -2,12 +2,12 @@
 
 abstract class Application_Admin_Area_Mode_Submode_Action_RevisionableStatus extends Application_Admin_Area_Mode_Submode_Action_Revisionable
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'status';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         if(!$this->isAdminMode()) {
             return t('Status');
@@ -16,7 +16,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_RevisionableStatus ext
         return t('%1$s status', $this->revisionable->getLabel());
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Status');
     }

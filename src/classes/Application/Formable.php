@@ -1213,7 +1213,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Retrieves the UI instance used by the formable form.
     * @return UI
     */
-    public function getUI()
+    public function getUI() : UI
     {
         $this->requireFormableInitialized();
         

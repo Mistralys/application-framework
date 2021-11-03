@@ -1,27 +1,25 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode.php';
-
 class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_Mode_Submode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'list';
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('List of application sets');
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('List');
     }
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
     
     /**
@@ -29,14 +27,16 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
      */
     protected $sets;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->sets = $this->driver->getApplicationSets();
         
         $this->createDataGrid();
+
+        return true;
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('addset', t('Add new set'))
         ->setIcon(UI::icon()->add())
@@ -52,7 +52,7 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
         );
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromSubmode($this);
@@ -91,7 +91,7 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
      */
     protected $dataGrid;
     
-    protected function createDataGrid()
+    protected function createDataGrid() : void
     {
         $grid = $this->ui->createDataGrid('appsets');
         $grid->addColumn('id', t('ID'))->setNowrap()->setCompact();

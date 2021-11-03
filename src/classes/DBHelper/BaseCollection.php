@@ -902,7 +902,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param array<string,mixed> $data
      * @throws DBHelper_Exception
      */
-    protected final function verifyData(array $data) : void
+    final protected function verifyData(array $data) : void
     {
         $keys = $this->keys->getRequired();
         $missing = array();
@@ -947,7 +947,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *
      * @param array $data
      */
-    protected final function fillDefaults(array &$data) : void
+    final protected function fillDefaults(array &$data) : void
     {
         $keys = $this->keys->getAll();
 
@@ -1004,7 +1004,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * @throws DBHelper_Exception
     * @return DBHelper_BaseCollection_Event_BeforeCreateRecord
     */
-    protected final function triggerBeforeCreateRecord(array $data) : DBHelper_BaseCollection_Event_BeforeCreateRecord
+    final protected function triggerBeforeCreateRecord(array $data) : DBHelper_BaseCollection_Event_BeforeCreateRecord
     {
         $event = $this->eventHandler->trigger(
             'BeforeCreateRecord',

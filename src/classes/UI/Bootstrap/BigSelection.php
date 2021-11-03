@@ -259,7 +259,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     }
 
     /**
-     * @param $label
+     * @param string|number|UI_Renderable_Interface $label
      * @return UI_Bootstrap_BigSelection_Item_Regular
      * @throws UI_Exception
      */
@@ -271,7 +271,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     }
 
     /**
-     * @param $title
+     * @param string|number|UI_Renderable_Interface $title
      * @return UI_Bootstrap_BigSelection_Item_Header
      * @throws UI_Exception
      */

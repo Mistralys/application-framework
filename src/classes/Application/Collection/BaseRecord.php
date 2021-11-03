@@ -89,7 +89,7 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
      * @param string $name
      * @return mixed|null
      */
-    protected final function getDataKey(string $name)
+    final protected function getDataKey(string $name)
     {
         if(isset($this->recordData[$name]))
         {
@@ -99,22 +99,22 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
         return null;
     }
 
-    protected final function getDataKeyString(string $name) : string
+    final protected function getDataKeyString(string $name) : string
     {
         return strval($this->getDataKey($name));
     }
 
-    protected final function getDataKeyInt(string $name) : int
+    final protected function getDataKeyInt(string $name) : int
     {
         return intval($this->getDataKey($name));
     }
 
-    protected final function getDataKeyBool(string $name) : bool
+    final protected function getDataKeyBool(string $name) : bool
     {
         return ConvertHelper::string2bool($this->getDataKey($name));
     }
 
-    protected final function getDataKeyArray(string $name) : array
+    final protected function getDataKeyArray(string $name) : array
     {
         $value = $this->getDataKey($name);
 
@@ -125,7 +125,7 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
         return array();
     }
 
-    protected final function getDataKeyDate(string $name) : ?DateTime
+    final protected function getDataKeyDate(string $name) : ?DateTime
     {
         $value = $this->getDataKey($name);
 
@@ -152,7 +152,7 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
      * @param mixed $value
      * @return bool
      */
-    protected final function setDataKey(string $name, $value) : bool
+    final protected function setDataKey(string $name, $value) : bool
     {
         // Avoid being able to change the record's primary
         // in the data set.

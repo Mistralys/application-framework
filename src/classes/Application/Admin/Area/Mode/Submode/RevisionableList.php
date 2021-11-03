@@ -4,9 +4,9 @@ abstract class Application_Admin_Area_Mode_Submode_RevisionableList extends Appl
 {
     use Application_Traits_Admin_RevisionableList;
     
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 }
 

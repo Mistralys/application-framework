@@ -7,6 +7,8 @@
  * @see Application_Admin_Area_Devel_Dbdump
  */
 
+use AppUtils\Request_Exception;
+
 /**
  * Developer helper to handle database dumps: creates dumps using
  * the bundled shell script (Linux only), and offers them for
@@ -30,40 +32,40 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
     */
     protected $dumps;
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'dbdump';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Database dumps');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Database dumps');
     }
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
 
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
-        $this->dumps = $this->driver->createDBDumps();
+        $this->dumps = Application_Driver::createDBDumps();
         
         $this->createDataGrid();
         
@@ -75,9 +77,15 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
         {
             $this->downloadDump();
         }
+
+        return true;
     }
 
-    protected function downloadDump()
+    /**
+     * @throws Request_Exception
+     * @return never-returns
+     */
+    protected function downloadDump() : void
     {
         $id = $this->request->registerParam('dump_id')->setInteger()->setCallback(array($this->dumps, 'dumpExists'))->get();
         if(empty($id)) {
@@ -91,7 +99,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
         $dump->sendFile();
     }
 
-    protected function createDump()
+    protected function createDump() : void
     {
         $dump = $this->dumps->createDump();
 
@@ -128,7 +136,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
         );
     }
 
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('create', t('Create new dump'))
         ->setIcon(UI::icon()->add())
@@ -153,7 +161,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
         }
     }
 
-    private function createDatagrid()
+    private function createDatagrid() : void
     {
         $grid = $this->ui->createDataGrid('dumps');
         $grid->enableMultiSelect('selected');
@@ -172,7 +180,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
         $this->datagrid = $grid;
     }
     
-    public function handle_multiDelete(UI_DataGrid_Action $action, $ids)
+    public function handle_multiDelete(UI_DataGrid_Action $action, $ids) : void
     {
         $deleted = 0;
         

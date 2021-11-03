@@ -2,24 +2,24 @@
 
 class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_Mode_Submode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'view';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('View error log');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('View');
     }
 
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
    
    /**

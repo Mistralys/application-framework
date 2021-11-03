@@ -81,7 +81,7 @@ abstract class Application_Session_Base implements Application_Session
         $this->init();
     }
 
-    protected final function init() : void
+    final protected function init() : void
     {
         $this->log('Starting the session.');
 

@@ -131,12 +131,12 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
      * 
      * @return string
      */
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
     
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->getLabel();
     }
@@ -520,25 +520,17 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         $this->wizard->handle_stepInvalidated($this, $reasonMessage);
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getURLName()
-     */
-    public function getURLName()
+    public function getURLName() : string
     {
         return strtolower($this->getID());
     }
     
-    /**
-     * {@inheritDoc}
-     * @see Application_Admin_Skeleton::getURLPath()
-     */
-    public function getURLPath()
+    public function getURLPath() : string
     {
         return $this->wizard->getURLPath();
     }
     
-    protected function initStepForm()
+    protected function initStepForm() : void
     {
         $this->createFormableForm($this->getFormName(), $this->getFormData());
     }
@@ -579,10 +571,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * Also adds all necessary hidden variables for the current
     * page to be able to use all grid functions.
     *  
-    * @param string $id
     * @return UI_DataGrid
     */
-    protected function createDataGrid($id=null)
+    protected function createDataGrid() : UI_DataGrid
     {
         $grid = $this->ui->createDataGrid($this->getSessionID(), true);
         
@@ -607,7 +598,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * 
     * @return string
     */
-    protected function getSessionID()
+    protected function getSessionID() : string
     {
         return $this->wizard->getSessionID().'-'.$this->getID();
     }
@@ -617,7 +608,10 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return null;
     }
 
-    public function getDataKeyNames()
+    /**
+     * @return string[]
+     */
+    public function getDataKeyNames() : array
     {
         $def = $this->getDefaultData();
         return array_keys($def);
@@ -630,9 +624,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * - When submitted, the form uses the submitted data.
     * - When in completed state, uses the current data. 
     * 
-    * @return array
+    * @return array<string,mixed>
     */
-    protected function getDefaultFormData()
+    protected function getDefaultFormData() : array
     {
         if($this->isComplete()) {
             return $this->getData();
@@ -640,13 +634,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         
         return $this->_getDefaultFormData();
     }
-    
-    protected function _getDefaultFormData()
+
+    /**
+     * @return array<string,mixed>
+     */
+    protected function _getDefaultFormData() : array
     {
         return $this->getDefaultData();
     }
     
-    protected function requireStepComplete()
+    protected function requireStepComplete() : void
     {
         if($this->isComplete()) {
             return;
@@ -723,7 +720,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard->getArea();
     }
     
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return $this->getTitle();
     }
@@ -736,16 +733,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function handleActions() {}
     public function renderContent() : string { return ''; }
     public function getURLParam(): string { return ''; }
-    public function handleBreadcrumb() {}
-    public function getDefaultSubscreenID(): ?string { return null; }
-    public function handleSidebar(UI_Page_Sidebar $sidebar) {}
+    public function handleBreadcrumb() : void {}
+    public function getDefaultSubscreenID(): string { return ''; }
+    public function handleSidebar(UI_Page_Sidebar $sidebar) : void {}
     public function hasActiveSubscreen(): bool { return false; }
-    public function handleTabs(UI_Bootstrap_Tabs $tabs) {}
-    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) {}
-    public function handleSubnavigation(UI_Page_Navigation $subnav) {}
-    public function isUserAllowed() {return true; }
+    public function handleTabs(UI_Bootstrap_Tabs $tabs) : void {}
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void {}
+    public function handleSubnavigation(UI_Page_Navigation $subnav) : void {}
+    public function isUserAllowed() : bool {return true; }
     public function isArea(): bool { return false; }
-    public function handleHelp(UI_Page_Help $help) {}
+    public function handleHelp(UI_Page_Help $help) : void {}
 
     public function getActiveSubscreenID(): ?string { return null; }
     public function getActiveSubscreen(): ?Application_Admin_ScreenInterface {return null;}

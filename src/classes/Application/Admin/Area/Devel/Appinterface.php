@@ -39,27 +39,27 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     */
     private $activeExample;
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'appinterface';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Application interface reference');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('Interface refs');
     }
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
-        return null;
+        return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return $this->user->isDeveloper();
     }
@@ -99,7 +99,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
         );
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->examples = $this->getExamplesList();
         
@@ -115,9 +115,11 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
         if(!empty($active) && in_array($active, $this->exampleIDs)) {
             $this->activeExample = $active;
         }
+
+        return true;
     }
 
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         foreach($this->examples as $categoryID => $category) {
             $section = $this->sidebar->addSection()
@@ -138,13 +140,13 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
         }
     }
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : string
     {
         return $this->renderContentWithSidebar(
             $this->renderTemplate(

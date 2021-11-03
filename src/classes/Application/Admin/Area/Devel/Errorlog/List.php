@@ -4,24 +4,24 @@ use AppUtils\FileHelper;
 
 class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_Mode_Submode
 {
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'list';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Error log');
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return t('List');
     }
 
-    public function getDefaultAction()
+    public function getDefaultAction() : string
     {
-        return null;
+        return '';
     }
 
    /**
@@ -29,7 +29,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
     */
     protected $errorlog;
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->errorlog = Application::createErrorLog();
         

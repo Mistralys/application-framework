@@ -6,8 +6,8 @@ use AppUtils\ConvertHelper;
 
 class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mode
 {
-    const URL_NAME_SETTINGS = 'settings';
-    const FORM_NAME = 'welcome_settings';
+    public const URL_NAME_SETTINGS = 'settings';
+    public const FORM_NAME = 'welcome_settings';
 
     /**
      * @var Application_User_Recent
@@ -19,32 +19,32 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
      */
     private $categories;
 
-    public function getDefaultSubmode()
+    public function getDefaultSubmode() : string
     {
         return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return true;
     }
 
-    public function getURLName()
+    public function getURLName() : string
     {
         return self::URL_NAME_SETTINGS;
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return '';
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return t('Quickstart settings');
     }
 
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->recent = $this->user->getRecent();
         $this->categories = $this->recent->getCategories();
@@ -55,9 +55,11 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
         {
             $this->handleSaveSettings($this->getFormValues());
         }
+
+        return true;
     }
 
-    protected function _handleHelp()
+    protected function _handleHelp() : void
     {
         $this->renderer->setTitle($this->getTitle());
     }
@@ -69,13 +71,13 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
             ->makeWithSidebar();
     }
 
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendItem(t('Quickstart'))->makeLinked($this->recent->getAdminURL());
         $this->breadcrumb->appendItem(t('Settings'))->makeLinked($this->recent->getAdminSettingsURL());
     }
 
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('save_settings', t('Save now'))
             ->setIcon(UI::icon()->save())

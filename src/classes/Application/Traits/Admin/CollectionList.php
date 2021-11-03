@@ -73,12 +73,12 @@ trait Application_Traits_Admin_CollectionList
     */
     protected $filtersAdded = false;
     
-    public function getURLName()
+    public function getURLName() : string
     {
         return 'list';
     }
     
-    protected function _handleActions()
+    protected function _handleActions() : bool
     {
         $this->collection = $this->createCollection();
         $this->gridName = $this->collection->getDataGridName();
@@ -88,6 +88,8 @@ trait Application_Traits_Admin_CollectionList
         $this->validateRequest();
         
         $this->createDataGrid();
+
+        return true;
     }
     
     protected function validateRequest() : void
@@ -103,22 +105,22 @@ trait Application_Traits_Admin_CollectionList
    /**
     * @return DBHelper_BaseCollection
     */
-    abstract protected function createCollection();
+    abstract protected function createCollection() : DBHelper_BaseCollection;
     
     abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry);
     
-    abstract protected function configureColumns();
+    abstract protected function configureColumns() : void;
     
-    abstract protected function configureActions();
+    abstract protected function configureActions() : void;
     
     abstract public function getBackOrCancelURL();
     
-    protected function _handleBreadcrumb()
+    protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle());
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $this->grid->configure($this->filterSettings, $this->filters);
         
@@ -145,7 +147,7 @@ trait Application_Traits_Admin_CollectionList
         ->appendDataGrid($this->grid, $entries);
     }
 
-    protected function createDataGrid()
+    protected function createDataGrid() : void
     {
         $grid = $this->ui->createDataGrid($this->gridName);
         $this->grid = $grid;
@@ -169,19 +171,19 @@ trait Application_Traits_Admin_CollectionList
         $grid->executeCallbacks();
     }
     
-    protected function configureGrid(UI_DataGrid $grid)
+    protected function configureGrid(UI_DataGrid $grid) : void
     {
         $this->configureColumns();
         $this->configureActions();
         $this->configureFilters();
     }
     
-    protected function _handleSidebar()
+    protected function _handleSidebar() : void
     {
         $this->addFilterSettings();
     }
     
-    protected function addFilterSettings()
+    protected function addFilterSettings() : void
     {
         if($this->filtersAdded) {
             return;

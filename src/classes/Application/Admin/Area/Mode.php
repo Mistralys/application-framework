@@ -19,18 +19,14 @@ abstract class Application_Admin_Area_Mode extends Application_Admin_Skeleton
         $this->initScreen();
     }
     
-    abstract public function getDefaultSubmode();
-
-    abstract public function getNavigationTitle();
-
-    abstract public function isUserAllowed();
+    abstract public function getDefaultSubmode() : string;
 
     public function hasSubmodes() : bool
     {
         return $this->hasSubscreens();
     }
     
-    public function getDefaultSubscreenID() : ?string
+    public function getDefaultSubscreenID() : string
     {
         return $this->getDefaultSubmode();
     }

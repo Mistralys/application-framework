@@ -30,17 +30,17 @@ class Application_Traits_Stubs_Admin_Wizard_WithConfirmationStepStub
         return '';
     }
 
-    public function getNavigationTitle()
+    public function getNavigationTitle() : string
     {
         return '';
     }
 
-    public function isUserAllowed()
+    public function isUserAllowed() : bool
     {
         return false;
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return '';
     }
@@ -64,7 +64,7 @@ class Application_Traits_Stubs_Admin_Wizard_WithConfirmationStepStub
     {
     }
 
-    protected function _initSteps()
+    protected function _initSteps() : void
     {
         $this->addStepConfirmation();
     }
