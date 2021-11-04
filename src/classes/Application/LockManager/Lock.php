@@ -499,7 +499,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         return $default;
     }
     
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'lock_id';
     }
@@ -509,7 +509,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         return 'app_locking';
     }
     
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'lock';
     }

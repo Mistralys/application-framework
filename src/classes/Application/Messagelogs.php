@@ -33,7 +33,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordClassName()
      */
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_Messagelogs_Log';
     }
@@ -42,12 +42,12 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordFiltersClassName()
      */
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_Messagelogs_FilterCriteria';
     }
 
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_Messagelogs_FilterSettings';
     }
@@ -56,12 +56,12 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
      */
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'date';
     }
 
-    public function getRecordDefaultSortDir()
+    public function getRecordDefaultSortDir() : string
     {
         return self::SORT_DIR_DESC;
     }
@@ -70,7 +70,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordSearchableColumns()
      */
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'message' => t('Message'),
@@ -82,7 +82,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTableName()
      */
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'app_messagelog';
     }
@@ -91,7 +91,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordPrimaryName()
      */
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'log_id';
     }
@@ -100,7 +100,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTypeName()
      */
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'appmessagelog';
     }
@@ -134,7 +134,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getCollectionLabel()
      */
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Message logs');
     }
@@ -143,7 +143,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordLabel()
      */
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Message log entry');
     }
@@ -152,7 +152,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordProperties()
      */
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

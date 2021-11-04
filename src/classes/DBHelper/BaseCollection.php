@@ -33,43 +33,43 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    const ERROR_IDTABLE_SAME_TABLE_NAME = 16501;
-    const ERROR_COLLECTION_HAS_NO_PARENT = 16502;
-    const ERROR_BINDING_RECORD_NOT_ALLOWED = 16503;
-    const ERROR_COLLECTION_ALREADY_HAS_PARENT = 16504;
-    const ERROR_NO_PARENT_RECORD_BOUND = 16505;
-    const ERROR_CANNOT_START_TWICE = 16506;
-    const ERROR_CANNOT_DELETE_OTHER_COLLECTION_RECORD = 16507;
-    const ERROR_INVALID_EVENT_TYPE = 16508;
-    const ERROR_CREATE_RECORD_CANCELLED = 16509;
-    const ERROR_MISSING_REQUIRED_KEYS = 16510;
-    const ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND = 16511;
-    const ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND = 16512;
+    public const ERROR_IDTABLE_SAME_TABLE_NAME = 16501;
+    public const ERROR_COLLECTION_HAS_NO_PARENT = 16502;
+    public const ERROR_BINDING_RECORD_NOT_ALLOWED = 16503;
+    public const ERROR_COLLECTION_ALREADY_HAS_PARENT = 16504;
+    public const ERROR_NO_PARENT_RECORD_BOUND = 16505;
+    public const ERROR_CANNOT_START_TWICE = 16506;
+    public const ERROR_CANNOT_DELETE_OTHER_COLLECTION_RECORD = 16507;
+    public const ERROR_INVALID_EVENT_TYPE = 16508;
+    public const ERROR_CREATE_RECORD_CANCELLED = 16509;
+    public const ERROR_MISSING_REQUIRED_KEYS = 16510;
+    public const ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND = 16511;
+    public const ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND = 16512;
 
-    const SORT_DIR_ASC = 'ASC';
-    const SORT_DIR_DESC = 'DESC';
+    public const SORT_DIR_ASC = 'ASC';
+    public const SORT_DIR_DESC = 'DESC';
 
-    const VALUE_UNDEFINED = '__undefined';
-
-    /**
-     * @return string
-     */
-    abstract public function getRecordClassName();
+    public const VALUE_UNDEFINED = '__undefined';
 
     /**
      * @return string
      */
-    abstract public function getRecordFiltersClassName();
+    abstract public function getRecordClassName() : string;
 
     /**
      * @return string
      */
-    abstract public function getRecordFilterSettingsClassName();
+    abstract public function getRecordFiltersClassName() : string;
 
     /**
      * @return string
      */
-    abstract public function getRecordDefaultSortKey();
+    abstract public function getRecordFilterSettingsClassName() : string;
+
+    /**
+     * @return string
+     */
+    abstract public function getRecordDefaultSortKey() : string;
     
    /**
     * Retrieves the searchable columns as an associative array
@@ -77,40 +77,40 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * 
     * @return array[string]string
     */
-    abstract public function getRecordSearchableColumns();
+    abstract public function getRecordSearchableColumns() : array;
 
     /**
      * The name of the table storing the records.
      *
      * @return string
      */
-    abstract public function getRecordTableName();
+    abstract public function getRecordTableName() : string;
 
     /**
      * The name of the database column storing the primary key.
      *
      * @return string
      */
-    abstract public function getRecordPrimaryName();
+    abstract public function getRecordPrimaryName() : string;
 
     /**
      * @return string
      */
-    abstract public function getRecordTypeName();
+    abstract public function getRecordTypeName() : string;
 
     /**
      * Human readable label of the collection, e.g. "Products".
      *
      * @return string
      */
-    abstract public function getCollectionLabel();
+    abstract public function getCollectionLabel() : string;
 
     /**
      * Human readable label of the records, e.g. "Product".
      *
      * @return string
      */
-    abstract public function getRecordLabel();
+    abstract public function getRecordLabel() : string;
 
     /**
      * Retrieves a list of properties availabable in the
@@ -128,7 +128,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *
      * @return array<int,array<string,string>>
      */
-    abstract public function getRecordProperties();
+    abstract public function getRecordProperties() : array;
     
    /**
     * Retrieves the name of the data grid used to 
@@ -156,7 +156,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * @return string
      */
-    public function getRecordDefaultSortDir()
+    public function getRecordDefaultSortDir() : string
     {
         return self::SORT_DIR_ASC;
     }
@@ -164,7 +164,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * @return string
      */
-    public function getParentCollectionClass()
+    public function getParentCollectionClass() : string
     {
         return '';
     }
@@ -172,7 +172,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * @return bool
      */
-    public function hasParentCollection()
+    public function hasParentCollection() : bool
     {
         $parentClass = $this->getParentCollectionClass();
 
@@ -295,7 +295,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     */
     protected $parentRecord = null;
     
-    public function bindParentRecord(DBHelper_BaseRecord $record)
+    public function bindParentRecord(DBHelper_BaseRecord $record) : void
     {
         if(isset($this->parentRecord)) {
             throw new DBHelper_Exception(
@@ -462,7 +462,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @throws Application_Exception_DisposableDisposed
      * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id)
+    public function getByID(int $record_id) : DBHelper_BaseRecord
     {
         $this->requireNotDisposed('Get a record by its ID.');
 
@@ -555,7 +555,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @throws DBHelper_Exception
      * @throws Request_Exception
      */
-    public function getByRequest()
+    public function getByRequest() : ?DBHelper_BaseRecord
     {
         $request = Application_Request::getInstance();
         
@@ -585,9 +585,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      */
     public function getByKey(string $key, string $value) : ?DBHelper_BaseRecord
     {
-        if($key == $this->recordPrimaryName) 
+        if($key === $this->recordPrimaryName)
         {
-            return $this->getByID(intval($value));
+            return $this->getByID((int)$value);
         }
         
         $where = $this->foreignKeys;
@@ -636,7 +636,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         $this->requireNotDisposed('Check if record ID exists.');
 
-        $record_id = intval($record_id);
+        $record_id = (int)$record_id;
         
         if(isset($this->records[$record_id])) {
             return true;
@@ -662,12 +662,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             $query,
             $where
         );
-        
-        if($id !== null) {
-            return true;
-        }
-        
-        return false;
+
+        return $id !== null;
     }
 
     /**
@@ -688,7 +684,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @return DBHelper_BaseRecord
      * @throws Application_Exception|DBHelper_Exception
      */
-    public function createDummyRecord()
+    public function createDummyRecord() : DBHelper_BaseRecord
     {
         if(isset($this->dummyRecord)) {
             return $this->dummyRecord;
@@ -719,7 +715,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws DBHelper_Exception
      */
-    public function getAll()
+    public function getAll() : array
     {
         return $this->getFilterCriteria()->getItemsObjects();
     }

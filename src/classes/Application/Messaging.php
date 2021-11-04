@@ -61,7 +61,7 @@ class Application_Messaging extends DBHelper_BaseCollection
     * @param int $message_id
     * @return Application_Messaging_Message
     */
-    public function getByID($message_id)
+    public function getByID(int $message_id) : DBHelper_BaseRecord
     {
         if(isset($this->messages[$message_id])) {
             return $this->messages[$message_id];
@@ -182,7 +182,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordClassName()
      */
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_Messaging_Message';
     }
@@ -191,7 +191,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordFiltersClassName()
      */
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_Messaging_FilterCriteria';
     }
@@ -200,7 +200,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordFilterSettingsClassName()
      */
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_Messaging_FilterSettings';
     }
@@ -209,7 +209,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
      */
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'date_sent';
     }
@@ -218,7 +218,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordSearchableColumns()
      */
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'message' => t('Message text')
@@ -229,7 +229,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTableName()
      */
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'app_messaging';
     }
@@ -238,7 +238,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordPrimaryName()
      */
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'message_id';
     }
@@ -247,7 +247,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTypeName()
      */
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'message';
     }
@@ -256,7 +256,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getCollectionLabel()
      */
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Application messages');
     }
@@ -265,7 +265,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordLabel()
      */
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Application message');
     }
@@ -274,7 +274,7 @@ class Application_Messaging extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordProperties()
      */
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

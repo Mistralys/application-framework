@@ -9,59 +9,59 @@ class Application_Ratings extends DBHelper_BaseCollection
 {
     const MAX_RATING = 5;
     
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_Ratings_Rating';
     }
 
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_Ratings_FilterCriteria';        
     }
 
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_Ratings_FilterSettings';
     }
 
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'label';
     }
 
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'comments'
         );
     }
 
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'app_ratings';
     }
 
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'rating_id';
     }
 
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'Screen rating';
     }
 
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Application ratings');
     }
 
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Application screen rating');
     }
 
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

@@ -22,27 +22,27 @@
  */
 class Application_Ratings_Screens extends DBHelper_BaseCollection
 {
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_Ratings_Screens_Screen';
     }
 
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_Ratings_Screens_FilterCriteria';
     }
 
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_Ratings_Screens_FilterSettings';
     }
 
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'path';   
     }
 
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'path',
@@ -51,32 +51,32 @@ class Application_Ratings_Screens extends DBHelper_BaseCollection
         );
     }
 
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'app_ratings_screens';
     }
 
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'rating_screen_id';
     }
 
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'Application rating screen';
     }
 
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return 'Application rating screens';
     }
 
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return 'Application rating screen';
     }
 
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

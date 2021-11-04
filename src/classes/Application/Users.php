@@ -23,17 +23,17 @@
  */
 class Application_Users extends DBHelper_BaseCollection
 {
-    const TABLE_USER_EMAILS = 'user_emails';
-    const TABLE_NAME = 'known_users';
-    const TABLE_USER_SETTINGS = Application_User_Storage_DB::TABLE_NAME;
-    
-    const PRIMARY_NAME = 'user_id';
+    public const TABLE_USER_EMAILS = 'user_emails';
+    public const TABLE_NAME = 'known_users';
+    public const TABLE_USER_SETTINGS = Application_User_Storage_DB::TABLE_NAME;
+
+    public const PRIMARY_NAME = 'user_id';
 
     /**
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordClassName()
      */
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return Application_Users_User::class;
     }
@@ -42,12 +42,12 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordFiltersClassName()
      */
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return Application_Users_FilterCriteria::class;
     }
 
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return '';
     }
@@ -56,7 +56,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
      */
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'email';
     }
@@ -65,7 +65,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordSearchableColumns()
      */
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'firstname' => t('First name'),
@@ -78,7 +78,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTableName()
      */
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return self::TABLE_NAME;
     }
@@ -87,7 +87,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordPrimaryName()
      */
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return self::PRIMARY_NAME;
     }
@@ -96,7 +96,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordTypeName()
      */
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'user';        
     }
@@ -104,7 +104,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getCollectionLabel()
      */
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Users');
     }
@@ -113,7 +113,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordLabel()
      */
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('User');
     }
@@ -122,7 +122,7 @@ class Application_Users extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordProperties()
      */
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }
@@ -165,9 +165,11 @@ class Application_Users extends DBHelper_BaseCollection
     /**
      * @param int $record_id
      * @return Application_Users_User
-     * @throws Application_Exception
+     * @throws Application_Exception_DisposableDisposed
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id)
+    public function getByID(int $record_id) : DBHelper_BaseRecord
     {
         $user = parent::getByID($record_id);
 

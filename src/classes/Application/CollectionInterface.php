@@ -23,7 +23,7 @@ interface Application_CollectionInterface extends Application_Interfaces_Disposa
     * Retrieves all available collection records.
     * @return Application_CollectionItemInterface[]
     */
-    public function getAll();
+    public function getAll() : array;
     
    /**
     * Retrieves a collection record by its primary key.
@@ -31,17 +31,4 @@ interface Application_CollectionInterface extends Application_Interfaces_Disposa
     * @return Application_CollectionItemInterface
     */
     public function getByID(int $record_id);
-}
-
-interface Application_CollectionItemInterface
-{
-   /**
-    * @return int
-    */
-    public function getID() : int;
-
-   /**
-    * @return string
-    */
-    public function getLabel() : string;
 }

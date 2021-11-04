@@ -203,7 +203,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @return string
      */
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return $this->recordPrimaryName;
     }
@@ -211,7 +211,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @return string
      */
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return $this->recordTypeName;
     }

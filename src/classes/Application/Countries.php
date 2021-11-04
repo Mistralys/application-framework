@@ -33,27 +33,27 @@ class Application_Countries extends DBHelper_BaseCollection
      */
     protected static $instance;
 
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'label';
     }
     
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return Application_Countries_Country::class;
     }
     
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return Application_Countries_FilterCriteria::class;
     }
     
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return '';
     }
     
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'label' => t('Label'), 
@@ -61,17 +61,17 @@ class Application_Countries extends DBHelper_BaseCollection
         );
     }
     
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return self::PRIMARY_NAME;
     }
     
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'country';
     }
     
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return self::TABLE_NAME;
     }
@@ -162,7 +162,7 @@ class Application_Countries extends DBHelper_BaseCollection
     * @see DBHelper_BaseCollection::getAll()
     * @return Application_Countries_Country[]
     */
-    public function getAll(bool $includeInvariant=true)
+    public function getAll(bool $includeInvariant=true) : array
     {
         if(!isset($this->cachedCountries)) 
         {
@@ -281,7 +281,7 @@ class Application_Countries extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getCollectionLabel()
      */
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Countries');
     }
@@ -290,7 +290,7 @@ class Application_Countries extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordLabel()
      */
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Country');
     }
@@ -299,7 +299,7 @@ class Application_Countries extends DBHelper_BaseCollection
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordProperties()
      */
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

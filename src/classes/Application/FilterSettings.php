@@ -386,7 +386,7 @@ abstract class Application_FilterSettings
      * for use with the filters. This includes buttons for
      * applying and resetting the filters.
      */
-    protected function createForm()
+    protected function createForm() : void
     {
         $this->form = $this->ui->createForm($this->id, $this->getSettings());
         $this->form->makeCondensed();

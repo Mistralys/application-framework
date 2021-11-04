@@ -193,7 +193,7 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
         return $this->setRecordKey('lock_id', $lock->getID());
     }
     
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'message_id';
     }
@@ -203,7 +203,7 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
         return 'app_messaging';
     }
     
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'message';
     }

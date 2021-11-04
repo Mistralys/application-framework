@@ -29,17 +29,17 @@ class Application_LockManager extends DBHelper_BaseCollection
     */
     const AUTO_UNLOCK_DIALOG_DELAY = 30;
     
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'lock_id';
     }
     
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'app_locking';
     }
     
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'lock_label' => t('Label'),
@@ -47,27 +47,27 @@ class Application_LockManager extends DBHelper_BaseCollection
         );
     }
     
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_LockManager_FilterCriteria';
     }
     
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_LockManager_FilterSettings';
     }
     
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_LockManager_Lock';
     }
     
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'locked_until';
     }
     
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'lock';
     }
@@ -701,17 +701,17 @@ class Application_LockManager extends DBHelper_BaseCollection
         DBHelper::deleteRecords('app_locking', array('lock_id' => $lock->getID()));
     }
 
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Lock manager');    
     }
 
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Page lock');
     }
 
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

@@ -114,7 +114,7 @@ trait Application_Traits_Admin_CollectionSettings
     * Retrieves the path to the administration screen that can be used to delete this item, if any.
     * @return string
     */
-    protected function getDeletePath()
+    protected function getDeletePath() : string
     {
         $path = 'delete';
         $parent = $this->getParentScreen();

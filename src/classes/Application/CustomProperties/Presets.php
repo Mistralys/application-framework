@@ -31,14 +31,14 @@ class Application_CustomProperties_Presets extends DBHelper_BaseCollection
     */
     protected $properties;
     
-    public function bindProperties(Application_CustomProperties $properties)
+    public function bindProperties(Application_CustomProperties $properties) : void
     {
         $this->properties = $properties;
         
         $this->setForeignKey('owner_type', $properties->getOwnerType());
     }
     
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             'name' => t('Name'),
@@ -47,37 +47,37 @@ class Application_CustomProperties_Presets extends DBHelper_BaseCollection
         );
     }
     
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return 'Application_CustomProperties_Presets_Preset';
     }
     
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'label';
     }
     
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return 'Application_CustomProperties_Presets_FilterCriteria';
     }
     
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_CustomProperties_Presets_FilterSettings';
     }
     
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'preset';
     }
     
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return 'custom_properties_presets';
     }
     
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return 'preset_id';
     }
@@ -103,17 +103,17 @@ class Application_CustomProperties_Presets extends DBHelper_BaseCollection
         ));
     }
 
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Custom property presets');
     }
 
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Custom property preset');
     }
 
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

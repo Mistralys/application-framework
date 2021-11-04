@@ -59,59 +59,59 @@ class Application_Feedback extends DBHelper_BaseCollection
         return array_keys($scopes);
     }
 
-    public function getRecordClassName()
+    public function getRecordClassName() : string
     {
         return Application_Feedback_Report::class;
     }
 
-    public function getRecordFiltersClassName()
+    public function getRecordFiltersClassName() : string
     {
         return '';
     }
 
-    public function getRecordFilterSettingsClassName()
+    public function getRecordFilterSettingsClassName() : string
     {
         return '';
     }
 
-    public function getRecordDefaultSortKey()
+    public function getRecordDefaultSortKey() : string
     {
         return 'date';
     }
 
-    public function getRecordSearchableColumns()
+    public function getRecordSearchableColumns() : array
     {
         return array(
             Application_Feedback_Report::COL_FEEDBACK => t('Feedback text')
         );
     }
 
-    public function getRecordTableName()
+    public function getRecordTableName() : string
     {
         return self::TABLE_NAME;
     }
 
-    public function getRecordPrimaryName()
+    public function getRecordPrimaryName() : string
     {
         return self::PRIMARY_NAME;
     }
 
-    public function getRecordTypeName()
+    public function getRecordTypeName() : string
     {
         return 'feedback_report';
     }
 
-    public function getCollectionLabel()
+    public function getCollectionLabel() : string
     {
         return t('Feedback');
     }
 
-    public function getRecordLabel()
+    public function getRecordLabel() : string
     {
         return t('Report');
     }
 
-    public function getRecordProperties()
+    public function getRecordProperties() : array
     {
         return array();
     }

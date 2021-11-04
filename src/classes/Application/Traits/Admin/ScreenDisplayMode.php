@@ -65,7 +65,7 @@ trait Application_Traits_Admin_ScreenDisplayMode
     protected function _handleSubnavigation_common() : void {}
     protected function _handleTabs_common() : void {}
     
-    protected function _handleActions() : void
+    protected function _handleActions() : bool
     {
         $this->_handleActions_common();
         
@@ -75,6 +75,8 @@ trait Application_Traits_Admin_ScreenDisplayMode
         {
             $this->$method();
         }
+
+        return true;
     }
     
     protected function _handleSubnavigation() : void

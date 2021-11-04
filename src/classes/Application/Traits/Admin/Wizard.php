@@ -157,7 +157,7 @@ trait Application_Traits_Admin_Wizard
         $this->_reset();
     }
     
-    protected function _reset()
+    protected function _reset() : void
     {
         
     }

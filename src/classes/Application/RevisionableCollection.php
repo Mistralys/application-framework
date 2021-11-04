@@ -3,12 +3,12 @@
 abstract class Application_RevisionableCollection implements Application_CollectionInterface
 {
     use Application_Traits_Loggable;
-    
-    const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
-    const ERROR_REVISION_DOES_NOT_EXIST = 16102;
-    const ERROR_CANNOT_INSTANTIATE_ABSTRACT_COLLECTION = 16103;
 
-    const DUMMY_ID = -1;
+    public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
+    public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
+    public const ERROR_CANNOT_INSTANTIATE_ABSTRACT_COLLECTION = 16103;
+
+    public const DUMMY_ID = -1;
 
    /**
     * @return string
@@ -249,9 +249,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public function getFilterCriteria() : Application_RevisionableCollection_FilterCriteria
     {
         $class = $this->getRecordFiltersClassName();
-        
-        $obj = new $class($this);
-        return $obj;
+        return new $class($this);
     }
     
    /**
@@ -260,9 +258,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public function getFilterSettings()
     {
         $class = $this->getRecordFilterSettingsClassName();
-        
-        $obj = new $class($this);
-        return $obj;
+        return new $class($this);
     }
     
     /**
@@ -342,7 +338,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return Application_StateHandler_State
     */
-    public function getInitialState()
+    public function getInitialState() : Application_StateHandler_State
     {
         $dummy = $this->createDummyRecord();
         return $dummy->getInitialState();
@@ -353,7 +349,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
         return $this->getCurrentRevision($revisionableID) !== null;
     }
     
-    public function getAll()
+    public function getAll() : array
     {
         return $this->getFilterCriteria()->getItemsObjects();
     }
@@ -525,8 +521,8 @@ abstract class Application_RevisionableCollection implements Application_Collect
         if(!empty($where)) 
         {
             $keys = array_keys($where);
-            foreach($keys as $key) {
-                $query .= " AND revs.`$key` = :$key";
+            foreach($keys as $whereKey) {
+                $query .= " AND revs.`$whereKey` = :$whereKey";
             }
         }
         

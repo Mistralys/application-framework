@@ -106,8 +106,13 @@ trait Application_Traits_Admin_CollectionList
     * @return DBHelper_BaseCollection
     */
     abstract protected function createCollection() : DBHelper_BaseCollection;
-    
-    abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry);
+
+    /**
+     * @param DBHelper_BaseRecord $record
+     * @param DBHelper_BaseFilterCriteria_Record $entry
+     * @return array<string,string>
+     */
+    abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array;
     
     abstract protected function configureColumns() : void;
     

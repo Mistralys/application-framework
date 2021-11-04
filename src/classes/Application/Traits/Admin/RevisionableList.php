@@ -40,7 +40,7 @@ trait Application_Traits_Admin_RevisionableList
     
     abstract protected function getEntryData(Application_RevisionableCollection_DBRevisionable $revisionable);
     
-    protected function _renderContent()
+    protected function _renderContent() : array
     {
         $filters = $this->collection->getFilterCriteria();
         
