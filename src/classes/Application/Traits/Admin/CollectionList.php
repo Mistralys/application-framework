@@ -110,7 +110,7 @@ trait Application_Traits_Admin_CollectionList
     /**
      * @param DBHelper_BaseRecord $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
-     * @return array<string,string>
+     * @return array<string,string|number|UI_Renderable_Interface>
      */
     abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array;
     

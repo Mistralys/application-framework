@@ -627,7 +627,7 @@ trait Application_Traits_Admin_CollectionSettings
      * @param array<string,mixed> $values
      * @return array<string,mixed>
      */
-    protected function _filterFormValues($values)
+    protected function _filterFormValues(array $values) : array
     {
         return $values;
     }
