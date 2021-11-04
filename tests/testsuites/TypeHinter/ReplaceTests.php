@@ -41,12 +41,14 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
         $this->assertCount(1, (new TypeHinter($this->sourceFolder))->getFilesList());
     }
 
-    public function test_replace() : void
+    public function test_updateV1_21() : void
     {
+        $update = new TypeHinter_UpdateV1_21();
+
         (new TypeHinter($this->sourceFolder))
             ->setFileSuffix('output')
             ->addMethod('_handleActions', 'bool')
-            ->addReplace($this->defActionSearch, $this->defActionReplace)
+            ->addReplace($update->getActionSearch(), $update->getActionReplace())
             ->process();
 
         $this->assertEquals(
@@ -55,59 +57,12 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
         );
     }
 
-    private $defActionSearch = <<<EOT
-function getDefaultAction() : string
+    public function test_executeUpdateV1_21() : void
     {
-        return null;
-    }
-EOT;
-
-    private $defActionReplace = <<<EOT
-function getDefaultAction() : string
-    {
-        return '';
-    }
-EOT;
-
-    private $defSubmodeSearch = <<<EOT
-function getDefaultSubmode() : string
-    {
-        return null;
-    }
-EOT;
-
-    private $defSubmodeReplace = <<<EOT
-function getDefaultSubmode() : string
-    {
-        return '';
-    }
-EOT;
-
-    public function test_replaceEverywhere() : void
-    {
-        $this->markTestSkipped();
-
-        $hinter = new TypeHinter(APP_INSTALL_FOLDER);
-
-        $hinter
-            ->addMethod('_handleActions', 'bool')
-            ->addMethod('_handleSubactions', 'void')
-            ->addMethod('_handleSubnavigation', 'void')
-            ->addMethod('_handleBreadcrumb', 'void')
-            ->addMethod('_handleSidebar', 'void')
-            ->addMethod('_handleBreadcrumb', 'void')
-            ->addMethod('_handleHelp', 'void')
-            ->addMethod('_initSteps', 'void')
-            ->addMethod('getURLName', 'string')
-            ->addMethod('getRecordMissingURL', 'string')
-            ->addMethod('getDefaultSubmode', 'string')
-            ->addMethod('getDefaultAction', 'string')
-            ->addMethod('getNavigationTitle', 'string')
-            ->addMethod('isUserAllowed', 'bool')
-            ->addReplace($this->defActionSearch, $this->defActionReplace)
-            ->addReplace($this->defSubmodeSearch, $this->defSubmodeReplace)
-            ->process();
+        (new TypeHinter_UpdateV1_21())->create(APP_INSTALL_FOLDER)->process();
 
         $this->addToAssertionCount(1);
+
+        FileHelper::saveFile(__DIR__.'/output.log', implode(PHP_EOL, Application::getLogger()->getLog()));
     }
 }

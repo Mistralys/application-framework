@@ -19,3 +19,4 @@ docs/phpstan/result.txt
 localization/storage.json
 errors.txt
 tests/assets/files/TypeHinter/TypeHinterTestClass.php.output
+tests/testsuites/TypeHinter/output.log
