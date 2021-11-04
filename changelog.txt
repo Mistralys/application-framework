@@ -1,4 +1,4 @@
-v1.20.2
+v1.21.0
 - FilterCriteria: Improved the custom columns handling further.
 - FilterCriteria: Custom columns now automate even more tasks.
 - FilterCriteria: Custom columns detected and auto-enabled more reliably.
