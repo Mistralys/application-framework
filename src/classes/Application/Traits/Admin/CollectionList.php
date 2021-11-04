@@ -110,15 +110,15 @@ trait Application_Traits_Admin_CollectionList
     /**
      * @param DBHelper_BaseRecord $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
-     * @return array<string,string|number|UI_Renderable_Interface>
+     * @return array<string,string|number|UI_Renderable_Interface>|UI_DataGrid_Entry
      */
-    abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array;
+    abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry);
     
     abstract protected function configureColumns() : void;
     
     abstract protected function configureActions() : void;
     
-    abstract public function getBackOrCancelURL();
+    abstract public function getBackOrCancelURL() : string;
     
     protected function _handleBreadcrumb() : void
     {
@@ -171,12 +171,12 @@ trait Application_Traits_Admin_CollectionList
             }
         }
         
-        $this->configureGrid($grid);
+        $this->configureGrid();
         
         $grid->executeCallbacks();
     }
     
-    protected function configureGrid(UI_DataGrid $grid) : void
+    protected function configureGrid() : void
     {
         $this->configureColumns();
         $this->configureActions();
