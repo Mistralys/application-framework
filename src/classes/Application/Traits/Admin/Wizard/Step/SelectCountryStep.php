@@ -21,7 +21,7 @@ declare(strict_types=1);
  */
 trait Application_Traits_Admin_Wizard_SelectCountryStep
 {
-    public function getLabel()
+    public function getLabel() : string
     {
         return t('Country');
     }
@@ -44,7 +44,7 @@ trait Application_Traits_Admin_Wizard_SelectCountryStep
     {
         $collection = $this->getCollection();
 
-        $id = intval($this->getDataKey(Application_Interfaces_Admin_Wizard_SelectCountryStep::PARAM_COUNTRY_ID));
+        $id = (int)$this->getDataKey(Application_Interfaces_Admin_Wizard_SelectCountryStep::PARAM_COUNTRY_ID);
 
         if(!empty($id) && $collection->idExists($id))
         {
@@ -76,14 +76,14 @@ trait Application_Traits_Admin_Wizard_SelectCountryStep
         );
     }
 
-    protected function getDefaultData()
+    protected function getDefaultData() : array
     {
         return array(
             Application_Interfaces_Admin_Wizard_SelectCountryStep::PARAM_COUNTRY_ID => null
         );
     }
 
-    public function _process()
+    public function _process() : bool
     {
         $country = $this->getCollection()->getByRequest();
 
@@ -97,7 +97,7 @@ trait Application_Traits_Admin_Wizard_SelectCountryStep
         return true;
     }
 
-    public function render()
+    public function render() : string
     {
         $countries = $this->getCollection()->getAll($this->isInvariantSelectable());
 

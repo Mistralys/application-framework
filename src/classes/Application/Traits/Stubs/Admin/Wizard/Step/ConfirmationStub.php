@@ -50,19 +50,16 @@ class Application_Traits_Stubs_Admin_Wizard_ConfirmationStub
         return '';
     }
 
-    public function initDone()
+    public function initDone() : void
     {
-        return '';
     }
 
-    protected function init()
+    protected function init() : void
     {
-        return '';
     }
 
-    protected function preProcess()
+    protected function preProcess() : void
     {
-        return '';
     }
 
     protected function createReferenceID() : string

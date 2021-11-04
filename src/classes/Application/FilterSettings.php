@@ -136,7 +136,7 @@ abstract class Application_FilterSettings
      * the {@link registerSetting()} method. At least one
      * setting must be registered.
      */
-    abstract protected function registerSettings();
+    abstract protected function registerSettings() : void;
     
    /**
     * Injects the required filtering form elements into the provided
@@ -150,7 +150,7 @@ abstract class Application_FilterSettings
     * 
     * @see Application_FilterSettings::injectElementsContainer()
     */
-    protected function injectElements(HTML_QuickForm2_Container $container)
+    protected function injectElements(HTML_QuickForm2_Container $container) : void
     {
         
     }
@@ -159,7 +159,7 @@ abstract class Application_FilterSettings
      * Configures the provided filter criteria instance with the
      * current filtering settings.
      */
-    abstract protected function _configureFilters();
+    abstract protected function _configureFilters() : void;
     
    /**
     * Automatically configures search terms in the filters

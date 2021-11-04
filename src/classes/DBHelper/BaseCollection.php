@@ -282,7 +282,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
    /**
     * Can be overwritten to initialize needed tasks and properties.
     */
-    protected function init()
+    protected function init() : void
     {
     }
 

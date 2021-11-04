@@ -50,7 +50,7 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
    /**
     * Handles any actions to execute before the UI layer is started. 
     */
-    public function handleActions();
+    public function handleActions() : bool;
     
    /**
     * Allows configuring the breadcrumb instance for the current page.

@@ -136,7 +136,7 @@ trait Application_Traits_Admin_Screen
     * 
     * @return boolean
     */
-    public function handleActions()
+    public function handleActions() : bool
     {
         $this->log('Handling actions.');
         

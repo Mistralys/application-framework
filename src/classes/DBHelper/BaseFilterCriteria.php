@@ -99,7 +99,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     * allows for joins, where conditions and the like
     * to be configured.
     */
-    protected function prepareQuery()
+    protected function prepareQuery() : void
     {
         
     }

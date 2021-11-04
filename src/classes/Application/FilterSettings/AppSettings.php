@@ -2,29 +2,17 @@
 
 class Application_FilterSettings_AppSettings extends Application_FilterSettings
 {
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterSettings::registerSettings()
-     */
-    protected function registerSettings()
+    protected function registerSettings() : void
     {
         $this->registerSetting('search', t('Search'));
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterSettings::injectElements()
-     */
-    protected function injectElements(HTML_QuickForm2_Container $container)
+    protected function injectElements(HTML_QuickForm2_Container $container) : void
     {
         $this->addElementSearch(array('data_key', 'data_value'), $container);
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterSettings::_configureFilters()
-     */
-    protected function _configureFilters()
+    protected function _configureFilters() : void
     {
         $search = $this->getSetting('search');
         if(!empty($search)) 

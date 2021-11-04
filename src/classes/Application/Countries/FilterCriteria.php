@@ -25,7 +25,7 @@ class Application_Countries_FilterCriteria extends DBHelper_BaseFilterCriteria
     */
     protected $excludeInvariant = false;
     
-    protected function prepareQuery()
+    protected function prepareQuery() : void
     {
         $this->addWhereColumnIN('`country_id`', $this->getCriteriaValues('country_ids'));
         

@@ -41,15 +41,15 @@ class Application_Traits_Stubs_Admin_Wizard_SelectCountryStub
         return false;
     }
 
-    public function initDone()
+    public function initDone() : void
     {
     }
 
-    protected function init()
+    protected function init() : void
     {
     }
 
-    protected function preProcess()
+    protected function preProcess() : void
     {
     }
 }

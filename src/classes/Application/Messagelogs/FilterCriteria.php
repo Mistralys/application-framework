@@ -8,7 +8,7 @@
  */
 class Application_Messagelogs_FilterCriteria extends DBHelper_BaseFilterCriteria
 {
-    protected function prepareQuery()
+    protected function prepareQuery() : void
     {
         $this->addDateSearch('date', '`date`');
         

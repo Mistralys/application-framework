@@ -89,15 +89,15 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * initialized, and before the step is processed.
     * Use this to set up the step's environment.
     */
-    abstract public function initDone();
+    abstract public function initDone() : void;
     
    /**
-    * Called right after instatiation of the step class.
+    * Called right after instantiation of the step class.
     * Used to set up the base environment. Note: the wizard
     * is not finished initializing at this point. Use the
     * {@link preProcess()} method otherwise.
     */
-    abstract protected function init();
+    abstract protected function init() : void;
     
    /**
     * Called before the step is processed, used for 
@@ -105,15 +105,18 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * At this time, all steps in the wizard have been
     * initialized and can be accessed.
     */
-    abstract protected function preProcess();
+    abstract protected function preProcess() : void;
 
-    abstract public function getLabel();
+    abstract public function getLabel() : string;
+
+    /**
+     * @return array<string,mixed>
+     */
+    abstract protected function getDefaultData() : array;
     
-    abstract protected function getDefaultData();
+    abstract public function _process() : bool;
     
-    abstract public function _process();
-    
-    abstract public function render();
+    abstract public function render() : string;
     
     abstract public function getAbstract() : string;
 
@@ -196,7 +199,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * 
     * @return string[]
     */
-    protected function getMonitoredSteps()
+    protected function getMonitoredSteps() : array
     {
         return array();
     }    
@@ -303,7 +306,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * 
     * @return string
     */
-    protected function getCancelURL()
+    protected function getCancelURL() : string
     {
         return $this->wizard->getCancelURL();
     }
@@ -478,7 +481,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @param Application_Admin_Wizard_Step $step
     * @throws Application_Exception
     */
-    protected function _handle_stepUpdated(Application_Admin_Wizard_Step $step)
+    protected function _handle_stepUpdated(Application_Admin_Wizard_Step $step) : void
     {
         throw new Application_Exception(
             'Unhandled step update operation',
@@ -497,7 +500,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @param Application_Admin_Wizard_Step $step
     * @return bool
     */
-    public function isMonitoring(Application_Admin_Wizard_Step $step)
+    public function isMonitoring(Application_Admin_Wizard_Step $step) : bool
     {
         return in_array($step->getID(), $this->monitoredSteps);
     }
@@ -513,7 +516,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     *  
     * @param string $reasonMessage
     */
-    protected function invalidate($reasonMessage)
+    protected function invalidate(string $reasonMessage) : void
     {
         $this->data = $this->getDefaultData();
         $this->updateRequired = true;
@@ -730,7 +733,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard;
     }
     
-    public function handleActions() {}
+    public function handleActions() : bool { return true; }
     public function renderContent() : string { return ''; }
     public function getURLParam(): string { return ''; }
     public function handleBreadcrumb() : void {}

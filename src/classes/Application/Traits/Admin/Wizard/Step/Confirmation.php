@@ -20,7 +20,7 @@ declare(strict_types=1);
  */
 trait Application_Traits_Admin_Wizard_Step_Confirmation
 {
-    public function getLabel()
+    public function getLabel() : string
     {
         return t('Confirmation');
     }
@@ -39,14 +39,14 @@ trait Application_Traits_Admin_Wizard_Step_Confirmation
 
     abstract protected function populateSummaryGrid(UI_PropertiesGrid $grid) : void;
 
-    protected function getDefaultData()
+    protected function getDefaultData() : array
     {
         return array(
             Application_Interfaces_Admin_Wizard_Step_Confirmation::PARAM_REFERENCE_ID => null
         );
     }
 
-    public function _process()
+    public function _process() : bool
     {
         $this->createFormableForm(Application_Interfaces_Admin_Wizard_Step_Confirmation::FORM_NAME);
 
@@ -64,7 +64,7 @@ trait Application_Traits_Admin_Wizard_Step_Confirmation
 
     public function getReferenceID() : string
     {
-        return strval($this->getDataKey(Application_Interfaces_Admin_Wizard_Step_Confirmation::PARAM_REFERENCE_ID));
+        return (string)$this->getDataKey(Application_Interfaces_Admin_Wizard_Step_Confirmation::PARAM_REFERENCE_ID);
     }
 
     public function requireReferenceID() : string
@@ -83,7 +83,7 @@ trait Application_Traits_Admin_Wizard_Step_Confirmation
         );
     }
 
-    public function render()
+    public function render() : string
     {
         $tbl = $this->ui->createPropertiesGrid();
 

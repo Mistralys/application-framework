@@ -27,7 +27,7 @@ trait Application_Traits_Admin_Wizard_SettingsManagerStep
      */
     protected $settings;
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return t('Settings');
     }
@@ -74,14 +74,14 @@ trait Application_Traits_Admin_Wizard_SettingsManagerStep
         return null;
     }
 
-    protected function getDefaultData()
+    protected function getDefaultData() : array
     {
         return array(
             Application_Interfaces_Admin_Wizard_SettingsManagerStep::KEY_FORM_VALUES => array()
         );
     }
 
-    public function _process()
+    public function _process() : bool
     {
         $this->setUpForm();
 
@@ -95,12 +95,12 @@ trait Application_Traits_Admin_Wizard_SettingsManagerStep
         return false;
     }
 
-    public function render()
+    public function render() : string
     {
         return $this->renderFormable();
     }
 
-    protected function setUpForm()
+    protected function setUpForm() : void
     {
         $this->settings = $this->createSettingsManager();
 

@@ -42,7 +42,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
      */
     private $settingsManager;
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return t('Confirmation');
     }
@@ -57,7 +57,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
         return t('Please make sure that your selection is correct.');
     }
 
-    protected function getDefaultData()
+    protected function getDefaultData() : array
     {
         return array(
             Application_Interfaces_Admin_Wizard_CreateDBRecordStep::KEY_RECORD_ID => null
@@ -73,7 +73,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     {
         $collection = $this->createCollection();
 
-        $id = intval($this->getDataKey(Application_Interfaces_Admin_Wizard_CreateDBRecordStep::KEY_RECORD_ID));
+        $id = (int)$this->getDataKey(Application_Interfaces_Admin_Wizard_CreateDBRecordStep::KEY_RECORD_ID);
         if(!empty($id) && $collection->idExists($id)) {
             return $collection->getByID($id);
         }
@@ -85,7 +85,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
         );
     }
 
-    public function _process()
+    public function _process() : bool
     {
         $this->settingsManager = $this->createSettingsManager();
 
@@ -106,7 +106,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
         return false;
     }
 
-    public function render()
+    public function render() : string
     {
         $tbl = $this->ui->createPropertiesGrid();
 

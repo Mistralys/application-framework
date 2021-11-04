@@ -9,7 +9,7 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
      * {@inheritDoc}
      * @see Application_FilterSettings::registerSettings()
      */
-    protected function registerSettings()
+    protected function registerSettings() : void
     {
         $this->registerSetting('category', t('Category'), '');
         $this->registerSetting('type', t('Type'), '');
@@ -17,11 +17,7 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
         $this->registerSetting('search', t('Search'));
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterSettings::injectElements()
-     */
-    protected function injectElements(HTML_QuickForm2_Container $container)
+    protected function injectElements(HTML_QuickForm2_Container $container) : void
     {
         $categories = $this->addSelect('category', $container);
         $categories->addOption(t('All categories'), '');
@@ -54,7 +50,7 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
      * {@inheritDoc}
      * @see Application_FilterSettings::_configureFilters()
      */
-    protected function _configureFilters()
+    protected function _configureFilters() : void
     {
         $this->filters->selectDate($this->getSetting('date'));   
         
@@ -62,6 +58,6 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
         
         $this->filters->selectType($this->getSetting('type'));
         
-        $this->filters->setSearch(strval($this->getSetting('search')));
+        $this->filters->setSearch((string)$this->getSetting('search'));
     }
 }
