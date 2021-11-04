@@ -73,7 +73,6 @@ EOT;
             ->addMethod('_handle_stepUpdated', 'void', '_Area_')
             ->addMethod('configureColumns', 'void', '_Area_')
             ->addMethod('configureActions', 'void', '_Area_')
-            ->addMethod('getEntryData', 'array', '_Area_')
             ->addMethod('_reset', 'void', '_Area_')
 
             ->addMethod('createCollection', 'DBHelper_BaseCollection', '_Admin_')
@@ -92,7 +91,6 @@ EOT;
             ->addMethod('_handle_stepUpdated', 'void', '_Admin_')
             ->addMethod('configureColumns', 'void', '_Admin_')
             ->addMethod('configureActions', 'void', '_Admin_')
-            ->addMethod('getEntryData', 'array', '_Admin_')
             ->addMethod('_reset', 'void', '_Admin_')
 
             ->addMethod('getRecordLabel', 'string')
