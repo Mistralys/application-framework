@@ -56,6 +56,7 @@ EOT;
             ->addMethod('_handleHelp', 'void')
             ->addMethod('_handleTabs', 'void')
             ->addMethod('_initSteps', 'void')
+            ->addMethod('_filterFormValues', 'array')
 
             ->addMethod('createCollection', 'DBHelper_BaseCollection', '_Area_')
             ->addMethod('getTitle', 'string', '_Area_')
