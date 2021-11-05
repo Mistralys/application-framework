@@ -2134,7 +2134,7 @@ use \AppUtils\OperationResult;
 
 class Documentation_OperationResult
 {
-    const ERROR_COULD_NOT_SAVE_FILE = 0000;
+    public const ERROR_COULD_NOT_SAVE_FILE = 0000;
 
     public function doSomething() : OperationResult
     {
@@ -2573,7 +2573,7 @@ class Connectors_Connector_Products extends Connectors_Connector
  */
 class Connectors_Connector_Products_Method_GetProducts extends Connectors_Connector_Method_Get
 {
-    const ERROR_COULD_NOT_FETCH_PRODUCTS = 80601;
+    public const ERROR_COULD_NOT_FETCH_PRODUCTS = 80601;
 
     /**
      * @param string $countryCode
