@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_Transliterate extends Application_AjaxMethod
 {
-    const ERROR_EMPTY_STRING_SPECIFIED = 14801;
+    public const ERROR_EMPTY_STRING_SPECIFIED = 14801;
     
     protected $defaultSpaceChar = '-';
     

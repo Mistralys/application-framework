@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Application_Countries_LocaleCode
 {
-    const ERROR_CODE_CANNOT_BE_PARSED = 87701;
+    public const ERROR_CODE_CANNOT_BE_PARSED = 87701;
 
     /**
      * @var string

@@ -26,8 +26,8 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 {
     use Application_Traits_Loggable;
 
-    const ERROR_CATEGORY_ALIAS_NOT_FOUND = 72701;
-    const ERROR_CATEGORY_ALIAS_EXISTS = 72702;
+    public const ERROR_CATEGORY_ALIAS_NOT_FOUND = 72701;
+    public const ERROR_CATEGORY_ALIAS_EXISTS = 72702;
     const SETTING_PINNED_NOTES = 'notepad-pinned-notes';
     const SETTING_AUTO_REFRESH_ENABLED = 'recent-auto-refresh-enabled';
 

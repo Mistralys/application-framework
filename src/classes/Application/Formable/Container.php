@@ -20,7 +20,7 @@
  */
 abstract class Application_Formable_Container extends Application_Formable
 {
-    const ERROR_INITIALIZATION_ERROR = 36901;
+    public const ERROR_INITIALIZATION_ERROR = 36901;
     
    /**
     * @var Application_Interfaces_Formable

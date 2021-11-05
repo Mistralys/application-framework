@@ -4,7 +4,7 @@ require_once 'Application/RevisionStorage/DBStandardized.php';
 
 abstract class Application_RevisionStorage_CollectionDB extends Application_RevisionStorage_DBStandardized
 { 
-    const ERROR_INVALID_REVISIONABLE_TYPE = 14601;
+    public const ERROR_INVALID_REVISIONABLE_TYPE = 14601;
     
     /**
      * @var Application_RevisionableCollection_DBRevisionable

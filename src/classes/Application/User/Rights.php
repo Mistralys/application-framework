@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class Application_User_Rights
 {
-    const ERROR_UNKNOWN_RIGHT = 70701;
-    const ERROR_UNKNOWN_GROUP = 70702;
-    const ERROR_UNKNOWN_ROLE = 70703;
+    public const ERROR_UNKNOWN_RIGHT = 70701;
+    public const ERROR_UNKNOWN_GROUP = 70702;
+    public const ERROR_UNKNOWN_ROLE = 70703;
 
     /**
      * @var Application_User_Rights_Group[]

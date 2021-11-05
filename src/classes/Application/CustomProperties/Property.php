@@ -2,7 +2,7 @@
 
 class Application_CustomProperties_Property extends DBHelper_BaseRecord
 {
-    const ERROR_CANNOT_FIND_OWNER = 16901;
+    public const ERROR_CANNOT_FIND_OWNER = 16901;
     
    /**
     * @var Application_CustomProperties

@@ -111,6 +111,7 @@ EOT;
             ->addMethod('prepareQuery', 'void')
             ->addMethod('registerSettings', 'void')
             ->addMethod('getURLName', 'string')
+            ->addMethod('getBackOrCancelURL', 'string')
             ->addMethod('getRecordMissingURL', 'string')
             ->addMethod('getDefaultMode', 'string')
             ->addMethod('getDefaultSubmode', 'string')

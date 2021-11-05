@@ -23,11 +23,11 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         return 'Memory';
     }
     
-    const ERROR_REVISION_DOES_NOT_EXIST = 117756001;
+    public const ERROR_REVISION_DOES_NOT_EXIST = 117756001;
     
-    const ERROR_COPYTO_NOT_IMPLEMENTED = 117756002;
+    public const ERROR_COPYTO_NOT_IMPLEMENTED = 117756002;
     
-    const ERROR_FILTER_CRITERIA_NOT_AVAILABLE = 117756003;
+    public const ERROR_FILTER_CRITERIA_NOT_AVAILABLE = 117756003;
 
     protected function _loadRevision($number)
     {

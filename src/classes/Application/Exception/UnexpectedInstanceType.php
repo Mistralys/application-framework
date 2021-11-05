@@ -21,7 +21,7 @@ use function AppUtils\parseVariable;
  */
 class Application_Exception_UnexpectedInstanceType extends Application_Exception
 {
-    const ERROR_UNEXPECTED_INSTANCE_TYPE = 63801;
+    public const ERROR_UNEXPECTED_INSTANCE_TYPE = 63801;
     
    /**
     * @param string $expectedClass

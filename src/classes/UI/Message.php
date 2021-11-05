@@ -2,7 +2,7 @@
 
 class UI_Message extends UI_Renderable implements UI_Renderable_Interface
 {
-    const ERROR_INVALID_LAYOUT = 35901;
+    public const ERROR_INVALID_LAYOUT = 35901;
     
     const LAYOUT_DEFAULT = 'default';
     const LAYOUT_SLIM = 'slim';

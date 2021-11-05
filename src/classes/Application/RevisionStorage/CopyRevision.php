@@ -2,7 +2,7 @@
 
 abstract class Application_RevisionStorage_CopyRevision
 {
-    const ERROR_CLASS_MISMATCH_FOR_TARGET_REVISIONABLE = 720001;
+    public const ERROR_CLASS_MISMATCH_FOR_TARGET_REVISIONABLE = 720001;
     
     protected $sourceRevision;
     

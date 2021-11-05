@@ -4,7 +4,7 @@ require_once 'Application/Whatsnew/Version/Language.php';
 
 class Application_Whatsnew_Version
 {
-    const ERROR_UNKNOWN_LANGUAGE = 31201;
+    public const ERROR_UNKNOWN_LANGUAGE = 31201;
     
    /**
     * The version number.

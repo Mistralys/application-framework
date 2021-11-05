@@ -22,8 +22,8 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
 {
     use Application_Traits_Loggable;
 
-    const ERROR_NO_TRANSACTION_STARTED = 532001;
-    const ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
+    public const ERROR_NO_TRANSACTION_STARTED = 532001;
+    public const ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
     
     /**
      * @var Application_Uploads

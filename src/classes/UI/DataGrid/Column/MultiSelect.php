@@ -2,7 +2,7 @@
 
 class UI_DataGrid_Column_MultiSelect extends UI_DataGrid_Column
 {
-    const ERROR_COLUMN_CANNOT_BE_EDITABLE = 513131;
+    public const ERROR_COLUMN_CANNOT_BE_EDITABLE = 513131;
     
     public function __construct(UI_DataGrid $grid)
     {

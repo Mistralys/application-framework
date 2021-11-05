@@ -20,7 +20,7 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Admin_Wizard_CreateDBRecordStep extends Application_Interfaces_Admin_Wizard_Step
 {
-    const ERROR_NO_RECORD_CREATED_YET = 93801;
+    public const ERROR_NO_RECORD_CREATED_YET = 93801;
 
     const KEY_RECORD_ID = 'record_id';
 

@@ -14,8 +14,8 @@
  */
 class Application_Countries_Country extends DBHelper_BaseRecord
 {
-    const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
-    const ERROR_UNKNOWN_LANGUAGE_LABEL = 37802;
+    public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
+    public const ERROR_UNKNOWN_LANGUAGE_LABEL = 37802;
     
     const COUNTRY_INDEPENDENT_ID = 9999;
     const COUNTRY_INDEPENDENT_ISO = 'zz';

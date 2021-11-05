@@ -21,7 +21,7 @@
  */
 class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select
 {
-    const ERROR_XXXXX = 33601;
+    public const ERROR_XXXXX = 33601;
 
     /**
      * @var int

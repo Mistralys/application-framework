@@ -21,8 +21,8 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Admin_CollectionSettings extends Application_Admin_ScreenInterface
 {
-    const ERROR_UNKNOWN_SETTING_KEY = 17901;
-    const ERROR_MISSING_REQUIRED_METHOD = 17902;
+    public const ERROR_UNKNOWN_SETTING_KEY = 17901;
+    public const ERROR_MISSING_REQUIRED_METHOD = 17902;
 
     /**
      * @return DBHelper_BaseCollection

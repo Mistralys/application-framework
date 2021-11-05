@@ -2,8 +2,8 @@
 
 abstract class Application_RevisionableCollection_DBRevisionable extends Application_Revisionable
 {
-    const ERROR_NO_CURRENT_REVISION_FOUND = 14701; 
-    const ERROR_INVALID_REVISION_STORAGE = 14702;
+    public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
+    public const ERROR_INVALID_REVISION_STORAGE = 14702;
     
    /**
     * @var Application_RevisionableCollection

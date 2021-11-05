@@ -6,6 +6,8 @@
  * @see Application_Formable
  */
 
+use AppUtils\RegexHelper;
+
 /**
  * Utility class for classes that create forms: offers a standardized API
  * for instantiating QuickForm2 form elements, with productivity related
@@ -25,8 +27,9 @@
  */
 abstract class Application_Formable implements Application_Interfaces_Formable
 {
-    const ERROR_FORMABLE_NOT_INITALIZED = 38732001;
-    const ERROR_INVALID_RULE_OPERATOR = 38732002;
+    public const ERROR_FORMABLE_NOT_INITIALIZED = 38732001;
+    public const ERROR_INVALID_RULE_OPERATOR = 38732002;
+    public const ERROR_ELEMENT_NOT_FOUND_BY_NAME = 38732003;
 
    /**
     * @var UI_Form
@@ -83,16 +86,12 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Creates a regular, non clientside form.
     * 
     * @param string $name
-    * @param array $defaultData
+    * @param array<string,mixed> $defaultData
     * @return UI_Form
     */
     protected function createForm(string $name, array $defaultData=array()) : UI_Form
     {
-        $ui = UI::getInstance();
-        
-        $form = $ui->createForm($name, $defaultData);
-
-        return $form;
+        return UI::getInstance()->createForm($name, $defaultData);
     }
     
    /**
@@ -151,7 +150,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->formableForm->addClass('form-horizontal');
         
         // clean up the form if it is intended for clientside use
-        if($this->formableMainContainer->getAttribute('is-client-form')=='yes') 
+        if($this->formableMainContainer->getAttribute('is-client-form') === 'yes')
         {
             // the UI_Form automatically adds the "page" hidden element,
             // we don't want that in our data set.
@@ -223,7 +222,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
                 $this->getFormableInstanceID()
             )
             ->add('This can usually be fixed by ensuring that createFormableForm() is called before this operation.'),
-            self::ERROR_FORMABLE_NOT_INITALIZED    
+            self::ERROR_FORMABLE_NOT_INITIALIZED
         );
     }
     
@@ -277,15 +276,17 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         {
             $container = $this->formableContainer;
         }
-    
-        $el = ensureType(
-            HTML_QuickForm2_Element::class,
-            $container->addElement($type, $name)
-        );
-        
-        $this->registerFormableElement($el);
-    
-        return $el;
+
+        $el = $container->addElement($type, $name);
+
+        if($el instanceof HTML_QuickForm2_Element)
+        {
+            $this->registerFormableElement($el);
+
+            return $el;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element::class, $el);
     }
     
     /**
@@ -331,7 +332,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
                     return true;
                 }
                 
-                return preg_match(\AppUtils\RegexHelper::REGEX_HEX_COLOR_CODE, $value);
+                return preg_match(RegexHelper::REGEX_HEX_COLOR_CODE, $value);
             },
             t('Not a valid hexadecimal color code.')
         );
@@ -680,7 +681,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         $html = $this->formableForm->renderHorizontal();
         
-        if($this->formableMainContainer->getAttribute('is-client-form') == 'yes') {
+        if($this->formableMainContainer->getAttribute('is-client-form') === 'yes') {
             $ui = $this->formableForm->getUI();
             $html = $ui->renderHeadIncludes().$html;
         }
@@ -1196,6 +1197,25 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->requireFormableInitialized();
         
         return $this->formableForm->getElementByName($name);
+    }
+
+    public function requireElementByName(string $name) : HTML_QuickForm2_Element
+    {
+        $el = $this->getElementByName($name);
+
+        if($el !== null)
+        {
+            return $el;
+        }
+
+        throw new Application_Formable_Exception(
+            'Form element not found.',
+            sprintf(
+                'Form element with name [%s] could not be found in the formable.',
+                $name
+            ),
+            self::ERROR_ELEMENT_NOT_FOUND_BY_NAME
+        );
     }
 
    /**

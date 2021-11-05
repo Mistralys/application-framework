@@ -23,9 +23,9 @@ require_once 'UI/Page/StepsNavigator/Step.php';
  */
 class UI_Page_StepsNavigator
 {
-    const ERROR_NO_STEPS_TO_SELECT = 556001;
+    public const ERROR_NO_STEPS_TO_SELECT = 556001;
     
-    const ERROR_UNKNOWN_STEP = 556002;
+    public const ERROR_UNKNOWN_STEP = 556002;
     
    /**
     * @var UI_Page

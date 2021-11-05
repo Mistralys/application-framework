@@ -22,7 +22,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
     
-    const ERROR_INVALID_TEMPLATE_CLASS = 62301;
+    public const ERROR_INVALID_TEMPLATE_CLASS = 62301;
     
    /**
     * @var UI

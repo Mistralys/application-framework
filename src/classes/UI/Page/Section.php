@@ -27,8 +27,8 @@ abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_In
     use Traits_Classable;
     use UI_Traits_Conditional;
     
-    const ERROR_INVALID_CONTEXT_BUTTON = 511001;
-    const ERROR_TAB_ALREADY_EXISTS = 511002;
+    public const ERROR_INVALID_CONTEXT_BUTTON = 511001;
+    public const ERROR_TAB_ALREADY_EXISTS = 511002;
     
     protected $templateName = 'frame.content.section';
 

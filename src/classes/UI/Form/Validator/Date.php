@@ -21,7 +21,7 @@
  */
 class UI_Form_Validator_Date extends UI_Form_Validator
 {
-    const ERROR_INVALID_DATE_ELEMENT_TYPE = 553001;
+    public const ERROR_INVALID_DATE_ELEMENT_TYPE = 553001;
     
     protected function checkConfig() : void
     {

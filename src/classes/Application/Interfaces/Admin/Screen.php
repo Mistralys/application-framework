@@ -27,6 +27,10 @@
  */
 interface Application_Admin_ScreenInterface extends Application_Interfaces_Formable, Application_Interfaces_Loggable
 {
+    public const ERROR_SIDEBAR_NOT_AVAILABLE_YET = 96701;
+    public const ERROR_MISSING_URL_PARAMETER = 96702;
+    public const ERROR_SCREEN_HAS_NO_AREA = 96703;
+
     public const REQUEST_PARAM_PAGE = 'page';
     public const REQUEST_PARAM_MODE = 'mode';
     public const REQUEST_PARAM_SUBMODE = 'submode';
@@ -201,6 +205,10 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     * @return Application_Admin_ScreenInterface
     */
     public function getParentScreen() : ?Application_Admin_ScreenInterface;
+
+    public function getSidebar() : ?UI_Page_Sidebar;
+
+    public function requireSidebar() : UI_Page_Sidebar;
 
     /**
      * Checks whether this screen is currently active (it is

@@ -31,10 +31,10 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
 {
     use Application_Traits_Loggable;
 
-    const ERROR_NO_LOCKING_PRIMARY = 13001;
-    const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
-    const ERROR_NO_SUCH_CHILD_ADMIN_SCREEN = 13003;
-    const ERROR_CANNOT_RESOLVE_INCLUDE_PATH = 13004;
+    public const ERROR_NO_LOCKING_PRIMARY = 13001;
+    public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
+    public const ERROR_NO_SUCH_CHILD_ADMIN_SCREEN = 13003;
+    public const ERROR_CANNOT_RESOLVE_INCLUDE_PATH = 13004;
 
     /**
      * @var Application_Driver

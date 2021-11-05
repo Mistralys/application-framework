@@ -50,9 +50,9 @@ use AppUtils\NamedClosure;
  */
 abstract class Application_FilterCriteria_DatabaseExtended extends Application_FilterCriteria_Database
 {
-    const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
-    const ERROR_MAX_BUILD_ITERATIONS_REACHED = 90502;
-    const ERROR_MAX_REPLACE_ITERATIONS_REACHED = 90503;
+    public const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
+    public const ERROR_MAX_BUILD_ITERATIONS_REACHED = 90502;
+    public const ERROR_MAX_REPLACE_ITERATIONS_REACHED = 90503;
 
     const MAX_BUILD_ITERATIONS = 20;
     const MAX_REPLACE_ITERATIONS = 4;

@@ -23,11 +23,11 @@ use function AppUtils\parseVariable;
  */
 abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 {
-    const ERROR_STEP_MUST_RETURN_BOOLEAN_VALUE = 558001;
-    const ERROR_CANNOT_UPDATE_FROM_UNMONITORED_STEP = 558002;
-    const ERROR_UNHANDLED_STEP_UPDATE = 558003;
-    const ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
-    const ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS = 558005;
+    public const ERROR_STEP_MUST_RETURN_BOOLEAN_VALUE = 558001;
+    public const ERROR_CANNOT_UPDATE_FROM_UNMONITORED_STEP = 558002;
+    public const ERROR_UNHANDLED_STEP_UPDATE = 558003;
+    public const ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
+    public const ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS = 558005;
     
    /**
     * @var Application_Interfaces_Admin_Wizardable
@@ -722,7 +722,17 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     {
         return $this->wizard->getArea();
     }
-    
+
+    public function getSidebar() : ?UI_Page_Sidebar
+    {
+        return $this->wizard->getSidebar();
+    }
+
+    public function requireSidebar() : UI_Page_Sidebar
+    {
+        return $this->wizard->requireSidebar();
+    }
+
     public function getNavigationTitle() : string
     {
         return $this->getTitle();

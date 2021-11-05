@@ -32,8 +32,8 @@
  */
 abstract class Application_RevisionStorage_DBStandardized extends Application_RevisionStorage_DB
 {
-    const ERROR_LOADING_REVISION = 534001;
-    const ERROR_LOADING_REVISION_USER = 534002;
+    public const ERROR_LOADING_REVISION = 534001;
+    public const ERROR_LOADING_REVISION_USER = 534002;
 
     const FREEFORM_KEY_PREFIX = 'freeform_';
 

@@ -22,12 +22,12 @@ use AppUtils\NamedClosure;
  */
 abstract class Application_RevisionableStateless implements Application_Revisionable_Interface, Application_Changelogable_Interface, Application_LockableRecord_Interface, Application_CollectionItemInterface
 {
-    const ERROR_CANNOT_START_TRANSACTION = 68437001;
-    const ERROR_INVALID_REVISION_STORAGE = 68437002;
-    const ERROR_CANNOT_END_TRANSACTION =  68437003;
-    const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
-    const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
-    const ERROR_CHANGELOG_FEATURE_NOT_IMPLEMENTED = 68437006;
+    public const ERROR_CANNOT_START_TRANSACTION = 68437001;
+    public const ERROR_INVALID_REVISION_STORAGE = 68437002;
+    public const ERROR_CANNOT_END_TRANSACTION =  68437003;
+    public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
+    public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
+    public const ERROR_CHANGELOG_FEATURE_NOT_IMPLEMENTED = 68437006;
 
     /**
      * @var Application_RevisionStorage

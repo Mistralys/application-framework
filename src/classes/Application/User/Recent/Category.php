@@ -12,7 +12,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
     use Application_Traits_Loggable;
     use Application_Traits_Iconizable;
 
-    const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
+    public const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
 
     const OPTION_MAX_ITEMS = 'max-items';
     const MAX_ITEMS_DEFAULT = 10;

@@ -25,10 +25,10 @@ declare(strict_types=1);
  */
 abstract class Application_Formable_RecordSettings_Extended extends Application_Formable_RecordSettings
 {
-    const ERROR_CREATE_FORM_INVALID = 59001;
-    const ERROR_CREATE_IN_EDIT_MODE = 59002;
-    const ERROR_CANNOT_SAVE_IN_CREATE_MODE = 59003;
-    const ERROR_EDIT_FORM_INVALID = 59004;
+    public const ERROR_CREATE_FORM_INVALID = 59001;
+    public const ERROR_CREATE_IN_EDIT_MODE = 59002;
+    public const ERROR_CANNOT_SAVE_IN_CREATE_MODE = 59003;
+    public const ERROR_EDIT_FORM_INVALID = 59004;
     
    /**
     * When in create mode, and provided the form has been

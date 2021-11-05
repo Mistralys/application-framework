@@ -6,10 +6,10 @@ use AppUtils\BaseException;
 
 class Application_Bootstrap
 {
-    const ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
-    const ERROR_AUTOLOADER_NOT_STARTED = 28102; 
-    const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
-    const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
+    public const ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
+    public const ERROR_AUTOLOADER_NOT_STARTED = 28102; 
+    public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
+    public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
     
    /**
     * @var string

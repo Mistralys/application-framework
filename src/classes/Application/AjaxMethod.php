@@ -2,7 +2,7 @@
 
 abstract class Application_AjaxMethod
 {
-    const ERROR_MALFORMED_JSON_DATA = 554001;
+    public const ERROR_MALFORMED_JSON_DATA = 554001;
     
     const RETURNFORMAT_HTML = 'HTML';
     const RETURNFORMAT_JSON = 'JSON';

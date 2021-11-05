@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_NoAJAXHandlerFound extends Application_AjaxMethod
 {
-    const ERROR_NO_SUCH_METHOD = 14501;
+    public const ERROR_NO_SUCH_METHOD = 14501;
     
     public function processJSON()
     {

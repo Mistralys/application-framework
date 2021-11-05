@@ -6,7 +6,7 @@ use AppUtils\Microtime;
 
 class Application_User_Notepad_Note
 {
-    const ERROR_NO_DATA_FOUND = 90001;
+    public const ERROR_NO_DATA_FOUND = 90001;
 
     const KEY_DATE = 'date';
     const KEY_TITLE = 'title';

@@ -23,9 +23,9 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
 {
     use Application_Traits_Iconizable;
     
-    const ERROR_SETTING_METHOD_MISSING = 44901;
-    const ERROR_ELEMENT_METHOD_INVALID_RETURN_VALUE = 44902;
-    const ERROR_INVALID_CALLBACK = 44903;
+    public const ERROR_SETTING_METHOD_MISSING = 44901;
+    public const ERROR_ELEMENT_METHOD_INVALID_RETURN_VALUE = 44902;
+    public const ERROR_INVALID_CALLBACK = 44903;
     
    /**
     * @var string

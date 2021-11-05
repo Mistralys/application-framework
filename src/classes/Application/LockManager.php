@@ -19,9 +19,9 @@
  */
 class Application_LockManager extends DBHelper_BaseCollection
 {
-    const ERROR_STATE_MAY_NOT_BE_MODIFIED = 551001;
-    const ERROR_REVISIONABLE_IS_NOT_LOCKABLE = 551002;
-    const ERROR_REVISIONABLE_PRIMARY_UNHANDLED = 551003;
+    public const ERROR_STATE_MAY_NOT_BE_MODIFIED = 551001;
+    public const ERROR_REVISIONABLE_IS_NOT_LOCKABLE = 551002;
+    public const ERROR_REVISIONABLE_PRIMARY_UNHANDLED = 551003;
 
    /**
     * The amount of seconds to show the "Are you still there?" dialog before the automatic unlock.

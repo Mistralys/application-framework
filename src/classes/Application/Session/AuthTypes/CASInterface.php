@@ -21,7 +21,7 @@ declare(strict_types=1);
  */
 interface Application_Session_AuthTypes_CASInterface
 {
-    const ERROR_EMPTY_USER_INFO = 75501;
+    public const ERROR_EMPTY_USER_INFO = 75501;
 
     public function getEmailField() : string;
     public function getFirstnameField() : string;

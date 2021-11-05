@@ -38,8 +38,8 @@ declare(strict_types=1);
  */
 abstract class UI_Statuses
 {
-    const ERROR_INVALID_STATUS_CLASS = 87101;
-    const ERROR_STATUS_ID_DOES_NOT_EXIST = 87102;
+    public const ERROR_INVALID_STATUS_CLASS = 87101;
+    public const ERROR_STATUS_ID_DOES_NOT_EXIST = 87102;
 
     /**
      * @var array<string,UI_Interfaces_Statuses_Status>

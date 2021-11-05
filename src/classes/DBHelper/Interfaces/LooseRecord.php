@@ -2,9 +2,9 @@
 
 interface DBHelper_Interface_LooseRecord
 {
-    const ERROR_CANNOT_LOAD_RECORD = 66701;
-    const ERROR_COULD_NOT_SAVE_DATA = 66702;
-    const ERROR_UNKNOWN_DATA_KEY = 66703;
+    public const ERROR_CANNOT_LOAD_RECORD = 66701;
+    public const ERROR_COULD_NOT_SAVE_DATA = 66702;
+    public const ERROR_UNKNOWN_DATA_KEY = 66703;
     
    /**
     * The name of the database table in which the records are stored. 

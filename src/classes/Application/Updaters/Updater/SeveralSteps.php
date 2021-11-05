@@ -16,7 +16,7 @@
  */
 abstract class Application_Updaters_Updater_SeveralSteps extends Application_Updaters_Updater
 {
-    const ERROR_MISSING_STEP_METHOD = 67854001;
+    public const ERROR_MISSING_STEP_METHOD = 67854001;
     
    /**
     * @return string[]

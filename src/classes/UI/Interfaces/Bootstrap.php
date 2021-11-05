@@ -4,9 +4,9 @@ use AppUtils\Interface_Classable;
 
 interface UI_Interfaces_Bootstrap extends Interface_Classable, UI_Renderable_Interface
 {
-    const ERROR_CHILD_NAME_ALREADY_EXISTS = 18601;
-    const ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT = 18602;
-    const ERROR_INVALID_CHILD_ELEMENT = 18603;
+    public const ERROR_CHILD_NAME_ALREADY_EXISTS = 18601;
+    public const ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT = 18602;
+    public const ERROR_INVALID_CHILD_ELEMENT = 18603;
     
     public function __construct(UI $ui);
     

@@ -2,7 +2,7 @@
 
 class Application_RevisionableCollection_FilterSettings_StateFilter
 {
-    const ERROR_INVALID_STATE_IN_PRESET = 16001;
+    public const ERROR_INVALID_STATE_IN_PRESET = 16001;
     
     /**
      * @var Application_RevisionableCollection_FilterSettings

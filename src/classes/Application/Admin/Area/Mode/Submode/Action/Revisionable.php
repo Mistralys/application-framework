@@ -2,7 +2,7 @@
 
 abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends Application_Admin_Area_Mode_Submode_Action
 {
-    const ERROR_INVALID_REVISIONABLE_ID = 15301;
+    public const ERROR_INVALID_REVISIONABLE_ID = 15301;
     
     /**
     * @return Application_RevisionableCollection

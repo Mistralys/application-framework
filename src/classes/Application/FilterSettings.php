@@ -26,10 +26,10 @@
  */
 abstract class Application_FilterSettings
 {
-    const ERROR_UNKNOWN_SETTING = 450001;
-    const ERROR_NO_SETTINGS_REGISTERED = 450002;
-    const ERROR_MISSING_AUTOCONFIG_METHOD = 450003;
-    const ERROR_ONLY_ONE_MORE_ALLOWED = 450004;
+    public const ERROR_UNKNOWN_SETTING = 450001;
+    public const ERROR_NO_SETTINGS_REGISTERED = 450002;
+    public const ERROR_MISSING_AUTOCONFIG_METHOD = 450003;
+    public const ERROR_ONLY_ONE_MORE_ALLOWED = 450004;
 
    /**
     * @var string

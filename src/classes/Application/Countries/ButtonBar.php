@@ -23,7 +23,7 @@ use AppUtils\Interface_Optionable;
  */
 class Application_Countries_ButtonBar extends UI_Renderable implements Interface_Classable, Interface_Optionable
 {
-    const ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
+    public const ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
     
     use Traits_Classable;
     use Traits_Optionable;

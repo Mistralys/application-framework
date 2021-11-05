@@ -10,8 +10,8 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     use UI_Traits_Conditional;
     use UI_Traits_ClientConfirmable;
  
-    const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
-    const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
+    public const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
+    public const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
 
     const MODE_CLICKABLE = 'clickable';
     const MODE_LINKED = 'linked';

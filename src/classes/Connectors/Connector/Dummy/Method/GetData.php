@@ -20,8 +20,8 @@ declare(strict_types=1);
  */
 class Connectors_Connector_Dummy_Method_GetData extends Connectors_Connector_Method_Get
 {
-    const ERROR_CONNECTION_DID_NOT_FAIL = 70101;
-    const ERROR_CONNECTION_FAILED = 70102;
+    public const ERROR_CONNECTION_DID_NOT_FAIL = 70101;
+    public const ERROR_CONNECTION_FAILED = 70102;
 
     public function getData() : array
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class UI_Bootstrap_Popover extends UI_Bootstrap
 {
-    const ERROR_INVALID_PLACEMENT = 89801;
+    public const ERROR_INVALID_PLACEMENT = 89801;
 
     const TEMPLATE_ID = 'ui/bootstrap/popover';
 

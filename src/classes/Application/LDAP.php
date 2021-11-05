@@ -18,8 +18,8 @@ class Application_LDAP implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    const ERROR_CONNECT_FAILED = 72001;
-    const ERROR_BINDING_FAILED = 72002;
+    public const ERROR_CONNECT_FAILED = 72001;
+    public const ERROR_BINDING_FAILED = 72002;
 
     /**
      * @var Application_LDAP_Config

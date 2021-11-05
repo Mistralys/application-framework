@@ -19,7 +19,7 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Admin_Wizard_SelectCountryStep extends Application_Interfaces_Admin_Wizard_Step
 {
-    const ERROR_NO_COUNTRY_SELECTED = 94401;
+    public const ERROR_NO_COUNTRY_SELECTED = 94401;
 
     const STEP_NAME = 'Country';
     const PARAM_COUNTRY_ID = 'country_id';

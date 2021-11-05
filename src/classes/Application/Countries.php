@@ -22,9 +22,9 @@ use function AppUtils\parseVariable;
  */
 class Application_Countries extends DBHelper_BaseCollection
 {
-    const ERROR_UNKNOWN_ISO_CODE = 21901;
-    const ERROR_INVALID_COUNTRY_ID = 21902;
-    const ERROR_UNKNOWN_LOCALE_CODE = 21903;
+    public const ERROR_UNKNOWN_ISO_CODE = 21901;
+    public const ERROR_INVALID_COUNTRY_ID = 21902;
+    public const ERROR_UNKNOWN_LOCALE_CODE = 21903;
     const PRIMARY_NAME = 'country_id';
     const TABLE_NAME = 'countries';
 

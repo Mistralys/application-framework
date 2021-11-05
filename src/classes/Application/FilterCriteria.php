@@ -32,9 +32,9 @@ abstract class Application_FilterCriteria
     use Application_Traits_Loggable;
     use Application_Traits_Instanceable;
 
-    const ERROR_INVALID_SORTING_ORDER = 710003;
-    const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
-    const ERROR_FILTER_CRITERIA_FINALIZED = 710006;
+    public const ERROR_INVALID_SORTING_ORDER = 710003;
+    public const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
+    public const ERROR_FILTER_CRITERIA_FINALIZED = 710006;
 
     const MESSAGE_TYPE_INFO = 'info';
     const MESSAGE_TYPE_WARNING = 'warning';

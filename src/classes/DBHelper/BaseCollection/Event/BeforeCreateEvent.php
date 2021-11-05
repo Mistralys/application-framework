@@ -6,7 +6,7 @@ use function AppUtils\parseVariable;
 
 class DBHelper_BaseCollection_Event_BeforeCreateRecord extends Application_EventHandler_Event
 {
-    const ERROR_INVALID_COLLECTION_ARGUMENT = 55101;
+    public const ERROR_INVALID_COLLECTION_ARGUMENT = 55101;
     
     public function getCollection() : DBHelper_BaseCollection
     {

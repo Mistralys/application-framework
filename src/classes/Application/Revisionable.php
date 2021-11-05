@@ -24,8 +24,8 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      */
     protected $stateHandler;
 
-    const ERROR_SAVING_WITHOUT_TRANSACTION = 68439001;
-    const ERROR_INVALID_EVENT_CALLBACK = 68439002;
+    public const ERROR_SAVING_WITHOUT_TRANSACTION = 68439001;
+    public const ERROR_INVALID_EVENT_CALLBACK = 68439002;
 
     /**
      * Initializes the underlying objects like the revision

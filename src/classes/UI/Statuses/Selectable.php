@@ -19,7 +19,7 @@ declare(strict_types=1);
  */
 abstract class UI_Statuses_Selectable extends UI_Statuses
 {
-    const ERROR_CANNOT_SELECT_INVALID_STATUS = 87401;
+    public const ERROR_CANNOT_SELECT_INVALID_STATUS = 87401;
 
     /**
      * @var string

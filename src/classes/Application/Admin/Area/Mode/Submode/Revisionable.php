@@ -4,7 +4,7 @@ require_once 'Application/Admin/Area/Mode/Submode.php';
 
 abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Application_Admin_Area_Mode_Submode
 {
-    const ERROR_INVALID_REVISIONABLE_ID = 15901;
+    public const ERROR_INVALID_REVISIONABLE_ID = 15901;
     
    /**
     * @var Application_RevisionableCollection

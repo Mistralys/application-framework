@@ -20,7 +20,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     use Application_Traits_Simulatable;
     use Application_Traits_Loggable;
 
-    const ERROR_NONE = 42401;
+    public const ERROR_NONE = 42401;
     
    /**
     * @var string

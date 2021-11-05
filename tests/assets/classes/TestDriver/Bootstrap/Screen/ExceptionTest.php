@@ -2,7 +2,7 @@
 
 class TestDriver_Bootstrap_Screen_ExceptionTest extends Application_Bootstrap_Screen
 {
-    const ERROR_TEST_EXCEPTION = 55901;
+    public const ERROR_TEST_EXCEPTION = 55901;
     
     public function getDispatcher()
     {

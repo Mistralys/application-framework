@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class UI_Form_Renderer_ElementFilter
 {
-    const ERROR_UNKNOWN_ELEMENT = 64501;
+    public const ERROR_UNKNOWN_ELEMENT = 64501;
     
    /**
     * @var array

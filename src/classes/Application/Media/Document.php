@@ -4,9 +4,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
 {
     use Application_Traits_Loggable;
 
-    const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
-    const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
-    const ERROR_NO_TRANSACTION_STARTED = 650003;
+    public const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
+    public const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
+    public const ERROR_NO_TRANSACTION_STARTED = 650003;
     
     protected $data;
 

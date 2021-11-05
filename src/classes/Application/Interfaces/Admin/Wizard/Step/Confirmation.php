@@ -23,7 +23,7 @@ interface Application_Interfaces_Admin_Wizard_Step_Confirmation
     const STEP_NAME = 'Confirm';
     const FORM_NAME = 'wizard_confirmation';
     const PARAM_REFERENCE_ID = 'reference_id';
-    const ERROR_NO_REFERENCE_ID_SET = 95001;
+    public const ERROR_NO_REFERENCE_ID_SET = 95001;
 
     public function getReferenceID() : string;
 

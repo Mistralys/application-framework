@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 class Application_Whatsnew
 {
-    const ERROR_WHATSNEW_FILE_NOT_FOUND = 30001;
-    const ERROR_COULD_NOT_PARSE_XML = 30002;
+    public const ERROR_WHATSNEW_FILE_NOT_FOUND = 30001;
+    public const ERROR_COULD_NOT_PARSE_XML = 30002;
 
     /**
      * @var string

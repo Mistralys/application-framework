@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class DBHelper_BaseCollection_Keys_Key
 {
-    const ERROR_CANNOT_GENERATE_VALUE = 87601;
+    public const ERROR_CANNOT_GENERATE_VALUE = 87601;
 
     /**
      * @var DBHelper_BaseCollection_Keys

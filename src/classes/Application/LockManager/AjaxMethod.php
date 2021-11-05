@@ -2,17 +2,17 @@
 
 abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
 {
-    const ERROR_NO_URL_PATH_SPECIFIED = 13101;
+    public const ERROR_NO_URL_PATH_SPECIFIED = 13101;
     
-    const ERROR_NO_USER_SPECIFIED = 13102;
+    public const ERROR_NO_USER_SPECIFIED = 13102;
     
-    const ERROR_UNKNOWN_USER = 13103;
+    public const ERROR_UNKNOWN_USER = 13103;
     
-    const ERROR_NO_RECORD_FOUND = 13104;
+    public const ERROR_NO_RECORD_FOUND = 13104;
     
-    const ERROR_INVALID_LOCK_ID_TO_EXTEND = 13105;
+    public const ERROR_INVALID_LOCK_ID_TO_EXTEND = 13105;
     
-    const ERROR_INVALID_LOCK_ID_TO_RELEASE = 13106;
+    public const ERROR_INVALID_LOCK_ID_TO_RELEASE = 13106;
     
     protected $data;
     

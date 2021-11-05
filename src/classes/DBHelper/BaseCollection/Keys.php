@@ -8,7 +8,7 @@ class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
     use Application_Traits_Eventable;
     use Application_Traits_Disposable;
 
-    const ERROR_KEY_ALREADY_REGISTERED = 71401;
+    public const ERROR_KEY_ALREADY_REGISTERED = 71401;
 
     /**
      * @var DBHelper_BaseCollection

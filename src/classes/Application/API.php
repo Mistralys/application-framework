@@ -50,11 +50,11 @@ class Application_API
         return self::$instance;
     }
 
-    const ERROR_METHOD_NOT_FOUND = 112547001;
+    public const ERROR_METHOD_NOT_FOUND = 112547001;
 
-    const ERROR_NO_METHOD_SPECIFIED = 112547002;
+    public const ERROR_NO_METHOD_SPECIFIED = 112547002;
 
-    const ERROR_INVALID_METHOD_CLASS = 112547003;
+    public const ERROR_INVALID_METHOD_CLASS = 112547003;
 
     public function process()
     {

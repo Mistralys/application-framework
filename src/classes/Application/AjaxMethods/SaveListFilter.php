@@ -2,9 +2,9 @@
 
 class Application_AjaxMethods_SaveListFilter extends Application_AjaxMethod
 {
-    const ERROR_INVALID_LABEL = 460001;
-    const ERROR_INVALID_SETTINGS_ID = 460002;
-    const ERROR_NO_SETTINGS_SPECIFIED = 460003;
+    public const ERROR_INVALID_LABEL = 460001;
+    public const ERROR_INVALID_SETTINGS_ID = 460002;
+    public const ERROR_NO_SETTINGS_SPECIFIED = 460003;
     
     public function processJSON()
     {

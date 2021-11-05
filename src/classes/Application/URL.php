@@ -24,7 +24,7 @@ use AppUtils\URLInfo;
  */
 class Application_URL
 {
-    const ERROR_INCOMPLETE_URL = 29801;
+    public const ERROR_INCOMPLETE_URL = 29801;
 
     /**
      * @var string

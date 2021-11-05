@@ -4,7 +4,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
 {
     use UI_Traits_Conditional;
 
-    const ERROR_SORT_DATA_COLUMN_MISSING = 17903;
+    public const ERROR_SORT_DATA_COLUMN_MISSING = 17903;
     
    /**
     * @var UI_DataGrid

@@ -18,10 +18,10 @@
  */
 class Application_EventHandler
 {
-    const ERROR_INVALID_EVENT_CLASS = 13801;
-    const ERROR_MISSING_EVENT_CLASS = 13802;
-    const ERROR_INVALID_CALLBACK = 13803;
-    const ERROR_UNKNOWN_LISTENER = 13804;
+    public const ERROR_INVALID_EVENT_CLASS = 13801;
+    public const ERROR_MISSING_EVENT_CLASS = 13802;
+    public const ERROR_INVALID_CALLBACK = 13803;
+    public const ERROR_UNKNOWN_LISTENER = 13804;
 
    /**
     * @var array<int,Application_EventHandler_Listener>

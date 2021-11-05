@@ -2,8 +2,8 @@
 
 class Application_AjaxMethods_DeleteListFilter extends Application_AjaxMethod
 {
-    const ERROR_INVALID_FILTER_ID = 470001;
-    const ERROR_INVALID_SETTINGS_ID = 470002;
+    public const ERROR_INVALID_FILTER_ID = 470001;
+    public const ERROR_INVALID_SETTINGS_ID = 470002;
     
     public function processJSON()
     {

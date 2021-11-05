@@ -2,7 +2,7 @@
 
 class Application_Media
 {
-    const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
+    public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
     
     /**
      * The media manager instance.

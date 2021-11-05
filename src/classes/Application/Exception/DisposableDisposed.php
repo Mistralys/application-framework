@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Application_Exception_DisposableDisposed extends Application_Exception
 {
-    const ERROR_DISPOSABLE_DISPOSED = 92101;
+    public const ERROR_DISPOSABLE_DISPOSED = 92101;
 
     public function __construct(Application_Interfaces_Disposable $disposable, $actionLabel)
     {

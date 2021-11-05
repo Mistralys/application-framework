@@ -7,10 +7,6 @@
  * @see Application_Traits_Admin_Screen
  */
 
-define('ADMIN_TRAIT_SCREEN_ERROR_MISSING_URL_PARAMETER', 51501);
-
-define('ADMIN_TRAIT_SCREEN_ERROR_SCREEN_HAS_NO_AREA', 51502);
-
 /**
  * Trait used by all administration screens: used to 
  * dispatch the <code>handleXXX</code> methods down the
@@ -376,8 +372,7 @@ trait Application_Traits_Admin_Screen
     {
         return '';
     }
-    
-    
+
    /**
     * Retrieves the tabs instance, if any.
     * 
@@ -396,7 +391,7 @@ trait Application_Traits_Admin_Screen
     /**
      * @return UI_Page_Help|NULL
      */
-    public function getHelp()
+    public function getHelp() : ?UI_Page_Help
     {
         return $this->help;
     }
@@ -408,6 +403,24 @@ trait Application_Traits_Admin_Screen
     public function getSidebar() : ?UI_Page_Sidebar
     {
         return $this->sidebar;
+    }
+
+    /**
+     * @return UI_Page_Sidebar
+     * @throws Application_Admin_Exception
+     */
+    public function requireSidebar() : UI_Page_Sidebar
+    {
+        if(isset($this->sidebar))
+        {
+            return $this->sidebar;
+        }
+
+        throw new Application_Admin_Exception(
+            'No sidebar available at this time.',
+            '',
+            Application_Admin_ScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
+        );
     }
 
     public function isArea() : bool
@@ -429,11 +442,12 @@ trait Application_Traits_Admin_Screen
     {
         return $this instanceof Application_Admin_Area_Mode_Submode_Action;
     }
-    
-   /**
-    * Retrieves the screen's admin area instance, if any.
-    * @return Application_Admin_Area
-    */
+
+    /**
+     * Retrieves the screen's admin area instance, if any.
+     * @return Application_Admin_Area
+     * @throws Application_Admin_Exception
+     */
     public function getArea() : Application_Admin_Area
     {
         if($this instanceof Application_Admin_Area) 
@@ -448,10 +462,10 @@ trait Application_Traits_Admin_Screen
             return $parent->getArea();
         }
         
-        throw new Application_Exception(
+        throw new Application_Admin_Exception(
             'Administration screen has no area.',
             'Path to screen: '.$this->getURLPath(),
-            ADMIN_TRAIT_SCREEN_ERROR_SCREEN_HAS_NO_AREA
+            Application_Admin_ScreenInterface::ERROR_SCREEN_HAS_NO_AREA
         );
     }
     
@@ -827,7 +841,7 @@ trait Application_Traits_Admin_Screen
                     get_class($this),
                     implode(', ', $names)
                 ),
-                ADMIN_TRAIT_SCREEN_ERROR_MISSING_URL_PARAMETER
+                Application_Admin_ScreenInterface::ERROR_MISSING_URL_PARAMETER
             );
         }
         

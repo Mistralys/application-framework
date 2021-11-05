@@ -22,7 +22,7 @@ declare(strict_types=1);
  */
 class Application_Formable_RecordSelector_Entry
 {
-    const ERROR_NO_DB_RECORD_SET = 92801;
+    public const ERROR_NO_DB_RECORD_SET = 92801;
 
    /**
     * @var DBHelper_BaseRecord|NULL

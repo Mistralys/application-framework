@@ -21,9 +21,9 @@ declare(strict_types=1);
  */
 class Application_Environments
 {
-    const ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
-    const ERROR_ENVIRONMENT_ALREADY_REGISTERED = 47602;
-    const ERROR_UNREGISTERED_ENVIRONMENT = 47603;
+    public const ERROR_NO_ENVIRONMENTS_REGISTERED = 47601;
+    public const ERROR_ENVIRONMENT_ALREADY_REGISTERED = 47602;
+    public const ERROR_UNREGISTERED_ENVIRONMENT = 47603;
     
     const TYPE_DEV = 'dev';
     const TYPE_PROD = 'prod';

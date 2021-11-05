@@ -33,8 +33,8 @@ class Application_Installer implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    const ERROR_INVALID_TASK_CLASS = 75801;
-    const ERROR_UNKNOWN_INSTALLER_TASK = 75802;
+    public const ERROR_INVALID_TASK_CLASS = 75801;
+    public const ERROR_UNKNOWN_INSTALLER_TASK = 75802;
 
     const SOURCE_FRAMEWORK = 'framework';
     const SOURCE_APPLICATION = 'application';

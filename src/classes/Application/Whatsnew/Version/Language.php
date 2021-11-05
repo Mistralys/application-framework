@@ -4,7 +4,7 @@ require_once 'Application/Whatsnew/Version/Language/Category.php';
 
 class Application_Whatsnew_Version_Language
 {
-    const ERROR_UNKNOWN_LANGUAGE_ID = 30101;
+    public const ERROR_UNKNOWN_LANGUAGE_ID = 30101;
 
     protected static $languages = array(
         'de' => array(

@@ -16,8 +16,8 @@
  */
 class Application_Messaging extends DBHelper_BaseCollection
 {
-    const ERROR_INVALID_MESSAGE_PRIORITY = 13401;
-    const ERROR_TO_AND_FROM_USERS_IDENTICAL = 13402;
+    public const ERROR_INVALID_MESSAGE_PRIORITY = 13401;
+    public const ERROR_TO_AND_FROM_USERS_IDENTICAL = 13402;
     
    /**
     * The amount of time to wait between requests to the server

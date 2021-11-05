@@ -2,7 +2,7 @@
 
 abstract class UI_Themes_Theme
 {
-    const ERROR_RESOURCE_FILE_NOT_FOUND = 27401;
+    public const ERROR_RESOURCE_FILE_NOT_FOUND = 27401;
 
     const LOCATION_DRIVER = 'driver';
     

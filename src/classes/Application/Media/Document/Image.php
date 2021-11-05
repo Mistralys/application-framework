@@ -5,7 +5,7 @@ use AppUtils\ImageHelper;
 
 class Application_Media_Document_Image extends Application_Media_Document
 {
-    const ERROR_FILE_NOT_FOUND = 384970001;
+    public const ERROR_FILE_NOT_FOUND = 384970001;
 
     public static function getLabel()
     {

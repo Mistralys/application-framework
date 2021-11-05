@@ -20,7 +20,7 @@
  */
 class Application_Media_Processor
 {
-    const ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
+    public const ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
     
     /**
      * @var UI

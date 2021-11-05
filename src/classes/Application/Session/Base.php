@@ -23,12 +23,12 @@ abstract class Application_Session_Base implements Application_Session
 {
     use Application_Traits_Loggable;
 
-    const ERROR_ADMIN_RIGHTS_PRESET_MISSING = 22201;
-    const ERROR_ONLY_FOR_SIMULATED_SESSION = 22202;
-    const ERROR_NO_RIGHT_PRESETS_PRESENT = 22203;
-    const ERROR_AUTH_DID_NOT_RETURN_USER = 22205;
-    const ERROR_INVALID_USER_CLASS = 22206;
-    const ERROR_INVALID_USER_ID = 22207;
+    public const ERROR_ADMIN_RIGHTS_PRESET_MISSING = 22201;
+    public const ERROR_ONLY_FOR_SIMULATED_SESSION = 22202;
+    public const ERROR_NO_RIGHT_PRESETS_PRESENT = 22203;
+    public const ERROR_AUTH_DID_NOT_RETURN_USER = 22205;
+    public const ERROR_INVALID_USER_CLASS = 22206;
+    public const ERROR_INVALID_USER_ID = 22207;
 
     const KEY_NAME_USER_ID = 'user_id';
     const KEY_NAME_USER_RIGHTS = 'user_rights';

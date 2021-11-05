@@ -2,9 +2,9 @@
 
 class Application_Changelog
 {
-    const ERROR_MISSING_CHANGELOG_KEY = 599601;
+    public const ERROR_MISSING_CHANGELOG_KEY = 599601;
     
-    const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
+    public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
     
    /**
     * @var Application_Changelogable_Interface

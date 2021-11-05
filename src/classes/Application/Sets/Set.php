@@ -19,9 +19,9 @@
  */
 class Application_Sets_Set
 {
-    const ERROR_FORMABLE_NOT_VALID = 12801;
+    public const ERROR_FORMABLE_NOT_VALID = 12801;
     
-    const ERROR_INVALID_DEFAULT_AREA = 12802;
+    public const ERROR_INVALID_DEFAULT_AREA = 12802;
     
    /**
     * @var string

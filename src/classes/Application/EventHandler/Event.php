@@ -20,7 +20,7 @@ use AppUtils\ConvertHelper;
  */
 class Application_EventHandler_Event
 {
-    const ERROR_EVENT_NOT_CANCELLABLE = 13701;
+    public const ERROR_EVENT_NOT_CANCELLABLE = 13701;
 
    /**
     * @var Application_EventHandler_Listener|NULL

@@ -20,9 +20,9 @@ declare(strict_types=1);
  */
 class Application_Formable_RecordSettings_Setting
 {
-    const ERROR_INVALID_CALLBACK = 45301;
-    const ERROR_NO_CALLBACK_EXECUTABLE = 45302;
-    const ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
+    public const ERROR_INVALID_CALLBACK = 45301;
+    public const ERROR_NO_CALLBACK_EXECUTABLE = 45302;
+    public const ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
     
    /**
     * @var Application_Formable_RecordSettings

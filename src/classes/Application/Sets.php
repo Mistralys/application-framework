@@ -20,11 +20,11 @@ use AppUtils\FileHelper;
  */
 class Application_Sets
 {
-    const ERROR_SET_ID_ALREADY_EXISTS = 12701;
-    const ERROR_UNKNOWN_SET = 12702;
-    const ERROR_CANNOT_SAVE_CONFIGURATION = 12703;
-    const ERROR_CANNOT_RENAME_INEXISTANT_SET = 12704;
-    const ERROR_CANNOT_RENAME_TO_EXISTING_NAME = 12705;
+    public const ERROR_SET_ID_ALREADY_EXISTS = 12701;
+    public const ERROR_UNKNOWN_SET = 12702;
+    public const ERROR_CANNOT_SAVE_CONFIGURATION = 12703;
+    public const ERROR_CANNOT_RENAME_INEXISTANT_SET = 12704;
+    public const ERROR_CANNOT_RENAME_TO_EXISTING_NAME = 12705;
     
    /**
     * @var Application_Sets

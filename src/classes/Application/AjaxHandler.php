@@ -22,9 +22,9 @@ class Application_AjaxHandler
     */
     protected $methods = array();
     
-    const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
+    public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
 
-    const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
+    public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
     
     public function __construct(Application_Driver $driver)
     {

@@ -21,7 +21,7 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Eventable extends Application_Interfaces_Loggable
 {
-    const ERROR_INVALID_EVENT_CLASS = 84901;
+    public const ERROR_INVALID_EVENT_CLASS = 84901;
 
     /**
      * Adds a listener for the specified event.

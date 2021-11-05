@@ -19,7 +19,7 @@ declare(strict_types=1);
  */
 class UI_ClientConfirmable_Message
 {
-    const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
+    public const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
 
     /**
      * @var string

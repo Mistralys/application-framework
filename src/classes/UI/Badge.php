@@ -18,8 +18,8 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
 {
     use Application_Traits_Iconizable;
     
-    const ERROR_INVALID_BADGE_TYPE = 430001;
-    const ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
+    public const ERROR_INVALID_BADGE_TYPE = 430001;
+    public const ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
     
     const WRAPPER_PLACEHOLDER = '{badge}';
     

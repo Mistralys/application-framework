@@ -20,8 +20,8 @@ use function AppUtils\parseVariable;
  */
 class UI_Page_Template extends UI_Renderable
 {
-    const ERROR_TEMPLATE_FILE_NOT_FOUND = 27301;
-    const ERROR_NOT_EXPECTED_OBJECT_INSTANCE = 27302;
+    public const ERROR_TEMPLATE_FILE_NOT_FOUND = 27301;
+    public const ERROR_NOT_EXPECTED_OBJECT_INSTANCE = 27302;
     
     /**
      * @var UI_Page_Sidebar

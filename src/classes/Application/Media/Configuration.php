@@ -2,11 +2,11 @@
 
 abstract class Application_Media_Configuration
 {
-    const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 690001;
+    public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 690001;
     
-    const ERROR_DATASET_TYPE_MISMATCH = 690002;
+    public const ERROR_DATASET_TYPE_MISMATCH = 690002;
   
-    const ERROR_INVALID_DOCUMENT_TYPE = 690003;
+    public const ERROR_INVALID_DOCUMENT_TYPE = 690003;
     
     protected $cachedTypeID;
 

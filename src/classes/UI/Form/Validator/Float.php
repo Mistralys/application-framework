@@ -24,7 +24,7 @@ declare(strict_types=1);
  */
 class UI_Form_Validator_Float extends UI_Form_Validator
 {
-    const ERROR_INVALID_FLOAT_CONFIGURATION = 74801;
+    public const ERROR_INVALID_FLOAT_CONFIGURATION = 74801;
 
     /**
      * @var float

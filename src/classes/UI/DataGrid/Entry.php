@@ -23,7 +23,7 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
 {
     use Traits_Classable;
 
-    const ERROR_MISSING_PRIMARY_VALUE = 536001;
+    public const ERROR_MISSING_PRIMARY_VALUE = 536001;
     
    /**
     * @var UI_DataGrid

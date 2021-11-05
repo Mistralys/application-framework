@@ -2,7 +2,7 @@
 
 class Application_StateHandler_State
 {
-    const ERROR_CANNOT_REPLACE_REVISIONABLE = 14101; 
+    public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14101;
     
     protected $name;
 

@@ -2,7 +2,7 @@
 
 abstract class UI_QuickSelector_Container extends UI_QuickSelector_Base
 {
-    const ERROR_ITEM_ID_ALREADY_EXISTS = 997581001;
+    public const ERROR_ITEM_ID_ALREADY_EXISTS = 997581001;
 
    /**
     * @var UI_QuickSelector_Base[]

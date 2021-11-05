@@ -21,11 +21,11 @@
  */
 abstract class Application_RevisionStorage_DB_CopyRevision extends Application_RevisionStorage_CopyRevision
 {
-    const ERROR_KEYS_MISMATCH_FOR_TARGET_DATA_SET = 620002;
+    public const ERROR_KEYS_MISMATCH_FOR_TARGET_DATA_SET = 620002;
     
-    const ERROR_NON_UNIQUE_AUTO_INCREMENT = 620003;
+    public const ERROR_NON_UNIQUE_AUTO_INCREMENT = 620003;
     
-    const ERROR_MISSING_TARGET_DATA_FOR_COPY = 620004;
+    public const ERROR_MISSING_TARGET_DATA_FOR_COPY = 620004;
     
    /**
     * @var Application_RevisionStorage_DBStandardized

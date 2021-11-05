@@ -26,7 +26,7 @@ use function AppUtils\parseVariable;
  */
 class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
 {
-    const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
+    public const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
 
     const STATE_DISABLED = 'disabled';
     const STATE_ENABLED = 'enabled';

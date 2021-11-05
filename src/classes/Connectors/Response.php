@@ -6,7 +6,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    const ERROR_INVALID_SERIALIZED_DATA = 80001;
+    public const ERROR_INVALID_SERIALIZED_DATA = 80001;
 
     /**
      * @var array|null

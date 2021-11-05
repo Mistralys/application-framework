@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class DBHelper_StatementBuilder_ValuesContainer
 {
-    const ERROR_UNKNOWN_PLACEHOLDER_NAME = 95501;
+    public const ERROR_UNKNOWN_PLACEHOLDER_NAME = 95501;
 
     /**
      * @var array<string,string>

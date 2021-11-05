@@ -2,7 +2,7 @@
 
 class Application_Messaging_Message extends DBHelper_BaseRecord
 {
-    const ERROR_INVALID_CUSTOM_DATA = 13501;
+    public const ERROR_INVALID_CUSTOM_DATA = 13501;
     
    /**
     * @var Application_Messaging

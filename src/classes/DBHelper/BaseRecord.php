@@ -24,8 +24,8 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     use Application_Traits_Disposable;
     use Application_Traits_Eventable;
 
-    const ERROR_RECORD_DOES_NOT_EXIST = 13301;
-    const ERROR_RECORD_KEY_UNKNOWN = 13302;
+    public const ERROR_RECORD_DOES_NOT_EXIST = 13301;
+    public const ERROR_RECORD_KEY_UNKNOWN = 13302;
 
     const DUMMY_ID = -1;
 

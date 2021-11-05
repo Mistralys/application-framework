@@ -24,9 +24,9 @@
  */
 class UI_Page extends UI_Renderable
 {
-    const ERROR_UNKNOWN_NAVIGATION = 45001;
+    public const ERROR_UNKNOWN_NAVIGATION = 45001;
     
-    const ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
+    public const ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
     
     /**
      * @var string

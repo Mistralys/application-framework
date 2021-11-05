@@ -25,7 +25,7 @@ use AppUtils\RegexHelper;
  */
 class UI_Form_Validator_Integer extends UI_Form_Validator
 {
-    const ERROR_INVALID_CONFIGURATION = 74901;
+    public const ERROR_INVALID_CONFIGURATION = 74901;
 
    /**
     * @var int

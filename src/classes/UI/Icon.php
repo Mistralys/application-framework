@@ -19,7 +19,7 @@ use AppUtils\Interface_Stringable;
  */
 class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 {
-    const ERROR_INVALID_TYPE_SELECTED = 95601;
+    public const ERROR_INVALID_TYPE_SELECTED = 95601;
 
     use UI_Traits_RenderableGeneric;
 

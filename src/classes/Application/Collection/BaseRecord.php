@@ -8,7 +8,7 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
 {
     use Application_Traits_Loggable;
 
-    const ERROR_COULD_NOT_LOAD_DATA = 85701;
+    public const ERROR_COULD_NOT_LOAD_DATA = 85701;
 
     /**
      * @var array<string,mixed>

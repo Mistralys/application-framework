@@ -26,7 +26,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
     use Traits_Optionable;
     use Application_Traits_Iconizable;
 
-    const ERROR_UNKNOWN_LAYOUT_PART = 24901;
+    public const ERROR_UNKNOWN_LAYOUT_PART = 24901;
     
    /**
     * @var UI

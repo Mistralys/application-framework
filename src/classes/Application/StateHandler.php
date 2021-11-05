@@ -4,11 +4,11 @@ require_once 'Application/StateHandler/State.php';
 
 class Application_StateHandler
 {
-    const ERROR_CANNOT_REPLACE_REVISIONABLE = 14001;
+    public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14001;
     
-    const ERROR_DUPLICATE_INITIAL_STATE = 14002;
+    public const ERROR_DUPLICATE_INITIAL_STATE = 14002;
     
-    const ERROR_NO_INITIAL_STATE_DEFINED = 14003;
+    public const ERROR_NO_INITIAL_STATE_DEFINED = 14003;
     
     protected $states = array();
 

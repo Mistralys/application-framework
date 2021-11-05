@@ -20,7 +20,7 @@ declare(strict_types=1);
  */
 class template_default_ui_nav_search_full_width extends template_default_ui_nav_search_inline
 {
-    const ERROR_NO_SCOPES_AVAILABLE = 81101;
+    public const ERROR_NO_SCOPES_AVAILABLE = 81101;
 
     /**
      * @var string

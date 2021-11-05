@@ -19,8 +19,8 @@
  */
 class Application_Uploads
 {
-    const ERROR_NO_UPLOAD_TMP_DIR = 42801;
-    const ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
+    public const ERROR_NO_UPLOAD_TMP_DIR = 42801;
+    public const ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
     
     /**
      * The uploads manager instance.

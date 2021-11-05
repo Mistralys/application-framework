@@ -39,8 +39,8 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 {
     use Application_Traits_Loggable;
 
-    const ERROR_NOTHING_TO_INJECT = 44801;
-    const ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
+    public const ERROR_NOTHING_TO_INJECT = 44801;
+    public const ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
     
    /**
     * @var DBHelper_BaseRecord|NULL

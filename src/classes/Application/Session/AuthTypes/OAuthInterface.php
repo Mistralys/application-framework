@@ -21,6 +21,6 @@ declare(strict_types=1);
  */
 interface Application_Session_AuthTypes_OAuthInterface
 {
-    const ERROR_AUTH_DID_NOT_EXIT = 75601;
+    public const ERROR_AUTH_DID_NOT_EXIT = 75601;
 
 }

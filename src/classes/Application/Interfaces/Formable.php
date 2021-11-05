@@ -513,6 +513,13 @@ interface Application_Interfaces_Formable
     public function getElementByName(string $name): ?HTML_QuickForm2_Element;
 
     /**
+     * @param string $name
+     * @return HTML_QuickForm2_Element
+     * @throws Application_Formable_Exception
+     */
+    public function requireElementByName(string $name): HTML_QuickForm2_Element;
+
+    /**
      * Retrieves the formable's UI Form instance.
      * @return UI_Form
      */

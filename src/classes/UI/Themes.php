@@ -17,8 +17,8 @@
  */
 class UI_Themes
 {
-    const ERROR_THEME_CLASS_FILE_NOT_FOUND = 28401;
-    const ERROR_THEME_CLASS_NOT_FOUND = 28402;
+    public const ERROR_THEME_CLASS_FILE_NOT_FOUND = 28401;
+    public const ERROR_THEME_CLASS_NOT_FOUND = 28402;
 
     const OPTION_SHOW_USER_NAME = 'theme_show_user_name';
 

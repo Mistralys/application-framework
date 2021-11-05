@@ -21,7 +21,7 @@ use AppUtils\ConvertHelper_ThrowableInfo;
  */
 class Application_ErrorLog
 {
-    const ERROR_UNKNOWN_LOG = 42701;
+    public const ERROR_UNKNOWN_LOG = 42701;
 
     const LOG_TYPE_EXCEPTION = 'Exception';
     const LOG_TYPE_AJAX = 'AJAX';

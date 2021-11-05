@@ -4,14 +4,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    const ERROR_INVALID_AUTH_SCHEME = 339001;
-    const ERROR_REQUEST_FAILED = 339002;
-    const ERROR_JSON_PARSE_ERROR = 339003;
-    const ERROR_UNEXPECTED_DATA_FORMAT = 339004;
-    const ERROR_NO_REQUEST_SENT_YET = 339005;
-    const ERROR_INVALID_DATA_VALUE = 339006;
-    const ERROR_URL_MAY_NOT_CONTAIN_QUERY = 339007;
-    const ERROR_INVALID_METHOD = 339008;
+    public const ERROR_INVALID_AUTH_SCHEME = 339001;
+    public const ERROR_REQUEST_FAILED = 339002;
+    public const ERROR_JSON_PARSE_ERROR = 339003;
+    public const ERROR_UNEXPECTED_DATA_FORMAT = 339004;
+    public const ERROR_NO_REQUEST_SENT_YET = 339005;
+    public const ERROR_INVALID_DATA_VALUE = 339006;
+    public const ERROR_URL_MAY_NOT_CONTAIN_QUERY = 339007;
+    public const ERROR_INVALID_METHOD = 339008;
 
     /**
      * @var array<string,string>

@@ -4,7 +4,7 @@ require_once 'Application/RevisionStorage/DB/CopyRevision.php';
 
 abstract class Application_RevisionableCollection_RevisionCopy extends Application_RevisionStorage_DB_CopyRevision
 {
-    const ERROR_REVISION_DOES_NOT_EXIST = 15401;
+    public const ERROR_REVISION_DOES_NOT_EXIST = 15401;
     
    /**
     * @var Application_RevisionableCollection_DBRevisionable
