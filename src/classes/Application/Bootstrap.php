@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\BaseException;
+use Composer\Autoload\ClassLoader;
 
 class Application_Bootstrap
 {
@@ -11,22 +12,34 @@ class Application_Bootstrap
     public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
     public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
     
-   /**
-    * @var string
-    */
-    private static $vendorPath = APP_ROOT.'/vendor';
-    
-   /**
+    /**
+     * @var ClassLoader
+     */
+    private static $autoLoader;
+
+    /**
+     * @var bool
+     */
+    private static $initialized = false;
+
+    /**
     * Boots from a standard application screen.
     * @param string $screenID
     * @param array $params
     */
     public static function boot(string $screenID, array $params=array(), bool $displayException=true) : void
     {
-        $class = 'Application_Bootstrap_Screen_'.$screenID;
+        $class = Application_Bootstrap_Screen::class.'_'.$screenID;
         self::bootClass($class, $params, $displayException);
     }
-    
+
+    public static function getAutoLoader() : ClassLoader
+    {
+        self::init();
+
+        return self::$autoLoader;
+    }
+
    /**
     * Boots from a custom driver screen.
     * @param string $screenID
@@ -164,11 +177,6 @@ class Application_Bootstrap
         self::registerOptionalSetting('APP_OPTIMIZE_IMAGES', false);
     }
     
-    public static function setVendorPath(string $path) : void
-    {
-        self::$vendorPath = $path;
-    }
-    
    /**
     * Initializes the application's boot process: sets up
     * configuration settings and loads configuration files,
@@ -178,111 +186,18 @@ class Application_Bootstrap
     */
     public static function init() : void
     {
+        if(self::$initialized)
+        {
+            return;
+        }
+
+        self::$initialized = true;
+
         self::registerConfigSettings();
-        
-        if(!class_exists('Composer\\Autoload\\ClassLoader')) 
-        {
-            $autoloadPath = self::$vendorPath.'/autoload.php';
-            $autoloadFile = realpath($autoloadPath);
-            if(!$autoloadFile) {
-                throw new Exception(
-                    sprintf('Autoload file not found in [%s]', $autoloadPath), 
-                    self::ERROR_AUTOLOAD_FILE_NOT_FOUND
-                );
-            }
-            
-            // For the autoloader, we use the handy PHP5.2 compatible
-            // autoloader that is created by the php52 composer
-            // dependency.
-            $loader = require_once $autoloadFile;
-            if(!is_object($loader)) {
-                throw new Exception(
-                    'Autoloader error',
-                    self::ERROR_AUTOLOADER_NOT_STARTED
-                );
-            }
-        }
-        
-        // set the include paths after the autoloader: this
-        // enables the possibility to have classes from the
-        // vendor folder be overridden by those in the application
-        // like for example the HTML_Quickform classes.
-        $includePaths = array(
-            APP_INSTALL_FOLDER.'/classes',
-            APP_ROOT.'/assets',
-            APP_ROOT.'/assets/classes',
-            ini_get('include_path')
-        );
-        
-        ini_set('include_path', implode(PATH_SEPARATOR, $includePaths));
-        
-        $localConfig = APP_ROOT.'/config/config-local.php';
-        
-        if(!file_exists($localConfig)) 
-        {
-            header('Content-Type:text/plain; charset=UTF-8');
-            echo 'Local configuration file not found. '.PHP_EOL;
-            echo 'Rename the bundled file config-local.dist.php to config-local.php and adjust the relevant configuration settings in that file, then reload this page.'.PHP_EOL;
-            exit;
-        }
-
-        /**
-         * The local configuration settings
-         */
-        require $localConfig;
-
-        /**
-         * The main app configuration file
-         */
-        require_once APP_ROOT.'/config/app-config.php';
-        
-        // set default configuration values
-        foreach(self::$knownSettings as $name => $def) 
-        {
-            if(isset($def['defaultValue']) && !defined($name)) {
-                define($name, $def['defaultValue']);
-            }
-        }
-
-        if(boot_constant('APP_OPTIMIZE_IMAGES') === true) {
-            self::registerRequiredSetting('APP_OPTIPNG_BINARY');
-        }
-        
-        // ensure that the DB configuration is required when enabled
-        if(Application::isDatabaseEnabled()) 
-        {
-            self::registerRequiredSetting('APP_DB_HOST');
-            self::registerRequiredSetting('APP_DB_NAME');
-            self::registerRequiredSetting('APP_DB_USER');
-            self::registerRequiredSetting('APP_DB_PASSWORD');
-        }
-        
-        // check required configuration values
-        foreach(self::$knownSettings as $name => $def)
-        {
-            if(!$def['required']) {
-                continue;
-            }
-            
-            if(!defined($name)) 
-            {
-                header('Content-Type:text/plain; charset=UTF-8');
-                
-                die(sprintf(
-                    'The %1$s configuration setting is missing. '. 
-                    'Please edit the relevant configuration file to add it.', 
-                    $name
-                ));
-            }
-        }
-
-        // automatic install URL detection: use the relative
-        // path after the APP_ROOT setting.
-        if(!defined('APP_INSTALL_URL'))
-        {
-            $relative = ltrim(str_replace(APP_ROOT, '', APP_INSTALL_FOLDER), '/');
-            define('APP_INSTALL_URL', APP_URL.'/'.$relative);
-        }
+        self::initAutoLoader();
+        self::initIncludePath();
+        self::initConfiguration();
+        self::validateConfigSettings();
     }
     
     public static function convertException(Exception $e) : Application_Exception
@@ -338,6 +253,138 @@ class Application_Bootstrap
             self::ERROR_NON_FRAMEWORK_EXCEPTION,
             $e
         );
+    }
+
+    public static function getVendorPath() : string
+    {
+        if(defined('APP_FRAMEWORK_TESTS') && APP_FRAMEWORK_TESTS === true)
+        {
+            return APP_ROOT.'/../vendor';
+        }
+
+        return APP_ROOT.'/vendor';
+    }
+
+    private static function initAutoLoader() : void
+    {
+        $autoloadPath = self::getVendorPath() . '/autoload.php';
+        $autoloadFile = realpath($autoloadPath);
+
+        if ($autoloadFile === false)
+        {
+            throw new Exception(
+                sprintf('Autoload file not found in [%s]', $autoloadPath),
+                self::ERROR_AUTOLOAD_FILE_NOT_FOUND
+            );
+        }
+
+        // For the autoloader, we use the handy PHP5.2 compatible
+        // autoloader that is created by the php52 composer
+        // dependency.
+        $loader = require $autoloadFile;
+
+        if (!is_object($loader))
+        {
+            throw new Exception(
+                'Autoloader error: no autoloader instance returned on require.',
+                self::ERROR_AUTOLOADER_NOT_STARTED
+            );
+        }
+
+        self::$autoLoader = $loader;
+    }
+
+    private static function initIncludePath() : void
+    {
+// set the include paths after the autoloader: this
+        // enables the possibility to have classes from the
+        // vendor folder be overridden by those in the application
+        // like for example the HTML_Quickform classes.
+        $includePaths = array(
+            APP_INSTALL_FOLDER . '/classes',
+            APP_ROOT . '/assets',
+            APP_ROOT . '/assets/classes',
+            ini_get('include_path')
+        );
+
+        ini_set('include_path', implode(PATH_SEPARATOR, $includePaths));
+    }
+
+    private static function initConfiguration() : void
+    {
+        $localConfig = APP_ROOT . '/config/config-local.php';
+
+        if (!file_exists($localConfig))
+        {
+            header('Content-Type:text/plain; charset=UTF-8');
+            echo 'Local configuration file not found. ' . PHP_EOL;
+            echo 'Rename the bundled file config-local.dist.php to config-local.php and adjust the relevant configuration settings in that file, then reload this page.' . PHP_EOL;
+            exit;
+        }
+
+        /**
+         * The local configuration settings
+         */
+        require $localConfig;
+
+        /**
+         * The main app configuration file
+         */
+        require_once APP_ROOT . '/config/app-config.php';
+    }
+
+    private static function validateConfigSettings() : void
+    {
+// set default configuration values
+        foreach (self::$knownSettings as $name => $def)
+        {
+            if (isset($def['defaultValue']) && !defined($name))
+            {
+                define($name, $def['defaultValue']);
+            }
+        }
+
+        if (boot_constant('APP_OPTIMIZE_IMAGES') === true)
+        {
+            self::registerRequiredSetting('APP_OPTIPNG_BINARY');
+        }
+
+        // ensure that the DB configuration is required when enabled
+        if (Application::isDatabaseEnabled())
+        {
+            self::registerRequiredSetting('APP_DB_HOST');
+            self::registerRequiredSetting('APP_DB_NAME');
+            self::registerRequiredSetting('APP_DB_USER');
+            self::registerRequiredSetting('APP_DB_PASSWORD');
+        }
+
+        // check required configuration values
+        foreach (self::$knownSettings as $name => $def)
+        {
+            if (!$def['required'])
+            {
+                continue;
+            }
+
+            if (!defined($name))
+            {
+                header('Content-Type:text/plain; charset=UTF-8');
+
+                die(sprintf(
+                    'The %1$s configuration setting is missing. ' .
+                    'Please edit the relevant configuration file to add it.',
+                    $name
+                ));
+            }
+        }
+
+        // automatic install URL detection: use the relative
+        // path after the APP_ROOT setting.
+        if (!defined('APP_INSTALL_URL'))
+        {
+            $relative = ltrim(str_replace(APP_ROOT, '', APP_INSTALL_FOLDER), '/');
+            define('APP_INSTALL_URL', APP_URL . '/' . $relative);
+        }
     }
 }
 
