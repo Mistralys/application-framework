@@ -10,6 +10,26 @@ v1.21.0
 - BigSelection: Added `prependXXX()` methods to prepend items instead of appending them.
 - BigSelection: Added `getReferenceID()` and `getReferenceID()` to items to identify them.
 - BigSelection: Added `getDescription()` and `getLabel()` to regular items.
+- CodeQuality: Type hint extravaganza, part I: admin screen interfaces typified.
+- TypeHinter: Added the automated type hint generator class.
+- TypeHinter: Added the update class `TypeHinter_UpdateV1_21` to help with the migration.
+- EventHandling: Added the offline event handling system.
+- EventHandling: Added `Application_EventHandler::createOfflineEvents()`.
+- Bootstrap: Added `getAutoLoader()` to access the composer autoloader instance.
+- Bootstrap: Added `getVendorFolder()` to access the path to the vendor folder.
+
+**Breaking changes**
+
+A big number of type hints have been added, notably in the admin
+screens handling. Especially affected is the `_handleAction()` method,
+which now has a fixed boolean return value. It already allowed boolean
+values, but would accept no return value as true. Going forward, this
+must be returned explicitly.
+
+To help with the type hint migration, use the class `TypeHinter_UpdateV1_21`,
+which is pre-configured for most of the type hint changes and will adjust
+PHP files automatically. It is recommended to commit all changes prior to
+running the update.
 
 v1.20.1
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
