@@ -656,12 +656,12 @@ class Application
      * @return string
      * @throws Application_Exception
      */
-    public static function getTempFolder()
+    public static function getTempFolder() : string
     {
         return self::getStorageSubfolderPath('temp');
     }
 
-    public static function getCacheFolder()
+    public static function getCacheFolder() : string
     {
         return self::getStorageSubfolderPath('cache');
     }
