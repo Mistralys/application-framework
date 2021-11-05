@@ -12,7 +12,7 @@
      * The application root folder (this file's location)
      * @var string
      */
-    define('APP_ROOT', dirname(__FILE__) );
+    const APP_ROOT = __DIR__;
 
     /**
      * The folder in which the Application libraries
