@@ -38,7 +38,12 @@ class Application_EventHandler
     */
     protected static $listenerIDCounter = 0;
 
-   /**
+    /**
+     * @var Application_EventHandler_OfflineEvents|NULL
+     */
+    private static $offlineEvents;
+
+    /**
     * Adds a callback to the specified event.
     * 
     * @param string $eventName
@@ -195,5 +200,15 @@ class Application_EventHandler
             ),
             self::ERROR_UNKNOWN_LISTENER
         );
+    }
+
+    public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
+    {
+        if(!isset(self::$offlineEvents))
+        {
+            self::$offlineEvents = new Application_EventHandler_OfflineEvents();
+        }
+
+        return self::$offlineEvents;
     }
 }
