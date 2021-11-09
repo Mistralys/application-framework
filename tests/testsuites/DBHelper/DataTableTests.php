@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use AppUtils\Microtime;
 
-final class DBHelper_DataTable_TestCase extends ApplicationTestCase
+final class DBHelper_DataTableTests extends ApplicationTestCase
 {
     /**
      * @var DBHelper_DataTable
@@ -208,17 +208,99 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
         $this->assertSame($user->getID(), $value->getID());
     }
 
+    /**
+     * The key delete event must be triggered and listeners
+     * must be called on saving (auto save is enabled for
+     * the tests).
+     */
+    public function test_deletedListener() : void
+    {
+        $this->startTest('Use a listener for deleted keys');
+
+        $dataTable = $this->createDataTable();
+
+        $dataTable->addKeysDeletedListener(array($this, 'callback_keysDeleted'));
+
+        $dataTable->setKey('to_delete', 'yes');
+        $dataTable->deleteKey('to_delete');
+
+        $this->assertTrue($this->keysDeletedCalled);
+    }
+
+    /**
+     * The delete key listener must only be triggered if the
+     * key actually exists, and a value could be deleted.
+     */
+    public function test_deletedListenerKeyNotExists() : void
+    {
+        $this->startTest('Listener for deleting keys that do not exist');
+
+        $dataTable = $this->createDataTable();
+
+        $dataTable->addKeysDeletedListener(array($this, 'callback_keysDeleted'));
+
+        $dataTable->deleteKey('no_such_key');
+
+        $this->assertFalse($this->keysDeletedCalled);
+    }
+
+    /**
+     * Working with boolean values.
+     */
+    public function test_setBoolKey() : void
+    {
+        $this->startTest('Set and get boolean keys');
+
+        $dataTable = $this->createDataTable();
+
+        // A key that does not exist must return false
+        $this->assertFalse($dataTable->getBoolKey('no_such_key'));
+
+        $dataTable->setBoolKey('boolean', true);
+
+        $this->assertTrue($dataTable->getBoolKey('boolean'));
+
+        $dataTable->setBoolKey('boolean', false);
+
+        $this->assertFalse($dataTable->getBoolKey('boolean'));
+    }
+
+    /**
+     * Setting the maximum key name length must work
+     * as intended, by replacing key names that are
+     * too long with MD5 encoded strings.
+     */
+    public function test_maxKeyNameLength() : void
+    {
+        $dataTable = $this->createDataTable();
+
+        $dataTable->setMaxKeyNameLength(50);
+
+        $okayName = str_repeat('k', 50);
+        $tooLongName = str_repeat('k', 60);
+
+        $this->assertEquals($okayName, $dataTable->getStorageKeyName($okayName));
+        $this->assertEquals(md5($tooLongName), $dataTable->getStorageKeyName($tooLongName));
+    }
+
     // endregion
 
     // region: Support methods
+
+    /**
+     * @var bool
+     */
+    private $keysDeletedCalled = false;
 
     protected function setUp() : void
     {
         parent::setUp();
 
         $this->startTransaction();
+
+        $this->keysDeletedCalled = false;
         $this->createTestRecord();
-        $this->createDataTable();
+        $this->dataTable = $this->createDataTable();
     }
 
     protected function tearDown() : void
@@ -227,16 +309,20 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
         parent::tearDown();
     }
 
+    public function callback_keysDeleted() : void
+    {
+        $this->keysDeletedCalled = true;
+    }
 
     private function createTestRecord() : void
     {
-        $insertID = intval(DBHelper::insertDynamic(
+        $insertID = (int)DBHelper::insertDynamic(
             $this->recordTable,
             array(
                 'label' => $this->testLabel,
                 'alias' => $this->testAlias
             )
-        ));
+        );
 
         $result = DBHelper::createFetchKey($this->recordPrimaryName, $this->recordTable)->whereValue($this->recordPrimaryName, $insertID)->fetchInt();
 
@@ -245,9 +331,9 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
         $this->recordID = $insertID;
     }
 
-    private function createDataTable() : void
+    private function createDataTable() : DBHelper_DataTable
     {
-        $this->dataTable = new DBHelper_DataTable(
+        $dataTable = (new DBHelper_DataTable(
             $this->recordTableData,
             $this->recordPrimaryName,
             $this->recordID,
@@ -256,12 +342,13 @@ final class DBHelper_DataTable_TestCase extends ApplicationTestCase
                 ucfirst($this->recordTypeName),
                 $this->getTestCounter()
             )
-        );
-
-        $this->dataTable->setAutoSave(true);
+        ))
+            ->setAutoSave(true);
 
         // The tests need the class to be in auto save mode.
-        $this->assertTrue($this->dataTable->isAutoSaveEnabled());
+        $this->assertTrue($dataTable->isAutoSaveEnabled());
+
+        return $dataTable;
     }
 
     // endregion
