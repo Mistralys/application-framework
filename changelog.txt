@@ -17,6 +17,8 @@ v1.21.0
 - EventHandling: Added `Application_EventHandler::createOfflineEvents()`.
 - Bootstrap: Added `getAutoLoader()` to access the composer autoloader instance.
 - Bootstrap: Added `getVendorFolder()` to access the path to the vendor folder.
+- DataTable: Added `setMaxKeyNameLength()` to handle long key names.
+- DataTable: Added `setNameColumnName()` and `setValueColumnName()` to customize the names.
 
 **Breaking changes**
 
@@ -29,7 +31,8 @@ must be returned explicitly.
 To help with the type hint migration, use the class `TypeHinter_UpdateV1_21`,
 which is pre-configured for most of the type hint changes and will adjust
 PHP files automatically. It is recommended to commit all changes prior to
-running the update.
+running this script. Simply call it in the `index.php` file of the application
+to run it.
 
 v1.20.1
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
