@@ -1,17 +1,60 @@
 <?php
+/**
+ * File containing the class {@see DBHelper_DataTable}.
+ *
+ * @package DBHelper
+ * @subpackage DataTables
+ * @see DBHelper_DataTable
+ */
 
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
 
+/**
+ * Data table handler for records: Handles fetching
+ * data keys for a record from a DB table that contains
+ * name => value pair data records.
+ *
+ * The data table must have at minimum three columns:
+ *
+ * 1. The record ID
+ * 2. The data key name (default `name`*)
+ * 3. The data key value (default `value`*)
+ *
+ * * The defaults can be changed.
+ *
+ * **Name column size limitation**
+ *
+ * Make sure you set the maximum key name length to match
+ * the size of the column in the database to avoid problems:
+ * The class will automatically replace key names that are
+ * longer with an MD5 hash (internally only).
+ *
+ *   > Note: Because of the MD5 conversion, the minimum size
+ *   > for the name column is 32 characters.
+ *
+ * @package DBHelper
+ * @subpackage DataTables
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @author Emre Celebi <emre.celebi@ionos.com>
+ */
 class DBHelper_DataTable implements Application_Interfaces_Loggable, Application_Interfaces_Eventable
 {
     use Application_Traits_Loggable;
     use Application_Traits_Eventable;
 
-    const EVENT_KEYS_SAVED = 'KeysSaved';
-    const EVENT_KEYS_DELETED = 'KeysDeleted';
+    public const EVENT_KEYS_SAVED = 'KeysSaved';
+    public const EVENT_KEYS_DELETED = 'KeysDeleted';
+
+    public const ERROR_INVALID_MAX_KEY_NAME_LENGTH = 97301;
+
+    /**
+     * The max key length may not be smaller than this.
+     * @see DBHelper_DataTable::setMaxKeyNameLength()
+     */
+    public const MIN_MAX_KEY_NAME_LENGTH = 32;
 
     /**
      * @var array<string,string>
@@ -58,6 +101,21 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
      */
     protected $deletedKeys = array();
 
+    /**
+     * @var string
+     */
+    private $keyValue = 'value';
+
+    /**
+     * @var string
+     */
+    private $keyName = 'name';
+
+    /**
+     * @var int
+     */
+    private $maxKeyNameLength = 250;
+
     public function __construct(string $tableName, string $primaryName, int $primaryValue, string $logPrefix)
     {
         $this->tableName = $tableName;
@@ -102,9 +160,9 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
             return $this->valueCache[$name];
         }
 
-        $value = DBHelper::createFetchKey('value', $this->tableName)
+        $value = DBHelper::createFetchKey($this->keyValue, $this->tableName)
             ->whereValue($this->primaryName, $this->primaryValue)
-            ->whereValue('name', $name)
+            ->whereValue($this->keyName, $name)
             ->fetchString();
 
         $this->valueCache[$name] = $value;
@@ -126,13 +184,13 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
             return true;
         }
 
-        return DBHelper::createFetchKey('value', $this->tableName)
-            ->whereValues(array($this->primaryName => $this->primaryValue, 'name' => $name))->exists();
+        return DBHelper::createFetchKey($this->keyValue, $this->tableName)
+            ->whereValues(array($this->primaryName => $this->primaryValue, $this->keyName => $name))->exists();
     }
 
     public function getIntKey(string $name) : int
     {
-        return intval($this->getKey($name));
+        return (int)$this->getKey($name);
     }
 
     /**
@@ -176,7 +234,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
     public function setIntKey(string $name, int $value) : bool
     {
-        return $this->setKey($name, strval($value));
+        return $this->setKey($name, (string)$value);
     }
 
     public function setUserKey(string $name, Application_User $user) : bool
@@ -254,19 +312,19 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return true;
     }
 
-    public function isModified() : bool
+    public function hasModifiedKeys() : bool
     {
         return !empty($this->modifiedKeys);
     }
 
-    public function isDeleted() : bool
+    public function hasDeletedKeys() : bool
     {
         return !empty($this->deletedKeys);
     }
 
     public function save() : bool
     {
-        if (!$this->isModified() && !$this->isDeleted())
+        if (!$this->hasModifiedKeys() && !$this->hasDeletedKeys())
         {
             return false;
         }
@@ -279,58 +337,82 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
         return true;
     }
 
-    private function saveModifiedKeys()
+    private function saveModifiedKeys() : void
     {
-        if ($this->isModified())
+        if (!$this->hasModifiedKeys())
         {
-            $this->log(sprintf('DataTable | Saving [%s] modified keys.', count($this->modifiedKeys)));
-
-            DBHelper::requireTransaction(sprintf('Save data table keys in [%s]', $this->tableName));
-
-            foreach ($this->modifiedKeys as $name)
-            {
-                DBHelper::insertOrUpdate(
-                    $this->tableName,
-                    array(
-                        $this->primaryName => $this->primaryValue,
-                        'name' => $name,
-                        'value' => $this->valueCache[$name]
-                    ),
-                    array($this->primaryName, 'name')
-                );
-            }
-
-            $this->triggerEvent(
-                self::EVENT_KEYS_SAVED,
-                array($this, $this->modifiedKeys),
-                DBHelper_DataTable_Events_KeysSaved::class
-            );
-
-            $this->modifiedKeys = array();
+            return;
         }
+
+        $this->log(sprintf('DataTable | Saving [%s] modified keys.', count($this->modifiedKeys)));
+
+        DBHelper::requireTransaction(sprintf('Save data table keys in [%s]', $this->tableName));
+
+        foreach ($this->modifiedKeys as $name)
+        {
+            $storageName = $this->getStorageKeyName($name);
+
+            DBHelper::insertOrUpdate(
+                $this->tableName,
+                array(
+                    $this->primaryName => $this->primaryValue,
+                    $this->keyName => $storageName,
+                    $this->keyValue => $this->valueCache[$name]
+                ),
+                array($this->primaryName, $this->keyName)
+            );
+        }
+
+        $this->triggerEvent(
+            self::EVENT_KEYS_SAVED,
+            array($this, $this->modifiedKeys),
+            DBHelper_DataTable_Events_KeysSaved::class
+        );
+
+        $this->modifiedKeys = array();
     }
 
-    private function saveDeletedKeys()
+    private function saveDeletedKeys() : void
     {
-        if ($this->isDeleted())
+        if (!$this->hasDeletedKeys())
         {
-            $this->log(sprintf('DataTable | Deleting [%s] keys.', count($this->deletedKeys)));
-
-            DBHelper::requireTransaction(sprintf('Delete data table keys in [%s]', $this->tableName));
-
-            foreach ($this->deletedKeys as $name)
-            {
-                DBHelper::deleteRecords($this->tableName, array($this->primaryName => $this->primaryValue, 'name' => $name));
-            }
-
-            $this->triggerEvent(
-                self::EVENT_KEYS_DELETED,
-                array($this, $this->deletedKeys),
-                DBHelper_DataTable_Events_KeysDeleted::class
-            );
-
-            $this->deletedKeys = array();
+            return;
         }
+
+        $this->log(sprintf('DataTable | Deleting [%s] keys.', count($this->deletedKeys)));
+
+        DBHelper::requireTransaction(sprintf('Delete data table keys in [%s]', $this->tableName));
+
+        foreach ($this->deletedKeys as $name)
+        {
+            $storageName = $this->getStorageKeyName($name);
+
+            DBHelper::deleteRecords(
+                $this->tableName,
+                array(
+                    $this->primaryName => $this->primaryValue,
+                    $this->keyName => $storageName
+                )
+            );
+        }
+
+        $this->triggerEvent(
+            self::EVENT_KEYS_DELETED,
+            array($this, $this->deletedKeys),
+            DBHelper_DataTable_Events_KeysDeleted::class
+        );
+
+        $this->deletedKeys = array();
+    }
+
+    public function getStorageKeyName(string $name) : string
+    {
+        if(strlen($name) > $this->maxKeyNameLength)
+        {
+            return md5($name);
+        }
+
+        return $name;
     }
 
     /**
@@ -368,5 +450,59 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     public function isAutoSaveEnabled() : bool
     {
         return $this->autoSave;
+    }
+
+    /**
+     * Sets the name of the database column used to store
+     * the record names.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setNameColumnName(string $name) : DBHelper_DataTable
+    {
+        $this->keyName = $name;
+        return $this;
+    }
+
+    /**
+     * Sets the name of the database column used to store
+     * the record values.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setValueColumnName(string $name) : DBHelper_DataTable
+    {
+        $this->keyValue = $name;
+        return $this;
+    }
+
+    /**
+     * @param int $length
+     * @return $this
+     *
+     * @throws DBHelper_Exception
+     * @see DBHelper_DataTable::ERROR_INVALID_MAX_KEY_NAME_LENGTH
+     */
+    public function setMaxKeyNameLength(int $length) : DBHelper_DataTable
+    {
+        $min = self::MIN_MAX_KEY_NAME_LENGTH;
+
+        if($length < $min)
+        {
+            throw new DBHelper_Exception(
+                'Maximum key name length too small.',
+                sprintf(
+                    'Cannot use [%s] as  maximum key length. The minimum value is [%s].',
+                    $length,
+                    $min
+                ),
+                self::ERROR_INVALID_MAX_KEY_NAME_LENGTH
+            );
+        }
+
+        $this->maxKeyNameLength = $length;
+        return $this;
     }
 }
