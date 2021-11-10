@@ -365,9 +365,8 @@ class Application_Countries extends DBHelper_BaseCollection
     * 
     * @return Application_Countries_Navigator
     */
-    public function createCountryNavigator()
+    public function createCountryNavigator() : Application_Countries_Navigator
     {
-        require_once 'Application/Countries/Navigator.php';
         return new Application_Countries_Navigator($this);
     }
     
