@@ -1,13 +1,17 @@
 <?php
 
+use AppUtils\ConvertHelper;
+use AppUtils\FileHelper;
+use AppUtils\Request_Exception;
+
 abstract class Application_AjaxMethod
 {
     public const ERROR_MALFORMED_JSON_DATA = 554001;
-    
-    const RETURNFORMAT_HTML = 'HTML';
-    const RETURNFORMAT_JSON = 'JSON';
-    const RETURNFORMAT_TEXT = 'TXT';
-    const RETURNFORMAT_XML = 'XML';
+
+    public const RETURNFORMAT_HTML = 'HTML';
+    public const RETURNFORMAT_JSON = 'JSON';
+    public const RETURNFORMAT_TEXT = 'TXT';
+    public const RETURNFORMAT_XML = 'XML';
 
     /**
      * @var Application_AjaxHandler
@@ -83,19 +87,17 @@ abstract class Application_AjaxMethod
     {
     }
     
-    protected function setReturnFormatHTML()
+    protected function setReturnFormatHTML() : void
     {
         $this->format = self::RETURNFORMAT_HTML;
     }
 
-    public function getID()
+    public function getID() : string
     {
-        $tokens = explode('_', get_class($this));
-
-        return array_pop($tokens);
+        return getClassTypeName($this);
     }
 
-    public function isFormatSupported($formatName)
+    public function isFormatSupported(string $formatName) : bool
     {
         return isset($this->supportedFormats[$formatName]);
     }
@@ -153,13 +155,13 @@ abstract class Application_AjaxMethod
             $details = strip_tags($details);
         }
         
-        $info = \AppUtils\ConvertHelper::throwable2info($e);
+        $info = ConvertHelper::throwable2info($e);
         
         $data = array(
             'isExceptionData' => 'yes',
             'eid' => $eid,
             'class' => get_class($e),
-            'file' => \AppUtils\FileHelper::relativizePath($e->getFile(), APP_ROOT),
+            'file' => FileHelper::relativizePath($e->getFile(), APP_ROOT),
             'line' => $e->getLine(),
             'details' => $details,
             'trace' => $info->toString(),
@@ -174,7 +176,7 @@ abstract class Application_AjaxMethod
         return $data;
     }
 
-    public function getSupportedFormats()
+    public function getSupportedFormats() : array
     {
         return array_keys($this->supportedFormats);
     }
@@ -183,7 +185,7 @@ abstract class Application_AjaxMethod
      * @param array<string|int,mixed>|string|NULL $data
      * @return never-returns
      */
-    protected function sendResponse($data = null)
+    protected function sendResponse($data = null) : void
     {
         if(DBHelper::isTransactionStarted()) {
             $this->endTransaction();
@@ -211,8 +213,12 @@ abstract class Application_AjaxMethod
         header('HTTP/1.1 200');
         Application::exit();
     }
-    
-    protected function sendHTMLResponse($html)
+
+    /**
+     * @param string $html
+     * @return never-returns
+     */
+    protected function sendHTMLResponse(string $html) : void
     {
         Application_Request::sendHTML($html);
     }
@@ -221,35 +227,38 @@ abstract class Application_AjaxMethod
      * Sends a JSON response with a success state and the specified
      * data payload.
      *
-     * @param mixed $data
+     * @param array $data
      */
-    protected function sendJSONResponse($data)
+    protected function sendJSONResponse(array $data) : void
     {
-        $this->sendJSON($this->formatJSONResponse($data));
+        $this->sendJSON(self::formatJSONResponse($data));
     }
-    
-    public static function formatJSONResponse($data)
+
+    /**
+     * @param array $data
+     * @return string
+     */
+    public static function formatJSONResponse(array $data) : string
     {
         $request = Application_Request::getInstance();
         
-        $json = json_encode(array(
-            'state' => 'success',
-            'request_uri' => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
-            'data' => $data
-        ));
-        
-        if($json===false) {
-            return self::formatJSONError(
-                'The response data contains malformed JSON data',
-                'Json encoder error message: '.json_last_error_msg(),
-                self::ERROR_MALFORMED_JSON_DATA
-            );
-        }
-        
-        return $json;
+        return json_encode(
+            array(
+                'state' => 'success',
+                'request_uri' => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
+                'data' => $data
+            ),
+            JSON_THROW_ON_ERROR
+        );
     }
-    
-    public static function formatJSONError($message, $data=null, $code=null)
+
+    /**
+     * @param string $message
+     * @param string|array|null $data
+     * @param int|null $code
+     * @return array{state:string,message:string,code:int|null,data:array<string,mixed>}
+     */
+    public static function formatJSONError(string $message, $data=null, ?int $code=null) : array
     {
         if(is_string($data)) {
             $data = array(
@@ -258,14 +267,12 @@ abstract class Application_AjaxMethod
             );
         }
         
-        $response = array(
+        return array(
             'state' => 'error',
             'message' => $message,
             'code' => $code,
             'data' => $data
         );
-        
-        return $response;
     }
 
     public static function formatJSONException(Exception $e)
@@ -301,7 +308,7 @@ abstract class Application_AjaxMethod
             Application::exit();
         }
         
-        if(!empty($code)) {
+        if($code !== null) {
             $message = 'Error #'.$code.': '.$message;
         }
 
@@ -324,7 +331,13 @@ abstract class Application_AjaxMethod
         $this->sendError(t('Unknown %1$s specified.', $elementLabel), $data, $code);
     }
 
-    protected function sendJSONError($message, $data=null, $code=null)
+    /**
+     * @param string $message
+     * @param array|null $data
+     * @param int|null $code
+     * @return never-returns
+     */
+    protected function sendJSONError(string $message, ?array $data=null, ?int $code=null) : void
     {
         $this->sendJSON(self::formatJSONError($message, $data, $code));
     }
@@ -334,8 +347,9 @@ abstract class Application_AjaxMethod
      * method if you want to send a regularly formatted response.
      *
      * @param string $json
+     * @return never-returns
      */
-    protected function sendJSON($json)
+    protected function sendJSON(string $json) : void
     {
         if($this->isSimulationEnabled()) {
             Application::log('Response', true);
@@ -348,14 +362,17 @@ abstract class Application_AjaxMethod
         Application_Request::sendJSON($json);
     }
 
+    /**
+     * @var bool
+     */
     protected $debug = false;
 
-    public function enableDebug()
+    public function enableDebug() : void
     {
         $this->debug = true;
     }
 
-    protected function log($message)
+    protected function log(string $message) : void
     {
         Application::log(sprintf(
             'AjaxMethod [%1$s] | %2$s',
@@ -383,12 +400,15 @@ abstract class Application_AjaxMethod
     * 
     * @return boolean
     */
-    protected function forceStartSimulation()
+    protected function forceStartSimulation() : bool
     {
         $this->request->setParam('simulate_only', 'yes');
         return $this->startSimulation();
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $simulationStarted = false;
     
    /**
@@ -399,7 +419,7 @@ abstract class Application_AjaxMethod
     * @return boolean
     * @see endSimulation()
     */
-    protected function startSimulation()
+    protected function startSimulation() : bool
     {
         if(!$this->isSimulationEnabled()) {
             return false;
@@ -428,7 +448,7 @@ abstract class Application_AjaxMethod
         return true;
     }
     
-    protected function getPermalink()
+    protected function getPermalink() : string
     {
         $vars = $_REQUEST;
         if(isset($vars['_loadkeys'])) {
@@ -444,7 +464,7 @@ abstract class Application_AjaxMethod
     * 
     * @see startSimulation()
     */
-    protected function endSimulation()
+    protected function endSimulation() : void
     {
         if(!$this->isSimulationEnabled()) {
             return;
@@ -458,7 +478,7 @@ abstract class Application_AjaxMethod
     * Utility method: alias for starting a DBHelper transaction.
     * @see endTransaction()
     */
-    protected function startTransaction()
+    protected function startTransaction() : void
     {
         DBHelper::startTransaction();
     }
@@ -470,7 +490,7 @@ abstract class Application_AjaxMethod
     * 
     * @see startTransaction()
     */
-    protected function endTransaction()
+    protected function endTransaction() : void
     {
         if($this->isSimulationEnabled()) {
             DBHelper::rollbackTransaction();
@@ -483,9 +503,32 @@ abstract class Application_AjaxMethod
    /**
     * Called before the processXXX() method, to validate
     * any request variables.
+    *
+    * @return void
     */
     protected function validateRequest()
     {
         
+    }
+
+    /**
+     * Ensures that a country has been specified in the request,
+     * and returns its instance.
+     *
+     * @return Application_Countries_Country
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     * @throws Request_Exception
+     */
+    protected function requireCountry() : Application_Countries_Country
+    {
+        $country = Application_Countries::getInstance()->getByRequest();
+
+        if($country !== null)
+        {
+            return $country;
+        }
+
+        $this->sendErrorUnknownElement(t('Country'));
     }
 }
