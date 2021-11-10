@@ -19,6 +19,8 @@ v1.21.0
 - Bootstrap: Added `getVendorFolder()` to access the path to the vendor folder.
 - DataTable: Added `setMaxKeyNameLength()` to handle long key names.
 - DataTable: Added `setNameColumnName()` and `setValueColumnName()` to customize the names.
+- Countries: Navigator: Added optional active country saving with `enableCountryStorage()`.
+- AjaxMethod: Added `requireCountry()` to fetch a country from the request.
 
 **Breaking changes**
 
