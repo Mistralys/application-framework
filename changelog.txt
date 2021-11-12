@@ -21,6 +21,8 @@ v1.21.0
 - DataTable: Added `setNameColumnName()` and `setValueColumnName()` to customize the names.
 - Countries: Navigator: Added optional active country saving with `enableCountryStorage()`.
 - AjaxMethod: Added `requireCountry()` to fetch a country from the request.
+- Countries: Added `createNewCountry()`.
+- Countries: Added failsafe for adding unhandled ISO codes like `gb`.
 
 **Breaking changes**
 
