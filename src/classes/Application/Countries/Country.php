@@ -5,6 +5,10 @@
  * @subpackage Countries
  */
 
+use AppLocalize\Localization;
+use AppLocalize\Localization_Country;
+use AppLocalize\Localization_Currency;
+
 /**
  * Country data type; handles an individual country and its information.
  *
@@ -17,22 +21,24 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
     public const ERROR_UNKNOWN_LANGUAGE_LABEL = 37802;
     
-    const COUNTRY_INDEPENDENT_ID = 9999;
-    const COUNTRY_INDEPENDENT_ISO = 'zz';
-    
-   /**
-    * @var \AppLocalize\Localization_Country
+    public const COUNTRY_INDEPENDENT_ID = 9999;
+    public const COUNTRY_INDEPENDENT_ISO = 'zz';
+    public const COL_ISO = 'iso';
+    const COL_LABEL = 'label';
+
+    /**
+    * @var Localization_Country
     */
     protected $country;
 
     protected function init()
     {
-        $this->country = \AppLocalize\Localization::createCountry($this->getISO());
+        $this->country = Localization::createCountry($this->getISO());
     }
     
     public function getLabel() : string
     {
-        $label = $this->getRecordKey('label');
+        $label = $this->getRecordKey(self::COL_LABEL);
         
         if($this->isInvariant()) {
             $label = '('.$label.')';
@@ -41,7 +47,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $label;
     }
 
-    public function getLocalizedLabel()
+    public function getLocalizedLabel() : string
     {
         $label = $this->country->getLabel();
         
@@ -52,7 +58,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $label;
     }
     
-    public function getIconLabel()
+    public function getIconLabel() : string
     {
         return $this->getIcon().' '.$this->getLocalizedLabel();
     }
@@ -82,28 +88,36 @@ class Application_Countries_Country extends DBHelper_BaseRecord
             return self::COUNTRY_INDEPENDENT_ISO;
         }
         
-        return $this->getRecordKey('iso');
+        return $this->getRecordKey(self::COL_ISO);
     }
-    
+
+    /**
+     * @var array<string,string>
+     */
+    private $isoToAlpha2 = array(
+        'uk' => 'gb'
+    );
+
    /**
     * Retrieves the Alpha 2 ISO code for the country.
     * @return string
     * @see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
     */
-    public function getAlpha2()
+    public function getAlpha2() : string
     {
         $iso = $this->getISO();
-        
-        if($iso == 'uk') {
-            return 'gb';
+
+        if(isset($this->isoToAlpha2[$iso]))
+        {
+            return $this->isoToAlpha2[$iso];
         }
-        
+
         return $iso;
     }
    
    /**
     * Primary language by country
-    * @var array
+    * @var array<string,string>
     * @see https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
     */
     protected $languages = array(
@@ -119,10 +133,13 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         'uk' => 'en',
         'us' => 'en'
     );
-    
+
+    /**
+     * @var array<string,string>
+     */
     protected $languageLabels;
     
-    protected function initLanguages()
+    protected function initLanguages() : void
     {
         if(isset($this->languageLabels)) {
             return;
@@ -142,13 +159,13 @@ class Application_Countries_Country extends DBHelper_BaseRecord
    /**
     * Retrieves the lowercase two-letter language code for
     * the country. Note that this only returns the main 
-    * language used in the the country, if it has several
+    * language used in the country, if it has several
     * official ones.
     * 
     * @throws Application_Exception
     * @return string
     */
-    public function getLanguageCode()
+    public function getLanguageCode() : string
     {
         $iso = $this->getISO();
         if(isset($this->languages[$iso])) {
@@ -179,7 +196,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * @throws Application_Exception
     * @return string
     */
-    public function getLanguageLabel()
+    public function getLanguageLabel() : string
     {
         $this->initLanguages();
         
@@ -197,9 +214,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     
    /**
     * The currency used in this country.
-    * @return \AppLocalize\Localization_Currency
+    * @return Localization_Currency
     */
-    public function getCurrency()
+    public function getCurrency() : Localization_Currency
     {
         return $this->country->getCurrency();
     }
@@ -217,20 +234,16 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * Alias for the {@link isInvariant()} method.
     * @return boolean
     */
-    public function isInvariant()
+    public function isInvariant() : bool
     {
-        if($this->getID() == self::COUNTRY_INDEPENDENT_ID) {
-            return true;
-        }
-        
-        return false;
+        return $this->getID() === self::COUNTRY_INDEPENDENT_ID;
     }
     
    /**
     * Whether this is the country independent special country.
     * @return boolean
     */
-    public function isCountryIndependent()
+    public function isCountryIndependent() : bool
     {
         return $this->isInvariant();
     }
