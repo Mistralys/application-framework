@@ -630,7 +630,9 @@ class Application
 
         self::$develEnvironment = false;
 
-        if (stristr(php_uname(), 'windows'))
+        $env = Application_Environments::getInstance()->getDetected();
+
+        if($env !== null && $env->isDev())
         {
             self::$develEnvironment = true;
         }
