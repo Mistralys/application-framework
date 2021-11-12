@@ -227,17 +227,17 @@ class Application_FilterCriteria_Database_CustomColumn
 
     public function isComplexQuery() : bool
     {
-        return $this->isSubQuery();
+        return $this->isSubQuery() || $this->isCaseQuery();
     }
 
     public function isCaseQuery() : bool
     {
-        return strstr($this->getSQLStatement(), 'CASE') !== false;
+        return strpos($this->getSQLStatement(), 'CASE') !== false;
     }
 
     public function isSubQuery() : bool
     {
-        return strstr($this->getSQLStatement(), 'SELECT') !== false;
+        return strpos($this->getSQLStatement(), 'SELECT') !== false;
     }
 
     // region: Getting flavored markers
@@ -298,14 +298,14 @@ class Application_FilterCriteria_Database_CustomColumn
 
     // region: Managing markers
 
-    const COMPONENT_WHERE = 'where';
-    const COMPONENT_ORDER_BY = 'order_by';
-    const COMPONENT_GROUP_BY = 'group_by';
-    const COMPONENT_SELECT_PRIMARY = 'select_primary';
-    const COMPONENT_SELECT_SECONDARY = 'select_secondary';
-    const COMPONENT_JOIN = 'join';
+    public const COMPONENT_WHERE = 'where';
+    public const COMPONENT_ORDER_BY = 'order_by';
+    public const COMPONENT_GROUP_BY = 'group_by';
+    public const COMPONENT_SELECT_PRIMARY = 'select_primary';
+    public const COMPONENT_SELECT_SECONDARY = 'select_secondary';
+    public const COMPONENT_JOIN = 'join';
 
-    const MARKER_SUFFIX = '$$';
+    public const MARKER_SUFFIX = '$$';
 
     /**
      * @var string
@@ -330,8 +330,8 @@ class Application_FilterCriteria_Database_CustomColumn
 
         $this->markerRegex = sprintf(
             '/%1$s%2$s_(%3$s)%1$s/sU',
-            preg_quote(self::MARKER_SUFFIX),
-            preg_quote($this->getName()),
+            preg_quote(self::MARKER_SUFFIX, '/'),
+            preg_quote($this->getName(), '/'),
             implode('|', $components)
         );
 
@@ -398,7 +398,7 @@ class Application_FilterCriteria_Database_CustomColumn
      * @param array<string,mixed> $placeholders
      * @return $this
      */
-    public function addCustomPlaceholders(array $placeholders)
+    public function addCustomPlaceholders(array $placeholders) : Application_FilterCriteria_Database_CustomColumn
     {
         foreach ($placeholders as $name => $value)
         {
@@ -421,7 +421,7 @@ class Application_FilterCriteria_Database_CustomColumn
      * @param mixed $value
      * @return $this
      */
-    public function addCustomPlaceholder(string $name, $value)
+    public function addCustomPlaceholder(string $name, $value) : Application_FilterCriteria_Database_CustomColumn
     {
         $this->placeholders[$name] = $value;
         return $this;
@@ -520,7 +520,7 @@ class Application_FilterCriteria_Database_CustomColumn
         // Complex queries are sub-queries for example, which
         // do not allow using the field alias. We have to duplicate
         // the full SQL statement.
-        if($this->isComplexQuery() && !$complexAliasAllowed)
+        if(!$complexAliasAllowed && $this->isComplexQuery())
         {
             return $this->getSQLStatement();
         }
