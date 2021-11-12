@@ -20,11 +20,6 @@ class TypeHinter implements Application_Interfaces_Loggable
     private $methods = array();
 
     /**
-     * @var string[]
-     */
-    private $methodNames = array();
-
-    /**
      * @var string
      */
     private $fileSuffix;
@@ -63,6 +58,7 @@ class TypeHinter implements Application_Interfaces_Loggable
             'type' => $type,
             'instanceOf' => $classSearch
         );
+
         return $this;
     }
 
@@ -75,8 +71,6 @@ class TypeHinter implements Application_Interfaces_Loggable
     public function process() : TypeHinter
     {
         $files = $this->getFilesList();
-
-        $this->methodNames = array_keys($this->methods);
 
         foreach($files as $file)
         {

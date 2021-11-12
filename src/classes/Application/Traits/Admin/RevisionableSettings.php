@@ -132,7 +132,7 @@ trait Application_Admin_RevisionableSettings
     
     abstract protected function getDefaultFormData();
     
-    protected function createSettingsForm() : string
+    protected function createSettingsForm() : void
     {
         $this->createFormableForm($this->getDefaultFormData(), $this->formName);
         
@@ -155,8 +155,6 @@ trait Application_Admin_RevisionableSettings
     
     protected function _handleSidebar() : void
     {
-        $btn = null;
-        
         if(!$this->isEditMode())
         {
             $btn = $this->sidebar->addButton('create_now', t('Create now'))

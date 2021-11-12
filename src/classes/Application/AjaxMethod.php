@@ -220,7 +220,8 @@ abstract class Application_AjaxMethod
      */
     protected function sendHTMLResponse(string $html) : void
     {
-        Application_Request::sendHTML($html);
+        Application_Request::sendHTML($html, false);
+        Application::exit();
     }
     
     /**
@@ -335,11 +336,13 @@ abstract class Application_AjaxMethod
      * @param string $message
      * @param array|null $data
      * @param int|null $code
-     * @return never-returns
+     * @throws JsonException
      */
     protected function sendJSONError(string $message, ?array $data=null, ?int $code=null) : void
     {
-        $this->sendJSON(self::formatJSONError($message, $data, $code));
+        $json = json_encode(self::formatJSONError($message, $data, $code), JSON_THROW_ON_ERROR);
+
+        $this->sendJSON($json);
     }
 
     /**
@@ -359,7 +362,8 @@ abstract class Application_AjaxMethod
             Application::exit();
         }
         
-        Application_Request::sendJSON($json);
+        Application_Request::sendJSON($json, false);
+        Application::exit();
     }
 
     /**

@@ -10,7 +10,7 @@ use function AppUtils\parseVariable;
 
 /**
  * Country management class, used to retrieve information
- * about available countries and add or delete individiual
+ * about available countries and add or delete individual
  * countries.
  *
  * @package Maileditor
@@ -159,15 +159,23 @@ class Application_Countries extends DBHelper_BaseCollection
     }
 
    /**
-    * @see DBHelper_BaseCollection::getAll()
     * @return Application_Countries_Country[]
     */
     public function getAll(bool $includeInvariant=true) : array
     {
+        /**
+         * @var Application_Countries_Country[] $countries
+         */
         $countries = parent::getAll();
             
         // sort by the localized label, which is not in the database.
-        usort($countries, array($this, 'handle_sortCountries'));
+        usort(
+            $countries,
+            NamedClosure::fromClosure(
+                Closure::fromCallable(array($this, 'handle_sortCountries')),
+                array($this, 'handle_sortCountries')
+            )
+        );
 
         if($includeInvariant)
         {
@@ -204,7 +212,7 @@ class Application_Countries extends DBHelper_BaseCollection
         return $result;
     }
     
-    public function handle_sortCountries(Application_Countries_Country $a, Application_Countries_Country $b)
+    private function handle_sortCountries(Application_Countries_Country $a, Application_Countries_Country $b)
     {
         if($a->isCountryIndependent()) {
             return -1;
