@@ -90,7 +90,12 @@ class Application_Environments
     {
         return $this->register($id, self::TYPE_PROD);
     }
-    
+
+    public function getDetected() : ?Application_Environments_Environment
+    {
+        return $this->detected;
+    }
+
     public function detect(string $defaultID) : Application_Environments_Environment
     {
         if(isset($this->detected))
