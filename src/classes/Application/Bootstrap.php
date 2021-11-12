@@ -283,7 +283,7 @@ class Application_Bootstrap
         // dependency.
         $loader = require $autoloadFile;
 
-        if (!is_object($loader))
+        if (!$loader instanceof ClassLoader)
         {
             throw new Exception(
                 'Autoloader error: no autoloader instance returned on require.',
@@ -296,7 +296,7 @@ class Application_Bootstrap
 
     private static function initIncludePath() : void
     {
-// set the include paths after the autoloader: this
+        // Set the include paths after the autoloader: this
         // enables the possibility to have classes from the
         // vendor folder be overridden by those in the application
         // like for example the HTML_Quickform classes.
