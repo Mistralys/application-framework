@@ -8,6 +8,7 @@
  */
 
 use AppUtils\ConvertHelper;
+use AppUtils\OutputBuffering;
 
 /**
  * Developer helper that can be used to store settings in the application
@@ -213,7 +214,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
     {
         ksort($this->settings);
 
-        ob_start();
+        OutputBuffering::start();
         ?>
             <ul class="unstyled">
             <?php
@@ -234,7 +235,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
             </ul>
         <?php
 
-        return ob_get_clean();
+        return OutputBuffering::get();
     }
 
     protected function renderStatement(UI_Page_Section $formSection, array $def) : string
