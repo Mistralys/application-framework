@@ -5,6 +5,7 @@
  * @subpackage Countries
  */
 
+use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
 /**
@@ -24,9 +25,10 @@ class Application_Countries extends DBHelper_BaseCollection
 {
     public const ERROR_UNKNOWN_ISO_CODE = 21901;
     public const ERROR_INVALID_COUNTRY_ID = 21902;
-    public const ERROR_UNKNOWN_LOCALE_CODE = 21903;
-    const PRIMARY_NAME = 'country_id';
-    const TABLE_NAME = 'countries';
+    public const ERROR_INVALID_ISO_CODE = 21903;
+
+    public const PRIMARY_NAME = 'country_id';
+    public const TABLE_NAME = 'countries';
 
     /**
      * @var Application_Countries
@@ -155,38 +157,33 @@ class Application_Countries extends DBHelper_BaseCollection
 
         return $element;
     }
-    
-    protected $cachedCountries;
-    
+
    /**
     * @see DBHelper_BaseCollection::getAll()
     * @return Application_Countries_Country[]
     */
     public function getAll(bool $includeInvariant=true) : array
     {
-        if(!isset($this->cachedCountries)) 
-        {
-            $this->cachedCountries = parent::getAll();
+        $countries = parent::getAll();
             
-            // sort by the localized label, which is not in the database.
-            usort($this->cachedCountries, array($this, 'handle_sortCountries'));
+        // sort by the localized label, which is not in the database.
+        usort($countries, array($this, 'handle_sortCountries'));
+
+        if($includeInvariant)
+        {
+            return $countries;
         }
-        
-        if(!$includeInvariant)
+
+        $result = array();
+
+        foreach($countries as $country)
         {
-            $result = array();
-            
-            foreach($this->cachedCountries as $country) 
-            {
-                if(!$country->isCountryIndependent()) {
-                    $result[] = $country;
-                }
+            if(!$country->isCountryIndependent()) {
+                $result[] = $country;
             }
-            
-            return $result;
         }
-        
-        return $this->cachedCountries;
+
+        return $result;
     }
 
     /**
@@ -384,7 +381,7 @@ class Application_Countries extends DBHelper_BaseCollection
         
         foreach($ids as $id)
         {
-            $countryID = intval($id);
+            $countryID = (int)$id;
             
             if($countryID === 0 || !$this->idExists($countryID)) 
             {
@@ -426,8 +423,71 @@ class Application_Countries extends DBHelper_BaseCollection
     * @param string $baseURL The base URL to use, to which the country selection parameter will be appended.
     * @return Application_Countries_ButtonBar
     */
-    public static  function createButtonBar(string $id, string $baseURL) : Application_Countries_ButtonBar
+    public static function createButtonBar(string $id, string $baseURL) : Application_Countries_ButtonBar
     {
         return new Application_Countries_ButtonBar($id, $baseURL);
+    }
+
+    public function createNewCountry(string $iso, string $label) : Application_Countries_Country
+    {
+        $record = $this->createNewRecord(array(
+            Application_Countries_Country::COL_ISO => $this->convertISO($iso),
+            Application_Countries_Country::COL_LABEL => $iso
+        ));
+
+        if($record instanceof Application_Countries_Country)
+        {
+            return $record;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Countries_Country::class, $record);
+    }
+
+    protected function _registerKeys() : void
+    {
+        $this->keys->register(Application_Countries_Country::COL_ISO)
+            ->makeRequired()
+            ->setValidation(NamedClosure::fromClosure(
+                Closure::fromCallable(array($this, 'validateISO')),
+                array($this, 'validateISO')
+            ));
+
+        $this->keys->register(Application_Countries_Country::COL_LABEL)
+            ->makeRequired();
+    }
+
+    private function validateISO(string $iso) : void
+    {
+        if($this->convertISO($iso) === $iso)
+        {
+            return;
+        }
+
+        throw new Application_Countries_Exception(
+            'Cannot use specified ISO code for a country.',
+            sprintf(
+                'Use the code [%s] instead, which supports being accessed as [%s] as well.',
+                $this->convertISO($iso),
+                $iso
+            ),
+            self::ERROR_INVALID_ISO_CODE
+        );
+    }
+
+    /**
+     * @var array<string,string>
+     */
+    private $isoConversions = array(
+        'gb' => 'uk'
+    );
+
+    public function convertISO(string $iso) : string
+    {
+        if(isset($this->isoConversions[$iso]))
+        {
+            return $this->isoConversions[$iso];
+        }
+
+        return $iso;
     }
 }
