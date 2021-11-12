@@ -15,6 +15,7 @@
  * @package Application
  * @subpackage Revisionable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @implements ArrayAccess<string,mixed>
  */
 abstract class Application_RevisionStorage implements ArrayAccess, Application_Interfaces_Eventable
 {

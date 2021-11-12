@@ -18,6 +18,7 @@ use AppUtils\Interface_Classable;
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @implements ArrayAccess<string,mixed>
  */
 class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
 {
