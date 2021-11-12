@@ -132,7 +132,7 @@ trait Application_Admin_RevisionableSettings
     
     abstract protected function getDefaultFormData();
     
-    protected function createSettingsForm()
+    protected function createSettingsForm() : string
     {
         $this->createFormableForm($this->getDefaultFormData(), $this->formName);
         
