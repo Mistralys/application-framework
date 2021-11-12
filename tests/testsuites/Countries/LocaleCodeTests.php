@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-final class Countries_CoreTest extends CountriesTestCase
+final class Countries_LocaleCodeTests extends CountriesTestCase
 {
     public function test_parseLocaleCode() : void
     {

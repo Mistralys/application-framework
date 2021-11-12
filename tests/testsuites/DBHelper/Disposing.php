@@ -14,6 +14,8 @@ final class DBHelper_Disposing_TestCase extends ApplicationTestCase
     public function test_resetCollection() : void
     {
         $collection = new Application_Countries();
+        $collection->createNewCountry('uk', 'United Kingdom');
+        $collection->createNewCountry('de', 'Germany');
 
         $records = $collection->getAll();
 

@@ -9,18 +9,13 @@ abstract class CountriesTestCase extends ApplicationTestCase
      */
     protected $countries;
 
-    protected static $dbDone = false;
-
     protected function setUp() : void
     {
         $this->countries = Application_Countries::getInstance();
 
-        if(self::$dbDone)
-        {
-            return;
-        }
+        $this->startTransaction();
 
-        self::$dbDone = true;
+        DBHelper::deleteRecords(Application_Countries::TABLE_NAME);
 
         DBHelper::insertDynamic(
             $this->countries->getRecordTableName(),
