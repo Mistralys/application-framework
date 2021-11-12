@@ -1,3 +1,8 @@
+v1.21.1
+- Environments: `Application::isDevelEnvironment()` now uses the environment classes.
+- Environments: Added `Application_Environments::getDetected()`.
+- DBHelper: Fixed detection of complex queries in custom columns.
+
 v1.21.0
 - FilterCriteria: Improved the custom columns handling further.
 - FilterCriteria: Custom columns now automate even more tasks.
