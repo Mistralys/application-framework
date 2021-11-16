@@ -1384,10 +1384,10 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Configures the clientside scripts and objects with the required data.
      */
-    protected function configureScripts()
+    protected function configureScripts() : void
     {
         $this->ui->addJavascriptHeadVariable('FormHelper.ID_PREFIX', UI_Form::ID_PREFIX);
-        $this->ui->addJavascriptHeadVariable('UI.BOOTSTRAP_VERSION', $this->ui->getBoostrapVersion());
+        $this->ui->addJavascriptHeadVariable('UI.BOOTSTRAP_VERSION', UI::getBoostrapVersion());
         $this->ui->addJavascriptHeadVariable('Driver.version', $this->getVersion());
 
         $this->ui->addJavascriptHead('application.setUp()');
@@ -1396,9 +1396,9 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('application.url', APP_URL);
         $this->ui->addJavascriptHeadVariable('application.host', parse_url(APP_URL, PHP_URL_HOST));
         $this->ui->addJavascriptHeadVariable('application.className', APP_CLASS_NAME);
-        $this->ui->addJavascriptHeadVariable('application.deletionDelay', AppUtils\ConvertHelper::time2string(APP_AUTOMATIC_DELETION_DELAY));
+        $this->ui->addJavascriptHeadVariable('application.deletionDelay', ConvertHelper::time2string(APP_AUTOMATIC_DELETION_DELAY));
         $this->ui->addJavascriptHeadVariable('application.appNameShort', $this->getAppNameShort());
-        $this->ui->addJavascriptHeadVariable('application.environment', APP_ENVIRONMENT);
+        $this->ui->addJavascriptHeadVariable('application.environment', boot_constant('APP_ENVIRONMENT'));
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
         $this->ui->addJavascriptHead('application.handle_JavaScriptError()');
