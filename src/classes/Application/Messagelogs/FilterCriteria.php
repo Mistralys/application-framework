@@ -23,7 +23,7 @@ class Application_Messagelogs_FilterCriteria extends DBHelper_BaseFilterCriteria
     * @param string $category
     * @return Application_Messagelogs_FilterCriteria
     */
-    public function selectCategory($category)
+    public function selectCategory(string $category)
     {
         return $this->selectCriteriaValue('categories', $category);
     }
@@ -32,7 +32,7 @@ class Application_Messagelogs_FilterCriteria extends DBHelper_BaseFilterCriteria
     * @param string $type
     * @return Application_Messagelogs_FilterCriteria
     */
-    public function selectType($type)
+    public function selectType(string $type)
     {
         return $this->selectCriteriaValue('types', $type);
     }
@@ -50,7 +50,7 @@ class Application_Messagelogs_FilterCriteria extends DBHelper_BaseFilterCriteria
     * @param string $dateSearchString
     * @return Application_Messagelogs_FilterCriteria
     */
-    public function selectDate($dateSearchString)
+    public function selectDate(string $dateSearchString)
     {
         return $this->selectCriteriaDate('date', $dateSearchString);
     }

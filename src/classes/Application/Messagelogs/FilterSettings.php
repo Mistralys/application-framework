@@ -52,11 +52,11 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
      */
     protected function _configureFilters() : void
     {
-        $this->filters->selectDate($this->getSetting('date'));   
+        $this->filters->selectDate((string)$this->getSetting('date'));
         
-        $this->filters->selectCategory($this->getSetting('category'));
+        $this->filters->selectCategory((string)$this->getSetting('category'));
         
-        $this->filters->selectType($this->getSetting('type'));
+        $this->filters->selectType((string)$this->getSetting('type'));
         
         $this->filters->setSearch((string)$this->getSetting('search'));
     }
