@@ -195,11 +195,11 @@ class UI_DataGrid
 
     /**
      * @param string $dataKey
-     * @param string $title
+     * @param string|number|UI_Renderable_Interface $title
      * @param array<string,mixed> $options
      * @return UI_DataGrid_Column
      */
-    protected function createColumn($dataKey, $title, $options = array())
+    protected function createColumn(string $dataKey, $title, array $options = array())
     {
     	$this->columnCounter++;
 
@@ -214,11 +214,11 @@ class UI_DataGrid
 
     /**
      * @param string $dataKey
-     * @param string $title
+     * @param string|number|UI_Renderable_Interface $title
      * @param array<string,mixed> $options
      * @return UI_DataGrid_Column
      */
-    public function addColumn($dataKey, $title, $options = array())
+    public function addColumn(string $dataKey, $title, array $options = array()) : UI_DataGrid_Column
     {
         $column = $this->createColumn($dataKey, $title, $options);
         $this->addColumnObject($column);
@@ -230,10 +230,10 @@ class UI_DataGrid
      * @param string $keyName
      * @return false|UI_DataGrid_Column
      */
-    public function hasColumn($keyName)
+    public function hasColumn(string $keyName)
     {
         for($i=0; $i < $this->columnCount; $i++) {
-            if($this->columns[$i]->getDataKey() == $keyName) {
+            if($this->columns[$i]->getDataKey() === $keyName) {
                 return $this->columns[$i];
             }
         }
@@ -262,9 +262,9 @@ class UI_DataGrid
      * @param string|int|float $value
      * @return $this
      */
-    public function addHiddenVar($name, $value)
+    public function addHiddenVar(string $name, $value)
     {
-        $this->hiddenVars[$name] = strval($value);
+        $this->hiddenVars[$name] = (string)$value;
         return $this;
     }
 
@@ -272,7 +272,7 @@ class UI_DataGrid
      * @param array<string,int|string|float> $vars
      * @return $this
      */
-    public function addHiddenVars($vars)
+    public function addHiddenVars(array $vars) : UI_DataGrid
     {
         foreach($vars as $name => $value) {
             $this->addHiddenVar($name, $value);
@@ -281,13 +281,13 @@ class UI_DataGrid
         return $this;
     }
 
-    protected function addColumnObject(UI_DataGrid_Column $column)
+    protected function addColumnObject(UI_DataGrid_Column $column) : void
     {
         $this->columns[] = $column;
         $this->columnCount++;
     }
 
-    protected function prependColumnObject(UI_DataGrid_Column $column)
+    protected function prependColumnObject(UI_DataGrid_Column $column) : void
     {
         array_unshift($this->columns, $column);
         $this->columnCount++;
