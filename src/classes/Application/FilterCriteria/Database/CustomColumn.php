@@ -511,7 +511,9 @@ class Application_FilterCriteria_Database_CustomColumn
     {
         // When counting records, no column aliases may be
         // used, since the select statements are not present.
-        // We have to use the full SQL statement instead.
+        // Also, when a column comes from a join, it is safer
+        // to use the full SQL as well, to ensure that no ambiguous
+        // error messages are generated.
         if($this->filters->isCount())
         {
             return $this->getSQLStatement();
@@ -525,10 +527,22 @@ class Application_FilterCriteria_Database_CustomColumn
             return $this->getSQLStatement();
         }
 
+        /*
+         * @TODO Review if there are any valid cases to use this
+         *
+         * Problem: It is impossible to determine if the
+         * alias can safely be used, for example when it
+         * has the same name as an existing column from
+         * a joined table.
+         *
+         * Also, since these queries are automatically
+         * generated, the benefit of using aliases is
+         * arguably minimal.
+         *
         if($this->canUseAlias())
         {
             return $this->getSelectAlias();
-        }
+        }*/
 
         return $this->getSQLStatement();
     }
