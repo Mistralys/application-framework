@@ -164,30 +164,20 @@ trait Application_Traits_Admin_Wizard
     
     protected function _handleActions() : bool
     {
+        $this->checkWizardExpiry();
+
         $this->startTransaction();
-        
+
+        // Initialize the steps before cancelling, since the
+        // cancel URL may need to access the existing step's data.
+        $this->initSteps('Initial setup');
+
         // the user has requested to cancel: we reset all session data.
         if($this->request->getBool('cancel') === true)
         {
             $this->processCancelWizard();
         }
-        
-        // check when this wizard session was last active,
-        // and reset it if it is too old.
-        $expiry = $this->sessionData['lastActive'] + ($this->sessionDuration * 60);
-        if($expiry < time()) {
-            $this->reset();
-            $this->redirectWithInfoMessage(
-                t('The previously started wizard session expired, please start anew.'),
-                $this->area->getURL()
-            );
-        }
-        
-        // the user is active: reset the expiry timer
-        $this->sessionData['lastActive'] = time();
-        
-        $this->initSteps('Initial setup');
-        
+
         $success = $this->activeStep->process();
         $this->saveSettings();
         
@@ -656,5 +646,23 @@ trait Application_Traits_Admin_Wizard
         }
         
         return false;
+    }
+
+    private function checkWizardExpiry() : void
+    {
+        // check when this wizard session was last active,
+        // and reset it if it is too old.
+        $expiry = $this->sessionData['lastActive'] + ($this->sessionDuration * 60);
+        if ($expiry < time())
+        {
+            $this->reset();
+            $this->redirectWithInfoMessage(
+                t('The previously started wizard session expired, please start anew.'),
+                $this->area->getURL()
+            );
+        }
+
+        // the user is active: reset the expiry timer
+        $this->sessionData['lastActive'] = time();
     }
 }
