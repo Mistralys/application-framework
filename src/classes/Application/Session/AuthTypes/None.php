@@ -25,11 +25,30 @@ use Hybridauth\User\Profile;
  */
 trait Application_Session_AuthTypes_None
 {
+    /**
+     * @var string[]
+     */
+    private $fixedRights = array(
+        Application_User::RIGHT_LOGIN,
+        Application_User::RIGHT_DEVELOPER,
+        Application_User::RIGHT_TRANSLATE_UI
+    );
+
     protected function handleLogin() : Application_Users_User
     {
         $users = Application_Driver::createUsers();
 
         return $users->getByID(Application::USER_ID_SYSTEM);
+    }
+
+    public function getRightPresets() : array
+    {
+        return array(
+            self::ADMIN_PRESET_ID => array(
+                'Login',
+                'Developer'
+            ),
+        );
     }
 
     protected function getForeignID(Profile $profile): string
@@ -44,10 +63,14 @@ trait Application_Session_AuthTypes_None
 
     public function fetchRights(Application_Users_User $user): array
     {
-        return array(
-            Application_User::RIGHT_LOGIN,
-            Application_User::RIGHT_DEVELOPER,
-            Application_User::RIGHT_TRANSLATE_UI
+        return $this->fixedRights;
+    }
+
+    public function getCurrentRights() : string
+    {
+        return implode(
+            ',',
+            $this->fixedRights
         );
     }
 }
