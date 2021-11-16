@@ -15,7 +15,7 @@
     "classmap": [
       "src/classes/",
       "src/themes/default/templates",
-      "tests/assets/classes"
+      "tests/application/assets/classes"
     ],
     "files": [
       "src/functions/functions.php"
