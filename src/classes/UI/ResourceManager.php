@@ -108,17 +108,27 @@ class UI_ResourceManager
             self::ERROR_UNKNOWN_RESOURCE_EXTENSION
         );
     }
-    
+
+    public function getVendorURL() : string
+    {
+        if(defined('APP_VENDOR_URL'))
+        {
+            return APP_VENDOR_URL;
+        }
+
+        return APP_URL.'/vendor';
+    }
+
     public function addVendorJavascript(string $packageName, string $file, int $priority=0) : UI_ClientResource_Javascript
     {
-        $url = APP_URL.'/vendor/'.$packageName.'/'.$file;
+        $url = $this->getVendorURL().'/'.$packageName.'/'.$file;
         
         return $this->addJavascript($url, $priority);
     }
     
     public function addVendorStylesheet(string $packageName, string $file, int $priority=0) : UI_ClientResource_Stylesheet
     {
-        $url = APP_URL.'/vendor/'.$packageName.'/'.$file;
+        $url = $this->getVendorURL().'/'.$packageName.'/'.$file;
         
         return $this->addStylesheet($url, 'all', $priority);
     }
