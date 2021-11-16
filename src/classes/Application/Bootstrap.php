@@ -257,9 +257,9 @@ class Application_Bootstrap
 
     public static function getVendorPath() : string
     {
-        if(defined('APP_FRAMEWORK_TESTS') && APP_FRAMEWORK_TESTS === true)
+        if(defined('APP_VENDOR_PATH'))
         {
-            return APP_ROOT.'/../vendor';
+            return APP_VENDOR_PATH;
         }
 
         return APP_ROOT.'/vendor';
