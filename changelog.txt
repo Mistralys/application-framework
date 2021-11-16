@@ -2,6 +2,7 @@ v1.21.1
 - Environments: `Application::isDevelEnvironment()` now uses the environment classes.
 - Environments: Added `Application_Environments::getDetected()`.
 - DBHelper: Fixed detection of complex queries in custom columns.
+- Wizards: Fixed a bug when trying to use step data in the cancel URL.
 
 v1.21.0
 - FilterCriteria: Improved the custom columns handling further.
