@@ -67,3 +67,5 @@
 	define('PROMS_SERVER', null);
 	define('PROMS_USERNAME', null);
 	define('PROMS_PASSWORD', null);
+
+    die('The function insight file may not be included anywhere.');
