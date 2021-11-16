@@ -11,7 +11,10 @@ class TestDriver extends Application_Driver
 
     public function getAdminAreas()
     {
-        return array('Settings');
+        return array(
+            'devel' => 'Devel',
+            'settings' => 'Settings'
+        );
     }
 
     protected function setUpUI()
