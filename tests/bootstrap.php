@@ -12,7 +12,7 @@
      * The application root folder (this file's location)
      * @var string
      */
-    const APP_ROOT = __DIR__;
+    const APP_ROOT = __DIR__.'/application';
 
     /**
      * The folder in which the Application libraries
@@ -21,7 +21,9 @@
      *
      * @var string
      */
-    define('APP_INSTALL_FOLDER', realpath(APP_ROOT.'/../src'));
+    const APP_INSTALL_FOLDER = __DIR__.'/../src';
+
+    const APP_VENDOR_PATH = __DIR__.'/../vendor';
 
     /**
      * Specifies that this is the framework's own tests suite.
@@ -29,7 +31,7 @@
      * folder, which is different from where it is located in
      * the applications.
      */
-    define('APP_FRAMEWORK_TESTS', true);
+    const APP_FRAMEWORK_TESTS = true;
 
     /**
      * The bootstrapper class that configures the

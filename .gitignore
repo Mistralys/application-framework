@@ -6,10 +6,10 @@ composer.phar
 # composer.lock
 .phpunit.result.cache
 /docs/phpstan/cache
-/tests/storage/logs
-tests/themes/default/js/localization/cachekey.txt
-tests/themes/default/js/localization/md5.min.js
-tests/themes/default/js/localization/translator.js
+/tests/application/storage/logs
+tests/application/themes/default/js/localization/cachekey.txt
+tests/application/themes/default/js/localization/md5.min.js
+tests/application/themes/default/js/localization/translator.js
 tests/.buildpath
 tests/.project
 tests/.settings/org.eclipse.php.core.prefs
@@ -18,5 +18,7 @@ docs/phpstan/resultCache.php
 docs/phpstan/result.txt
 localization/storage.json
 errors.txt
-tests/assets/files/TypeHinter/TypeHinterTestClass.php.output
+tests/files/TypeHinter/TypeHinterTestClass.php.output
 tests/testsuites/TypeHinter/output.log
+tests/application/config/test-db-config.php
+tests/application/config/ui.php

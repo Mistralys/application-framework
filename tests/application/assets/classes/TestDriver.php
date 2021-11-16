@@ -1,5 +1,7 @@
 <?php 
 
+declare(strict_types=1);
+
 class TestDriver extends Application_Driver
 {
     protected function getCookieNamespace()
@@ -14,6 +16,7 @@ class TestDriver extends Application_Driver
 
     protected function setUpUI()
     {
+        $this->configureAdminUIFramework();
     }
 
     public function getAppName()
