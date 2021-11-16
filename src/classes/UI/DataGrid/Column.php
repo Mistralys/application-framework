@@ -5,38 +5,72 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     use UI_Traits_Conditional;
 
     public const ERROR_SORT_DATA_COLUMN_MISSING = 17903;
-    
-   /**
+
+    public const OPTION_HIDDEN = 'hidden';
+    public const OPTION_SORT_CALLBACK = 'sortCallback';
+    public const OPTION_SORT_DATA_COLUMN = 'sortDataColumn';
+    public const OPTION_SORTABLE = 'sortable';
+    public const OPTION_SORT_KEY = 'sortKey';
+    public const OPTION_NOWRAP = 'nowrap';
+    public const OPTION_WIDTH = 'width';
+    public const OPTION_WIDTH_TYPE = 'width-type';
+    public const OPTION_TOOLTIP = 'tooltip';
+    public const OPTION_ALIGN = 'align';
+
+    /**
     * @var UI_DataGrid
     */
     protected $grid;
 
+    /**
+     * @var string
+     */
     protected $dataKey;
 
+    /**
+     * @var string
+     */
     protected $title;
-    
+
+    /**
+     * @var int
+     */
     protected $number;
 
    /**
     * @var UI
     */
     protected $ui;
-    
+
+    /**
+     * @var array{sortable:bool,sortKey:string|null,sortCallback:callable|null,sortDataColumn:string|NULL,align:string,nowrap:bool,hidden:bool,width:null|int,width-type:string,tooltip:string}
+     */
     protected $options = array(
-        'align' => 'left',
-        'sortable' => false,
-        'nowrap' => false,
-        'hidden' => false,
-        'width' => null,
-        'width-type' => 'percent',
-        'tooltip' => ''
+        self::OPTION_ALIGN => 'left',
+        self::OPTION_SORTABLE => false,
+        self::OPTION_SORT_KEY => null,
+        self::OPTION_SORT_CALLBACK => null,
+        self::OPTION_SORT_DATA_COLUMN => null,
+        self::OPTION_NOWRAP => false,
+        self::OPTION_HIDDEN => false,
+        self::OPTION_WIDTH => null,
+        self::OPTION_WIDTH_TYPE => 'percent',
+        self::OPTION_TOOLTIP => ''
     );
 
-    public function __construct(UI_DataGrid $grid, $number, $dataKey, $title, $options = array())
+    /**
+     * @param UI_DataGrid $grid
+     * @param int $number
+     * @param string $dataKey
+     * @param string|number|UI_Renderable_Interface $title
+     * @param array<string,mixed> $options
+     * @throws Exception
+     */
+    public function __construct(UI_DataGrid $grid, int $number, string $dataKey, $title, array $options = array())
     {
         $this->grid = $grid;
         $this->dataKey = $dataKey;
-        $this->title = $title;
+        $this->title = toString($title);
         $this->number = $number;
         $this->ui = $grid->getUI();
 
@@ -44,49 +78,60 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
             $this->setOption($name, $value);
         }
     }
-    
-    public function getType()
+
+    /**
+     * @return UI_DataGrid
+     */
+    public function getDataGrid() : UI_DataGrid
+    {
+        return $this->grid;
+    }
+
+    public function getType() : string
     {
         return 'Regular';
     }
 
-    public function getDataKey()
+    public function getDataKey() : string
     {
         return $this->dataKey;
     }
 
-    public function getTitle()
+    public function getTitle() : string
     {
         return $this->title;
     }
 
     /**
      * Forces contents of the column's cells not to break to a new line.
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function setNowrap()
+    public function setNowrap() : UI_DataGrid_Column
     {
-        return $this->setOption('nowrap', true);
+        return $this->setOption(self::OPTION_NOWRAP, true);
     }
 
     /**
      * Aligns the contents of the column's cells to the center.
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function alignCenter()
+    public function alignCenter() : UI_DataGrid_Column
     {
-        return $this->setOption('align', 'center');
+        return $this->setOption(self::OPTION_ALIGN, 'center');
     }
-    
+
+    /**
+     * @var string[]
+     */
     protected $classes = array();
     
    /**
     * Adds a class that will be added to all cells in this column.
     * 
     * @param string $class
-    * @return UI_DataGrid_Column
+    * @return $this
     */
-    public function addClass($class)
+    public function addClass(string $class) : UI_DataGrid_Column
     {
         if(!in_array($class, $this->classes)) {
             $this->classes[] = $class;
@@ -97,31 +142,31 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
 
     /**
      * Aligns the contents of the column's cells to the right.
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function alignRight()
+    public function alignRight() : UI_DataGrid_Column
     {
-        return $this->setOption('align', 'right');
+        return $this->setOption(self::OPTION_ALIGN, 'right');
     }
     
    /**
     * Sets the tooltip text for the column: this will add the tooltip
     * to the column header.
     * 
-    * @param string $text
-    * @return UI_DataGrid_Column
+    * @param string|number|UI_Renderable_Interface $text
+    * @return $this
     */
-    public function setTooltip($text)
+    public function setTooltip($text) : UI_DataGrid_Column
     {
-        return $this->setOption('tooltip', $text);
+        return $this->setOption(self::OPTION_TOOLTIP, toString($text));
     }
 
     /**
      * Makes the column as compact as possible. To avoid line
      * breaks in texts, combine this with {@setNowrap()}.
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function setCompact()
+    public function setCompact() : UI_DataGrid_Column
     {
         $this->setNowrap();
         return $this->setWidthPercent(1);
@@ -132,10 +177,10 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * @param int $width
      * @return $this
      */
-    public function setWidthPercent(int $width)
+    public function setWidthPercent(int $width) : UI_DataGrid_Column
     {
-        $this->setOption('width', $width);
-        $this->setOption('width-type', 'percent');
+        $this->setOption(self::OPTION_WIDTH, $width);
+        $this->setOption(self::OPTION_WIDTH_TYPE, 'percent');
 
         return $this;
     }
@@ -145,10 +190,10 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * @param int $width
      * @return $this
      */
-    public function setWidthPixels(int $width)
+    public function setWidthPixels(int $width) : UI_DataGrid_Column
     {
-        $this->setOption('width', $width);
-        $this->setOption('width-type', 'pixels');
+        $this->setOption(self::OPTION_WIDTH, $width);
+        $this->setOption(self::OPTION_WIDTH_TYPE, 'pixels');
         $this->addClass('force-ellipsis');
 
         return $this;
@@ -171,34 +216,34 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      */
     public function getWidthType() : string
     {
-        return strval($this->options['width-type']);
+        return (string)$this->options[self::OPTION_WIDTH_TYPE];
     }
 
     public function getWidth() : int
     {
-        return intval($this->options['width']);
+        return (int)$this->options[self::OPTION_WIDTH];
     }
 
-    public function resetWidth() : void
+    public function resetWidth() : UI_DataGrid_Column
     {
-        $this->setWidthPercent(0);
+        return $this->setWidthPercent(0);
     }
 
     /**
      * Sets this column as sortable, which will allow the user to
      * sort by the contents of the column using clientside controls.
      *
-     * @param string $dataKeyName The name of the data key to sort: use this if it is not the same as the column name.
+     * @param string|NULL $dataKeyName The name of the data key to sort: use this if it is not the same as the column name.
      * @return UI_DataGrid_Column
      */
-    public function setSortable($default=false, $dataKeyName=null)
+    public function setSortable(bool $default=false, string $dataKeyName=null) : UI_DataGrid_Column
     {
         if(empty($dataKeyName)) {
             $dataKeyName = $this->getDataKey();
         }
         
-        $this->options['sortable'] = true;
-        $this->options['sortKey'] = $dataKeyName;
+        $this->options[self::OPTION_SORTABLE] = true;
+        $this->options[self::OPTION_SORT_KEY] = $dataKeyName;
 
         if($default) {
             $this->grid->setDefaultSortColumn($this);
@@ -212,15 +257,15 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * Enables sorting the column.
     * 
     * @param callable $callback
-    * @param string $dataColumn The name of the column in the data set to use as value for the sorting. Defaults to this column, but a different one can be specified as needed.
-    * @return UI_DataGrid_Column
+    * @param string|NULL $dataColumn The name of the column in the data set to use as value for the sorting. Defaults to this column, but a different one can be specified as needed.
+    * @return $this
     */
-    public function setSortingCallback($callback, $dataColumn=null): UI_DataGrid_Column
+    public function setSortingCallback(callable $callback, ?string $dataColumn=null): UI_DataGrid_Column
     {
         $this->setSortable();
         
-        $this->options['sortCallback'] = $callback;
-        $this->options['sortDataColumn'] = $dataColumn;
+        $this->options[self::OPTION_SORT_CALLBACK] = $callback;
+        $this->options[self::OPTION_SORT_DATA_COLUMN] = $dataColumn;
         
         return $this;
     }
@@ -258,8 +303,8 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     public function callback_sortEntries(UI_DataGrid_Entry $entryA, UI_DataGrid_Entry $entryB)
     {
         $key = $this->getDataKey();
-        if(isset($this->options['sortDataColumn'])) {
-            $key = $this->options['sortDataColumn'];
+        if(isset($this->options[self::OPTION_SORT_DATA_COLUMN])) {
+            $key = $this->options[self::OPTION_SORT_DATA_COLUMN];
         }
         
         $dataA = $entryA->getData();
@@ -278,9 +323,9 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
             );
         }
         
-        $result = call_user_func($this->options['sortCallback'], $dataA[$key], $dataB[$key]);
+        $result = call_user_func($this->options[self::OPTION_SORT_CALLBACK], $dataA[$key], $dataB[$key]);
         
-        if($this->grid->getOrderDir() == 'desc') {
+        if($this->grid->getOrderDir() === 'desc') {
             $result = $result * -1;
         }
         
@@ -290,28 +335,31 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     /**
      * Sets the column as hidden: use this to hide ID columns for example.
      *
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function setHidden()
+    public function setHidden() : UI_DataGrid_Column
     {
-        $this->options['hidden'] = true;
+        $this->options[self::OPTION_HIDDEN] = true;
 
         return $this;
     }
 
     /**
-     * Sets a column option. Alsoe see the dedicated methods that
+     * Sets a column option. Also see the dedicated methods that
      * allow setting the options without having to know the option's
      * name.
      *
-     * @return UI_DataGrid_Column
-     * @see setSortable()
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     * @throws Exception
      * @see setHidden()
      * @see setNowrap()
      * @see alignRight()
      * @see alignCenter()
+     * @see setSortable()
      */
-    public function setOption($name, $value)
+    public function setOption(string $name, $value) : UI_DataGrid_Column
     {
         if (!array_key_exists($name, $this->options)) {
             throw new Exception('Unknown option.');
@@ -326,12 +374,12 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * Checks whether this column is hidden.
      * @return boolean
      */
-    public function isHidden()
+    public function isHidden() : bool
     {
-        return $this->options['hidden'];
+        return $this->isHiddenForUser() || $this->options[self::OPTION_HIDDEN];
     }
 
-    public function renderCell(UI_DataGrid_Entry $entry)
+    public function renderCell(UI_DataGrid_Entry $entry) : string
     {
         if ($this->isHidden()) {
             return '';
@@ -349,7 +397,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return '<td' . $this->renderAttributes(false, $value, $entry) . '>' . $value . '</td>';
     }
 
-    public function renderHeaderCell(bool $duplicate=false)
+    public function renderHeaderCell(bool $duplicate=false) : string
     {
         if ($this->isHidden()) {
             return '';
@@ -366,11 +414,11 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
 
         $title->add($this->title);
         
-        if(!empty($this->options['tooltip'])) {
+        if(!empty($this->options[self::OPTION_TOOLTIP])) {
             $icons[] = UI::icon()->information()
                 ->makeInformation()
                 ->addClass('help')
-                ->setTooltip($this->options['tooltip'])
+                ->setTooltip($this->options[self::OPTION_TOOLTIP])
                 ->render();
         }
         
@@ -431,15 +479,11 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * 
     * @return boolean
     */
-    public function isSorted()
+    public function isSorted() : bool
     {
         $orderBy = $this->grid->getOrderBy();
-         
-        if(!empty($orderBy) && $orderBy == $this->getOrderKey()) {
-            return true;
-        }
-        
-        return false;
+
+        return !empty($orderBy) && $orderBy === $this->getOrderKey();
     }
     
     protected function renderAttributes($isHeader, $value=null, UI_DataGrid_Entry $entry=null)
@@ -447,7 +491,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         $objectName = $this->getObjectName();
         
         $classes = $this->classes;
-        $classes[] = 'align-' . $this->options['align'];
+        $classes[] = 'align-' . $this->options[self::OPTION_ALIGN];
         $classes[] = 'role-' . $this->role;
         $classes[] = 'column-' . $this->number;
 
@@ -459,18 +503,18 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         $styles = array();
         $attributes = array();
 
-        if ($this->options['nowrap']) {
-            $classes[] = 'nowrap';
+        if ($this->options[self::OPTION_NOWRAP]) {
+            $classes[] = self::OPTION_NOWRAP;
         }
 
-        if (!empty($this->options['width'])) {
-            switch ($this->options['width-type']) {
+        if (!empty($this->options[self::OPTION_WIDTH])) {
+            switch ($this->options[self::OPTION_WIDTH_TYPE]) {
                 case 'percent':
-                    $styles['width'] = $this->options['width'] . '%';
+                    $styles[self::OPTION_WIDTH] = $this->options[self::OPTION_WIDTH] . '%';
                     break;
 
                 case 'pixels':
-                    $styles['width'] = $this->options['width'] . 'px';
+                    $styles[self::OPTION_WIDTH] = $this->options[self::OPTION_WIDTH] . 'px';
                     break;
             }
         }
@@ -513,48 +557,63 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * Reshuffles the grid's columns to insert this column at
      * the desired column number, starting at 1.
      *
-     * @since 3.3.7
      * @param integer $position
-     * @return UI_DataGrid_Column
+     * @return $this
      */
-    public function moveTo($position)
+    public function moveTo(int $position) : UI_DataGrid_Column
     {
         $this->grid->moveColumn($this, $position);
 
         return $this;
     }
-    
+
+    /**
+     * @var string
+     */
     protected $role = 'cell';
-    
-    public function roleHeading()
+
+    /**
+     * @return $this
+     */
+    public function roleHeading() : UI_DataGrid_Column
     {
     	return $this->setRole('heading');
     }
-    
-    public function roleActions()
+
+    /**
+     * @return $this
+     */
+    public function roleActions() : UI_DataGrid_Column
     {
     	return $this->setRole('actions');
     }
-    
-    protected function setRole($role)
+
+    /**
+     * @param string $role
+     * @return $this
+     */
+    protected function setRole(string $role) : UI_DataGrid_Column
     {
     	$this->role = $role;
     	return $this;
     }
     
-    public function getNumber()
+    public function getNumber() : int
     {
     	return $this->number;
     }
     
-    public function getRole()
+    public function getRole() : string
     {
     	return $this->role;
     }
+
+    /**
+     * @var string|NULL
+     */
+    protected $cachedObjectName = null;
     
-    protected $cachedObjectName;
-    
-    public function getObjectName()
+    public function getObjectName() : string
     {
         if(!isset($this->cachedObjectName)) {
             $this->cachedObjectName = 'col'.nextJSID();
@@ -563,7 +622,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return $this->cachedObjectName; 
     }
     
-    public function injectJavascript(UI $ui, $gridName)
+    public function injectJavascript(UI $ui, string $gridName) : void
     {
         $colName = $this->getObjectName();
         
@@ -581,14 +640,14 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
             $this->getRole()
         );
         
-        if($this->options['align'] == 'center') {
+        if($this->options[self::OPTION_ALIGN] === 'center') {
             $ui->addJavascriptHeadStatement(sprintf(
                 '%s.AlignCenter',
                 $colName        
             ));
         }
 
-        if($this->options['align'] == 'right') {
+        if($this->options[self::OPTION_ALIGN] === 'right') {
             $ui->addJavascriptHeadStatement(sprintf(
                 '%s.AlignRight',
                 $colName        
@@ -602,10 +661,16 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
             );
         }
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $editable = false;
-    
-    protected $editableClientClass;
+
+    /**
+     * @var string
+     */
+    protected $editableClientClass = '';
     
    /**
     * Makes this column editable: requires a clientside handler object
@@ -618,7 +683,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * @param string $clientClassName
     * @return UI_DataGrid_Column
     */
-    public function setEditable($clientClassName)
+    public function setEditable(string $clientClassName) : UI_DataGrid_Column
     {
         $this->grid->requirePrimaryName();
         
@@ -634,7 +699,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * Whether the cells in this column are editable.
     * @return boolean
     */
-    public function isEditable()
+    public function isEditable() : bool
     {
         return $this->editable;
     }
@@ -645,9 +710,9 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * 
     * @return boolean
     */
-    public function isAction()
+    public function isAction() : bool
     {
-        if($this->role=='actions') {
+        if($this->role === 'actions') {
             return true;
         }
         
@@ -658,9 +723,9 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * Checks whether the column is sortable.
     * @return boolean
     */
-    public function isSortable()
+    public function isSortable() : bool
     {
-        return $this->options['sortable'];
+        return $this->options[self::OPTION_SORTABLE];
     }
     
    /**
@@ -668,17 +733,38 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * @return string|NULL
     * @see setSortable()
     */
-    public function getOrderKey()
+    public function getOrderKey() : ?string
     {
         if($this->isSortable()) {
-            return $this->options['sortKey'];
+            return $this->options[self::OPTION_SORT_KEY];
         }
         
         return null;
     }
     
-    public function hasSortingCallback()
+    public function hasSortingCallback() : bool
     {
-        return $this->isSortable() && isset($this->options['sortCallback']);
+        return $this->isSortable() && isset($this->options[self::OPTION_SORT_CALLBACK]);
+    }
+
+    public function setHiddenForUser(bool $hidden, ?Application_User $user=null) : UI_DataGrid_Column
+    {
+        $this->getUserSettings()->setHiddenForUser($hidden, $user);
+        return $this;
+    }
+
+    public function isHiddenForUser(?Application_User $user=null) : bool
+    {
+        return $this->getUserSettings()->isHiddenForUser($user);
+    }
+
+    private function getUserSettings() : UI_DataGrid_Column_UserSettings
+    {
+        if(!isset($this->userSettings))
+        {
+            $this->userSettings = new UI_DataGrid_Column_UserSettings($this);
+        }
+
+        return $this->userSettings;
     }
 }
