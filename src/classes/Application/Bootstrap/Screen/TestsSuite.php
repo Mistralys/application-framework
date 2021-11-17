@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\FileHelper;
+
 class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Screen
 {
     protected function _boot()
@@ -61,13 +63,12 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
             die('Cannot run tests: Could not find the application\'s [tests] folder.');
         }
 
-        define('TESTS_ROOT', $testsRoot);
         define('TESTS_ASSETS_FOLDER', TESTS_ROOT . '/assets');
         define('TESTS_CLASSES_FOLDER', TESTS_ASSETS_FOLDER . '/classes');
 
         if (is_dir(TESTS_CLASSES_FOLDER))
         {
-            $names = \AppUtils\FileHelper::createFileFinder(TESTS_CLASSES_FOLDER)
+            $names = FileHelper::createFileFinder(TESTS_CLASSES_FOLDER)
                 ->getPHPClassNames();
 
             // load all classes that may be needed for the tests to run.

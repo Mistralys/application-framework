@@ -14,6 +14,8 @@
      */
     const APP_ROOT = __DIR__.'/application';
 
+    const TESTS_ROOT = __DIR__;
+
     /**
      * The folder in which the Application libraries
      * are installed. This is the default using a

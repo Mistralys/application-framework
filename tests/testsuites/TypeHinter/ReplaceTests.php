@@ -31,6 +31,9 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
         parent::setUp();
 
         $this->sourceFolder = TESTS_ROOT.'/files/TypeHinter';
+
+        $this->assertDirectoryExists($this->sourceFolder);
+
         $this->inputFile = $this->sourceFolder.'/TypeHinterTestClass.php';
         $this->outputFile = $this->sourceFolder.'/TypeHinterTestClass.php.output';
         $this->expectedFile = $this->sourceFolder.'/TypeHinterTestClass.php.expected';
