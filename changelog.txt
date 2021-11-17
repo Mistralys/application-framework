@@ -6,6 +6,7 @@ v1.21.1
 - FilterSettings: Fixed the UI bug that made the add filter button not clickable.
 - Sessions: Fixed auth type `None` throwing exceptions when used.
 - UI: DataGrid: Added support for user-persisted hiding of columns.
+- TestSuites: Added functional application UI under `tests/application`.
 
 v1.21.0
 - FilterCriteria: Improved the custom columns handling further.
