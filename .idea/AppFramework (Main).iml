@@ -78,8 +78,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/desandro/masonry" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/marcj/css-element-queries" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/zenorocha/clipboardjs" />
-      <excludeFolder url="file://$MODULE_DIR$/tests/storage" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/tests/application/storage" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
