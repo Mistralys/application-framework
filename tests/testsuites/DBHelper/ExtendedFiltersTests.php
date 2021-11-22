@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
+final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 {
     public function test_getCustomSelects() : void
     {
@@ -347,8 +347,6 @@ final class DBHelper_ExtendedFiltersTests extends ApplicationTestCase
     protected function setUp() : void
     {
         parent::setUp();
-
-        $this->startTransaction();
 
         $this->createTestRecords();
     }

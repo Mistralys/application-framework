@@ -2,15 +2,8 @@
 
 declare(strict_types=1);
 
-final class DBHelper_JoinsTests extends ApplicationTestCase
+final class DBHelper_JoinsTests extends DBHelperTestCase
 {
-    protected function setUp() : void
-    {
-        parent::setUp();
-
-        $this->startTransaction();
-    }
-
     /**
      * When only accessing a column that requires a join, but not actually
      * using the column, the join must not be added.

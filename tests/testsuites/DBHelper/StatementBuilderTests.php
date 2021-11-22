@@ -2,15 +2,8 @@
 
 declare(strict_types=1);
 
-final class DBHelper_StatementBuilderTests extends ApplicationTestCase
+final class DBHelper_StatementBuilderTests extends DBHelperTestCase
 {
-    protected function setUp() : void
-    {
-        parent::setUp();
-
-        $this->startTransaction();
-    }
-
     public function test_tableName() : void
     {
         $this->assertSame(

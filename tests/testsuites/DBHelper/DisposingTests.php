@@ -2,15 +2,8 @@
 
 declare(strict_types=1);
 
-final class DBHelper_Disposing_TestCase extends ApplicationTestCase
+final class DBHelper_DisposingTests extends DBHelperTestCase
 {
-    protected function setUp() : void
-    {
-        parent::setUp();
-
-        $this->startTransaction();
-    }
-
     public function test_resetCollection() : void
     {
         $collection = new Application_Countries();

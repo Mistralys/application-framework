@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 use AppUtils\Microtime;
 
-final class DBHelper_DataTableTests extends ApplicationTestCase
+final class DBHelper_DataTableTests extends DBHelperTestCase
 {
     /**
      * @var DBHelper_DataTable
      */
     private $dataTable;
 
-    private $recordTable = 'test_records';
+    private $recordTable = DBHelperTestCase::TEST_RECORDS_TABLE;
 
-    private $recordTableData = 'test_records_data';
+    private $recordTableData = DBHelperTestCase::TEST_RECORDS_DATA_TABLE;
 
-    private $recordPrimaryName = 'record_id';
+    private $recordPrimaryName = DBHelperTestCase::TEST_RECORDS_PRIMARY;
 
     private $recordTypeName = 'record';
 
@@ -295,8 +295,6 @@ final class DBHelper_DataTableTests extends ApplicationTestCase
     protected function setUp() : void
     {
         parent::setUp();
-
-        $this->startTransaction();
 
         $this->keysDeletedCalled = false;
         $this->createTestRecord();
