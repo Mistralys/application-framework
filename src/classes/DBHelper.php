@@ -8,6 +8,7 @@
 
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\Highlighter;
 use AppUtils\Interface_Stringable;
 use AppUtils\Microtime;
 use function AppUtils\parseVariable;
@@ -29,7 +30,7 @@ use function AppUtils\parseVariable;
 class DBHelper
 {
     /**
-     * Counter for the amount of queries run during a request.
+     * Counter for the amount of queries that were run during a request.
      * @var int
      */
     protected static $queryCount = 0;
@@ -54,8 +55,6 @@ class DBHelper
     public const ERROR_INSERTING = 33871003;
     public const ERROR_FETCHING = 33871004;
     public const ERROR_CONNECTING = 33871005;
-    public const ERROR_SELECTING_DATABASE = 33871006;
-    public const ERROR_INVALID_VARIABLE_TYPE = 33871007;
     public const ERROR_CANNOT_ROLL_BACK_TRANSACTION = 33871008;
     public const ERROR_CANNOT_COMMIT_TRANSACTION = 33871009;
     public const ERROR_CANNOT_START_TRANSACTION = 33871010;
@@ -68,10 +67,10 @@ class DBHelper
     public const ERROR_INVALID_TABLE_NAME = 338701017;
     public const ERROR_INVALID_COLUMN_NAME = 338701018;
     public const ERROR_DB_NOT_REGISTERED = 338701019;
-    public const ERROR_INVALID_LOG_CALLBACK = 338701020;
     public const ERROR_CANNOT_CONVERT_OBJECT = 338701021;
     public const ERROR_CANNOT_CONVERT_ARRAY = 338701022;
     public const ERROR_CANNOT_CONVERT_RESOURCE = 338701023;
+    public const ERROR_EMPTY_WHERE = 338701024;
     
     protected static $startTime;
     
@@ -93,7 +92,8 @@ class DBHelper
      * @param array $variables Associative array with placeholders and values to replace in the query
      * @param bool $exceptionOnError
      * @return boolean
-     * @throws DBHelper_Exception|ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
      * @see getErrorCode()
      * @see getErrorMessage()
      */
@@ -166,9 +166,8 @@ class DBHelper
      * database compatible values, converting them as
      * necessary.
      *
-     * @param array<string,mixed> $variables
-     * @return array<string,string>
-     * @throws ConvertHelper_Exception
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
+     * @return array<string,string|NULL>
      * @throws DBHelper_Exception
      *
      * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
@@ -189,9 +188,8 @@ class DBHelper
 
     /**
      * @param mixed $value
-     * @return string|null
+     * @return string|NULL
      * @throws DBHelper_Exception
-     * @throws ConvertHelper_Exception
      *
      * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
      * @see DBHelper::ERROR_CANNOT_CONVERT_OBJECT
@@ -216,12 +214,12 @@ class DBHelper
 
         if(is_bool($value))
         {
-            return ConvertHelper::bool2string($value);
+            return ConvertHelper::boolStrict2string($value);
         }
 
         if($value instanceof Interface_Stringable)
         {
-            return strval($value);
+            return (string)$value;
         }
 
         if(is_object($value))
@@ -255,7 +253,7 @@ class DBHelper
             );
         }
 
-        return strval($value);
+        return (string)$value;
     }
 
     static protected $queryLogging = false;
@@ -273,8 +271,8 @@ class DBHelper
     *
     * @param string $statement
     * @param array<string,mixed> $variables
-    * @throws DBHelper_Exception
     * @return string
+    * @throws DBHelper_Exception|ConvertHelper_Exception|JsonException
     */
     public static function insert(string $statement, array $variables = array()) : string
     {
@@ -298,19 +296,21 @@ class DBHelper
     */
     public static function insertInt(string $statement, array $variables=array()) : int
     {
-        return intval(self::insert($statement, $variables));
+        return (int)self::insert($statement, $variables);
     }
 
     /**
-     * Registers a query by adding it to the interal queries cache.
+     * Registers a query by adding it to the internal queries cache.
      * They can be retrieved using the {@link getQueries()} method,
      * and the last query that was run can be retrieved using the
      * {@link getSQL()} and {@link getSQLHighlighted()} methods.
      *
+     * @param string $operationType
      * @param string $statement
      * @param array $variables
+     * @param bool $result
      */
-    protected static function registerQuery($operationType, $statement, $variables=array(), $result)
+    protected static function registerQuery(string $operationType, string $statement, array $variables, bool $result) : void
     {
         if (self::$queryLogging === true) {
             self::log(self::getSQL());
@@ -358,18 +358,20 @@ class DBHelper
      */
     public static function getErrorCode() : string
     {
-        if (!isset(self::$activeStatement)) {
+        if (!isset(self::$activeStatement))
+        {
             return '';
         }
 
         $errorInfo = self::$activeStatement->errorInfo();
-        if (isset($errorInfo[0]) && $errorInfo[0] != '00000') {
-            return strval($errorInfo[0]);
+        if (isset($errorInfo[0]) && $errorInfo[0] !== '00000')
+        {
+            return (string)$errorInfo[0];
         }
 
         $error = error_get_last();
         if($error) {
-            return strval($error['type']);
+            return (string)$error['type'];
         }
 
         return '';
@@ -377,20 +379,22 @@ class DBHelper
 
     /**
      * Retrieves the raw SQL query string from the last query, if any.
-     * @return string|NULL
+     * @return string
      */
-    public static function getSQL()
+    public static function getSQL() : string
     {
-        if (!isset(self::$activeQuery)) {
+        if (!isset(self::$activeQuery))
+        {
             return '';
         }
 
         return self::formatQuery(self::$activeQuery[0], self::$activeQuery[1]);
     }
     
-    public static function formatQuery($query, $variables)
+    public static function formatQuery(string $query, array $variables) : string
     {
-        if(empty($variables)) {
+        if(empty($variables))
+        {
             return $query;
         }
         
@@ -403,14 +407,14 @@ class DBHelper
         return str_replace(array_keys($replaces), array_values($replaces), $query);
     }
 
-    public static function getSQLHighlighted()
+    public static function getSQLHighlighted() : string
     {
         $sql = self::getSQL();
         if(!empty($sql)) {
-            return AppUtils\Highlighter::sql(AppUtils\ConvertHelper::normalizeTabs($sql, true));
+            return Highlighter::sql(ConvertHelper::normalizeTabs($sql, true));
         }
         
-        return null;
+        return '';
     }
 
     /**
@@ -420,22 +424,28 @@ class DBHelper
      * to use this method if you run UPDATE queries.
      *
      * @param string $statement The full SQL query to run with placeholders for variables
-     * @param array $variables Associative array with placeholders and values to replace in the query
+     * @param array<array,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
      */
-    public static function update($statement, $variables = array())
+    public static function update(string $statement, array $variables = array()) : bool
     {
         return self::executeAndRegister(DBHelper_OperationTypes::TYPE_UPDATE, $statement, $variables);
     }
-    
-   /**
-    * Executes the query and registers it internally.
-    * 
-    * @param string $statement
-    * @param array $variables
-    * @return boolean
-    */
-    protected static function executeAndRegister($operationType, $statement, $variables=array(), $exceptionOnError=true)
+
+    /**
+     * Executes the query and registers it internally.
+     *
+     * @param string $operationType
+     * @param string $statement
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
+     * @param bool $exceptionOnError
+     * @return boolean
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    protected static function executeAndRegister(string $operationType, string $statement, array $variables=array(), bool $exceptionOnError=true) : bool
     {
         $result = self::execute($operationType, $statement, $variables, $exceptionOnError);
         self::registerQuery($operationType, $statement, $variables, $result);
@@ -443,16 +453,16 @@ class DBHelper
     }
 
     /**
-     * Runs a delete query. This is an alias for the {@link execute()}
+     * Runs a "DELETE" query. This is an alias for the {@link execute()}
      * method, which exists for semantic purposes and the possibility
      * to add specific functionality at a later time. It is recommended
      * to use this method if you run DELETE queries.
      *
      * @param string $statement The full SQL query to run with placeholders for variables
-     * @param array $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
      */
-    public static function delete($statement, $variables = array())
+    public static function delete(string $statement, array $variables = array()) : bool
     {
         return self::executeAndRegister(DBHelper_OperationTypes::TYPE_DELETE, $statement, $variables);
     }
@@ -460,11 +470,11 @@ class DBHelper
     /**
      * Fetches a single entry as an associative array from a SELECT query.
      * @param string $statement The full SQL query to run with placeholders for variables
-     * @param array $variables Associative array with placeholders and values to replace in the query
-     * @throws DBHelper_Exception
-     * @return null|array
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @return array|NULL
+     * @throws DBHelper_Exception|ConvertHelper_Exception
      */
-    public static function fetch($statement, $variables = array())
+    public static function fetch(string $statement, array $variables = array()) : ?array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statement, $variables);
         
@@ -476,23 +486,24 @@ class DBHelper
         
         return $fetch;
     }
-   
-   /**
-    * Like {@link fetch()}, but builds the query dynamically to
-    * fetch data from a single table.
-    * 
-    * @param string $table The table name
-    * @param array $where Any where column values required
-    * @param array $columns The columns to fetch. Defaults to all columns if empty.
-    * @return NULL|array
-    */
-    public static function fetchData($table, $where=array(), $columns=array())
+
+    /**
+     * Like {@link fetch()}, but builds the query dynamically to
+     * fetch data from a single table.
+     *
+     * @param string $table The table name
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Any "WHERE" column values required
+     * @param string[] $columnNames The columns to fetch. Defaults to all columns if empty.
+     * @return NULL|array
+     * @throws DBHelper_Exception
+     */
+    public static function fetchData(string $table, array $where=array(), array $columnNames=array()) : ?array
     {
         $select = '*';
-        if(!empty($columns)) 
+        if(!empty($columnNames))
         {
             $entries = array();
-            foreach($columns as $name) {
+            foreach($columnNames as $name) {
                 $entries[] = '`'.$name.'`';
             } 
             
@@ -513,7 +524,7 @@ class DBHelper
             $whereString
         );
         
-        return DBHelper::fetch($query, $where);
+        return self::fetch($query, $where);
     }
 
     /**
@@ -521,11 +532,11 @@ class DBHelper
      * with associative arrays for each record.
      *
      * @param string $statement The full SQL query to run with placeholders for variables
-     * @param array $variables Associative array with placeholders and values to replace in the query
-     * @throws DBHelper_Exception
-     * @return array
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @return array<int,array<string,string>>
+     * @throws DBHelper_Exception|ConvertHelper_Exception
      */
-    public static function fetchAll($statement, $variables = array())
+    public static function fetchAll(string $statement, array $variables = array()) : array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statement, $variables);
         
@@ -549,6 +560,7 @@ class DBHelper
      * @param PDOException|null $e
      * @return DBHelper_Exception
      * @throws DBHelper_Exception
+     * @throws JsonException
      */
     private static function createException(int $code, ?string $title=null, ?string $errorMessage=null, PDOException $e=null) : DBHelper_Exception
     {
@@ -578,15 +590,14 @@ class DBHelper
             $params = array();
             preg_match_all('/[:]([a-zA-Z0-9_]+)/', self::$activeQuery[0], $params, PREG_PATTERN_ORDER);
             
-            if(isset($params[1]) && isset($params[1][0])) {
+            if(isset($params[1][0])) {
                 $paramNames = array_unique($params[1]);
             }
             
             $tokens = array();
             $errors = false;
-            foreach($paramNames as $name) {
-                $tokenInfo = '';
-                
+            foreach($paramNames as $name)
+            {
                 $foundName = null;
                 if(array_key_exists($name, self::$activeQuery[1])) {
                     $foundName = $name;
@@ -597,7 +608,7 @@ class DBHelper
                 } 
                 
                 if($foundName) {
-                    $tokenInfo = json_encode(self::$activeQuery[1][$foundName]);
+                    $tokenInfo = json_encode(self::$activeQuery[1][$foundName], JSON_THROW_ON_ERROR);
                 } else {
                     $errors = true;
                     $tokenInfo = '<i class="text-error">Placeholder not specified in values list</i>';
@@ -610,7 +621,7 @@ class DBHelper
                 foreach(self::$activeQuery[1] as $name => $value) {
                     if(!in_array(ltrim($name, ':'), $paramNames)) {
                         $errors = true;
-                        $tokens[] = $name .= ' = <i class="text-error">No matching placeholder in query</i>';
+                        $tokens[] = $name . ' = <i class="text-error">No matching placeholder in query</i>';
                     }
                 }
             }
@@ -650,14 +661,14 @@ class DBHelper
      * done at the end of the request to be accurate for the total
      * number of queries in a request.
      *
-     * @return number
+     * @return int
      */
-    public static function getQueryCount()
+    public static function getQueryCount() : int
     {
         return self::$queryCount;
     }
 
-    public static function getLimitSQL($limit = 0, $offset = 0)
+    public static function getLimitSQL(int $limit = 0, int $offset = 0) : string
     {
         if ($limit < 1 && $offset < 1) {
             return '';
@@ -672,6 +683,9 @@ class DBHelper
         return $limitSQL . PHP_EOL;
     }
 
+    /**
+     * @var array<int,array<int,mixed>>
+     */
     protected static $queries = array();
 
    /**
@@ -679,9 +693,9 @@ class DBHelper
     * to only the specified types.
     * 
     * @param int[] $types
-    * @return mixed[]
+    * @return array
     */
-    public static function getQueries($types=null)
+    public static function getQueries(array $types=array()) : array
     {
         if(empty($types)) {
             return self::$queries;
@@ -702,29 +716,33 @@ class DBHelper
     * Retrieves information about all queries made up to this point,
     * but only write operations.
     * 
-    * @return mixed[]
+    * @return array
     */
-    public static function getWriteQueries()
+    public static function getWriteQueries() : array
     {
         return self::getQueries(DBHelper_OperationTypes::getWriteTypes());
     }
     
-    public static function getSelectQueries()
+    public static function getSelectQueries() : array
     {
         return self::getQueries(array(DBHelper_OperationTypes::TYPE_SELECT));
     }
     
-    public static function countSelectQueries()
+    public static function countSelectQueries() : int
     {
         return self::countQueries(array(DBHelper_OperationTypes::TYPE_SELECT));
     }
     
-    public static function countWriteQueries()
+    public static function countWriteQueries() : int
     {
         return self::countQueries(DBHelper_OperationTypes::getWriteTypes());
     }
-    
-    public static function countQueries($types=null)
+
+    /**
+     * @param string[] $types
+     * @return int
+     */
+    public static function countQueries(array $types=array()) : int
     {
         if(empty($types)) {
             return count(self::$queries);
@@ -733,7 +751,7 @@ class DBHelper
         $total = count(self::$queries);
         $result = 0;
         for($i=0; $i<$total; $i++) {
-            if(in_array(self::$queries[$i][3], $types)) {
+            if(in_array(self::$queries[$i][3], $types, true)) {
                 $result++;
             }
         }
@@ -748,9 +766,9 @@ class DBHelper
      * table names.
      *
      * @throws DBHelper_Exception
-     * @return array
+     * @return string[]
      */
-    public static function getTablesList()
+    public static function getTablesList() : array
     {
         $entries = self::fetchAll('SHOW TABLES');
         
@@ -764,8 +782,7 @@ class DBHelper
 
         $list = array();
         foreach ($entries as $entry) {
-            $values = array_values($entry);
-            $list[] = $values[0];
+            $list[] = $entry[key($entry)];
         }
 
         return $list;
@@ -779,7 +796,7 @@ class DBHelper
      * @throws DBHelper_Exception
      * @return boolean
      */
-    public static function truncate($tableName)
+    public static function truncate(string $tableName) : bool
     {
         $query = 'TRUNCATE TABLE `' . $tableName . '`';
         return self::executeAndRegister(DBHelper_OperationTypes::TYPE_TRUNCATE, $query);
@@ -800,7 +817,7 @@ class DBHelper
      * @see commitTransaction()
      * @see rollbackTransaction()
      */
-    public static function startTransaction()
+    public static function startTransaction() : bool
     {
         self::log('Starting a new transaction.');
 
@@ -837,7 +854,7 @@ class DBHelper
      * Checks whether a transaction has been started.
      * @return boolean
      */
-    public static function isTransactionStarted()
+    public static function isTransactionStarted() : bool
     {
         return self::$transactionStarted;
     }
@@ -851,7 +868,7 @@ class DBHelper
      * @see rollbackTransaction()
      * @see startTransaction()
      */
-    public static function commitTransaction()
+    public static function commitTransaction() : bool
     {
         self::log('Committing the transaction.');
 
@@ -877,7 +894,7 @@ class DBHelper
      * @see commitTransaction()
      * @see startTransaction()
      */
-    public static function rollbackTransaction()
+    public static function rollbackTransaction() : bool
     {
         self::log('Rolling back the transaction.');
 
@@ -902,11 +919,17 @@ class DBHelper
         }
     }
 
+    /**
+     * @var string
+     */
     protected static $selectedDB = 'main';
 
+    /**
+     * @var PDO|NULL
+     */
     protected static $activeDB = null;
 
-    public static function init()
+    public static function init() : void
     {
         DBHelper_OperationTypes::init();
         
@@ -914,7 +937,7 @@ class DBHelper
         
         if(defined('APP_DB_PORT')) 
         {
-            $port = intval(APP_DB_PORT);
+            $port = (int)APP_DB_PORT;
         }
         
         self::registerDB(
@@ -930,10 +953,13 @@ class DBHelper
         
         self::triggerEvent('Init');
     }
-    
+
+    /**
+     * @var array<string,array{name:string,username:string,password:string,host:string,port:int}>
+     */
     protected static $databases = array();
     
-    public static function registerDB(string $id, string $name, string $username, string $password, string $host, int $port=0)
+    public static function registerDB(string $id, string $name, string $username, string $password, string $host, int $port=0) : void
     {
         if($port <= 0) {
             $port = 3306;
@@ -948,7 +974,7 @@ class DBHelper
         );
     }
     
-    public static function selectDB(string $id)
+    public static function selectDB(string $id) : void
     {
         self::$selectedDB = $id;
         self::$activeDB = self::getDB();
@@ -961,7 +987,7 @@ class DBHelper
     * @param array $args
     * @return DBHelper_Event|NULL
     */
-    protected static function triggerEvent($eventName, $args=array())
+    protected static function triggerEvent(string $eventName, array $args=array()) : ?DBHelper_Event
     {
         $handler = new DBHelper_Event($eventName, $args);
         
@@ -984,21 +1010,38 @@ class DBHelper
         return $handler;
     }
     
-    public static function hasListener($eventName)
+    public static function hasListener(string $eventName) : bool
     {
         return isset(self::$eventHandlers[$eventName]) && !empty(self::$eventHandlers[$eventName]);
     }
 
+    /**
+     * @var int
+     */
     protected static $eventCounter = 0;
-    
+
+    /**
+     * @var array<string,array<int,array{id:int,callback:callable,data:mixed|NULL}>>
+     */
     protected static $eventHandlers = array();
-    
-    public static function onInit($handler, $data=null)
+
+    /**
+     * @param callable $handler
+     * @param mixed|NULL $data
+     * @return int
+     */
+    public static function onInit(callable $handler, $data=null) : int
     {
         return self::addListener('Init', $handler, $data);
     }
-    
-    protected static function addListener($eventName, $handler, $data=null)
+
+    /**
+     * @param string $eventName
+     * @param callable $handler
+     * @param mixed|NULL $data
+     * @return int
+     */
+    protected static function addListener(string $eventName, callable $handler, $data=null) : int
     {
         self::$eventCounter++;
         
@@ -1028,7 +1071,7 @@ class DBHelper
     * Removes all listeners to the specified event, if any.
     * @param string $eventName
     */
-    public static function removeListeners($eventName)
+    public static function removeListeners(string $eventName) : void
     {
         if(isset(self::$eventHandlers[$eventName])) {
             unset(self::$eventHandlers[$eventName]);
@@ -1037,13 +1080,13 @@ class DBHelper
     
    /**
     * Removes a specific event listener by its ID, if it exists.
-    * @param string $eventID
+    * @param int $listenerID
     */
-    public static function removeListener($eventID)
+    public static function removeListener(int $listenerID) : void
     {
         foreach(self::$eventHandlers as $name => $listeners) {
             foreach($listeners as $id => $listener) {
-                if($id == $eventID) {
+                if($id === $listenerID) {
                     unset(self::$eventHandlers[$name][$id]);
                     return;
                 }
@@ -1051,6 +1094,10 @@ class DBHelper
         }
     }
 
+    /**
+     * @return array{name:string,username:string,password:string,host:string,port:int}
+     * @throws DBHelper_Exception
+     */
     public static function getSelectedDB() : array
     {
         if(isset(self::$databases[self::$selectedDB]))
@@ -1075,7 +1122,7 @@ class DBHelper
      * @throws DBHelper_Exception
      * @return PDO
      */
-    public static function getDB()
+    public static function getDB() : PDO
     {
         if(isset(self::$db[self::$selectedDB])) {
             return self::$db[self::$selectedDB];
@@ -1098,7 +1145,7 @@ class DBHelper
         } 
         catch (PDOException $e) 
         {
-            if(stristr($e->getMessage(), 'driver')) 
+            if(stripos($e->getMessage(), 'driver') !== false)
             {
                 throw self::createException(
                     self::ERROR_CONNECTING_NO_DRIVER,
@@ -1172,29 +1219,32 @@ class DBHelper
      * @param int $offset
      * @return string
      */
-    public static function buildLimitStatement($limit = 0, $offset = 0)
+    public static function buildLimitStatement(int $limit = 0, int $offset = 0) : string
     {
         return self::getLimitSQL($limit, $offset);
     }
 
-    const INSERTORUPDATE_UPDATE = 'upd';
-    
+    public const INSERTORUPDATE_UPDATE = 'upd';
+
     /**
      * Utility method that either inserts or updates an existing record.
      *
      * @param string $table
      * @param array $data
-     * @param array $primaryFields
-     * @return string|integer The insert ID in case of an insert operation, or the update status code.
+     * @param string[] $primaryFieldNames
+     * @return string The insert ID in case of an insert operation, or the update status code.
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
      * @see DBHelper::INSERTORUPDATE_UPDATE
      */
-    public static function insertOrUpdate($table, $data, $primaryFields)
+    public static function insertOrUpdate(string $table, array $data, array $primaryFieldNames) : string
     {
-        $checkField = $primaryFields[0]; // used in the query to check if a record exists
+        $checkField = $primaryFieldNames[0]; // used in the query to check if a record exists
 
         $whereTokens = array();
         $checkVariables = array(); // variables set for the fetch query
-        foreach ($primaryFields as $fieldName) 
+        foreach ($primaryFieldNames as $fieldName)
         {
             if (!array_key_exists($fieldName, $data)) 
             {
@@ -1243,15 +1293,15 @@ class DBHelper
                 $variables
             );
             return self::INSERTORUPDATE_UPDATE;
-        } else {
-            return self::insert(
-                "INSERT INTO
-					`$table`
-				SET
-					$set",
-                $variables
-            );
         }
+
+        return self::insert(
+            "INSERT INTO
+                `$table`
+            SET
+                $set",
+            $variables
+        );
     }
     
    /**
@@ -1301,10 +1351,10 @@ class DBHelper
     * Builds a list of columns to set values for, with value placeholders
     * named after the column names.
     * 
-    * @param array $data
+    * @param array<string,string|number|NULL> $data
     * @return string
     */
-    public static function buildSetStatement($data)
+    public static function buildSetStatement(array $data) : string
     {
         $tokens = array();
         $columns = array_keys($data);
@@ -1319,12 +1369,15 @@ class DBHelper
         return implode(', ', $tokens);
     }
 
+    /**
+     * @var bool
+     */
     protected static $debugging = false;
 
     /**
      * Enables debugging, which will output all queries as they are run.
      */
-    public static function enableDebugging()
+    public static function enableDebugging() : void
     {
         self::$debugging = true;
     }
@@ -1332,32 +1385,29 @@ class DBHelper
     /**
      * Disables the debug mode.
      */
-    public static function disableDebugging()
+    public static function disableDebugging() : void
     {
         self::$debugging = false;
     }
 
-    protected static function debugQuery($result)
+    /**
+     * @param bool $result
+     */
+    protected static function debugQuery(bool $result) : void
     {
         if (!self::$debugging) {
             return;
         }
+
+        $replaces = array(
+            "\t" => '',
+            '    ' => '',
+            ',' => ','.PHP_EOL
+        );
         
         $sql = trim(self::getSQL());
-        $sql = str_replace(array("\t", '    '), array(''), $sql);
-        $sql = str_replace(',', ','.PHP_EOL, $sql);
+        $sql = str_replace(array_keys($replaces), array_values($replaces), $sql);
 
-        $resultDisplay = '';
-        if($result===true || $result===false) {
-            $resultDisplay = AppUtils\ConvertHelper::bool2string($result);
-        } else if(is_array($result)) {
-            $resultDisplay = count($result).' entries';
-        } else if($result===null) {
-            $resultDisplay = 'NULL';
-        } else {
-            $resultDisplay = 'Unknown';
-        }
-        
         if(isCLI())
         {
             echo PHP_EOL.
@@ -1369,40 +1419,38 @@ class DBHelper
             echo 
             '<pre>' . 
                 $sql . PHP_EOL . 
-                'Result: '. $resultDisplay .
+                'Result: '. ConvertHelper::boolStrict2string($result) .
             '</pre>';
         }
     }
 
-    public static function fetchTableNames()
+    /**
+     * @return string[]
+     * @throws DBHelper_Exception
+     * @deprecated Use {@see DBHelper::getTablesList()} instead.
+     * @see DBHelper::getTablesList()
+     */
+    public static function fetchTableNames() : array
     {
-        $entries = self::fetchAll(
-            "SHOW TABLES"
-        );
-
-        $tables = array();
-        foreach ($entries as $entry) {
-            $tables[] = $entry[key($entry)];
-        }
-
-        return $tables;
+        return self::getTablesList();
     }
 
-    public static function dropTables()
+    public static function dropTables() : bool
     {
         $query = self::getDropTablesQuery();
+
         return self::executeAndRegister(DBHelper_OperationTypes::TYPE_DROP, $query);
     }
 
-    public static function getDropTablesQuery()
+    public static function getDropTablesQuery() : string
     {
-        $tables = self::fetchTableNames();
+        $tables = self::getTablesList();
         $tableQueries = array();
         foreach ($tables as $table) {
             $tableQueries[] = sprintf('DROP TABLE `%s`;', $table);
         }
 
-        $query = sprintf(
+        return sprintf(
             "SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;" . PHP_EOL .
             "SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;" . PHP_EOL .
             "SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';" . PHP_EOL .
@@ -1412,11 +1460,9 @@ class DBHelper
             "SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;",
             implode(PHP_EOL, $tableQueries)
         );
-
-        return $query;
     }
 
-    protected static function log($message)
+    protected static function log(string $message) : void
     {
         if(isset(self::$logCallback)) {
             call_user_func(self::$logCallback, sprintf(
@@ -1425,23 +1471,18 @@ class DBHelper
             ));
         }
     }
-    
+
+    /**
+     * @var callable|NULL
+     */
     protected static $logCallback = null;
     
-    public static function setLogCallback($callback)
+    public static function setLogCallback(callable $callback) : void
     {
-        if(!is_callable($callback)) {
-            throw new DBHelper_Exception(
-                'Invalid logging callback',
-                'The specified callback is not a callable entity.',
-                self::ERROR_INVALID_LOG_CALLBACK
-            );
-        }
-        
         self::$logCallback = $callback;
     }
 
-    public static function countAffectedRows()
+    public static function countAffectedRows() : int
     {
         if (!isset(self::$activeStatement)) {
             throw new DBHelper_Exception(
@@ -1453,17 +1494,22 @@ class DBHelper
 
         return self::$activeStatement->rowCount();
     }
-    
+
+    /**
+     * @var array<string,bool>
+     */
     protected static $cachedColumnExist = array();
-    
-   /**
-    * Checks whether the specified column exists in the target table.
-    * 
-    * @param string $tableName
-    * @param string $columnName
-    * @return boolean
-    */
-    public static function columnExists($tableName, $columnName)
+
+    /**
+     * Checks whether the specified column exists in the target table.
+     *
+     * @param string $tableName
+     * @param string $columnName
+     * @return boolean
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    public static function columnExists(string $tableName, string $columnName) : bool
     {
         $key = $tableName.'.'.$columnName;
         if(isset(self::$cachedColumnExist[$key])) {
@@ -1472,7 +1518,7 @@ class DBHelper
         
         self::$cachedColumnExist[$key] = false;
         
-    	$info = DBHelper::fetch(
+    	$info = self::fetch(
     		"SELECT
 				`COLUMN_NAME`
 			FROM
@@ -1507,7 +1553,7 @@ class DBHelper
     * @param array $variables
     * @return string|NULL
     */
-    public static function fetchKey(string $key, string $statement, array $variables=array())
+    public static function fetchKey(string $key, string $statement, array $variables=array()) : ?string
     {
         $data = self::fetch($statement, $variables);
         if(is_array($data) && isset($data[$key])) {
@@ -1548,7 +1594,7 @@ class DBHelper
             return 0;
         }
         
-        return intval($value);
+        return (int)$value;
     }
     
    /**
@@ -1559,10 +1605,10 @@ class DBHelper
     * 
     * @param string $key
     * @param string $statement
-    * @param array $variables
-    * @return array
+    * @param array<string,mixed> $variables
+    * @return string[]
     */
-    public static function fetchAllKey(string $key, string $statement, array $variables=array())
+    public static function fetchAllKey(string $key, string $statement, array $variables=array()) : array
     {
         $result = array();
         
@@ -1599,7 +1645,7 @@ class DBHelper
         
         for($i=0; $i < $total; $i++)
         {
-            $result[] = intval($items[$i]);
+            $result[] = (int)$items[$i];
         }
         
         return $result;
@@ -1659,10 +1705,10 @@ class DBHelper
     * are deleted.
     * 
     * @param string $table The target table name.
-    * @param array $where Associative array with column > value pairs for the where statement.
+    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Associative array with column > value pairs for the where statement.
     * @return boolean
     */
-    public static function deleteRecords(string $table, $where=array())
+    public static function deleteRecords(string $table, array $where=array()) : bool
     {
         self::validateTableName($table);
         
@@ -1689,58 +1735,74 @@ class DBHelper
         return self::delete($query, $vars);
     }
 
-   /**
-    * Checks whether the specified key exists in the target table.
-    * 
-    * Example:
-    * 
-    * <pre>
-    * // with a single key value
-    * keyExists('tablename', array('primary_key' => 2));
-    * 
-    * // with a complex key value
-    * keyExists(
-    *     'tablename', 
-    *     array(
-    *         'first_key' => 5,
-    *         'second_key' => 'text',
-    *         'third_key' => 'yes'
-    *     )
-    * );
-    * </pre>
-    * 
-    * @param string $table
-    * @param array $key Associative array with key => value pairs to check
-    * @return boolean
-    */
-    public static function keyExists($table, $key)
+    /**
+     * Checks whether the specified key exists in the target table.
+     *
+     * Example:
+     *
+     * <pre>
+     * // with a single key value
+     * keyExists('tablename', array('primary_key' => 2));
+     *
+     * // with a complex key value
+     * keyExists(
+     *     'tablename',
+     *     array(
+     *         'first_key' => 5,
+     *         'second_key' => 'text',
+     *         'third_key' => 'yes'
+     *     )
+     * );
+     * </pre>
+     *
+     * @param string $table
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Associative array with key => value pairs to check
+     * @return boolean
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    public static function keyExists(string $table, array $where) : bool
     {
-        $primaryKeys = array_keys($key);
-        $checkField = $primaryKeys[0]; // used in the query to check if a record exists
-        
-        $whereTokens = array();
-        $checkVariables = array(); 
-        foreach ($key as $fieldName => $fieldValue) {
-            $whereTokens[] = "`$fieldName`=:$fieldName";
-            $checkVariables[':' . $fieldName] = $fieldValue;
-        }
-        $where = implode(" AND ", $whereTokens);
+        self::requireNonEmptyData($where);
+
+        reset($where);
+
+        $checkField = key($where); // used in the query to check if a record exists
         
         $entry = self::fetch(
+            sprintf(
             "SELECT
-                `$checkField`
+                `%s`
             FROM
                 `$table`
             WHERE
-                $where",
-            $checkVariables
+                %s",
+                $checkField,
+                self::buildWhereFieldsStatement($where)
+            ),
+            $where
         );
-        
-        if (is_array($entry) && isset($entry[$checkField])) {
-            return true;
-        }        
-        
-        return false;
+
+        return is_array($entry) && isset($entry[$checkField]);
+    }
+
+    /**
+     * @param array $data
+     * @throws DBHelper_Exception
+     * @see DBHelper::ERROR_EMPTY_WHERE
+     */
+    private static function requireNonEmptyData(array $data) : void
+    {
+        if(!empty($data))
+        {
+            return;
+        }
+
+        throw new DBHelper_Exception(
+            'No where query conditions set.',
+            'Provided an empty array as where data.',
+            self::ERROR_EMPTY_WHERE
+        );
     }
     
    /**
@@ -1750,9 +1812,9 @@ class DBHelper
     * @param string $tableName
     * @return boolean
     */
-    public static function tableExists($tableName)
+    public static function tableExists(string $tableName) : bool
     {
-        $names = self::fetchTableNames();
+        $names = self::getTablesList();
         return in_array($tableName, $names);
     }
     
@@ -1765,10 +1827,10 @@ class DBHelper
     * be set to NULL accordingly.
     * 
     * @param string $tableName
-    * @param array<string,mixed> $data
+    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $data
     * @return string The insert ID, if any
     */
-    public static function insertDynamic($tableName, $data)
+    public static function insertDynamic(string $tableName, array $data) : string
     {
         $setTokens = array();
         foreach($data as $column => $value) {
@@ -1783,7 +1845,7 @@ class DBHelper
             }
         }
         
-        return DBHelper::insert(
+        return self::insert(
             sprintf(
                 "INSERT INTO
                     `%s`
@@ -1795,36 +1857,37 @@ class DBHelper
             $data
         );
     }
-    
-   /**
-    * Checks whether the specified table column is an auto 
-    * increment column.
-    * 
-    * @param string $tableName
-    * @param string $columnName
-    * @return boolean
-    */
-    public static function isAutoincrementColumn($tableName, $columnName)
+
+    /**
+     * Checks whether the specified table column is an auto
+     * increment column.
+     *
+     * @param string $tableName
+     * @param string $columnName
+     * @return boolean
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    public static function isAutoIncrementColumn(string $tableName, string $columnName) : bool
     {
-        $data = DBHelper::fetch(
+        $data = self::fetch(
             "SELECT 
                `EXTRA`
             FROM 
                 INFORMATION_SCHEMA.COLUMNS
             WHERE 
                 `TABLE_NAME`=:table
+            AND
+                `COLUMN_NAME`=:column
             AND 
                 `EXTRA` like '%auto_increment%'",
             array(
-                'table' => $tableName
+                'table' => $tableName,
+                'column' => $columnName
             )
         );
-        
-        if(is_array($data) && isset($data['EXTRA'])) {
-            return true;
-        }
-        
-        return false;
+
+        return is_array($data) && isset($data['EXTRA']);
     }
     
    /**
@@ -1835,7 +1898,7 @@ class DBHelper
     * @param string $operationLabel A short description for the operation that requires the transaction, added to the exception details 
     * @throws DBHelper_Exception
     */
-    public static function requireTransaction($operationLabel)
+    public static function requireTransaction(string $operationLabel) : void
     {
         if(self::isTransactionStarted()) {
            return; 
@@ -1859,7 +1922,7 @@ class DBHelper
     * @param array $where
     * @return boolean
     */
-    public static function recordExists($table, $where)
+    public static function recordExists(string $table, array $where) : bool
     {
         $query = sprintf( 
             "SELECT
@@ -1871,12 +1934,8 @@ class DBHelper
             $table,
             self::buildWhereFieldsStatement($where)
         );
-        
-        if(self::fetchCount($query, $where) > 0) {
-            return true;
-}
-        
-        return false;
+
+        return self::fetchCount($query, $where) > 0;
     }
     
    /**
@@ -1884,10 +1943,10 @@ class DBHelper
     * fields and values, connected by <code>AND</code>. The
     * bound variable names match the field names.
     *  
-    * @param array<string,mixed> $params
+    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $params
     * @return string
     */
-    public static function buildWhereFieldsStatement($params)
+    public static function buildWhereFieldsStatement(array $params) : string
     {
         $tokens = array();
         foreach($params as $key => $value) 
@@ -1905,9 +1964,10 @@ class DBHelper
    /**
     * Adds an event listener that is called before a database write operation.
     * @param callable $eventCallback
-    * @return number
+    * @param mixed|NULL $data
+    * @return int
     */
-    public static function onBeforeWriteOperation($eventCallback, $data=null)
+    public static function onBeforeWriteOperation(callable $eventCallback, $data=null) : int
     {
         return self::addListener('BeforeDBWriteOperation', $eventCallback, $data);
     }
@@ -1919,12 +1979,12 @@ class DBHelper
 
     /**
      * @param string $class
-     * @param DBHelper_BaseRecord|null $parentRecord
+     * @param DBHelper_BaseRecord|NULL $parentRecord
      * @param bool $newInstance
      * @return DBHelper_BaseCollection
      * @throws DBHelper_Exception
      */
-    public static function createCollection($class, DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false)
+    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : ?DBHelper_BaseCollection
     {
         $key = $class;
         if($parentRecord) {
@@ -1966,7 +2026,7 @@ class DBHelper
             }
     
             $parentClass = get_class($parentRecord->getCollection());
-            if($parentClass != $instance->getParentCollectionClass()) {
+            if($parentClass !== $instance->getParentCollectionClass()) {
                 throw new DBHelper_Exception(
                     'Invalid parent record',
                     sprintf(
