@@ -159,7 +159,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             
             $this->autoincrements[$path] = false;
             
-            if(!DBHelper::isAutoincrementColumn($table, $name)) {
+            if(!DBHelper::isAutoIncrementColumn($table, $name)) {
                 continue;
             }
             
