@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_DataGrid_Action_Separator extends UI_DataGrid_Action
 {
     public function __construct(UI_DataGrid $grid)
@@ -7,7 +9,7 @@ class UI_DataGrid_Action_Separator extends UI_DataGrid_Action
         parent::__construct($grid, 'sep'.nextJSID(), '');
     }
 
-    public function render()
+    public function render() : string
     {
         if(!$this->isValid())
         {
