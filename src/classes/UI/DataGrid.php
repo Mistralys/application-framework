@@ -1270,14 +1270,17 @@ class UI_DataGrid
         return '';
     }
 
+    /**
+     * @return string[]
+     */
     public function getSelected() : array
     {
         $items = $this->request->getParam('datagrid_items');
-        if (!is_array($items)) {
-            return array();
+        if (is_array($items)) {
+            return $items;
         }
 
-        return $items;
+        return array();
     }
 
     public function isSubmitted() : bool
