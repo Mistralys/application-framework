@@ -57,6 +57,7 @@ class Application
     const USER_ID_SYSTEM = 1;
     const USER_ID_DUMMY = 2;
     const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
+    const EVENT_REDIRECT = 'Redirect';
 
     /**
      * @var UI
@@ -1091,7 +1092,7 @@ class Application
     {
         $conf = new Application_LDAP_Config(
             APP_LDAP_HOST,
-            intval(APP_LDAP_PORT),
+            (int)APP_LDAP_PORT,
             APP_LDAP_DN,
             APP_LDAP_USERNAME,
             APP_LDAP_PASSWORD
@@ -1100,6 +1101,18 @@ class Application
         $conf->setMemberSuffix(APP_LDAP_MEMBER_SUFFIX);
 
         return new Application_LDAP($conf);
+    }
+
+    /**
+     * Adds an event listener for the redirect event, which is
+     * triggered every time a redirect is made to a target URL.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_Listener
+     */
+    public static function addRedirectListener(callable $callback) : Application_EventHandler_Listener
+    {
+        return Application_EventHandler::addListener(self::EVENT_REDIRECT, $callback);
     }
 
     /**
@@ -1114,7 +1127,7 @@ class Application
         try
         {
             Application_EventHandler::trigger(
-                'Redirect',
+                self::EVENT_REDIRECT,
                 array(
                     'url' => $url
                 )
