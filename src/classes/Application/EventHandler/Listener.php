@@ -75,7 +75,7 @@ class Application_EventHandler_Listener
     }
     
    /**
-    * Human readable label of where the listener comes from.
+    * Human-readable label of where the listener comes from.
     * 
     * @return string
     */
