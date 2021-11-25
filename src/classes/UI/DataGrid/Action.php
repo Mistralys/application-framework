@@ -1,12 +1,25 @@
 <?php
 
+use AppUtils\Interface_Classable;
+use AppUtils\NamedClosure;
+use AppUtils\OutputBuffering;
+use AppUtils\OutputBuffering_Exception;
+use AppUtils\Traits_Classable;
+
 /**
  * @method UI_DataGrid_Action setIcon($icon)
  */
-abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, UI_Interfaces_Conditional
+abstract class UI_DataGrid_Action
+    implements
+    Application_Interfaces_Iconizable,
+    UI_Interfaces_Conditional,
+    UI_Renderable_Interface,
+    Interface_Classable
 {
     use Application_Traits_Iconizable;
+    use UI_Traits_RenderableGeneric;
     use UI_Traits_Conditional;
+    use Traits_Classable;
     
     /**
      * @var string
@@ -19,7 +32,7 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
     protected $label;
 
     /**
-     * @var CallableContainer
+     * @var CallableContainer|NULL
      */
     protected $callback;
 
@@ -28,29 +41,46 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
      */
     protected $grid;
 
+    /**
+     * @var array<string,string>
+     */
     protected $attributes = array(
         'href' => 'javascript:void(0);'
     );
 
+    /**
+     * @var string
+     */
     protected $id;
     
    /**
     * @var UI
     */
     protected $ui;
-    
-    public function __construct(UI_DataGrid $grid, $name, $label)
+
+    /**
+     * @param UI_DataGrid $grid
+     * @param string $name
+     * @param string|number|UI_Renderable_Interface $label
+     * @throws UI_Exception
+     */
+    public function __construct(UI_DataGrid $grid, string $name, $label)
     {
         $this->id = nextJSID();
         $this->grid = $grid;
         $this->name = $name;
-        $this->label = $label;
+        $this->label = toString($label);
         $this->ui = $grid->getUI();
         
         $this->restoreParams();
     }
-    
-    protected function restoreParams()
+
+    public function getUI() : UI
+    {
+        return $this->ui;
+    }
+
+    protected function restoreParams() : void
     {
         $request = Application_Request::getInstance();
         
@@ -64,22 +94,25 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
             $this->lockParam($name);
         }
     }
-    
+
+    /**
+     * @var string[]
+     */
     protected $lockedParams = array();
     
-    protected function lockParam($name)
+    protected function lockParam(string $name) : void
     {
         if(!in_array($name, $this->lockedParams)) {
              $this->lockedParams[] = $name;
         }
     }
     
-    protected function isParamLocked($name)
+    protected function isParamLocked(string $name) : bool
     {
         return in_array($name, $this->lockedParams);
     }
     
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
@@ -88,7 +121,7 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
      * Retrieves the identifying name of the action.
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -104,15 +137,11 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
      * - [Optional arguments]
      *
      * @param callable $callback The callback to use.
-     * @param mixed[]|null $arguments Optional list of arguments to include in the callback.
-     * @return UI_DataGrid_Action
+     * @param array $arguments Optional list of arguments to include in the callback.
+     * @return $this
      */
-    public function setCallback($callback, $arguments=null)
+    public function setCallback(callable $callback, array $arguments=array())
     {
-        if(empty($arguments)) {
-            $arguments = array();
-        } 
-        
         $this->callback = new CallableContainer($callback, $arguments);
         
         return $this;
@@ -122,17 +151,20 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
     * Disables the "Select all entries" functionality 
     * for this list action.
     *  
-    * @return UI_DataGrid_Action
+    * @return $this
     */
     public function disableSelectAll()
     {
         $this->selectAllDisabled = true;
         return $this;
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $selectAllDisabled = false;
     
-    public function isSelectAllEnabled()
+    public function isSelectAllEnabled() : bool
     {
         return !$this->selectAllDisabled;
     }
@@ -142,8 +174,9 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
      * drop down menu in the datagrid.
      *
      * @return string
+     * @throws OutputBuffering_Exception
      */
-    public function render()
+    public function render() : string
     {
         if(!$this->isValid())
         {
@@ -152,61 +185,53 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
 
         $this->init();
 
-        return
-        '<li>'.
-            '<a' . $this->renderAttributes() . '>' .
-                $this->renderIcon() . $this->label .
-            '</a>'.
-        '</li>';
+        OutputBuffering::start();
+
+        ?>
+        <li>
+            <a <?php echo $this->renderAttributes() ?>>
+                <?php echo sb()
+                    ->add((string)$this->getIcon())
+                    ->add($this->label);
+                ?>
+            </a>
+        </li>
+        <?php
+
+        return OutputBuffering::get();
     }
-    
-    protected $classes = array();
-    
-    public function addClass($name)
-    {
-        if(!$this->hasClass($name)) {
-            $this->classes[] = $name;
-        }
-        
-        return $this;
-    }
-    
-    public function hasClass($name)
-    {
-        return in_array($name, $this->classes);
-    }
-    
+
+    /**
+     * @return $this
+     */
     public function makeDangerous()
     {
         return $this->addClass('action-danger');
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeSuccess()
     {
         return $this->addClass('action-success');
     }
-    
+
+    /**
+     * @return $this
+     */
     public function makeDeveloper()
     {
         $this->label = 'DEV: '.$this->label;
         return $this->addClass('action-developer');
     }
 
-    protected function renderIcon()
-    {
-        if(isset($this->icon)) {
-            return $this->icon->render() . ' ';
-        }
-
-        return '';
-    }
-
-    protected function renderAttributes()
+    protected function renderAttributes() : string
     {
         $this->attributes['id'] = $this->getID();
         
         if(!empty($this->classes)) {
-            $this->attributes['class'] = implode(' ', $this->classes);
+            $this->attributes['class'] = $this->classesToString();
         }
         
         if(isset($this->jsMethod)) {
@@ -257,7 +282,10 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
 
         return ' ' . implode(' ', $items);
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $lastBatch = false;
     
    /**
@@ -269,7 +297,7 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
     * 
     * @return boolean
     */
-    public function isLastBatch()
+    public function isLastBatch() : bool
     {
         if($this->isSelectAllEnabled()) {
             return $this->lastBatch;
@@ -284,9 +312,9 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
      * method, this will not do anything.
      * 
      * @param bool $isLastBatch
-     * @return UI_DataGrid_Action
+     * @return $this
      */
-    public function executeCallback($isLastBatch=false)
+    public function executeCallback(bool $isLastBatch=false)
     {
         if (!isset($this->callback) || !$this->isValid())
         {
@@ -295,7 +323,9 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
 
         // the callback may trigger a redirect: in some cases
         // we want to intercept this, so we add the event handler 
-        Application_EventHandler::addListener('Redirect', array($this, 'handle_redirect'));
+        Application::addRedirectListener(
+            Closure::fromCallable(array($this, 'callback_redirect')),
+        );
         
         try
         {
@@ -316,19 +346,29 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
         return $this;
     }
     
-    public function getSelectedValues()
+    public function getSelectedValues() : array
     {
         return $this->grid->getSelected();
     }
-    
-    public function handle_redirect()
+
+    /**
+     * NOTE: For PHP8 compatibility, the parameters must be
+     * defined even if they are unused.
+     *
+     * @param Application_EventHandler_Event $event
+     * @param string $url
+     */
+    private function callback_redirect(Application_EventHandler_Event $event, string $url) : void
     {
         $this->callbackExecuted();
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $callbackDone = false;
     
-    protected function callbackExecuted()
+    protected function callbackExecuted() : void
     {
         if($this->callbackDone) {
             return;
@@ -351,8 +391,11 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
         $response = Application_AjaxMethod::formatJSONResponse($data);
         Application_Request::sendJSON($response);
     }
-    
-    protected $jsMethod;
+
+    /**
+     * @var string|NULL
+     */
+    protected $jsMethod = null;
     
    /**
     * Sets a javascript method to call when the link is clicked.
@@ -365,38 +408,46 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
     * - The datagrid object instance
     *
     * @param string $methodName Only the method name, e.g. "DoSomething".
-    * @return UI_DataGrid_Action
+    * @return $this
     */
-    public function setJSMethod($methodName)
+    public function setJSMethod(string $methodName)
     {
     	$this->jsMethod = $methodName;
         return $this;
     }
- 
-    protected $tooltip;
-    
-   /**
-    * Sets a tooltip to show when hovering over the action menu item.
-    * @param string|int|UI_Renderable_Interface $text
-    * @return UI_DataGrid_Action
-    */
+
+    /**
+     * @var string|NULL
+     */
+    protected $tooltip = null;
+
+    /**
+     * Sets a tooltip to show when hovering over the action menu item.
+     * @param string|int|UI_Renderable_Interface $text
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setTooltip($text)
     {
         $this->tooltip = toString($text);
         return $this;
     }
-    
-    protected $confirmMessage;
-    
-   /**
-    * Adds a confirmation message to the action: a message dialog will
-    * be shown before the action is submitted.
-    * 
-    * @param string|int|UI_Renderable_Interface $message The confirmation message. HTML is allowed.
-    * @param boolean $withInput Whether this is a critical message for which the user must type a confirmation string.
-    * @return UI_DataGrid_Action
-    */
-    public function makeConfirm($message, $withInput=false)
+
+    /**
+     * @var array{message:string,withInput:bool}|NULL
+     */
+    protected $confirmMessage = null;
+
+    /**
+     * Adds a confirmation message to the action: a message dialog will
+     * be shown before the action is submitted.
+     *
+     * @param string|int|UI_Renderable_Interface $message The confirmation message. HTML is allowed.
+     * @param boolean $withInput Whether this is a critical message for which the user must type a confirmation string.
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function makeConfirm($message, bool $withInput=false)
     {
         $this->confirmMessage = array(
             'message' => toString($message),
@@ -410,30 +461,34 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
         return $this;
     }
     
-    protected function init()
+    protected function init() : void
     {
         // can be extended as needed
     }
-    
+
+    /**
+     * @var array<string,string>
+     */
     protected $params = array();
-    
-   /**
-    * Sets a freeform parameter: these can be used to
-    * store data that the callback function can use.
-    * It has no functionality beyond storing data.
-    * 
-    * NOTE: The value must be convertible to a string.
-    * When using the select all feature, the parameters
-    * are passed on via AJAX.
-    * 
-    * @param string $name
-    * @param string $value
-    * @return UI_DataGrid_Action
-    */
-    public function setParam($name, $value)
+
+    /**
+     * Sets a freeform parameter: these can be used to
+     * store data that the callback function can use.
+     * It has no functionality beyond storing data.
+     *
+     * NOTE: The value must be convertible to a string.
+     * When using the select all feature, the parameters
+     * are passed on via AJAX.
+     *
+     * @param string $name
+     * @param string|number|UI_Renderable_Interface $value
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setParam(string $name, $value)
     {
         if(!$this->isParamLocked($name)) {
-            $this->params[$name] = $value;
+            $this->params[$name] = toString($value);
         }
         
         return $this;
@@ -446,7 +501,7 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
     * @param string $default
     * @return string
     */
-    public function getParam($name, $default=null)
+    public function getParam(string $name, string $default='') : string
     {
         if(isset($this->params[$name])) {
             return $this->params[$name];
@@ -454,8 +509,11 @@ abstract class UI_DataGrid_Action implements Application_Interfaces_Iconizable, 
         
         return $default;
     }
-    
-    public function getParams()
+
+    /**
+     * @return array<string,string>
+     */
+    public function getParams() : array
     {
         return $this->params;
     }
