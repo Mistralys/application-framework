@@ -813,7 +813,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             throw $ex;
         }
         
-        $this->getData[$name] = strval($value);
+        $this->getData[$name] = (string)$value;
         return $this;
     }
     
@@ -837,7 +837,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param int $durationSeconds
      * @return $this
      */
-    public function setCacheEnabled(bool $enabled=true, int $durationSeconds)
+    public function setCacheEnabled(bool $enabled=true, int $durationSeconds = 0)
     {
         $this->cache->setEnabled($enabled, $durationSeconds);
         return $this;
