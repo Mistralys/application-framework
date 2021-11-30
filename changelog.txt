@@ -1,5 +1,6 @@
 v1.21.2
 - Events: Added `Application::addRedirectListener()`.
+- Events: Fixed PHP8 support by removing keys from associative argument arrays.
 
 v1.21.1
 - Environments: `Application::isDevelEnvironment()` now uses the environment classes.
