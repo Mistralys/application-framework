@@ -353,14 +353,12 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             $this->buildColumnsWhere()
         );
         
-        $revs = DBHelper::fetchAllKey($this->revisionColumn, $query, $this->getColumns());
+        $this->cacheRevisionsList = DBHelper::fetchAllKeyInt($this->revisionColumn, $query, $this->getColumns());
 
         $this->log(sprintf(
             'Revisions list loaded, found %1$s revisions.',
-            count($revs)
+            count($this->cacheRevisionsList)
         ));
-
-        $this->cacheRevisionsList = $revs;
 
         return $this->cacheRevisionsList;
     }

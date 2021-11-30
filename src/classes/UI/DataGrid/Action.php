@@ -323,9 +323,10 @@ abstract class UI_DataGrid_Action
 
         // the callback may trigger a redirect: in some cases
         // we want to intercept this, so we add the event handler 
-        Application::addRedirectListener(
+        Application::addRedirectListener(NamedClosure::fromClosure(
             Closure::fromCallable(array($this, 'callback_redirect')),
-        );
+            array($this, 'callback_redirect')
+        ));
         
         try
         {
@@ -351,14 +352,7 @@ abstract class UI_DataGrid_Action
         return $this->grid->getSelected();
     }
 
-    /**
-     * NOTE: For PHP8 compatibility, the parameters must be
-     * defined even if they are unused.
-     *
-     * @param Application_EventHandler_Event $event
-     * @param string $url
-     */
-    private function callback_redirect(Application_EventHandler_Event $event, string $url) : void
+    private function callback_redirect() : void
     {
         $this->callbackExecuted();
     }

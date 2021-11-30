@@ -1128,9 +1128,7 @@ class Application
         {
             Application_EventHandler::trigger(
                 self::EVENT_REDIRECT,
-                array(
-                    'url' => $url
-                )
+                array($url)
             );
         }
         catch (Application_Exception $e)

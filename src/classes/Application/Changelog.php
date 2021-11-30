@@ -225,7 +225,7 @@ class Application_Changelog
         $user_ids = DBHelper::fetchAllKey('changelog_author', $query, $placeholders);
         $users = array();
         foreach($user_ids as $user_id) {
-            $user = Application::getUser()->createByID($user_id);
+            $user = Application::createUser((int)$user_id);
             if($user instanceof Application_User) {
                 $users[] = $user;
             }

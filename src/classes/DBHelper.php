@@ -305,12 +305,12 @@ class DBHelper
      * and the last query that was run can be retrieved using the
      * {@link getSQL()} and {@link getSQLHighlighted()} methods.
      *
-     * @param string $operationType
+     * @param int $operationType
      * @param string $statement
      * @param array $variables
      * @param bool $result
      */
-    protected static function registerQuery(string $operationType, string $statement, array $variables, bool $result) : void
+    protected static function registerQuery(int $operationType, string $statement, array $variables, bool $result) : void
     {
         if (self::$queryLogging === true) {
             self::log(self::getSQL());
@@ -424,7 +424,7 @@ class DBHelper
      * to use this method if you run UPDATE queries.
      *
      * @param string $statement The full SQL query to run with placeholders for variables
-     * @param array<array,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
@@ -437,7 +437,7 @@ class DBHelper
     /**
      * Executes the query and registers it internally.
      *
-     * @param string $operationType
+     * @param int $operationType
      * @param string $statement
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
      * @param bool $exceptionOnError
@@ -445,7 +445,7 @@ class DBHelper
      * @throws DBHelper_Exception
      * @throws JsonException
      */
-    protected static function executeAndRegister(string $operationType, string $statement, array $variables=array(), bool $exceptionOnError=true) : bool
+    protected static function executeAndRegister(int $operationType, string $statement, array $variables=array(), bool $exceptionOnError=true) : bool
     {
         $result = self::execute($operationType, $statement, $variables, $exceptionOnError);
         self::registerQuery($operationType, $statement, $variables, $result);
@@ -739,7 +739,7 @@ class DBHelper
     }
 
     /**
-     * @param string[] $types
+     * @param int[] $types
      * @return int
      */
     public static function countQueries(array $types=array()) : int

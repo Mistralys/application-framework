@@ -90,7 +90,7 @@ class Application_EventHandler
      * Triggers the specified event, calling all registered listeners.
      *
      * @param string $eventName
-     * @param array $args
+     * @param array<int,mixed> $args Indexed array of arguments.
      * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
      * @return Application_EventHandler_Event
      * @throws Application_EventHandler_Exception
@@ -104,26 +104,17 @@ class Application_EventHandler
         if(!is_array($args)) {
             $args = array($args);
         }
-        
-        if(!class_exists($class)) {
-            throw new Application_EventHandler_Exception(
-                'Missing event class',
-                sprintf(
-                    'Event [%s]: The [%s] class could not be found. Custom event classes must be loaded prior to triggering the event.',
-                    $eventName,
-                    $class
-                ),
-                self::ERROR_MISSING_EVENT_CLASS
-            );
-        }
-        
-        /* @var $event Application_EventHandler_Event */
-        $event = ensureType(
-            Application_EventHandler_Event::class, 
-            new $class($eventName, $args),
-            self::ERROR_INVALID_EVENT_CLASS
-        );
-        
+
+        // PHP8 fix for call_user_func_array using associative array
+        // keys as named parameters: we remove all keys to avoid the
+        // interpreter using named parameters.
+        //
+        // https://php.watch/versions/8.0/named-parameters#named-params-call_user_func_array
+        //
+        $args = array_values($args);
+
+        $event = self::createEvent($eventName, $class, $args);
+
         if (!isset(self::$events[$eventName])) 
         {
             return $event;
@@ -210,5 +201,50 @@ class Application_EventHandler
         }
 
         return self::$offlineEvents;
+    }
+
+    /**
+     * @param string $class
+     * @param string $eventName
+     * @throws Application_EventHandler_Exception
+     */
+    private static function requireEventClassExists(string $class, string $eventName) : void
+    {
+        if (class_exists($class))
+        {
+            return;
+        }
+
+        throw new Application_EventHandler_Exception(
+            'Missing event class',
+            sprintf(
+                'Event [%s]: The [%s] class could not be found. Custom event classes must be loaded prior to triggering the event.',
+                $eventName,
+                $class
+            ),
+            self::ERROR_MISSING_EVENT_CLASS
+        );
+    }
+
+    private static function createEvent(string $eventName, string $class, array $args) : Application_EventHandler_Event
+    {
+        self::requireEventClassExists($class, $eventName);
+
+        $event = new $class($eventName, $args);
+
+        if($event instanceof Application_EventHandler_Event)
+        {
+            return $event;
+        }
+
+        throw new Application_EventHandler_Exception(
+            'Invalid event class',
+            sprintf(
+                'The event class [%s] does not extend the [%s] class.',
+                $class,
+                Application_EventHandler_Event::class
+            ),
+            self::ERROR_INVALID_EVENT_CLASS
+        );
     }
 }

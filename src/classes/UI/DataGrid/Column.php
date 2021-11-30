@@ -5,6 +5,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     use UI_Traits_Conditional;
 
     public const ERROR_SORT_DATA_COLUMN_MISSING = 17903;
+    public const ERROR_UNKNOWN_OPTION_NAME = 17904;
 
     public const OPTION_HIDDEN = 'hidden';
     public const OPTION_SORT_CALLBACK = 'sortCallback';
@@ -41,6 +42,11 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     * @var UI
     */
     protected $ui;
+
+    /**
+     * @var UI_DataGrid_Column_UserSettings|NULL
+     */
+    protected $userSettings;
 
     /**
      * @var array{sortable:bool,sortKey:string|null,sortCallback:callable|null,sortDataColumn:string|NULL,align:string,nowrap:bool,hidden:bool,width:null|int,width-type:string,tooltip:string}
@@ -352,7 +358,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * @param string $name
      * @param mixed $value
      * @return $this
-     * @throws Exception
+     * @throws UI_DataGrid_Exception
      * @see setHidden()
      * @see setNowrap()
      * @see alignRight()
@@ -361,9 +367,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      */
     public function setOption(string $name, $value) : UI_DataGrid_Column
     {
-        if (!array_key_exists($name, $this->options)) {
-            throw new Exception('Unknown option.');
-        }
+        $this->requireValidOption($name);
 
         $this->options[$name] = $value;
 
@@ -766,5 +770,26 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         }
 
         return $this->userSettings;
+    }
+
+    /**
+     * @param string $name
+     * @throws UI_DataGrid_Exception
+     */
+    private function requireValidOption(string $name) : void
+    {
+        if (array_key_exists($name, $this->options))
+        {
+            return;
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Unknown column option.',
+            sprintf(
+                'The column option [%s] is not known.',
+                $name
+            ),
+            self::ERROR_UNKNOWN_OPTION_NAME
+        );
     }
 }

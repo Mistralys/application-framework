@@ -9,7 +9,7 @@
 
 /**
  * Container class for a single locked administration screen.
- * Offers an easy to use API to access the lock information.
+ * Offers an easy-to-use API to access the lock information.
  * 
  * @package Application
  * @subpackage LockManager
@@ -254,20 +254,16 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         if(!empty($entries)) {
             $messaging = Application::createMessaging();
             foreach($entries as $message_id) {
-                $info['unlock_requests'][] = $messaging->getByID($message_id)->toArray();
+                $info['unlock_requests'][] = $messaging->getByID((int)$message_id)->toArray();
             }
         }
         
         return $info;
     }
     
-    public function isForcedRelease()
+    public function isForcedRelease() : bool
     {
-        if($this->getProperty('forced_release') == 'yes') {
-            return true;
-        }
-        
-        return false;
+        return $this->getProperty('forced_release') === 'yes';
     }
    
    /**
@@ -411,7 +407,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         if(is_array($entries)) {
             $messaging = Application::createMessaging();
             foreach($entries as $message_id) {
-                $result[] = $messaging->getByID($message_id);
+                $result[] = $messaging->getByID((int)$message_id);
             }
         }
         
