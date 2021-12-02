@@ -63,9 +63,9 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      *
      * @param UI $ui
      * @param string $id
-     * @param array $defaultData
+     * @param array<string,mixed> $defaultData
      */
-    public function __construct(UI $ui, string $id, string $method, $defaultData = array())
+    public function __construct(UI $ui, string $id, string $method, array $defaultData = array())
     {
         parent::__construct($ui->getPage());
         
