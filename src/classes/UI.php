@@ -5,8 +5,10 @@
  * @see UI
  */
 
+use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
+use AppUtils\OutputBuffering;
 use function AppUtils\parseVariable;
-use AppUtils\ConvertHelper;
 
 /**
  * UI management class that handles display-related
@@ -23,15 +25,18 @@ class UI
     public const ERROR_CANNOT_SELECT_DUMMY_INSTANCE = 39747001;
     public const ERROR_NO_UI_INSTANCE_AVAILABLE_YET = 39747002;
     public const ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE = 39747003;
-    public const ERROR_INVALID_INCLUDE_URL = 39747004;
     public const ERROR_NOT_A_RENDERABLE = 39747005;
-    public const ERROR_INVALID_BOOTSTRAP_ELEMENT = 39747006; 
-    
-    const MESSAGE_TYPE_SUCCESS = 'success';
-    const MESSAGE_TYPE_ERROR= 'error';
-    const MESSAGE_TYPE_WARNING ='warning';
-    const MESSAGE_TYPE_INFO = 'info';
-    
+    public const ERROR_INVALID_BOOTSTRAP_ELEMENT = 39747006;
+    public const ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN = 39747007;
+
+    public const MESSAGE_TYPE_SUCCESS = 'success';
+    public const MESSAGE_TYPE_ERROR= 'error';
+    public const MESSAGE_TYPE_WARNING ='warning';
+    public const MESSAGE_TYPE_INFO = 'info';
+
+    private const SESSION_VAR_APP_MESSAGES = 'application_messages';
+    public const DUMMY_INSTANCE_ID = '_dummy';
+
     /**
      * @var Application
      */
@@ -42,7 +47,7 @@ class UI
      * page has loaded (included in the jQuery.ready()
      * function call).
      *
-     * @var array
+     * @var string[]
      * @see addJavascriptOnload()
      */
     private $onloadJS = array();
@@ -55,14 +60,6 @@ class UI
      * @see addJavascriptHead()
      */
     private $headJS = array();
-
-    /**
-     * Stores form-related error messages.
-     * @var array
-     * @see addFormError()
-     * @see getFormErrors()
-     */
-    private $formErrors = array();
 
     /**
      * @var Application_Session
@@ -78,11 +75,6 @@ class UI
     * @var UI_Themes
     */
     private $themes;
-    
-   /**
-    * @var UI_Themes_Theme
-    */
-    private $theme;
     
    /**
     * @var boolean
@@ -117,7 +109,6 @@ class UI
         $this->app = $app;
         $this->session = Application::getSession();
         $this->themes = new UI_Themes($this);
-        $this->theme = $this->themes->getTheme();
         $this->resourceManager = new UI_ResourceManager($this);
     }
     
@@ -163,12 +154,18 @@ class UI
             );
         }
         
-        return self::$instances[self::$activeInstance];
+        return self::$instances[self::$activeInstanceID];
     }
-    
-    private static $previousKey = null;
-    
-    private static $activeInstance = null;
+
+    /**
+     * @var string|null
+     */
+    private static $previousKey;
+
+    /**
+     * @var string|null
+     */
+    private static $activeInstanceID;
     
    /**
     * @var array<string, UI>
@@ -188,7 +185,7 @@ class UI
             self::$instances[$key] = new UI($key, $app);
         }
         
-        self::$activeInstance = $key;
+        self::$activeInstanceID = $key;
         return self::$instances[$key];
     }
     
@@ -205,7 +202,7 @@ class UI
     * @return UI
     * @throws Application_Exception
     */
-    public static function selectDummyInstance()
+    public static function selectDummyInstance() : UI
     {
         if(empty(self::$instances)) {
             throw new Application_Exception(
@@ -215,30 +212,30 @@ class UI
             );
         }
         
-        if(!isset(self::$instances['_dummy'])) {
+        if(!isset(self::$instances[self::DUMMY_INSTANCE_ID])) {
             $key = key(self::$instances);
-            $ui = new UI('_dummy', self::$instances[$key]->getApplication());
+            $ui = new UI(self::DUMMY_INSTANCE_ID, self::$instances[$key]->getApplication());
             $ui->setPage($ui->createPage('dummy'));
-            self::$instances['_dummy'] = $ui;
+            self::$instances[self::DUMMY_INSTANCE_ID] = $ui;
         }
 
-        if(self::$activeInstance != '_dummy') {
-            self::$previousKey = self::$activeInstance;
-            self::$activeInstance = '_dummy';
+        if(self::$activeInstanceID !== self::DUMMY_INSTANCE_ID) {
+            self::$previousKey = self::$activeInstanceID;
+            self::$activeInstanceID = self::DUMMY_INSTANCE_ID;
         }
         
         return self::getInstance();
     }
-    
+
    /**
     * Restores the previously selected UI instance after
     * switching to another UI instance, for example using
     * the {@link selectDummyInstance()} method.
-    * 
+    *
     * @param boolean $ignoreErrors Whether to ignore errors when no previous instance is present
     * @throws Application_Exception
     */
-    public static function selectPreviousInstance($ignoreErrors=false)
+    public static function selectPreviousInstance(bool $ignoreErrors=false) : void
     {
         if(!isset(self::$previousKey)) {
             if($ignoreErrors) {
@@ -247,11 +244,11 @@ class UI
             throw new Application_Exception(
                 'No previous UI instance available',
                 'Tried selecting a previous instance, but no instance was switched yet.',
-                self::ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE    
+                self::ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE
             );
         }
-        
-        self::$activeInstance = self::$previousKey;
+
+        self::$activeInstanceID = self::$previousKey;
     }
 
     /**
@@ -262,14 +259,15 @@ class UI
     {
         return new UI_Page($this, $id);
     }
-    
-   /**
-    * Creates a new instance of the quick selector helper
-    * class, which can be used to create quick selection 
-    * UI elements for switching between items.
-    * 
-    * @return UI_QuickSelector
-    */
+
+    /**
+     * Creates a new instance of the quick selector helper
+     * class, which can be used to create quick selection
+     * UI elements for switching between items.
+     *
+     * @param string $id
+     * @return UI_QuickSelector
+     */
     public function createQuickSelector(string $id='') : UI_QuickSelector
     {
         return new UI_QuickSelector($id);
@@ -278,7 +276,7 @@ class UI
     /**
      * @return Application
      */
-    public function getApplication()
+    public function getApplication() : Application
     {
         return $this->app;
     }
@@ -353,13 +351,13 @@ class UI
      * @param string $statement
      * @param boolean $avoidDuplicates Whether to ignore identical statements that have already been added
      */
-    public function addJavascriptOnload($statement, $avoidDuplicates=false)
+    public function addJavascriptOnload(string $statement, bool $avoidDuplicates=false) : void
     {
         $statement = rtrim($statement, ';') . ';';
         
         if($avoidDuplicates && in_array($statement, $this->onloadJS)) {
             return;
-    }
+        }
 
         $this->onloadJS[] = $statement;
     }
@@ -374,8 +372,9 @@ class UI
      * addJavascriptHead("alert('Hello World')");
      *
      * @param string $statement
+     * @param bool $addSemicolon
      */
-    public function addJavascriptHead($statement, $addSemicolon=true)
+    public function addJavascriptHead(string $statement, bool $addSemicolon=true) : void
     {
         if($addSemicolon) {
         	$statement = rtrim($statement, ';') . ';';
@@ -391,7 +390,7 @@ class UI
      * @param string $varName
      * @param mixed $varValue
      */
-    public function addJavascriptHeadVariable($varName, $varValue)
+    public function addJavascriptHeadVariable(string $varName, $varValue) : void
     {
         $this->headJS[] = JSHelper::buildVariable($varName, $varValue);
     }
@@ -411,7 +410,7 @@ class UI
      * // add an alert('Alert text'); statement
      * addJavascriptHeadStatement('alert', 'Alert text');
      */
-    public function addJavascriptHeadStatement()
+    public function addJavascriptHeadStatement() : void
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
@@ -424,13 +423,13 @@ class UI
     * 
     * @see addJavascriptHeadStatement()
     */
-    public function addJavascriptOnloadStatement()
+    public function addJavascriptOnloadStatement() : void
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
         $this->addJavascriptOnload($statement);
     }
-    
+
     /**
      * Adds a message to be displayed to the user. It is stored in
      * the session, so it will be displayed on the next request if
@@ -438,11 +437,12 @@ class UI
      * saving a record followed by a redirect).
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @see hasMessages()
+     * @throws UI_Exception
      * @see getMessages()
      * @see clearMessages()
+     * @see hasMessages()
      */
-    public function addMessage($message, $type = UI::MESSAGE_TYPE_INFO)
+    public function addMessage($message, string $type = UI::MESSAGE_TYPE_INFO) : void
     {
         $messages = $this->getMessages();
         $messages[] = array(
@@ -450,46 +450,50 @@ class UI
             'text' => toString($message)
         );
 
-        $this->session->setValue('application_messages', $messages);
+        $this->session->setValue(self::SESSION_VAR_APP_MESSAGES, $messages);
     }
 
-   /**
-    * @param string|number|UI_Renderable_Interface $message
-    */
-    public function addSuccessMessage($message)
+    /**
+     * @param string|number|UI_Renderable_Interface $message
+     * @throws UI_Exception
+     */
+    public function addSuccessMessage($message) : void
     {
-        $this->addMessage($message, UI::MESSAGE_TYPE_SUCCESS);
+        $this->addMessage($message, self::MESSAGE_TYPE_SUCCESS);
     }
 
-   /**
-    * @param string|number|UI_Renderable_Interface $message
-    */
-    public function addErrorMessage($message)
+    /**
+     * @param string|number|UI_Renderable_Interface $message
+     * @throws UI_Exception
+     */
+    public function addErrorMessage($message) : void
     {
-        $this->addMessage($message, UI::MESSAGE_TYPE_ERROR);
+        $this->addMessage($message, self::MESSAGE_TYPE_ERROR);
     }
 
-   /**
-    * @param string|number|UI_Renderable_Interface $message
-    */
-    public function addInfoMessage($message)
+    /**
+     * @param string|number|UI_Renderable_Interface $message
+     * @throws UI_Exception
+     */
+    public function addInfoMessage($message) : void
     {
-        $this->addMessage($message, UI::MESSAGE_TYPE_INFO);
+        $this->addMessage($message);
     }
 
-   /**
-    * @param string|number|UI_Renderable_Interface $message
-    */
-    public function addWarningMessage($message)
+    /**
+     * @param string|number|UI_Renderable_Interface $message
+     * @throws UI_Exception
+     */
+    public function addWarningMessage($message) : void
     {
-        $this->addMessage($message, UI::MESSAGE_TYPE_WARNING);
+        $this->addMessage($message, self::MESSAGE_TYPE_WARNING);
     }
-    
+
     /**
      * Checks if any user messages are present.
      * @return boolean
      */
-    public function hasMessages()
+    public function hasMessages() : bool
     {
         $messages = $this->getMessages();
 
@@ -530,14 +534,14 @@ class UI
      * to clear them using the {@link clearMessages()}
      * method.
      *
-     * @return array
+     * @return array<int,array{type:string,message:string}>
      * @see addMessage()
      * @see hasMessages()
      * @see clearMessages()
      */
-    public function getMessages()
+    public function getMessages() : array
     {
-        $messages = $this->session->getValue('application_messages', array());
+        $messages = $this->session->getValue(self::SESSION_VAR_APP_MESSAGES, array());
         if (!is_array($messages)) {
             $messages = array();
         }
@@ -554,7 +558,7 @@ class UI
      */
     public function clearMessages() : UI
     {
-        $this->session->setValue('application_messages', array());
+        $this->session->setValue(self::SESSION_VAR_APP_MESSAGES, array());
         
         return $this;
     }
@@ -568,7 +572,7 @@ class UI
      * @param boolean $allowDuplicateID Allow using the same grid ID more than once?
      * @return UI_DataGrid
      */
-    public function createDataGrid($id, $allowDuplicateID=false) : UI_DataGrid
+    public function createDataGrid(string $id, bool $allowDuplicateID=false) : UI_DataGrid
     {
         return new UI_DataGrid($this, $id, $allowDuplicateID);
     }
@@ -598,8 +602,7 @@ class UI
         // array value.
         HTML_QuickForm2_Factory::registerRule(
             'equals',
-            'HTML_QuickForm2_Rule_Equals',
-            null
+            HTML_QuickForm2_Rule_Equals::class
         );
         
         self::$formsInitDone = true;
@@ -610,16 +613,19 @@ class UI
      * object to make handling forms easier within the application.
      *
      * @param string $id
+     * @param array<string,mixed> $defaultData
      * @return UI_Form
      * @see createGetForm()
      */
-    public function createForm($id, $defaultData = array()) : UI_Form
+    public function createForm(string $id, array $defaultData = array()) : UI_Form
     {
         self::initForms();
+
         $form = new UI_Form($this, $id, 'post', $defaultData);
 
-        if(Application_EventHandler::hasListener('FormCreated')) {
-            Application_EventHandler::trigger('FormCreated', array($form), 'UI_Event_FormCreated');
+        if(Application_EventHandler::hasListener('FormCreated'))
+        {
+            Application_EventHandler::trigger('FormCreated', array($form), UI_Event_FormCreated::class);
         }
 
         return $form;
@@ -630,10 +636,10 @@ class UI
      * of the default post method.
      *
      * @param string $id
-     * @param array $defaultData
+     * @param array<string,mixed> $defaultData
      * @return UI_Form
      */
-    public function createGetForm($id, $defaultData = array()) : UI_Form
+    public function createGetForm(string $id, array $defaultData = array()) : UI_Form
     {
         self::initForms();
 
@@ -650,17 +656,23 @@ class UI
      * application on startup.
      *
      * @param UI_Page $page
+     * @throws UI_Exception
      */
-    public function setPage(UI_Page $page)
+    public function setPage(UI_Page $page) : void
     {
-        if (isset($this->page)) {
-            throw new Exception('The page may only be set once at startup');
+        if (isset($this->page))
+        {
+            throw new UI_Exception(
+                'The page may only be set once at startup',
+                'Tried to set the page instance for the UI.',
+                self::ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN
+            );
         }
 
         $this->page = $page;
     }
     
-    public function hasPage()
+    public function hasPage() : bool
     {
         return isset($this->page);
     }
@@ -671,9 +683,10 @@ class UI
      * @throws Exception
      * @return UI_Page
      */
-    public function getPage()
+    public function getPage() : UI_Page
     {
-        if (!isset($this->page)) {
+        if (!isset($this->page))
+        {
             $this->page = new UI_Page($this, 'dummy');
         }
 
@@ -700,7 +713,7 @@ class UI
         return $this->resourceManager->addResource($fileOrURL);
     }
 
-    public function renderHeadIncludes()
+    public function renderHeadIncludes() : string
     {
         $html = '';
 
@@ -741,7 +754,7 @@ class UI
         return $html;
     }
     
-    protected function resetIncludes()
+    protected function resetIncludes() : void
     {
         $this->headJS = array();
         $this->onloadJS = array();
@@ -750,18 +763,22 @@ class UI
     }
 
     /**
+     * @param string $label
      * @return UI_Bootstrap_ButtonDropdown
      */
-    public function createButtonDropdown($label='') : UI_Bootstrap_ButtonDropdown
+    public function createButtonDropdown(string $label='') : UI_Bootstrap_ButtonDropdown
     {
-        return new UI_Bootstrap_ButtonDropdown($this);
+        $dropDown = new UI_Bootstrap_ButtonDropdown($this);
+        $dropDown->setLabel($label);
+
+        return $dropDown;
     }
     
    /**
     * @param string $label
     * @return UI_Bootstrap_BadgeDropdown
     */
-    public function createBadgeDropdown($label='') : UI_Bootstrap_BadgeDropdown
+    public function createBadgeDropdown(string $label='') : UI_Bootstrap_BadgeDropdown
     {
         $dropdown = new UI_Bootstrap_BadgeDropdown($this);
         $dropdown->setLabel($label);
@@ -774,7 +791,7 @@ class UI
     * @param string $url
     * @return UI_Bootstrap_Anchor
     */
-    public function createAnchor($label='', $url='') : UI_Bootstrap_Anchor
+    public function createAnchor(string $label='', string $url='') : UI_Bootstrap_Anchor
     {
         $anchor = new UI_Bootstrap_Anchor($this);
         $anchor->setLabel($label);
@@ -883,7 +900,7 @@ class UI
      * @since 3.3.5
      * @param string $markup
      */
-    public function addConsoleOutput($markup)
+    public function addConsoleOutput(string $markup) : void
     {
         $this->page->addConsoleOutput($markup);
     }
@@ -895,6 +912,16 @@ class UI
     public static function icon() : UI_Icon
     {
         return new UI_Icon();
+    }
+
+    /**
+     * @param string|bool $boolValue
+     * @return UI_PrettyBool
+     * @throws ConvertHelper_Exception
+     */
+    public static function prettyBool($boolValue) : UI_PrettyBool
+    {
+        return new UI_PrettyBool($boolValue);
     }
     
    /**
@@ -935,22 +962,22 @@ class UI
      *
      * @since 3.3.11
      */
-    public function addProgressBar()
+    public function addProgressBar() : void
     {
         $this->addJavascript('ui/progressbar.js');
         $this->addJavascript('dialog/progressbar.js');
         $this->addStylesheet('ui-progressbar.css');
     }
     
-    public function addBootstrap()
+    public function addBootstrap() : void
     {
         $this->addStylesheet('bootstrap.min.css', 'all', 8000);
         $this->addJavascript('bootstrap.min.js', 8800);
     }
     
-    const FONT_AWESOME_URL = 'https://use.fontawesome.com/releases/v5.15.4/css/all.css';
+    public const FONT_AWESOME_URL = 'https://use.fontawesome.com/releases/v5.15.4/css/all.css';
     
-    public function addFontAwesome()
+    public function addFontAwesome() : void
     {
         $this->addStylesheet(self::FONT_AWESOME_URL);
         
@@ -960,14 +987,14 @@ class UI
         //$this->addJavascript('https://use.fontawesome.com/releases/v5.0.8/js/all.js', null, true);
     }
     
-    public function addJqueryUI()
+    public function addJqueryUI() : void
     {
         $this->addStylesheet('jquery-ui.min.css', 'screen', 9000);
         $this->addJavascript('jquery-ui.min.js', 8900);
         $this->addJavascript('jquery-ui-timepicker.js', 8600);
     }
     
-    public function addJquery()
+    public function addJquery() : void
     {
         $this->addJavascript('jquery.min.js', 9000);
     }
@@ -976,20 +1003,25 @@ class UI
     {
         return new UI_PropertiesGrid($this->getPage(), $id);
     }
-    
-   /**
-    * Adds a redactor UI element.
-    * 
-    * @param HTML_QuickForm2_Element $element
-    * @param Application_Countries_Country $country
-    * @return UI_MarkupEditor_Redactor
-    */
+
+    /**
+     * Adds a redactor UI element.
+     *
+     * @param HTML_QuickForm2_Element $element
+     * @param Application_Countries_Country $country
+     * @return UI_MarkupEditor_Redactor
+     * @throws Application_Exception_UnexpectedInstanceType
+     */
     public function addRedactor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_Redactor
     {
-        return ensureType(
-            UI_MarkupEditor_Redactor::class,
-            $this->addMarkupEditor('Redactor', $element, $country)
-        );
+        $editor = $this->addMarkupEditor('Redactor', $element, $country);
+
+        if($editor instanceof UI_MarkupEditor_Redactor)
+        {
+            return $editor;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(UI_MarkupEditor_Redactor::class, $editor);
     }
     
    /**
@@ -1004,59 +1036,79 @@ class UI
     */
     public function addMarkupEditor(string $id, HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor
     {
-        $class = 'UI_MarkupEditor_'.$id;
+        $class = UI_MarkupEditor::class.'_'.$id;
         
         $redactor = new $class($this, $element, $country);
         
         $this->markupEditorInstances[] = $redactor;
+
         return $redactor;
     }
-    
-   /**
-    * Creates a new Badge UI element and returns it. These can
-    * be converted to strings, so they can be inserted directly
-    * into any content strings.
-    * 
-    * @param string $label
-    * @return UI_Badge
-    */
-    public static function badge($label)
+
+    /**
+     * Creates a new Badge UI element and returns it. These can
+     * be converted to string, so they can be inserted directly
+     * into any content strings.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_Badge
+     * @throws UI_Exception
+     */
+    public static function badge($label) : UI_Badge
     {
         return new UI_Badge($label);
     }
 
-   /**
-    * Creates a new Label UI element and returns it. These can
-    * be converted to strings, so they can be inserted directly
-    * into any content strings.
-    * 
-    * @param string $label
-    * @return UI_Label
-    */
-    public static function label($label)
+    /**
+     * Creates a new Label UI element and returns it. These can
+     * be converted to string, so they can be inserted directly
+     * into any content strings.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_Label
+     * @throws UI_Exception
+     */
+    public static function label($label) : UI_Label
     {
         return new UI_Label($label);
     }
     
-    public static function printBacktrace()
+    public static function printBacktrace() : void
     {
         $trace = debug_backtrace();
         array_shift($trace); // remove own call
         $trace = array_reverse($trace);
         
-        $html =
-        '<style>'.
-            '.backtrace{padding:8px;background:#fff;margin:13px;border:solid 1px #ccc;border-radius:4px;}'.
-            '.backtrace TD, .backtrace TH{padding:3px 6px;color:#454545;font-family:monospace;}'.
-        '</style>'.
-        '<div class="backtrace">'.
-            '<table>'.
-                '<thead>'.
-                    '<th style="text-align:right">File</th>'.
-                    '<th style="text-align:right">Line</th>'.
-                    '<th style="text-align:left">Call</th>'.
-                '</thead>'.
-                '<tbody>';
+        OutputBuffering::start();
+
+        ?>
+        <style>
+            .backtrace{
+                padding:8px;
+                background:#fff;
+                margin:13px;
+                border:solid 1px #ccc;
+                border-radius:4px;
+            }
+
+            .backtrace TD,
+            .backtrace TH{
+                padding:3px 6px;
+                color:#454545;
+                font-family:monospace;
+            }
+        </style>
+        <div class="backtrace">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:right">File</th>
+                        <th style="text-align:right">Line</th>
+                        <th style="text-align:left">Call</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
                     foreach($trace as $entry) {
                         $call = $entry['function'];
                         if(isset($entry['class'])) {
@@ -1068,26 +1120,34 @@ class UI
                             $type = gettype($arg);
                             switch($type) {
                                 case 'string':
-                                    $args[] = '"'.htmlspecialchars(trim($arg), ENT_QUOTES, 'UTF-8').'"';
+                                    $args[] = '"'.htmlspecialchars(trim($arg), ENT_QUOTES).'"';
                                     break;
                             }
                         }
                         
                         $call .= '('.implode(', ', $args).')';
                         
-                        $html .=
-                        '<tr>'.
-                            '<td style="text-align:right">'.AppUtils\FileHelper::relativizePath($entry['file'], APP_ROOT).'</td>'.
-                            '<td style="text-align:right">'.$entry['line'].'</td>'.
-                            '<td>'.$call.'</td>'.
-                        '</tr>';
+                        ?>
+                        <tr>
+                            <td style="text-align:right">
+                                <?php echo FileHelper::relativizePath($entry['file'], APP_ROOT); ?>
+                            </td>
+                            <td style="text-align:right">
+                                <?php echo $entry['line'] ?>
+                            </td>
+                            <td>
+                                <?php echo $call ?>
+                            </td>
+                        </tr>
+                        <?php
                     }
-                    $html .=
-                '</tbody>'.
-            '</table>'.
-        '</div>';
+                    ?>
+                </tbody>
+            </table>
+        </div>
+        <?php
                 
-        echo $html;
+        echo OutputBuffering::get();
     }
     
    /**
@@ -1100,12 +1160,12 @@ class UI
     }
 
    /**
-    * Adds support for clientside datagrid building with
-    * the UI_DataGrid classes.
+    * Adds support for clientside data grid building with
+    * the `UI_DataGrid` classes.
     * 
     * @return UI
     */    
-    public function addDataGridSupport()
+    public function addDataGridSupport() : UI
     {
         UI_DataGrid::addClientSupport();
         
@@ -1160,10 +1220,10 @@ class UI
      *
      * @param string|number|UI_Renderable_Interface $message
      * @param string $type
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return UI_Message
      */
-    public function createMessage($message, $type=UI::MESSAGE_TYPE_INFO, $options=array()) : UI_Message
+    public function createMessage($message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
     {
         return new UI_Message($this, $message, $type, $options);
     }
