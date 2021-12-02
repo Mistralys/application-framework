@@ -1,3 +1,14 @@
+v1.21.3
+- Icons: Added `on()` and `off()`.
+- Icons: Improved internal color style handling.
+- Icons: Added `makeRegular()` to restore the default color style.
+- Buttons: Improved size handling.
+- Buttons: Added `makeActive()` to toggle the pressed state.
+- Forms: Switch element: Replaced the custom HTML rendering with fitting UI classes.
+- Forms: Switch element: Added `makeLarge()`, `makeMini()`, `makeEnabledDisabled()`, etc.
+- UI:: Added `prettyBool()` method for the pretty boolean helper.
+- Continued adding type hints wherever applicable.
+
 v1.21.2
 - Events: Added `Application::addRedirectListener()`.
 - Events: Fixed PHP8 support by removing keys from associative argument arrays.
