@@ -83,6 +83,8 @@ class UI_PrettyBool implements UI_Renderable_Interface
     {
         if($this->bool)
         {
+            $label = $this->labelTrue;
+
             $icon = UI::icon()->ok()
                 ->setTooltip($this->labelTrue)
                 ->makeSuccess();
@@ -91,6 +93,8 @@ class UI_PrettyBool implements UI_Renderable_Interface
         }
         else
         {
+            $label = $this->labelFalse;
+
             $icon = UI::icon()->disabled()
                 ->setTooltip($this->labelFalse)
                 ->makeDangerous();
@@ -103,7 +107,9 @@ class UI_PrettyBool implements UI_Renderable_Interface
             $icon->makeMuted();
         }
 
-        return (string)$icon;
+        return (string)sb()
+            ->icon($icon)
+            ->add($label);
     }
 
     private function renderBadge() : string
@@ -174,7 +180,14 @@ class UI_PrettyBool implements UI_Renderable_Interface
         {
             case self::TYPE_ACTIVE_INACTIVE:
             case self::TYPE_ENABLED_DISABLED:
-                $subject->makeMuted();
+                if($subject instanceof UI_Icon)
+                {
+                    $subject->makeMuted();
+                }
+                else
+                {
+                    $subject->makeInactive();
+                }
                 break;
         }
     }
