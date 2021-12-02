@@ -6,6 +6,8 @@
  * @see UI_Icon
  */
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
 use AppUtils\Interface_Stringable;
 
@@ -21,6 +23,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 {
     public const ERROR_INVALID_TYPE_SELECTED = 95601;
     public const ERROR_INVALID_COLOR_STYLE = 95602;
+    public const ERROR_INVALID_TOOLTIP_POSITION = 95603;
 
     use UI_Traits_RenderableGeneric;
 
@@ -273,212 +276,212 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     // region: Icon type methods
 
     /* START METHODS */
-    public function actioncode() { return $this->setType('ACTIONCODE'); }
-    public function activate() { return $this->setType('ACTIVATE'); }
-    public function activity() { return $this->setType('ACTIVITY'); }
-    public function add() { return $this->setType('ADD'); }
-    public function attentionRequired() { return $this->setType('ATTENTION_REQUIRED'); }
-    public function audience() { return $this->setType('AUDIENCE'); }
-    public function back() { return $this->setType('BACK'); }
-    public function backup() { return $this->setType('BACKUP'); }
-    public function backToCurrent() { return $this->setType('BACK_TO_CURRENT'); }
-    public function box() { return $this->setType('BOX'); }
-    public function browse() { return $this->setType('BROWSE'); }
-    public function bugreport() { return $this->setType('BUGREPORT'); }
-    public function build() { return $this->setType('BUILD'); }
-    public function business() { return $this->setType('BUSINESS'); }
-    public function button() { return $this->setType('BUTTON'); }
-    public function calendar() { return $this->setType('CALENDAR'); }
-    public function campaigns() { return $this->setType('CAMPAIGNS'); }
-    public function cancel() { return $this->setType('CANCEL'); }
-    public function caretDown() { return $this->setType('CARET_DOWN'); }
-    public function caretUp() { return $this->setType('CARET_UP'); }
-    public function category() { return $this->setType('CATEGORY'); }
-    public function changelog() { return $this->setType('CHANGELOG'); }
-    public function changeOrder() { return $this->setType('CHANGE_ORDER'); }
-    public function check() { return $this->setType('CHECK'); }
-    public function code() { return $this->setType('CODE'); }
-    public function collapse() { return $this->setType('COLLAPSE'); }
-    public function collapseLeft() { return $this->setType('COLLAPSE_LEFT'); }
-    public function collapseRight() { return $this->setType('COLLAPSE_RIGHT'); }
-    public function colors() { return $this->setType('COLORS'); }
-    public function combination() { return $this->setType('COMBINATION'); }
-    public function combine() { return $this->setType('COMBINE'); }
-    public function commands() { return $this->setType('COMMANDS'); }
-    public function comment() { return $this->setType('COMMENT'); }
-    public function comtypes() { return $this->setType('COMTYPES'); }
-    public function contentTypes() { return $this->setType('CONTENT_TYPES'); }
-    public function convert() { return $this->setType('CONVERT'); }
-    public function copy() { return $this->setType('COPY'); }
-    public function countdown() { return $this->setType('COUNTDOWN'); }
-    public function countries() { return $this->setType('COUNTRIES'); }
-    public function csv() { return $this->setType('CSV'); }
-    public function customVariables() { return $this->setType('CUSTOM_VARIABLES'); }
-    public function deactivate() { return $this->setType('DEACTIVATE'); }
-    public function deactivated() { return $this->setType('DEACTIVATED'); }
-    public function delete() { return $this->setType('DELETE'); }
-    public function deleted() { return $this->setType('DELETED'); }
-    public function deleteSign() { return $this->setType('DELETE_SIGN'); }
-    public function deselectAll() { return $this->setType('DESELECT_ALL'); }
-    public function destroy() { return $this->setType('DESTROY'); }
-    public function developer() { return $this->setType('DEVELOPER'); }
-    public function disabled() { return $this->setType('DISABLED'); }
-    public function discard() { return $this->setType('DISCARD'); }
-    public function disconnect() { return $this->setType('DISCONNECT'); }
-    public function download() { return $this->setType('DOWNLOAD'); }
-    public function draft() { return $this->setType('DRAFT'); }
-    public function drag() { return $this->setType('DRAG'); }
-    public function dropdown() { return $this->setType('DROPDOWN'); }
-    public function edit() { return $this->setType('EDIT'); }
-    public function editor() { return $this->setType('EDITOR'); }
-    public function email() { return $this->setType('EMAIL'); }
-    public function enabled() { return $this->setType('ENABLED'); }
-    public function expand() { return $this->setType('EXPAND'); }
-    public function expandLeft() { return $this->setType('EXPAND_LEFT'); }
-    public function expandRight() { return $this->setType('EXPAND_RIGHT'); }
-    public function export() { return $this->setType('EXPORT'); }
-    public function exportArchive() { return $this->setType('EXPORT_ARCHIVE'); }
-    public function featuretables() { return $this->setType('FEATURETABLES'); }
-    public function feedback() { return $this->setType('FEEDBACK'); }
-    public function file() { return $this->setType('FILE'); }
-    public function filter() { return $this->setType('FILTER'); }
-    public function first() { return $this->setType('FIRST'); }
-    public function flat() { return $this->setType('FLAT'); }
-    public function forward() { return $this->setType('FORWARD'); }
-    public function generate() { return $this->setType('GENERATE'); }
-    public function global() { return $this->setType('GLOBAL'); }
-    public function globalContent() { return $this->setType('GLOBAL_CONTENT'); }
-    public function grouped() { return $this->setType('GROUPED'); }
-    public function help() { return $this->setType('HELP'); }
-    public function hide() { return $this->setType('HIDE'); }
-    public function home() { return $this->setType('HOME'); }
-    public function html() { return $this->setType('HTML'); }
-    public function id() { return $this->setType('ID'); }
-    public function image() { return $this->setType('IMAGE'); }
-    public function import() { return $this->setType('IMPORT'); }
-    public function inactive() { return $this->setType('INACTIVE'); }
-    public function information() { return $this->setType('INFORMATION'); }
-    public function itemActive() { return $this->setType('ITEM_ACTIVE'); }
-    public function itemInactive() { return $this->setType('ITEM_INACTIVE'); }
-    public function jumpTo() { return $this->setType('JUMP_TO'); }
-    public function jumpUp() { return $this->setType('JUMP_UP'); }
-    public function keyword() { return $this->setType('KEYWORD'); }
-    public function last() { return $this->setType('LAST'); }
-    public function link() { return $this->setType('LINK'); }
-    public function list() { return $this->setType('LIST'); }
-    public function load() { return $this->setType('LOAD'); }
-    public function locked() { return $this->setType('LOCKED'); }
-    public function logIn() { return $this->setType('LOG_IN'); }
-    public function logOut() { return $this->setType('LOG_OUT'); }
-    public function lookup() { return $this->setType('LOOKUP'); }
-    public function mails() { return $this->setType('MAILS'); }
-    public function mailHeaders() { return $this->setType('MAIL_HEADERS'); }
-    public function mailHeaderTitle() { return $this->setType('MAIL_HEADER_TITLE'); }
-    public function mailTests() { return $this->setType('MAIL_TESTS'); }
-    public function maximize() { return $this->setType('MAXIMIZE'); }
-    public function media() { return $this->setType('MEDIA'); }
-    public function menu() { return $this->setType('MENU'); }
-    public function merge() { return $this->setType('MERGE'); }
-    public function message() { return $this->setType('MESSAGE'); }
-    public function minus() { return $this->setType('MINUS'); }
-    public function money() { return $this->setType('MONEY'); }
-    public function move() { return $this->setType('MOVE'); }
-    public function moveLeftRight() { return $this->setType('MOVE_LEFT_RIGHT'); }
-    public function moveTo() { return $this->setType('MOVE_TO'); }
-    public function moveUpDown() { return $this->setType('MOVE_UP_DOWN'); }
-    public function next() { return $this->setType('NEXT'); }
-    public function no() { return $this->setType('NO'); }
-    public function notepad() { return $this->setType('NOTEPAD'); }
-    public function notAvailable() { return $this->setType('NOT_AVAILABLE'); }
-    public function notRequired() { return $this->setType('NOT_REQUIRED'); }
-    public function off() { return $this->setType('OFF'); }
-    public function ok() { return $this->setType('OK'); }
-    public function oms() { return $this->setType('OMS'); }
-    public function on() { return $this->setType('ON'); }
-    public function options() { return $this->setType('OPTIONS'); }
-    public function page() { return $this->setType('PAGE'); }
-    public function pagemodel() { return $this->setType('PAGEMODEL'); }
-    public function pause() { return $this->setType('PAUSE'); }
-    public function pin() { return $this->setType('PIN'); }
-    public function play() { return $this->setType('PLAY'); }
-    public function plus() { return $this->setType('PLUS'); }
-    public function positionAny() { return $this->setType('POSITION_ANY'); }
-    public function positionBottom() { return $this->setType('POSITION_BOTTOM'); }
-    public function positionTop() { return $this->setType('POSITION_TOP'); }
-    public function presets() { return $this->setType('PRESETS'); }
-    public function preview() { return $this->setType('PREVIEW'); }
-    public function previous() { return $this->setType('PREVIOUS'); }
-    public function price() { return $this->setType('PRICE'); }
-    public function print() { return $this->setType('PRINT'); }
-    public function printer() { return $this->setType('PRINTER'); }
-    public function product() { return $this->setType('PRODUCT'); }
-    public function proms() { return $this->setType('PROMS'); }
-    public function proofing() { return $this->setType('PROOFING'); }
-    public function properties() { return $this->setType('PROPERTIES'); }
-    public function publish() { return $this->setType('PUBLISH'); }
-    public function published() { return $this->setType('PUBLISHED'); }
-    public function rating() { return $this->setType('RATING'); }
-    public function recordType() { return $this->setType('RECORD_TYPE'); }
-    public function refresh() { return $this->setType('REFRESH'); }
-    public function required() { return $this->setType('REQUIRED'); }
-    public function reset() { return $this->setType('RESET'); }
-    public function restore() { return $this->setType('RESTORE'); }
-    public function revert() { return $this->setType('REVERT'); }
-    public function review() { return $this->setType('REVIEW'); }
-    public function save() { return $this->setType('SAVE'); }
-    public function search() { return $this->setType('SEARCH'); }
-    public function selected() { return $this->setType('SELECTED'); }
-    public function selectAll() { return $this->setType('SELECT_ALL'); }
-    public function send() { return $this->setType('SEND'); }
-    public function settings() { return $this->setType('SETTINGS'); }
-    public function shop() { return $this->setType('SHOP'); }
-    public function sort() { return $this->setType('SORT'); }
-    public function sorting() { return $this->setType('SORTING'); }
-    public function sortAsc() { return $this->setType('SORT_ASC'); }
-    public function sortDesc() { return $this->setType('SORT_DESC'); }
-    public function status() { return $this->setType('STATUS'); }
-    public function stop() { return $this->setType('STOP'); }
-    public function structural() { return $this->setType('STRUCTURAL'); }
-    public function suggest() { return $this->setType('SUGGEST'); }
-    public function switch() { return $this->setType('SWITCH'); }
-    public function switchCampaign() { return $this->setType('SWITCH_CAMPAIGN'); }
-    public function switchMode() { return $this->setType('SWITCH_MODE'); }
-    public function table() { return $this->setType('TABLE'); }
-    public function tariffMatrix() { return $this->setType('TARIFF_MATRIX'); }
-    public function task() { return $this->setType('TASK'); }
-    public function template() { return $this->setType('TEMPLATE'); }
-    public function tenant() { return $this->setType('TENANT'); }
-    public function text() { return $this->setType('TEXT'); }
-    public function time() { return $this->setType('TIME'); }
-    public function toggle() { return $this->setType('TOGGLE'); }
-    public function tools() { return $this->setType('TOOLS'); }
-    public function translation() { return $this->setType('TRANSLATION'); }
-    public function transmission() { return $this->setType('TRANSMISSION'); }
-    public function uncombine() { return $this->setType('UNCOMBINE'); }
-    public function uncombined() { return $this->setType('UNCOMBINED'); }
-    public function undelete() { return $this->setType('UNDELETE'); }
-    public function unlock() { return $this->setType('UNLOCK'); }
-    public function unlocked() { return $this->setType('UNLOCKED'); }
-    public function upload() { return $this->setType('UPLOAD'); }
-    public function user() { return $this->setType('USER'); }
-    public function users() { return $this->setType('USERS'); }
-    public function utils() { return $this->setType('UTILS'); }
-    public function validate() { return $this->setType('VALIDATE'); }
-    public function variables() { return $this->setType('VARIABLES'); }
-    public function variations() { return $this->setType('VARIATIONS'); }
-    public function view() { return $this->setType('VIEW'); }
-    public function waiting() { return $this->setType('WAITING'); }
-    public function warning() { return $this->setType('WARNING'); }
-    public function whitelist() { return $this->setType('WHITELIST'); }
-    public function wordwrap() { return $this->setType('WORDWRAP'); }
-    public function workflow() { return $this->setType('WORKFLOW'); }
-    public function xml() { return $this->setType('XML'); }
-    public function yes() { return $this->setType('YES'); }
+    public function actioncode() : UI_Icon { return $this->setType('ACTIONCODE'); }
+    public function activate() : UI_Icon { return $this->setType('ACTIVATE'); }
+    public function activity() : UI_Icon { return $this->setType('ACTIVITY'); }
+    public function add() : UI_Icon { return $this->setType('ADD'); }
+    public function attentionRequired() : UI_Icon { return $this->setType('ATTENTION_REQUIRED'); }
+    public function audience() : UI_Icon { return $this->setType('AUDIENCE'); }
+    public function back() : UI_Icon { return $this->setType('BACK'); }
+    public function backup() : UI_Icon { return $this->setType('BACKUP'); }
+    public function backToCurrent() : UI_Icon { return $this->setType('BACK_TO_CURRENT'); }
+    public function box() : UI_Icon { return $this->setType('BOX'); }
+    public function browse() : UI_Icon { return $this->setType('BROWSE'); }
+    public function bugreport() : UI_Icon { return $this->setType('BUGREPORT'); }
+    public function build() : UI_Icon { return $this->setType('BUILD'); }
+    public function business() : UI_Icon { return $this->setType('BUSINESS'); }
+    public function button() : UI_Icon { return $this->setType('BUTTON'); }
+    public function calendar() : UI_Icon { return $this->setType('CALENDAR'); }
+    public function campaigns() : UI_Icon { return $this->setType('CAMPAIGNS'); }
+    public function cancel() : UI_Icon { return $this->setType('CANCEL'); }
+    public function caretDown() : UI_Icon { return $this->setType('CARET_DOWN'); }
+    public function caretUp() : UI_Icon { return $this->setType('CARET_UP'); }
+    public function category() : UI_Icon { return $this->setType('CATEGORY'); }
+    public function changelog() : UI_Icon { return $this->setType('CHANGELOG'); }
+    public function changeOrder() : UI_Icon { return $this->setType('CHANGE_ORDER'); }
+    public function check() : UI_Icon { return $this->setType('CHECK'); }
+    public function code() : UI_Icon { return $this->setType('CODE'); }
+    public function collapse() : UI_Icon { return $this->setType('COLLAPSE'); }
+    public function collapseLeft() : UI_Icon { return $this->setType('COLLAPSE_LEFT'); }
+    public function collapseRight() : UI_Icon { return $this->setType('COLLAPSE_RIGHT'); }
+    public function colors() : UI_Icon { return $this->setType('COLORS'); }
+    public function combination() : UI_Icon { return $this->setType('COMBINATION'); }
+    public function combine() : UI_Icon { return $this->setType('COMBINE'); }
+    public function commands() : UI_Icon { return $this->setType('COMMANDS'); }
+    public function comment() : UI_Icon { return $this->setType('COMMENT'); }
+    public function comtypes() : UI_Icon { return $this->setType('COMTYPES'); }
+    public function contentTypes() : UI_Icon { return $this->setType('CONTENT_TYPES'); }
+    public function convert() : UI_Icon { return $this->setType('CONVERT'); }
+    public function copy() : UI_Icon { return $this->setType('COPY'); }
+    public function countdown() : UI_Icon { return $this->setType('COUNTDOWN'); }
+    public function countries() : UI_Icon { return $this->setType('COUNTRIES'); }
+    public function csv() : UI_Icon { return $this->setType('CSV'); }
+    public function customVariables() : UI_Icon { return $this->setType('CUSTOM_VARIABLES'); }
+    public function deactivate() : UI_Icon { return $this->setType('DEACTIVATE'); }
+    public function deactivated() : UI_Icon { return $this->setType('DEACTIVATED'); }
+    public function delete() : UI_Icon { return $this->setType('DELETE'); }
+    public function deleted() : UI_Icon { return $this->setType('DELETED'); }
+    public function deleteSign() : UI_Icon { return $this->setType('DELETE_SIGN'); }
+    public function deselectAll() : UI_Icon { return $this->setType('DESELECT_ALL'); }
+    public function destroy() : UI_Icon { return $this->setType('DESTROY'); }
+    public function developer() : UI_Icon { return $this->setType('DEVELOPER'); }
+    public function disabled() : UI_Icon { return $this->setType('DISABLED'); }
+    public function discard() : UI_Icon { return $this->setType('DISCARD'); }
+    public function disconnect() : UI_Icon { return $this->setType('DISCONNECT'); }
+    public function download() : UI_Icon { return $this->setType('DOWNLOAD'); }
+    public function draft() : UI_Icon { return $this->setType('DRAFT'); }
+    public function drag() : UI_Icon { return $this->setType('DRAG'); }
+    public function dropdown() : UI_Icon { return $this->setType('DROPDOWN'); }
+    public function edit() : UI_Icon { return $this->setType('EDIT'); }
+    public function editor() : UI_Icon { return $this->setType('EDITOR'); }
+    public function email() : UI_Icon { return $this->setType('EMAIL'); }
+    public function enabled() : UI_Icon { return $this->setType('ENABLED'); }
+    public function expand() : UI_Icon { return $this->setType('EXPAND'); }
+    public function expandLeft() : UI_Icon { return $this->setType('EXPAND_LEFT'); }
+    public function expandRight() : UI_Icon { return $this->setType('EXPAND_RIGHT'); }
+    public function export() : UI_Icon { return $this->setType('EXPORT'); }
+    public function exportArchive() : UI_Icon { return $this->setType('EXPORT_ARCHIVE'); }
+    public function featuretables() : UI_Icon { return $this->setType('FEATURETABLES'); }
+    public function feedback() : UI_Icon { return $this->setType('FEEDBACK'); }
+    public function file() : UI_Icon { return $this->setType('FILE'); }
+    public function filter() : UI_Icon { return $this->setType('FILTER'); }
+    public function first() : UI_Icon { return $this->setType('FIRST'); }
+    public function flat() : UI_Icon { return $this->setType('FLAT'); }
+    public function forward() : UI_Icon { return $this->setType('FORWARD'); }
+    public function generate() : UI_Icon { return $this->setType('GENERATE'); }
+    public function global() : UI_Icon { return $this->setType('GLOBAL'); }
+    public function globalContent() : UI_Icon { return $this->setType('GLOBAL_CONTENT'); }
+    public function grouped() : UI_Icon { return $this->setType('GROUPED'); }
+    public function help() : UI_Icon { return $this->setType('HELP'); }
+    public function hide() : UI_Icon { return $this->setType('HIDE'); }
+    public function home() : UI_Icon { return $this->setType('HOME'); }
+    public function html() : UI_Icon { return $this->setType('HTML'); }
+    public function id() : UI_Icon { return $this->setType('ID'); }
+    public function image() : UI_Icon { return $this->setType('IMAGE'); }
+    public function import() : UI_Icon { return $this->setType('IMPORT'); }
+    public function inactive() : UI_Icon { return $this->setType('INACTIVE'); }
+    public function information() : UI_Icon { return $this->setType('INFORMATION'); }
+    public function itemActive() : UI_Icon { return $this->setType('ITEM_ACTIVE'); }
+    public function itemInactive() : UI_Icon { return $this->setType('ITEM_INACTIVE'); }
+    public function jumpTo() : UI_Icon { return $this->setType('JUMP_TO'); }
+    public function jumpUp() : UI_Icon { return $this->setType('JUMP_UP'); }
+    public function keyword() : UI_Icon { return $this->setType('KEYWORD'); }
+    public function last() : UI_Icon { return $this->setType('LAST'); }
+    public function link() : UI_Icon { return $this->setType('LINK'); }
+    public function list() : UI_Icon { return $this->setType('LIST'); }
+    public function load() : UI_Icon { return $this->setType('LOAD'); }
+    public function locked() : UI_Icon { return $this->setType('LOCKED'); }
+    public function logIn() : UI_Icon { return $this->setType('LOG_IN'); }
+    public function logOut() : UI_Icon { return $this->setType('LOG_OUT'); }
+    public function lookup() : UI_Icon { return $this->setType('LOOKUP'); }
+    public function mails() : UI_Icon { return $this->setType('MAILS'); }
+    public function mailHeaders() : UI_Icon { return $this->setType('MAIL_HEADERS'); }
+    public function mailHeaderTitle() : UI_Icon { return $this->setType('MAIL_HEADER_TITLE'); }
+    public function mailTests() : UI_Icon { return $this->setType('MAIL_TESTS'); }
+    public function maximize() : UI_Icon { return $this->setType('MAXIMIZE'); }
+    public function media() : UI_Icon { return $this->setType('MEDIA'); }
+    public function menu() : UI_Icon { return $this->setType('MENU'); }
+    public function merge() : UI_Icon { return $this->setType('MERGE'); }
+    public function message() : UI_Icon { return $this->setType('MESSAGE'); }
+    public function minus() : UI_Icon { return $this->setType('MINUS'); }
+    public function money() : UI_Icon { return $this->setType('MONEY'); }
+    public function move() : UI_Icon { return $this->setType('MOVE'); }
+    public function moveLeftRight() : UI_Icon { return $this->setType('MOVE_LEFT_RIGHT'); }
+    public function moveTo() : UI_Icon { return $this->setType('MOVE_TO'); }
+    public function moveUpDown() : UI_Icon { return $this->setType('MOVE_UP_DOWN'); }
+    public function next() : UI_Icon { return $this->setType('NEXT'); }
+    public function no() : UI_Icon { return $this->setType('NO'); }
+    public function notepad() : UI_Icon { return $this->setType('NOTEPAD'); }
+    public function notAvailable() : UI_Icon { return $this->setType('NOT_AVAILABLE'); }
+    public function notRequired() : UI_Icon { return $this->setType('NOT_REQUIRED'); }
+    public function off() : UI_Icon { return $this->setType('OFF'); }
+    public function ok() : UI_Icon { return $this->setType('OK'); }
+    public function oms() : UI_Icon { return $this->setType('OMS'); }
+    public function on() : UI_Icon { return $this->setType('ON'); }
+    public function options() : UI_Icon { return $this->setType('OPTIONS'); }
+    public function page() : UI_Icon { return $this->setType('PAGE'); }
+    public function pagemodel() : UI_Icon { return $this->setType('PAGEMODEL'); }
+    public function pause() : UI_Icon { return $this->setType('PAUSE'); }
+    public function pin() : UI_Icon { return $this->setType('PIN'); }
+    public function play() : UI_Icon { return $this->setType('PLAY'); }
+    public function plus() : UI_Icon { return $this->setType('PLUS'); }
+    public function positionAny() : UI_Icon { return $this->setType('POSITION_ANY'); }
+    public function positionBottom() : UI_Icon { return $this->setType('POSITION_BOTTOM'); }
+    public function positionTop() : UI_Icon { return $this->setType('POSITION_TOP'); }
+    public function presets() : UI_Icon { return $this->setType('PRESETS'); }
+    public function preview() : UI_Icon { return $this->setType('PREVIEW'); }
+    public function previous() : UI_Icon { return $this->setType('PREVIOUS'); }
+    public function price() : UI_Icon { return $this->setType('PRICE'); }
+    public function print() : UI_Icon { return $this->setType('PRINT'); }
+    public function printer() : UI_Icon { return $this->setType('PRINTER'); }
+    public function product() : UI_Icon { return $this->setType('PRODUCT'); }
+    public function proms() : UI_Icon { return $this->setType('PROMS'); }
+    public function proofing() : UI_Icon { return $this->setType('PROOFING'); }
+    public function properties() : UI_Icon { return $this->setType('PROPERTIES'); }
+    public function publish() : UI_Icon { return $this->setType('PUBLISH'); }
+    public function published() : UI_Icon { return $this->setType('PUBLISHED'); }
+    public function rating() : UI_Icon { return $this->setType('RATING'); }
+    public function recordType() : UI_Icon { return $this->setType('RECORD_TYPE'); }
+    public function refresh() : UI_Icon { return $this->setType('REFRESH'); }
+    public function required() : UI_Icon { return $this->setType('REQUIRED'); }
+    public function reset() : UI_Icon { return $this->setType('RESET'); }
+    public function restore() : UI_Icon { return $this->setType('RESTORE'); }
+    public function revert() : UI_Icon { return $this->setType('REVERT'); }
+    public function review() : UI_Icon { return $this->setType('REVIEW'); }
+    public function save() : UI_Icon { return $this->setType('SAVE'); }
+    public function search() : UI_Icon { return $this->setType('SEARCH'); }
+    public function selected() : UI_Icon { return $this->setType('SELECTED'); }
+    public function selectAll() : UI_Icon { return $this->setType('SELECT_ALL'); }
+    public function send() : UI_Icon { return $this->setType('SEND'); }
+    public function settings() : UI_Icon { return $this->setType('SETTINGS'); }
+    public function shop() : UI_Icon { return $this->setType('SHOP'); }
+    public function sort() : UI_Icon { return $this->setType('SORT'); }
+    public function sorting() : UI_Icon { return $this->setType('SORTING'); }
+    public function sortAsc() : UI_Icon { return $this->setType('SORT_ASC'); }
+    public function sortDesc() : UI_Icon { return $this->setType('SORT_DESC'); }
+    public function status() : UI_Icon { return $this->setType('STATUS'); }
+    public function stop() : UI_Icon { return $this->setType('STOP'); }
+    public function structural() : UI_Icon { return $this->setType('STRUCTURAL'); }
+    public function suggest() : UI_Icon { return $this->setType('SUGGEST'); }
+    public function switch() : UI_Icon { return $this->setType('SWITCH'); }
+    public function switchCampaign() : UI_Icon { return $this->setType('SWITCH_CAMPAIGN'); }
+    public function switchMode() : UI_Icon { return $this->setType('SWITCH_MODE'); }
+    public function table() : UI_Icon { return $this->setType('TABLE'); }
+    public function tariffMatrix() : UI_Icon { return $this->setType('TARIFF_MATRIX'); }
+    public function task() : UI_Icon { return $this->setType('TASK'); }
+    public function template() : UI_Icon { return $this->setType('TEMPLATE'); }
+    public function tenant() : UI_Icon { return $this->setType('TENANT'); }
+    public function text() : UI_Icon { return $this->setType('TEXT'); }
+    public function time() : UI_Icon { return $this->setType('TIME'); }
+    public function toggle() : UI_Icon { return $this->setType('TOGGLE'); }
+    public function tools() : UI_Icon { return $this->setType('TOOLS'); }
+    public function translation() : UI_Icon { return $this->setType('TRANSLATION'); }
+    public function transmission() : UI_Icon { return $this->setType('TRANSMISSION'); }
+    public function uncombine() : UI_Icon { return $this->setType('UNCOMBINE'); }
+    public function uncombined() : UI_Icon { return $this->setType('UNCOMBINED'); }
+    public function undelete() : UI_Icon { return $this->setType('UNDELETE'); }
+    public function unlock() : UI_Icon { return $this->setType('UNLOCK'); }
+    public function unlocked() : UI_Icon { return $this->setType('UNLOCKED'); }
+    public function upload() : UI_Icon { return $this->setType('UPLOAD'); }
+    public function user() : UI_Icon { return $this->setType('USER'); }
+    public function users() : UI_Icon { return $this->setType('USERS'); }
+    public function utils() : UI_Icon { return $this->setType('UTILS'); }
+    public function validate() : UI_Icon { return $this->setType('VALIDATE'); }
+    public function variables() : UI_Icon { return $this->setType('VARIABLES'); }
+    public function variations() : UI_Icon { return $this->setType('VARIATIONS'); }
+    public function view() : UI_Icon { return $this->setType('VIEW'); }
+    public function waiting() : UI_Icon { return $this->setType('WAITING'); }
+    public function warning() : UI_Icon { return $this->setType('WARNING'); }
+    public function whitelist() : UI_Icon { return $this->setType('WHITELIST'); }
+    public function wordwrap() : UI_Icon { return $this->setType('WORDWRAP'); }
+    public function workflow() : UI_Icon { return $this->setType('WORKFLOW'); }
+    public function xml() : UI_Icon { return $this->setType('XML'); }
+    public function yes() : UI_Icon { return $this->setType('YES'); }
     /* END METHODS */
 
     // endregion
 
-    public function spinner()
+    public function spinner() : UI_Icon
     {
         $this->setType('SPINNER');
         $this->makeSpinner();
@@ -511,7 +514,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * @param string $className
      * @return UI_Icon
      */
-    public function addClass($className)
+    public function addClass(string $className) : UI_Icon
     {
         if (!in_array($className, $this->classes)) {
             $this->classes[] = $className;
@@ -520,7 +523,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         return $this;
     }
 
-    public function makeSpinner()
+    public function makeSpinner() : UI_Icon
     {
         return $this->addClass('fa-spin');
     }
@@ -630,18 +633,24 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     * will be the click-enabled cursor. Optionally
     * a click handling statement can be specified.
     */
-    public function makeClickable($statement=null)
+    public function makeClickable(?string $statement=null) : UI_Icon
     {
-        if(!empty($statement)) {
+        if(!empty($statement))
+        {
             $this->setAttribute('onclick', $statement);    
         }
         
         return $this->addClass('clickable');
     }
 
-    public function setTooltip($text)
+    /**
+     * @param string|number|UI_Renderable_Interface $text
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTooltip($text) : UI_Icon
     {
-        $this->tooltip['text'] = $text;
+        $this->tooltip['text'] = toString($text);
         
         return $this;
     }
@@ -658,7 +667,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * @param mixed $value
      * @return $this
      */
-    public function setAttribute(string $name, $value)
+    public function setAttribute(string $name, $value) : UI_Icon
     {
         $this->attributes[$name] = $value;
 
@@ -780,10 +789,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     
     public function getTooltip() : string
     {
-        return strval($this->tooltip['text']);
+        return (string)$this->tooltip['text'];
     }
 
-    protected function tooltipify()
+    protected function tooltipify() : void
     {
         JSHelper::tooltipify($this->getID(), $this->tooltip['placement']);
     }
@@ -801,7 +810,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     * Displays a help cursor when hovering over the icon.
     * @return UI_Icon
     */
-    public function cursorHelp()
+    public function cursorHelp() : UI_Icon
     {
         return $this->setStyle('cursor', 'help');
     }
@@ -819,7 +828,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     * @param string $value
     * @return UI_Icon
     */
-    public function setStyle($name, $value)
+    public function setStyle(string $name, string $value) : UI_Icon
     {
         $this->styles[$name] = $value;
         return $this;
@@ -836,44 +845,76 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     }
 
     protected $styles = array();
-    
-   /**
-    * Sets the position for the tooltip, if one is used.
-    * 
-    * @param string $position "top" (default), "left", "right", "bottom"
-    * @return UI_Icon
-    */
-    public function setTooltipPosition($position='top')
+
+    public const TOOLTIP_POSITION_TOP = 'top';
+    public const TOOLTIP_POSITION_BOTTOM = 'bottom';
+    public const TOOLTIP_POSITION_LEFT = 'left';
+    public const TOOLTIP_POSITION_RIGHT = 'right';
+
+    public static function requireValidTooltipPosition(string $pos) : void
     {
-        if(!in_array($position, array('top', 'left', 'right', 'bottom'))) {
-            $position = 'top';
+        $validPositions = array(
+            self::TOOLTIP_POSITION_TOP,
+            self::TOOLTIP_POSITION_BOTTOM,
+            self::TOOLTIP_POSITION_LEFT,
+            self::TOOLTIP_POSITION_RIGHT
+        );
+
+        if(in_array($pos, $validPositions))
+        {
+            return;
         }
+
+        throw new UI_Exception(
+            'Invalid icon tooltip position.',
+            sprintf(
+                'The position [%s] is invalid. Valid positions are: [%s].',
+                $pos,
+                implode(', ', $validPositions)
+            ),
+            self::ERROR_INVALID_TOOLTIP_POSITION
+        );
+    }
+
+    /**
+     * Sets the position for the tooltip, if one is used.
+     *
+     * @param string $position "top" (default), "left", "right", "bottom"
+     * @return UI_Icon
+     * @throws UI_Exception
+     */
+    public function setTooltipPosition(string $position=self::TOOLTIP_POSITION_TOP) : UI_Icon
+    {
+        self::requireValidTooltipPosition($position);
         
         $this->tooltip['placement'] = $position;
         return $this;
     }
     
-    public function makeTooltipTop()
+    public function makeTooltipTop() : UI_Icon
     {
         return $this->setTooltipPosition('top');
     }
 
-    public function makeTooltipLeft()
+    public function makeTooltipLeft() : UI_Icon
     {
         return $this->setTooltipPosition('left');
     }
 
-    public function makeTooltipRight()
+    public function makeTooltipRight() : UI_Icon
     {
         return $this->setTooltipPosition('right');
     }
 
-    public function makeTooltipBottom()
+    public function makeTooltipBottom() : UI_Icon
     {
         return $this->setTooltipPosition('bottom');
     }
-    
-    public function getIconTypes()
+
+    /**
+     * @return array<string,string>
+     */
+    public function getIconTypes() : array
     {
         return $this->types; 
     }
