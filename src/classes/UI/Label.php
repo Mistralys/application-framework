@@ -16,6 +16,10 @@
  */
 class UI_Label extends UI_Badge
 {
+    /**
+     * @param string|number|UI_Renderable_Interface $label
+     * @throws UI_Exception
+     */
     public function __construct($label)
     {
         parent::__construct($label);
