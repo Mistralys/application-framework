@@ -21,10 +21,16 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     public const ERROR_INVALID_BADGE_TYPE = 430001;
     public const ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
     
-    const WRAPPER_PLACEHOLDER = '{badge}';
-    
+    public const WRAPPER_PLACEHOLDER = '{badge}';
+
+    /**
+     * @var string
+     */
     protected $label;
-    
+
+    /**
+     * @var string
+     */
 	protected $layout = 'default';
 	
    /**
@@ -36,12 +42,16 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * @var string
     */
 	protected $wrapper = '';
-	
+
+    /**
+     * @param string|number|UI_Renderable_Interface $label
+     * @throws UI_Exception
+     */
     public function __construct($label)
     {
         parent::__construct();
         
-        $this->label = $label;
+        $this->label = toString($label);
         $this->classType = 'badge';
     }
     
