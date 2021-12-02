@@ -892,7 +892,7 @@ class UI
      * Creates and returns a new UI icon object.
      * @return UI_Icon
      */
-    public static function icon()
+    public static function icon() : UI_Icon
     {
         return new UI_Icon();
     }
