@@ -27,12 +27,12 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     );
 
     /**
-     * @var
+     * @var string
      */
     protected $onLabel;
 
     /**
-     * @var
+     * @var string
      */
     protected $offLabel;
 
@@ -135,7 +135,6 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         $btnOFF = UI::button($this->offLabel)
             ->setID($id.'-off')
             ->makeSize($this->buttonSize)
-            ->makeDangerous()
             ->click(sprintf(
                 "switchElement.turnOff('%s')",
                 $id
@@ -144,11 +143,14 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         if ($this->isChecked())
         {
             $btnON->makeActive();
+            $btnON->makeSuccess();
+
             $value = $this->onValue;
         }
         else
         {
             $btnOFF->makeActive();
+            $btnOFF->makeDangerous();
             $value = $this->offValue;
         }
 
