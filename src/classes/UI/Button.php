@@ -137,7 +137,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     */
     public function setAttribute(string $name, $value) : UI_Button
     {
-        $this->attributes[$name] = strval($value);
+        $this->attributes[$name] = (string)$value;
         return $this;
     }
     
@@ -148,7 +148,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     * @param mixed $value
     * @return $this
     */
-    public function addStyle(string $name, $value)
+    public function addStyle(string $name, $value) : UI_Button
     {
         return $this->setStyle($name, $value);
     }
@@ -365,7 +365,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     {
         $this->type = 'submit';
         $this->setAttribute('name', $name);
-        $this->setAttribute('value', strval($value));
+        $this->setAttribute('value', (string)$value);
         
         return $this;
     }
@@ -397,7 +397,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     /**
      * Sets the title attribute of the button.
      *
-     * @param scalar|UI_Renderable_Interface $title
+     * @param string|number|UI_Renderable_Interface $title
      * @return $this
      * @throws UI_Exception
      */
@@ -407,11 +407,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     }
 
     /**
-     * @param scalar|UI_Renderable_Interface $tooltip
+     * @param string|number|UI_Renderable_Interface $tooltip
      * @return $this
      * @throws UI_Exception
      */
-    public function setTooltip($tooltip)
+    public function setTooltip($tooltip) : UI_Button
     {
         $this->tooltipText = toString($tooltip);
         return $this;
@@ -447,7 +447,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
    /**
     * Sets the text to display on the button when it is 
     * switched to the loading state. Note that the loading
-    * state can only be triggered clientside however.
+    * state can only be triggered clientside, however.
     * 
     * @param string|number|UI_Renderable_Interface $text
     * @return $this
@@ -560,10 +560,12 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         } 
         else if($this->disabled) 
         {
-            unset($attribs['onclick']);
-            unset($attribs['href']);
-            unset($attribs['type']);
-            unset($attribs['target']);
+            unset(
+                $attribs['onclick'],
+                $attribs['href'],
+                $attribs['type'],
+                $attribs['target']
+            );
         }
         
         return $attribs;
@@ -655,7 +657,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     */
     public function setStyle(string $style, $value) : UI_Button
     {
-        $this->styles[$style] = strval($value);
+        $this->styles[$style] = (string)$value;
         return $this;
     }
     
@@ -692,7 +694,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         return $this->click(sprintf(
             "application.redirect('%s', %s)", 
             $url,
-            JSHelper::phpVariable2JS($loaderText, JSHelper::QUOTE_STYLE_SINGLE)
+            JSHelper::phpVariable2JS($loaderText, AppUtils\JSHelper::QUOTE_STYLE_SINGLE)
         ));
     }
     
