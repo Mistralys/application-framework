@@ -13,8 +13,12 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     public const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
     public const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
 
-    const MODE_CLICKABLE = 'clickable';
-    const MODE_LINKED = 'linked';
+    public const MODE_CLICKABLE = 'clickable';
+    public const MODE_LINKED = 'linked';
+
+    public const SIZE_SMALL = 'small';
+    public const SIZE_LARGE = 'large';
+    public const SIZE_MINI = 'mini';
 
     /**
     * @var string
@@ -60,20 +64,20 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     * @var string
     */
     protected $tooltipText = '';
-    
+
    /**
     * @var array<int,array<string,string>>
     */
-    protected $sizes = array(
+    protected static $sizes = array(
         2 => array(
-            'large' => 'large',
-            'small' => 'small',
-            'mini' => 'mini'
+            self::SIZE_LARGE => 'large',
+            self::SIZE_SMALL => 'small',
+            self::SIZE_MINI => 'mini'
         ),
         4 => array(
-            'large' => 'lg',
-            'small' => 'sm',
-            'mini' => 'xs'
+            self::SIZE_LARGE => 'lg',
+            self::SIZE_SMALL => 'sm',
+            self::SIZE_MINI => 'xs'
         )
     );
     
@@ -111,6 +115,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      * @var array<string,string>
      */
     private $dataAttributes = array();
+
+    /**
+     * @var bool
+     */
+    private $active = false;
 
     public function __construct($label='')
     {
@@ -173,7 +182,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     public function makeSmall() : UI_Button
     {
-        return $this->makeSize('small');
+        return $this->makeSize(self::SIZE_SMALL);
     }
 
     /**
@@ -184,7 +193,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     public function makeLarge() : UI_Button
     {
-        return $this->makeSize('large');
+        return $this->makeSize(self::SIZE_LARGE);
     }
 
     /**
@@ -195,7 +204,7 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     public function makeMini() : UI_Button
     {
-        return $this->makeSize('mini');
+        return $this->makeSize(self::SIZE_MINI);
     }
 
     /**
@@ -205,11 +214,24 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
      */
     public function makeSize(string $size) : UI_Button
     {
-        $version = $this->getUI()->getBoostrapVersion();
+        self::requireValidSize($size);
         
-        if(!isset($this->sizes[$version]))
+        $this->size = self::$sizes[UI::getInstance()->getBoostrapVersion()][$size];
+        
+        return $this;
+    }
+
+    /**
+     * @param string $size
+     * @throws UI_Exception
+     */
+    public static function requireValidSize(string $size) : void
+    {
+        $version = UI::getInstance()->getBoostrapVersion();
+
+        if(!isset(self::$sizes[$version]))
         {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'Unknown bootstrap version',
                 sprintf(
                     'No button sizes known for bootstrap version [%s].',
@@ -218,23 +240,21 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
                 self::ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION
             );
         }
-        
-        if(!isset($this->sizes[$version][$size]))
+
+        if(isset(self::$sizes[$version][$size]))
         {
-            throw new Application_Exception(
-                'Unknown button size',
-                sprintf(
-                    'Button size [%s] not known for bootstrap version [%s].',
-                    $size,
-                    $version
-                ),
-                self::ERROR_UNKNOWN_BOOTSTRAP_SIZE
-            );
+            return;
         }
-        
-        $this->size = $this->sizes[$version][$size];
-        
-        return $this;
+
+        throw new UI_Exception(
+            'Unknown button size',
+            sprintf(
+                'Button size [%s] not known for bootstrap version [%s].',
+                $size,
+                $version
+            ),
+            self::ERROR_UNKNOWN_BOOTSTRAP_SIZE
+        );
     }
     
    /**
@@ -468,6 +488,11 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
         if(!empty($this->size)) 
         {
             $classes[] = 'btn-'.$this->size;
+        }
+
+        if($this->active)
+        {
+            $classes[] = 'active';
         }
         
         if($this->locked) {
@@ -709,6 +734,12 @@ class UI_Button extends UI_BaseLockable implements UI_Interfaces_Button, UI_Inte
     public function isDangerous() : bool
     {
         return $this->layout === 'danger';
+    }
+
+    public function makeActive(bool $active=true) : UI_Button
+    {
+        $this->active = $active;
+        return $this;
     }
 
     private function getAttribute(string $name) : string
