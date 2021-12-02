@@ -27,13 +27,12 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
     * @param UI $ui
     * @param string|number|UI_Renderable_Interface $message
     * @param string $type
-    * @param array $options
+    * @param array<string,mixed> $options
     */
     public function __construct(UI $ui, $message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array())
     {
-        $this->page = $ui->getPage();
-        $this->ui = $ui;
-        
+        parent::__construct($ui->getPage());
+
         $this->properties = array_merge(
             array(
                 'dismissable' => true,
