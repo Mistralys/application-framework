@@ -20,6 +20,7 @@ use AppUtils\Interface_Stringable;
 class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 {
     public const ERROR_INVALID_TYPE_SELECTED = 95601;
+    public const ERROR_INVALID_COLOR_STYLE = 95602;
 
     use UI_Traits_RenderableGeneric;
 
@@ -102,7 +103,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         'DROPDOWN' => 'caret-down',
         'EDIT' => 'fas:pencil-alt',
         'EDITOR' => 'cubes',
-        'ENABLED' => 'check',
+        'ENABLED' => 'fas:check-circle',
         'EXPAND' => 'plus-circle',
         'EXPORT' => 'fas:bolt',
         'EXPORT_ARCHIVE' => 'archive',
@@ -133,6 +134,8 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         'LOCKED' => 'lock',
         'LOG_IN' => 'fas:sign-in-alt',
         'LOG_OUT' => 'power-off',
+        'OFF' => 'power-off',
+        'ON' => 'far:dot-circle',
         'LOOKUP' => 'ellipsis-h',
         'MAILS' => 'envelope',
         'MAIL_HEADERS' => 'crosshairs',
@@ -267,6 +270,8 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         $this->id = 'ic'.nextJSID();
     }
 
+    // region: Icon type methods
+
     /* START METHODS */
     public function actioncode() { return $this->setType('ACTIONCODE'); }
     public function activate() { return $this->setType('ACTIVATE'); }
@@ -386,8 +391,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public function notepad() { return $this->setType('NOTEPAD'); }
     public function notAvailable() { return $this->setType('NOT_AVAILABLE'); }
     public function notRequired() { return $this->setType('NOT_REQUIRED'); }
+    public function off() { return $this->setType('OFF'); }
     public function ok() { return $this->setType('OK'); }
     public function oms() { return $this->setType('OMS'); }
+    public function on() { return $this->setType('ON'); }
     public function options() { return $this->setType('OPTIONS'); }
     public function page() { return $this->setType('PAGE'); }
     public function pagemodel() { return $this->setType('PAGEMODEL'); }
@@ -468,7 +475,9 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public function xml() { return $this->setType('XML'); }
     public function yes() { return $this->setType('YES'); }
     /* END METHODS */
-    
+
+    // endregion
+
     public function spinner()
     {
         $this->setType('SPINNER');
@@ -516,35 +525,105 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         return $this->addClass('fa-spin');
     }
 
-    public function makeDangerous()
+    // region: Color styles
+
+    /**
+     * @var string|null
+     */
+    private $colorStyle = null;
+
+    public const COLOR_STYLE_DANGER = 'danger';
+    public const COLOR_STYLE_WARNING = 'warning';
+    public const COLOR_STYLE_MUTED = 'muted';
+    public const COLOR_STYLE_SUCCESS = 'success';
+    public const COLOR_STYLE_INFO = 'info';
+    public const COLOR_STYLE_WHITE = 'white';
+
+    /**
+     * @var array<string,string>
+     */
+    private static $colorClasses = array(
+        self::COLOR_STYLE_DANGER => 'text-error',
+        self::COLOR_STYLE_WARNING => 'text-warning',
+        self::COLOR_STYLE_MUTED => 'muted',
+        self::COLOR_STYLE_SUCCESS => 'text-success',
+        self::COLOR_STYLE_INFO => 'text-info',
+        self::COLOR_STYLE_WHITE => 'icon-white'
+    );
+
+    /**
+     * @param string $style
+     * @throws UI_Exception
+     */
+    public static function requireValidColorStyle(string $style) : void
     {
-        return $this->addClass('text-error');
+        if(isset(self::$colorClasses[$style]))
+        {
+            return;
+        }
+
+        throw new UI_Exception(
+            'Invalid icon color style.',
+            sprintf(
+                'The color style [%s] does not exist. Valid styles are [%s].',
+                $style,
+                implode(', ', array_keys(self::$colorClasses))
+            ),
+            self::ERROR_INVALID_COLOR_STYLE
+        );
+    }
+
+    public function makeColorStyle(string $style) : UI_Icon
+    {
+        self::requireValidColorStyle($style);
+
+        $this->colorStyle = $style;
+        return $this;
+    }
+
+    /**
+     * Resets the color style to the default mode to
+     * inherit the surrounding text's color.
+     *
+     * @return $this
+     */
+    public function makeRegular() : UI_Icon
+    {
+        $this->colorStyle = null;
+        return $this;
+    }
+
+    public function makeDangerous() : UI_Icon
+    {
+        return $this->makeColorStyle(self::COLOR_STYLE_DANGER);
     }
     
-    public function makeWarning()
+    public function makeWarning() : UI_Icon
     {
-        return $this->addClass('text-warning');
+        return $this->makeColorStyle(self::COLOR_STYLE_WARNING);
     }
     
-    public function makeMuted()
+    public function makeMuted() : UI_Icon
     {
-        return $this->addClass('muted');
+        return $this->makeColorStyle(self::COLOR_STYLE_MUTED);
     }
 
-    public function makeSuccess()
+    public function makeSuccess() : UI_Icon
     {
-        return $this->addClass('text-success');
+        return $this->makeColorStyle(self::COLOR_STYLE_SUCCESS);
     }
 
-    public function makeInformation()
+    public function makeInformation() : UI_Icon
     {
-        return $this->addClass('text-info');
+        return $this->makeColorStyle(self::COLOR_STYLE_INFO);
     }
 
-    public function makeWhite()
+    public function makeWhite() : UI_Icon
     {
-        return $this->addClass('icon-white');
+        return $this->makeColorStyle(self::COLOR_STYLE_WHITE);
     }
+
+    // endregion
 
    /**
     * Gives the icon a clickable style: the cursor
@@ -598,6 +677,11 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         
         $classes[] = $type['prefix'];
         $classes[] = 'fa-'.$type['type'];
+
+        if(isset($this->colorStyle))
+        {
+            $classes[] = self::$colorClasses[$this->colorStyle];
+        }
         
         return array_merge($classes, $this->classes);
     }
