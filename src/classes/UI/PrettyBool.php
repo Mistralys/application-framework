@@ -16,9 +16,19 @@ class UI_PrettyBool implements UI_Renderable_Interface
 
     public const COLORS_DEFAULT = 'default';
     public const COLORS_NEUTRAL = 'neutral';
+    public const COLORS_INVERTED = 'inverted';
 
     public const LAYOUT_BADGE = 'badge';
     public const LAYOUT_ICON = 'icon';
+
+    public const CRITICALITY_SUCCESS = 'success';
+    public const CRITICALITY_WARNING = 'warning';
+    public const CRITICALITY_DANGEROUS = 'dangerous';
+
+    /**
+     * @var string
+     */
+    private $criticality = self::CRITICALITY_SUCCESS;
 
     /**
      * @var bool
@@ -53,7 +63,27 @@ class UI_PrettyBool implements UI_Renderable_Interface
     /**
      * @var bool
      */
-    private $inverted = false;
+    private $falseHasColor = false;
+
+    /**
+     * @var bool
+     */
+    private $iconWithLabel = false;
+
+    /**
+     * @var bool
+     */
+    private $useIcon = true;
+
+    /**
+     * @var string
+     */
+    private $iconTrue;
+
+    /**
+     * @var string
+     */
+    private $iconFalse;
 
     /**
      * @param string|bool $boolean
@@ -85,11 +115,9 @@ class UI_PrettyBool implements UI_Renderable_Interface
         {
             $label = $this->labelTrue;
 
-            $icon = UI::icon()->ok()
+            $icon = UI::icon()->enabled()
                 ->setTooltip($this->labelTrue)
                 ->makeSuccess();
-
-            $this->checkColorsTrue($icon);
         }
         else
         {
@@ -97,19 +125,14 @@ class UI_PrettyBool implements UI_Renderable_Interface
 
             $icon = UI::icon()->disabled()
                 ->setTooltip($this->labelFalse)
-                ->makeDangerous();
-
-            $this->checkColorsFalse($icon);
+                ->makeMuted();
         }
 
-        if($this->colors === self::COLORS_NEUTRAL)
-        {
-            $icon->makeMuted();
-        }
+        $this->checkColors($icon);
 
         return (string)sb()
             ->icon($icon)
-            ->add($label);
+            ->ifTrue($this->iconWithLabel, $label);
     }
 
     private function renderBadge() : string
@@ -118,27 +141,21 @@ class UI_PrettyBool implements UI_Renderable_Interface
 
         if($this->bool)
         {
-            $label
-                ->setLabel($this->labelTrue)
-                ->setIcon(UI::icon()->ok())
-                ->makeSuccess();
-
-            $this->checkColorsTrue($label);
+            $label->setLabel($this->labelTrue);
+            $icon = UI::icon()->ok();
         }
         else
         {
-            $label
-                ->setLabel($this->labelFalse)
-                ->setIcon(UI::icon()->disabled())
-                ->makeDangerous();
-
-            $this->checkColorsFalse($label);
+            $label->setLabel($this->labelFalse);
+            $icon = UI::icon()->disabled();
         }
 
-        if($this->colors === self::COLORS_NEUTRAL)
+        if($this->useIcon)
         {
-            $label->makeInactive();
+            $label->setIcon($icon);
         }
+
+        $this->checkColors($label);
 
         return (string)$label;
     }
@@ -146,49 +163,62 @@ class UI_PrettyBool implements UI_Renderable_Interface
     /**
      * @param UI_Icon|UI_Badge $subject
      */
-    private function checkColorsTrue($subject) : void
+    private function checkColors($subject) : void
     {
-        if($this->inverted)
+        // Default is to render both as muted/inactive,
+        // which catches the "inverted" color mode - and
+        // by default, the false value is rendered as muted.
+        if($subject instanceof UI_Icon)
         {
-            $subject->makeDangerous();
+            $subject->makeMuted();
+        }
+        else
+        {
+            $subject->makeInactive();
+        }
+
+        if($this->colors === self::COLORS_NEUTRAL)
+        {
             return;
         }
 
-        $this->checkColorType($subject);
-    }
+        $bool = $this->bool;
 
-    /**
-     * @param UI_Icon|UI_Badge $subject
-     */
-    private function checkColorsFalse($subject) : void
-    {
-        if($this->inverted)
+        if($this->colors === self::COLORS_INVERTED)
         {
-            $subject->makeSuccess();
-            return;
+            $bool = !$this->bool;
         }
 
-        $this->checkColorType($subject);
-    }
-
-    /**
-     * @param UI_Icon|UI_Badge $subject
-     */
-    private function checkColorType($subject) : void
-    {
-        switch ($this->type)
+        if ($bool)
         {
-            case self::TYPE_ACTIVE_INACTIVE:
-            case self::TYPE_ENABLED_DISABLED:
-                if($subject instanceof UI_Icon)
-                {
-                    $subject->makeMuted();
-                }
-                else
-                {
-                    $subject->makeInactive();
-                }
-                break;
+            switch ($this->criticality)
+            {
+                case self::CRITICALITY_SUCCESS:
+                    $subject->makeSuccess();
+                    break;
+
+                case self::CRITICALITY_DANGEROUS:
+                    $subject->makeDangerous();
+                    break;
+
+                case self::CRITICALITY_WARNING:
+                    $subject->makeWarning();
+                    break;
+            }
+        }
+        else if($this->falseHasColor)
+        {
+            switch ($this->criticality)
+            {
+                case self::CRITICALITY_SUCCESS:
+                    $subject->makeDangerous();
+                    break;
+
+                case self::CRITICALITY_WARNING:
+                case self::CRITICALITY_DANGEROUS:
+                    $subject->makeSuccess();
+                    break;
+            }
         }
     }
 
@@ -200,7 +230,67 @@ class UI_PrettyBool implements UI_Renderable_Interface
      */
     public function makeColorsInverted() : UI_PrettyBool
     {
-        $this->inverted = false;
+        $this->colors = self::COLORS_INVERTED;
+        return $this;
+    }
+
+    /**
+     * Sets that true = success, or false = success in inverted mode.
+     *
+     * @return $this
+     */
+    public function makeSuccess() : UI_PrettyBool
+    {
+        return $this->setCriticality(self::CRITICALITY_SUCCESS);
+    }
+
+    /**
+     * Sets that true = warning, or false = warning in inverted mode.
+     *
+     * @return $this
+     */
+    public function makeWarning() : UI_PrettyBool
+    {
+        return $this->setCriticality(self::CRITICALITY_WARNING);
+    }
+
+    /**
+     * Sets that true = dangerous, or false = dangerous in inverted mode.
+     *
+     * @return $this
+     */
+    public function makeDangerous() : UI_PrettyBool
+    {
+        return $this->setCriticality(self::CRITICALITY_DANGEROUS);
+    }
+
+    public function setCriticality(string $criticality) : UI_PrettyBool
+    {
+        $this->criticality = $criticality;
+        return $this;
+    }
+
+    public function getCriticality() : string
+    {
+        return $this->criticality;
+    }
+
+    /**
+     * By default, the false state is rendered in an inactive
+     * color, so the true state stands out. With this option,
+     * both true and false will be colorized.
+     *
+     * @return UI_PrettyBool
+     */
+    public function enableFalseColor() : UI_PrettyBool
+    {
+        $this->falseHasColor = true;
+        return $this;
+    }
+
+    public function disableIcon(bool $disable=true) : UI_PrettyBool
+    {
+        $this->useIcon = !$disable;
         return $this;
     }
 
@@ -218,9 +308,10 @@ class UI_PrettyBool implements UI_Renderable_Interface
      * Turns the layout into an icon only.
      * @return $this
      */
-    public function makeIcon() : UI_PrettyBool
+    public function makeIcon(bool $withLabel=true) : UI_PrettyBool
     {
         $this->layout = self::LAYOUT_ICON;
+        $this->iconWithLabel = $withLabel;
         return $this;
     }
 
@@ -277,4 +368,12 @@ class UI_PrettyBool implements UI_Renderable_Interface
         $this->labelFalse = $labelFalse;
         return $this;
     }
+
+    public function setIcons(UI_Icon $iconTrue, UI_Icon $iconFalse) : UI_PrettyBool
+    {
+        $this->iconTrue = $iconTrue->getType();
+        $this->iconFalse = $iconFalse->getType();
+        return $this;
+    }
+
 }
