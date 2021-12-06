@@ -3,6 +3,7 @@ v1.21.3
 - Icons: Improved internal color style handling.
 - Icons: Added `makeRegular()` to restore the default color style.
 - Icons: Added icon constants.
+- Icons: Made the warning icon color more distinct from the dangerous color.
 - Buttons: Improved size handling.
 - Buttons: Added `makeActive()` to toggle the pressed state.
 - Forms: Switch element: Replaced the custom HTML rendering with fitting UI classes.
