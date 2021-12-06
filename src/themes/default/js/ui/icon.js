@@ -22,210 +22,430 @@ var UI_Icon =
 	'eventHandlers':[],
 	'layout':null,
 
-	'types':{
-        'ACTIONCODE':'rocket',
-        'ACTIVATE':'far:sun',
-        'ACTIVITY':'bullhorn',
-        'ADD':'plus-circle',
-        'ATTENTION_REQUIRED':'exclamation-triangle',
-        'AUDIENCE':'podcast',
-        'BACK':'arrow-circle-left',
-        'BACKUP':'recycle',
-        'BACK_TO_CURRENT':'fas:level-down-alt',
-        'BOX':'archive',
-        'BROWSE':'folder-open',
-        'BUGREPORT':'bug',
-        'BUILD':'magic',
-        'BUSINESS':'university',
-        'BUTTON':'external-link-square-alt',
-        'CALENDAR':'calendar',
-        'CAMPAIGNS':'flag',
-        'CANCEL':'ban',
-        'CARET_DOWN':'caret-down',
-        'CARET_UP':'caret-up',
-        'CATEGORY':'bars',
-        'CHANGELOG':'edit',
-        'CHANGE_ORDER':'bars',
-        'CHECK':'check-double',
-        'CODE':'code',
-        'COLLAPSE':'minus-circle',
-        'COLLAPSE_LEFT':'caret-square-left',
-        'COLLAPSE_RIGHT':'caret-square-right',
-        'COLORS':'palette',
-        'COMBINATION':'object-group',
-        'COMBINE':'link',
-        'COMMANDS':'terminal',
-        'COMMENT':'comment',
-        'COMTYPES':'broadcast-tower',
-        'CONTENT_TYPES':'fab:elementor',
-        'CONVERT':'cogs',
-        'COPY':'copy',
-        'COUNTDOWN':'far:clock',
-        'COUNTRIES':'far:flag',
-        'CSV':'far:file-alt',
-        'CUSTOM_VARIABLES':'project-diagram',
-        'DEACTIVATE':'far:moon',
-        'DEACTIVATED':'far:moon',
-        'DELETE':'times',
-        'DELETED':'times',
-        'DELETE_SIGN':'far:times-circle',
-        'DESELECT_ALL':'far:minus-square',
-        'DESTROY':'exclamation-triangle',
-        'DEVELOPER':'asterisk',
-        'DISABLED':'ban',
-        'DISCARD':'far:trash-alt',
-        'DISCONNECT':'unlink',
-        'DOWNLOAD':'download',
-        'DRAFT':'puzzle-piece',
-        'DRAG':'bars',
-        'DROPDOWN':'caret-down',
-        'EDIT':'fas:pencil-alt',
-        'EDITOR':'cubes',
-        'EMAIL':'at',
-        'ENABLED':'fas:check-circle',
-        'EXPAND':'plus-circle',
-        'EXPAND_LEFT':'caret-square-left',
-        'EXPAND_RIGHT':'caret-square-right',
-        'EXPORT':'fas:bolt',
-        'EXPORT_ARCHIVE':'archive',
-        'FEATURETABLES':'server',
-        'FEEDBACK':'far:thumbs-up',
-        'FILE':'file-alt',
-        'FILTER':'filter',
-        'FIRST':'step-backward',
-        'FLAT':'th',
-        'FORWARD':'arrow-circle-right',
-        'GENERATE':'fas:bolt',
-        'GLOBAL':'globe-europe',
-        'GLOBAL_CONTENT':'cube',
-        'GROUPED':'layer-group',
-        'HELP':'question-circle',
-        'HIDE':'eye-slash',
-        'HOME':'home',
-        'HTML':'code',
-        'ID':'key',
-        'IMAGE':'image',
-        'IMPORT':'briefcase',
-        'INACTIVE':'far:moon',
-        'INFORMATION':'info-circle',
-        'ITEM_ACTIVE':'circle',
-        'ITEM_INACTIVE':'far:circle',
-        'JUMP_TO':'far:arrow-alt-circle-right',
-        'JUMP_UP':'arrow-up',
-        'KEYWORD':'bookmark',
-        'LAST':'step-forward',
-        'LINK':'link',
-        'LIST':'server',
-        'LOAD':'far:folder-open',
-        'LOCKED':'lock',
-        'LOG_IN':'fas:sign-in-alt',
-        'LOG_OUT':'power-off',
-        'LOOKUP':'ellipsis-h',
-        'MAILS':'envelope',
-        'MAIL_HEADERS':'crosshairs',
-        'MAIL_HEADER_TITLE':'fas:heading',
-        'MAIL_TESTS':'envelope-open-text',
-        'MAXIMIZE':'expand',
-        'MEDIA':'image',
-        'MENU':'bars',
-        'MERGE':'fas:level-down-alt',
-        'MESSAGE':'far:comment-alt',
-        'MINUS':'minus',
-        'MONEY':'money-check-alt',
-        'MOVE':'arrows-alt',
-        'MOVE_LEFT_RIGHT':'fas:arrows-alt-h',
-        'MOVE_TO':'fas:sign-out-alt',
-        'MOVE_UP_DOWN':'fas:arrows-alt-v',
-        'NEXT':'chevron-right',
-        'NO':'times',
-        'NOTEPAD':'far:sticky-note',
-        'NOT_AVAILABLE':'ban',
-        'NOT_REQUIRED':'minus',
-        'OFF':'power-off',
-        'OK':'check',
-        'OMS':'fab:telegram',
-        'ON':'far:dot-circle',
-        'OPTIONS':'far:dot-circle',
-        'PAGE':'file',
-        'PAGEMODEL':'far:newspaper',
-        'PAUSE':'pause',
-        'PIN':'thumbtack',
-        'PLAY':'play',
-        'PLUS':'plus',
-        'POSITION_ANY':'fas:sort',
-        'POSITION_BOTTOM':'arrow-circle-down',
-        'POSITION_TOP':'arrow-circle-up',
-        'PRESETS':'server',
-        'PREVIEW':'far:file-code',
-        'PREVIOUS':'chevron-left',
-        'PRICE':'money-check-alt',
-        'PRINT':'print',
-        'PRINTER':'print',
-        'PRODUCT':'shopping-basket',
-        'PROMS':'database',
-        'PROOFING':'far:check-square',
-        'PROPERTIES':'fas:cogs',
-        'PUBLISH':'fas:sign-out-alt',
-        'PUBLISHED':'check',
-        'RATING':'star',
-        'RECORD_TYPE':'bezier-curve',
-        'REFRESH':'fas:sync',
-        'REQUIRED':'exclamation-circle',
-        'RESET':'minus-square',
-        'RESTORE':'share',
-        'REVERT':'history',
-        'REVIEW':'user-edit',
-        'SAVE':'save',
-        'SEARCH':'search',
-        'SELECTED':'list',
-        'SELECT_ALL':'far:plus-square',
-        'SEND':'envelope',
-        'SETTINGS':'wrench',
-        'SHOP':'shopping-cart',
-        'SORT':'sort',
-        'SORTING':'fas:sort-amount-down',
-        'SORT_ASC':'angle-up',
-        'SORT_DESC':'angle-down',
-        'SPINNER':'spinner',
-        'STATUS':'shield-alt',
-        'STOP':'pause',
-        'STRUCTURAL':'cubes',
-        'SUGGEST':'lightbulb',
-        'SWITCH':'retweet',
-        'SWITCH_CAMPAIGN':'fas:exchange-alt',
-        'SWITCH_MODE':'compass',
-        'TABLE':'table',
-        'TARIFF_MATRIX':'table',
-        'TASK':'tasks',
-        'TEMPLATE':'far:file-alt',
-        'TENANT':'award',
-        'TEXT':'font',
-        'TIME':'clock',
-        'TOGGLE':'retweet',
-        'TOOLS':'tools',
-        'TRANSLATION':'globe',
-        'TRANSMISSION':'satellite-dish',
-        'UNCOMBINE':'unlink',
-        'UNCOMBINED':'object-ungroup',
-        'UNDELETE':'reply',
-        'UNLOCK':'unlock',
-        'UNLOCKED':'unlock',
-        'UPLOAD':'upload',
-        'USER':'user',
-        'USERS':'users',
-        'UTILS':'fas:first-aid',
-        'VALIDATE':'check-circle',
-        'VARIABLES':'code-branch',
-        'VARIATIONS':'sitemap',
-        'VIEW':'eye',
-        'WAITING':'far:clock',
-        'WARNING':'fas:exclamation-triangle',
-        'WHITELIST':'far:star',
-        'WORDWRAP':'fas:terminal',
-        'WORKFLOW':'sitemap',
-        'XML':'code',
-        'YES':'check'
+    /* START TYPES */
+
+    // region: Icon type definitions
+    
+    // WARNING: This list is automatically generated.
+    // To modify the available icons, use the framework
+    // manager's icons generation feature.
+
+    'TYPE_ACTIONCODE':'actioncode',
+    'TYPE_ACTIVATE':'activate',
+    'TYPE_ACTIVITY':'activity',
+    'TYPE_ADD':'add',
+    'TYPE_ATTENTION_REQUIRED':'attention_required',
+    'TYPE_AUDIENCE':'audience',
+    'TYPE_BACK':'back',
+    'TYPE_BACK_TO_CURRENT':'back_to_current',
+    'TYPE_BACKUP':'backup',
+    'TYPE_BOX':'box',
+    'TYPE_BROWSE':'browse',
+    'TYPE_BUGREPORT':'bugreport',
+    'TYPE_BUILD':'build',
+    'TYPE_BUSINESS':'business',
+    'TYPE_BUTTON':'button',
+    'TYPE_CALENDAR':'calendar',
+    'TYPE_CAMPAIGNS':'campaigns',
+    'TYPE_CANCEL':'cancel',
+    'TYPE_CARET_DOWN':'caret_down',
+    'TYPE_CARET_UP':'caret_up',
+    'TYPE_CATEGORY':'category',
+    'TYPE_CHANGE_ORDER':'change_order',
+    'TYPE_CHANGELOG':'changelog',
+    'TYPE_CHECK':'check',
+    'TYPE_CODE':'code',
+    'TYPE_COLLAPSE':'collapse',
+    'TYPE_COLLAPSE_LEFT':'collapse_left',
+    'TYPE_COLLAPSE_RIGHT':'collapse_right',
+    'TYPE_COLORS':'colors',
+    'TYPE_COMBINATION':'combination',
+    'TYPE_COMBINE':'combine',
+    'TYPE_COMMANDS':'commands',
+    'TYPE_COMMENT':'comment',
+    'TYPE_COMTYPES':'comtypes',
+    'TYPE_CONTENT_TYPES':'content_types',
+    'TYPE_CONVERT':'convert',
+    'TYPE_COPY':'copy',
+    'TYPE_COUNTDOWN':'countdown',
+    'TYPE_COUNTRIES':'countries',
+    'TYPE_CSV':'csv',
+    'TYPE_CUSTOM_VARIABLES':'custom_variables',
+    'TYPE_DEACTIVATE':'deactivate',
+    'TYPE_DEACTIVATED':'deactivated',
+    'TYPE_DELETE':'delete',
+    'TYPE_DELETE_SIGN':'delete_sign',
+    'TYPE_DELETED':'deleted',
+    'TYPE_DESELECT_ALL':'deselect_all',
+    'TYPE_DESTROY':'destroy',
+    'TYPE_DEVELOPER':'developer',
+    'TYPE_DISABLED':'disabled',
+    'TYPE_DISCARD':'discard',
+    'TYPE_DISCONNECT':'disconnect',
+    'TYPE_DOWNLOAD':'download',
+    'TYPE_DRAFT':'draft',
+    'TYPE_DRAG':'drag',
+    'TYPE_DROPDOWN':'dropdown',
+    'TYPE_EDIT':'edit',
+    'TYPE_EDITOR':'editor',
+    'TYPE_EMAIL':'email',
+    'TYPE_ENABLED':'enabled',
+    'TYPE_EXPAND':'expand',
+    'TYPE_EXPAND_LEFT':'expand_left',
+    'TYPE_EXPAND_RIGHT':'expand_right',
+    'TYPE_EXPORT':'export',
+    'TYPE_EXPORT_ARCHIVE':'export_archive',
+    'TYPE_FEATURETABLES':'featuretables',
+    'TYPE_FEEDBACK':'feedback',
+    'TYPE_FILE':'file',
+    'TYPE_FILTER':'filter',
+    'TYPE_FIRST':'first',
+    'TYPE_FLAT':'flat',
+    'TYPE_FORWARD':'forward',
+    'TYPE_GENERATE':'generate',
+    'TYPE_GLOBAL':'global',
+    'TYPE_GLOBAL_CONTENT':'global_content',
+    'TYPE_GROUPED':'grouped',
+    'TYPE_HELP':'help',
+    'TYPE_HIDE':'hide',
+    'TYPE_HOME':'home',
+    'TYPE_HTML':'html',
+    'TYPE_ID':'id',
+    'TYPE_IMAGE':'image',
+    'TYPE_IMPORT':'import',
+    'TYPE_INACTIVE':'inactive',
+    'TYPE_INFORMATION':'information',
+    'TYPE_ITEM_ACTIVE':'item_active',
+    'TYPE_ITEM_INACTIVE':'item_inactive',
+    'TYPE_JUMP_TO':'jump_to',
+    'TYPE_JUMP_UP':'jump_up',
+    'TYPE_KEYWORD':'keyword',
+    'TYPE_LAST':'last',
+    'TYPE_LINK':'link',
+    'TYPE_LIST':'list',
+    'TYPE_LOAD':'load',
+    'TYPE_LOCKED':'locked',
+    'TYPE_LOG_IN':'log_in',
+    'TYPE_LOG_OUT':'log_out',
+    'TYPE_LOOKUP':'lookup',
+    'TYPE_MAIL_HEADER_TITLE':'mail_header_title',
+    'TYPE_MAIL_HEADERS':'mail_headers',
+    'TYPE_MAIL_TESTS':'mail_tests',
+    'TYPE_MAILS':'mails',
+    'TYPE_MAXIMIZE':'maximize',
+    'TYPE_MEDIA':'media',
+    'TYPE_MENU':'menu',
+    'TYPE_MERGE':'merge',
+    'TYPE_MESSAGE':'message',
+    'TYPE_MINUS':'minus',
+    'TYPE_MONEY':'money',
+    'TYPE_MOVE':'move',
+    'TYPE_MOVE_LEFT_RIGHT':'move_left_right',
+    'TYPE_MOVE_TO':'move_to',
+    'TYPE_MOVE_UP_DOWN':'move_up_down',
+    'TYPE_NEXT':'next',
+    'TYPE_NO':'no',
+    'TYPE_NOT_AVAILABLE':'not_available',
+    'TYPE_NOT_REQUIRED':'not_required',
+    'TYPE_NOTEPAD':'notepad',
+    'TYPE_OFF':'off',
+    'TYPE_OK':'ok',
+    'TYPE_OMS':'oms',
+    'TYPE_ON':'on',
+    'TYPE_OPTIONS':'options',
+    'TYPE_PAGE':'page',
+    'TYPE_PAGEMODEL':'pagemodel',
+    'TYPE_PAUSE':'pause',
+    'TYPE_PIN':'pin',
+    'TYPE_PLAY':'play',
+    'TYPE_PLUS':'plus',
+    'TYPE_POSITION_ANY':'position_any',
+    'TYPE_POSITION_BOTTOM':'position_bottom',
+    'TYPE_POSITION_TOP':'position_top',
+    'TYPE_PRESETS':'presets',
+    'TYPE_PREVIEW':'preview',
+    'TYPE_PREVIOUS':'previous',
+    'TYPE_PRICE':'price',
+    'TYPE_PRINT':'print',
+    'TYPE_PRINTER':'printer',
+    'TYPE_PRODUCT':'product',
+    'TYPE_PROMS':'proms',
+    'TYPE_PROOFING':'proofing',
+    'TYPE_PROPERTIES':'properties',
+    'TYPE_PUBLISH':'publish',
+    'TYPE_PUBLISHED':'published',
+    'TYPE_RATING':'rating',
+    'TYPE_RECORD_TYPE':'record_type',
+    'TYPE_REFRESH':'refresh',
+    'TYPE_REQUIRED':'required',
+    'TYPE_RESET':'reset',
+    'TYPE_RESTORE':'restore',
+    'TYPE_REVERT':'revert',
+    'TYPE_REVIEW':'review',
+    'TYPE_SAVE':'save',
+    'TYPE_SEARCH':'search',
+    'TYPE_SELECT_ALL':'select_all',
+    'TYPE_SELECTED':'selected',
+    'TYPE_SEND':'send',
+    'TYPE_SETTINGS':'settings',
+    'TYPE_SHOP':'shop',
+    'TYPE_SORT':'sort',
+    'TYPE_SORT_ASC':'sort_asc',
+    'TYPE_SORT_DESC':'sort_desc',
+    'TYPE_SORTING':'sorting',
+    'TYPE_SPINNER':'spinner',
+    'TYPE_STATUS':'status',
+    'TYPE_STOP':'stop',
+    'TYPE_STRUCTURAL':'structural',
+    'TYPE_SUGGEST':'suggest',
+    'TYPE_SWITCH':'switch',
+    'TYPE_SWITCH_CAMPAIGN':'switch_campaign',
+    'TYPE_SWITCH_MODE':'switch_mode',
+    'TYPE_TABLE':'table',
+    'TYPE_TARIFF_MATRIX':'tariff_matrix',
+    'TYPE_TASK':'task',
+    'TYPE_TEMPLATE':'template',
+    'TYPE_TENANT':'tenant',
+    'TYPE_TEXT':'text',
+    'TYPE_TIME':'time',
+    'TYPE_TOGGLE':'toggle',
+    'TYPE_TOOLS':'tools',
+    'TYPE_TRANSLATION':'translation',
+    'TYPE_TRANSMISSION':'transmission',
+    'TYPE_UNCOMBINE':'uncombine',
+    'TYPE_UNCOMBINED':'uncombined',
+    'TYPE_UNDELETE':'undelete',
+    'TYPE_UNLOCK':'unlock',
+    'TYPE_UNLOCKED':'unlocked',
+    'TYPE_UPLOAD':'upload',
+    'TYPE_USER':'user',
+    'TYPE_USERS':'users',
+    'TYPE_UTILS':'utils',
+    'TYPE_VALIDATE':'validate',
+    'TYPE_VARIABLES':'variables',
+    'TYPE_VARIATIONS':'variations',
+    'TYPE_VIEW':'view',
+    'TYPE_WAITING':'waiting',
+    'TYPE_WARNING':'warning',
+    'TYPE_WHITELIST':'whitelist',
+    'TYPE_WORDWRAP':'wordwrap',
+    'TYPE_WORKFLOW':'workflow',
+    'TYPE_XML':'xml',
+    'TYPE_YES':'yes',
+
+    'types':null,
+    
+    InitTypes:function()
+    {
+        this.types = {};
+        
+        this.types[this.TYPE_ACTIONCODE] = 'rocket';
+        this.types[this.TYPE_ACTIVATE] = 'far:sun';
+        this.types[this.TYPE_ACTIVITY] = 'bullhorn';
+        this.types[this.TYPE_ADD] = 'plus-circle';
+        this.types[this.TYPE_ATTENTION_REQUIRED] = 'exclamation-triangle';
+        this.types[this.TYPE_AUDIENCE] = 'podcast';
+        this.types[this.TYPE_BACK] = 'arrow-circle-left';
+        this.types[this.TYPE_BACK_TO_CURRENT] = 'fas:level-down-alt';
+        this.types[this.TYPE_BACKUP] = 'recycle';
+        this.types[this.TYPE_BOX] = 'archive';
+        this.types[this.TYPE_BROWSE] = 'folder-open';
+        this.types[this.TYPE_BUGREPORT] = 'bug';
+        this.types[this.TYPE_BUILD] = 'magic';
+        this.types[this.TYPE_BUSINESS] = 'university';
+        this.types[this.TYPE_BUTTON] = 'external-link-square-alt';
+        this.types[this.TYPE_CALENDAR] = 'calendar';
+        this.types[this.TYPE_CAMPAIGNS] = 'flag';
+        this.types[this.TYPE_CANCEL] = 'ban';
+        this.types[this.TYPE_CARET_DOWN] = 'caret-down';
+        this.types[this.TYPE_CARET_UP] = 'caret-up';
+        this.types[this.TYPE_CATEGORY] = 'bars';
+        this.types[this.TYPE_CHANGE_ORDER] = 'bars';
+        this.types[this.TYPE_CHANGELOG] = 'edit';
+        this.types[this.TYPE_CHECK] = 'check-double';
+        this.types[this.TYPE_CODE] = 'code';
+        this.types[this.TYPE_COLLAPSE] = 'minus-circle';
+        this.types[this.TYPE_COLLAPSE_LEFT] = 'caret-square-left';
+        this.types[this.TYPE_COLLAPSE_RIGHT] = 'caret-square-right';
+        this.types[this.TYPE_COLORS] = 'palette';
+        this.types[this.TYPE_COMBINATION] = 'object-group';
+        this.types[this.TYPE_COMBINE] = 'link';
+        this.types[this.TYPE_COMMANDS] = 'terminal';
+        this.types[this.TYPE_COMMENT] = 'comment';
+        this.types[this.TYPE_COMTYPES] = 'broadcast-tower';
+        this.types[this.TYPE_CONTENT_TYPES] = 'fab:elementor';
+        this.types[this.TYPE_CONVERT] = 'cogs';
+        this.types[this.TYPE_COPY] = 'copy';
+        this.types[this.TYPE_COUNTDOWN] = 'far:clock';
+        this.types[this.TYPE_COUNTRIES] = 'far:flag';
+        this.types[this.TYPE_CSV] = 'far:file-alt';
+        this.types[this.TYPE_CUSTOM_VARIABLES] = 'project-diagram';
+        this.types[this.TYPE_DEACTIVATE] = 'far:moon';
+        this.types[this.TYPE_DEACTIVATED] = 'far:moon';
+        this.types[this.TYPE_DELETE] = 'times';
+        this.types[this.TYPE_DELETE_SIGN] = 'far:times-circle';
+        this.types[this.TYPE_DELETED] = 'times';
+        this.types[this.TYPE_DESELECT_ALL] = 'far:minus-square';
+        this.types[this.TYPE_DESTROY] = 'exclamation-triangle';
+        this.types[this.TYPE_DEVELOPER] = 'asterisk';
+        this.types[this.TYPE_DISABLED] = 'ban';
+        this.types[this.TYPE_DISCARD] = 'far:trash-alt';
+        this.types[this.TYPE_DISCONNECT] = 'unlink';
+        this.types[this.TYPE_DOWNLOAD] = 'download';
+        this.types[this.TYPE_DRAFT] = 'puzzle-piece';
+        this.types[this.TYPE_DRAG] = 'bars';
+        this.types[this.TYPE_DROPDOWN] = 'caret-down';
+        this.types[this.TYPE_EDIT] = 'fas:pencil-alt';
+        this.types[this.TYPE_EDITOR] = 'cubes';
+        this.types[this.TYPE_EMAIL] = 'at';
+        this.types[this.TYPE_ENABLED] = 'fas:check-circle';
+        this.types[this.TYPE_EXPAND] = 'plus-circle';
+        this.types[this.TYPE_EXPAND_LEFT] = 'caret-square-left';
+        this.types[this.TYPE_EXPAND_RIGHT] = 'caret-square-right';
+        this.types[this.TYPE_EXPORT] = 'fas:bolt';
+        this.types[this.TYPE_EXPORT_ARCHIVE] = 'archive';
+        this.types[this.TYPE_FEATURETABLES] = 'server';
+        this.types[this.TYPE_FEEDBACK] = 'far:thumbs-up';
+        this.types[this.TYPE_FILE] = 'file-alt';
+        this.types[this.TYPE_FILTER] = 'filter';
+        this.types[this.TYPE_FIRST] = 'step-backward';
+        this.types[this.TYPE_FLAT] = 'th';
+        this.types[this.TYPE_FORWARD] = 'arrow-circle-right';
+        this.types[this.TYPE_GENERATE] = 'fas:bolt';
+        this.types[this.TYPE_GLOBAL] = 'globe-europe';
+        this.types[this.TYPE_GLOBAL_CONTENT] = 'cube';
+        this.types[this.TYPE_GROUPED] = 'layer-group';
+        this.types[this.TYPE_HELP] = 'question-circle';
+        this.types[this.TYPE_HIDE] = 'eye-slash';
+        this.types[this.TYPE_HOME] = 'home';
+        this.types[this.TYPE_HTML] = 'code';
+        this.types[this.TYPE_ID] = 'key';
+        this.types[this.TYPE_IMAGE] = 'image';
+        this.types[this.TYPE_IMPORT] = 'briefcase';
+        this.types[this.TYPE_INACTIVE] = 'far:moon';
+        this.types[this.TYPE_INFORMATION] = 'info-circle';
+        this.types[this.TYPE_ITEM_ACTIVE] = 'circle';
+        this.types[this.TYPE_ITEM_INACTIVE] = 'far:circle';
+        this.types[this.TYPE_JUMP_TO] = 'far:arrow-alt-circle-right';
+        this.types[this.TYPE_JUMP_UP] = 'arrow-up';
+        this.types[this.TYPE_KEYWORD] = 'bookmark';
+        this.types[this.TYPE_LAST] = 'step-forward';
+        this.types[this.TYPE_LINK] = 'link';
+        this.types[this.TYPE_LIST] = 'server';
+        this.types[this.TYPE_LOAD] = 'far:folder-open';
+        this.types[this.TYPE_LOCKED] = 'lock';
+        this.types[this.TYPE_LOG_IN] = 'fas:sign-in-alt';
+        this.types[this.TYPE_LOG_OUT] = 'power-off';
+        this.types[this.TYPE_LOOKUP] = 'ellipsis-h';
+        this.types[this.TYPE_MAIL_HEADER_TITLE] = 'fas:heading';
+        this.types[this.TYPE_MAIL_HEADERS] = 'crosshairs';
+        this.types[this.TYPE_MAIL_TESTS] = 'envelope-open-text';
+        this.types[this.TYPE_MAILS] = 'envelope';
+        this.types[this.TYPE_MAXIMIZE] = 'expand';
+        this.types[this.TYPE_MEDIA] = 'image';
+        this.types[this.TYPE_MENU] = 'bars';
+        this.types[this.TYPE_MERGE] = 'fas:level-down-alt';
+        this.types[this.TYPE_MESSAGE] = 'far:comment-alt';
+        this.types[this.TYPE_MINUS] = 'minus';
+        this.types[this.TYPE_MONEY] = 'money-check-alt';
+        this.types[this.TYPE_MOVE] = 'arrows-alt';
+        this.types[this.TYPE_MOVE_LEFT_RIGHT] = 'fas:arrows-alt-h';
+        this.types[this.TYPE_MOVE_TO] = 'fas:sign-out-alt';
+        this.types[this.TYPE_MOVE_UP_DOWN] = 'fas:arrows-alt-v';
+        this.types[this.TYPE_NEXT] = 'chevron-right';
+        this.types[this.TYPE_NO] = 'times';
+        this.types[this.TYPE_NOT_AVAILABLE] = 'ban';
+        this.types[this.TYPE_NOT_REQUIRED] = 'minus';
+        this.types[this.TYPE_NOTEPAD] = 'far:sticky-note';
+        this.types[this.TYPE_OFF] = 'power-off';
+        this.types[this.TYPE_OK] = 'check';
+        this.types[this.TYPE_OMS] = 'fab:telegram';
+        this.types[this.TYPE_ON] = 'far:dot-circle';
+        this.types[this.TYPE_OPTIONS] = 'far:dot-circle';
+        this.types[this.TYPE_PAGE] = 'file';
+        this.types[this.TYPE_PAGEMODEL] = 'far:newspaper';
+        this.types[this.TYPE_PAUSE] = 'pause';
+        this.types[this.TYPE_PIN] = 'thumbtack';
+        this.types[this.TYPE_PLAY] = 'play';
+        this.types[this.TYPE_PLUS] = 'plus';
+        this.types[this.TYPE_POSITION_ANY] = 'fas:sort';
+        this.types[this.TYPE_POSITION_BOTTOM] = 'arrow-circle-down';
+        this.types[this.TYPE_POSITION_TOP] = 'arrow-circle-up';
+        this.types[this.TYPE_PRESETS] = 'server';
+        this.types[this.TYPE_PREVIEW] = 'far:file-code';
+        this.types[this.TYPE_PREVIOUS] = 'chevron-left';
+        this.types[this.TYPE_PRICE] = 'money-check-alt';
+        this.types[this.TYPE_PRINT] = 'print';
+        this.types[this.TYPE_PRINTER] = 'print';
+        this.types[this.TYPE_PRODUCT] = 'shopping-basket';
+        this.types[this.TYPE_PROMS] = 'database';
+        this.types[this.TYPE_PROOFING] = 'far:check-square';
+        this.types[this.TYPE_PROPERTIES] = 'fas:cogs';
+        this.types[this.TYPE_PUBLISH] = 'fas:sign-out-alt';
+        this.types[this.TYPE_PUBLISHED] = 'check';
+        this.types[this.TYPE_RATING] = 'star';
+        this.types[this.TYPE_RECORD_TYPE] = 'bezier-curve';
+        this.types[this.TYPE_REFRESH] = 'fas:sync';
+        this.types[this.TYPE_REQUIRED] = 'exclamation-circle';
+        this.types[this.TYPE_RESET] = 'minus-square';
+        this.types[this.TYPE_RESTORE] = 'share';
+        this.types[this.TYPE_REVERT] = 'history';
+        this.types[this.TYPE_REVIEW] = 'user-edit';
+        this.types[this.TYPE_SAVE] = 'save';
+        this.types[this.TYPE_SEARCH] = 'search';
+        this.types[this.TYPE_SELECT_ALL] = 'far:plus-square';
+        this.types[this.TYPE_SELECTED] = 'list';
+        this.types[this.TYPE_SEND] = 'envelope';
+        this.types[this.TYPE_SETTINGS] = 'wrench';
+        this.types[this.TYPE_SHOP] = 'shopping-cart';
+        this.types[this.TYPE_SORT] = 'sort';
+        this.types[this.TYPE_SORT_ASC] = 'angle-up';
+        this.types[this.TYPE_SORT_DESC] = 'angle-down';
+        this.types[this.TYPE_SORTING] = 'fas:sort-amount-down';
+        this.types[this.TYPE_SPINNER] = 'spinner';
+        this.types[this.TYPE_STATUS] = 'shield-alt';
+        this.types[this.TYPE_STOP] = 'pause';
+        this.types[this.TYPE_STRUCTURAL] = 'cubes';
+        this.types[this.TYPE_SUGGEST] = 'lightbulb';
+        this.types[this.TYPE_SWITCH] = 'retweet';
+        this.types[this.TYPE_SWITCH_CAMPAIGN] = 'fas:exchange-alt';
+        this.types[this.TYPE_SWITCH_MODE] = 'compass';
+        this.types[this.TYPE_TABLE] = 'table';
+        this.types[this.TYPE_TARIFF_MATRIX] = 'table';
+        this.types[this.TYPE_TASK] = 'tasks';
+        this.types[this.TYPE_TEMPLATE] = 'far:file-alt';
+        this.types[this.TYPE_TENANT] = 'award';
+        this.types[this.TYPE_TEXT] = 'font';
+        this.types[this.TYPE_TIME] = 'clock';
+        this.types[this.TYPE_TOGGLE] = 'retweet';
+        this.types[this.TYPE_TOOLS] = 'tools';
+        this.types[this.TYPE_TRANSLATION] = 'globe';
+        this.types[this.TYPE_TRANSMISSION] = 'satellite-dish';
+        this.types[this.TYPE_UNCOMBINE] = 'unlink';
+        this.types[this.TYPE_UNCOMBINED] = 'object-ungroup';
+        this.types[this.TYPE_UNDELETE] = 'reply';
+        this.types[this.TYPE_UNLOCK] = 'unlock';
+        this.types[this.TYPE_UNLOCKED] = 'unlock';
+        this.types[this.TYPE_UPLOAD] = 'upload';
+        this.types[this.TYPE_USER] = 'user';
+        this.types[this.TYPE_USERS] = 'users';
+        this.types[this.TYPE_UTILS] = 'fas:first-aid';
+        this.types[this.TYPE_VALIDATE] = 'check-circle';
+        this.types[this.TYPE_VARIABLES] = 'code-branch';
+        this.types[this.TYPE_VARIATIONS] = 'sitemap';
+        this.types[this.TYPE_VIEW] = 'eye';
+        this.types[this.TYPE_WAITING] = 'far:clock';
+        this.types[this.TYPE_WARNING] = 'fas:exclamation-triangle';
+        this.types[this.TYPE_WHITELIST] = 'far:star';
+        this.types[this.TYPE_WORDWRAP] = 'fas:terminal';
+        this.types[this.TYPE_WORKFLOW] = 'sitemap';
+        this.types[this.TYPE_XML] = 'code';
+        this.types[this.TYPE_YES] = 'check';
     },
+    
+    // endregion
+
+    /* END TYPES */
     
    /**
     * @constructs
@@ -248,8 +468,13 @@ var UI_Icon =
 		this.maxPostRenderAttempts = 3;
 		this.eventHandlers = {'click':null, 'doubleClick':null};
 		this.layout = null;
+
+		if(this.types == null)
+		{
+			this.InitTypes();
+		}
 	},
-	
+
 	DialogReferenceSheet:function()
 	{
 		var types = [];
@@ -305,207 +530,213 @@ var UI_Icon =
 	},
 	
 	/* START METHODS */
-    Actioncode:function() { return this.SetType('ACTIONCODE'); },
-    Activate:function() { return this.SetType('ACTIVATE'); },
-    Activity:function() { return this.SetType('ACTIVITY'); },
-    Add:function() { return this.SetType('ADD'); },
-    AttentionRequired:function() { return this.SetType('ATTENTION_REQUIRED'); },
-    Audience:function() { return this.SetType('AUDIENCE'); },
-    Back:function() { return this.SetType('BACK'); },
-    Backup:function() { return this.SetType('BACKUP'); },
-    BackToCurrent:function() { return this.SetType('BACK_TO_CURRENT'); },
-    Box:function() { return this.SetType('BOX'); },
-    Browse:function() { return this.SetType('BROWSE'); },
-    Bugreport:function() { return this.SetType('BUGREPORT'); },
-    Build:function() { return this.SetType('BUILD'); },
-    Business:function() { return this.SetType('BUSINESS'); },
-    Button:function() { return this.SetType('BUTTON'); },
-    Calendar:function() { return this.SetType('CALENDAR'); },
-    Campaigns:function() { return this.SetType('CAMPAIGNS'); },
-    Cancel:function() { return this.SetType('CANCEL'); },
-    CaretDown:function() { return this.SetType('CARET_DOWN'); },
-    CaretUp:function() { return this.SetType('CARET_UP'); },
-    Category:function() { return this.SetType('CATEGORY'); },
-    Changelog:function() { return this.SetType('CHANGELOG'); },
-    ChangeOrder:function() { return this.SetType('CHANGE_ORDER'); },
-    Check:function() { return this.SetType('CHECK'); },
-    Code:function() { return this.SetType('CODE'); },
-    Collapse:function() { return this.SetType('COLLAPSE'); },
-    CollapseLeft:function() { return this.SetType('COLLAPSE_LEFT'); },
-    CollapseRight:function() { return this.SetType('COLLAPSE_RIGHT'); },
-    Colors:function() { return this.SetType('COLORS'); },
-    Combination:function() { return this.SetType('COMBINATION'); },
-    Combine:function() { return this.SetType('COMBINE'); },
-    Commands:function() { return this.SetType('COMMANDS'); },
-    Comment:function() { return this.SetType('COMMENT'); },
-    Comtypes:function() { return this.SetType('COMTYPES'); },
-    ContentTypes:function() { return this.SetType('CONTENT_TYPES'); },
-    Convert:function() { return this.SetType('CONVERT'); },
-    Copy:function() { return this.SetType('COPY'); },
-    Countdown:function() { return this.SetType('COUNTDOWN'); },
-    Countries:function() { return this.SetType('COUNTRIES'); },
-    Csv:function() { return this.SetType('CSV'); },
-    CustomVariables:function() { return this.SetType('CUSTOM_VARIABLES'); },
-    Deactivate:function() { return this.SetType('DEACTIVATE'); },
-    Deactivated:function() { return this.SetType('DEACTIVATED'); },
-    Delete:function() { return this.SetType('DELETE'); },
-    Deleted:function() { return this.SetType('DELETED'); },
-    DeleteSign:function() { return this.SetType('DELETE_SIGN'); },
-    DeselectAll:function() { return this.SetType('DESELECT_ALL'); },
-    Destroy:function() { return this.SetType('DESTROY'); },
-    Developer:function() { return this.SetType('DEVELOPER'); },
-    Disabled:function() { return this.SetType('DISABLED'); },
-    Discard:function() { return this.SetType('DISCARD'); },
-    Disconnect:function() { return this.SetType('DISCONNECT'); },
-    Download:function() { return this.SetType('DOWNLOAD'); },
-    Draft:function() { return this.SetType('DRAFT'); },
-    Drag:function() { return this.SetType('DRAG'); },
-    Dropdown:function() { return this.SetType('DROPDOWN'); },
-    Edit:function() { return this.SetType('EDIT'); },
-    Editor:function() { return this.SetType('EDITOR'); },
-    Email:function() { return this.SetType('EMAIL'); },
-    Enabled:function() { return this.SetType('ENABLED'); },
-    Expand:function() { return this.SetType('EXPAND'); },
-    ExpandLeft:function() { return this.SetType('EXPAND_LEFT'); },
-    ExpandRight:function() { return this.SetType('EXPAND_RIGHT'); },
-    Export:function() { return this.SetType('EXPORT'); },
-    ExportArchive:function() { return this.SetType('EXPORT_ARCHIVE'); },
-    Featuretables:function() { return this.SetType('FEATURETABLES'); },
-    Feedback:function() { return this.SetType('FEEDBACK'); },
-    File:function() { return this.SetType('FILE'); },
-    Filter:function() { return this.SetType('FILTER'); },
-    First:function() { return this.SetType('FIRST'); },
-    Flat:function() { return this.SetType('FLAT'); },
-    Forward:function() { return this.SetType('FORWARD'); },
-    Generate:function() { return this.SetType('GENERATE'); },
-    Global:function() { return this.SetType('GLOBAL'); },
-    GlobalContent:function() { return this.SetType('GLOBAL_CONTENT'); },
-    Grouped:function() { return this.SetType('GROUPED'); },
-    Help:function() { return this.SetType('HELP'); },
-    Hide:function() { return this.SetType('HIDE'); },
-    Home:function() { return this.SetType('HOME'); },
-    Html:function() { return this.SetType('HTML'); },
-    Id:function() { return this.SetType('ID'); },
-    Image:function() { return this.SetType('IMAGE'); },
-    Import:function() { return this.SetType('IMPORT'); },
-    Inactive:function() { return this.SetType('INACTIVE'); },
-    Information:function() { return this.SetType('INFORMATION'); },
-    ItemActive:function() { return this.SetType('ITEM_ACTIVE'); },
-    ItemInactive:function() { return this.SetType('ITEM_INACTIVE'); },
-    JumpTo:function() { return this.SetType('JUMP_TO'); },
-    JumpUp:function() { return this.SetType('JUMP_UP'); },
-    Keyword:function() { return this.SetType('KEYWORD'); },
-    Last:function() { return this.SetType('LAST'); },
-    Link:function() { return this.SetType('LINK'); },
-    List:function() { return this.SetType('LIST'); },
-    Load:function() { return this.SetType('LOAD'); },
-    Locked:function() { return this.SetType('LOCKED'); },
-    LogIn:function() { return this.SetType('LOG_IN'); },
-    LogOut:function() { return this.SetType('LOG_OUT'); },
-    Lookup:function() { return this.SetType('LOOKUP'); },
-    Mails:function() { return this.SetType('MAILS'); },
-    MailHeaders:function() { return this.SetType('MAIL_HEADERS'); },
-    MailHeaderTitle:function() { return this.SetType('MAIL_HEADER_TITLE'); },
-    MailTests:function() { return this.SetType('MAIL_TESTS'); },
-    Maximize:function() { return this.SetType('MAXIMIZE'); },
-    Media:function() { return this.SetType('MEDIA'); },
-    Menu:function() { return this.SetType('MENU'); },
-    Merge:function() { return this.SetType('MERGE'); },
-    Message:function() { return this.SetType('MESSAGE'); },
-    Minus:function() { return this.SetType('MINUS'); },
-    Money:function() { return this.SetType('MONEY'); },
-    Move:function() { return this.SetType('MOVE'); },
-    MoveLeftRight:function() { return this.SetType('MOVE_LEFT_RIGHT'); },
-    MoveTo:function() { return this.SetType('MOVE_TO'); },
-    MoveUpDown:function() { return this.SetType('MOVE_UP_DOWN'); },
-    Next:function() { return this.SetType('NEXT'); },
-    No:function() { return this.SetType('NO'); },
-    Notepad:function() { return this.SetType('NOTEPAD'); },
-    NotAvailable:function() { return this.SetType('NOT_AVAILABLE'); },
-    NotRequired:function() { return this.SetType('NOT_REQUIRED'); },
-    Off:function() { return this.SetType('OFF'); },
-    Ok:function() { return this.SetType('OK'); },
-    Oms:function() { return this.SetType('OMS'); },
-    On:function() { return this.SetType('ON'); },
-    Options:function() { return this.SetType('OPTIONS'); },
-    Page:function() { return this.SetType('PAGE'); },
-    Pagemodel:function() { return this.SetType('PAGEMODEL'); },
-    Pause:function() { return this.SetType('PAUSE'); },
-    Pin:function() { return this.SetType('PIN'); },
-    Play:function() { return this.SetType('PLAY'); },
-    Plus:function() { return this.SetType('PLUS'); },
-    PositionAny:function() { return this.SetType('POSITION_ANY'); },
-    PositionBottom:function() { return this.SetType('POSITION_BOTTOM'); },
-    PositionTop:function() { return this.SetType('POSITION_TOP'); },
-    Presets:function() { return this.SetType('PRESETS'); },
-    Preview:function() { return this.SetType('PREVIEW'); },
-    Previous:function() { return this.SetType('PREVIOUS'); },
-    Price:function() { return this.SetType('PRICE'); },
-    Print:function() { return this.SetType('PRINT'); },
-    Printer:function() { return this.SetType('PRINTER'); },
-    Product:function() { return this.SetType('PRODUCT'); },
-    Proms:function() { return this.SetType('PROMS'); },
-    Proofing:function() { return this.SetType('PROOFING'); },
-    Properties:function() { return this.SetType('PROPERTIES'); },
-    Publish:function() { return this.SetType('PUBLISH'); },
-    Published:function() { return this.SetType('PUBLISHED'); },
-    Rating:function() { return this.SetType('RATING'); },
-    RecordType:function() { return this.SetType('RECORD_TYPE'); },
-    Refresh:function() { return this.SetType('REFRESH'); },
-    Required:function() { return this.SetType('REQUIRED'); },
-    Reset:function() { return this.SetType('RESET'); },
-    Restore:function() { return this.SetType('RESTORE'); },
-    Revert:function() { return this.SetType('REVERT'); },
-    Review:function() { return this.SetType('REVIEW'); },
-    Save:function() { return this.SetType('SAVE'); },
-    Search:function() { return this.SetType('SEARCH'); },
-    Selected:function() { return this.SetType('SELECTED'); },
-    SelectAll:function() { return this.SetType('SELECT_ALL'); },
-    Send:function() { return this.SetType('SEND'); },
-    Settings:function() { return this.SetType('SETTINGS'); },
-    Shop:function() { return this.SetType('SHOP'); },
-    Sort:function() { return this.SetType('SORT'); },
-    Sorting:function() { return this.SetType('SORTING'); },
-    SortAsc:function() { return this.SetType('SORT_ASC'); },
-    SortDesc:function() { return this.SetType('SORT_DESC'); },
-    Status:function() { return this.SetType('STATUS'); },
-    Stop:function() { return this.SetType('STOP'); },
-    Structural:function() { return this.SetType('STRUCTURAL'); },
-    Suggest:function() { return this.SetType('SUGGEST'); },
-    Switch:function() { return this.SetType('SWITCH'); },
-    SwitchCampaign:function() { return this.SetType('SWITCH_CAMPAIGN'); },
-    SwitchMode:function() { return this.SetType('SWITCH_MODE'); },
-    Table:function() { return this.SetType('TABLE'); },
-    TariffMatrix:function() { return this.SetType('TARIFF_MATRIX'); },
-    Task:function() { return this.SetType('TASK'); },
-    Template:function() { return this.SetType('TEMPLATE'); },
-    Tenant:function() { return this.SetType('TENANT'); },
-    Text:function() { return this.SetType('TEXT'); },
-    Time:function() { return this.SetType('TIME'); },
-    Toggle:function() { return this.SetType('TOGGLE'); },
-    Tools:function() { return this.SetType('TOOLS'); },
-    Translation:function() { return this.SetType('TRANSLATION'); },
-    Transmission:function() { return this.SetType('TRANSMISSION'); },
-    Uncombine:function() { return this.SetType('UNCOMBINE'); },
-    Uncombined:function() { return this.SetType('UNCOMBINED'); },
-    Undelete:function() { return this.SetType('UNDELETE'); },
-    Unlock:function() { return this.SetType('UNLOCK'); },
-    Unlocked:function() { return this.SetType('UNLOCKED'); },
-    Upload:function() { return this.SetType('UPLOAD'); },
-    User:function() { return this.SetType('USER'); },
-    Users:function() { return this.SetType('USERS'); },
-    Utils:function() { return this.SetType('UTILS'); },
-    Validate:function() { return this.SetType('VALIDATE'); },
-    Variables:function() { return this.SetType('VARIABLES'); },
-    Variations:function() { return this.SetType('VARIATIONS'); },
-    View:function() { return this.SetType('VIEW'); },
-    Waiting:function() { return this.SetType('WAITING'); },
-    Warning:function() { return this.SetType('WARNING'); },
-    Whitelist:function() { return this.SetType('WHITELIST'); },
-    Wordwrap:function() { return this.SetType('WORDWRAP'); },
-    Workflow:function() { return this.SetType('WORKFLOW'); },
-    Xml:function() { return this.SetType('XML'); },
-    Yes:function() { return this.SetType('YES'); },
+
+    // region: Icon methods
+    
+    Actioncode:function() { return this.SetType(this.TYPE_ACTIONCODE); },
+    Activate:function() { return this.SetType(this.TYPE_ACTIVATE); },
+    Activity:function() { return this.SetType(this.TYPE_ACTIVITY); },
+    Add:function() { return this.SetType(this.TYPE_ADD); },
+    AttentionRequired:function() { return this.SetType(this.TYPE_ATTENTION_REQUIRED); },
+    Audience:function() { return this.SetType(this.TYPE_AUDIENCE); },
+    Back:function() { return this.SetType(this.TYPE_BACK); },
+    BackToCurrent:function() { return this.SetType(this.TYPE_BACK_TO_CURRENT); },
+    Backup:function() { return this.SetType(this.TYPE_BACKUP); },
+    Box:function() { return this.SetType(this.TYPE_BOX); },
+    Browse:function() { return this.SetType(this.TYPE_BROWSE); },
+    Bugreport:function() { return this.SetType(this.TYPE_BUGREPORT); },
+    Build:function() { return this.SetType(this.TYPE_BUILD); },
+    Business:function() { return this.SetType(this.TYPE_BUSINESS); },
+    Button:function() { return this.SetType(this.TYPE_BUTTON); },
+    Calendar:function() { return this.SetType(this.TYPE_CALENDAR); },
+    Campaigns:function() { return this.SetType(this.TYPE_CAMPAIGNS); },
+    Cancel:function() { return this.SetType(this.TYPE_CANCEL); },
+    CaretDown:function() { return this.SetType(this.TYPE_CARET_DOWN); },
+    CaretUp:function() { return this.SetType(this.TYPE_CARET_UP); },
+    Category:function() { return this.SetType(this.TYPE_CATEGORY); },
+    ChangeOrder:function() { return this.SetType(this.TYPE_CHANGE_ORDER); },
+    Changelog:function() { return this.SetType(this.TYPE_CHANGELOG); },
+    Check:function() { return this.SetType(this.TYPE_CHECK); },
+    Code:function() { return this.SetType(this.TYPE_CODE); },
+    Collapse:function() { return this.SetType(this.TYPE_COLLAPSE); },
+    CollapseLeft:function() { return this.SetType(this.TYPE_COLLAPSE_LEFT); },
+    CollapseRight:function() { return this.SetType(this.TYPE_COLLAPSE_RIGHT); },
+    Colors:function() { return this.SetType(this.TYPE_COLORS); },
+    Combination:function() { return this.SetType(this.TYPE_COMBINATION); },
+    Combine:function() { return this.SetType(this.TYPE_COMBINE); },
+    Commands:function() { return this.SetType(this.TYPE_COMMANDS); },
+    Comment:function() { return this.SetType(this.TYPE_COMMENT); },
+    Comtypes:function() { return this.SetType(this.TYPE_COMTYPES); },
+    ContentTypes:function() { return this.SetType(this.TYPE_CONTENT_TYPES); },
+    Convert:function() { return this.SetType(this.TYPE_CONVERT); },
+    Copy:function() { return this.SetType(this.TYPE_COPY); },
+    Countdown:function() { return this.SetType(this.TYPE_COUNTDOWN); },
+    Countries:function() { return this.SetType(this.TYPE_COUNTRIES); },
+    Csv:function() { return this.SetType(this.TYPE_CSV); },
+    CustomVariables:function() { return this.SetType(this.TYPE_CUSTOM_VARIABLES); },
+    Deactivate:function() { return this.SetType(this.TYPE_DEACTIVATE); },
+    Deactivated:function() { return this.SetType(this.TYPE_DEACTIVATED); },
+    Delete:function() { return this.SetType(this.TYPE_DELETE); },
+    DeleteSign:function() { return this.SetType(this.TYPE_DELETE_SIGN); },
+    Deleted:function() { return this.SetType(this.TYPE_DELETED); },
+    DeselectAll:function() { return this.SetType(this.TYPE_DESELECT_ALL); },
+    Destroy:function() { return this.SetType(this.TYPE_DESTROY); },
+    Developer:function() { return this.SetType(this.TYPE_DEVELOPER); },
+    Disabled:function() { return this.SetType(this.TYPE_DISABLED); },
+    Discard:function() { return this.SetType(this.TYPE_DISCARD); },
+    Disconnect:function() { return this.SetType(this.TYPE_DISCONNECT); },
+    Download:function() { return this.SetType(this.TYPE_DOWNLOAD); },
+    Draft:function() { return this.SetType(this.TYPE_DRAFT); },
+    Drag:function() { return this.SetType(this.TYPE_DRAG); },
+    Dropdown:function() { return this.SetType(this.TYPE_DROPDOWN); },
+    Edit:function() { return this.SetType(this.TYPE_EDIT); },
+    Editor:function() { return this.SetType(this.TYPE_EDITOR); },
+    Email:function() { return this.SetType(this.TYPE_EMAIL); },
+    Enabled:function() { return this.SetType(this.TYPE_ENABLED); },
+    Expand:function() { return this.SetType(this.TYPE_EXPAND); },
+    ExpandLeft:function() { return this.SetType(this.TYPE_EXPAND_LEFT); },
+    ExpandRight:function() { return this.SetType(this.TYPE_EXPAND_RIGHT); },
+    Export:function() { return this.SetType(this.TYPE_EXPORT); },
+    ExportArchive:function() { return this.SetType(this.TYPE_EXPORT_ARCHIVE); },
+    Featuretables:function() { return this.SetType(this.TYPE_FEATURETABLES); },
+    Feedback:function() { return this.SetType(this.TYPE_FEEDBACK); },
+    File:function() { return this.SetType(this.TYPE_FILE); },
+    Filter:function() { return this.SetType(this.TYPE_FILTER); },
+    First:function() { return this.SetType(this.TYPE_FIRST); },
+    Flat:function() { return this.SetType(this.TYPE_FLAT); },
+    Forward:function() { return this.SetType(this.TYPE_FORWARD); },
+    Generate:function() { return this.SetType(this.TYPE_GENERATE); },
+    Global:function() { return this.SetType(this.TYPE_GLOBAL); },
+    GlobalContent:function() { return this.SetType(this.TYPE_GLOBAL_CONTENT); },
+    Grouped:function() { return this.SetType(this.TYPE_GROUPED); },
+    Help:function() { return this.SetType(this.TYPE_HELP); },
+    Hide:function() { return this.SetType(this.TYPE_HIDE); },
+    Home:function() { return this.SetType(this.TYPE_HOME); },
+    Html:function() { return this.SetType(this.TYPE_HTML); },
+    Id:function() { return this.SetType(this.TYPE_ID); },
+    Image:function() { return this.SetType(this.TYPE_IMAGE); },
+    Import:function() { return this.SetType(this.TYPE_IMPORT); },
+    Inactive:function() { return this.SetType(this.TYPE_INACTIVE); },
+    Information:function() { return this.SetType(this.TYPE_INFORMATION); },
+    ItemActive:function() { return this.SetType(this.TYPE_ITEM_ACTIVE); },
+    ItemInactive:function() { return this.SetType(this.TYPE_ITEM_INACTIVE); },
+    JumpTo:function() { return this.SetType(this.TYPE_JUMP_TO); },
+    JumpUp:function() { return this.SetType(this.TYPE_JUMP_UP); },
+    Keyword:function() { return this.SetType(this.TYPE_KEYWORD); },
+    Last:function() { return this.SetType(this.TYPE_LAST); },
+    Link:function() { return this.SetType(this.TYPE_LINK); },
+    List:function() { return this.SetType(this.TYPE_LIST); },
+    Load:function() { return this.SetType(this.TYPE_LOAD); },
+    Locked:function() { return this.SetType(this.TYPE_LOCKED); },
+    LogIn:function() { return this.SetType(this.TYPE_LOG_IN); },
+    LogOut:function() { return this.SetType(this.TYPE_LOG_OUT); },
+    Lookup:function() { return this.SetType(this.TYPE_LOOKUP); },
+    MailHeaderTitle:function() { return this.SetType(this.TYPE_MAIL_HEADER_TITLE); },
+    MailHeaders:function() { return this.SetType(this.TYPE_MAIL_HEADERS); },
+    MailTests:function() { return this.SetType(this.TYPE_MAIL_TESTS); },
+    Mails:function() { return this.SetType(this.TYPE_MAILS); },
+    Maximize:function() { return this.SetType(this.TYPE_MAXIMIZE); },
+    Media:function() { return this.SetType(this.TYPE_MEDIA); },
+    Menu:function() { return this.SetType(this.TYPE_MENU); },
+    Merge:function() { return this.SetType(this.TYPE_MERGE); },
+    Message:function() { return this.SetType(this.TYPE_MESSAGE); },
+    Minus:function() { return this.SetType(this.TYPE_MINUS); },
+    Money:function() { return this.SetType(this.TYPE_MONEY); },
+    Move:function() { return this.SetType(this.TYPE_MOVE); },
+    MoveLeftRight:function() { return this.SetType(this.TYPE_MOVE_LEFT_RIGHT); },
+    MoveTo:function() { return this.SetType(this.TYPE_MOVE_TO); },
+    MoveUpDown:function() { return this.SetType(this.TYPE_MOVE_UP_DOWN); },
+    Next:function() { return this.SetType(this.TYPE_NEXT); },
+    No:function() { return this.SetType(this.TYPE_NO); },
+    NotAvailable:function() { return this.SetType(this.TYPE_NOT_AVAILABLE); },
+    NotRequired:function() { return this.SetType(this.TYPE_NOT_REQUIRED); },
+    Notepad:function() { return this.SetType(this.TYPE_NOTEPAD); },
+    Off:function() { return this.SetType(this.TYPE_OFF); },
+    Ok:function() { return this.SetType(this.TYPE_OK); },
+    Oms:function() { return this.SetType(this.TYPE_OMS); },
+    On:function() { return this.SetType(this.TYPE_ON); },
+    Options:function() { return this.SetType(this.TYPE_OPTIONS); },
+    Page:function() { return this.SetType(this.TYPE_PAGE); },
+    Pagemodel:function() { return this.SetType(this.TYPE_PAGEMODEL); },
+    Pause:function() { return this.SetType(this.TYPE_PAUSE); },
+    Pin:function() { return this.SetType(this.TYPE_PIN); },
+    Play:function() { return this.SetType(this.TYPE_PLAY); },
+    Plus:function() { return this.SetType(this.TYPE_PLUS); },
+    PositionAny:function() { return this.SetType(this.TYPE_POSITION_ANY); },
+    PositionBottom:function() { return this.SetType(this.TYPE_POSITION_BOTTOM); },
+    PositionTop:function() { return this.SetType(this.TYPE_POSITION_TOP); },
+    Presets:function() { return this.SetType(this.TYPE_PRESETS); },
+    Preview:function() { return this.SetType(this.TYPE_PREVIEW); },
+    Previous:function() { return this.SetType(this.TYPE_PREVIOUS); },
+    Price:function() { return this.SetType(this.TYPE_PRICE); },
+    Print:function() { return this.SetType(this.TYPE_PRINT); },
+    Printer:function() { return this.SetType(this.TYPE_PRINTER); },
+    Product:function() { return this.SetType(this.TYPE_PRODUCT); },
+    Proms:function() { return this.SetType(this.TYPE_PROMS); },
+    Proofing:function() { return this.SetType(this.TYPE_PROOFING); },
+    Properties:function() { return this.SetType(this.TYPE_PROPERTIES); },
+    Publish:function() { return this.SetType(this.TYPE_PUBLISH); },
+    Published:function() { return this.SetType(this.TYPE_PUBLISHED); },
+    Rating:function() { return this.SetType(this.TYPE_RATING); },
+    RecordType:function() { return this.SetType(this.TYPE_RECORD_TYPE); },
+    Refresh:function() { return this.SetType(this.TYPE_REFRESH); },
+    Required:function() { return this.SetType(this.TYPE_REQUIRED); },
+    Reset:function() { return this.SetType(this.TYPE_RESET); },
+    Restore:function() { return this.SetType(this.TYPE_RESTORE); },
+    Revert:function() { return this.SetType(this.TYPE_REVERT); },
+    Review:function() { return this.SetType(this.TYPE_REVIEW); },
+    Save:function() { return this.SetType(this.TYPE_SAVE); },
+    Search:function() { return this.SetType(this.TYPE_SEARCH); },
+    SelectAll:function() { return this.SetType(this.TYPE_SELECT_ALL); },
+    Selected:function() { return this.SetType(this.TYPE_SELECTED); },
+    Send:function() { return this.SetType(this.TYPE_SEND); },
+    Settings:function() { return this.SetType(this.TYPE_SETTINGS); },
+    Shop:function() { return this.SetType(this.TYPE_SHOP); },
+    Sort:function() { return this.SetType(this.TYPE_SORT); },
+    SortAsc:function() { return this.SetType(this.TYPE_SORT_ASC); },
+    SortDesc:function() { return this.SetType(this.TYPE_SORT_DESC); },
+    Sorting:function() { return this.SetType(this.TYPE_SORTING); },
+    Status:function() { return this.SetType(this.TYPE_STATUS); },
+    Stop:function() { return this.SetType(this.TYPE_STOP); },
+    Structural:function() { return this.SetType(this.TYPE_STRUCTURAL); },
+    Suggest:function() { return this.SetType(this.TYPE_SUGGEST); },
+    Switch:function() { return this.SetType(this.TYPE_SWITCH); },
+    SwitchCampaign:function() { return this.SetType(this.TYPE_SWITCH_CAMPAIGN); },
+    SwitchMode:function() { return this.SetType(this.TYPE_SWITCH_MODE); },
+    Table:function() { return this.SetType(this.TYPE_TABLE); },
+    TariffMatrix:function() { return this.SetType(this.TYPE_TARIFF_MATRIX); },
+    Task:function() { return this.SetType(this.TYPE_TASK); },
+    Template:function() { return this.SetType(this.TYPE_TEMPLATE); },
+    Tenant:function() { return this.SetType(this.TYPE_TENANT); },
+    Text:function() { return this.SetType(this.TYPE_TEXT); },
+    Time:function() { return this.SetType(this.TYPE_TIME); },
+    Toggle:function() { return this.SetType(this.TYPE_TOGGLE); },
+    Tools:function() { return this.SetType(this.TYPE_TOOLS); },
+    Translation:function() { return this.SetType(this.TYPE_TRANSLATION); },
+    Transmission:function() { return this.SetType(this.TYPE_TRANSMISSION); },
+    Uncombine:function() { return this.SetType(this.TYPE_UNCOMBINE); },
+    Uncombined:function() { return this.SetType(this.TYPE_UNCOMBINED); },
+    Undelete:function() { return this.SetType(this.TYPE_UNDELETE); },
+    Unlock:function() { return this.SetType(this.TYPE_UNLOCK); },
+    Unlocked:function() { return this.SetType(this.TYPE_UNLOCKED); },
+    Upload:function() { return this.SetType(this.TYPE_UPLOAD); },
+    User:function() { return this.SetType(this.TYPE_USER); },
+    Users:function() { return this.SetType(this.TYPE_USERS); },
+    Utils:function() { return this.SetType(this.TYPE_UTILS); },
+    Validate:function() { return this.SetType(this.TYPE_VALIDATE); },
+    Variables:function() { return this.SetType(this.TYPE_VARIABLES); },
+    Variations:function() { return this.SetType(this.TYPE_VARIATIONS); },
+    View:function() { return this.SetType(this.TYPE_VIEW); },
+    Waiting:function() { return this.SetType(this.TYPE_WAITING); },
+    Warning:function() { return this.SetType(this.TYPE_WARNING); },
+    Whitelist:function() { return this.SetType(this.TYPE_WHITELIST); },
+    Wordwrap:function() { return this.SetType(this.TYPE_WORDWRAP); },
+    Workflow:function() { return this.SetType(this.TYPE_WORKFLOW); },
+    Xml:function() { return this.SetType(this.TYPE_XML); },
+    Yes:function() { return this.SetType(this.TYPE_YES); },
+
+    // endregion
+
     /* END METHODS */
 	
 	Spinner:function() 
