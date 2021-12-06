@@ -81,6 +81,12 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'section-buttons' => t('Adding context buttons'),
                 )
             ),
+            'ui-elements' => array(
+                'label' => t('UI elements'),
+                'examples' => array(
+                    'pretty-bool' => t('Pretty booleans')
+                )
+            ),
             'forms' => array(
                 'label' => t('Forms'),
                 'examples' => array(
