@@ -1,0 +1,810 @@
+{
+  "actioncode": {
+    "icon": "rocket",
+    "type": ""
+  },
+  "activate": {
+    "icon": "sun",
+    "type": "far"
+  },
+  "activity": {
+    "icon": "bullhorn",
+    "type": ""
+  },
+  "add": {
+    "icon": "plus-circle",
+    "type": ""
+  },
+  "attention_required": {
+    "icon": "exclamation-triangle",
+    "type": ""
+  },
+  "audience": {
+    "icon": "podcast",
+    "type": ""
+  },
+  "back": {
+    "icon": "arrow-circle-left",
+    "type": ""
+  },
+  "back_to_current": {
+    "icon": "level-down-alt",
+    "type": "fas"
+  },
+  "backup": {
+    "icon": "recycle",
+    "type": ""
+  },
+  "box": {
+    "icon": "archive",
+    "type": ""
+  },
+  "browse": {
+    "icon": "folder-open",
+    "type": ""
+  },
+  "bugreport": {
+    "icon": "bug",
+    "type": ""
+  },
+  "build": {
+    "icon": "magic",
+    "type": ""
+  },
+  "business": {
+    "icon": "university",
+    "type": ""
+  },
+  "button": {
+    "icon": "external-link-square-alt",
+    "type": ""
+  },
+  "calendar": {
+    "icon": "calendar",
+    "type": ""
+  },
+  "campaigns": {
+    "icon": "flag",
+    "type": ""
+  },
+  "cancel": {
+    "icon": "ban",
+    "type": ""
+  },
+  "caret_down": {
+    "icon": "caret-down",
+    "type": ""
+  },
+  "caret_up": {
+    "icon": "caret-up",
+    "type": ""
+  },
+  "category": {
+    "icon": "bars",
+    "type": ""
+  },
+  "change_order": {
+    "icon": "bars",
+    "type": ""
+  },
+  "changelog": {
+    "icon": "edit",
+    "type": ""
+  },
+  "check": {
+    "icon": "check-double",
+    "type": ""
+  },
+  "code": {
+    "icon": "code",
+    "type": ""
+  },
+  "collapse": {
+    "icon": "minus-circle",
+    "type": ""
+  },
+  "collapse_left": {
+    "icon": "caret-square-left",
+    "type": ""
+  },
+  "collapse_right": {
+    "icon": "caret-square-right",
+    "type": ""
+  },
+  "colors": {
+    "icon": "palette",
+    "type": ""
+  },
+  "combination": {
+    "icon": "object-group",
+    "type": ""
+  },
+  "combine": {
+    "icon": "link",
+    "type": ""
+  },
+  "commands": {
+    "icon": "terminal",
+    "type": ""
+  },
+  "comment": {
+    "icon": "comment",
+    "type": ""
+  },
+  "comtypes": {
+    "icon": "broadcast-tower",
+    "type": ""
+  },
+  "content_types": {
+    "icon": "elementor",
+    "type": "fab"
+  },
+  "convert": {
+    "icon": "cogs",
+    "type": ""
+  },
+  "copy": {
+    "icon": "copy",
+    "type": ""
+  },
+  "countdown": {
+    "icon": "clock",
+    "type": "far"
+  },
+  "countries": {
+    "icon": "flag",
+    "type": "far"
+  },
+  "csv": {
+    "icon": "file-alt",
+    "type": "far"
+  },
+  "custom_variables": {
+    "icon": "project-diagram",
+    "type": ""
+  },
+  "deactivate": {
+    "icon": "moon",
+    "type": "far"
+  },
+  "deactivated": {
+    "icon": "moon",
+    "type": "far"
+  },
+  "delete": {
+    "icon": "times",
+    "type": ""
+  },
+  "delete_sign": {
+    "icon": "times-circle",
+    "type": "far"
+  },
+  "deleted": {
+    "icon": "times",
+    "type": ""
+  },
+  "deselect_all": {
+    "icon": "minus-square",
+    "type": "far"
+  },
+  "destroy": {
+    "icon": "exclamation-triangle",
+    "type": ""
+  },
+  "developer": {
+    "icon": "asterisk",
+    "type": ""
+  },
+  "disabled": {
+    "icon": "ban",
+    "type": ""
+  },
+  "discard": {
+    "icon": "trash-alt",
+    "type": "far"
+  },
+  "disconnect": {
+    "icon": "unlink",
+    "type": ""
+  },
+  "download": {
+    "icon": "download",
+    "type": ""
+  },
+  "draft": {
+    "icon": "puzzle-piece",
+    "type": ""
+  },
+  "drag": {
+    "icon": "bars",
+    "type": ""
+  },
+  "dropdown": {
+    "icon": "caret-down",
+    "type": ""
+  },
+  "edit": {
+    "icon": "pencil-alt",
+    "type": "fas"
+  },
+  "editor": {
+    "icon": "cubes",
+    "type": ""
+  },
+  "email": {
+    "icon": "at",
+    "type": ""
+  },
+  "enabled": {
+    "icon": "check-circle",
+    "type": "fas"
+  },
+  "expand": {
+    "icon": "plus-circle",
+    "type": ""
+  },
+  "expand_left": {
+    "icon": "caret-square-left",
+    "type": ""
+  },
+  "expand_right": {
+    "icon": "caret-square-right",
+    "type": ""
+  },
+  "export": {
+    "icon": "bolt",
+    "type": "fas"
+  },
+  "export_archive": {
+    "icon": "archive",
+    "type": ""
+  },
+  "featuretables": {
+    "icon": "server",
+    "type": ""
+  },
+  "feedback": {
+    "icon": "thumbs-up",
+    "type": "far"
+  },
+  "file": {
+    "icon": "file-alt",
+    "type": ""
+  },
+  "filter": {
+    "icon": "filter",
+    "type": ""
+  },
+  "first": {
+    "icon": "step-backward",
+    "type": ""
+  },
+  "flat": {
+    "icon": "th",
+    "type": ""
+  },
+  "forward": {
+    "icon": "arrow-circle-right",
+    "type": ""
+  },
+  "generate": {
+    "icon": "bolt",
+    "type": "fas"
+  },
+  "global": {
+    "icon": "globe-europe",
+    "type": ""
+  },
+  "global_content": {
+    "icon": "cube",
+    "type": ""
+  },
+  "grouped": {
+    "icon": "layer-group",
+    "type": ""
+  },
+  "help": {
+    "icon": "question-circle",
+    "type": ""
+  },
+  "hide": {
+    "icon": "eye-slash",
+    "type": ""
+  },
+  "home": {
+    "icon": "home",
+    "type": ""
+  },
+  "html": {
+    "icon": "code",
+    "type": ""
+  },
+  "id": {
+    "icon": "key",
+    "type": ""
+  },
+  "image": {
+    "icon": "image",
+    "type": ""
+  },
+  "import": {
+    "icon": "briefcase",
+    "type": ""
+  },
+  "inactive": {
+    "icon": "moon",
+    "type": "far"
+  },
+  "information": {
+    "icon": "info-circle",
+    "type": ""
+  },
+  "item_active": {
+    "icon": "circle",
+    "type": ""
+  },
+  "item_inactive": {
+    "icon": "circle",
+    "type": "far"
+  },
+  "jump_to": {
+    "icon": "arrow-alt-circle-right",
+    "type": "far"
+  },
+  "jump_up": {
+    "icon": "arrow-up",
+    "type": ""
+  },
+  "keyword": {
+    "icon": "bookmark",
+    "type": ""
+  },
+  "last": {
+    "icon": "step-forward",
+    "type": ""
+  },
+  "link": {
+    "icon": "link",
+    "type": ""
+  },
+  "list": {
+    "icon": "server",
+    "type": ""
+  },
+  "load": {
+    "icon": "folder-open",
+    "type": "far"
+  },
+  "locked": {
+    "icon": "lock",
+    "type": ""
+  },
+  "log_in": {
+    "icon": "sign-in-alt",
+    "type": "fas"
+  },
+  "log_out": {
+    "icon": "power-off",
+    "type": ""
+  },
+  "lookup": {
+    "icon": "ellipsis-h",
+    "type": ""
+  },
+  "mail_header_title": {
+    "icon": "heading",
+    "type": "fas"
+  },
+  "mail_headers": {
+    "icon": "crosshairs",
+    "type": ""
+  },
+  "mail_tests": {
+    "icon": "envelope-open-text",
+    "type": ""
+  },
+  "mails": {
+    "icon": "envelope",
+    "type": ""
+  },
+  "maximize": {
+    "icon": "expand",
+    "type": ""
+  },
+  "media": {
+    "icon": "image",
+    "type": ""
+  },
+  "menu": {
+    "icon": "bars",
+    "type": ""
+  },
+  "merge": {
+    "icon": "level-down-alt",
+    "type": "fas"
+  },
+  "message": {
+    "icon": "comment-alt",
+    "type": "far"
+  },
+  "minus": {
+    "icon": "minus",
+    "type": ""
+  },
+  "money": {
+    "icon": "money-check-alt",
+    "type": ""
+  },
+  "move": {
+    "icon": "arrows-alt",
+    "type": ""
+  },
+  "move_left_right": {
+    "icon": "arrows-alt-h",
+    "type": "fas"
+  },
+  "move_to": {
+    "icon": "sign-out-alt",
+    "type": "fas"
+  },
+  "move_up_down": {
+    "icon": "arrows-alt-v",
+    "type": "fas"
+  },
+  "next": {
+    "icon": "chevron-right",
+    "type": ""
+  },
+  "no": {
+    "icon": "times",
+    "type": ""
+  },
+  "not_available": {
+    "icon": "ban",
+    "type": ""
+  },
+  "not_required": {
+    "icon": "minus",
+    "type": ""
+  },
+  "notepad": {
+    "icon": "sticky-note",
+    "type": "far"
+  },
+  "off": {
+    "icon": "power-off",
+    "type": ""
+  },
+  "ok": {
+    "icon": "check",
+    "type": ""
+  },
+  "oms": {
+    "icon": "telegram",
+    "type": "fab"
+  },
+  "on": {
+    "icon": "dot-circle",
+    "type": "far"
+  },
+  "options": {
+    "icon": "dot-circle",
+    "type": "far"
+  },
+  "page": {
+    "icon": "file",
+    "type": ""
+  },
+  "pagemodel": {
+    "icon": "newspaper",
+    "type": "far"
+  },
+  "pause": {
+    "icon": "pause",
+    "type": ""
+  },
+  "pin": {
+    "icon": "thumbtack",
+    "type": ""
+  },
+  "play": {
+    "icon": "play",
+    "type": ""
+  },
+  "plus": {
+    "icon": "plus",
+    "type": ""
+  },
+  "position_any": {
+    "icon": "sort",
+    "type": "fas"
+  },
+  "position_bottom": {
+    "icon": "arrow-circle-down",
+    "type": ""
+  },
+  "position_top": {
+    "icon": "arrow-circle-up",
+    "type": ""
+  },
+  "presets": {
+    "icon": "server",
+    "type": ""
+  },
+  "preview": {
+    "icon": "file-code",
+    "type": "far"
+  },
+  "previous": {
+    "icon": "chevron-left",
+    "type": ""
+  },
+  "price": {
+    "icon": "money-check-alt",
+    "type": ""
+  },
+  "print": {
+    "icon": "print",
+    "type": ""
+  },
+  "printer": {
+    "icon": "print",
+    "type": ""
+  },
+  "product": {
+    "icon": "shopping-basket",
+    "type": ""
+  },
+  "proms": {
+    "icon": "database",
+    "type": ""
+  },
+  "proofing": {
+    "icon": "check-square",
+    "type": "far"
+  },
+  "properties": {
+    "icon": "cogs",
+    "type": "fas"
+  },
+  "publish": {
+    "icon": "sign-out-alt",
+    "type": "fas"
+  },
+  "published": {
+    "icon": "check",
+    "type": ""
+  },
+  "rating": {
+    "icon": "star",
+    "type": ""
+  },
+  "record_type": {
+    "icon": "bezier-curve",
+    "type": ""
+  },
+  "refresh": {
+    "icon": "sync",
+    "type": "fas"
+  },
+  "required": {
+    "icon": "exclamation-circle",
+    "type": ""
+  },
+  "reset": {
+    "icon": "minus-square",
+    "type": ""
+  },
+  "restore": {
+    "icon": "share",
+    "type": ""
+  },
+  "revert": {
+    "icon": "history",
+    "type": ""
+  },
+  "review": {
+    "icon": "user-edit",
+    "type": ""
+  },
+  "save": {
+    "icon": "save",
+    "type": ""
+  },
+  "search": {
+    "icon": "search",
+    "type": ""
+  },
+  "select_all": {
+    "icon": "plus-square",
+    "type": "far"
+  },
+  "selected": {
+    "icon": "list",
+    "type": ""
+  },
+  "send": {
+    "icon": "envelope",
+    "type": ""
+  },
+  "settings": {
+    "icon": "wrench",
+    "type": ""
+  },
+  "shop": {
+    "icon": "shopping-cart",
+    "type": ""
+  },
+  "sort": {
+    "icon": "sort",
+    "type": ""
+  },
+  "sort_asc": {
+    "icon": "angle-up",
+    "type": ""
+  },
+  "sort_desc": {
+    "icon": "angle-down",
+    "type": ""
+  },
+  "sorting": {
+    "icon": "sort-amount-down",
+    "type": "fas"
+  },
+  "spinner": {
+    "icon": "spinner",
+    "type": ""
+  },
+  "status": {
+    "icon": "shield-alt",
+    "type": ""
+  },
+  "stop": {
+    "icon": "pause",
+    "type": ""
+  },
+  "structural": {
+    "icon": "cubes",
+    "type": ""
+  },
+  "suggest": {
+    "icon": "lightbulb",
+    "type": ""
+  },
+  "switch": {
+    "icon": "retweet",
+    "type": ""
+  },
+  "switch_campaign": {
+    "icon": "exchange-alt",
+    "type": "fas"
+  },
+  "switch_mode": {
+    "icon": "compass",
+    "type": ""
+  },
+  "table": {
+    "icon": "table",
+    "type": ""
+  },
+  "tariff_matrix": {
+    "icon": "table",
+    "type": ""
+  },
+  "task": {
+    "icon": "tasks",
+    "type": ""
+  },
+  "template": {
+    "icon": "file-alt",
+    "type": "far"
+  },
+  "tenant": {
+    "icon": "award",
+    "type": ""
+  },
+  "text": {
+    "icon": "font",
+    "type": ""
+  },
+  "time": {
+    "icon": "clock",
+    "type": ""
+  },
+  "toggle": {
+    "icon": "retweet",
+    "type": ""
+  },
+  "tools": {
+    "icon": "tools",
+    "type": ""
+  },
+  "translation": {
+    "icon": "globe",
+    "type": ""
+  },
+  "transmission": {
+    "icon": "satellite-dish",
+    "type": ""
+  },
+  "uncombine": {
+    "icon": "unlink",
+    "type": ""
+  },
+  "uncombined": {
+    "icon": "object-ungroup",
+    "type": ""
+  },
+  "undelete": {
+    "icon": "reply",
+    "type": ""
+  },
+  "unlock": {
+    "icon": "unlock",
+    "type": ""
+  },
+  "unlocked": {
+    "icon": "unlock",
+    "type": ""
+  },
+  "upload": {
+    "icon": "upload",
+    "type": ""
+  },
+  "user": {
+    "icon": "user",
+    "type": ""
+  },
+  "users": {
+    "icon": "users",
+    "type": ""
+  },
+  "utils": {
+    "icon": "first-aid",
+    "type": "fas"
+  },
+  "validate": {
+    "icon": "check-circle",
+    "type": ""
+  },
+  "variables": {
+    "icon": "code-branch",
+    "type": ""
+  },
+  "variations": {
+    "icon": "sitemap",
+    "type": ""
+  },
+  "view": {
+    "icon": "eye",
+    "type": ""
+  },
+  "waiting": {
+    "icon": "clock",
+    "type": "far"
+  },
+  "warning": {
+    "icon": "exclamation-triangle",
+    "type": "fas"
+  },
+  "whitelist": {
+    "icon": "star",
+    "type": "far"
+  },
+  "wordwrap": {
+    "icon": "terminal",
+    "type": "fas"
+  },
+  "workflow": {
+    "icon": "sitemap",
+    "type": ""
+  },
+  "xml": {
+    "icon": "code",
+    "type": ""
+  },
+  "yes": {
+    "icon": "check",
+    "type": ""
+  }
+}
