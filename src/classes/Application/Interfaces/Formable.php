@@ -17,7 +17,7 @@
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-interface Application_Interfaces_Formable
+interface Application_Interfaces_Formable extends UI_Renderable_Interface
 {
     /**
      * Creates a serverside form and initializes the formable
@@ -524,12 +524,6 @@ interface Application_Interfaces_Formable
      * @return UI_Form
      */
     public function getFormInstance(): UI_Form;
-
-    /**
-     * Retrieves the UI instance used by the formable form.
-     * @return UI
-     */
-    public function getUI();
 
     /**
      * Retrieves the form container to which elements are
