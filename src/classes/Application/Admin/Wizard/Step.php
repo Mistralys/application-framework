@@ -116,8 +116,6 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     
     abstract public function _process() : bool;
     
-    abstract public function render() : string;
-    
     abstract public function getAbstract() : string;
 
     /**
