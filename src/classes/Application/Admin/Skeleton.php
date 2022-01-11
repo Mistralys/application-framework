@@ -7,6 +7,8 @@
  * @see Application_Admin_Skeleton
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Base class for administration screens. This has all the 
  * common functionality that screens can use. 
@@ -34,7 +36,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
     public const ERROR_NO_SUCH_CHILD_ADMIN_SCREEN = 13003;
-    public const ERROR_CANNOT_RESOLVE_INCLUDE_PATH = 13004;
 
     /**
      * @var Application_Driver
@@ -52,7 +53,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     protected $request;
 
     /**
-     * @var UI_Page
+     * @var UI_Page|NULL
      */
     protected $page;
 
@@ -91,22 +92,15 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     protected $adminMode = true;
     
    /**
-    * @var string
-    */
-    protected $instanceID;
-    
-   /**
     * @var Application_Admin_ScreenInterface|NULL
     */
     protected $parentScreen;
     
-    const LOCK_MODE_PRIMARYLESS = 'primaryless';
-    
-    const LOCK_MODE_PRIMARYBASED = 'primarybased';
+    public const LOCK_MODE_PRIMARYLESS = 'primaryless';
+    public const LOCK_MODE_PRIMARYBASED = 'primarybased';
     
     public function __construct(Application_Driver $driver, ?Application_Admin_ScreenInterface $parent=null)
     {
-        $this->instanceID = nextJSID();
         $this->driver = $driver;
         $this->user = $this->driver->getUser();
         $this->request = $this->driver->getRequest();
@@ -234,11 +228,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         }
     }
     
-    public function getRenderer() : UI_Themes_Theme_ContentRenderer
-    {
-        return $this->renderer;
-    }
-
     /**
      * @return Application_Driver
      */
@@ -295,7 +284,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
-    * @return never-returns
+    * @return never
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL) : void
     {
@@ -315,7 +304,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
-    * @return never-returns
+    * @return never
     */
     public function redirectWithErrorMessage($message, $paramsOrURL) : void
     {
@@ -335,7 +324,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param array|string $paramsOrURL
-    * @return never-returns
+    * @return never
     */
     public function redirectWithInfoMessage($message, $paramsOrURL) : void
     {
@@ -352,7 +341,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
 
     /**
      * @param string|array<string,string|int|float> $paramsOrURL
-     * @return never-returns
+     * @return never
      * @throws Application_Exception
      */
     public function redirectTo($paramsOrURL) : void
@@ -747,9 +736,19 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         
         DBHelper::commitTransaction();
     }
-    
-    protected function renderInfoPage($title, $message)
+
+    /**
+     * @param string $title
+     * @param string|number|UI_Renderable_Interface $message
+     * @return string
+     */
+    protected function renderInfoPage(string $title, $message) : string
     {
+        if(!isset($this->page))
+        {
+            return '';
+        }
+
         return $this->renderContentWithoutSidebar(
             $this->page->renderInfoMessage(
                 UI::icon()->information().' '.$message,
@@ -777,15 +776,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         return $this->adminMode;
     }
     
-   /**
-    * Retrieves the request-unique instance ID of the screen instance. 
-    * @return string
-    */
-    public function getInstanceID() : string
-    {
-        return $this->instanceID;
-    }
-
    /**
     * Sets an application setting specifically for this administration screen.
     *  
