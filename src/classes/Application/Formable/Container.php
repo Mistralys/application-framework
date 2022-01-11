@@ -26,14 +26,14 @@ abstract class Application_Formable_Container extends Application_Formable
     * @var Application_Interfaces_Formable
     */
     protected $originFormable;
-    
+
     public function __construct(Application_Interfaces_Formable $formable)
     {
         $this->switchFormable($formable);
         
         $this->initContainer();
     }
-    
+
     protected function initContainer() : void
     {
         
@@ -71,5 +71,10 @@ abstract class Application_Formable_Container extends Application_Formable
                 self::ERROR_INITIALIZATION_ERROR
             );
         }
+    }
+
+    public function render() : string
+    {
+        return $this->renderFormable();
     }
 }
