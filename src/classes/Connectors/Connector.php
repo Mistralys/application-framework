@@ -20,7 +20,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     use Application_Traits_Simulatable;
     use Application_Traits_Loggable;
 
-    public const ERROR_NONE = 42401;
+    public const ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
     
    /**
     * @var string
@@ -189,6 +189,21 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     public function getActiveResponse() : ?Connectors_Response
     {
         return $this->activeResponse;
+    }
+
+    public function requireActiveResponse() : Connectors_Response
+    {
+        if(isset($this->activeResponse))
+        {
+            return $this->activeResponse;
+        }
+
+        throw new Connectors_Exception(
+            $this,
+            'No active response available.',
+           'Cannot get active response, none has been stored.',
+           self::ERROR_NO_ACTIVE_RESPONSE_AVAILABLE
+        );
     }
     
    /**
