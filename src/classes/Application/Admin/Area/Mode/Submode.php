@@ -96,4 +96,9 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
     {
         return true;
     }
+
+    public function render() : string
+    {
+        return $this->renderContent();
+    }
 }

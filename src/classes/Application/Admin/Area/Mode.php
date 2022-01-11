@@ -60,4 +60,9 @@ abstract class Application_Admin_Area_Mode extends Application_Admin_Skeleton
         
         return null;
     }
+
+    public function render() : string
+    {
+        return $this->renderContent();
+    }
 }

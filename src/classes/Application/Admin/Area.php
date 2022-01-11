@@ -230,4 +230,9 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     {
         return strnatcasecmp($a->getTitle(), $b->getTitle());
     }
+
+    public function render() : string
+    {
+        return $this->renderContent();
+    }
 }

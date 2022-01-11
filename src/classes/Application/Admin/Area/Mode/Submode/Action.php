@@ -51,4 +51,9 @@ abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Ad
     {
         return true;
     }
+
+    public function render() : string
+    {
+        return $this->renderContent();
+    }
 }
