@@ -21,13 +21,13 @@ use AppUtils\StringBuilder_Interface;
  */
 interface UI_Renderable_Interface extends StringBuilder_Interface
 {
-    function getPage() : UI_Page;
+    public function getPage() : UI_Page;
     
-    function getTheme() : UI_Themes_Theme;
+    public function getTheme() : UI_Themes_Theme;
     
-    function getUI() : UI;
+    public function getUI() : UI;
     
-    function getInstanceID() : string;
+    public function getInstanceID() : string;
     
-    function getRenderer() : UI_Themes_Theme_ContentRenderer;
+    public function getRenderer() : UI_Themes_Theme_ContentRenderer;
 }
