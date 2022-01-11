@@ -6,6 +6,7 @@
  * @see Application_Formable
  */
 
+use AppUtils\ConvertHelper;
 use AppUtils\RegexHelper;
 
 /**
@@ -30,6 +31,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     public const ERROR_FORMABLE_NOT_INITIALIZED = 38732001;
     public const ERROR_INVALID_RULE_OPERATOR = 38732002;
     public const ERROR_ELEMENT_NOT_FOUND_BY_NAME = 38732003;
+    public const ERROR_NO_PAGE_INSTANCE = 38732004;
 
    /**
     * @var UI_Form
@@ -181,7 +183,12 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         return $this;
     }
-    
+
+    public function getInstanceID() : string
+    {
+        return $this->getFormableInstanceID();
+    }
+
     public function getFormableJSID() : string
     {
         return $this->formableJSID;
@@ -1235,9 +1242,46 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     */
     public function getUI() : UI
     {
-        $this->requireFormableInitialized();
-        
-        return $this->formableForm->getUI();
+        return $this->getPage()->getUI();
+    }
+
+    public function getPage() : UI_Page
+    {
+        return $this->requirePage();
+    }
+
+    protected function requirePage() : UI_Page
+    {
+        if(isset($this->page))
+        {
+            return $this->page;
+        }
+
+        throw new UI_Exception(
+            'No page instance is available at this time.',
+            '',
+            self::ERROR_NO_PAGE_INSTANCE
+        );
+    }
+
+    public function getTheme() : UI_Themes_Theme
+    {
+        return $this->getPage()->getTheme();
+    }
+
+    public function getRenderer() : UI_Themes_Theme_ContentRenderer
+    {
+        return $this->getPage()->getRenderer();
+    }
+
+    public function display() : void
+    {
+        echo $this->render();
+    }
+
+    public function __toString()
+    {
+        return $this->render();
     }
 
     public function getUser() : Application_User
