@@ -919,7 +919,7 @@ trait Application_Traits_Admin_Screen
             '%s [%s] [%s]',
             $type,
             $this->getURLPath(),
-            $this->instanceID
+            $this->getInstanceID()
         );
 
         return $this->logPrefix;
