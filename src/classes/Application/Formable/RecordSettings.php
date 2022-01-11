@@ -87,11 +87,6 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         }
     }
 
-    public function getUser() : Application_User
-    {
-        return Application::getUser();
-    }
-
     /**
      * Retrieves a list of the names of all registered settings
      * (=the names of the form elements).
