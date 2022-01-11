@@ -45,7 +45,7 @@ class Application_Countries_Navigator extends UI_Renderable
     protected $autoSelect = true;
 
     /**
-     * @var array<string,scalar>
+     * @var array<string,string|number>
      */
     protected $urlParams = array();
 
@@ -108,12 +108,18 @@ class Application_Countries_Navigator extends UI_Renderable
 
     /**
      * @param string $name
-     * @param scalar $value
+     * @param string|number|NULL $value
      * @return $this
      */
     public function setURLParam(string $name, $value) : Application_Countries_Navigator
     {
-        $this->urlParams[$name] = (string)$value;
+        $param = (string)$value;
+
+        if(!empty($param))
+        {
+            $this->urlParams[$name] = $param;
+        }
+
         return $this;
     }
     
@@ -123,10 +129,10 @@ class Application_Countries_Navigator extends UI_Renderable
     }
 
     /**
-     * @param array<string,scalar> $params
+     * @param array<string,string|number|NULL> $params
      * @return $this
      */
-    public function setURLParams(array $params) : Application_Countries_Navigator
+    public function setURLParams(array $params)  : Application_Countries_Navigator
     {
         foreach($params as $name => $value)
         {
