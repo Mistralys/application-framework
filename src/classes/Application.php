@@ -997,7 +997,7 @@ class Application
     }
 
     /**
-     * @return never-return
+     * @return never
      * @todo Handle shutdown tasks here.
      */
     public static function exit(string $reason = '')
@@ -1117,7 +1117,7 @@ class Application
 
     /**
      * @param string $url
-     * @return never-returns
+     * @return never
      *
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED

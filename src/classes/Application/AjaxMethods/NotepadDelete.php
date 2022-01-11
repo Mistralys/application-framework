@@ -37,7 +37,7 @@ class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
     }
 
     /**
-     * @return never-returns
+     * @return never
      */
     private function sendSuccessResponse() : void
     {

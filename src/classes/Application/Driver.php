@@ -459,7 +459,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * redirectTo(array('page' => 'home'));
      *
      * @param array|string|NULL $paramsOrURL
-     * @return never-returns
+     * @return never
      * @throws Application_Exception
      */
     public function redirectTo($paramsOrURL = null)
@@ -847,7 +847,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @throws Application_Exception
-     * @return never-returns
+     * @return never
      */
     public function redirectWithInfoMessage($message, $paramsOrURL = null)
     {
@@ -862,7 +862,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @throws Application_Exception
-     * @return never-returns
+     * @return never
      */
     public function redirectWithErrorMessage($message, $paramsOrURL = null)
     {
@@ -877,7 +877,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string|number|UI_Renderable_Interface $message
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @throws Application_Exception
-     * @return never-returns
+     * @return never
      */
     public function redirectWithSuccessMessage($message, $paramsOrURL = null)
     {

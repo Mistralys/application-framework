@@ -83,7 +83,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
 
     /**
      * @throws Request_Exception
-     * @return never-returns
+     * @return never
      */
     protected function downloadDump() : void
     {
