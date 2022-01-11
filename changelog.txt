@@ -1,4 +1,4 @@
-v1.21.3
+v1.22.0
 - Icons: Added `on()` and `off()`.
 - Icons: Improved internal color style handling.
 - Icons: Added `makeRegular()` to restore the default color style.
@@ -12,6 +12,12 @@ v1.21.3
 - Continued adding type hints wherever applicable.
 - Formables: Using getUI() now works without initializing the formable.
 - Connectors: Added `requireActiveResponse()`.
+
+**Breaking changes**
+
+Any classes extending the `Application_Formable` class must now implement
+the `render()` method. This does not affect admin screens, which have been
+updated already.
 
 v1.21.2
 - Events: Added `Application::addRedirectListener()`.
