@@ -7,6 +7,21 @@ font-family:monospace;
 white-space:nowrap;
 }
 
+input[type="file"]
+{
+    display: block;
+    background: aliceblue;
+    padding: 2px 6px;
+    border-radius: 3px;
+    width: 96%;
+    cursor: pointer;
+}
+
+input[type="file"]:hover
+{
+    background: #ceedff;
+}
+
 .input-xllarge{
 width:340px;
 }
@@ -77,7 +92,7 @@ margin-bottom:3px !important;
 }
 
 .form-condensed .help-block {
-    margin-top: 0px !important;
+    margin-top: 0 !important;
     margin-bottom: 7px;
 }
 
