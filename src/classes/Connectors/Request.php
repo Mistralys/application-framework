@@ -94,9 +94,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     protected $proxyConfig;
 
     /**
-     * @var int
+     * @var string
      */
-    private $id = 0;
+    private $id;
 
     /**
      * @var Connectors_Request_Cache
@@ -132,9 +132,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     /**
      * Unique request ID.
      *
-     * @return int
+     * @return string
      */
-    public function getID() : int
+    public function getID() : string
     {
         return $this->id;
     }
@@ -142,18 +142,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     /**
      * Creates a unique request ID.
      *
-     * @return int
+     * @return string
      * @throws Application_Exception
      */
-    private function createID() : int
+    private function createID() : string
     {
-        $counter = intval(Application_Driver::getSetting('request_counter', '0'));
+        $user = Application::getUser();
 
-        $counter++;
-
-        Application_Driver::setSetting('request_counter', strval($counter));
-
-        return $counter;
+        return $user->getID().'-'.microtime(true);
     }
 
    /**
