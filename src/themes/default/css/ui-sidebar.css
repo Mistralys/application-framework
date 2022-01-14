@@ -92,13 +92,12 @@
 }
 
 .sidebar-section-header {
-    display:inline-block;
+    display:block;
     font-size: 14px;
     line-height: 30px;
     background:transparent;
     padding-left:6px;
-    position: relative;
-    left: -6px;
+    margin-left:-6px;
 }
 
 .sidebar-section-header > .icon-toggle{
