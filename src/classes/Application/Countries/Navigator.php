@@ -128,6 +128,31 @@ class Application_Countries_Navigator extends UI_Renderable
         return $this->setURLParams($area->getPageParams());
     }
 
+    public function setURLParamByRequest(string $varName) : Application_Countries_Navigator
+    {
+        return $this->setURLParam(
+            $varName,
+            Application_Driver::getInstance()
+                ->getRequest()
+                ->getParam($varName)
+        );
+    }
+
+    public function setURLParamMode() : Application_Countries_Navigator
+    {
+        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE);
+    }
+
+    public function setURLParamSubmode() : Application_Countries_Navigator
+    {
+        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE);
+    }
+
+    public function setURLParamAction() : Application_Countries_Navigator
+    {
+        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION);
+    }
+
     /**
      * @param array<string,string|number|NULL> $params
      * @return $this
