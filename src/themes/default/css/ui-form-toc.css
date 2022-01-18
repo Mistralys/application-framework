@@ -4,7 +4,7 @@ margin:0;
 padding:0;
 }
 
-UL.form-toc-sections LI{
+UL.form-toc-sections > LI{
 padding:0;
 margin:0;
 line-height:100%;
@@ -15,4 +15,21 @@ margin-top:6px;
 }
 
 .form-toc-alphalink{
+}
+
+.form-toc-sections > LI > A > .status-icons{
+    display:none;
+}
+
+.form-toc-sections > LI > A{
+    display:block;
+    padding: 2px 0 2px 4px;
+    margin-left:-4px;
+}
+
+.form-toc-sections > LI > A:hover,
+.form-toc-sections > LI > A:active {
+    background: #d6f1ff;
+    border-radius: 2px;
+    text-decoration: none;
 }
