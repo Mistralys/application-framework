@@ -162,12 +162,12 @@ class UI_DataGrid
     }
 
     /**
-     * @param string $message
+     * @param string|number|UI_Renderable_Interface|NULL $message
      * @return $this
      */
     public function setEmptyMessage($message) : UI_DataGrid
     {
-        $this->emptyMessage = $message;
+        $this->emptyMessage = toString($message);
 
         return $this;
     }
