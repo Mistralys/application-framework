@@ -7,6 +7,7 @@
  * @see UI_DataGrid_Entry
  */
 
+use AppUtils\ConvertHelper;
 use AppUtils\Traits_Classable;
 use AppUtils\Interface_Classable;
 
@@ -61,6 +62,15 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
     public function getCheckboxID()
     {
         return $this->id.'_check';
+    }
+
+    public function renderCheckboxLabel(string $label) : string
+    {
+        return sprintf(
+            '<label for="%s">%s</label>',
+            $this->getCheckboxID(),
+            $label
+        );
     }
     
    /**
@@ -137,7 +147,7 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
     * rows above or below an unsortable row, effectively moving it 
     * anyway even if indirectly.
     * 
-    * @return UI_DataGrid_Entry
+    * @return $this
     */
     public function makeNonSortable()
     {
@@ -153,17 +163,20 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
     * if the data grid supports multiple selection.
     * 
     * @param bool $select
-    * @return UI_DataGrid_Entry
+    * @return $this
     */
-    public function select($select=true)
+    public function select(bool $select=true)
     {
         $this->selected = $select;
         return $this;
     }
-    
+
+    /**
+     * @var bool
+     */
     protected $selected = false;
     
-    public function isSelected()
+    public function isSelected() : bool
     {
         return $this->selected;
     }
@@ -186,14 +199,11 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
     {
         $value = $this->getValue($column->getDataKey());
         
-        if(is_object($value))
+        if($value instanceof DateTime)
         {
-            if($value instanceof DateTime)
-            {
-                return \AppUtils\ConvertHelper::date2listLabel($value, true, true);
-            }
+            return ConvertHelper::date2listLabel($value, true, true);
         }
-        
+
         return (string)$value;
     }
     
