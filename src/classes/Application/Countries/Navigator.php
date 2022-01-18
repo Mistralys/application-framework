@@ -19,6 +19,8 @@ declare(strict_types=1);
  */
 class Application_Countries_Navigator extends UI_Renderable
 {
+    public const REQUEST_PARAM_COUNTRY_ID = Application_Countries::PRIMARY_NAME;
+
    /**
     * @var Application_Countries
     */
@@ -253,7 +255,7 @@ class Application_Countries_Navigator extends UI_Renderable
             $id = $country->getID();
             
             $params = $this->urlParams;
-            $params['country_id'] = $id;
+            $params[self::REQUEST_PARAM_COUNTRY_ID] = $id;
             
             $btn = UI::button(strtoupper($country->getISO()))
             ->link($request->buildURL($params));
