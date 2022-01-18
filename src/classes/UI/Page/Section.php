@@ -22,10 +22,20 @@ use AppUtils\Interface_Classable;
  * @see template_default_frame_content_section
  * @see template_default_frame_sidebar_section
  */
-abstract class UI_Page_Section extends UI_Renderable implements UI_Renderable_Interface, UI_Interfaces_Conditional, Application_LockableItem_Interface, UI_Page_Sidebar_ItemInterface, Application_Interfaces_Iconizable, Interface_Classable
+abstract class UI_Page_Section
+    extends
+        UI_Renderable
+    implements
+        UI_Interfaces_Conditional,
+        Application_LockableItem_Interface,
+        UI_Page_Sidebar_ItemInterface,
+        Application_Interfaces_Iconizable,
+        Interface_Classable,
+        UI_Interfaces_StatusElementContainer
 {
     use Traits_Classable;
     use UI_Traits_Conditional;
+    use UI_Traits_StatusElementContainer;
     
     public const ERROR_INVALID_CONTEXT_BUTTON = 511001;
     public const ERROR_TAB_ALREADY_EXISTS = 511002;

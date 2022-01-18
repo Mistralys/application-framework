@@ -229,9 +229,35 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
 
         ?>
             <h3 <?php echo compileAttributes($this->resolveHeaderAttributes()) ?>>
+                <?php $this->displayStatusElements() ?>
                 <?php echo $title ?>
                 <?php $this->displayTitleTagline() ?>
             </h3>
+        <?php
+    }
+
+    protected function displayStatusElements() : void
+    {
+        if(!$this->section->hasStatusElements())
+        {
+            return;
+        }
+
+        $elements = $this->section->getStatusElements();
+
+        ?>
+        <div class="section-status-elements">
+            <?php
+                foreach($elements as $element)
+                {
+                    ?>
+                    <div class="section-status-element">
+                        <?php echo $element ?>
+                    </div>
+                    <?php
+                }
+            ?>
+        </div>
         <?php
     }
 

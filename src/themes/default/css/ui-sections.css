@@ -112,6 +112,12 @@
     background: #e8f5ff;
 }
 
+.section-header > .section-status-elements{
+    float:right;
+    display:inline-block;
+    margin-right:6px;
+}
+
 .section-header .icon-form-required{
     font-size: 76%;
     position: relative;
