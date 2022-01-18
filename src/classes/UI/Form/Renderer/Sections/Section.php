@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-class UI_Form_Renderer_Sections_Section
+class UI_Form_Renderer_Sections_Section implements UI_Renderable_Interface
 {
+    use UI_Traits_RenderableGeneric;
+
    /**
     * @var UI_Form_Renderer_ElementFilter_RenderDef
     */
@@ -18,11 +20,23 @@ class UI_Form_Renderer_Sections_Section
     * @var UI_Page_Section
     */
     private $section;
-    
+
+    /**
+     * @var Application_Formable_Header|NULL
+     */
+    private $header;
+
     public function __construct(UI_Form_Renderer_ElementFilter_RenderDef $renderDef)
     {
         $this->renderDef = $renderDef;
         $this->section = $renderDef->getRenderer()->getForm()->getUI()->getPage()->createSubsection();
+
+        $header = $renderDef->getElement()->getRuntimeProperty(Application_Formable_Header::PROPERTY_HEADER_INSTANCE);
+
+        if($header instanceof Application_Formable_Header)
+        {
+            $this->header = $header;
+        }
 
         $this->initSection();
     }
@@ -141,7 +155,7 @@ class UI_Form_Renderer_Sections_Section
             }
         }
         
-        $anchor = strval($this->renderDef->getAttribute('data-anchor'));
+        $anchor = $this->renderDef->getAttribute('data-anchor');
 
         if(!empty($anchor))
         {
@@ -162,5 +176,10 @@ class UI_Form_Renderer_Sections_Section
         $this->section->setTitle($this->getLabel());
         $this->section->makeCollapsible($this->isCollapsed());
         $this->section->setAbstract($this->renderDef->getAttribute('data-abstract'));
+
+        if(isset($this->header))
+        {
+            $this->header->configureSection($this->section);
+        }
     }
 }
