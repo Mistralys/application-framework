@@ -1,3 +1,13 @@
+v1.22.2
+- Forms: Improved the form TOC headers list styling.
+- Forms: Added `addStatusIcon()` to the headers.
+- Forms: Headers can now configure the final content section instances.
+- DataGrid: Added `renderCheckboxLabel()` in entries.
+- DataGrid: Added renderable support to `setEmptyMessage()`.
+- Countries: Navigator: Added the `REQUEST_PARAM_COUNTRY_ID` constant.
+- UI: Sections: Added status elements support.
+- UI: Added interface and trait for elements that support status indicators.
+
 v1.22.1
 - Countries: Navigator: Added `setURLParamByRequest()` and admin screen flavors.
 - Connectors: Fixed unique request IDs making unnecessary DB requests to generate the IDs.
