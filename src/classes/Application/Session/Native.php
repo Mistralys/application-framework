@@ -21,6 +21,11 @@ abstract class Application_Session_Native extends Application_Session_Base
         session_start();
     }
 
+    public function getID() : string
+    {
+        return session_id();
+    }
+
     protected function handleLogout() : void
     {
         $_SESSION = array();

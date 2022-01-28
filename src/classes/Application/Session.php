@@ -16,11 +16,13 @@
  */
 interface Application_Session extends Application_Interfaces_Loggable
 {
+    public function getID() : string;
+
     /**
      * The user object that is returned must implement the Application_User interface.
      * @return Application_User|null
      */
-    public function getUser();
+    public function getUser() : ?Application_User;
 
     /**
      * Fetches a list of all rights available for the specified user.
