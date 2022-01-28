@@ -6,6 +6,8 @@
  * @see Application_Request
  */
 
+use AppUtils\Request;
+
 /**
  * Request management: wrapper around request variables with validation
  * capabilities and overall easier and more robust request variable handling.
@@ -25,32 +27,48 @@
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
+ *
+ * @see Application_Driver::__construct()
+ *
+ * @method Application_Request getInstance()
  */
-class Application_Request extends AppUtils\Request
+class Application_Request extends Request
 {
-   /**
-    * @var Application_Request
-    */
-    protected static $instance;
-    
-    public function __construct()
+    /**
+     * @var string|NULL
+     */
+    private static $requestID;
+
+    /**
+     * @return void
+     * @see Application_Driver::__construct()
+     */
+    protected function init()
     {
-        self::$instance = $this;
-        
         $this->setBaseURL(APP_URL);
+
+        Application::getLogger()->logSF(
+            'Initialized request [%s].',
+            self::getRequestID()
+        );
     }
-    
-   /**
-    * @return Application_Request
-    */
-    public static function getInstance()
+
+    public static function getRequestID() : string
     {
-        return self::$instance;
+        if(!isset(self::$requestID))
+        {
+            self::$requestID = md5('request-id-'.microtime(true));
+        }
+
+        return self::$requestID;
     }
     
     public function getDispatcher() : string
     {
-        return Application_Driver::getInstance()->getApplication()->getBootScreen()->getDispatcher(); 
+        return Application_Driver::getInstance()
+            ->getApplication()
+            ->getBootScreen()
+            ->getDispatcher();
     }
     
     public function getExcludeParams()
