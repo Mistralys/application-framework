@@ -2045,6 +2045,50 @@ track important events and changes, and can stay in the code indefinitely. Since
 exceptions retain the log messages up to the error, they are a valuable source of 
 information.
 
+### Writing request logs
+
+When the constant `APP_WRITE_LOG` is set to true, the entire application log is 
+written to disk on every request. This allows debugging things from the very 
+beginning of a request, including the user's authentication request chain.
+
+The logs are written into the following folder:
+
+```
+htdocs/storage/logs/request
+```
+
+The logs are then further organized into year, month, day and hour subfolders
+to make it easy to browse and find them.
+
+#### Accessing request logs programmatically
+
+These files can be easily accessed 
+using the dedicated classes.
+
+The following example shows how to get a list of all years for which there are
+request logs stored:
+
+```php
+$log = Application::createRequestLog();
+
+$availableYears = $log->getYears();
+```
+
+The object-oriented interface makes it easy to progress in the folders.
+
+#### Accessing request logs via UI
+
+If the application has enabled the `htdocs/requestlog.php` dispatcher file,
+navigating to it with the browser allows navigating and viewing the log files
+in a simple UI. 
+
+The UI will only be available if the `APP_WRITE_LOG` is set to `true`, as it
+is only meant to be used for debugging.
+
+> NOTE: This dispatcher is not protected. We recommend enabling it only when
+> necessary, since the application log can give critical insight into the 
+> application, and even display privileged information.
+
 # Global utility methods & functions
 
 ## Global functions
