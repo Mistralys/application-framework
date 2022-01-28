@@ -7,18 +7,6 @@
  */
 
 /**
- * The base connector class.
- * @see Connectors_Connector
- */
-require_once 'Connectors/Connector.php';
-
-/**
- * The connectors exception class
- * @see Connectors_Exception
- */
-require_once 'Connectors/Exception.php';
-
-/**
  * External API connectors manager: handles access to
  * connector classes for the available connections to 
  * external applications.
@@ -28,34 +16,45 @@ require_once 'Connectors/Exception.php';
  */
 class Connectors
 {
+    public const ERROR_INVALID_CONNECTOR_TYPE = 100701;
+
     protected static $connectors = array();
     
    /**
     * Creates/gets the connector of the specified type. The type is
-    * the name of the connector file, case sensitive. Will throw
+    * the name of the connector file, case-sensitive. Will throw
     * an exception if the type does not exist.
     * 
     * @param string $type
     * @return Connectors_Connector
-    * @throws Application_Exception
+    *
+    * @throws Application_Exception_UnexpectedInstanceType
+    * @see Connectors::ERROR_INVALID_CONNECTOR_TYPE
     */
-    public static function createConnector($type)
+    public static function createConnector(string $type) : Connectors_Connector
     {
-        if(!isset(self::$connectors[$type])) 
+        if(isset(self::$connectors[$type]))
         {
-            $class = 'Connectors_Connector_'.$type;
-            Application::requireClass($class);
-            self::$connectors[$type] = new $class();
+            return self::$connectors[$type];
         }
-        
-        return self::$connectors[$type];
+
+        $class = Connectors_Connector::class.'_'.$type;
+        $connector = new $class();
+
+        if($connector instanceof Connectors_Connector)
+        {
+            return $connector;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(
+            Connectors_Connector::class,
+            $connector,
+            self::ERROR_INVALID_CONNECTOR_TYPE
+        );
     }
 
     public static function createDummyConnector() : Connectors_Connector_Dummy
     {
-        return ensureType(
-            Connectors_Connector_Dummy::class,
-            self::createConnector('Dummy')
-        );
+        return self::createConnector('Dummy');
     }
 }
