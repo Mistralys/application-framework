@@ -58,6 +58,7 @@ class Application
     const USER_ID_DUMMY = 2;
     const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
     const EVENT_REDIRECT = 'Redirect';
+    public const REQUEST_VAR_SIMULATION = 'simulate_only';
 
     /**
      * @var UI
@@ -170,6 +171,11 @@ class Application
      * @var Application_ErrorLog
      */
     protected static $errorLog;
+
+    /**
+     * @var Application_RequestLog
+     */
+    protected static $requestLog;
 
     public function __construct(Application_Bootstrap_Screen $bootScreen)
     {
@@ -795,13 +801,17 @@ class Application
      *
      * @param string $type
      * @return Connectors_Connector
+     * @throws Application_Exception_UnexpectedInstanceType
      */
-    public static function createConnector($type) : Connectors_Connector
+    public static function createConnector(string $type) : Connectors_Connector
     {
         return Connectors::createConnector($type);
     }
 
-    protected static $devuser;
+    /**
+     * @var bool|NULL
+     */
+    protected static $isDevUser;
 
     /**
      * Checks whether the application is in simulation mode, which
@@ -812,36 +822,42 @@ class Application
      */
     public static function isSimulation() : bool
     {
-        if (Application::isSessionReady() && !self::isUserDev())
+        // Avoid checks if it has already been determined.
+        // Also, important in case the simulation mode has
+        // been set explicitly via setSimulation().
+        if (self::$simulation === true)
+        {
+            return true;
+        }
+
+        // Only developer users may enable the simulation mode
+        if (self::isSessionReady() && !self::isUserDev())
         {
             return false;
         }
 
-        if (self::$simulation)
-        {
-            return true;
-        }
-
-        if (isset($_REQUEST['simulate_only']) && ($_REQUEST['simulate_only'] == 'yes' || $_REQUEST['simulate_only'] == 'true'))
-        {
-            return true;
-        }
-
-        return false;
+        return
+            isset($_REQUEST[self::REQUEST_VAR_SIMULATION])
+            &&
+            (
+                $_REQUEST[self::REQUEST_VAR_SIMULATION] === 'yes'
+                ||
+                $_REQUEST[self::REQUEST_VAR_SIMULATION] === 'true'
+            );
     }
 
     public static function isUserDev() : bool
     {
-        if (!isset(self::$devuser))
+        if (!isset(self::$isDevUser))
         {
-            self::$devuser = self::getUser()->isDeveloper();
+            self::$isDevUser = self::getUser()->isDeveloper();
         }
 
-        return self::$devuser !== null;
+        return self::$isDevUser !== null;
     }
 
     /**
-     * Explicity starts the simulation mode, in which all relevant queries or
+     * Explicitly starts the simulation mode, in which all relevant queries or
      * operations are not committed.
      *
      * @param boolean $simulation
@@ -850,11 +866,13 @@ class Application
     {
         self::$simulation = $simulation;
 
-        $_REQUEST['simulate_only'] = ConvertHelper::bool2string($simulation, true);
+        // Simulate the parameter being present in the request
+        // for methods that check the request.
+        $_REQUEST[self::REQUEST_VAR_SIMULATION] = ConvertHelper::boolStrict2string($simulation, true);
 
         self::log(sprintf(
             'Application | Setting simulation mode to %1$s.',
-            strtoupper($_REQUEST['simulate_only'])
+            strtoupper($_REQUEST[self::REQUEST_VAR_SIMULATION])
         ));
     }
 
@@ -948,17 +966,21 @@ class Application
      * if this fails.
      *
      * @param integer $megabytes The amount of memory in megabytes. Set to -1 for no limit.
-     * @param string $operation Human readable label of the operation that needs the memory limit, shown in the exception.
+     * @param string $operation Human-readable label of the operation that needs the memory limit, shown in the exception.
      * @throws Application_Exception
      */
-    public static function setMemoryLimit($megabytes, $operation)
+    public static function setMemoryLimit(int $megabytes, string $operation) : void
     {
-        if ($megabytes != -1 || $megabytes != '-1')
+        if ($megabytes === -1)
         {
-            $megabytes = $megabytes . 'M';
+            $value = '-1';
+        }
+        else
+        {
+            $value = $megabytes . 'M';
         }
 
-        if (ini_set('memory_limit', $megabytes) === false)
+        if (ini_set('memory_limit', $value) === false)
         {
             throw new Application_Exception(
                 'Cannot change the memory limit.',
@@ -986,6 +1008,16 @@ class Application
         return APP_ROOT . '/vendor';
     }
 
+    public static function createRequestLog() : Application_RequestLog
+    {
+        if(!isset(self::$requestLog))
+        {
+            self::$requestLog = new Application_RequestLog();
+        }
+
+        return self::$requestLog;
+    }
+
     public static function createErrorLog() : Application_ErrorLog
     {
         if (!isset(self::$errorLog))
@@ -1000,7 +1032,7 @@ class Application
      * @return never
      * @todo Handle shutdown tasks here.
      */
-    public static function exit(string $reason = '')
+    public static function exit(string $reason = '') : void
     {
         /* TODO: Review the exit bypass handling
         if (self::$exitEnabled)
@@ -1010,6 +1042,11 @@ class Application
         */
 
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
+
+        if(boot_constant('APP_WRITE_LOG') === true)
+        {
+            self::getLogger()->write();
+        }
 
         exit;
     }
@@ -1141,12 +1178,12 @@ class Application
             );
         }
 
-        $simulation = Application::isSimulation();
+        $simulation = self::isSimulation();
 
-        if (!headers_sent() && !$simulation)
+        if (!$simulation && !headers_sent())
         {
             header('Location:' . $url);
-            Application::exit(sprintf('Redirected to [%s]', $url));
+            self::exit(sprintf('Redirected to [%s]', $url));
         }
 
         ?>
@@ -1177,10 +1214,10 @@ class Application
 
         if ($simulation)
         {
-            Application::getLogger()->printLog(true);
+            self::getLogger()->printLog(true);
         }
 
-        Application::exit(sprintf('Redirected to [%s]', $url));
+        self::exit(sprintf('Redirected to [%s]', $url));
     }
 
     public static function getUserClass() : string
