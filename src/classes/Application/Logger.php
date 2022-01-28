@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\FileHelper_Exception;
+
 /**
  * Used to log messages while the application is running.
  *
@@ -18,11 +20,11 @@ declare(strict_types=1);
  */
 class Application_Logger
 {
-    const LOG_MODE_FILE = 1;
-    const LOG_MODE_ECHO = 2;
-    const LOG_MODE_NONE = 3;
+    public const LOG_MODE_FILE = 1;
+    public const LOG_MODE_ECHO = 2;
+    public const LOG_MODE_NONE = 3;
 
-    const LINE_LENGTH = 65;
+    public const LINE_LENGTH = 65;
 
    /**
     * Stores all log messages.
@@ -31,16 +33,6 @@ class Application_Logger
     */
     private $log = array();
     
-   /**
-    * @var string
-    */
-    private $logPrefix = '';
-
-   /**
-    * @var string
-    */
-    private $logSuffix = PHP_EOL;
-
    /**
     * @var int
     */
@@ -54,12 +46,12 @@ class Application_Logger
    /**
     * @var string
     */
-    private $separator = '';
+    private $separator;
     
    /**
     * @var string
     */
-    private $logFile = '';
+    private $logFile;
     
     public function __construct()
     {
@@ -130,11 +122,13 @@ class Application_Logger
         {
             return $this->logHeader((string)$message);
         }
-        else if (empty($message))
+
+        if (empty($message))
         {
             return $this->addLogMessage('', false);
         }
-        else if(is_array($message))
+
+        if(is_array($message))
         {
             return $this->logData($message);
         }
@@ -240,15 +234,16 @@ class Application_Logger
         return $this->addLogMessage('', false);
     }
 
-   /**
-    * Logs a data array.
-    * 
-    * @param array $data
-    * @return Application_Logger
-    */
+    /**
+     * Logs a data array.
+     *
+     * @param array $data
+     * @return Application_Logger
+     * @throws JsonException
+     */
     public function logData(array $data) : Application_Logger
     {
-        $json = json_encode($data, JSON_PRETTY_PRINT);
+        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $json = str_replace('\/', '/', $json);
 
         $this->addLogMessage('Data dump:', true);
@@ -311,7 +306,7 @@ class Application_Logger
             return $message.PHP_EOL;
         }
         
-        if(strstr($message, "\n") !== false)
+        if(strpos($message, "\n") !== false)
         {
             $message = '<pre>'.$message.'</pre>';
         }
@@ -363,7 +358,7 @@ class Application_Logger
     */
     public function logModeEcho() : Application_Logger
     {
-        return self::setLogMode(self::LOG_MODE_ECHO);
+        return $this->setLogMode(self::LOG_MODE_ECHO);
     }
 
    /**
@@ -373,7 +368,7 @@ class Application_Logger
     */
     public function logModeFile() : Application_Logger
     {
-        return self::setLogMode(self::LOG_MODE_FILE);
+        return $this->setLogMode(self::LOG_MODE_FILE);
     }
     
    /**
@@ -383,7 +378,7 @@ class Application_Logger
     */
     public function logModeNone() : Application_Logger
     {
-        return self::setLogMode(self::LOG_MODE_NONE);
+        return $this->setLogMode(self::LOG_MODE_NONE);
     }
 
     public function printLog(bool $html=false) : void
@@ -420,5 +415,17 @@ class Application_Logger
             <div><?php echo implode('</div><div>', $entries) ?></div>
         </div>
         <?php
+    }
+
+    /**
+     * Writes the log to disk, under `storage/logs/request/Y/m/d/H`.
+     *
+     * @return string The path to the log file that was written.
+     * @throws Application_Exception
+     * @throws FileHelper_Exception
+     */
+    public function write() : string
+    {
+        return Application::createRequestLog()->writeLog($this);
     }
 }
