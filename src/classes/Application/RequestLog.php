@@ -18,11 +18,13 @@ use AppUtils\Microtime;
  * request logs that have been written to disk, if any.
  *
  * For more information on how to enable request logs, please
- * look in the framework documentation under "Debugging".
+ * look in the framework documentation (see link).
  *
  * @package Application
  * @subpackage RequestLog
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @link https://github.com/Mistralys/application-framework/blob/main/docs/Documentation.md#writing-request-logs
  */
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
 {
