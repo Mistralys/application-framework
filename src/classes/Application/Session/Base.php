@@ -30,15 +30,15 @@ abstract class Application_Session_Base implements Application_Session
     public const ERROR_INVALID_USER_CLASS = 22206;
     public const ERROR_INVALID_USER_ID = 22207;
 
-    const KEY_NAME_USER_ID = 'user_id';
-    const KEY_NAME_USER_RIGHTS = 'user_rights';
-    const KEY_NAME_SIMULATED_ID = 'simulate_user_id';
-    const KEY_NAME_RIGHTS_PRESET = 'simulate_rights_preset';
+    public const KEY_NAME_USER_ID = 'user_id';
+    public const KEY_NAME_USER_RIGHTS = 'user_rights';
+    public const KEY_NAME_SIMULATED_ID = 'simulate_user_id';
+    public const KEY_NAME_RIGHTS_PRESET = 'simulate_rights_preset';
 
-    const ADMIN_PRESET_ID = 'Admin';
+    public const ADMIN_PRESET_ID = 'Admin';
 
-    const LOGOUT_REASON_USER_REQUEST = 75901;
-    const LOGOUT_REASON_LOGIN_NOT_ALLOWED = 75902;
+    public const LOGOUT_REASON_USER_REQUEST = 75901;
+    public const LOGOUT_REASON_LOGIN_NOT_ALLOWED = 75902;
 
     /**
      * @var array<int,string>
@@ -54,14 +54,14 @@ abstract class Application_Session_Base implements Application_Session
     protected $defaultSimulatedUser = Application::USER_ID_SYSTEM;
 
     /**
-     * @var array<string,string[]|string>
+     * @var array<string,string|array<int,string>>
      */
     protected $rightPresets = array();
 
     /**
      * @var Application_User|null
      */
-    protected $user = null;
+    protected $user;
 
     abstract protected function start() : void;
     abstract protected function handleLogout() : void;
@@ -86,6 +86,8 @@ abstract class Application_Session_Base implements Application_Session
         $this->log('Starting the session.');
 
         $this->start();
+
+        $this->log('Session started with ID [%s].', $this->getID());
 
         $this->initRightPresets();
 
@@ -135,13 +137,13 @@ abstract class Application_Session_Base implements Application_Session
         );
     }
 
-    public function logOut(int $reasonCode=self::LOGOUT_REASON_USER_REQUEST): void
+    public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
     {
         $this->log('Logout requested, logging the user out.');
 
         $this->handleLogout();
 
-        self::redirectToLogout($reasonCode);
+        self::redirectToLogout($reasonID);
     }
 
     public static function redirectToLogout(int $reasonCode) : void
@@ -180,7 +182,7 @@ abstract class Application_Session_Base implements Application_Session
      */
     public function getUserID() : int
     {
-        return intval($this->getValue(self::KEY_NAME_USER_ID));
+        return (int)$this->getValue(self::KEY_NAME_USER_ID);
     }
 
     /**
@@ -292,15 +294,15 @@ abstract class Application_Session_Base implements Application_Session
         $simulateID = $this->defaultSimulatedUser;
 
         // Is a user already simulated in the session?
-        if(isset($_SESSION[self::KEY_NAME_SIMULATED_ID]) && isset($this->simulateableUsers[$_SESSION[self::KEY_NAME_SIMULATED_ID]]))
+        if(isset($_SESSION[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_SESSION[self::KEY_NAME_SIMULATED_ID]]))
         {
-            $simulateID = intval($_SESSION[self::KEY_NAME_SIMULATED_ID]);
+            $simulateID = (int)$_SESSION[self::KEY_NAME_SIMULATED_ID];
         }
 
         // A user has been selected in the request.
-        if(isset($_REQUEST[self::KEY_NAME_SIMULATED_ID]) && isset($this->simulateableUsers[$_REQUEST[self::KEY_NAME_SIMULATED_ID]]))
+        if(isset($_REQUEST[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_REQUEST[self::KEY_NAME_SIMULATED_ID]]))
         {
-            $simulateID = intval($_REQUEST[self::KEY_NAME_SIMULATED_ID]);
+            $simulateID = (int)$_REQUEST[self::KEY_NAME_SIMULATED_ID];
         }
 
         return $simulateID;
@@ -308,7 +310,7 @@ abstract class Application_Session_Base implements Application_Session
 
     protected function unpackRights() : array
     {
-        $rights = strval($this->getValue(self::KEY_NAME_USER_RIGHTS));
+        $rights = (string)$this->getValue(self::KEY_NAME_USER_RIGHTS);
 
         if(Application::isSessionSimulated())
         {
@@ -424,7 +426,10 @@ abstract class Application_Session_Base implements Application_Session
         return $rights;
     }
 
-    public function getSimulateableUsers()
+    /**
+     * @return array<int,string>
+     */
+    public function getSimulateableUsers() : array
     {
         return $this->simulateableUsers;
     }
@@ -434,7 +439,7 @@ abstract class Application_Session_Base implements Application_Session
         return getClassTypeName($this);
     }
 
-    public function getUser()
+    public function getUser() : ?Application_User
     {
         return $this->user;
     }
@@ -452,11 +457,21 @@ abstract class Application_Session_Base implements Application_Session
      */
     protected function registerUser(string $email, string $firstname, string $lastname, string $foreignID='') : Application_Users_User
     {
+        $this->log(sprintf(
+            'User [%s] | Registering the user.',
+            $email
+        ));
+
         $users = Application_Driver::createUsers();
         $user = $users->getByEmail($email);
 
         if($user !== null)
         {
+            $this->log(sprintf(
+                'User [%s] | User already exists in the database.',
+                $email
+            ));
+
             return $this->updateUser($user, $firstname, $lastname, $foreignID);
         }
 
@@ -464,8 +479,22 @@ abstract class Application_Session_Base implements Application_Session
         // to the registration disabled screen.
         if(!$this->isRegistrationEnabled())
         {
+            $this->log(sprintf(
+                'User [%s] | Cannot register new user, registration is disabled.',
+                $email
+            ));
+
             $this->redirectToRegistrationDisabled();
         }
+
+        return $this->addUser($email, $firstname, $lastname, $foreignID);
+    }
+
+    protected function addUser(string $email, string $firstname, string $lastname, string $foreignID) : Application_Users_User
+    {
+        $this->log(sprintf('User [%s] | Inserting new user in the database.', $email));
+
+        $users = Application_Driver::createUsers();
 
         DBHelper::startTransaction();
         $user = $users->createNewUser($email, $firstname, $lastname, $foreignID);
@@ -482,6 +511,11 @@ abstract class Application_Session_Base implements Application_Session
 
         if($user->isModified())
         {
+            $this->log(sprintf(
+                'User [%s] | The user\'s data has changed, saving new data to database.',
+                $user->getEmail()
+            ));
+
             DBHelper::startTransaction();
             $user->save();
             DBHelper::commitTransaction();
