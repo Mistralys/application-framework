@@ -7,6 +7,13 @@ v1.22.2
 - Countries: Navigator: Added the `REQUEST_PARAM_COUNTRY_ID` constant.
 - UI: Sections: Added status elements support.
 - UI: Added interface and trait for elements that support status indicators.
+- Logging: Added the `write()` method to the logger to write the current log to disk.
+- Request: Added `getRequestID()`.
+- Logging: Added request logging with the new `Application_RequestLog` class.
+- Logging: Added `Application::createRequestLog()`.
+- Logging: Added `APP_WRITE_LOG` constant to force writing logs to disk.
+- Sessions: Added `getID()` to the session class interface.
+
 
 v1.22.1
 - Countries: Navigator: Added `setURLParamByRequest()` and admin screen flavors.
