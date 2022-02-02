@@ -23,7 +23,10 @@ class Application_Driver_Storage_File extends Application_Driver_Storage
         // to avoid multiple writes for single setting values,
         // we use the shutdown event to save everything at the
         // end of the request.
-        Application_EventHandler::addListener('SystemShutDown', array($this, 'handle_shutDown'));
+        Application_EventHandler::addListener(
+            Application::EVENT_SYSTEM_SHUTDOWN,
+            array($this, 'handle_shutDown')
+        );
     }
 
     public function get($name)
