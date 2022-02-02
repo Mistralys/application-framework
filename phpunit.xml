@@ -54,6 +54,9 @@
         <testsuite name="Ratings">
             <directory suffix=".php">./tests/testsuites/Ratings</directory>
         </testsuite>
+        <testsuite name="RequestLog">
+            <directory suffix=".php">./tests/testsuites/RequestLogTests</directory>
+        </testsuite>
         <testsuite name="Revisionables">
             <directory suffix=".php">./tests/testsuites/Revisionables</directory>
         </testsuite>
