@@ -19,9 +19,11 @@ abstract class Application_Bootstrap_Screen
         $this->params = $params;
     }
     
-    public function boot()
+    public function boot() : void
     {
         register_shutdown_function(array($this, 'shutDown'));
+
+        define('APP_TIME_START', microtime(true));
         
         $this->_boot();
     }
@@ -55,7 +57,10 @@ abstract class Application_Bootstrap_Screen
     * @var Application_User
     */
     protected $user;
-    
+
+    /**
+     * @var bool
+     */
     private $environmentCreated = false;
     
     /**
@@ -63,7 +68,7 @@ abstract class Application_Bootstrap_Screen
      * application and driver. Stores the instances
      * in the according properties.
      */
-    protected function createEnvironment()
+    protected function createEnvironment() : void
     {
         if($this->environmentCreated) {
             return;
@@ -123,7 +128,7 @@ abstract class Application_Bootstrap_Screen
             $this->authenticateUser();
         }
         
-        if (isset($this->user) && $this->user->isDeveloper() && $this->user->getSetting('developer_mode') == 'yes') 
+        if (isset($this->user) && $this->user->isDeveloper() && $this->user->getSetting('developer_mode') === 'yes')
         {
             define('APP_DEVELOPER_MODE', true);
             error_reporting(E_ALL);
@@ -161,7 +166,7 @@ abstract class Application_Bootstrap_Screen
             $old = $user->getSetting('developer_mode', 'no');
             $user->setSetting('developer_mode', $new);
             if ($new != $old) {
-                if ($new == 'yes') {
+                if ($new === 'yes') {
                     UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-success">enabled</b>.');
                 } else {
                     UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-error">disabled</b>.');
@@ -310,17 +315,23 @@ abstract class Application_Bootstrap_Screen
         define($name, $value);
     }
     
-    public function shutDown()
+    public function shutDown() : void
     {
-        if(!Application_EventHandler::hasListener('SystemShutDown')) {
-            return;
+        Application::log('Bootstrap | The system is shutting down.');
+
+        if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN))
+        {
+            Application_EventHandler::trigger(
+                Application::EVENT_SYSTEM_SHUTDOWN,
+                array($this->driver),
+                Application_EventHandler_Event_SystemShutDown::class
+            );
         }
                
-        Application_EventHandler::trigger(
-            'SystemShutDown',
-            array($this->driver),
-            Application_EventHandler_Event_SystemShutDown::class
-        );
+        if(boot_constant('APP_WRITE_LOG') === true)
+        {
+            Application::getLogger()->write();
+        }
     }
 
     protected function createPage() : UI_Page
