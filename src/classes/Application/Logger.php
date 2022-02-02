@@ -420,11 +420,11 @@ class Application_Logger
     /**
      * Writes the log to disk, under `storage/logs/request/Y/m/d/H`.
      *
-     * @return string The path to the log file that was written.
+     * @return Application_RequestLog_LogWriter
      * @throws Application_Exception
      * @throws FileHelper_Exception
      */
-    public function write() : string
+    public function write() : Application_RequestLog_LogWriter
     {
         return Application::createRequestLog()->writeLog($this);
     }
