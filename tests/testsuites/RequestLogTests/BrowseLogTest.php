@@ -20,7 +20,8 @@ class BrowseLogTest extends RequestLogTestCase
         $logPath = Application::getLogger()
             ->clearLog()
             ->log('Log message')
-            ->write();
+            ->write()
+            ->getSidecarPath();
 
         $year = (int)date('Y');
         $month = (int)date('m');
@@ -43,8 +44,8 @@ class BrowseLogTest extends RequestLogTestCase
 
         $files = $hourLog->getFiles();
 
-        $this->assertTrue($hourLog->hasFiles());
         $this->assertCount(1, $files);
+        $this->assertTrue($hourLog->hasFiles());
         $this->assertSame($logPath, $files[0]->getFilePath());
 
         $info = $files[0]->getFileInfo();

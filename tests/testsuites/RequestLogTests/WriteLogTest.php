@@ -18,9 +18,10 @@ class WriteLogTest extends RequestLogTestCase
         $logger->clearLog();
         $logger->log($logMessage);
 
-        $path = $logger->write();
+        $writer = $logger->write();
 
-        $this->assertFileExists($path);
-        $this->assertStringContainsString($logMessage, FileHelper::readContents($path));
+        $this->assertFileExists($writer->getSidecarPath());
+        $this->assertFileExists($writer->getLogPath());
+        $this->assertStringContainsString($logMessage, FileHelper::readContents($writer->getLogPath()));
     }
 }
