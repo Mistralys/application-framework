@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use AppUtils\FileHelper;
-
 abstract class Application_RequestLog_AbstractLogContainer extends Application_RequestLog_AbstractLogItem
 {
     public const ERROR_ID_DOES_NOT_EXIST = 100801;
