@@ -128,7 +128,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @param array<int,mixed> $customArguments
     */
-    protected function __construct(array $customArguments=array())
+    protected function __construct(array $customArguments=array()) : array
     {
         $this->recordTypeName = $this->getRecordTypeName();
         $this->tableName = $this->getRecordTableName();
