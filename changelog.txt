@@ -13,7 +13,8 @@ v1.22.2
 - Logging: Added `Application::createRequestLog()`.
 - Logging: Added `APP_WRITE_LOG` constant to force writing logs to disk.
 - Sessions: Added `getID()` to the session class interface.
-
+- Events: Added a constant for the `SystemShutdown` event.
+- Application: Added static `getTimeStarted()` and `getTimePassed()` methods.
 
 v1.22.1
 - Countries: Navigator: Added `setURLParamByRequest()` and admin screen flavors.
