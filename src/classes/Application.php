@@ -56,8 +56,11 @@ class Application
 
     const USER_ID_SYSTEM = 1;
     const USER_ID_DUMMY = 2;
+
     const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
     const EVENT_REDIRECT = 'Redirect';
+    public const EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
+
     public const REQUEST_VAR_SIMULATION = 'simulate_only';
 
     /**
@@ -1028,12 +1031,21 @@ class Application
         return self::$errorLog;
     }
 
+    private static $exited = false;
+
+    public static function isExited() : bool
+    {
+        return self::$exited;
+    }
+
     /**
      * @return never
      * @todo Handle shutdown tasks here.
      */
     public static function exit(string $reason = '') : void
     {
+        self::$exited = true;
+
         /* TODO: Review the exit bypass handling
         if (self::$exitEnabled)
         {
@@ -1042,11 +1054,6 @@ class Application
         */
 
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
-
-        if(boot_constant('APP_WRITE_LOG') === true)
-        {
-            self::getLogger()->write();
-        }
 
         exit;
     }
@@ -1494,5 +1501,20 @@ class Application
             (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
             ||
             (defined('APP_FRAMEWORK_TESTS') && APP_FRAMEWORK_TESTS === true);
+    }
+
+    public static function getTimeStarted() : float
+    {
+        if(defined('APP_TIME_START'))
+        {
+            return APP_TIME_START;
+        }
+
+        return 0;
+    }
+
+    public static function getTimePassed() : float
+    {
+        return microtime(true) - self::getTimeStarted();
     }
 }
