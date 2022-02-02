@@ -24,6 +24,7 @@ use AppUtils\Microtime;
  * @subpackage RequestLog
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
+ * @see Application_Bootstrap_Screen_RequestLog
  * @link https://github.com/Mistralys/application-framework/blob/main/docs/Documentation.md#writing-request-logs
  */
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
@@ -56,6 +57,13 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
                 $params,
                 Application_Bootstrap_Screen_RequestLog::DISPATCHER
             );
+    }
+
+    public function getAdminLogOutURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_LOG_OUT] = 'yes';
+
+        return $this->getAdminURL($params);
     }
 
     protected function isValidFolder(string $folder) : bool
@@ -105,47 +113,17 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
      * Writes the current application log to disk.
      *
      * @param Application_Logger $logger
-     * @return string The path to the log file that was written.
+     * @return Application_RequestLog_LogWriter
      * @throws Application_Exception
      * @throws FileHelper_Exception
      */
-    public function writeLog(Application_Logger $logger) : string
+    public function writeLog(Application_Logger $logger) : Application_RequestLog_LogWriter
     {
-        $requestID = Application_Request::getRequestID();
-        $time = new Microtime();
+        return (new Application_RequestLog_LogWriter($logger))->write();
+    }
 
-        $folder = Application::getStorageSubfolderPath(sprintf(
-            'logs/request/%s/%s/%s/%s',
-            $time->format('Y'),
-            $time->format('m'),
-            $time->format('d'),
-            $time->format('H')
-        ));
-
-        $sessionID = self::SESSION_ID_NONE;
-
-        if(Application::isSessionSimulated())
-        {
-            $sessionID = self::SESSION_ID_SIMULATED;
-        }
-        else if(Application::isSessionReady())
-        {
-            $sessionID = Application::getSession()->getID();
-        }
-
-        $fileName = Application_RequestLog_LogName::generateName(
-            $time,
-            $sessionID,
-            $requestID
-        );
-
-        $path = $folder.'/'.$fileName;
-
-        FileHelper::saveFile(
-            $path,
-            implode(PHP_EOL, $logger->getLog())
-        );
-
-        return FileHelper::normalizePath($path);
+    public function getLogIdentifier() : string
+    {
+        return 'RequestLog';
     }
 }
