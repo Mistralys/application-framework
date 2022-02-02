@@ -65,4 +65,18 @@ class Application_RequestLog_LogItems_Year extends Application_RequestLog_Abstra
 
         return $this->getRequestLog()->getAdminURL($params);
     }
+
+    public function getLabel() : string
+    {
+        return (string)$this->getYearNumber();
+    }
+
+    public function getLogIdentifier() : string
+    {
+        return sprintf(
+            '%s | Year [%s]',
+            $this->parent->getLogIdentifier(),
+            $this->getYearNumber()
+        );
+    }
 }

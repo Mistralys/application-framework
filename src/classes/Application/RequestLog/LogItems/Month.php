@@ -80,4 +80,13 @@ class Application_RequestLog_LogItems_Month extends Application_RequestLog_Abstr
             $this
         );
     }
+
+    public function getLogIdentifier() : string
+    {
+        return sprintf(
+            '%s | Month [%s]',
+            $this->parent->getLogIdentifier(),
+            $this->getMonthNumber()
+        );
+    }
 }
