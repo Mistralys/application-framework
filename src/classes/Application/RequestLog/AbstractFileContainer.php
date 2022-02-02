@@ -13,7 +13,6 @@ abstract class Application_RequestLog_AbstractFileContainer extends Application_
         $storageFolder = $this->getStorageFolder();
 
         $files = FileHelper::createFileFinder($storageFolder)
-            ->includeExtension('log')
             ->setPathmodeStrip()
             ->getAll();
 
