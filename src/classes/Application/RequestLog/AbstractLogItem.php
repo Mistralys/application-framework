@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 abstract class Application_RequestLog_AbstractLogItem implements Application_RequestLog_LogItemInterface
 {
+    use Application_Traits_Loggable;
+
     /**
      * @var string
      */
