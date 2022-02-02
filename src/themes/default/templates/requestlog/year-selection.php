@@ -29,8 +29,8 @@ class template_default_requestlog_year_selection extends UI_Page_Template_Custom
         $grid->setEmptyMessage(t('No request logs have been found.'));
 
         OutputBuffering::start();
+        echo $this->renderTemplate('requestlog/header');
         ?>
-            <h1><?php pt('Request log'); ?></h1>
             <?php echo $grid->render($this->collectEntries()) ?>
         <?php
 

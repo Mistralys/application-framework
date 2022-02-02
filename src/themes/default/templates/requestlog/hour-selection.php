@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the template class {@see template_default_requestlog_year_selection}.
+ * File containing the template class {@see template_default_requestlog_hour_selection}.
  *
  * @package UserInterface
  * @subpackage Templates
- * @see template_default_requestlog_year_selection
+ * @see template_default_requestlog_hour_selection
  */
 
 declare(strict_types=1);
@@ -18,15 +18,15 @@ use AppUtils\OutputBuffering;
  * @subackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Bootstrap_Screen_RequestLog::renderMonthView()
+ * @see Application_Bootstrap_Screen_RequestLog::renderDayView()
  */
-class template_default_requestlog_month_selection extends UI_Page_Template_Custom
+class template_default_requestlog_hour_selection extends UI_Page_Template_Custom
 {
     protected function generateOutput() : void
     {
-        $grid = $this->ui->createDataGrid('requestlog-months');
-        $grid->addColumn('month', t('Month'));
-        $grid->setEmptyMessage(t('No months found in this year.'));
+        $grid = $this->ui->createDataGrid('requestlog-hours');
+        $grid->addColumn('hour', t('Hour'));
+        $grid->setEmptyMessage(t('No hours found in this day.'));
 
         OutputBuffering::start();
         echo $this->renderTemplate('requestlog/header');
@@ -40,14 +40,14 @@ class template_default_requestlog_month_selection extends UI_Page_Template_Custo
     private function collectEntries() : array
     {
         $entries = array();
-        $months = $this->year->getMonths();
+        $hours = $this->day->getHours();
 
-        foreach($months as $month)
+        foreach($hours as $hour)
         {
             $entries[] = array(
-                'month' => sb()->link(
-                    $month->getLabel(),
-                    $month->getAdminURL()
+                'hour' => sb()->link(
+                    $hour->getLabel(),
+                    $hour->getAdminURL()
                 )
             );
         }
@@ -56,12 +56,12 @@ class template_default_requestlog_month_selection extends UI_Page_Template_Custo
     }
 
     /**
-     * @var Application_RequestLog_LogItems_Year
+     * @var Application_RequestLog_LogItems_Day
      */
-    private $year;
+    private $day;
 
     protected function preRender(): void
     {
-        $this->year = $this->getObjectVar('year', Application_RequestLog_LogItems_Year::class);
+        $this->day = $this->getObjectVar('day', Application_RequestLog_LogItems_Day::class);
     }
 }
