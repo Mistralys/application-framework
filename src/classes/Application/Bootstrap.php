@@ -23,6 +23,11 @@ class Application_Bootstrap
     private static $initialized = false;
 
     /**
+     * @var string
+     */
+    private static $bootClass = '';
+
+    /**
     * Boots from a standard application screen.
     * @param string $screenID
     * @param array $params
@@ -31,6 +36,18 @@ class Application_Bootstrap
     {
         $class = Application_Bootstrap_Screen::class.'_'.$screenID;
         self::bootClass($class, $params, $displayException);
+    }
+
+    /**
+     * Returns the name of the boot screen class that was used
+     * to boot the application. Can be used to identify which
+     * screen was used.
+     *
+     * @return string
+     */
+    public static function getBootClass() : string
+    {
+        return self::$bootClass;
     }
 
     public static function getAutoLoader() : ClassLoader
@@ -61,6 +78,8 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        self::$bootClass = $class;
+
         try
         {
             $screen = new $class($params);
