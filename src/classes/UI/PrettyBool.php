@@ -264,6 +264,10 @@ class UI_PrettyBool implements UI_Renderable_Interface
         return $this->setCriticality(self::CRITICALITY_DANGEROUS);
     }
 
+    /**
+     * @param string $criticality
+     * @return $this
+     */
     public function setCriticality(string $criticality) : UI_PrettyBool
     {
         $this->criticality = $criticality;
