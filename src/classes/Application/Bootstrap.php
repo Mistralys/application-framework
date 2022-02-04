@@ -184,6 +184,7 @@ class Application_Bootstrap
         self::registerRequiredSetting('APP_INSTANCE_ID');
         self::registerRequiredSetting('APP_CONTENT_LOCALES');
         self::registerRequiredSetting('APP_URL');
+        self::registerRequiredSetting('APP_REQUEST_LOG_PASSWORD');
         
         self::registerOptionalSetting('APP_DB_ENABLED', true);
         

@@ -191,7 +191,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
             return true;
         }
 
-        return $value === 'tomato';
+        return $value === APP_REQUEST_LOG_PASSWORD;
     }
 
     private function renderAuthentication(Application_Formable_Generic $form) : string
