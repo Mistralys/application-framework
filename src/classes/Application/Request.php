@@ -17,7 +17,7 @@ use AppUtils\Request;
  * // get a parameter. If it does not exist, returns null.
  * $request->getParam('name');
  *
- * // get a parameter and specifiy the default value to return if it does not exist.
+ * // get a parameter and specify the default value to return if it does not exist.
  * $request->getParam('name', 'Default value');
  *
  * // register a parameter to specify its validation: if the existing
@@ -29,8 +29,6 @@ use AppUtils\Request;
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
  *
  * @see Application_Driver::__construct()
- *
- * @method Application_Request getInstance()
  */
 class Application_Request extends Request
 {
@@ -51,6 +49,21 @@ class Application_Request extends Request
             'Initialized request [%s].',
             self::getRequestID()
         );
+    }
+
+    /**
+     * @return Application_Request
+     */
+    public static function getInstance()
+    {
+        $instance = parent::getInstance();
+
+        if($instance instanceof Application_Request)
+        {
+            return $instance;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Request::class, $instance);
     }
 
     public static function getRequestID() : string
