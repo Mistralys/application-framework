@@ -122,4 +122,14 @@ class Application_RequestLog_LogItems_Hour extends Application_RequestLog_Abstra
             $this->getHourNumber()
         );
     }
+
+    public function createFilterSettings() : Application_RequestLog_FileFilterSettings
+    {
+        return new Application_RequestLog_FileFilterSettings();
+    }
+
+    public function createFilterCriteria() : Application_RequestLog_FileFilterCriteria
+    {
+        return new Application_RequestLog_FileFilterCriteria($this);
+    }
 }
