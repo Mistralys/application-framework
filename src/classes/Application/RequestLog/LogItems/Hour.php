@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use AppUtils\FileHelper;
 
+/**
+ * @property Application_RequestLog_LogItems_Day $parent
+ * @method Application_RequestLog_LogFile[] getContainers()
+ * @method Application_RequestLog_LogFile getContainerByID(string $id)
+ */
 class Application_RequestLog_LogItems_Hour extends Application_RequestLog_AbstractFileContainer
 {
     protected function isValidFile(string $file) : bool

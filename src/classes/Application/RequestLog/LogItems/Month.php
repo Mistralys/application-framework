@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 
+/**
+ * @property Application_RequestLog_LogItems_Year $parent
+ * @method Application_RequestLog_LogItems_Day[] getContainers()
+ * @method Application_RequestLog_LogItems_Day getContainerByID(string $id)
+ */
 class Application_RequestLog_LogItems_Month extends Application_RequestLog_AbstractFolderContainer
 {
     public function getAdminURL(array $params=array()) : string

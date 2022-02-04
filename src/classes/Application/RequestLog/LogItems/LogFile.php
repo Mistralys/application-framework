@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use AppUtils\FileHelper;
 
+/**
+ * @property Application_RequestLog_LogItems_Hour $parent
+ */
 class Application_RequestLog_LogFile extends Application_RequestLog_AbstractLogItem
 {
     /**

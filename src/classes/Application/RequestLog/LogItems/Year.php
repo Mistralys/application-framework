@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+/**
+ * @method Application_RequestLog_LogItems_Month[] getContainers()
+ * @method Application_RequestLog_LogItems_Month getContainerByID(string $id)
+ */
 class Application_RequestLog_LogItems_Year extends Application_RequestLog_AbstractFolderContainer
 {
     protected function isValidFolder(string $folder) : bool

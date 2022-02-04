@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 
+/**
+ * @property Application_RequestLog_LogItems_Month $parent
+ * @method Application_RequestLog_LogItems_Hour[] getContainers()
+ * @method Application_RequestLog_LogItems_Hour getContainerByID(string $id)
+ */
 class Application_RequestLog_LogItems_Day extends Application_RequestLog_AbstractFolderContainer
 {
     protected function isValidFolder(string $folder) : bool

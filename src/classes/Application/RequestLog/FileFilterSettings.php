@@ -39,7 +39,7 @@ class Application_RequestLog_FileFilterSettings extends Application_FilterSettin
     {
         $el = $this->addElementText(self::SETTING_DISPATCHER);
         $el->addFilterTrim();
-        $el->setComment(sb()
+        $el->setComment((string)sb()
             ->t('Searches in the dispatcher file name.')
             ->t('Case insensitive.')
         );
@@ -49,7 +49,7 @@ class Application_RequestLog_FileFilterSettings extends Application_FilterSettin
     {
         $el = $this->addElementText(self::SETTING_SCREEN);
         $el->addFilterTrim();
-        $el->setComment(sb()
+        $el->setComment((string)sb()
             ->t('Searches in the screen path.')
             ->t('Case insensitive.')
         );
@@ -59,7 +59,7 @@ class Application_RequestLog_FileFilterSettings extends Application_FilterSettin
     {
         $el = $this->addElementText(self::SETTING_USER_NAME);
         $el->addFilterTrim();
-        $el->setComment(sb()
+        $el->setComment((string)sb()
             ->t('Searches in the user name.')
             ->t('Case insensitive.')
         );
@@ -89,7 +89,7 @@ class Application_RequestLog_FileFilterSettings extends Application_FilterSettin
         $el = $this->addElementText(self::SETTING_DURATION);
         $el->addFilterTrim();
         $el->addClass('input-small');
-        $el->setComment(sb()
+        $el->setComment((string)sb()
             ->t('Limits to files that match the specified duration.')
             ->t('Examples:')
             ->ul(array(
