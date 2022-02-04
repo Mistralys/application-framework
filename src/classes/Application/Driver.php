@@ -721,6 +721,11 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $default;
     }
 
+    public static function setBoolSetting(string $name, bool $value) : void
+    {
+        self::setSetting($name, ConvertHelper::boolStrict2string($value));
+    }
+
     /**
      * Sets an application setting. Can optionally set the role: default
      * is adding a persistent setting, can be set as a cache setting
