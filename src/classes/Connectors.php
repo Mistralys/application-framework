@@ -55,6 +55,13 @@ class Connectors
 
     public static function createDummyConnector() : Connectors_Connector_Dummy
     {
-        return self::createConnector('Dummy');
+        $dummy = self::createConnector('Dummy');
+
+        if($dummy instanceof Connectors_Connector_Dummy)
+        {
+            return $dummy;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Connectors_Connector_Dummy::class, $dummy);
     }
 }
