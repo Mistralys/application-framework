@@ -135,6 +135,11 @@ class UI_DataGrid
     protected $footerCountText;
 
     /**
+     * @var string
+     */
+    private $dispatcher = '';
+
+    /**
      * @param UI $ui
      * @param string|int $id
      * @param bool $allowDuplicateID
@@ -997,7 +1002,7 @@ class UI_DataGrid
                 ));
 
                 $html .=
-                '<form id="' . $this->getFormID() . '" method="post" class="form-inline">' .
+                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . APP_URL.'/'.$this->dispatcher . '">' .
                     $this->renderHiddenVars();
             }
 
@@ -1290,13 +1295,16 @@ class UI_DataGrid
             return false;
         }
 
-        if ($this->request->getParam('datagrid_submitted') == $this->getID()) {
+        if ($this->request->getParam('datagrid_submitted') === $this->getID()) {
             return true;
         }
 
         return false;
     }
 
+    /**
+     * @var int
+     */
     protected $duplicateHeadersThreshold = 8;
 
     /**
@@ -1737,7 +1745,7 @@ class UI_DataGrid
             $params[$name] = $value;
         }
 
-        return $this->request->buildURL($params);
+        return $this->request->buildURL($params, $this->dispatcher);
     }
 
     protected function getSetting(string $name)
@@ -1974,7 +1982,8 @@ class UI_DataGrid
         }
 
         $action = $this->getActiveAction();
-        if(!$action) {
+        if(!$action)
+        {
             return $this;
         }
 
@@ -2657,5 +2666,17 @@ class UI_DataGrid
     private function formatAmount(int $amount) : string
     {
         return number_format($amount, 0, '.', ' ');
+    }
+
+    /**
+     * Sets the `action` parameter of the data grid's form.
+     *
+     * @param string $dispatcher
+     * @return $this
+     */
+    public function setDispatcher(string $dispatcher) : UI_DataGrid
+    {
+        $this->dispatcher = $dispatcher;
+        return $this;
     }
 }
