@@ -13,6 +13,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public const REQUEST_PARAM_HOUR = 'hour';
     public const REQUEST_PARAM_ID = 'requestID';
     public const REQUEST_PARAM_LOG_OUT = 'log_out';
+    public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
 
     public const DISPATCHER = 'requestlog.php';
     public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
@@ -32,6 +33,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
      */
     private $request;
 
+    private $persistVars = array();
+
     public function getDispatcher()
     {
         return self::DISPATCHER;
@@ -45,11 +48,16 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         $this->log = Application::createRequestLog();
         $this->page = $this->driver->getUI()->createPage('request-log');
         $this->request = Application_Driver::getInstance()->getRequest();
-        $this->breadcrumb = $this->page->getBreadcrumb();
+        $breadcrumb = $this->page->getBreadcrumb();
 
         if($this->request->getBool(self::REQUEST_PARAM_LOG_OUT))
         {
             $this->handleLogOut();
+        }
+
+        if($this->request->hasParam(self::REQUEST_PARAM_TOGGLE_STATUS))
+        {
+            $this->handleStatusChange($this->request->getBool(self::REQUEST_PARAM_TOGGLE_STATUS));
         }
 
         if($this->session->getValue(self::SESSION_AUTH_PARAM) !== 'yes')
@@ -63,7 +71,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         $year = $this->log->getYearByNumber((int)$this->request->getParam(self::REQUEST_PARAM_YEAR));
-        $this->breadcrumb->appendItem($year->getLabel())->makeLinked($year->getAdminURL());
+        $breadcrumb->appendItem($year->getLabel())->makeLinked($year->getAdminURL());
+        $this->persistVars[self::REQUEST_PARAM_YEAR] = $year->getYearNumber();
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_MONTH))
         {
@@ -71,7 +80,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         $month = $year->getMonthByNumber((int)$this->request->getParam(self::REQUEST_PARAM_MONTH));
-        $this->breadcrumb->appendItem($month->getLabel())->makeLinked($month->getAdminURL());
+        $breadcrumb->appendItem($month->getLabel())->makeLinked($month->getAdminURL());
+        $this->persistVars[self::REQUEST_PARAM_MONTH] = $month->getMonthNumber();
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_DAY))
         {
@@ -79,7 +89,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         $day = $month->getDayByNumber((int)$this->request->getParam(self::REQUEST_PARAM_DAY));
-        $this->breadcrumb->appendItem($day->getLabel())->makeLinked($day->getAdminURL());
+        $breadcrumb->appendItem($day->getLabel())->makeLinked($day->getAdminURL());
+        $this->persistVars[self::REQUEST_PARAM_DAY] = $day->getDayNumber();
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_HOUR))
         {
@@ -87,7 +98,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         $hour = $day->getHourByNumber((int)$this->request->getParam(self::REQUEST_PARAM_HOUR));
-        $this->breadcrumb->appendItem($hour->getLabel())->makeLinked($hour->getAdminURL());
+        $breadcrumb->appendItem($hour->getLabel())->makeLinked($hour->getAdminURL());
+        $this->persistVars[self::REQUEST_PARAM_HOUR] = $hour->getHourNumber();
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_ID))
         {
@@ -95,7 +107,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         $file = $hour->getFileByRequestID((string)$this->request->getParam(self::REQUEST_PARAM_ID));
-        $this->breadcrumb->appendItem($file->getLabel())->makeLinked($file->getAdminURL());
+        $breadcrumb->appendItem($file->getLabel())->makeLinked($file->getAdminURL());
+        $this->persistVars[self::REQUEST_PARAM_ID] = $file->getRequestID();
 
         displayHTML($this->renderFileDetailView($file));
 
@@ -107,6 +120,24 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         $this->session->setValue(self::SESSION_AUTH_PARAM, 'no');
 
         UI::getInstance()->addSuccessMessage(t('You have been successfully logged out.'));
+
+        Application::redirect($this->log->getAdminURL());
+    }
+
+    private function handleStatusChange(bool $enable) : void
+    {
+        $this->log->getStatus()->setEnabled($enable);
+
+        if($enable)
+        {
+            $message = t('The request logging has been enabled.');
+        }
+        else
+        {
+            $message = t('The request logging has been disabled.');
+        }
+
+        UI::getInstance()->addSuccessMessage($message);
 
         Application::redirect($this->log->getAdminURL());
     }
@@ -244,7 +275,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         return $this->page->renderTemplate(
             'requestlog/file-selection',
             array(
-                'hour' => $hour
+                'hour' => $hour,
+                'screen' => $this
             )
         );
     }
@@ -257,5 +289,10 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
                 'file' => $file
             )
         );
+    }
+
+    public function getPersistVars() : array
+    {
+        return $this->persistVars;
     }
 }
