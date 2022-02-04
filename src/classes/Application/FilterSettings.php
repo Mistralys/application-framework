@@ -7,6 +7,8 @@
  * @see Application_FilterSettings
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Base class for custom filter setting implementations. This can
  * be used to create a settings form intended to configure a filter
@@ -324,7 +326,9 @@ abstract class Application_FilterSettings
         
         Application_Driver::getInstance()->redirectTo($url);
     }
-    
+
+    // region: Access setting values
+
     /**
      * Retrieves all settings as an associative array with
      * setting name > value pairs.
@@ -369,6 +373,23 @@ abstract class Application_FilterSettings
         
         return array();
     }
+
+    public function getSettingString(string $name) : string
+    {
+        return (string)$this->getSetting($name);
+    }
+
+    public function getSettingBool(string $name) : bool
+    {
+        return ConvertHelper::string2bool($this->getSetting($name));
+    }
+
+    public function getSettingInt(string $name) : int
+    {
+        return (int)$this->getSetting($name);
+    }
+
+    // endregion
     
     public function setSetting($name, $value)
     {
@@ -515,6 +536,18 @@ abstract class Application_FilterSettings
             HTML_QuickForm2_Element_Select::class,
             $this->addElement($setting, 'select', $container)
         );
+    }
+
+    public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        $el =  $this->addElement($setting, 'text', $container);
+
+        if($el instanceof HTML_QuickForm2_Element_InputText)
+        {
+            return $el;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_InputText::class, $el);
     }
     
    /**
