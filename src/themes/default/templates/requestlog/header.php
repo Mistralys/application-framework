@@ -22,13 +22,34 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
 {
     protected function generateOutput() : void
     {
+        $status = $this->log->getStatus();
+
         ?>
-        <p class="pull-right">
-            <a href="<?php echo Application::createRequestLog()->getAdminLogOutURL() ?>">
-                <?php echo UI::icon()->logOut() ?>
-                <?php pt('Log out') ?>
-            </a>
-        </p>
+        <div class="pull-right">
+            <p>
+                <?php echo sb()
+                    ->t('Logging:')
+                    ->bold($status->getEnabledLabel());
+                ?>
+                (<?php
+                echo sb()->link($status->getToggleLabel(), $status->getAdminToggleURL())
+                ?>)
+                |
+                <a href="<?php echo Application::createRequestLog()->getAdminLogOutURL() ?>">
+                    <?php echo sb()
+                        ->icon(UI::icon()->logOut())
+                        ->t('Log out')
+                    ?>
+                </a>
+                |
+                <a href="<?php echo APP_URL ?>">
+                    <?php echo sb()
+                        ->icon(UI::icon()->back())
+                        ->t('Back to %1$s', $this->driver->getAppNameShort())
+                    ?>
+                </a>
+            </p>
+        </div>
         <h1><?php pt('Request log'); ?></h1>
         <?php
         echo $this->page->renderMessages();
@@ -36,7 +57,13 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
         ?><hr/><?php
     }
 
+    /**
+     * @var Application_RequestLog
+     */
+    private $log;
+
     protected function preRender(): void
     {
+        $this->log = Application::createRequestLog();
     }
 }
