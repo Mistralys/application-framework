@@ -328,7 +328,7 @@ abstract class Application_Bootstrap_Screen
             );
         }
                
-        if(boot_constant('APP_WRITE_LOG') === true)
+        if(Application::createRequestLog()->getStatus()->isEnabled() === true)
         {
             Application::getLogger()->write();
         }
