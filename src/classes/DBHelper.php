@@ -36,6 +36,16 @@ class DBHelper
     protected static $queryCount = 0;
 
     /**
+     * @var int
+     */
+    protected static $queryCountRead = 0;
+
+    /**
+     * @var int
+     */
+    protected static $queryCountWrite = 0;
+
+    /**
      * The statement object for the last query that was run, if any.
      * @var PDOStatement
      */
@@ -103,13 +113,25 @@ class DBHelper
             self::$startTime = microtime(true);
         }
 
+        self::$queryCount++;
         self::$activeQuery = array($statement, $variables);
         
-        if(DBHelper_OperationTypes::isWriteOperation($operationType) && self::hasListener('BeforeDBWriteOperation')) {
-            $event = self::triggerEvent('BeforeDBWriteOperation', array($operationType, $statement, $variables));
-            if($event !== null && $event->isCancelled()) {
-                return true;
+        if(DBHelper_OperationTypes::isWriteOperation($operationType))
+        {
+            if(self::hasListener('BeforeDBWriteOperation'))
+            {
+                $event = self::triggerEvent('BeforeDBWriteOperation', array($operationType, $statement, $variables));
+                if ($event !== null && $event->isCancelled())
+                {
+                    return true;
+                }
             }
+
+            self::$queryCountWrite++;
+        }
+        else
+        {
+            self::$queryCountRead++;
         }
 
         $filteredVariables = self::filterVariablesForDB($variables);
@@ -319,9 +341,8 @@ class DBHelper
         if(self::$debugging) {
             self::debugQuery($result);
         }
-        
+
         if(self::isQueryTrackingEnabled()) {
-            self::$queryCount++;
             $time = microtime(true)-self::$startTime;
             self::$queries[] = array($statement, $variables, $time, $operationType);
         } 
@@ -730,33 +751,20 @@ class DBHelper
     
     public static function countSelectQueries() : int
     {
-        return self::countQueries(array(DBHelper_OperationTypes::TYPE_SELECT));
+        return self::$queryCountRead;
     }
     
     public static function countWriteQueries() : int
     {
-        return self::countQueries(DBHelper_OperationTypes::getWriteTypes());
+        return self::$queryCountWrite;
     }
 
     /**
-     * @param int[] $types
      * @return int
      */
-    public static function countQueries(array $types=array()) : int
+    public static function countQueries() : int
     {
-        if(empty($types)) {
-            return count(self::$queries);
-        }
-        
-        $total = count(self::$queries);
-        $result = 0;
-        for($i=0; $i<$total; $i++) {
-            if(in_array(self::$queries[$i][3], $types, true)) {
-                $result++;
-            }
-        }
-        
-        return $result;
+        return self::$queryCount;
     }
 
     /**
