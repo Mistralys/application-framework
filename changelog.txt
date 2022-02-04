@@ -1,4 +1,4 @@
-v1.22.2
+v1.23.0
 - Forms: Improved the form TOC headers list styling.
 - Forms: Added `addStatusIcon()` to the headers.
 - Forms: Headers can now configure the final content section instances.
@@ -16,10 +16,16 @@ v1.22.2
 - Sessions: Added `getID()` to the session class interface.
 - Events: Added a constant for the `SystemShutdown` event.
 - Application: Added static `getTimeStarted()` and `getTimePassed()` methods.
+- Application: Added the `APP_REQUEST_LOG_PASSWORD` config parameter.
 - Bootstrap: Added `getBootClass()` to identify the boot screen used in the request.
 - Driver: Added `setBoolSetting()`.
 - FilterSettings: Added `addElementText()` and typed getSetting methods.
 - DBHelper: Added query counts without enabling the full query tracking.
+
+**Breaking changes:**
+
+The `APP_REQUEST_LOG_PASSWORD` setting must be added in the configuration. We suggest
+adding in the `app-config.php` file, since it does not have to change regularly.
 
 v1.22.1
 - Countries: Navigator: Added `setURLParamByRequest()` and admin screen flavors.
