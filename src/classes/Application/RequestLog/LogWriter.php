@@ -27,6 +27,10 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
     public const KEY_QUERY_COUNT = 'queryCount';
     public const KEY_SELECT_QUERY_COUNT = 'selectQueryCount';
     public const KEY_WRITE_QUERY_COUNT = 'writeQueryCount';
+    public const KEY_PHP_VERSION = 'phpVersion';
+    public const KEY_OPERATING_SYSTEM = 'operatingSystem';
+    public const KEY_OPERATING_SYSTEM_FAMILY = 'operatingSystemFamily';
+    public const KEY_COMMAND_LINE_MODE = 'commandLineMode';
 
     /**
      * @var Application_Logger
@@ -150,6 +154,13 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
 
     public function write() : Application_RequestLog_LogWriter
     {
+        // Ignore writing the log if we are in the request log
+        // viewer interface, as this will only pollute the log.
+        if(Application_Bootstrap::getBootClass() === Application_Bootstrap_Screen_RequestLog::class)
+        {
+            return $this;
+        }
+
         $this->log('Writing the application log to disk.');
 
         $this->writeLogFile();
@@ -190,6 +201,10 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
             self::KEY_QUERY_COUNT => DBHelper::getQueryCount(),
             self::KEY_SELECT_QUERY_COUNT => DBHelper::countSelectQueries(),
             self::KEY_WRITE_QUERY_COUNT => DBHelper::countWriteQueries(),
+            self::KEY_PHP_VERSION => PHP_VERSION,
+            self::KEY_OPERATING_SYSTEM => PHP_OS,
+            self::KEY_OPERATING_SYSTEM_FAMILY => PHP_OS_FAMILY,
+            self::KEY_COMMAND_LINE_MODE => isCLI(),
             self::KEY_LOG_FILE_RELATIVE => FileHelper::relativizePath(
                 $this->getLogPath(),
                 $this->getBaseFolder()
