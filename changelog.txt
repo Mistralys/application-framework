@@ -4,6 +4,7 @@ v1.22.2
 - Forms: Headers can now configure the final content section instances.
 - DataGrid: Added `renderCheckboxLabel()` in entries.
 - DataGrid: Added renderable support to `setEmptyMessage()`.
+- DataGrid: Added `setDispatcher()` to change the grid form action attribute.
 - Countries: Navigator: Added the `REQUEST_PARAM_COUNTRY_ID` constant.
 - UI: Sections: Added status elements support.
 - UI: Added interface and trait for elements that support status indicators.
@@ -15,6 +16,10 @@ v1.22.2
 - Sessions: Added `getID()` to the session class interface.
 - Events: Added a constant for the `SystemShutdown` event.
 - Application: Added static `getTimeStarted()` and `getTimePassed()` methods.
+- Bootstrap: Added `getBootClass()` to identify the boot screen used in the request.
+- Driver: Added `setBoolSetting()`.
+- FilterSettings: Added `addElementText()` and typed getSetting methods.
+- DBHelper: Added query counts without enabling the full query tracking.
 
 v1.22.1
 - Countries: Navigator: Added `setURLParamByRequest()` and admin screen flavors.
