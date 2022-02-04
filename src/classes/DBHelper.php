@@ -136,9 +136,11 @@ class DBHelper
 
         $filteredVariables = self::filterVariablesForDB($variables);
 
-        try{
+        try
+        {
             $stmt = self::$activeDB->prepare($statement);
-            if (!$stmt) 
+
+            if ($stmt === false)
             {
                 throw self::createException(
                     self::ERROR_PREPARING_QUERY, 
