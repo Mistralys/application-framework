@@ -32,6 +32,11 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     public const SESSION_ID_NONE = 'none';
     public const SESSION_ID_SIMULATED = 'simulated';
 
+    /**
+     * @var Application_RequestLog_EnabledStatus|NULL
+     */
+    private $status;
+
     public function __construct()
     {
         parent::__construct(
@@ -114,8 +119,6 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
      *
      * @param Application_Logger $logger
      * @return Application_RequestLog_LogWriter
-     * @throws Application_Exception
-     * @throws FileHelper_Exception
      */
     public function writeLog(Application_Logger $logger) : Application_RequestLog_LogWriter
     {
@@ -125,5 +128,15 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     public function getLogIdentifier() : string
     {
         return 'RequestLog';
+    }
+
+    public function getStatus() : Application_RequestLog_EnabledStatus
+    {
+        if(!isset($this->status))
+        {
+            $this->status = new Application_RequestLog_EnabledStatus($this);
+        }
+
+        return $this->status;
     }
 }
