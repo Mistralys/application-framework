@@ -1,3 +1,6 @@
+v1.23.1
+- Sessions: Added error checks in the session initialization.
+
 v1.23.0
 - Forms: Improved the form TOC headers list styling.
 - Forms: Added `addStatusIcon()` to the headers.
