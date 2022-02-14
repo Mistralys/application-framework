@@ -3,7 +3,7 @@
  * File containing the trait {@see Application_Session_AuthTypes_OAuth}.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @see Application_Session_AuthTypes_OAuth
  */
 
@@ -24,8 +24,9 @@ declare(strict_types=1);
  * those that you wish to use.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
  * @see Application_Session_AuthTypes_OAuthInterface
  * @see Application_Session_Base
  *

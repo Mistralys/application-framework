@@ -3,7 +3,7 @@
  * File containing the {@see Application_Session_Base} class.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @see Application_Session_Base
  */
 
@@ -16,7 +16,7 @@ declare(strict_types=1);
  * information in the session.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class Application_Session_Base implements Application_Session
@@ -325,7 +325,7 @@ abstract class Application_Session_Base implements Application_Session
         return APP_URL;
     }
 
-    public function getRightPresets()
+    public function getRightPresets() : array
     {
         $this->requireSimulatedSession();
 
@@ -340,7 +340,7 @@ abstract class Application_Session_Base implements Application_Session
         return $this->rightPresets;
     }
 
-    public function getRightPreset()
+    public function getRightPreset() : string
     {
         if (!$this->presetExists(self::ADMIN_PRESET_ID))
         {
@@ -369,7 +369,7 @@ abstract class Application_Session_Base implements Application_Session
             $select = $requestPreset;
         }
 
-        return $this->getValue(self::KEY_NAME_RIGHTS_PRESET, $select);
+        return (string)$this->getValue(self::KEY_NAME_RIGHTS_PRESET, $select);
     }
 
     public function getPresetBySession() : string

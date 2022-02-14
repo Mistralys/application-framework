@@ -13,7 +13,7 @@ declare(strict_types=1);
  * Interface for the matching trait.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Session_AuthTypes_CAS

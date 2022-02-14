@@ -3,7 +3,7 @@
  * File containing the trait {@see Application_Session_AuthTypes_None}.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @see Application_Session_AuthTypes_None
  */
 
@@ -17,7 +17,7 @@ use Hybridauth\User\Profile;
  * uses the system user to simulate the logged in user.
  *
  * @package Application
- * @subpackage Session
+ * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Session_AuthTypes_NoneInterface
@@ -36,9 +36,8 @@ trait Application_Session_AuthTypes_None
 
     protected function handleLogin() : Application_Users_User
     {
-        $users = Application_Driver::createUsers();
-
-        return $users->getByID(Application::USER_ID_SYSTEM);
+        return Application_Driver::createUsers()
+            ->getByID(Application::USER_ID_SYSTEM);
     }
 
     public function getRightPresets() : array

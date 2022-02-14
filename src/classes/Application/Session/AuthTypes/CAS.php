@@ -21,6 +21,10 @@ declare(strict_types=1);
  *    - APP_CAS_PORT
  *    - APP_CAS_SERVER
  *
+ * @package Application
+ * @subpackage Sessions
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
  * @see Application_Session_AuthTypes_CASInterface
  * @see Application_Session_Base
  */

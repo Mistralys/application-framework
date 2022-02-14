@@ -3,15 +3,17 @@
  * File containing the {@link Application_Session} interface.
  *
  * @package Application
- * @subpackage Core
+ * @subpackage Sessions
  * @see Application_Session
  */
+
+declare(strict_types=1);
 
 /**
  * Interface for application session handling classes.
  *
  * @package Application
- * @subpackage Core
+ * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 interface Application_Session extends Application_Interfaces_Loggable
@@ -44,10 +46,10 @@ interface Application_Session extends Application_Interfaces_Loggable
      * is not set.
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed|NULL $default
      * @return mixed
      */
-    public function getValue($name, $default = null);
+    public function getValue(string $name, $default = null);
 
     /**
      * Sets a session value.
@@ -55,7 +57,7 @@ interface Application_Session extends Application_Interfaces_Loggable
      * @param string $name
      * @param mixed $value
      */
-    public function setValue($name, $value);
+    public function setValue(string $name, $value) : void;
 
     /**
      * Removes / unsets a session value. Has no effect
@@ -63,14 +65,14 @@ interface Application_Session extends Application_Interfaces_Loggable
      *
      * @param string $name
      */
-    public function unsetValue($name);
+    public function unsetValue(string $name) : void;
 
     /**
      * Checks whether the specified session value exists / is set.
      *
      * @param string $name
      */
-    public function valueExists($name);
+    public function valueExists(string $name) : bool;
 
     /**
      * Retrieves the name of the currently active simulated
@@ -78,7 +80,7 @@ interface Application_Session extends Application_Interfaces_Loggable
      *
      * @return string
      */
-    public function getRightPreset();
+    public function getRightPreset() : string;
 
     /**
      * Retrieves the currently active simulated session rights preset.
@@ -105,9 +107,9 @@ interface Application_Session extends Application_Interfaces_Loggable
      *     'Reader' => 'ViewRecord'
      * )
      *
-     * @return array
+     * @return array<string,string>
      */
-    public function getRightPresets();
+    public function getRightPresets() : array;
 
     /**
      * @param int $reasonID
