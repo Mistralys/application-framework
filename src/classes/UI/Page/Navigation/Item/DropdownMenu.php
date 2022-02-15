@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\OutputBuffering;
+
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 {
    /**
@@ -11,11 +15,6 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @var string
      */
     protected $label;
-
-    /**
-     * @var bool
-     */
-    protected $active = false;
 
     /**
      * @var bool
@@ -50,8 +49,9 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     /**
      * @param string|UI_Renderable_Interface|int|float $label
      * @return $this
+     * @throws UI_Exception
      */
-    public function setLabel($label)
+    public function setLabel($label) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->label = toString($label);
         return $this;
@@ -67,7 +67,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * 
     * @return $this
     */
-    public function makeSplit()
+    public function makeSplit() : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->split = true;
         return $this;
@@ -81,7 +81,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * @param string $url
     * @return UI_Page_Navigation_Item_DropdownMenu
     */
-    public function link(string $url)
+    public function link(string $url) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->makeSplit();
         $this->link = $url;
@@ -96,7 +96,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @param string $statement
      * @return UI_Page_Navigation_Item_DropdownMenu
      */
-    public function click(string $statement)
+    public function click(string $statement) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->makeSplit();
         $this->click = $statement;
@@ -112,7 +112,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * Makes this the active menu item.
      * @return $this
      */
-    public function makeActive()
+    public function makeActive() : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->active = true;
         return $this;
@@ -120,53 +120,94 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
     public function render(array $attributes = array()) : string
     {
-        if(!$this->isValid())
+        if (!$this->isValid())
         {
             return '';
         }
 
         $this->addClass('dropdown');
-        
-        if($this->active) {
+
+        if ($this->active)
+        {
             $this->addClass('active');
         }
-        
-        $classes = $this->classes;
-        
-        if($this->split && (!empty($this->link) || !empty($this->click) )) {
-            $linkAtts = array(
-                'href' => 'javascript:void(0)',
-                'class' => 'dropdown-toggle split-link',
-            );
-            
-            if(!empty($this->link)) {
-                $linkAtts['href'] = $this->link;
-            } else {
-                $linkAtts['onclick'] = $this->click;
-            }
-            
-            $html = 
-            '<li class="'.implode(' ', $classes).'">'.
-                '<a'.compileAttributes($linkAtts).'>'.
-                    $this->label . ' ' .
-                '</a>'.
-                '<a href="#" class="dropdown-toggle split-caret" data-toggle="dropdown">'.
-                    '<b class="caret"></b>'.
-                '</a>'.
-                $this->menu->render().
-            '</li>';
-            
-            return $html;
+
+        if ($this->split && (!empty($this->link) || !empty($this->click)))
+        {
+            return $this->renderSplit();
         }
-        
-        return 
-        '<li class="'.implode(' ', $classes).'">'.
-            '<a href="#" class="dropdown-toggle" data-toggle="dropdown">'.
-                $this->label . ' ' .
-                '<b class="caret"></b>'.
-            '</a>'.
-            $this->menu->render().
-        '</li>';
+
+        return $this->renderDefault();
+    }
+
+    private function renderDefault() : string
+    {
+        OutputBuffering::start();
+
+        ?>
+        <li class="<?php echo implode(' ', $this->classes) ?>">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                <?php echo $this->renderLabel() ?>
+                <b class="caret"></b>
+            </a>
+            <?php echo $this->menu->render() ?>
+        </li>
+        <?php
+
+        return OutputBuffering::get();
+    }
+
+    private function renderSplit() : string
+    {
+        OutputBuffering::start();
+
+        ?>
+        <li class="<?php echo implode(' ', $this->classes) ?>">
+            <a <?php echo compileAttributes($this->getLinkAttributes()) ?>>
+                <?php echo $this->renderLabel() ?>
+            </a>
+            <a href="#" class="dropdown-toggle split-caret" data-toggle="dropdown">
+                <b class="caret"></b>
+            </a>
+            <?php echo $this->menu->render() ?>
+        </li>
+        <?php
+
+        return OutputBuffering::get();
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    private function getLinkAttributes() : array
+    {
+        $attributes = array(
+            'href' => 'javascript:void(0)',
+            'class' => 'dropdown-toggle split-link',
+        );
+
+        if(!empty($this->link)) {
+            $attributes['href'] = $this->link;
+        } else {
+            $attributes['onclick'] = $this->click;
+        }
+
+        return $attributes;
+    }
+
+    private function renderLabel() : string
+    {
+        $label = sb();
+
+        $icon = $this->getIcon();
+        if($icon !== null)
+        {
+            $label->icon($icon);
+        }
+
+        $label->add($this->label);
+
+        return (string)$label;
     }
     
     /**
@@ -176,7 +217,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
      */
-    public function addLink(string $label, string $url)
+    public function addLink(string $label, string $url) : UI_Bootstrap_DropdownAnchor
     {
         return $this->menu->addLink($label, $url);
     }
@@ -185,7 +226,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @return UI_Bootstrap_DropdownMenu
      * @throws Application_Exception
      */
-    public function addSeparator()
+    public function addSeparator() : UI_Bootstrap_DropdownMenu
     {
         return $this->menu->addSeparator();
     }
