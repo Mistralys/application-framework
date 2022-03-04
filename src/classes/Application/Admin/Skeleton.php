@@ -563,7 +563,21 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         return $vars;
     }
 
-    
+    /**
+     * Retrieves a list of all available page request parameter names.
+     *
+     * @return string[]
+     */
+    public static function getPageParamNames() : array
+    {
+        return array(
+            self::REQUEST_PARAM_PAGE,
+            self::REQUEST_PARAM_MODE,
+            self::REQUEST_PARAM_SUBMODE,
+            self::REQUEST_PARAM_ACTION
+        );
+    }
+
    /**
     * Adds a quick selection menu that is placed on the right hand side 
     * of the page, in the page title area. Note that this must still be
