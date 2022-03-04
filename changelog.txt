@@ -1,3 +1,14 @@
+v2.0.0
+- Requirements: Now using PHP v7.4 as minimum requirement.
+- UI: Fixed the dropdown menu's `setIcon()` method not doing anything (#25).
+- UI: Fixed meu items' icons disappearing when they are active (#25).
+- Formable: Marked `addElementHeader()` as deprecated.
+- Request: Added `Application_Request::resolveParams()`.
+- UI: Skeleton: Added the static `Application_Admin_Skeleton::getPageParamNames()`.
+
+**Breaking changes:**
+- Minimum requirement now PHP 7.4
+
 v1.23.1
 - Sessions: Added error checks in the session initialization.
 
