@@ -1257,10 +1257,10 @@ UI::button(t('Very dangerous'))->makeDangerous();
 
 ```php
 // Set an URL to link to
-UI::button(t('Click me'))->link('https://ionos.com');
+UI::button(t('Click me'))->link('https://appname.com');
 
 // Open in a new tab
-UI::button(t('Click me'))->link('https://ionos.com', '_blank');
+UI::button(t('Click me'))->link('https://appname.com', '_blank');
 ```
 
 ### Choosing a size
