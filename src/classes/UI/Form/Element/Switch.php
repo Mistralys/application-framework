@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_Switch} class.
+ * File containing the {@see HTML_QuickForm2_Element_Switch} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @custom
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_Switch
  */
 
 declare(strict_types=1);
@@ -12,64 +12,34 @@ declare(strict_types=1);
 /**
  * Twitter Bootstrap-based switch element that acts like a checkbox.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @custom
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 {
     /**
-     * @var array<string,mixed>
+     * @var array<string,string>
      */
     protected $attributes = array(
         'type' => 'checkbox'
     );
 
-    /**
-     * @var string
-     */
-    protected $onLabel;
+    protected string $onLabel = '';
+    protected string $offLabel = '';
+    protected string $onValue = 'true';
+    protected string $offValue = 'false';
+    protected UI $ui;
+    private bool $useIcons = false;
+    private ?UI_Icon $onIcon = null;
+    private ?UI_Icon $offIcon = null;
+    protected string $buttonSize = UI_Button::SIZE_SMALL;
+    protected ?string $jsID = null;
 
     /**
-     * @var string
+     * @var array{statement:string,data:string}|NULL
      */
-    protected $offLabel;
-
-    /**
-     * @var string
-     */
-    protected $onValue = 'true';
-
-    /**
-     * @var string
-     */
-    protected $offValue = 'false';
-
-    /**
-     * @var UI
-     */
-    protected $ui;
-
-    /**
-     * @var bool
-     */
-    private $useIcons = false;
-
-    /**
-     * @var UI_Icon
-     */
-    private $onIcon;
-
-    /**
-     * @var UI_Icon
-     */
-    private $offIcon;
-
-    /**
-     * @var string
-     */
-    protected $buttonSize;
+    protected ?array $onChangeHandler = null;
 
     public function __construct(string $name, ?array $attributes = null, array $data = array())
     {
@@ -88,7 +58,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
      * @param string $label
      * @return HTML_QuickForm2_Element_Switch
      */
-    public function setOnLabel(string $label) : HTML_QuickForm2_Element_Switch
+    public function setOnLabel(string $label) : self
     {
         $this->onLabel = $label;
         return $this;
@@ -99,7 +69,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
      * @param string $label
      * @return HTML_QuickForm2_Element_Switch
      */
-    public function setOffLabel(string $label) : HTML_QuickForm2_Element_Switch
+    public function setOffLabel(string $label) : self
     {
         $this->offLabel = $label;
         return $this;
@@ -185,11 +155,6 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return '_uncategorized';
     }
 
-    /**
-     * @var string
-     */
-    protected $jsID;
-
     protected function resolveID() : string
     {
         if (isset($this->jsID)) {
@@ -208,11 +173,6 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     }
 
     /**
-     * @var array{statement:string,data:string}|NULL
-     */
-    protected $onChangeHandler;
-
-    /**
      * Sets the clientside javascript statement to execute when
      * the switch value changes.
      *
@@ -229,7 +189,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
      * @param string|null $data A javascript compatible value as a string.
      * @return $this
      */
-    public function setOnchangeHandler(string $statement, ?string $data = null) : HTML_QuickForm2_Element_Switch
+    public function setOnchangeHandler(string $statement, ?string $data = null) : self
     {
         if(empty($data))
         {
@@ -264,7 +224,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
             UI::icon()->no()->makeDangerous() . ' ' . $this->offLabel;
     }
 
-    protected function updateValue() : HTML_QuickForm2_Element_Switch
+    protected function updateValue() : self
     {
         $name = $this->getName();
 
@@ -281,7 +241,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this->setValue($this->offValue);
     }
 
-    public function setValue($value) : HTML_QuickForm2_Element_Switch
+    public function setValue($value) : self
     {
         if (empty($value) || ($value !== $this->onValue && $value !== $this->offValue))
         {
@@ -293,22 +253,22 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
 
-    public function makeLarge() : HTML_QuickForm2_Element_Switch
+    public function makeLarge() : self
     {
         return $this->makeSize(UI_Button::SIZE_LARGE);
     }
 
-    public function makeMini() : HTML_QuickForm2_Element_Switch
+    public function makeMini() : self
     {
         return $this->makeSize(UI_Button::SIZE_MINI);
     }
 
-    public function makeSmall() : HTML_QuickForm2_Element_Switch
+    public function makeSmall() : self
     {
         return $this->makeSize(UI_Button::SIZE_SMALL);
     }
 
-    public function makeSize(string $size) : HTML_QuickForm2_Element_Switch
+    public function makeSize(string $size) : self
     {
         UI_Button::requireValidSize($size);
 
@@ -324,9 +284,9 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     * NOTE: does not change the internal values: these stay
     * "true" and "false".
     * 
-    * @return HTML_QuickForm2_Element_Switch
+    * @return $this
     */
-    public function makeYesNo() : HTML_QuickForm2_Element_Switch
+    public function makeYesNo() : self
     {
         $this->setOnLabel(t('Yes'));
         $this->setOffLabel(t('No'));
@@ -336,7 +296,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
 
-    public function makeEnabledDisabled() : HTML_QuickForm2_Element_Switch
+    public function makeEnabledDisabled() : self
     {
         $this->setOnLabel(t('Enabled'));
         $this->setOffLabel(t('Disabled'));
@@ -346,7 +306,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
 
-    public function makeActiveInactive() : HTML_QuickForm2_Element_Switch
+    public function makeActiveInactive() : self
     {
         $this->setOnLabel(t('Active'));
         $this->setOffLabel(t('Inactive'));
@@ -354,7 +314,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
 
-    public function makeOnOff() : HTML_QuickForm2_Element_Switch
+    public function makeOnOff() : self
     {
         $this->setOnLabel(t('On'));
         $this->setOffLabel(t('Off'));
@@ -364,19 +324,19 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
 
-    public function setOnIcon(UI_Icon $icon) : HTML_QuickForm2_Element_Switch
+    public function setOnIcon(UI_Icon $icon) : self
     {
         $this->onIcon = $icon;
         return $this;
     }
 
-    public function setOffIcon(UI_Icon $icon) : HTML_QuickForm2_Element_Switch
+    public function setOffIcon(UI_Icon $icon) : self
     {
         $this->offIcon = $icon;
         return $this;
     }
 
-    public function makeWithIcons(bool $useIcons=true) : HTML_QuickForm2_Element_Switch
+    public function makeWithIcons(bool $useIcons=true) : self
     {
         $this->useIcons = $useIcons;
         return $this;
@@ -394,7 +354,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this->offValue;
     }
     
-    public function setOnValue(string $value) : HTML_QuickForm2_Element_Switch
+    public function setOnValue(string $value) : self
     {
         // convert the currently stored value
         if($this->getAttribute('value') === $this->onValue)
@@ -410,7 +370,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
     
-    public function setOffValue(string $value) : HTML_QuickForm2_Element_Switch
+    public function setOffValue(string $value) : self
     {
         // convert the currently stored value
         if($this->getAttribute('value') === $this->offValue)
@@ -426,7 +386,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         return $this;
     }
     
-    public function setValues(string $onValue, string $offValue) : HTML_QuickForm2_Element_Switch
+    public function setValues(string $onValue, string $offValue) : self
     {
         $this->setOnValue($onValue);
         $this->setOffValue($offValue);

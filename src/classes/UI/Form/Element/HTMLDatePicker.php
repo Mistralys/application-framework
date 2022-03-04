@@ -1,18 +1,19 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_HTMLDatePicker} class.
+ * File containing the {@see HTML_QuickForm2_Element_HTMLDatePicker} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_HTMLDatePicker
  */
 
 /**
  * Element that is used to handle generate HTML input with type date.
  * All browsers(except IE) will open calendar as input
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Emre Celebi <emre.celebi@ionos.com>
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
  */
 class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element
 {

@@ -1,28 +1,26 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_VisualSelect} class.
+ * File containing the {@see HTML_QuickForm2_Element_VisualSelect} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @custom
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_VisualSelect
  */
 
 /**
- * Bootstrap-based mutiple select element that implements the
- * interface of the bootstrap multiselect plugin.
+ * Select element that lets the user choose an item from
+ * an image gallery (icons, for example). Includes filtering
+ * by search term, and choosing the text value from a traditional
+ * select element.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * 
  * @method HTML_QuickForm2_Element_VisualSelect_Optgroup addOptgroup($label, $attributes = null)
- * 
- * @custom
  */
 class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select
 {
-    public const ERROR_XXXXX = 33601;
-
     /**
      * @var int
      */

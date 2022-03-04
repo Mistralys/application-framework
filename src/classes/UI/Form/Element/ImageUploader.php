@@ -1,30 +1,29 @@
 <?php
-
 /**
- * File containing the {@link HTML_QuickForm2_Element_ImageUploader} class.
+ * File containing the {@see HTML_QuickForm2_Element_ImageUploader} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_ImageUploader
  */
 
-/**
- * Element that is used to handle SPIN image uploads: handles an image upload
- * in its own dialog window and processes image transformations directly.
- *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
- */
 use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
 use function AppUtils\parseNumber;
 use AppUtils\ImageHelper_Size;
 use AppUtils\NumberInfo;
 
+/**
+ * Element that is used to handle SPIN image uploads: handles an image upload
+ * in its own dialog window and processes image transformations directly.
+ *
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input
 {
     const THUMBNAIL_WIDTH = 75;
-
     const THUMBNAIL_HEIGHT = 75;
 
     protected $persistent = true;

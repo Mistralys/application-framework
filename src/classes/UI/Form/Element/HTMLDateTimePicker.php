@@ -1,17 +1,18 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_HTMLDateTimePicker} class.
+ * File containing the {@see HTML_QuickForm2_Element_HTMLDateTimePicker} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_HTMLDateTimePicker
  */
 
 /**
  * EXPERIMENTAL! Element that is used to handle generate HTML input with type date and time together.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Emre Celebi <emre.celebi@ionos.com>
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
  */
 class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Element
 {
@@ -19,6 +20,7 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Element
      * @var HTML_QuickForm2_Element_HTMLDatePicker
      */
     private $htmlDatePicker;
+
     /**
      * @var HTML_QuickForm2_Element_HTMLTimePicker
      */
