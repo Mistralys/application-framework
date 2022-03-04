@@ -1908,7 +1908,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function createCountries() : Application_Countries
     {
-        return ensureType(Application_Countries::class, self::createCollection('Application_Countries'));
+        return Application_Countries::getInstance();
     }
 
     /**
