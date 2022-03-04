@@ -1,6 +1,6 @@
-# IONOS application framework
+# Application admin UI framework
 
-The engine underlying the SPIN and Maileditor tools.
+The app framework is a PHP-based framework for building frontends for web and intranet tools.
 
 ## Deployment
 
