@@ -3,9 +3,9 @@
 The framework provides the underlying application structure,
 from the user authentication and administration screens to the
 UI theming. It is a custom framework that is not based on any
-known frameworks: it grew from the original development of the
-SPIN system. It was still fully integrated in SPIN and the
-Maileditor until 2019, when it was separated into its own project.
+known frameworks: it grew from the original development of 
+several intranet tools until 2019, when it was separated into 
+its own project.
 
 # Responsibilities
 
@@ -86,13 +86,13 @@ several options that will determine how the application is run.
 
 ## Structure
 
-Administration screens in the Maileditor are individual PHP classes. They follow the
+Administration screens in the applications are individual PHP classes. They follow the
 framework’s admin structure, and have a fixed maximum logical depth of 4:
 
-1. Area – Main administration area (Mails, Comtypes...)
-2. Mode – Sub-navigation within an area (Mails list)
-3. Submode – Sub-navigation within a mode (View mail => Status, Upload, Changelog...)
-4. Action – Specific actions within a sub-mode (Publish mail, delete mail...)
+1. Area – Main administration area (Products, Countries...)
+2. Mode – Sub-navigation within an area (Products list)
+3. Submode – Sub-navigation within a mode (View product => Status, Settings, Changelog...)
+4. Action – Specific actions within a sub-mode (Publish product, delete product...)
 
 Each of these administration levels has specific base classes that must be extended:
 
@@ -108,15 +108,15 @@ request to a sub-level. For example, an area will check if one of its modes shou
 handle it, which in turn checks all its sub-modes, etc.
 
 This means that all screens in the chain can do their part of the processing as needed.
-To illustrate, consider the Mail builder screen, which is the following class:
+To illustrate, consider a Product settings screen, which is the following class:
 
-`Maileditor_Area_Mails_View_Audiences_Edit`
+`AppName_Area_Products_View_Settings_Edit`
 
 The screens in this case are, in order:
 
-1. Mails (Area)
+1. Products (Area)
 2. View (Mode)
-3. Audiences (Submode)
+3. Settings (Submode)
 4. Edit (Action).
 
 ## Handler methods
@@ -140,7 +140,7 @@ as needed. They are called automatically by the system, in the following order:
 Even if the active screen is an _Action_ at the end of the hierarchy, the handler methods of
 all its parents are called nonetheless. This is practical to avoid duplicating tasks.
 
-For example, consider viewing a communication type, handled by the class `Maileditor_Area_Comtypes_Edit`:
+For example, consider viewing a product property, handled by the class `AppName_Area_Properties_Edit`:
 The subnavigation is created here in the `_handleSubnavigation()` method, so that the _Sub-mode_
 and _Action_ screens do not have to worry about it.
 
@@ -160,16 +160,16 @@ a boolean `false`.
 ### Authenticated user
 
 The current user is available in `$this->user`. Anywhere else, it can be fetched via
-`Maileditor::getInstance()->getUser()`. This class instance allows accessing all relevant
+`AppName::getInstance()->getUser()`. This class instance allows accessing all relevant
 user data as well as the user's rights.
 
 The names of all rights in the system are accessible as constants in the user class, for
-example: `Maileditor_User::RIGHT_CREATE_MAILS`. Each of these is also accessible easily
+example: `AppName_User::RIGHT_CREATE_PRODUCTS`. Each of these is also accessible easily
 via the user instance itself, for example:
 
 ```php
-if($this->user->canCreateMails()) {
-    // User can create new mails.
+if($this->user->canCreateProducts()) {
+    // User can create new products.
 }
 ```
 
@@ -182,16 +182,16 @@ see the "Accessing request data" chapter.
 ### Links and URLs
 
 Generating links to admin screens should be delegated to the according data types. For example,
-to get the URL to edit a mailing's setting, one must ask the mailing. The same goes for all
-known data types in the Maileditor.
+to get the URL to edit a prpduct's setting, one must ask the product. The same goes for all
+known data types in the application.
 
 - Collections: Fetch the URL to the overview, or other collection-level screens.
 - Records: Fetch URLs to the available screens.
 
 Examples:
 
-- `Maileditor_Mails::getAdminListURL()` - URL to the mailings overview.
-- `Maileditor_Mails_Mail::getAdminEditStatusURL()` - URL to the status screen of the mailing.
+- `AppName_Products::getAdminListURL()` - URL to the products overview.
+- `AppName_Proucts_Product::getAdminEditStatusURL()` - URL to the status screen of the product.
 
 # Application UI
 
@@ -234,7 +234,7 @@ protected function _renderContent()
 
 ## The main navigation
 
-The menu items available in the main navigation are determined by the Maileditor's
+The menu items available in the main navigation are determined by the application's
 `getAdminAreas()` method.
 
 ### Customizing navigation items
@@ -262,7 +262,7 @@ protected function _handleSidebar()
     $this->sidebar->addButton('homepage', t('Homepage'))
     ->setIcon(UI::icon()->home())
     ->makePrimary()
-    ->makeLinked('https://maileditor.server.lan');
+    ->makeLinked('https://appname.lan');
 }
 ```
 
@@ -271,9 +271,9 @@ Any combination of conditions can be set for the button to be shown:
 ```php
 protected function _handleSidebar()
 {
-    $this->sidebar->addButton('create', t('Create mail'))
+    $this->sidebar->addButton('create', t('Create product'))
     ->makePrimary()
-    ->requireRight(Maileditor_User::RIGHT_CREATE_MAILS)
+    ->requireRight(AppName_User::RIGHT_CREATE_PRODUCTS)
     ->requireTrue($trueCondition)
     ->requireFalse($falseCondition);
 }
@@ -335,7 +335,7 @@ protected function _handleSidebar()
     $dev->addButton(
         UI::button(t('Homepage'))
         ->setIcon(UI::icon()->home())
-        ->link('https://maileditor.server.lan')
+        ->link('https://appname.lan')
     );
 }
 ```
@@ -374,9 +374,10 @@ The breadcrumb is present in all screens. The optimal way to handle it is
 to add elements sequentially, following the screen hierarchy. Consider
 the screen to edit an address book contact, for example:
 
-1) Address book (Area) - `Maileditor_Area_Recipients`
-2) Contact editor (Mode) - `Maileditor_Area_Recipients_Edit`
-3) Contact settings form (Submode) - `Maileditor_Area_Recipients_Edit_Settings`
+1) Products (Area) - `AppName_Area_Products`
+2) Product (Mode) - `AppName_Area_Products_View`
+3) Settings (Submode) - `AppName_Area_Products_View_Settings`
+4) Edit (Action) - `AppName_Area_Products_View_Settings_Edit`
 
 Each of these can add its own level to the breadcrumb, so it does not need
 to be built from the root in each screen.
@@ -477,7 +478,7 @@ tied to specific user rights, and any additional freeform conditions.
 protected function _handleSubnavigation() 
 {
     $this->subnav->addURL(t('Nav item'), '(url)')
-        ->requireRight(Maileditor_User::RIGHT_CREATE_MAILS)
+        ->requireRight(AppName_User::RIGHT_CREATE_PRODUCTS)
         ->requireTrue($trueCondition)
         ->requireFalse($falseCondition);
 }
@@ -955,7 +956,7 @@ using a separate method, and to append it to the page content in `_renderContent
 Example skeleton for a data grid screen:
 
 ```php
-class Maileditor_Area_Example_DataGrid extends Application_Admin_Area_Mode
+class AppName_Area_Example_DataGrid extends Application_Admin_Area_Mode
 {
     /**
      * @var UI_DataGrid 
@@ -1231,7 +1232,7 @@ UI::icon()->delete()
 
 ### Icons reference sheet
 
-In the maileditor UI, open the developer menu. There is a menu entry called "Icons reference sheet",
+In the application UI, open the developer menu. There is a menu entry called "Icons reference sheet",
 which shows all icons available for the application.
 
 ## Buttons
@@ -1783,7 +1784,7 @@ Custom validation methods:
 
 ## Marking elements as structural
 
-This is typically used in conjunction with data types that have states, like mailings:
+This is typically used in conjunction with data types that have states, like products:
 It means that changing the value will change the state of the record. These elements
 receive a visual distinction in the UI to identify them as structural.
 
