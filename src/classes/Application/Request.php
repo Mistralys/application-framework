@@ -7,6 +7,7 @@
  */
 
 use AppUtils\Request;
+use function AppUtils\parseURL;
 
 /**
  * Request management: wrapper around request variables with validation
@@ -95,5 +96,15 @@ class Application_Request extends Request
     public function buildPrintURL($params = array())
     {
         return $this->buildRefreshURL(array('print' => 'yes'));
+    }
+
+    public static function resolveParams($urlOrParams) : array
+    {
+        if(is_array($urlOrParams))
+        {
+            return $urlOrParams;
+        }
+
+        return parseURL($urlOrParams)->getParams();
     }
 }
