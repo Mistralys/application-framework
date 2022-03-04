@@ -3,7 +3,7 @@
  * a single campaign is selected. Automatically populated
  * serverside with the required information.
  *
- * @package Maileditor
+ * @package Application
  * @subpackage Campaigns
  * @class
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
