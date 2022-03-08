@@ -15,44 +15,52 @@ interface UI_Interfaces_Bootstrap extends Interface_Classable, UI_Renderable_Int
      * @param string $name
      * @return UI_Bootstrap
      */
-    public function setName($name);
+    public function setName(string $name) : self;
     
    /**
     * @return string
     */
-    public function getName();
+    public function getName() : string;
     
    /**
     * @param string $name
     * @return bool
     */
-    public function isNamed($name);
+    public function isNamed(string $name) : bool;
     
-    public function getID();
+    public function getID() : string;
     
-    public function setID($id);
+    public function setID(string $id) : self;
     
-    public function setAttribute($name, $value);
+    public function setAttribute(string $name, $value) : self;
     
-    public function getAttribute($name, $default=null);
+    public function getAttribute(string $name, $default=null);
     
-    public function hasAttribute($name);
+    public function hasAttribute(string $name) : bool;
     
-    public function renderAttributes();
+    public function renderAttributes() : string;
+
+    /**
+     * @param string $name
+     * @param string|number|NULL $value
+     * @return $this
+     */
+    public function setStyle(string $name, $value) : self;
     
-    public function setStyle($name, $value);
+    public function appendChild(UI_Bootstrap $child) : self;
     
-    public function appendChild(UI_Bootstrap $child);
+    public function setParent(UI_Bootstrap $parent) : self;
     
-    public function setParent(UI_Bootstrap $parent);
-    
-    public function getParent();
+    public function getParent() : ?UI_Bootstrap;
     
     public function createChild(string $type) : UI_Interfaces_Bootstrap;
     
     public function hasChild(string $name) : bool;
+
+    /**
+     * @return UI_Bootstrap[]
+     */
+    public function getChildren() : array;
     
-    public function getChildren();
-    
-    public function hasChildren();
+    public function hasChildren() : bool;
 }
