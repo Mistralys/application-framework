@@ -20,7 +20,11 @@ use AppUtils\NamedClosure;
  * @subpackage Revisionable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_RevisionableStateless implements Application_Revisionable_Interface, Application_Changelogable_Interface, Application_LockableRecord_Interface, Application_CollectionItemInterface
+abstract class Application_RevisionableStateless
+    implements
+    Application_Revisionable_Interface,
+    Application_Changelogable_Interface,
+    Application_CollectionItemInterface
 {
     public const ERROR_CANNOT_START_TRANSACTION = 68437001;
     public const ERROR_INVALID_REVISION_STORAGE = 68437002;
@@ -28,6 +32,10 @@ abstract class Application_RevisionableStateless implements Application_Revision
     public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
     public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
     public const ERROR_CHANGELOG_FEATURE_NOT_IMPLEMENTED = 68437006;
+
+    use Application_Traits_LockableWithManager;
+    use Application_Traits_Disposable;
+    use Application_Traits_Eventable;
 
     /**
      * @var Application_RevisionStorage
@@ -1022,12 +1030,17 @@ abstract class Application_RevisionableStateless implements Application_Revision
         return $this->transactionActive;
     }
     
-    public function dispose()
+    public function dispose() : void
     {
         $this->revisions->dispose();
     }
 
-   /**
+    public function isEditable() : bool
+    {
+        return !$this->isLocked();
+    }
+
+    /**
     * Gives the possibility to adjust the changelog query further if
     * needed, for example by adding joins or additional where 
     * statements.
@@ -1067,67 +1080,17 @@ abstract class Application_RevisionableStateless implements Application_Revision
         return $user;
     }
     
-   /**
-    * @var Application_LockManager
-    */
-    protected $lockManager;
-    
-   /**
-    * {@inheritDoc}
-    * @see Application_Revisionable_Interface::setLockManager($lockManager)
-    * @return Application_RevisionableStateless
-    */
-    public function setLockManager(Application_LockManager $lockManager)
-    {
-        $this->log('Using a lock manager: enabling locking.');
-        $this->lockManager = $lockManager;
-        return $this;
-    }
-    
-    public function isLockable()
-    {
-        return true;
-    }
-    
-    public function isEditable()
-    {
-        return !$this->isLocked();
-    }
-    
-    public function isLocked()
-    {
-        if(isset($this->lockManager)) {
-            return $this->lockManager->isLocked();
-        }
-        
-        return false;
-    }
-    
-    public function getLockReason()
-    {
-        if(isset($this->lockManager)) {
-            return $this->lockManager->getLockReason();
-        }
-        
-        return '';
-    }
-    
-    public function getLockManager()
-    {
-        return $this->lockManager;
-    }
-
-    public function getLockPrimary()
+    public function getLockPrimary() : string
     {
         return $this->getRevisionableTypeName().'-'.$this->getID();
     }
     
-    public function isExportable()
+    public function isExportable() : bool
     {
         return false;
     }
     
-    public function getExportRevision()
+    public function getExportRevision() : ?int
     {
         return null;
     }

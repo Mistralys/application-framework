@@ -1,6 +1,9 @@
 <?php 
 
 interface Application_Revisionable_Interface
+    extends
+    Application_LockableRecord_Interface,
+    Application_Interfaces_Disposable
 {
    /**
     * Locks the currently selected revision, so that any
@@ -116,16 +119,6 @@ interface Application_Revisionable_Interface
     public function getID() : int;
     
     /**
-     * Retrieves an identification of the object in string form,
-     * with typically the ID and human readable label of the item.
-     * This is used for example in log messages to help identify
-     * the source. It is not used to display to the user.
-     *
-     * @return string
-     */
-    public function getIdentification();
-
-    /**
      * Retrieves the latest revision number available for the item.
      * @return int
      */
@@ -141,64 +134,11 @@ interface Application_Revisionable_Interface
     public function getRevisionableTypeName();
     
    /**
-    * Retrieves a human readable label of the item, typcially only
-    * used in the administration to recognize it by.
-    * 
-    * @return string
-    */
-    public function getLabel() : string;
-    
-   /**
-    * Disposes of the item's internal storage: in lieu of unloading
-    * the item (which is almost impossible due to all the object 
-    * references), the internal data is cleared and freed up to liberate
-    * memory, but so that revision data can be loaded again if needed.
-    * 
-    * Of course this should be done when it is reasonable certain the 
-    * item will not be needed anymore, to avoid loading the same data
-    * several times.
-    */
-    public function dispose();
-    
-   /**
-    * Whether the revisionable is editable, i.e. its properties
-    * and content may be modified. This usually ties into the 
-    * lock manager as well, if the item supports locking.
-    * 
-    * @return bool
-    */
-    public function isEditable();
-    
-   /**
-    * Whether the item can be locked in specific adminstration
-    * screens with the the lock manager.
-    * 
-    * @return bool
-    */
-    public function isLockable();
-    
-   /**
-    * Sets the lock manager instance used to handle locking
-    * of this revisionable item. This is set automatically by
-    * the administration areas if the item supports locking.
-    * 
-    * @param Application_LockManager $lockManager
-    */
-    public function setLockManager(Application_LockManager $lockManager);
-    
-   /**
-    * Alias for querying the lock manager for this item.
-    * Will return true if the item supports locking, and is
-    * locked in the current administration area.
-    */
-    public function isLocked();
-    
-   /**
     * Sets whether this revisionable item can be exported.
     * 
     * @return boolean
     */
-    public function isExportable();
+    public function isExportable() : bool;
     
    /**
     * Returns the item's version, if exportable, that should be
@@ -206,12 +146,6 @@ interface Application_Revisionable_Interface
     * 
     * @return integer|NULL Returns NULL if no version has been selected.
     */
-    public function getExportRevision();
-    
-   /**
-    * Retrieves the revisionable's lock manager, if any has been set.
-    * @return Application_LockManager|NULL
-    */
-    public function getLockManager();
+    public function getExportRevision() : ?int;
 }
 

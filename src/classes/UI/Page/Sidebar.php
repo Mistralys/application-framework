@@ -19,6 +19,9 @@
  */
 class UI_Page_Sidebar implements Application_LockableItem_Interface
 {
+    use Application_Traits_LockableItem;
+    use Application_Traits_LockableStatus;
+
     /**
      * @var UI_Page
      */
@@ -543,67 +546,36 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         );
     }
     
-    protected $tagName = 'div';
+    protected string $tagName = 'div';
     
-    public function setTagName($name)
+    public function setTagName(string $name) : self
     {
         $this->tagName = $name;
+        return $this;
     }
     
-    public function getTagName()
+    public function getTagName() : string
     {
         return $this->tagName;
     }
     
-    public function makeAllItemsLockable()
+    public function makeAllItemsLockable() : self
     {
         foreach($this->items as $item) {
             if($item instanceof Application_LockableItem_Interface) {
                 $item->makeLockable();
             }
         }
-    }
-    
-    protected $locked = false;
- 
-    public function isLocked()
-    {
-        return $this->locked;
-    }
-    
-    public function makeLockable($lockable=true)
-    {
-        // always lockable
+
         return $this;
     }
-    
-    public function isLockable()
+
+    /**
+     * The sidebar is always lockable.
+     * @return bool
+     */
+    public function isLockable() : bool
     {
         return true;
-    }
-    
-    public function lock($reason)
-    {
-        $this->locked = true;
-        $this->lockReason = $reason;
-        
-        return $this;
-    }
-    
-    protected $lockReason;
-    
-    public function getLockReason()
-    {
-        if($this->locked) {
-            return $this->lockReason;
-        }
-        
-        return '';
-    }
-    
-    public function unlock()
-    {
-        $this->locked = false;
-        return $this;
     }
 }
