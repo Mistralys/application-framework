@@ -13,6 +13,7 @@
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
  * @method UI_Bootstrap_Tabs getParent()
  */
 class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Iconizable
