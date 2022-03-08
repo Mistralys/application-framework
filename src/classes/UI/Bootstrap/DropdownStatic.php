@@ -7,22 +7,29 @@
  * @see UI_Bootstrap_DropdownStatic
  */
 
+declare(strict_types=1);
+
 /**
  * Bootstrap dropdown static HTML element.
  *
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- *
- * @method UI_Bootstrap_DropdownStatic setName(string $name)
  */
-class UI_Bootstrap_DropdownStatic extends UI_Bootstrap
+class UI_Bootstrap_DropdownStatic
+    extends UI_Bootstrap
+    implements UI_Interfaces_Bootstrap_DropdownItem
 {
-    protected $content;
-    
-    public function setContent($content)
+    protected string $content;
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setContent($content) : self
     {
-        $this->content = $content;
+        $this->content = toString($content);
         return $this;
     }
     

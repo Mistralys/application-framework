@@ -7,7 +7,7 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
     */
     protected $badge;
     
-    protected function init()
+    protected function init() : void
     {
         $this->badge = $this->ui->badge('');
     }

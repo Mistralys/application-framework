@@ -1,49 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
+use AppUtils\OutputBuffering;
 
 class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
 {
    /**
-    * @var UI_Interfaces_Bootstrap[]
+    * @var UI_Interfaces_Bootstrap_DropdownItem[]
     */
-    protected $items = array();
+    protected array $items = array();
 
     /**
      * @var bool
      */
-    private $left;
+    private bool $left = false;
 
-    protected function _render()
+    protected function _render() : string
     {
-        if(empty($this->items)) {
+        if(empty($this->items))
+        {
             return '';
         }
 
-        if($this->left) {
+        if($this->left)
+        {
             $this->addClass('pull-right');
         }
 
         $this->addClass('dropdown-menu');
         $this->setAttribute('class', implode(' ', $this->classes));
         
-        $atts = ConvertHelper::array2attributeString($this->attributes);
+        $attributes = ConvertHelper::array2attributeString($this->attributes);
         
-        ob_start();
-?>
-<!-- start menu -->
-<ul <?php echo $atts ?>>
-	<?php 
-	    foreach ($this->items as $item) 
-        {
-           echo $item->render();
-        }   
-    ?>
-</ul>
-<!-- end menu -->
-<?php 
+        OutputBuffering::start();
+        ?>
+        <!-- start menu -->
+        <ul <?php echo $attributes ?>>
+            <?php
+                foreach ($this->items as $item)
+                {
+                   echo $item->render();
+                }
+            ?>
+        </ul>
+        <!-- end menu -->
+        <?php
         
-        return ob_get_clean();
+        return OutputBuffering::get();
     }
 
     /**
@@ -52,43 +57,52 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
      *
      * @return $this
      */
-    public function openLeft()
+    public function openLeft() : self
     {
         $this->left = true;
         return $this;
     }
 
-    /**
-    * Adds a submenu item: creates the menu instance
-    * and returns it to be configured.
-    * 
-    * @param string $label The label of the submenu item
-    * @return UI_Bootstrap_DropdownSubmenu
-    */
-    public function addMenu($label)
+    private function addItem(UI_Interfaces_Bootstrap_DropdownItem $item) : void
     {
-        $menu = $this->ui->createDropdownSubmenu($label);
-        $menu->setMenu($this);
-        
-        $this->items[] = $menu;
-        
+        $this->items[] = $item;
+    }
+
+    /**
+     * Adds a submenu item: creates the menu instance
+     * and returns it to be configured.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label The label of the submenu item
+     * @return UI_Bootstrap_DropdownSubmenu
+     * @throws UI_Exception
+     */
+    public function addMenu($label) : UI_Bootstrap_DropdownSubmenu
+    {
+        $menu = $this->ui
+            ->createDropdownSubmenu($label)
+            ->setMenu($this);
+
+        $this->addItem($menu);
+
         return $menu;
     }
 
     /**
      * Adds a menu item that links to a regular URL.
-     * 
-     * @param string $label
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
      */
-    public function addLink($label, $url)
+    public function addLink($label, string $url) : UI_Bootstrap_DropdownAnchor
     {
-        $link = $this->ui->createDropdownAnchor($label);
-        $link->setHref($url);
-        $link->addClass('menu-link');
-        $link->addClass('dropdown-item');
-        $this->items[] = $link;
+        $link = $this->ui
+            ->createDropdownAnchor($label)
+            ->addClass('menu-link')
+            ->setHref($url);
+
+        $this->addItem($link);
 
         return $link;
     }
@@ -97,38 +111,42 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
     * Whether the menu has items.
     * @return boolean
     */
-    public function hasItems()
+    public function hasItems() : bool
     {
         return !empty($this->items);
     }
     
    /**
     * Adds a subheader within the menu.
-    * @param string $label
+    * @param string|number|UI_Renderable_Interface|NULL $label
     * @return UI_Bootstrap_DropdownHeader
     */
-    public function addHeader($label)
+    public function addHeader($label) : UI_Bootstrap_DropdownHeader
     {
         $header = $this->ui->createDropdownHeader($label);
-        $this->items[] = $header;
+
+        $this->addItem($header);
+
         return $header;
     }
-    
-   /**
-    * Adds a menu item that executes the specified javascript
-    * statement when clicked.
-    * 
-    * @param string $label
-    * @param string $statement
-    * @return UI_Bootstrap_DropdownAnchor
-    */
-    public function addClickable($label, $statement)
+
+    /**
+     * Adds a menu item that executes the specified javascript
+     * statement when clicked.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string $statement
+     * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
+     */
+    public function addClickable($label, string $statement) : UI_Bootstrap_DropdownAnchor
     {
-        $link = $this->ui->createDropdownAnchor($label);
-        $link->setOnclick($statement);
-        $link->addClass('menu-clickable');
-        $link->addClass('dropdown-item');
-        $this->items[] = $link;
+        $link = $this->ui
+            ->createDropdownAnchor($label)
+            ->setOnclick($statement)
+            ->addClass('menu-clickable');
+
+        $this->addItem($link);
         
         return $link;
     }
@@ -137,26 +155,47 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
      * @return $this
      * @throws Application_Exception
      */
-    public function addSeparator()
+    public function addSeparator() : self
     {
-        if(empty($this->items)) {
+        if(empty($this->items))
+        {
             return $this;
         }
         
         $items = $this->items;
         $last = array_pop($items);
         
-        if(!$last instanceof UI_Bootstrap_DropdownDivider) {
-            $this->items[] = $this->ui->createBootstrap('DropdownDivider');
+        if(!$last instanceof UI_Bootstrap_DropdownDivider)
+        {
+            $this->addItem($this->createDivider());
         }
         
         return $this;
     }
-    
-    public function addStatic($content)
+
+    private function createDivider() : UI_Bootstrap_DropdownDivider
+    {
+        $divider = $this->ui->createBootstrap('DropdownDivider');
+
+        if($divider instanceof UI_Bootstrap_DropdownDivider)
+        {
+            return $divider;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(UI_Bootstrap_DropdownDivider::class, $divider);
+    }
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @return UI_Bootstrap_DropdownStatic
+     * @throws UI_Exception
+     */
+    public function addStatic($content) : UI_Bootstrap_DropdownStatic
     {
         $item = $this->ui->createDropdownStatic($content);
-        $this->items[] = $item;
+
+        $this->addItem($item);
+
         return $item;
     }
 
@@ -169,22 +208,26 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
     * @param string $afterItem The name of the item to move it after
     * @return UI_Bootstrap_DropdownMenu
     */
-    public function moveAfter($whichItem, $afterItem)
+    public function moveAfter(string $whichItem, string $afterItem) : self
     {
         $moveItem = $this->getItemByName($whichItem);
-        if(!$moveItem) {
+        if(!$moveItem)
+        {
             return $this;
         }
         
         $keep = array();
-        foreach($this->items as $item) {
-            if($item->isNamed($whichItem)) {
+        foreach($this->items as $item)
+        {
+            if($item->isNamed($whichItem))
+            {
                 continue;
             }
             
             $keep[] = $item;
             
-            if($item->isNamed($afterItem)) {
+            if($item->isNamed($afterItem))
+            {
                 $keep[] = $moveItem;
             }
         }
@@ -198,12 +241,14 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
     * Retrieves a menu item by its name.
     * 
     * @param string $name
-    * @return UI_Interfaces_Bootstrap|NULL
+    * @return UI_Interfaces_Bootstrap_DropdownItem|NULL
     */
-    public function getItemByName($name)
+    public function getItemByName(string $name) : ?UI_Interfaces_Bootstrap_DropdownItem
     {
-        foreach($this->items as $item) {
-            if($item->isNamed($name)) {
+        foreach($this->items as $item)
+        {
+            if($item->isNamed($name))
+            {
                 return $item;
             }
         }
@@ -211,4 +256,3 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         return null;
     }
 }
-

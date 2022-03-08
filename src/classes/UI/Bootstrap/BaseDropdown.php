@@ -1,6 +1,8 @@
 <?php
 
-abstract class UI_Bootstrap_BaseDropdown extends UI_Bootstrap implements Application_Interfaces_Iconizable
+abstract class UI_Bootstrap_BaseDropdown
+    extends UI_Bootstrap
+    implements UI_Interfaces_Bootstrap_DropdownItem
 {
     use Application_Traits_Iconizable;
     
@@ -24,7 +26,7 @@ abstract class UI_Bootstrap_BaseDropdown extends UI_Bootstrap implements Applica
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }
@@ -147,14 +149,14 @@ abstract class UI_Bootstrap_BaseDropdown extends UI_Bootstrap implements Applica
    /**
     * Attempts to retrieve an item by its name.
     * @param string $name
-    * @return UI_Interfaces_Bootstrap|NULL
+    * @return UI_Interfaces_Bootstrap_DropdownItem|NULL
     */
-    public function getItemByName($name)
+    public function getItemByName(string $name) : ?UI_Interfaces_Bootstrap_DropdownItem
     {
         return $this->menu->getItemByName($name);
     }
     
-    protected function renderCaret()
+    protected function renderCaret() : string
     {
         return '<span class="caret"></span>';
     }
