@@ -413,7 +413,7 @@ class Application_LockManager extends DBHelper_BaseCollection
         return $this->isLockedFor(Application::getUser()); 
     }
     
-    public function getLockReason()
+    public function getLockReason() : ?string
     {
         if($this->isLocked()) {
             return t('Locked by %1$s.', $this->getUser()->getName());
