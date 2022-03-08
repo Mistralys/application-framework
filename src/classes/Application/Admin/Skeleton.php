@@ -390,10 +390,9 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     /**
      * Renders the generic unauthorized information message that is
      * displayed if someone tries to access a page that he is not
-     * authorized to view (by copy+pasting an URL for example).
+     * authorized to view (by copy+pasting a URL for example).
      *
      * @return string
-     * @template content.unauthorized
      */
     protected function renderUnauthorized()
     {
