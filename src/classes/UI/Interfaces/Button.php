@@ -2,81 +2,86 @@
 
 use AppUtils\Interface_Classable;
 
-interface UI_Interfaces_Button extends UI_Renderable_Interface, Application_Interfaces_Iconizable, Interface_Classable, Application_LockableItem_Interface, UI_Interfaces_ClientConfirmable
+interface UI_Interfaces_Button
+    extends
+    Application_Interfaces_Iconizable,
+    Interface_Classable,
+    Application_LockableItem_Interface,
+    UI_Interfaces_ClientConfirmable
 {
     /**
      * Styles the button as a button for a dangerous operation, like deleting records.
      *
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeDangerous();
+    public function makeDangerous() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makePrimary();
+    public function makePrimary() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeSuccess();
+    public function makeSuccess() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeDeveloper();
+    public function makeDeveloper() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeWarning();
+    public function makeWarning() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeInfo();
+    public function makeInfo() : self;
 
     /**
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function makeInverse();
+    public function makeInverse() : self;
 
     /**
      * @param string $statement
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function click(string $statement);
+    public function click(string $statement) : self;
 
     /**
      * @param string $url
      * @param string $target
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function link(string $url, string $target='');
+    public function link(string $url, string $target='') : self;
 
     /**
      * @param string|number|UI_Renderable_Interface $tooltip
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function setTooltip($tooltip);
+    public function setTooltip($tooltip) : self;
 
     /**
      * @param string|number|UI_Renderable_Interface $text
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function setLoadingText($text);
+    public function setLoadingText($text) : self;
 
     /**
      * @param string $id
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function setID(string $id);
+    public function setID(string $id) : self;
 
     /**
      * @param string $label
-     * @return UI_Interfaces_Button
+     * @return $this
      */
-    public function setLabel(string $label);
+    public function setLabel(string $label) : self;
 
     public function getLabel() : string;
 
