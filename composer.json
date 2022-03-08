@@ -1,14 +1,14 @@
 {
-  "name": "1and1/application_framework",
+  "name": "mistralys/application_framework",
   "description": "PHP-based Application Framework",
   "type": "library",
-  "license": "Commercial",
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Sebastian Mordziol",
-      "email": "s.mordziol@gmail.com",
+      "email": "s.mordziol@mistralys.eu",
       "homepage": "https://www.mistralys.eu",
-      "role": "Developer"
+      "role": "Lead"
     }
   ],
   "autoload": {
@@ -85,10 +85,10 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "php": "7.4"
+    "php": ">=7.4"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.5",
-    "phpstan/phpstan": "^0.12"
+    "phpunit/phpunit": ">=9.5",
+    "phpstan/phpstan": ">=1.4"
   }
 }
