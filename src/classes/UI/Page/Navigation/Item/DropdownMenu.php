@@ -103,7 +103,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         return $this;
     }
     
-    public function getType()
+    public function getType() : string
     {
         return 'dropdownmenu';
     }

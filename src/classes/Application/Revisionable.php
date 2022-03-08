@@ -643,18 +643,19 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     * Whether changes may be made to the revisionable in its current state.
     * @return boolean
     */
-    public function isChangingAllowed()
+    public function isChangingAllowed() : bool
     {
         return $this->getState()->isChangingAllowed();
     }
     
-    public function isEditable()
+    public function isEditable() : bool
     {
-        if ($this->isChangingAllowed()) {
-            return parent::isEditable();
+        if(!parent::isEditable())
+        {
+            return false;
         }
-    
-        return false;
+
+        return $this->isChangingAllowed();
     }
     
    /**

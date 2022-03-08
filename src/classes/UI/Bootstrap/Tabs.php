@@ -13,22 +13,19 @@
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
- * @method UI_Bootstrap_Tab[] getChildren()
  */
 class UI_Bootstrap_Tabs extends UI_Bootstrap
 {
     public const ERROR_TAB_ALREADY_EXISTS = 18501;
     public const ERROR_TAB_NAME_NOT_FOUND = 18502;
     
-    protected function init()
+    protected function init() : void
     {
-        $this->setName($this->getAttribute('id'));
-        
-        $this->addClass('nav')->addClass('nav-tabs');
+        $this->addClass('nav');
+        $this->addClass('nav-tabs');
     }
     
-    public function getID()
+    public function getID() : string
     {
         return 'tabs-'.$this->getName();
     }

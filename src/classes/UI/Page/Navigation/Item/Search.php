@@ -148,7 +148,7 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         return $this->resolveCountry($scopeID);
     }
     
-    public function getType()
+    public function getType() : string
     {
         return 'search';
     }
