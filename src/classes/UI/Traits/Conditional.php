@@ -4,15 +4,8 @@ declare(strict_types=1);
 
 trait UI_Traits_Conditional
 {
-   /**
-    * @var boolean
-    */
-    protected $conditionalValid = true;
-    
-    /**
-     * @var string
-     */
-    protected $invalidReason = '';
+    protected bool $conditionalValid = true;
+    protected string $invalidReason = '';
 
    /**
     * The element will only be shown if the specified condition evaluates to true.
@@ -21,7 +14,7 @@ trait UI_Traits_Conditional
     * @param string $reason
     * @return $this
     */
-    public function requireTrue(bool $enabled, string $reason='')
+    public function requireTrue(bool $enabled, string $reason='') : self
     {
         if($enabled !== true)
         {
@@ -34,8 +27,9 @@ trait UI_Traits_Conditional
     /**
      * @param string $rightName
      * @return $this
+     * @throws Application_Exception
      */
-    public function requireRight(string $rightName)
+    public function requireRight(string $rightName) : self
     {
         return $this->requireTrue(Application::getUser()->can($rightName));
     }
@@ -44,7 +38,7 @@ trait UI_Traits_Conditional
     * @param string $reason
     * @return $this
     */
-    protected function setInvalid(string $reason='')
+    protected function setInvalid(string $reason='') : self
     {
         $this->conditionalValid = false;
         $this->invalidReason = $reason;
@@ -59,7 +53,7 @@ trait UI_Traits_Conditional
     * @param string $reason
     * @return $this
     */
-    public function requireFalse(bool $enabled, string $reason='')
+    public function requireFalse(bool $enabled, string $reason='') : self
     {
         if($enabled !== false)
         {
@@ -75,7 +69,7 @@ trait UI_Traits_Conditional
      * @param Application_LockableRecord_Interface $record
      * @return $this
      */
-    public function requireEditable(Application_LockableRecord_Interface $record)
+    public function requireEditable(Application_LockableRecord_Interface $record) : self
     {
         if(!$record->isEditable()) 
         {
@@ -90,7 +84,7 @@ trait UI_Traits_Conditional
      * @param Application_Revisionable $revisionable
      * @return $this
      */
-    public function requireChanging(Application_Revisionable $revisionable)
+    public function requireChanging(Application_Revisionable $revisionable) : self
     {
         if(!$revisionable->isChangingAllowed()) 
         {
