@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-use AppUtils\FileHelper;
+namespace testsuites\TypeHinter;
 
-final class TypeHinter_ReplaceTests extends ApplicationTestCase
+use Application;
+use ApplicationTestCase;
+use AppUtils\FileHelper;
+use TypeHinter;
+use TypeHinter_UpdateV1_21;
+
+final class ReplaceTests extends ApplicationTestCase
 {
     /**
      * @var string
      */
-    private $inputFile;
+    private string $outputFile;
 
     /**
      * @var string
      */
-    private $outputFile;
-
-
+    private string $expectedFile;
     /**
      * @var string
      */
-    private $expectedFile;
-    /**
-     * @var string
-     */
-    private $sourceFolder;
+    private string $sourceFolder;
 
     protected function setUp() : void
     {
@@ -34,9 +34,10 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
 
         $this->assertDirectoryExists($this->sourceFolder);
 
-        $this->inputFile = $this->sourceFolder.'/TypeHinterTestClass.php';
         $this->outputFile = $this->sourceFolder.'/TypeHinterTestClass.php.output';
         $this->expectedFile = $this->sourceFolder.'/TypeHinterTestClass.php.expected';
+
+        FileHelper::deleteFile($this->outputFile);
     }
 
     public function test_findFiles() : void
@@ -48,11 +49,16 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
     {
         $update = new TypeHinter_UpdateV1_21();
 
-        (new TypeHinter($this->sourceFolder))
+        $this->enableLogging();
+
+        $hinter = (new TypeHinter($this->sourceFolder))
             ->setFileSuffix('output')
             ->addMethod('_handleActions', 'bool')
-            ->addReplace($update->getActionSearch(), $update->getActionReplace())
-            ->process();
+            ->addReplace($update->getActionSearch(), $update->getActionReplace());
+
+        $this->assertCount(1, $hinter->getFilesList());
+
+        $hinter->process();
 
         $this->assertEquals(
             FileHelper::readContents($this->expectedFile),
@@ -60,7 +66,7 @@ final class TypeHinter_ReplaceTests extends ApplicationTestCase
         );
     }
 
-    public function test_executeUpdateV1_21() : void
+    public function _test_executeUpdateV1_21() : void
     {
         (new TypeHinter_UpdateV1_21())->create(APP_INSTALL_FOLDER)->process();
 
