@@ -201,7 +201,7 @@ class Application_Countries_Navigator extends UI_Renderable
     {
         if($this->savingEnabled === true)
         {
-            Application_Driver::setSetting($this->storageName, (string)$country->getID());
+            Application_Driver::createSettings()->setInt($this->storageName, $country->getID());
         }
     }
 
@@ -212,7 +212,7 @@ class Application_Countries_Navigator extends UI_Renderable
             return null;
         }
 
-        $id = (int)Application_Driver::getSetting($this->storageName);
+        $id = Application_Driver::createSettings()->getInt($this->storageName);
 
         if($this->collection->idExists($id))
         {

@@ -28,13 +28,8 @@ class Application_Maintenance
     {
         $this->driver = $driver;
         
-        $json = $this->driver->getSetting($this->settingName);
-        if(empty($json)) {
-            return;
-        }
-        
-        $data = json_decode($json, true);
-        
+        $data = Application_Driver::createSettings()->getArray($this->settingName);
+
         foreach($data as $entry) 
         {
             $plan = new Application_Maintenance_Plan(
@@ -95,12 +90,8 @@ class Application_Maintenance
         foreach($this->plans as $plan) {
             $data[] = $plan->serialize();
         }
-        
-        if(empty($data)) {
-            $this->driver->deleteSetting($this->settingName);
-        } else {
-            $this->driver->setSetting($this->settingName, json_encode($data));
-        }
+
+        Application_Driver::createSettings()->setArray($this->settingName, $data);
     }
     
     protected $enabled;
@@ -167,16 +158,8 @@ class Application_Maintenance
     
     protected function nextID() : int
     {
-        $id = intval($this->driver->getSetting($this->settingName.'_id', '0'));
-        if(empty($id)) {
-            $id = 1;
-        } else {
-            $id++;
-        }
-        
-        $this->driver->setSetting($this->settingName.'_id', (string)$id);
-        
-        return $id;
+        return Application_Driver::createSettings()
+            ->increaseCounter($this->settingName.'_id');
     }
     
     public function idExists(int $id) : bool

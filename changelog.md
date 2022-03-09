@@ -5,9 +5,21 @@
 - Formable: Marked `addElementHeader()` as deprecated.
 - Request: Added `Application_Request::resolveParams()`.
 - UI: Skeleton: Added the static `Application_Admin_Skeleton::getPageParamNames()`.
+- Application: Added the `DriverSettings` class to easily access global settings.
+- Application: Added `Application_Driver::createSettings()`.
 
 **Breaking changes:**
 - Minimum requirement now PHP 7.4
+
+**Deprecated methods:**
+- `Application_Driver::setSetting()`
+- `Application_Driver::setBoolSetting()`
+- `Application_Driver::setSettingExpiry()`
+- `Application_Driver::getSetting()`
+- `Application_Driver::getBoolSetting()`
+- `Application_Driver::deleteSetting()`
+
+These methods will be removed in a future release.
 
 ### v1.23.1 - Maintenance release
 - Sessions: Added error checks in the session initialization.

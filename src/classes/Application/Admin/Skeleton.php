@@ -793,12 +793,12 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * Sets an application setting specifically for this administration screen.
     *  
     * @param string $name
-    * @param string $value
+    * @param string|int|float|bool|NULL $value
     * @return $this
     */
-    protected function setSetting(string $name, $value)
+    protected function setSetting(string $name, $value) : self
     {
-        Application_Driver::setSetting($this->getSettingName($name), $value);
+        Application_Driver::createSettings()->set($this->getSettingName($name), $value);
         return $this;
     }
     
@@ -806,32 +806,37 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * Retrieves a setting previously stored for this administration screen.
     * 
     * @param string $name
-    * @param mixed $default
-    * @return mixed
+    * @param string|NULL $default
+    * @return string|NULL
     */
-    protected function getSetting(string $name, $default=null)
+    protected function getSetting(string $name, ?string $default=null) : ?string
     {
-        return $this->driver->getSetting($this->getSettingName($name), $default);
+        return Application_Driver::createSettings()->get($this->getSettingName($name), $default);
     }
-    
-   /**
-    * Removes a setting stored for this administration screen. Has no 
-    * effect if the setting does not exist.
-    * 
-    * @param string $name
-    */
-    protected function removeSetting($name)
+
+    /**
+     * Removes a setting stored for this administration screen. Has no
+     * effect if the setting does not exist.
+     *
+     * @param string $name
+     * @throws Application_Exception
+     * @return $this
+     */
+    protected function removeSetting(string $name) : self
     {
-        $this->driver->deleteSetting($this->getSettingName($name));
+        Application_Driver::createSettings()->delete($this->getSettingName($name));
+        return $this;
     }
-    
-   /**
-    * Sets a user setting specifically for this administration screen.
-    * 
-    * @param string $name
-    * @return Application_Admin_Skeleton
-    */
-    protected function setUserSetting($name, $value)
+
+    /**
+     * Sets a user setting specifically for this administration screen.
+     *
+     * @param string $name
+     * @param string $value
+     * @return $this
+     * @throws Application_Exception
+     */
+    protected function setUserSetting(string $name, string $value) : self
     {
         $this->user->setSetting($this->getSettingName($name), $value);
         $this->user->saveSettings();
@@ -842,23 +847,25 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * Retrieves a setting previously stored for this user and this specific administration screen.
     *  
     * @param string $name
-    * @param string|NULL $default
-    * @return string|NULL
+    * @param string $default
+    * @return string
     */
-    protected function getUserSetting($name, $default=null)
+    protected function getUserSetting(string $name, string $default='') : string
     {
         return $this->user->getSetting($this->getSettingName($name), $default);
     }
 
-   /**
-    * Removes a previously set user setting for this specific administration screen.
-    * Has no effect if the setting does not exist.
-    *  
-    * @param string $name
-    */
-    protected function removeUserSetting(string $name) : void
+    /**
+     * Removes a previously set user setting for this specific administration screen.
+     * Has no effect if the setting does not exist.
+     *
+     * @param string $name
+     * @return $this
+     */
+    protected function removeUserSetting(string $name) : self
     {
         $this->user->removeSetting($this->getSettingName($name));
+        return $this;
     }
     
    /**
@@ -868,7 +875,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * @param string $name The name of the setting
     * @return string
     */
-    protected function getSettingName($name)
+    protected function getSettingName(string $name) : string
     {
         $path = 'Screen['.$this->getURLPath().']['.$name.']';
         return md5($path);

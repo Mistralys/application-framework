@@ -26,18 +26,22 @@ class Application_Exception extends BaseException
    /**
     * @var string
     */
-    protected $id;
+    protected string $id;
     
     /**
      * Whether to log the exception in the error log.
      * @var boolean
      */
-    private $logging = true;
+    private bool $logging = true;
     
    /**
     * @var boolean
     */
-    private $logged = false;
+    private bool $logged = false;
+
+    private static ?string $requestID = null;
+
+    private static int $exceptionCounter = 0;
 
     /**
      * The additional developer information is only included in
@@ -50,6 +54,15 @@ class Application_Exception extends BaseException
      */
     public function __construct(string $message, string $developerInfo = '', int $code = 0, ?Exception $previous = null)
     {
+        self::$exceptionCounter++;
+
+        if(!isset(self::$requestID))
+        {
+            self::$requestID = md5((string)microtime(true));
+        }
+
+        $this->id = self::$requestID.'_'.self::$exceptionCounter;
+
         if(Application::isUnitTestingRunning())
         {
             $message .= PHP_EOL.$developerInfo;
@@ -62,8 +75,6 @@ class Application_Exception extends BaseException
         }
 
         parent::__construct($message, $developerInfo, $code, $previous);
-
-        $this->id = md5(strval(microtime(true)).'-exception-'.$code.'-'.$message);
     }
     
    /**
@@ -128,5 +139,28 @@ class Application_Exception extends BaseException
             Application_ErrorLog_Log_Entry_Exception::logException($this);
             $this->logged = true;
         }
+    }
+
+    public static function getDeveloperMessage(Throwable $e) : string
+    {
+        $code = $e->getCode();
+        if(empty($code))
+        {
+           $code = '(none)';
+        }
+
+        $details = '';
+        if($e instanceof BaseException)
+        {
+            $details = $e->getDetails();
+        }
+
+        return sprintf(
+            'Exception [%s] | Code: [%s] | Message: [%s] | Details: [%s]',
+            get_class($e),
+            $code,
+            $e->getMessage(),
+            $details
+        );
     }
 }

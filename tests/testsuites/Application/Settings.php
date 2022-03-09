@@ -29,19 +29,23 @@ final class Application_SettingsTest extends ApplicationTestCase
     {
         $this->logHeader('Set application setting');
 
-        Application_Driver::setSetting($this->settingName, $this->settingValue);
+        $settings = Application_Driver::createSettings();
 
-        $this->assertSame($this->settingValue, Application_Driver::getSetting($this->settingName));
+        $settings->set($this->settingName, $this->settingValue);
+
+        $this->assertSame($this->settingValue, $settings->get($this->settingName));
     }
 
     public function test_updateSetting() : void
     {
         $this->logHeader('Update application setting');
 
-        Application_Driver::setSetting($this->settingName, $this->settingValue);
-        Application_Driver::setSetting($this->settingName, $this->settingUpdatedValue);
+        $settings = Application_Driver::createSettings();
 
-        $this->assertSame($this->settingUpdatedValue, Application_Driver::getSetting($this->settingName));
+        $settings->set($this->settingName, $this->settingValue);
+        $settings->set($this->settingName, $this->settingUpdatedValue);
+
+        $this->assertSame($this->settingUpdatedValue, $settings->get($this->settingName));
     }
 
     public function test_setExpirySettingFuture() : void
@@ -50,13 +54,14 @@ final class Application_SettingsTest extends ApplicationTestCase
 
         $this->logHeader('Update expiry date one day later application setting');
 
-        Application_Driver::setSetting($this->settingName, $this->settingValue);
+        $settings = Application_Driver::createSettings();
+        $settings->set($this->settingName, $this->settingValue);
 
         $value = new DateTime();
         $value->modify('+1 day');
-        Application_Driver::setSettingExpiry($this->settingName, $value);
+        $settings->setExpiry($this->settingName, $value);
 
-        $this->assertEquals($this->settingValue, Application_Driver::getSetting($this->settingName));
+        $this->assertEquals($this->settingValue, $settings->get($this->settingName));
     }
 
     public function test_setExpirySettingPast() : void
@@ -65,13 +70,15 @@ final class Application_SettingsTest extends ApplicationTestCase
 
         $this->logHeader('Update expiry date one day before application setting');
 
-        Application_Driver::setSetting($this->settingName, $this->settingValue);
+        $settings = Application_Driver::createSettings();
+
+        $settings->set($this->settingName, $this->settingValue);
 
         $value = new DateTime();
         $value->modify('-1 day');
-        Application_Driver::setSettingExpiry($this->settingName, $value);
+        $settings->setExpiry($this->settingName, $value);
 
-        $this->assertNull(Application_Driver::getSetting($this->settingName));
+        $this->assertNull($settings->get($this->settingName));
     }
 
     private function skipIfExpiryNotPresent() : void

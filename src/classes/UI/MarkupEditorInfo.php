@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 /**
  * Information container for a markup editor type: allows
- * retrieving a human readable label and its ID.
+ * retrieving a human-readable label and its ID.
  * 
  * Additionally, it allows selecting a markup editor as
  * the default for the whole application.
@@ -23,15 +23,17 @@ declare(strict_types=1);
  */
 class UI_MarkupEditorInfo
 {
-   /**
+    public const SETTING_NAME_MARKUP_EDITOR_ID = 'MarkupEditorID';
+
+    /**
     * @var string
     */
-    private $id;
+    private string $id;
     
    /**
     * @var string
     */
-    private $label;
+    private string $label;
     
     public function __construct(string $id, string $label)
     {
@@ -57,7 +59,7 @@ class UI_MarkupEditorInfo
     */
     public function selectAsDefault() : UI_MarkupEditorInfo
     {
-        Application_Driver::setSetting('MarkupEditorID', $this->getID());
+        Application_Driver::createSettings()->set(self::SETTING_NAME_MARKUP_EDITOR_ID, $this->getID());
         return $this;
     }
 }

@@ -1305,7 +1305,7 @@ class UI
     
     public function getDefaultMarkupEditor() : UI_MarkupEditorInfo
     {
-        $name = Application_Driver::getSetting('MarkupEditorID');
+        $name = Application_Driver::createSettings()->get(UI_MarkupEditorInfo::SETTING_NAME_MARKUP_EDITOR_ID);
 
         $editors = $this->getMarkupEditors();
         

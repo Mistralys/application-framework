@@ -27,6 +27,12 @@ interface Application_Session extends Application_Interfaces_Loggable
     public function getUser() : ?Application_User;
 
     /**
+     * @return Application_User
+     * @throws Application_Session_Exception
+     */
+    public function requireUser() : Application_User;
+
+    /**
      * Fetches a list of all rights available for the specified user.
      *
      * @param Application_Users_User $user

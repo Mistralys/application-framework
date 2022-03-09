@@ -37,9 +37,7 @@ class Application_DBDumps
     */
     public function createDump() : Application_DBDumps_Dump
     {
-        $id = (int)$this->driver->getSetting('db-dump-idcounter', '1') + 1;
-        $this->driver->setSetting('db-dump-idcounter', (string)$id);
-
+        $id = Application_Driver::createSettings()->increaseCounter('db-dump-idcounter');
         $cmd = null;
         
         if(isOSWindows()) 

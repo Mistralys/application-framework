@@ -204,18 +204,16 @@ class Application_LockManager extends DBHelper_BaseCollection
     * 
     * @return boolean
     */
-    public static function isEnabled()
+    public static function isEnabled() : bool
     {
         if(!isDevelMode()) {
             return true;
         }
         
-        $state = Application_Driver::getSetting('lockmanager_state', 'enabled');
-        if($state === 'enabled') {
-            return true;
-        }
-        
-        return false;
+        $state = Application_Driver::createSettings()
+            ->get('lockmanager_state', 'enabled');
+
+        return $state === 'enabled';
     }
     
    /**
@@ -243,7 +241,7 @@ class Application_LockManager extends DBHelper_BaseCollection
     * @param string $state [enabled|disabled]
     * @throws Application_Exception
     */
-    protected static function setState($state)
+    protected static function setState(string $state) : void
     {
         if(!isDevelMode()) {
             throw new Application_Exception(
@@ -253,7 +251,7 @@ class Application_LockManager extends DBHelper_BaseCollection
             );
         }
         
-        Application_Driver::setSetting('lockmanager_state', $state);
+        Application_Driver::createSettings()->set('lockmanager_state', $state);
     }
 
     protected $loaded = false;

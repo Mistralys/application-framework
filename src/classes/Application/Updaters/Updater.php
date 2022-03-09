@@ -217,14 +217,13 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
     * Gets the value of a persistent updater-specific application setting.
     * 
     * @param string $name
-    * @param string $default
+    * @param string|NULL $default
     * @return string
-    * @see Application_Driver::getSetting()
     */
-    public function getSetting($name, $default=null)
+    public function getSetting(string $name, ?string $default=null) : ?string
     {
     	$name = $this->getSettingName($name);
-    	return $this->driver->getSetting($name, $default);
+    	return Application_Driver::createSettings()->get($name, $default);
     }
     
    /**
@@ -232,24 +231,22 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
     * 
     * @param string $name
     * @param string $value
-    * @see Application_Driver::setSetting()
     */
-    protected function setSetting($name, $value)
+    protected function setSetting(string $name, string $value) : void
     {
     	$name = $this->getSettingName($name);
-    	$this->driver->setSetting($name, $value);
+        Application_Driver::createSettings()->set($name, $value);
     }
     
    /**
     * Deletes an existing updater-specific application setting.
     * 
     * @param string $name
-    * @see Application_Driver::deleteSetting()
     */
-    protected function deleteSetting($name)
+    protected function deleteSetting(string $name) : void
     {
     	$name = $this->getSettingName($name);
-    	$this->driver->deleteSetting($name);
+        Application_Driver::createSettings()->delete($name);
     }
     
    /**
@@ -259,7 +256,7 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
     * @param string $name
     * @return string
     */
-    protected function getSettingName($name)
+    protected function getSettingName(string $name) : string
     {
     	return 'Updater_'.$this->getID().'_'.$name;
     }

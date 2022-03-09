@@ -44,31 +44,30 @@ class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_
         return 'SELECT {WHAT} FROM `app_settings` {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
     }
     
-    public function addSetting($name, $value)
+    public function addSetting(string $name, $value) : self
     {
-        Application_Driver::setSetting($name, $value);
+        Application_Driver::createSettings()->set($name, $value);
         return $this;
     }
     
-    public function getSetting($name, $default=null)
+    public function getSetting(string $name, ?string $default=null) : ?string
     {
-        return Application_Driver::getSetting($name, $default);
+        return Application_Driver::createSettings()->get($name, $default);
     }
 
     public function getBoolSetting(string $name, bool $default=false) : bool
     {
-        return Application_Driver::getBoolSetting($name, $default);
+        return Application_Driver::createSettings()->getBool($name, $default);
     }
     
-    public function settingExists($name)
+    public function settingExists(string $name) : bool
     {
-        $value = $this->getSetting($name);
-        return $value !== "" && $value !== null;
+        return Application_Driver::createSettings()->exists($name);
     }
     
-    public function deleteSetting($name)
+    public function deleteSetting(string $name) : self
     {
-        Application_Driver::deleteSetting($name);
+        Application_Driver::createSettings()->delete($name);
 
         DBHelper::deleteRecords(
             'app_settings', 
@@ -76,6 +75,8 @@ class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_
                 'data_key' => $name
             )
         );
+
+        return $this;
     }
 
     protected function _registerJoins() : void

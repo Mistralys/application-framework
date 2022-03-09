@@ -196,6 +196,12 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
             t('Show user name in meta navigation?')
         );
 
+        $this->registerSetting(
+            UI_MarkupEditorInfo::SETTING_NAME_MARKUP_EDITOR_ID,
+            'string',
+            t('The ID of the markup editor to use.')
+        );
+
         $this->_registerSettings();
     }
 
