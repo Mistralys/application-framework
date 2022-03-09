@@ -742,14 +742,6 @@ abstract class Application_RevisionableStateless
      */
     abstract protected function _save();
 
-    protected function log($message)
-    {
-        Application::log(
-            $this->getIdentification() . ' | ' .
-            $message
-        );
-    }
-    
    /**
     * This is called by the revisionable storage when a new
     * revision has been loaded. Can be extended to add any
