@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 class TypeHinter_UpdateV1_21
 {
-    private static $defActionSearch = <<<EOT
+    private static string $defActionSearch = <<<EOT
+function getDefaultAction() : string
+    {
+        return null;
+    }
+EOT;
+
+    private static string $defActionReplace = <<<EOT
 function getDefaultAction() : string
     {
         return '';
     }
 EOT;
 
-    private static $defActionReplace = <<<EOT
-function getDefaultAction() : string
-    {
-        return '';
-    }
-EOT;
-
-    private static $defSubmodeSearch = <<<EOT
+    private static string $defSubmodeSearch = <<<EOT
 function getDefaultSubmode() : string
     {
         return '';
     }
 EOT;
 
-    private static $defSubmodeReplace = <<<EOT
+    private static string $defSubmodeReplace = <<<EOT
 function getDefaultSubmode() : string
     {
         return '';

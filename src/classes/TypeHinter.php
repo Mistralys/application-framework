@@ -12,22 +12,22 @@ class TypeHinter implements Application_Interfaces_Loggable
     /**
      * @var string
      */
-    private $rootPath;
+    private string $rootPath;
 
     /**
      * @var array<int,array{name:string,regex:string,type:string,instanceOf:string}>
      */
-    private $methods = array();
+    private array $methods = array();
 
     /**
      * @var string
      */
-    private $fileSuffix;
+    private string $fileSuffix;
 
     /**
      * @var array<string,string>
      */
-    private $replaces = array();
+    private array $replaces = array();
 
     public function __construct(string $rootPath)
     {
