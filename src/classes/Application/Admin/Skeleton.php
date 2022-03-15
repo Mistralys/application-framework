@@ -401,6 +401,8 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
 
     protected function renderDatagrid($pageTitle, UI_DataGrid $grid, $entries = array(), $withSidebar = true)
     {
+        $grid->configureForScreen($this);
+
         return $this->renderer
         ->setWithSidebar($withSidebar)
         ->setTitle($pageTitle)

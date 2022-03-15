@@ -129,9 +129,13 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
      */
     protected $datagrid;
 
-    protected function createDatagrid()
+    protected function createDatagrid() : void
     {
         $grid = $this->ui->createDataGrid('errorlogs');
+        $grid->configureForScreen($this);
+
+        $grid->configureForScreen($this);
+
         $grid->addColumn('month', t('Month'))
         ->setSortable(true)
         ->setSortingNumeric('monthnumber');
@@ -159,7 +163,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
     {
         $logs = $this->errorlog->getFolder();
         
-        \AppUtils\FileHelper::deleteTree($logs);
+        FileHelper::deleteTree($logs);
         
         $this->redirectWithSuccessMessage(
             t(
