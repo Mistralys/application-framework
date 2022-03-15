@@ -1,8 +1,8 @@
 {
-  "name": "1and1/application_framework",
+  "name": "mistralys/application_framework",
   "description": "PHP-based Application Framework",
   "type": "library",
-  "license": "Commercial",
+  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "Sebastian Mordziol",
