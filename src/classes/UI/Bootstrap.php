@@ -1,5 +1,6 @@
 <?php
 
+use AppUtils\ConvertHelper;
 use AppUtils\Traits_Classable;
 
 abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Bootstrap, UI_Interfaces_Conditional
@@ -10,12 +11,12 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
    /**
     * @var string
     */    
-    protected $name;
+    protected string $name;
     
    /**
     * @var UI_Bootstrap[]
     */
-    protected $children = array();
+    protected array $children = array();
 
     public function __construct(UI $ui)
     {
@@ -24,7 +25,7 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         $id = nextJSID();
         $this->setAttribute('id', 'bt'.$id);
@@ -36,13 +37,13 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     * @param string $name
     * @return UI_Bootstrap
     */
-    public function setName($name)
+    public function setName(string $name) : self
     {
         $this->name = $name;
         return $this;
     }
     
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
@@ -52,34 +53,38 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     * @param string $name
     * @return boolean
     */
-    public function isNamed($name)
+    public function isNamed(string $name) : bool
     {
-        if($this->name === $name) {
-            return true;
-        }
-        
-        return false;
+        return $this->name === $name;
     }
 
-    public function getID()
+    public function getID() : string
     {
-        return $this->getAttribute('id');
+        return (string)$this->getAttribute('id');
     }
     
-    public function setID($id)
+    public function setID(string $id) : self
     {
         return $this->setAttribute('id', $id);
     }
-    
+
+    /**
+     * @var array<string,string>
+     */
     protected $attributes = array();
-    
-    public function setAttribute($name, $value)
+
+    /**
+     * @param string $name
+     * @param string|number $value
+     * @return $this
+     */
+    public function setAttribute(string $name, $value) : self
     {
-        $this->attributes[$name] = $value;
+        $this->attributes[$name] = (string)$value;
         return $this;
     }
     
-    public function getAttribute($name, $default=null)
+    public function getAttribute(string $name, $default=null)
     {
         if(isset($this->attributes[$name])) {
             return $this->attributes[$name];
@@ -88,31 +93,41 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
         return $default;
     }
     
-    public function hasAttribute($name)
+    public function hasAttribute(string $name) : bool
     {
-        return isset($this->attributes[$name]) && $this->attributes[$name] != '';
+        return isset($this->attributes[$name]) && $this->attributes[$name] !== '';
     }
     
-    public function renderAttributes()
+    public function renderAttributes() : string
     {
-        $atts = $this->attributes;
+        $attributes = $this->attributes;
         
         if(!empty($this->classes)) {
-            $atts['class'] = $this->classesToString();
+            $attributes['class'] = $this->classesToString();
         }
         
         if(!empty($this->styles)) {
-            $atts['style'] = AppUtils\ConvertHelper::array2styleString($this->styles);
+            $attributes['style'] = ConvertHelper::array2styleString($this->styles);
         }
         
-        return compileAttributes($atts);
+        return compileAttributes($attributes);
     }
-    
+
+    /**
+     * @var array<string,string>
+     */
     protected $styles = array();
-    
-    public function setStyle($name, $value)
+
+    /**
+     * @param string $name
+     * @param string|number|NULL $value
+     * @return void
+     */
+    public function setStyle(string $name, $value) : self
     {
-        $this->styles[$name] = $value;
+        $this->styles[$name] = (string)$value;
+
+        return $this;
     }
     
    /**
@@ -122,9 +137,9 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     * 
     * @param UI_Bootstrap $child
     * @throws Application_Exception
-    * @return UI_Bootstrap
+    * @return $this
     */
-    public function appendChild(UI_Bootstrap $child)
+    public function appendChild(UI_Bootstrap $child) : self
     {
         $this->requireNotHasChild($child);
 
@@ -140,7 +155,7 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
      * @return $this
      * @throws Application_Exception
      */
-    public function prependChild(UI_Bootstrap $child)
+    public function prependChild(UI_Bootstrap $child) : self
     {
         $this->requireNotHasChild($child);
 
@@ -150,14 +165,15 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
 
         return $this;
     }
-    
-   /**
-    * Sets the parent element of a child element.
-    * 
-    * @param UI_Bootstrap $parent
-    * @return UI_Bootstrap
-    */
-    public function setParent(UI_Bootstrap $parent)
+
+    /**
+     * Sets the parent element of a child element.
+     *
+     * @param UI_Bootstrap $parent
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setParent(UI_Bootstrap $parent) : self
     {
         $this->requireParentHasChild($parent);
 
@@ -166,27 +182,28 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     }
     
    /**
-    * @var UI_Bootstrap
+    * @var UI_Bootstrap|NULL
     */
-    protected $parent = null;
+    protected ?UI_Bootstrap $parent = null;
     
    /**
     * Retrieves the element's parent element, if any.
-    * @return UI_Bootstrap
+    * @return UI_Bootstrap|NULL
     */
-    public function getParent()
+    public function getParent() : ?UI_Bootstrap
     {
         return $this->parent;
     }
 
-   /**
-    * Creates a child content instance. Note that this does not
-    * add the child: it is orphaned until it is actually added
-    * to a parent element.
-    * 
-    * @param string $type
-    * @return UI_Interfaces_Bootstrap
-    */
+    /**
+     * Creates a child content instance. Note that this does not
+     * add the child: it is orphaned until it is actually added
+     * to a parent element.
+     *
+     * @param string $type
+     * @return UI_Interfaces_Bootstrap
+     * @throws Application_Exception
+     */
     public function createChild(string $type) : UI_Interfaces_Bootstrap
     {
         return $this->ui->createBootstrap($type);
@@ -199,8 +216,10 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     */
     public function hasChild(string $name) : bool
     {
-        foreach($this->children as $child) {
-            if($child->getName() == $name) {
+        foreach($this->children as $child)
+        {
+            if($child->getName() === $name)
+            {
                 return true;
             }
         }
@@ -211,12 +230,12 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
    /**
     * @return UI_Bootstrap[]
     */
-    public function getChildren()
+    public function getChildren() : array
     {
         return $this->children;
     }
     
-    public function hasChildren()
+    public function hasChildren() : bool
     {
         return !empty($this->children);
     }
@@ -256,7 +275,7 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
 
     /**
      * @param UI_Bootstrap $parent
-     * @throws Application_Exception
+     * @throws UI_Exception
      */
     private function requireParentHasChild(UI_Bootstrap $parent) : void
     {
@@ -265,7 +284,7 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
             return;
         }
 
-        throw new Application_Exception(
+        throw new UI_Exception(
             'Child element has no such parent',
             sprintf(
                 'Cannot add element [%s] of type [%s] as parent of element [%s] of type [%s]: It is not a child of the parent element.',

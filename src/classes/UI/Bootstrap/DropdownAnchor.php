@@ -7,43 +7,55 @@
  * @see UI_Bootstrap_DropdownAnchor
  */
 
+use AppUtils\OutputBuffering;
+
 /**
  * Bootstrap dropdown anchor element.
  *
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- *
- * @method UI_Bootstrap_DropdownAnchor setName(string $name)
  */
-class UI_Bootstrap_DropdownAnchor extends UI_Bootstrap implements Application_Interfaces_Iconizable
+class UI_Bootstrap_DropdownAnchor
+    extends UI_Bootstrap
+    implements
+        Application_Interfaces_Iconizable,
+        UI_Interfaces_Bootstrap_DropdownItem
 {
    /**
     * @var UI_Bootstrap_Anchor
     */
-    protected $anchor;
+    protected UI_Bootstrap_Anchor $anchor;
 
-   /**
-    * {@inheritDoc}
-    * @see UI_Bootstrap::init()
-    */
-    public function init()
+    public function init() : void
     {
         $this->anchor = $this->ui->createAnchor();
+
+        $this->addClass('dropdown-item');
     }
-    
-    public function setTitle($title)
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
+     */
+    public function setTitle($title) : self
     {
-        return $this->setAttribute('title', $title);
+        return $this->setAttribute('title', toString($title));
     }
-    
-    public function setLabel($label)
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setLabel($label) : self
     {
         $this->anchor->setLabel($label);
         return $this;
     }
     
-    public function setHref($url)
+    public function setHref(string $url) : self
     {
         $this->anchor->setHref($url);
         return $this;
@@ -55,13 +67,13 @@ class UI_Bootstrap_DropdownAnchor extends UI_Bootstrap implements Application_In
     * @param string $target
     * @return UI_Bootstrap_DropdownAnchor
     */
-    public function setTarget($target)
+    public function setTarget(string $target) : self
     {
         $this->anchor->setTarget($target);
         return $this;
     }
     
-    public function setOnclick($statement)
+    public function setOnclick(string $statement) : self
     {
         $this->anchor->setClick($statement);
         $this->anchor->setHref('javascript:void(0)');
@@ -72,7 +84,7 @@ class UI_Bootstrap_DropdownAnchor extends UI_Bootstrap implements Application_In
     * @param UI_Icon $icon
     * @return UI_Bootstrap_DropdownAnchor
     */
-    public function setIcon(UI_Icon $icon)
+    public function setIcon(UI_Icon $icon) : self
     {
         $this->anchor->setIcon($icon);
         return $this;
@@ -88,36 +100,44 @@ class UI_Bootstrap_DropdownAnchor extends UI_Bootstrap implements Application_In
         return $this->anchor->getIcon();
     }
 
-    public function makeDangerous()
+    public function makeDangerous() : self
     {
         return $this->addClass('danger');
     }
     
-    public function makeActive()
+    public function makeActive() : self
     {
         return $this->addClass('active');
     }
     
-    public function makeDeveloper()
+    public function makeDeveloper() : self
     {
         return $this->addClass('developer');
     }
     
-    protected function _render()
+    protected function _render() : string
     {
-        if($this->hasClass('active')) {
-            return 
-            '<li'.$this->renderAttributes().'>' . 
-                '<a>' .
-                    $this->anchor->getLabel() .
-                '</a>' .  
-            '</li>';
-        }
+        OutputBuffering::start();
+
+        ?>
+        <li <?php echo $this->renderAttributes() ?>>
+            <?php
+            if($this->hasClass('active'))
+            {
+                ?>
+                <a>
+                    <?php echo $this->anchor->renderIconLabel($this->anchor->getLabel()) ?>
+                </a>
+                <?php
+            }
+            else
+            {
+                echo $this->anchor->render();
+            }
+            ?>
+        </li>
+        <?php
         
-        if($this->hasClass('developer')) {
-            $this->anchor->setLabel(t('DEV:') . ' ' . $this->anchor->getLabel());
-        }
-        
-        return '<li'.$this->renderAttributes().'>' . $this->anchor->render() . '</li>';
+        return OutputBuffering::get();
     }
 }

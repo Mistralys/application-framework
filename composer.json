@@ -6,9 +6,9 @@
   "authors": [
     {
       "name": "Sebastian Mordziol",
-      "email": "s.mordziol@gmail.com",
+      "email": "s.mordziol@mistralys.eu",
       "homepage": "https://www.mistralys.eu",
-      "role": "Developer"
+      "role": "Lead"
     }
   ],
   "autoload": {
@@ -84,10 +84,11 @@
     "zenorocha/clipboardjs": "v2.0.8",
     "ext-json": "*",
     "ext-mbstring": "*",
-    "ext-pdo": "*"
+    "ext-pdo": "*",
+    "php": ">=7.4"
   },
   "require-dev": {
-    "phpunit/phpunit": "^8.5",
-    "phpstan/phpstan": "^0.12"
+    "phpunit/phpunit": ">=9.5",
+    "phpstan/phpstan": ">=1.4"
   }
 }

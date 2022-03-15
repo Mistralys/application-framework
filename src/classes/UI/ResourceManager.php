@@ -191,33 +191,48 @@ class UI_ResourceManager
     */
     public function registerClientResource(string $fileOrUrl) : int
     {
-        $driver = Application_Driver::getInstance();
-        $keys = $driver->getSetting('client-keys');
-        
-        if(empty($keys)) 
+        $this->loadKeys();
+
+        if(isset($this->keys['scripts'][$fileOrUrl]))
         {
-            $keys = array(
-                'counter' => 0,
-                'scripts' => array()
-            );
-        } 
-        else 
-        {
-            $keys = json_decode($keys, true);
+            return $this->keys['scripts'][$fileOrUrl];
         }
         
-        if(isset($keys['scripts'][$fileOrUrl])) 
-        {
-            return $keys['scripts'][$fileOrUrl];
-        }
-        
-        $keys['counter']++;
-        $id = $keys['counter'];
-        $keys['scripts'][$fileOrUrl] = $id;
-        
-        $driver->setSetting('client-keys', json_encode($keys));
-        
+        $this->keys['counter']++;
+        $id = $this->keys['counter'];
+
+        $this->keys['scripts'][$fileOrUrl] = $id;
+
+        Application_Driver::createSettings()->setArray('client-keys', $this->keys);
+
         return $id;
+    }
+
+    private bool $keysLoaded = false;
+
+    /**
+     * @var array{counter:int,scripts:array<string,int>}
+     */
+    private array $keys = array(
+        'counter' => 0,
+        'scripts' => array()
+    );
+
+    private function loadKeys() : void
+    {
+        if($this->keysLoaded === true)
+        {
+            return;
+        }
+
+        $keys = Application_Driver::createSettings()->getArray('client-keys');
+
+        if(!empty($keys))
+        {
+            $this->keys = $keys;
+        }
+
+        $this->keysLoaded = true;
     }
 
    /**

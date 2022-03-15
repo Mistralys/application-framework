@@ -371,9 +371,9 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
      * Note that this can be empty if the revisionable does not
      * support this, or none has been selected yet.
      *
-     * @return string|NULL
+     * @return int|NULL
      */
-    public function getExportRevision()
+    public function getExportRevision() : ?int
     {
         $table = $this->collection->getRecordExportRevisionsTableName();
         if(!DBHelper::tableExists($table)) {

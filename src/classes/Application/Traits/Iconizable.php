@@ -47,4 +47,17 @@ trait Application_Traits_Iconizable
     {
         return $this->icon;
     }
+
+    public function renderIconLabel(string $label) : string
+    {
+        $icon = $this->getIcon();
+        $result = sb();
+
+        if($icon !== null)
+        {
+            $result->icon($icon);
+        }
+
+        return (string)$result->add($label);
+    }
 }

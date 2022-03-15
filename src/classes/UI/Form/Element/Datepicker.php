@@ -1,21 +1,21 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_Datepicker} class.
+ * File containing the {@see HTML_QuickForm2_Element_Datepicker} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @custom
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_Datepicker
  */
 
 /**
  * Bootstrap-based datepicker element for selecting dates.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package User Interface
+ * @subpackage Form Elements
  * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
  * @see http://eternicode.github.io/bootstrap-datepicker
  * @see https://github.com/eternicode/bootstrap-datepicker
- * @custom
  */
 class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputText
 {

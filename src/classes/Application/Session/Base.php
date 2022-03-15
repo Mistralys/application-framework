@@ -29,6 +29,7 @@ abstract class Application_Session_Base implements Application_Session
     public const ERROR_AUTH_DID_NOT_RETURN_USER = 22205;
     public const ERROR_INVALID_USER_CLASS = 22206;
     public const ERROR_INVALID_USER_ID = 22207;
+    public const ERROR_NO_USER_AVAILABLE = 22208;
 
     public const KEY_NAME_USER_ID = 'user_id';
     public const KEY_NAME_USER_RIGHTS = 'user_rights';
@@ -442,6 +443,26 @@ abstract class Application_Session_Base implements Application_Session
     public function getUser() : ?Application_User
     {
         return $this->user;
+    }
+
+    /**
+     * @return Application_User
+     * @throws Application_Session_Exception
+     */
+    public function requireUser() : Application_User
+    {
+        $user = $this->getUser();
+
+        if($user !== null)
+        {
+            return $user;
+        }
+
+        throw new Application_Session_Exception(
+            'No user has been authenticated yet',
+            '',
+            self::ERROR_NO_USER_AVAILABLE
+        );
     }
 
     /**

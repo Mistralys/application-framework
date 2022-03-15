@@ -2,7 +2,7 @@
 /**
  * File containing the {@link Application_Countries_FilterCriteria} class.
  * 
- * @package Maileditor
+ * @package Application
  * @subpackage Countries
  * @see Application_Countries_FilterCriteria
  */
@@ -12,7 +12,7 @@ declare(strict_types=1);
 /**
  * Filter criteria handler for countries.
  * 
- * @package Maileditor
+ * @package Application
  * @subpackage Countries
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *

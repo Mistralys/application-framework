@@ -2,9 +2,16 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
+namespace testsuites\Application;
 
-final class Application_LoggingTest extends TestCase
+use Application;
+use Application_Bootstrap;
+use Application_Exception;
+use PHPUnit\Framework\TestCase;
+use TestDriver_Bootstrap_Screen_ExceptionTest;
+use TestLoggable;
+
+final class LoggingTests extends TestCase
 {
    /**
     * Ensure that regular exceptions get converted to application
@@ -22,7 +29,15 @@ final class Application_LoggingTest extends TestCase
         catch(Application_Exception $e)
         {
             $this->assertEquals(Application_Bootstrap::ERROR_NON_FRAMEWORK_EXCEPTION, $e->getCode());
-            $this->assertEquals(TestDriver_Bootstrap_Screen_ExceptionTest::ERROR_TEST_EXCEPTION, $e->getPrevious()->getCode());
+
+            $previous = $e->getPrevious();
+            $this->assertNotNull($previous);
+
+            $this->assertEquals(
+                TestDriver_Bootstrap_Screen_ExceptionTest::ERROR_TEST_EXCEPTION,
+                $previous->getCode(),
+                Application_Exception::getDeveloperMessage($previous)
+            );
         }
     }
     

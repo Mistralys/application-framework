@@ -565,6 +565,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * @param boolean $collapsed Whether the header should start collapsed
     * @return HTML_QuickForm2_Element_InputText
     * @see Application_Formable::addElementHeaderII()
+    * @deprecated Use addElementHeaderII() instead.
     */
     public function addElementHeader($title, $container = null, $anchor=null, $collapsed=true)
     {

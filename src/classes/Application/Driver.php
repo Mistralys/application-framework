@@ -6,9 +6,9 @@
  * @package Application
  */
 
+use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
-use AppUtils\ConvertHelper_Exception;
 
 /**
  * Base class for the application "driver", which is where the
@@ -82,7 +82,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * @var Application_Driver_Storage
      */
-    protected static $storage;
+    protected static Application_Driver_Storage $storage;
 
     /**
      * The available URL parameters and the corresponding admin
@@ -690,40 +690,56 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $name
      * @param string|NULL $default
      * @return string|NULL
+     * @deprecated Use the createSettings() API instead.
      */
-    public static function getSetting(string $name, $default = null)
+    public static function getSetting(string $name, ?string $default = null) : ?string
     {
-        $value = self::$storage->get($name);
+        return self::createSettings()->get($name, $default);
+    }
 
-        if ($value !== null)
+    private static ?DriverSettings $settings = null;
+
+    /**
+     * Creates / gets the driver settings utility,
+     * which is used to access and modify the global,
+     * persistent application settings.
+     *
+     * @return DriverSettings
+     */
+    public static function createSettings() : DriverSettings
+    {
+        if(isset(self::$settings))
         {
-            return $value;
+            return self::$settings;
         }
 
-        return $default;
+        $settings = new DriverSettings(self::$storage);
+        self::$settings = $settings;
+
+        return $settings;
     }
 
     /**
      * @param string $name
      * @param bool $default
      * @return bool
-     *
-     * @throws ConvertHelper_Exception
-     * @see ConvertHelper::ERROR_INVALID_BOOLEAN_STRING
+     * @deprecated Use the createSettings() API instead.
      */
     public static function getBoolSetting(string $name, bool $default=false) : bool
     {
-        $value = self::getSetting($name);
-        if($value !== null) {
-            return ConvertHelper::string2bool($value);
-        }
-
-        return $default;
+        return self::createSettings()->getBool($name, $default);
     }
 
+    /**
+     * @param string $name
+     * @param bool $value
+     * @return void
+     * @throws Application_Exception
+     * @deprecated Use the createSettings() API instead.
+     */
     public static function setBoolSetting(string $name, bool $value) : void
     {
-        self::setSetting($name, ConvertHelper::boolStrict2string($value));
+        self::createSettings()->setBool($name, $value);
     }
 
     /**
@@ -735,42 +751,14 @@ abstract class Application_Driver implements Application_Driver_Interface
      * beforehand as needed.
      *
      * @param string $name
-     * @param string $value
+     * @param string|int|float|bool|NULL $value
      * @param string $role
      * @throws Application_Exception
+     * @deprecated Use the createSettings() API instead.
      */
-    public static function setSetting($name, $value, $role = self::SETTING_ROLE_PERSISTENT)
+    public static function setSetting(string $name, $value, string $role = self::SETTING_ROLE_PERSISTENT) : void
     {
-        if (strlen($name) > self::SETTING_NAME_MAX_LENGTH)
-        {
-            throw new Application_Exception(
-                'Setting name too long',
-                sprintf(
-                    'Tried setting the setting %1$s, but the name exceeds the maximum %2$s characters.',
-                    $name,
-                    self::SETTING_NAME_MAX_LENGTH
-                )
-            );
-        }
-
-        if (is_numeric($value))
-        {
-            $value = $value . '';
-        }
-
-        if (!is_string($value))
-        {
-            throw new Application_Exception(
-                'Setting value is not a string',
-                sprintf(
-                    'Only string values are allowed for application settings, tried setting [%s]',
-                    gettype($value)
-                ),
-                self::ERROR_SETTING_VALUE_NOT_A_STRING
-            );
-        }
-
-        self::$storage->set($name, $value, $role);
+        self::createSettings()->set($name, $value, $role);
     }
 
     /**
@@ -779,46 +767,34 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @param string $name
      * @throws Application_Exception
+     * @deprecated Use the createSettings() API instead.
      */
-    public static function deleteSetting($name)
+    public static function deleteSetting(string $name) : void
     {
-        if (strlen($name) > self::SETTING_NAME_MAX_LENGTH)
-        {
-            throw new Application_Exception(
-                'Setting name too long',
-                sprintf(
-                    'Tried deleting the setting %1$s, but the name exceeds the maximum %2$s characters.',
-                    $name,
-                    self::SETTING_NAME_MAX_LENGTH
-                )
-            );
-        }
-
-        self::$storage->delete($name);
+        self::createSettings()->delete($name);
     }
 
     /**
      * @param string $name
      * @param DateTime $date
-     * @return bool
+     * @return void
+     * @deprecated Use the createSettings() API instead.
      */
-    public static function setSettingExpiry(string $name, DateTime $date) : bool
+    public static function setSettingExpiry(string $name, DateTime $date) : void
     {
-        self::$storage->setExpiry($name, $date);
-
-        return false;
+        self::createSettings()->setExpiry($name, $date);
     }
 
     /**
      * Retrieves an application cache item.
      *
      * @param string $name
-     * @param string $default
-     * @return string
+     * @param string|NULL $default
+     * @return string|NULL
      */
-    public function getCache($name, $default = null)
+    public function getCache(string $name, ?string $default = null) : ?string
     {
-        return self::getSetting($name, $default);
+        return self::createSettings()->get($name, $default);
     }
 
     /**
@@ -827,11 +803,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * be periodically deleted.
      *
      * @param string $name
-     * @param string $value
+     * @param string|int|float|bool|NULL $value
      */
     public function setCache(string $name, $value) : void
     {
-        self::setSetting($name, $value, self::SETTING_ROLE_CACHE);
+        self::createSettings()->set($name, $value, self::SETTING_ROLE_CACHE);
     }
 
     /**
@@ -1908,7 +1884,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function createCountries() : Application_Countries
     {
-        return ensureType(Application_Countries::class, self::createCollection('Application_Countries'));
+        return Application_Countries::getInstance();
     }
 
     /**

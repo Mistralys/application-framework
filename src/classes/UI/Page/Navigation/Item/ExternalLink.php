@@ -19,7 +19,7 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
         $this->title = $title;
     }
     
-    public function getType()
+    public function getType() : string
     {
         return 'externallink';
     }

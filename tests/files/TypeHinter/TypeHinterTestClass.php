@@ -1,5 +1,4 @@
 <?php
-/*
 
 class TypeHinterTestClass
 {
@@ -41,4 +40,3 @@ class TypeHinterTestClass
         return null;
     }
 }
-*/

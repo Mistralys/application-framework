@@ -4,8 +4,6 @@
 #
 # @template-version 1.2
 #
-# @template-version 1.2
-#
 
 MemoryLimit=900M
 AnalysisLevel=5
@@ -14,7 +12,7 @@ ConfigFile=docs/phpstan/config.neon
 BinFolder=vendor/bin
 
 echo "-------------------------------------------------------"
-echo "RUNNING PHPSTAN"
+echo "RUNNING PHPSTAN @ LEVEL $AnalysisLevel"
 echo "-------------------------------------------------------"
 echo ""
 

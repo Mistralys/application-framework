@@ -841,7 +841,12 @@ class UI
         return $tabs;
     }
 
-    public function createDropdownAnchor(string $label) : UI_Bootstrap_DropdownAnchor
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
+     */
+    public function createDropdownAnchor($label) : UI_Bootstrap_DropdownAnchor
     {
         $dropdown = new UI_Bootstrap_DropdownAnchor($this);
         $dropdown->setLabel($label);
@@ -868,29 +873,27 @@ class UI
         
         return $header;
     }
-    
-   /**
-    * @param string $content
-    * @return UI_Bootstrap_DropdownStatic
-    */
-    public function createDropdownStatic(string $content) : UI_Bootstrap_DropdownStatic
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @return UI_Bootstrap_DropdownStatic
+     * @throws UI_Exception
+     */
+    public function createDropdownStatic($content) : UI_Bootstrap_DropdownStatic
     {
-        $static = new UI_Bootstrap_DropdownStatic($this);
-        $static->setContent($content);
-        
-        return $static;
+        return (new UI_Bootstrap_DropdownStatic($this))
+            ->setContent($content);
     }
-    
-   /**
-    * @param string $title
-    * @return UI_Bootstrap_DropdownSubmenu
-    */
-    public function createDropdownSubmenu(string $title='') : UI_Bootstrap_DropdownSubmenu
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @return UI_Bootstrap_DropdownSubmenu
+     * @throws UI_Exception
+     */
+    public function createDropdownSubmenu($title='') : UI_Bootstrap_DropdownSubmenu
     {
-        $menu = new UI_Bootstrap_DropdownSubmenu($this);
-        $menu->setTitle($title);
-        
-        return $menu;
+        return (new UI_Bootstrap_DropdownSubmenu($this))
+            ->setTitle($title);
     }
 
     /**
@@ -1302,7 +1305,7 @@ class UI
     
     public function getDefaultMarkupEditor() : UI_MarkupEditorInfo
     {
-        $name = Application_Driver::getSetting('MarkupEditorID');
+        $name = Application_Driver::createSettings()->get(UI_MarkupEditorInfo::SETTING_NAME_MARKUP_EDITOR_ID);
 
         $editors = $this->getMarkupEditors();
         

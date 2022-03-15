@@ -8,7 +8,7 @@ set BinFolder=vendor\bin
 cls
 
 echo -------------------------------------------------------
-echo RUNNING PHPSTAN
+echo RUNNING PHPSTAN @ LEVEL %AnalysisLevel%
 echo -------------------------------------------------------
 echo.
 

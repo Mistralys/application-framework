@@ -36,6 +36,8 @@ abstract class UI_Page_Section
     use Traits_Classable;
     use UI_Traits_Conditional;
     use UI_Traits_StatusElementContainer;
+    use Application_Traits_LockableStatus;
+    use Application_Traits_LockableItem;
     
     public const ERROR_INVALID_CONTEXT_BUTTON = 511001;
     public const ERROR_TAB_ALREADY_EXISTS = 511002;
@@ -865,89 +867,20 @@ abstract class UI_Page_Section
         return $this->removeClass('nopadding');
     }
 
-    public function isLockable()
-    {
-        return $this->lockable;
-    }
-    
-    protected $locked = false;
-    
-    protected $lockReason = null;
-    
    /**
-    * {@inheritDoc}
-    * @see Application_LockableItem_Interface::lock()
-    * @return $this
+    * @var array<string,UI_Page_Section_Tab>
     */
-    public function lock($reason)
-    {
-        if($this->isLockable()) {
-            $this->locked = true;
-            $this->lockReason = $reason;
-        }
-        
-        return $this;
-    }
-    
-    public function getLockReason()
-    {
-        if($this->locked) {
-            return $this->lockReason;
-        }
-        
-        return '';
-    }
-    
-   /**
-    * {@inheritDoc}
-    * @see Application_LockableItem_Interface::unlock()
-    * @return $this
-    */
-    public function unlock()
-    {
-        $this->locked = false;
-        return $this;
-    }
-    
-    public function isLocked()
-    {
-        return $this->locked;
-    }
-
-    protected $lockable = false;
-    
-   /**
-    * Makes the button lockable: it will automatically be disabled
-    * if the administration screen is locked by the lockmanager.
-    * 
-    * @param bool $lockable
-    * @return $this
-    */
-    public function makeLockable($lockable=true)
-    {
-        $this->lockable = true;
-        return $this;
-    }
-    
-   /**
-    * @var UI_Page_Section_Tab[]
-    */
-    protected $tabs;
+    protected array $tabs = array();
     
    /**
     * Adds a tab to the section, which is used to compartmentalize the section's contents.
     * 
     * @param string $name Unique name/alias to identify the tab by - not shown in the UI.
-    * @param string $label Human readable label of the tab.
+    * @param string $label Human-readable label of the tab.
     * @return UI_Page_Section_Tab
     */
     public function addTab($name, $label)
     {
-        if(!isset($this->tabs)) 
-        {
-            $this->tabs = array();
-        }
-        
         if(isset($this->tabs[$name])) {
             throw new Application_Exception(
                 'Tab already exists',
@@ -969,24 +902,20 @@ abstract class UI_Page_Section
     * Checks whether this section has tabs.
     * @return boolean
     */
-    public function hasTabs()
+    public function hasTabs() : bool
     {
-        return isset($this->tabs) && !empty($this->tabs);
+        return !empty($this->tabs);
     }
     
    /**
     * @return UI_Page_Section_Tab[]
     */
-    public function getTabs()
+    public function getTabs() : array
     {
-        if(empty($this->tabs)) {
-            return array();
-        }
-        
-        return $this->tabs;
+        return array_values($this->tabs);
     }
     
-    public function isSeparator()
+    public function isSeparator() : bool
     {
         return false;
     }

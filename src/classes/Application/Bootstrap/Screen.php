@@ -10,9 +10,9 @@ abstract class Application_Bootstrap_Screen
     public const ERROR_CONFIG_SETTING_ALREADY_DEFINED = 28201;
     public const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
 
-    const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
+    public const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
 
-    protected $params = array();
+    protected array $params = array();
     
     public function __construct($params)
     {
@@ -23,7 +23,10 @@ abstract class Application_Bootstrap_Screen
     {
         register_shutdown_function(array($this, 'shutDown'));
 
-        define('APP_TIME_START', microtime(true));
+        if(!defined('APP_TIME_START'))
+        {
+            define('APP_TIME_START', microtime(true));
+        }
         
         $this->_boot();
     }
@@ -41,27 +44,27 @@ abstract class Application_Bootstrap_Screen
    /**
     * @var Application
     */
-    protected $app;
+    protected Application $app;
     
    /**
     * @var Application_Driver
     */
-    protected $driver;
+    protected Application_Driver $driver;
     
    /**
     * @var Application_Session
     */
-    protected $session;
+    protected Application_Session $session;
     
    /**
     * @var Application_User
     */
-    protected $user;
+    protected Application_User $user;
 
     /**
      * @var bool
      */
-    private $environmentCreated = false;
+    private bool $environmentCreated = false;
     
     /**
      * Creates the environment by instantiating the
@@ -145,7 +148,7 @@ abstract class Application_Bootstrap_Screen
         $this->app->start($this->driver);
     }
     
-    protected function initDatabase()
+    protected function initDatabase() : void
     {
         DBHelper::init();
         
@@ -156,9 +159,9 @@ abstract class Application_Bootstrap_Screen
         }
     }
     
-    protected function authenticateUser()
+    protected function authenticateUser() : void
     {
-        $user = $this->session->getUser();
+        $user = $this->session->requireUser();
         
         if (isset($_REQUEST['develmode_enable']) && in_array($_REQUEST['develmode_enable'], array('yes', 'no')))
         {

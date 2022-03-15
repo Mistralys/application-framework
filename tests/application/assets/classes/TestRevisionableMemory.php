@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 class TestRevisionableMemory extends Application_RevisionableStateless
 {
+    use Application_Traits_Loggable;
+
     const EVENT_TEST_EVENT = 'TestEvent';
 
     /**
@@ -11,7 +13,7 @@ class TestRevisionableMemory extends Application_RevisionableStateless
      */
     private $revisionCounter = 0;
 
-    public function getIdentification()
+    public function getIdentification() : string
     {
         return 'Test revisionable (memory)';
     }
@@ -82,5 +84,20 @@ class TestRevisionableMemory extends Application_RevisionableStateless
     protected function _registerEvents() : void
     {
 
+    }
+
+    public function getChildDisposables() : array
+    {
+        return array();
+    }
+
+    protected function _dispose() : void
+    {
+
+    }
+
+    public function getLogIdentifier() : string
+    {
+        return $this->getIdentification();
     }
 }

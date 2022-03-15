@@ -2,21 +2,21 @@
 /**
  * File containing the {@link HTML_QuickForm2_Element_Multiselect} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @custom
+ * @package Application
+ * @subpackage Forms
+ * @see HTML_QuickForm2_Element_Multiselect
  */
 
 /**
- * Bootstrap-based mutiple select element that implements the
+ * Bootstrap-based multiple select element that implements the
  * interface of the bootstrap multiselect plugin.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package Application
+ * @subpackage Forms
  * @author   Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
  * @see https://github.com/davidstutz/bootstrap-multiselect
  * @see http://davidstutz.github.io/bootstrap-multiselect
- * @custom
  */
 class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
 {

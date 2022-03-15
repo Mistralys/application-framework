@@ -32,50 +32,26 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
     public const KEY_OPERATING_SYSTEM_FAMILY = 'operatingSystemFamily';
     public const KEY_COMMAND_LINE_MODE = 'commandLineMode';
 
-    /**
-     * @var Application_Logger
-     */
-    private $logger;
-
-    /**
-     * @var Microtime
-     */
-    private $time;
-
-    /**
-     * @var string
-     */
-    private $requestID;
-
-    /**
-     * @var string
-     */
-    private $sessionID;
-
-    /**
-     * @var string
-     */
-    private $logPath;
-    /**
-     * @var string
-     */
-    private $baseFolder;
-    /**
-     * @var string
-     */
-    private $baseName;
-
-    /**
-     * @var float
-     */
-    private $duration;
+    private Application_Logger $logger;
+    private Microtime $time;
+    private string $requestID;
+    private string $sessionID;
+    private string $baseFolder;
+    private string $baseName;
+    private float $duration;
 
     public function __construct(Application_Logger $logger)
     {
         $this->logger = $logger;
         $this->requestID = Application_Request::getRequestID();
         $this->sessionID = $this->resolveSessionID();
-        $this->duration = Application::getTimePassed();
+
+        // We are rounding the duration to 12 decimal places to
+        // avoid rounding errors when casting the float to string,
+        // and back to float again: the precision is maintained up
+        // to 14 decimals, the rest is rounded up. 12 should be more
+        // than enough for all purposes.
+        $this->duration = round(Application::getTimePassed(), 12);
 
         $this->setTime(new Microtime());
     }
@@ -171,10 +147,12 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
 
     private function writeLogFile() : void
     {
-        $this->log('Saving log to file: [%s].', $this->logPath);
+        $path = $this->getLogPath();
+
+        $this->log('Saving log to file: [%s].', $path);
 
         FileHelper::saveFile(
-            $this->getLogPath(),
+            $path,
             implode(PHP_EOL, $this->logger->getLog())
         );
     }

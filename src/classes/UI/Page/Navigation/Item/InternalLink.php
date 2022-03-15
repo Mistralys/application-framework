@@ -7,9 +7,21 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
      */
     protected $page;
 
+    /**
+     * @var bool
+     */
     protected $locked = false;
-    
-    public function __construct(UI_Page_Navigation $nav, $id, UI_Page $page, $targetPageID, $title, $params = array())
+
+    /**
+     * @param UI_Page_Navigation $nav
+     * @param string $id
+     * @param UI_Page $page
+     * @param string $targetPageID
+     * @param string $title
+     * @param array<string,string> $params
+     * @throws Application_Exception
+     */
+    public function __construct(UI_Page_Navigation $nav, string $id, UI_Page $page, string $targetPageID, string  $title, array $params = array())
     {
         parent::__construct($nav, $id);
 
@@ -33,12 +45,12 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
         }
     }
 
-    public function getURL()
+    public function getURL() : string
     {
         return $this->request->buildURL($this->params);
     }
 
-    public function getType()
+    public function getType() : string
     {
         return 'internallink';
     }
@@ -50,13 +62,12 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
             return '';
         }
 
-        $attributes = array(
-            'href' => $this->getURL(),
-            'id' => 'nav-'.str_replace('.', '-', $this->getURLPath()),
-            'class' => implode(' ', $this->classes)
-        );
-        
-        if($this->locked) {
+        $attributes['href'] = $this->getURL();
+        $attributes['id'] = 'nav-'.str_replace('.', '-', $this->getURLPath());
+        $attributes['class'] = implode(' ', $this->classes);
+
+        if($this->locked)
+        {
             $this->setIcon(UI::icon()->locked());
         }
         
@@ -68,22 +79,27 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
         return '<a' . compileAttributes($attributes) . '>' . $label . '</a>';
     }
     
-    public function getAdminScreen()
+    public function getAdminScreen() : ?Application_Admin_ScreenInterface
     {
-        $path = $this->getURLPath();
-        $driver = Application_Driver::getInstance();
-        return $driver->getScreenByPath($path);
+        return Application_Driver::getInstance()
+            ->getScreenByPath($this->getURLPath());
     }
     
-    public function getURLPath()
+    public function getURLPath() : string
     {
-        $tokens = array($this->params['page']);
-        if(isset($this->params['mode'])) {
-            $tokens[] = $this->params['mode'];
-            if(isset($this->params['submode'])) {
-                $tokens[] = $this->params['submode'];
-                if(isset($this->params['action'])) {
-                    $tokens[] = $this->params['action'];
+        $tokens = array($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]);
+
+        if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE]))
+        {
+            $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE];
+
+            if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE]))
+            {
+                $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE];
+
+                if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION]))
+                {
+                    $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION];
                 }
             }
         }
@@ -93,13 +109,15 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
 
     public function isActive() : bool
     {
-        $active = $this->nav->getForcedActiveItem();
-        if ($active && $active->getID() == $this->id) {
+        if(parent::isActive())
+        {
             return true;
         }
 
-        foreach ($this->params as $name => $value) {
-            if ($this->request->getParam($name) != $value) {
+        foreach ($this->params as $name => $value)
+        {
+            if ($this->request->getParam($name) !== $value)
+            {
                 return false;
             }
         }

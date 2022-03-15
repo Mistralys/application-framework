@@ -13,9 +13,6 @@
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
- * @method UI_Bootstrap_Anchor setName($name) setName(string $name)
- * @method UI_Bootstrap_Anchor setIcon($icon) setIcon(UI_Icon $icon)
  */
 class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces_Iconizable
 {
@@ -51,9 +48,14 @@ class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces
         return '<a' . compileAttributes($this->attributes) . '>' . $label . '</a>';
     }
 
-    public function setLabel($label)
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setLabel($label) : self
     {
-        $this->label = $label;
+        $this->label = toString($label);
         return $this;
     }
     

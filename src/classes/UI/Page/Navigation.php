@@ -7,6 +7,8 @@
  * @see UI_Page_Navigation
  */
 
+declare(strict_types=1);
+
 use AppUtils\Traits_Classable;
 use AppUtils\Interface_Classable;
 
@@ -32,14 +34,15 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     */
     private $counter = 0;
 
+    /**
+     * @var UI_Page_Navigation_Item[]
+     */
     private $items = array();
 
    /**
     * @var string
     */
     private $append = '';
-    
-    protected $classes = array();
     
     /**
      * @var UI_Bootstrap_DropdownMenu|NULL
@@ -56,7 +59,7 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     /**
      * @return string
      */
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
@@ -68,10 +71,10 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * @return string
      * @throws Application_Exception
      */
-    protected function _render()
+    protected function _render() : string
     {
         if(empty($this->items)) {
-            return ''.$this->append;
+            return $this->append;
         }
         
         $this->addClass('nav');
@@ -87,7 +90,7 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      *
      * @return UI_Page_Navigation_Item[]
      */
-    public function getItems()
+    public function getItems() : array
     {
         return $this->items;
     }
@@ -99,11 +102,11 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * @param string $groupName
      * @return UI_Page_Navigation_Item[]
      */
-    public function getItemsByGroup($groupName)
+    public function getItemsByGroup(string $groupName) : array
     {
         $items = array();
         foreach ($this->items as $item) {
-            if ($item->getGroup() == $groupName) {
+            if ($item->getGroup() === $groupName) {
                 $items[] = $item;
             }
         }
@@ -111,14 +114,17 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
         return $items;
     }
 
-    public function isGroupActive($group)
+    public function isGroupActive(string $group) : bool
     {
-        foreach ($this->items as $item) {
-            if ($item->getGroup() != $group) {
+        foreach ($this->items as $item)
+        {
+            if ($item->getGroup() !== $group)
+            {
                 continue;
             }
 
-            if ($item->isActive()) {
+            if ($item->isActive())
+            {
                 return true;
             }
         }
@@ -131,14 +137,23 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * navigation link item object.
      *
      * @param string $targetPageID
-     * @param string $title
-     * @param array $params
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @param array<string,string> $params
      * @return UI_Page_Navigation_Item_InternalLink
      */
-    public function addInternalLink($targetPageID, $title, $params = array())
+    public function addInternalLink(string $targetPageID, $title, array $params = array()) : UI_Page_Navigation_Item_InternalLink
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_InternalLink($this, $this->counter, $this->page, $targetPageID, $title, $params);
+
+        $item = new UI_Page_Navigation_Item_InternalLink(
+            $this,
+            (string)$this->counter,
+            $this->page,
+            $targetPageID,
+            toString($title),
+            $params
+        );
+
         $this->items[] = $item;
 
         return $item;
@@ -154,56 +169,49 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     
    /**
     * Adds a subnavigation link that automatically adds
-    * the page variables to the parameters (mode, submode, etc).
+    * the page variables to the parameters (mode, submode, etc.).
     * 
-    * @param string $title
-    * @param array|string $paramsOrURL If an URL is given, it is parsed to extract the query parameters.
+    * @param string|number|UI_Renderable_Interface|NULL $title
+    * @param array<string,string>|string $paramsOrURL If a URL is given, it is parsed to extract the query parameters.
     * @return UI_Page_Navigation_Item_InternalLink
     */
-    public function addSubnavLink($title, $paramsOrURL=array())
+    public function addSubnavLink($title, $paramsOrURL=array()) : UI_Page_Navigation_Item_InternalLink
     {
-        $params = $paramsOrURL;
-        
-        if(is_string($paramsOrURL)) {
-            $url = str_replace('&amp;', '&', $paramsOrURL);
-            $params = array();
-            $query = parse_url($url, PHP_URL_QUERY);
-
-            if(!empty($query)) {
-                $params = \AppUtils\ConvertHelper::parseQueryString($query);
-            }
-        }
-        
         $request = Application_Driver::getInstance()->getRequest();
-        $vars = array('page', 'mode', 'submode', 'action');
-        foreach($vars as $var) {
+        $vars = Application_Admin_Skeleton::getPageParamNames();
+        $params = Application_Request::resolveParams($paramsOrURL);
+
+        foreach($vars as $var)
+        {
             if(!isset($params[$var])) {
                 $params[$var] = $request->getParam($var);
             }
         }
         
-        return $this->addInternalLink($params['page'], $title, $params);
+        return $this->addInternalLink(
+            $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
+            $title,
+            $params
+        );
     }
-    
+
    /**
-    * Adds an URL, which will be parsed automatically to add
+    * Adds a URL, which will be parsed automatically to add
     * its parameters.
     * 
-    * @param string $title
+    * @param string|number|UI_Renderable_Interface|NULL $title
     * @param string $url
     * @return UI_Page_Navigation_Item_InternalLink
     */
-    public function addURL($title, $url)
+    public function addURL($title, string $url) : UI_Page_Navigation_Item_InternalLink
     {
-        $url = str_replace('&amp;', '&', $url);
-        $params = array();
-        $query = parse_url($url, PHP_URL_QUERY);
+        $params = Application_Request::resolveParams($url);
 
-        if(!empty($query)) {
-            $params = \AppUtils\ConvertHelper::parseQueryString($query);
-        }
-        
-        return $this->addInternalLink($params['page'], $title, $params);
+        return $this->addInternalLink(
+            $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
+            $title,
+            $params
+        );
     }
 
     /**
@@ -214,10 +222,10 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * @return UI_Page_Navigation_Item_Search
      * @throws Application_Exception
      */
-    public function addSearch($callback) : UI_Page_Navigation_Item_Search
+    public function addSearch(callable $callback) : UI_Page_Navigation_Item_Search
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_Search($this, strval($this->counter), $callback);
+        $item = new UI_Page_Navigation_Item_Search($this, (string)$this->counter, $callback);
         $this->items[] = $item;
         
         return $item;
@@ -232,7 +240,7 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     public function addDropdownMenu($label) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_DropdownMenu($this, strval($this->counter), $label);
+        $item = new UI_Page_Navigation_Item_DropdownMenu($this, (string)$this->counter, $label);
         $this->items[] = $item;
         
         return $item;
@@ -240,30 +248,35 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     
    /**
     * Adds an item with custom HTML code.
-    * @param string $html
+    * @param string|number|UI_Renderable_Interface|NULL $html
     * @return UI_Page_Navigation_Item_HTML
     */
-    public function addHTML($html)
+    public function addHTML($html) : UI_Page_Navigation_Item_HTML
     {
         $this->counter++;
-        $item = new UI_Page_Navigation_Item_HTML($this, $this->counter, $html);
+        $item = new UI_Page_Navigation_Item_HTML($this, (string)$this->counter, $html);
         $this->items[] = $item;
         
         return $item;
     }
 
-    protected $activeItem = null;
-    
-   /**
-    * Force any navigation item active.
-    * @param UI_Page_Navigation_Item $item
-    */
-    public function forceActiveItem(UI_Page_Navigation_Item $item)
+    /**
+     * @var UI_Page_Navigation_Item|null
+     */
+    protected $activeItem;
+
+    /**
+     * Force any navigation item active.
+     * @param UI_Page_Navigation_Item $item
+     * @return UI_Page_Navigation
+     */
+    public function forceActiveItem(UI_Page_Navigation_Item $item) : self
     {
         $this->activeItem = $item;
+        return $this;
     }
     
-    public function getForcedActiveItem()
+    public function getForcedActiveItem() : ?UI_Page_Navigation_Item
     {
         return $this->activeItem;
     }
@@ -273,16 +286,16 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     * @param string $alias
     * @return UI_Page_Navigation_Item|NULL
     */
-    public function getItemByAlias($alias)
+    public function getItemByAlias(string $alias) : ?UI_Page_Navigation_Item
     {
-        $total = count($this->items);
-        for($i=0; $i<$total; $i++) {
-            $item = $this->items[$i];
-            if($item->getAlias()==$alias) {
+        foreach ($this->items as $item)
+        {
+            if($item->getAlias() === $alias)
+            {
                 return $item;
             }
         }
-        
+
         return null;
     }
     
@@ -303,7 +316,8 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     */
     public function getContextMenu() : UI_Bootstrap_DropdownMenu
     {
-        if(!isset($this->contextMenu)) {
+        if(!isset($this->contextMenu))
+        {
             $this->contextMenu = new UI_Bootstrap_DropdownMenu($this->ui);
         }
         
@@ -314,7 +328,7 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     * Called when the initialization of the navigation is complete.
     * This is done automatically by the admin screen.
     */
-    public function initDone()
+    public function initDone() : void
     {
         foreach($this->items as $item) {
             $item->initDone();

@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
 {
    /**
-    * @var string
+    * @var string|number|UI_Renderable_Interface|NULL
     */
-    protected $html = '';
+    protected $html;
     
-    public function __construct(UI_Page_Navigation $nav, $id, $html)
+    public function __construct(UI_Page_Navigation $nav, string $id, $html)
     {
         parent::__construct($nav, $id);
+
         $this->html = $html;
     }
     
-    public function getType()
+    public function getType() : string
     {
         return 'html';
     }
@@ -25,6 +28,6 @@ class UI_Page_Navigation_Item_HTML extends UI_Page_Navigation_Item
             return '';
         }
 
-        return $this->html;
+        return toString($this->html);
     }
 }

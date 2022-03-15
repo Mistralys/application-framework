@@ -1,18 +1,19 @@
 <?php
 /**
- * File containing the {@link HTML_QuickForm2_Element_HTMLTimePicker} class.
+ * File containing the {@see HTML_QuickForm2_Element_HTMLTimePicker} class.
  *
- * @category HTML
- * @package  HTML_QuickForm2
+ * @package User Interface
+ * @subpackage Form Elements
+ * @see HTML_QuickForm2_Element_HTMLTimePicker
  */
 
 /**
  * Element that is used to handle generate HTML input with type time.
  * All browsers(except IE) will open time selection menu as input
  *
- * @category HTML
- * @package  HTML_QuickForm2
- * @author   Emre Celebi <emre.celebi@ionos.com>
+ * @package User Interface
+ * @subpackage Form Elements
+ * @author Emre Celebi <emre.celebi@ionos.com>
  */
 class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element
 {
@@ -24,7 +25,7 @@ class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element
 
     protected function onAttributeChange($name, $value = null)
     {
-        if ('type' == $name)
+        if ('type' === $name)
         {
             throw new HTML_QuickForm2_InvalidArgumentException(
                 "Attribute 'type' is read-only"
@@ -54,5 +55,3 @@ class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element
         return '<input type="time"' . $this->getAttributes(true) . ' />';
     }
 }
-
-?>

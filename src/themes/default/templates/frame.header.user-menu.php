@@ -21,7 +21,7 @@ class template_default_frame_header_user_menu extends UI_Page_Template_Custom
     /**
      * @var bool
      */
-    private $showUserName = false;
+    private bool $showUserName = false;
 
     protected function generateOutput() : void
     {
@@ -54,7 +54,7 @@ class template_default_frame_header_user_menu extends UI_Page_Template_Custom
         $std = $menu->addLink(t('Standard'), $this->request->buildRefreshURL(array(Application_Bootstrap_Screen::REQUEST_PARAM_SET_USERSETTING => 'layout_width', 'value' => 'standard')));
         $max = $menu->addLink(t('Maximized'), $this->request->buildRefreshURL(array(Application_Bootstrap_Screen::REQUEST_PARAM_SET_USERSETTING => 'layout_width', 'value' => 'maximized')));
 
-        if ($this->user->getSetting('layout_width', 'standard') == 'maximized')
+        if ($this->user->getSetting('layout_width', 'standard') === 'maximized')
         {
             $std->setIcon(UI::icon()->itemInactive());
             $max->setIcon(UI::icon()->itemActive());
@@ -70,7 +70,7 @@ class template_default_frame_header_user_menu extends UI_Page_Template_Custom
         $std = $menu->addLink(t('Standard'), $this->request->buildRefreshURL(array(Application_Bootstrap_Screen::REQUEST_PARAM_SET_USERSETTING => 'layout_fontsize', 'value' => 'standard')));
         $max = $menu->addLink(t('Bigger'), $this->request->buildRefreshURL(array(Application_Bootstrap_Screen::REQUEST_PARAM_SET_USERSETTING => 'layout_fontsize', 'value' => 'bigger')));
 
-        if ($this->user->getSetting('layout_fontsize', 'standard') == 'bigger')
+        if ($this->user->getSetting('layout_fontsize', 'standard') === 'bigger')
         {
             $std->setIcon(UI::icon()->itemInactive());
             $max->setIcon(UI::icon()->itemActive());
@@ -92,6 +92,6 @@ class template_default_frame_header_user_menu extends UI_Page_Template_Custom
 
     protected function preRender() : void
     {
-        $this->showUserName = Application_Driver::getBoolSetting(UI_Themes::OPTION_SHOW_USER_NAME);
+        $this->showUserName = Application_Driver::createSettings()->getBool(UI_Themes::OPTION_SHOW_USER_NAME);
     }
 }
