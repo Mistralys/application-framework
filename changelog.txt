@@ -1,3 +1,6 @@
+v1.23.12
+- Devel: Fixed the error logs list missing hidden request variables.
+
 v1.23.1
 - Sessions: Added error checks in the session initialization.
 
