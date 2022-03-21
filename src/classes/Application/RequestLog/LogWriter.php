@@ -159,15 +159,23 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
 
     public function getData() : array
     {
-        $user = Application::getUser();
+        $userID = '';
+        $userName = '';
+
+        if(Application::isSessionReady())
+        {
+            $user = Application::getUser();
+            $userID = $user->getID();
+            $userName = $user->getName();
+        }
 
         return array(
             self::KEY_REQUEST_ID => $this->requestID,
             self::KEY_MICRO_TIME => $this->time->getISODate(),
             self::KEY_SESSION_ID => $this->sessionID,
             self::KEY_DURATION => $this->duration,
-            self::KEY_USER_ID => $user->getID(),
-            self::KEY_USER_NAME => $user->getName(),
+            self::KEY_USER_ID => $userID,
+            self::KEY_USER_NAME => $userName,
             self::KEY_DEVELOPER_MODE => isDevelMode(),
             self::KEY_SIMULATION_MODE => Application::isSimulation(),
             self::KEY_UI_ENABLED => Application::isUIEnabled(),
