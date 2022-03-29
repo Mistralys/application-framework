@@ -71,15 +71,16 @@ interface Application_Interfaces_Admin_Wizardable extends Application_Admin_Scre
      * @return string
      */
     public function getWizardID() : string;
-    
+
     /**
      * Handles any tasks to be done if the specified step has
      * been invalidated for any reason.
      *
      * @param Application_Admin_Wizard_Step $step
      * @param string $reasonMessage
+     * @param int $callingStep
      */
-    public function handle_stepInvalidated(Application_Admin_Wizard_Step $step, string $reasonMessage) : void;
+    public function handle_stepInvalidated(Application_Admin_Wizard_Step $step, string $reasonMessage, int $callingStep = 0) : void;
     
     /**
      * Handles any tasks to be done when a step's data has
