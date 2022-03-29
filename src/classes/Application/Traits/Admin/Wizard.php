@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Wizard\InvalidationHandler;
+
 /**
  * Trait for adding a wizard to an administration screen.
  *
@@ -77,6 +79,11 @@ trait Application_Traits_Admin_Wizard
      */
     protected $settingPrefix = '';
 
+    /**
+     * @var InvalidationHandler
+     */
+    protected InvalidationHandler $invalidationHandler;
+
     abstract public function getWizardID() : string;
 
     abstract public function getClassBase() : string;
@@ -110,7 +117,8 @@ trait Application_Traits_Admin_Wizard
                 'userID' => $this->user->getID(),
                 'lastActive' => time()
             );
-            $this->setSetting('isStepHandleInvalidated', false);
+            $invalidationHandler = new InvalidationHandler();
+            $invalidationHandler->setIsInvalidated(false);
 
             $this->session->setValue($this->sessionID, $this->sessionData);
 
@@ -638,9 +646,9 @@ trait Application_Traits_Admin_Wizard
                 $step->handle_stepUpdated($updatedStep);
             }
         }
-        if ($this->getSetting('isStepHandleInvalidated') && $number === $this->getSetting('stepHandleInvalidateCallingStep'))
+        if ($this->invalidationHandler->isInvalidated() && $number === $this->invalidationHandler->getInvalidationCallingStep())
         {
-            $this->redirectWithErrorMessage($this->getSetting('stepHandleInvalidateMessage'), $this->getSetting('stepHandleInvalidateURL'));
+            $this->redirectWithErrorMessage($this->invalidationHandler->getInvalidationMessage(), $this->invalidationHandler->getInvalidationURL());
         }
     }
 
@@ -658,12 +666,12 @@ trait Application_Traits_Admin_Wizard
         $this->handle_stepUpdated($step);
         $step->setComplete(false);
         $this->saveSettings();
-        if (!$this->getSetting('isStepHandleInvalidated'))
+        if (!$this->invalidationHandler->isInvalidated())
         {
-            $this->setSetting('stepHandleInvalidateMessage', $reasonMessage);
-            $this->setSetting('stepHandleInvalidateURL', $step->getURL());
-            $this->setSetting('isStepHandleInvalidated', true);
-            $this->setSetting('stepHandleInvalidateCallingStep', $callingStep);
+            $this->invalidationHandler->setInvalidationMessage($reasonMessage);
+            $this->invalidationHandler->setInvalidationURL($step->getURL());
+            $this->invalidationHandler->setIsInvalidated(true);
+            $this->invalidationHandler->setInvalidationCallingStep($callingStep);
         }
     }
 
