@@ -31,50 +31,50 @@ declare(strict_types=1);
  */
 trait Application_Traits_Admin_Wizard
 {
-    /**
-     * @var string
-     */
+   /**
+    * @var string
+    */
     protected $wizardID;
 
-    /**
-     * @var string
-     */
+   /**
+    * @var string
+    */
     protected $sessionID;
 
-    /**
-     * @var string
-     */
+   /**
+    * @var string
+    */
     protected $classBase;
 
-    /**
-     * @var array
-     */
+   /**
+    * @var array
+    */
     protected $sessionData = array();
 
-    /**
-     * @var array<string,Application_Admin_Wizard_Step>
-     */
+   /**
+    * @var array<string,Application_Admin_Wizard_Step>
+    */
     protected $steps = array();
 
-    /**
-     * @var string
-     */
+   /**
+    * @var string
+    */
     protected $initialStepName;
 
-    /**
-     * @var Application_Admin_Wizard_Step
-     */
+   /**
+    * @var Application_Admin_Wizard_Step
+    */
     protected $activeStep;
 
-    /**
-     * Set when a specific step has been requested via the request.
-     * @var Application_Admin_Wizard_Step|NULL
-     */
+   /**
+    * Set when a specific step has been requested via the request.
+    * @var Application_Admin_Wizard_Step|NULL
+    */
     protected $requestedStep;
 
-    /**
-     * @var string
-     */
+   /**
+    * @var string
+    */
     protected $settingPrefix = '';
 
     abstract public function getWizardID() : string;
@@ -93,15 +93,15 @@ trait Application_Traits_Admin_Wizard
         $this->wizardID = $this->getWizardID();
         $this->classBase = $this->getClassBase();
 
-        // create or get the wizard session ID: this is used to 
+        // create or get the wizard session ID: this is used to
         // identify a specific wizard session, and enables the
         // same user to use several parallel wizards. The ID is
         // included in all URLs and forms.
         $this->sessionID = $this->request->getParam('wizard');
 
-        if (empty($this->sessionID))
+        if(empty($this->sessionID))
         {
-            $this->sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $this->user->getID());
+            $this->sessionID = 'WZ'.crc32(microtime(true).'-wizard-'.$this->user->getID());
 
             $this->log(sprintf('Generated the wizard ID [%s].', $this->sessionID));
 
@@ -122,10 +122,10 @@ trait Application_Traits_Admin_Wizard
 
             $this->sessionData = $this->session->getValue($this->sessionID);
 
-            if ($this->sessionData['userID'] != $this->user->getID())
+            if($this->sessionData['userID'] != $this->user->getID())
             {
                 $this->redirectWithInfoMessage(
-                    UI::icon()->information() . ' ' .
+                    UI::icon()->information().' '.
                     t('Wizards can not be shared between users.'),
                     $this->getCanceledURL()
                 );
@@ -146,8 +146,7 @@ trait Application_Traits_Admin_Wizard
 
     public function reset() : void
     {
-        if ($this->isSimulationEnabled())
-        {
+        if($this->isSimulationEnabled()) {
             $this->log('RESET | Simulation mode: ignoring the reset.');
             return;
         }
@@ -175,7 +174,7 @@ trait Application_Traits_Admin_Wizard
         $this->initSteps('Initial setup');
 
         // the user has requested to cancel: we reset all session data.
-        if ($this->request->getBool('cancel') === true)
+        if($this->request->getBool('cancel') === true)
         {
             $this->processCancelWizard();
         }
@@ -185,7 +184,7 @@ trait Application_Traits_Admin_Wizard
 
         $this->addDebugData('process');
 
-        if ($success && !$this->request->getBool('review'))
+        if($success && !$this->request->getBool('review'))
         {
             // we re-create all the steps with the adjusted new data.
             $this->steps = array();
@@ -195,8 +194,7 @@ trait Application_Traits_Admin_Wizard
             $nextStep = $this->getNextStep();
 
             // we've reached the end
-            if (!$nextStep)
-            {
+            if(!$nextStep) {
                 $this->processCompleteWizard();
             }
 
@@ -218,7 +216,7 @@ trait Application_Traits_Admin_Wizard
 
         $this->processCancelCleanup();
 
-        foreach ($this->steps as $step)
+        foreach($this->steps as $step)
         {
             $step->handle_cancelWizardCleanup();
         }
@@ -231,11 +229,11 @@ trait Application_Traits_Admin_Wizard
         );
     }
 
-    /**
-     * This is called when the wizard is cancelled, and should
-     * do any custom cleanup tasks the wizard needs to do. The
-     * session and the like are cleaned automatically.
-     */
+   /**
+    * This is called when the wizard is cancelled, and should
+    * do any custom cleanup tasks the wizard needs to do. The
+    * session and the like are cleaned automatically.
+    */
     abstract protected function processCancelCleanup() : void;
 
     public function getCanceledURL() : string
@@ -270,8 +268,7 @@ trait Application_Traits_Admin_Wizard
     protected function collectDebugData(string $timelineLabel) : array
     {
         $debugData = array();
-        foreach ($this->steps as $step)
-        {
+        foreach($this->steps as $step) {
             $debugData['steps'][] = $step->getID();
         }
 
@@ -279,18 +276,14 @@ trait Application_Traits_Admin_Wizard
 
         $debugData['activeStep'] = $this->getActiveStep()->getID();
         $debugData['nextStep'] = null;
-        if ($next)
-        {
+        if($next) {
             $debugData['nextStep'] = $next->getID();
         }
 
         $nextIncomp = $this->getNextIncompleteStep();
-        if ($nextIncomp)
-        {
+        if($nextIncomp) {
             $debugData['nextIncompleteStep'] = $nextIncomp->getID();
-        }
-        else
-        {
+        } else {
             $debugData['nextIncompleteStep'] = '(none)';
         }
         $debugData['data'] = $this->sessionData;
@@ -304,7 +297,7 @@ trait Application_Traits_Admin_Wizard
     protected function addDebugData(string $timelineLabel) : void
     {
         $debug = $this->collectDebugData($timelineLabel);
-        $this->session->setValue('wizard-debug-' . $this->getWizardID(), $debug);
+        $this->session->setValue('wizard-debug-'.$this->getWizardID(), $debug);
     }
 
     protected function _handleBreadcrumb() : void
@@ -331,8 +324,8 @@ trait Application_Traits_Admin_Wizard
         );
 
         return $this->renderer->appendContent($content)
-            ->setTitle($this->getTitle())
-            ->setAbstract($this->activeStep->getAbstract());
+        ->setTitle($this->getTitle())
+        ->setAbstract($this->activeStep->getAbstract());
     }
 
     /**
@@ -345,10 +338,8 @@ trait Application_Traits_Admin_Wizard
     public function getNextStep() : ?Application_Admin_Wizard_Step
     {
         $next = $this->activeStep->getNumber() + 1;
-        foreach ($this->steps as $step)
-        {
-            if ($step->getNumber() === $next)
-            {
+        foreach($this->steps as $step) {
+            if($step->getNumber() === $next) {
                 return $step;
             }
         }
@@ -362,10 +353,8 @@ trait Application_Traits_Admin_Wizard
      */
     public function getNextIncompleteStep() : ?Application_Admin_Wizard_Step
     {
-        foreach ($this->steps as $step)
-        {
-            if (!$step->isComplete())
-            {
+        foreach($this->steps as $step) {
+            if(!$step->isComplete()) {
                 return $step;
             }
         }
@@ -382,15 +371,12 @@ trait Application_Traits_Admin_Wizard
     public function getPreviousStep() : ?Application_Admin_Wizard_Step
     {
         $previous = $this->activeStep->getNumber() - 1;
-        if ($previous < 1)
-        {
-            return null;
+        if($previous < 1) {
+            return  null;
         }
 
-        foreach ($this->steps as $step)
-        {
-            if ($step->getNumber() === $previous)
-            {
+        foreach($this->steps as $step) {
+            if($step->getNumber() === $previous) {
                 return $step;
             }
         }
@@ -400,7 +386,7 @@ trait Application_Traits_Admin_Wizard
 
     protected function initSteps(string $reason) : void
     {
-        $this->log('Steps init | ' . $reason);
+        $this->log('Steps init | '.$reason);
 
         $this->_initSteps();
 
@@ -410,8 +396,7 @@ trait Application_Traits_Admin_Wizard
         $this->log(sprintf('Registered steps [%s].', implode(', ', array_keys($this->steps))));
 
         $activeStepName = $this->getSetting('activeStep', $this->initialStepName);
-        if (!$this->stepExists($activeStepName))
-        {
+        if(!$this->stepExists($activeStepName)) {
             $activeStepName = $this->initialStepName;
         }
 
@@ -422,13 +407,13 @@ trait Application_Traits_Admin_Wizard
 
         $this->log(sprintf('Requested step is [%s].', $requestedStepName));
 
-        if (!empty($requestedStepName) && $this->isValidStep($requestedStepName))
+        if(!empty($requestedStepName) && $this->isValidStep($requestedStepName))
         {
             $this->activeStep = $this->steps[$requestedStepName];
             $this->requestedStep = $this->activeStep;
         }
 
-        foreach ($this->steps as $step)
+        foreach($this->steps as $step)
         {
             $step->initDone();
             $step->postInit();
@@ -444,19 +429,17 @@ trait Application_Traits_Admin_Wizard
 
     public function isValidStep(string $name) : bool
     {
-        if (!$this->hasStep($name))
-        {
+        if(!$this->hasStep($name)) {
             return false;
         }
 
-        if ($name === $this->activeStep->getID())
+        if($name === $this->activeStep->getID())
         {
             return true;
         }
 
         $nextIncomplete = $this->getNextIncompleteStep();
-        if ($nextIncomplete && $name === $nextIncomplete->getID())
-        {
+        if($nextIncomplete && $name === $nextIncomplete->getID()) {
             return true;
         }
 
@@ -468,10 +451,10 @@ trait Application_Traits_Admin_Wizard
         return $this->activeStep;
     }
 
-    /**
-     * Retrieves all steps in the wizard, in the order they are processed.
-     * @return Application_Admin_Wizard_Step[]
-     */
+   /**
+    * Retrieves all steps in the wizard, in the order they are processed.
+    * @return Application_Admin_Wizard_Step[]
+    */
     public function getSteps() : array
     {
         return array_values($this->steps);
@@ -484,8 +467,7 @@ trait Application_Traits_Admin_Wizard
      */
     public function getStep(string $name) : Application_Admin_Wizard_Step
     {
-        if (!isset($this->steps[$name]))
-        {
+        if(!isset($this->steps[$name])) {
             throw new Application_Exception(
                 'Unknown step',
                 sprintf(
@@ -520,8 +502,7 @@ trait Application_Traits_Admin_Wizard
      */
     protected function addStep(string $name) : Application_Admin_Wizard_Step
     {
-        if (isset($this->steps[$name]))
-        {
+        if(isset($this->steps[$name])) {
             throw new Application_Exception(
                 'Wizard step already exists.',
                 sprintf(
@@ -532,7 +513,7 @@ trait Application_Traits_Admin_Wizard
             );
         }
 
-        $className = $this->classBase . '_Step_' . $name;
+        $className = $this->classBase.'_Step_'.$name;
 
         $number = count($this->steps) + 1;
 
@@ -548,9 +529,9 @@ trait Application_Traits_Admin_Wizard
 
     private function getStepData(string $name) : array
     {
-        $data = $this->getSetting('step_' . $name);
+        $data = $this->getSetting('step_'.$name);
 
-        if (is_array($data))
+        if(is_array($data))
         {
             return $data;
         }
@@ -558,19 +539,18 @@ trait Application_Traits_Admin_Wizard
         return array();
     }
 
-    /**
-     * Retrieves a setting from the session.
-     *
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     */
-    protected function getSetting(string $name, $default = null)
+   /**
+    * Retrieves a setting from the session.
+    *
+    * @param string $name
+    * @param mixed $default
+    * @return mixed
+    */
+    protected function getSetting(string $name, $default=null)
     {
-        $key = $this->settingPrefix . '-' . $name;
+        $key = $this->settingPrefix.'-'.$name;
 
-        if (isset($this->sessionData[$key]))
-        {
+        if(isset($this->sessionData[$key])) {
             return $this->sessionData[$key];
         }
 
@@ -585,7 +565,7 @@ trait Application_Traits_Admin_Wizard
      */
     protected function setSetting(string $name, $value)
     {
-        $key = $this->settingPrefix . '-' . $name;
+        $key = $this->settingPrefix.'-'.$name;
 
         $this->sessionData[$key] = $value;
         return $this;
@@ -594,9 +574,8 @@ trait Application_Traits_Admin_Wizard
     protected function saveSettings() : void
     {
         // get a fresh copy of the data of each step
-        foreach ($this->steps as $step)
-        {
-            $this->setSetting('step_' . $step->getID(), $step->getData());
+        foreach($this->steps as $step) {
+            $this->setSetting('step_'.$step->getID(), $step->getData());
         }
 
         $this->session->setValue($this->sessionID, $this->sessionData);
@@ -614,7 +593,7 @@ trait Application_Traits_Admin_Wizard
         ));
     }
 
-    public function getURL(array $params = array()) : string
+    public function getURL(array $params=array()) : string
     {
         $params['wizard'] = $this->getSessionID();
 
@@ -631,10 +610,8 @@ trait Application_Traits_Admin_Wizard
     public function handle_stepUpdated(Application_Admin_Wizard_Step $updatedStep) : void
     {
         $number = $updatedStep->getNumber();
-        foreach ($this->steps as $step)
-        {
-            if ($step->getNumber() > $number && $step->isMonitoring($updatedStep))
-            {
+        foreach($this->steps as $step) {
+            if($step->getNumber() > $number && $step->isMonitoring($updatedStep)) {
                 $step->handle_stepUpdated($updatedStep);
             }
         }
@@ -676,8 +653,7 @@ trait Application_Traits_Admin_Wizard
      */
     public function isStepComplete(string $name) : bool
     {
-        if ($this->hasStep($name))
-        {
+        if($this->hasStep($name)) {
             return $this->getStep($name)->isComplete();
         }
 
