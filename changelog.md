@@ -22,6 +22,7 @@
 These methods will be removed in a future release.
 
 ### v1.23.2 - Maintenance release
+- UI: External links now have the same color as other items in the dropdown menu
 - UI: Fixed dropdown menu item not rendering correctly when set to "active"
 
 ### v1.23.1 - Maintenance release
