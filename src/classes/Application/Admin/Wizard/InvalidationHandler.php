@@ -1,6 +1,6 @@
 <?php
 /**
- * Class containing the {@link InvalidationHandler} class.
+ * Class containing the {@see InvalidationHandler} class.
  *
  * @package Application
  * @subpackage Administration
@@ -12,13 +12,11 @@ declare(strict_types=1);
 namespace Application\Admin\Wizard;
 
 /**
- * Base class for individual steps in a wizard. Based on the application
- * skeleton for administration pages, this allows for easy form handling
- * and the base structure handles all the data flow and necessary updates.
+ * Class for invalidation process data.
  *
  * @package Application
  * @subpackage Administration
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @author Emre Celebi <emre.celebi@ionos.com>
  *
  * @see Application_Admin_Wizard
  */

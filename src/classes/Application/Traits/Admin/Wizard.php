@@ -117,8 +117,9 @@ trait Application_Traits_Admin_Wizard
                 'userID' => $this->user->getID(),
                 'lastActive' => time()
             );
-            $invalidationHandler = new InvalidationHandler();
-            $invalidationHandler->setIsInvalidated(false);
+            $this->invalidationHandler = new InvalidationHandler();
+            $this->invalidationHandler->setIsInvalidated(false);
+            $this->sessionData['invalidationHandler'] = $this->invalidationHandler;
 
             $this->session->setValue($this->sessionID, $this->sessionData);
 
@@ -129,6 +130,7 @@ trait Application_Traits_Admin_Wizard
             $this->log(sprintf('Using existing wizard ID.'));
 
             $this->sessionData = $this->session->getValue($this->sessionID);
+            $this->invalidationHandler = $this->sessionData['invalidationHandler'];
 
             if ($this->sessionData['userID'] != $this->user->getID())
             {
