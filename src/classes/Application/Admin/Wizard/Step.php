@@ -29,43 +29,43 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public const ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
     public const ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS = 558005;
 
-   /**
-    * @var Application_Interfaces_Admin_Wizardable
-    */
+    /**
+     * @var Application_Interfaces_Admin_Wizardable
+     */
     protected $wizard;
 
-   /**
-    * The step number in the queue
-    * @var integer
-    */
+    /**
+     * The step number in the queue
+     * @var integer
+     */
     protected $number;
 
-   /**
-    * @var array<string,mixed>
-    */
+    /**
+     * @var array<string,mixed>
+     */
     protected $data;
 
-   /**
-    * @var string[]
-    */
+    /**
+     * @var string[]
+     */
     protected $monitoredSteps;
 
-   /**
-    * @var string
-    */
+    /**
+     * @var string
+     */
     protected $id;
 
-   /**
-    * @var string
-    */
+    /**
+     * @var string
+     */
     protected $instanceID;
 
-   /**
-    * @param Application_Interfaces_Admin_Wizardable $wizard
-    * @param int $number
-    * @param array<string,mixed> $data
-    */
-    public function __construct(Application_Interfaces_Admin_Wizardable $wizard, int $number, array $data=array())
+    /**
+     * @param Application_Interfaces_Admin_Wizardable $wizard
+     * @param int $number
+     * @param array<string,mixed> $data
+     */
+    public function __construct(Application_Interfaces_Admin_Wizardable $wizard, int $number, array $data = array())
     {
         parent::__construct(Application_Driver::getInstance());
 
@@ -74,9 +74,10 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         $this->data = $data;
         $this->instanceID = nextJSID();
         $this->monitoredSteps = $this->getMonitoredSteps();
-        $this->id = str_replace($this->wizard->getClassBase().'_Step_', '', get_class($this));
+        $this->id = str_replace($this->wizard->getClassBase() . '_Step_', '', get_class($this));
 
-        if(!isset($this->data)) {
+        if (!isset($this->data))
+        {
             $this->data = $this->getDefaultData();
             $this->setComplete(false);
         }
@@ -84,27 +85,27 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         $this->init();
     }
 
-   /**
-    * Called when all steps in the wizard have been
-    * initialized, and before the step is processed.
-    * Use this to set up the step's environment.
-    */
+    /**
+     * Called when all steps in the wizard have been
+     * initialized, and before the step is processed.
+     * Use this to set up the step's environment.
+     */
     abstract public function initDone() : void;
 
-   /**
-    * Called right after instantiation of the step class.
-    * Used to set up the base environment. Note: the wizard
-    * is not finished initializing at this point. Use the
-    * {@link preProcess()} method otherwise.
-    */
+    /**
+     * Called right after instantiation of the step class.
+     * Used to set up the base environment. Note: the wizard
+     * is not finished initializing at this point. Use the
+     * {@link preProcess()} method otherwise.
+     */
     abstract protected function init() : void;
 
-   /**
-    * Called before the step is processed, used for
-    * any initialization routines the step may need.
-    * At this time, all steps in the wizard have been
-    * initialized and can be accessed.
-    */
+    /**
+     * Called before the step is processed, used for
+     * any initialization routines the step may need.
+     * At this time, all steps in the wizard have been
+     * initialized and can be accessed.
+     */
     abstract protected function preProcess() : void;
 
     abstract public function getLabel() : string;
@@ -142,13 +143,13 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->getLabel();
     }
 
-   /**
-    * Called before rendering the step's contents. Must return
-    * a boolean value indicating whether the step has been
-    * completed, in which case the wizard can jump to the next step.
-    *
-    * @return boolean
-    */
+    /**
+     * Called before rendering the step's contents. Must return
+     * a boolean value indicating whether the step has been
+     * completed, in which case the wizard can jump to the next step.
+     *
+     * @return boolean
+     */
     public function process() : bool
     {
         $this->log('Process | Pre-Process');
@@ -159,7 +160,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         $this->log(sprintf('Process | Processed: [%s].', parseVariable($result)));
 
-        if(!is_bool($result)) {
+        if (!is_bool($result))
+        {
             throw new Application_Exception(
                 'Not a boolean value',
                 sprintf(
@@ -171,111 +173,115 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         }
 
         // processing was successful
-        if($result)
+        if ($result)
         {
             // The step has not been completed before:
             // we set it to completed.
-            if(!$this->isComplete()) {
+            if (!$this->isComplete())
+            {
                 $this->setComplete();
             }
             // the step has been completed before, and
             // some data has changed: we need to
             // let the other steps adjust to the changes.
-            else if($this->updateRequired)
+            else
             {
-                $this->wizard->handle_stepUpdated($this);
+                if ($this->updateRequired)
+                {
+                    $this->wizard->handle_stepUpdated($this);
+                }
             }
         }
 
         return $result;
     }
 
-   /**
-    * Returns an indexed array with step IDs to monitor
-    * changes from: if one of these is modified the
-    * {@link handle_stepUpdated()} method is called.
-    *
-    * @return string[]
-    */
+    /**
+     * Returns an indexed array with step IDs to monitor
+     * changes from: if one of these is modified the
+     * {@link handle_stepUpdated()} method is called.
+     *
+     * @return string[]
+     */
     protected function getMonitoredSteps() : array
     {
         return array();
     }
 
-   /**
-    * The URL to switch to this step.
-    * @return string
-    */
-    public function getURL(array $params=array()) : string
+    /**
+     * The URL to switch to this step.
+     * @return string
+     */
+    public function getURL(array $params = array()) : string
     {
         $params['step'] = $this->getID();
         return $this->wizard->getURL($params);
     }
 
-   /**
-    * The URL to review this step when it has been completed.
-    * @param array $params
-    * @return string
-    */
-    public function getURLReview(array $params=array()) : string
+    /**
+     * The URL to review this step when it has been completed.
+     * @param array $params
+     * @return string
+     */
+    public function getURLReview(array $params = array()) : string
     {
         $params['review'] = 'yes';
         return $this->getURL($params);
     }
 
-   /**
-    * The step number (begins at 1).
-    * @return int
-    */
+    /**
+     * The step number (begins at 1).
+     * @return int
+     */
     public function getNumber() : int
     {
         return $this->number;
     }
 
-   /**
-    * Whether this is the active step.
-    * @return boolean
-    */
+    /**
+     * Whether this is the active step.
+     * @return boolean
+     */
     public function isActive() : bool
     {
         return $this->wizard->getActiveStep()->getID() === $this->getID();
     }
 
-   /**
-    * Whether this step can be switched to. This is true for
-    * all steps that have been completed.
-    *
-    * @return boolean
-    */
+    /**
+     * Whether this step can be switched to. This is true for
+     * all steps that have been completed.
+     *
+     * @return boolean
+     */
     public function isEnabled() : bool
     {
         return $this->isComplete();
     }
 
-   /**
-    * Checks if this step has been completed.
-    * @return boolean
-    */
+    /**
+     * Checks if this step has been completed.
+     * @return boolean
+     */
     public function isComplete() : bool
     {
         return isset($this->data['completed']) && $this->data['completed'] === true;
     }
 
-   /**
-    * Sets the completed state of the step.
-    * @param boolean $complete
-    * @return $this
-    */
-    public function setComplete(bool $complete=true)
+    /**
+     * Sets the completed state of the step.
+     * @param boolean $complete
+     * @return $this
+     */
+    public function setComplete(bool $complete = true)
     {
         $this->data['completed'] = $complete;
         return $this;
     }
 
-   /**
-    * Overridden to add the required hidden form variables.
-    * @see Application_Formable::createFormableForm()
-    */
+    /**
+     * Overridden to add the required hidden form variables.
+     * @see Application_Formable::createFormableForm()
+     */
     public function createFormableForm(string $name, array $defaultData = array()) : void
     {
         parent::createFormableForm($name, $defaultData);
@@ -288,32 +294,32 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         ));
     }
 
-   /**
-    * Retrieves the step's session data collection, which is stored
-    * by the wizard itself and restored on every request.
-    *
-    * @return array<string,mixed>
-    */
+    /**
+     * Retrieves the step's session data collection, which is stored
+     * by the wizard itself and restored on every request.
+     *
+     * @return array<string,mixed>
+     */
     public function getData() : array
     {
         return $this->data;
     }
 
-   /**
-    * Retrieves the URL to cancel the wizard.
-    *
-    * @return string
-    */
+    /**
+     * Retrieves the URL to cancel the wizard.
+     *
+     * @return string
+     */
     protected function getCancelURL() : string
     {
         return $this->wizard->getCancelURL();
     }
 
-   /**
-    * Adds the next/previous buttons to the current formable
-    * form. Automatically detects where the step is in the
-    * queue and adjusts the buttons accordingly.
-    */
+    /**
+     * Adds the next/previous buttons to the current formable
+     * form. Automatically detects where the step is in the
+     * queue and adjusts the buttons accordingly.
+     */
     protected function injectNavigationButtons() : void
     {
         $this->requireFormableInitialized();
@@ -323,16 +329,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         $this->formableForm->addLinkButton(
             $this->getCancelURL(),
-            UI::icon()->cancel().' '.t('Cancel'),
+            UI::icon()->cancel() . ' ' . t('Cancel'),
             t('Cancels the wizard session.')
         )
-        ->addClass('btn-warning')
-        ->addClass('wizard-cancel');
+            ->addClass('btn-warning')
+            ->addClass('wizard-cancel');
 
-        if($this->user->isDeveloper())
+        if ($this->user->isDeveloper())
         {
             $this->formableForm->addDevPrimarySubmit(t('Submit'))
-            ->addClass('wizard-dev-submit');
+                ->addClass('wizard-dev-submit');
         }
     }
 
@@ -340,10 +346,10 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     {
         $next = $this->wizard->getNextStep();
 
-        if($next)
+        if ($next)
         {
             $this->formableForm->addPrimarySubmit(
-                t('Next').' '.UI::icon()->next(),
+                t('Next') . ' ' . UI::icon()->next(),
                 'save',
                 t('Go forward to %1$s.', $next->getLabel())
             );
@@ -352,7 +358,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         }
 
         $el = $this->formableForm->addPrimarySubmit(
-            $this->getButtonConfirmIcon().' '.$this->getButtonConfirmLabel(),
+            $this->getButtonConfirmIcon() . ' ' . $this->getButtonConfirmLabel(),
             'save',
             $this->getButtonConfirmTooltip()
         );
@@ -370,7 +376,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     {
         $prev = $this->wizard->getPreviousStep();
 
-        if(!$prev)
+        if (!$prev)
         {
             return;
         }
@@ -404,27 +410,30 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     protected $updateRequired = false;
 
-   /**
-    * Sets a data key. This should be used when the step has been submitted,
-    * as it checks if the data has been modified. If it has been modified,
-    * all steps will have the occasion to review whether this invalidates
-    * their own data.
-    *
-    * @param string $name
-    * @param mixed $value
-    * @return $this
-    */
+    /**
+     * Sets a data key. This should be used when the step has been submitted,
+     * as it checks if the data has been modified. If it has been modified,
+     * all steps will have the occasion to review whether this invalidates
+     * their own data.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
     protected function setData(string $name, $value)
     {
         $old = null;
-        if(isset($this->data[$name])) {
+        if (isset($this->data[$name]))
+        {
             $old = $this->data[$name];
         }
 
         // If this step has already been completed previously and
         // a data key is modified, an update of the wizard is required.
-        if($this->isComplete() && !$this->updateRequired && $old !== $value) {
-            if($this->isComplete()) {
+        if ($this->isComplete() && !$this->updateRequired && $old !== $value)
+        {
+            if ($this->isComplete())
+            {
                 $this->updateRequired = true;
             }
         }
@@ -434,20 +443,22 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this;
     }
 
-   /**
-    * This is called when a step in the wizard has been modified
-    * that comes before this one. Allows the step to adjust its
-    * status according to the new data.
-    *
-    * @param Application_Admin_Wizard_Step $step
-    */
+    /**
+     * This is called when a step in the wizard has been modified
+     * that comes before this one. Allows the step to adjust its
+     * status according to the new data.
+     *
+     * @param Application_Admin_Wizard_Step $step
+     */
     public function handle_stepUpdated(Application_Admin_Wizard_Step $step)
     {
-        if(!$this->isComplete()) {
+        if (!$this->isComplete())
+        {
             return;
         }
 
-        if(!$this->isMonitoring($step)) {
+        if (!$this->isMonitoring($step))
+        {
             throw new Application_Exception(
                 'Cannot update from non-monitored step',
                 sprintf(
@@ -461,7 +472,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         $this->_handle_stepUpdated($step);
 
-        if($this->updateRequired) {
+        if ($this->updateRequired)
+        {
             $this->wizard->handle_stepUpdated($this);
         }
     }
@@ -471,14 +483,14 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     }
 
-   /**
-    * Called automatically when a step is updated that this step is
-    * monitoring. Allows adjusting any data as required. Must be
-    * implemented in the class if a step is being monitored.
-    *
-    * @param Application_Admin_Wizard_Step $step
-    * @throws Application_Exception
-    */
+    /**
+     * Called automatically when a step is updated that this step is
+     * monitoring. Allows adjusting any data as required. Must be
+     * implemented in the class if a step is being monitored.
+     *
+     * @param Application_Admin_Wizard_Step $step
+     * @throws Application_Exception
+     */
     protected function _handle_stepUpdated(Application_Admin_Wizard_Step $step) : void
     {
         throw new Application_Exception(
@@ -492,12 +504,12 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         );
     }
 
-   /**
-    * Checks whether this step monitors changes to the target step.
-    *
-    * @param Application_Admin_Wizard_Step $step
-    * @return bool
-    */
+    /**
+     * Checks whether this step monitors changes to the target step.
+     *
+     * @param Application_Admin_Wizard_Step $step
+     * @return bool
+     */
     public function isMonitoring(Application_Admin_Wizard_Step $step) : bool
     {
         return in_array($step->getID(), $this->monitoredSteps);
@@ -539,53 +551,56 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     public function getFormName() : string
     {
-        return 'wizard_'.$this->wizard->getWizardID().'_'.$this->getID();
+        return 'wizard_' . $this->wizard->getWizardID() . '_' . $this->getID();
     }
 
-   /**
-    * @return array<string,mixed>
-    */
+    /**
+     * @return array<string,mixed>
+     */
     protected function getFormData() : array
     {
         return $this->getData();
     }
 
-   /**
-    * @param string $name
-    * @return mixed
-    */
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function getDataKey(string $name)
     {
         $data = $this->getData();
-        if(isset($data[$name])) {
+        if (isset($data[$name]))
+        {
             return $data[$name];
         }
 
         return null;
     }
 
-   /**
-    * Creates a data grid compatible for use with the
-    * wizard step: since steps are created and re-created
-    * on the fly, the ID is an issue for example, since those
-    * must usually be unique.
-    *
-    * Also adds all necessary hidden variables for the current
-    * page to be able to use all grid functions.
-    *
-    * @return UI_DataGrid
-    */
+    /**
+     * Creates a data grid compatible for use with the
+     * wizard step: since steps are created and re-created
+     * on the fly, the ID is an issue for example, since those
+     * must usually be unique.
+     *
+     * Also adds all necessary hidden variables for the current
+     * page to be able to use all grid functions.
+     *
+     * @return UI_DataGrid
+     */
     protected function createDataGrid() : UI_DataGrid
     {
         $grid = $this->ui->createDataGrid($this->getSessionID(), true);
 
         $grid->addHiddenVar('step', $this->getID());
 
-        if($this->wizard instanceof Application_Admin_Area_Mode_Submode) {
+        if ($this->wizard instanceof Application_Admin_Area_Mode_Submode)
+        {
             $grid->addHiddenVar('submode', $this->wizard->getURLName());
         }
 
-        if($this->wizard instanceof Application_Admin_Area_Mode_Submode_Action) {
+        if ($this->wizard instanceof Application_Admin_Area_Mode_Submode_Action)
+        {
             $grid->addHiddenVar('submode', $this->wizard->getSubmode()->getURLName());
             $grid->addHiddenVar('action', $this->wizard->getURLName());
         }
@@ -593,16 +608,16 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $grid;
     }
 
-   /**
-    * Retrieves the step's unique ID for this session of the
-    * wizard, which will stay the same for its duration.
-    * Entirely unrelated to the PHP session ID.
-    *
-    * @return string
-    */
+    /**
+     * Retrieves the step's unique ID for this session of the
+     * wizard, which will stay the same for its duration.
+     * Entirely unrelated to the PHP session ID.
+     *
+     * @return string
+     */
     protected function getSessionID() : string
     {
-        return $this->wizard->getSessionID().'-'.$this->getID();
+        return $this->wizard->getSessionID() . '-' . $this->getID();
     }
 
     public function getParent()
@@ -619,18 +634,19 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return array_keys($def);
     }
 
-   /**
-    * Retrieves the default data for a form:
-    *
-    * - In the initial state, uses the result of _getDefaultFormData.
-    * - When submitted, the form uses the submitted data.
-    * - When in completed state, uses the current data.
-    *
-    * @return array<string,mixed>
-    */
+    /**
+     * Retrieves the default data for a form:
+     *
+     * - In the initial state, uses the result of _getDefaultFormData.
+     * - When submitted, the form uses the submitted data.
+     * - When in completed state, uses the current data.
+     *
+     * @return array<string,mixed>
+     */
     protected function getDefaultFormData() : array
     {
-        if($this->isComplete()) {
+        if ($this->isComplete())
+        {
             return $this->getData();
         }
 
@@ -647,7 +663,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     protected function requireStepComplete() : void
     {
-        if($this->isComplete()) {
+        if ($this->isComplete())
+        {
             return;
         }
 
@@ -657,6 +674,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
             self::ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION
         );
     }
+
     public function postInit() : void
     {
         $this->renderCompletedSteps();
@@ -678,7 +696,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     protected function renderCompletedSteps() : void
     {
-        if(empty($this->completedSteps))
+        if (empty($this->completedSteps))
         {
             return;
         }
@@ -694,7 +712,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
                 ?>
                 <tr>
                     <td class="align-center"><?php echo $item['icon'] ?></td>
-                    <td><?php echo $item['label'].' '.$item['value'] ?></td>
+                    <td><?php echo $item['label'] . ' ' . $item['value'] ?></td>
                 </tr>
                 <?php
             }
@@ -712,9 +730,9 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
     //region: Admin screen interface methods
 
-    public function getLogIdentifier(): string
+    public function getLogIdentifier() : string
     {
-        return $this->wizard->getLogIdentifier().' | '.sprintf('Step [%s]', $this->getID());
+        return $this->wizard->getLogIdentifier() . ' | ' . sprintf('Step [%s]', $this->getID());
     }
 
     public function getArea() : Application_Admin_Area
@@ -742,26 +760,91 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard;
     }
 
-    public function handleActions() : bool { return true; }
-    public function renderContent() : string { return ''; }
-    public function getURLParam(): string { return ''; }
-    public function handleBreadcrumb() : void {}
-    public function getDefaultSubscreenID(): string { return ''; }
-    public function handleSidebar(UI_Page_Sidebar $sidebar) : void {}
-    public function hasActiveSubscreen(): bool { return false; }
-    public function handleTabs(UI_Bootstrap_Tabs $tabs) : void {}
-    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void {}
-    public function handleSubnavigation(UI_Page_Navigation $subnav) : void {}
-    public function isUserAllowed() : bool {return true; }
-    public function isArea(): bool { return false; }
-    public function handleHelp(UI_Page_Help $help) : void {}
+    public function handleActions() : bool
+    {
+        return true;
+    }
 
-    public function getActiveSubscreenID(): ?string { return null; }
-    public function getActiveSubscreen(): ?Application_Admin_ScreenInterface {return null;}
-    public function hasSubscreen(string $id): bool { return false; }
-    public function getSubscreenIDs(): array { return array(); }
-    public function hasSubscreens(): bool { return false; }
-    public function getSubscreenByID(string $id): Application_Admin_ScreenInterface
+    public function renderContent() : string
+    {
+        return '';
+    }
+
+    public function getURLParam() : string
+    {
+        return '';
+    }
+
+    public function handleBreadcrumb() : void
+    {
+    }
+
+    public function getDefaultSubscreenID() : string
+    {
+        return '';
+    }
+
+    public function handleSidebar(UI_Page_Sidebar $sidebar) : void
+    {
+    }
+
+    public function hasActiveSubscreen() : bool
+    {
+        return false;
+    }
+
+    public function handleTabs(UI_Bootstrap_Tabs $tabs) : void
+    {
+    }
+
+    public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void
+    {
+    }
+
+    public function handleSubnavigation(UI_Page_Navigation $subnav) : void
+    {
+    }
+
+    public function isUserAllowed() : bool
+    {
+        return true;
+    }
+
+    public function isArea() : bool
+    {
+        return false;
+    }
+
+    public function handleHelp(UI_Page_Help $help) : void
+    {
+    }
+
+    public function getActiveSubscreenID() : ?string
+    {
+        return null;
+    }
+
+    public function getActiveSubscreen() : ?Application_Admin_ScreenInterface
+    {
+        return null;
+    }
+
+    public function hasSubscreen(string $id) : bool
+    {
+        return false;
+    }
+
+    public function getSubscreenIDs() : array
+    {
+        return array();
+    }
+
+    public function hasSubscreens() : bool
+    {
+        return false;
+    }
+
+    public function getSubscreenByID(string $id) : Application_Admin_ScreenInterface
     {
         throw new Application_Exception(
             'Wizard steps have no subscreens.',
