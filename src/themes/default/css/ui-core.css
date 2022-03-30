@@ -930,6 +930,11 @@ A[target="_blank"]:not([type="button"]) {
     color: #063aae;
 }
 
+/*Don't change color for external links in a dropdown menu*/
+.dropdown-menu > li > a[target="_blank"]:not([type="button"]) {
+    color: #333;
+}
+
 /**
  * Add the " »" after external links, with a non
  * breaking space before it.
