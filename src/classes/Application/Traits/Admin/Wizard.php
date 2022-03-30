@@ -394,7 +394,7 @@ trait Application_Traits_Admin_Wizard
         
         $this->log(sprintf('Registered steps [%s].', implode(', ', array_keys($this->steps))));
         
-        $activeStepName = $this->getSetting('activeStep', $this->initialStepName);
+        $activeStepName = (string)$this->getWizardSetting('activeStep', $this->initialStepName);
         if(!$this->stepExists($activeStepName)) {
             $activeStepName = $this->initialStepName;
         }
@@ -528,7 +528,7 @@ trait Application_Traits_Admin_Wizard
     
     private function getStepData(string $name) : array
     {
-        $data = $this->getSetting('step_'.$name);
+        $data = $this->getWizardSetting('step_'.$name);
         
         if(is_array($data))
         {
@@ -542,10 +542,10 @@ trait Application_Traits_Admin_Wizard
     * Retrieves a setting from the session.
     * 
     * @param string $name
-    * @param mixed $default
+    * @param mixed|NULL $default
     * @return mixed
     */
-    protected function getSetting(string $name, $default=null)
+    protected function getWizardSetting(string $name, $default=null)
     {
         $key = $this->settingPrefix.'-'.$name;
         
@@ -558,11 +558,12 @@ trait Application_Traits_Admin_Wizard
     
     /**
      * Sets a setting of the steps wizard.
+     *
      * @param string $name
-     * @param mixed $value
+     * @param mixed|NULL $value
      * @return $this
      */
-    protected function setSetting(string $name, $value)
+    protected function setWizardSetting(string $name, $value) : self
     {
         $key = $this->settingPrefix.'-'.$name;
         
@@ -574,7 +575,7 @@ trait Application_Traits_Admin_Wizard
     {
         // get a fresh copy of the data of each step
         foreach($this->steps as $step) {
-            $this->setSetting('step_'.$step->getID(), $step->getData());
+            $this->setWizardSetting('step_'.$step->getID(), $step->getData());
         }
         
         $this->session->setValue($this->sessionID, $this->sessionData);
