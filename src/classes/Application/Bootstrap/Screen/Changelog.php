@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Changelog extends Application_Bootstrap_Screen
 {
    /**
     * @var string
     */
-    protected $langID = 'dev';
+    protected string $langID = 'dev';
     
     public function getDispatcher()
     {
@@ -16,10 +17,10 @@ class Application_Bootstrap_Screen_Changelog extends Application_Bootstrap_Scree
     protected function _boot()
     {
         $this->enableScriptMode();
-        
+        $this->disableAuthentication();
         $this->createEnvironment();
         
-        $versions = $this->driver->createWhatsnew()->getVersionsByLanguage($this->langID);
+        $versions = Application_Driver::createWhatsnew()->getVersionsByLanguage($this->langID);
         
         header('Content-Type:text/plain; encoding=utf-8');
         
@@ -64,6 +65,6 @@ class Application_Bootstrap_Screen_Changelog extends Application_Bootstrap_Scree
             echo PHP_EOL;
         }
         
-        Application::exit();
+        Application::exit('Shown the changelog.');
     }
 }
