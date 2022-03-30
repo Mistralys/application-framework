@@ -1,6 +1,6 @@
 {
   "name": "mistralys/application_framework",
-  "description": "PHP-based Application Framework",
+  "description": "Application admin UI Framework.",
   "type": "library",
   "license": "LGPL-3.0-or-later",
   "authors": [
