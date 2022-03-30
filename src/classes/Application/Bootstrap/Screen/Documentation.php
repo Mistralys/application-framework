@@ -42,7 +42,7 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
         $frameworkFolder = sprintf(
             '%s/%s/docs',
             $this->app->getVendorFolder(),
-            PackageInfo::PROJECT_COMPOSER_ID
+            PackageInfo::getComposerID()
         );
 
         $this->addFilesFromFolder($frameworkFolder);
