@@ -790,14 +790,15 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     {
         return $this->adminMode;
     }
-    
-   /**
-    * Sets an application setting specifically for this administration screen.
-    *  
-    * @param string $name
-    * @param string|int|float|bool|NULL $value
-    * @return $this
-    */
+
+    /**
+     * Sets an application setting specifically for this administration screen.
+     *
+     * @param string $name
+     * @param string|int|float|bool|NULL $value
+     * @return $this
+     * @throws Application_Exception
+     */
     protected function setSetting(string $name, $value) : self
     {
         Application_Driver::createSettings()->set($this->getSettingName($name), $value);
