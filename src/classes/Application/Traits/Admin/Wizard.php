@@ -419,7 +419,7 @@ trait Application_Traits_Admin_Wizard
 
         $this->log(sprintf('Registered steps [%s].', implode(', ', array_keys($this->steps))));
 
-        $activeStepName = $this->getSetting('activeStep', $this->initialStepName);
+        $activeStepName = $this->getWizardSetting('activeStep', $this->initialStepName);
         if (!$this->stepExists($activeStepName))
         {
             $activeStepName = $this->initialStepName;
@@ -558,7 +558,7 @@ trait Application_Traits_Admin_Wizard
 
     private function getStepData(string $name) : array
     {
-        $data = $this->getSetting('step_' . $name);
+        $data = $this->getWizardSetting('step_' . $name);
 
         if (is_array($data))
         {
@@ -575,7 +575,7 @@ trait Application_Traits_Admin_Wizard
      * @param mixed $default
      * @return mixed
      */
-    protected function getSetting(string $name, $default = null)
+    protected function getWizardSetting(string $name, $default = null)
     {
         $key = $this->settingPrefix . '-' . $name;
 
