@@ -9,7 +9,10 @@
 - Request: Added `Application_Request::resolveParams()`.
 - Application: Added the `DriverSettings` class to easily access global settings.
 - Application: Added `Application_Driver::createSettings()`.
+- Application: Added `requireClassExists()` for a useful exception.
 - Dependencies: Bugfix for the documentation viewer (See [v1.1.0 release](https://github.com/Mistralys/markdown-viewer/releases/tag/1.1.0)).
+- Themes: Added the `VariableMissingException` for variables missing in templates.
+- Themes: Added an interface for templates, `PageTemplateInterface`.
 
 #### Breaking changes
 
