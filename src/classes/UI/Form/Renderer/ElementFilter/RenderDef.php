@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class UI_Form_Renderer_ElementFilter_RenderDef
 {
-   /**
+    /**
     * @var array<string,mixed>
     */
     private $itemDef;
@@ -44,9 +44,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     * 
     * @var array<string,string>
     */
-    private $relByType = array(
-        'Button' => 'button'
-    );
+    private array $relByType;
     
    /**
     * 
@@ -59,6 +57,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
         $this->itemDef = $itemDef;
         $this->node = $node;
         $this->level = $level;
+        $this->relByType = $this->getRelValues();
         
         if($this->isSection())
         {
@@ -123,7 +122,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     {
         $rel = ucfirst($this->getRel());
         
-        $relClass = 'UI_Form_Renderer_RenderType_' . $rel;
+        $relClass = UI_Form_Renderer_RenderType::class.'_' . $rel;
         
         if(class_exists($relClass))
         {
@@ -175,7 +174,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     
     public function getElementHTML() : string
     {
-        return strval($this->getItemProperty('html'));
+        return (string)$this->getItemProperty('html');
     }
     
     public function getRel() : string
@@ -186,7 +185,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
         // a rel attribute set are handled as well
         if(empty($rel) && $this->getElement() instanceof HTML_QuickForm2_Container)
         {
-            $rel = 'layoutlessGroup';
+            $rel = UI_Form::REL_LAYOUT_LESS_GROUP;
         }
         else
         {
@@ -200,10 +199,18 @@ class UI_Form_Renderer_ElementFilter_RenderDef
         
         return $rel;
     }
+
+    public function getRelValues() : array
+    {
+        return array(
+            getClassTypeName(HTML_QuickForm2_Element_Button::class) => UI_Form::REL_BUTTON,
+            getClassTypeName(HTML_QuickForm2_Element_UIButton::class) => UI_Form::REL_BUTTON
+        );
+    }
     
     public function isDummy() : bool
     {
-        return substr($this->getElementID(), 0, 5) === 'dummy';
+        return strpos($this->getElementID(), 'dummy') === 0;
     }
     
     public function isLast() : bool

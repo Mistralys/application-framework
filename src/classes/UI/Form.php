@@ -43,32 +43,24 @@ class UI_Form extends UI_Renderable
      * Stores the string that form element IDs get prefixed with.
      * @var string
      */
-    const ID_PREFIX = 'f-';
+    public const ID_PREFIX = 'f-';
 
-    /**
-     * @var string
-     */
-    protected $id;
+    public const REL_BUTTON = 'Button';
+    public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
 
-    /**
-     * @var HTML_QuickForm2
-     */
-    protected $form;
-
-    /**
-     * @var HTML_QuickForm2_DataSource_Array
-     */
-    protected $defaultDataSource;
+    protected string $id;
+    protected HTML_QuickForm2 $form;
+    protected HTML_QuickForm2_DataSource_Array $defaultDataSource;
 
     /**
      * Creates a new form. Use the {@link getForm()} method to configure
      * the QuickForm object.
      *
      * @param UI $ui
-     * @param string $id
+     * @param string $formID
      * @param array<string,mixed> $defaultData
      */
-    public function __construct(UI $ui, string $id, string $method, array $defaultData = array())
+    public function __construct(UI $ui, string $formID, string $method, array $defaultData = array())
     {
         parent::__construct($ui->getPage());
         
@@ -86,13 +78,13 @@ class UI_Form extends UI_Renderable
             );
         }
         
-        $this->id = $id;
+        $this->id = $formID;
         $this->defaultDataSource = new HTML_QuickForm2_DataSource_Array($defaultData);
-        $this->form = new HTML_QuickForm2('form-' . $id, $method);
+        $this->form = new HTML_QuickForm2('form-' . $formID, $method);
         $this->form->addDataSource($this->defaultDataSource);
-        $this->form->setAttribute('data-jsid', $id);
+        $this->form->setAttribute('data-jsid', $formID);
         
-        $id = $this->form->getEventHandler()->onNodeAdded(array($this, 'callback_onNodeAdded'));
+        $this->form->getEventHandler()->onNodeAdded(array($this, 'callback_onNodeAdded'));
 
         if($ui->hasPage()) {
             $this->addHiddenVar('page', $this->ui->getPage()->getID());
@@ -924,7 +916,7 @@ class UI_Form extends UI_Renderable
     {
         return $this->addButton($name)
             ->makeSubmit()
-            ->setContent(toString($label))
+            ->setLabel(toString($label))
             ->setTooltip($tooltip);
     }
 
