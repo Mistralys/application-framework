@@ -420,8 +420,7 @@ trait Application_Traits_Admin_Wizard
         $this->log(sprintf('Registered steps [%s].', implode(', ', array_keys($this->steps))));
 
         $activeStepName = (string)$this->getWizardSetting('activeStep', $this->initialStepName);
-        if (!$this->stepExists($activeStepName))
-        {
+        if(!$this->stepExists($activeStepName)) {
             $activeStepName = $this->initialStepName;
         }
 
