@@ -267,7 +267,7 @@ function displayError(Throwable $e, string $output='') : void
 
     try
     {
-        if(Application::isActive()) {
+        if(Application::isSessionReady()) {
             $user = Application::getUser();
             $develinfo = $user->isDeveloper();
         }
