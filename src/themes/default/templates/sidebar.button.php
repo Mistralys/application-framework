@@ -210,8 +210,9 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
 
     private function configureMode() : void
     {
-        switch ($this->mode) {
-            case 'linked':
+        switch ($this->mode)
+        {
+            case UI_Page_Sidebar_Item_Button::MODE_LINKED:
                 $this->tagname = 'a';
                 $this->setAttribute('href', $this->getStringVar('url'));
 
@@ -220,19 +221,18 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
                 }
                 break;
 
-            case 'submit':
+            case UI_Page_Sidebar_Item_Button::MODE_SUBMIT:
                 $this->setAttribute('type', 'submit');
                 $this->setAttribute('value', $this->attributes['name']);
                 break;
 
-            case 'clickable':
+            case UI_Page_Sidebar_Item_Button::MODE_CLICKABLE:
                 $this->setAttribute('onclick', $this->getVar('javascript'));
                 break;
 
-            case 'dropmenu':
+            case UI_Page_Sidebar_Item_DropdownButton::MODE_DROPDOWN_MENU:
                 $this->ui->addJavascriptOnload(sprintf("$('#%s').dropdown()", $this->button->getID()));
                 $this->setAttribute('data-toggle', 'dropdown');
-                //$attributes['onclick'] = '';
                 break;
         }
     }
