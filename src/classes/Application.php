@@ -6,10 +6,10 @@
  * @package Application
  */
 
-use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use function AppUtils\parseVariable;
 
 /**
  * Underlying structure for the application, dispatches rendering
@@ -46,139 +46,44 @@ class Application
     public const ERROR_INVALID_USER_CLASS = 1199543021;
     public const ERROR_REDIRECT_EVENTS_FAILED = 1199543022;
 
-    const RUN_MODE_UI = 'ui';
-    const RUN_MODE_SCRIPT = 'script';
+    public const RUN_MODE_UI = 'ui';
+    public const RUN_MODE_SCRIPT = 'script';
 
-    const SCRIPT_TYPE_AJAX = 'ajax';
-    const SCRIPT_TYPE_EXPORT_AUTHENTICATED = 'export_authenticated';
-    const SCRIPT_TYPE_EXPORT_PUBLIC = 'export_public';
-    const SCRIPT_TYPE_MONITOR = 'monitor';
+    public const SCRIPT_TYPE_AJAX = 'ajax';
+    public const SCRIPT_TYPE_EXPORT_AUTHENTICATED = 'export_authenticated';
+    public const SCRIPT_TYPE_EXPORT_PUBLIC = 'export_public';
+    public const SCRIPT_TYPE_MONITOR = 'monitor';
 
-    const USER_ID_SYSTEM = 1;
-    const USER_ID_DUMMY = 2;
+    public const USER_ID_SYSTEM = 1;
+    public const USER_ID_DUMMY = 2;
 
-    const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
-    const EVENT_REDIRECT = 'Redirect';
+    public const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
+    public const EVENT_REDIRECT = 'Redirect';
     public const EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
 
     public const REQUEST_VAR_SIMULATION = 'simulate_only';
 
-    /**
-     * @var UI
-     */
-    private $ui;
-
-    /**
-     * @var Application_Driver
-     */
-    private $driver;
-
-    /**
-     * @var Application_Request
-     */
-    private $request;
-
-    /**
-     * @var Application_Session
-     */
-    private static $session;
-
-    /**
-     * @var AppLocalize\Localization_Locale
-     */
-    private $locale;
-
-    /**
-     * @var integer
-     */
-    private static $counter = 0;
-
-    /**
-     * @var boolean
-     */
-    private $started = false;
-
-    /**
-     * @var Application_Bootstrap_Screen
-     */
-    private $bootScreen;
-
-    /**
-     * @see Application::getLogger()
-     * @var Application_Logger
-     */
-    private static $logger;
-
-    /**
-     * @var UI_Page
-     */
-    private $page;
-
-    /**
-     * @var boolean
-     */
-    private static $simulation = false;
-
-    /**
-     * @var boolean
-     */
-    private static $develEnvironment;
-
-    /**
-     * @see Application::getStorageFolder()
-     * @var string
-     */
-    private static $storageFolder = '';
-
-    /**
-     * @see Application::getStorageSubfolderPath()
-     * @var string[]string
-     */
-    private static $knownStorageFolders = array();
-
-    /**
-     * @see Application::getMessageLog()
-     * @var Application_Messagelogs
-     */
-    private static $messagelogs;
-
-    /**
-     * @see Application::createMedia()
-     * @var Application_Media
-     */
-    private static $media;
-
-    /**
-     * @see Application::createMessaging()
-     * @var Application_Messaging
-     */
-    private static $messaging;
-
-    /**
-     * @see Application::createLookupItems()
-     * @var Application_LookupItems
-     */
-    private static $lookupItems;
-
-    /**
-     * @var integer
-     */
-    private $id;
-
-    /**
-     * @var boolean
-     */
-    private static $exitEnabled = true;
-
-    /**
-     * @var Application_ErrorLog
-     */
-    protected static $errorLog;
-
-    /**
-     * @var Application_RequestLog
-     */
-    protected static $requestLog;
+    private UI $ui;
+    private ?Application_Driver $driver = null;
+    private ?Application_Request $request = null;
+    private static ?Application_Session $session = null;
+    private static int $counter = 0;
+    private bool $started = false;
+    private Application_Bootstrap_Screen $bootScreen;
+    private static ?Application_Logger $logger = null;
+    private ?UI_Page $page = null;
+    private static bool $simulation = false;
+    private static ?bool $develEnvironment = null;
+    private static string $storageFolder = '';
+    private static array $knownStorageFolders = array();
+    private static ?Application_Messagelogs $messageLogs = null;
+    private static ?Application_Media $media = null;
+    private static ?Application_Messaging $messaging = null;
+    private static ?Application_LookupItems $lookupItems = null;
+    private int $id;
+    private static bool $exitEnabled = true;
+    protected static ?Application_ErrorLog $errorLog = null;
+    protected static ?Application_RequestLog $requestLog = null;
 
     public function __construct(Application_Bootstrap_Screen $bootScreen)
     {
@@ -188,7 +93,6 @@ class Application
         $this->bootScreen = $bootScreen;
         $this->id = self::$counter;
         $this->ui = UI::createInstance($this);
-        $this->locale = Localization::getAppLocale();
     }
 
     /**
@@ -200,7 +104,7 @@ class Application
      */
     public static function isActive() : bool
     {
-        return isset(self::$session);
+        return self::isSessionReady();
     }
 
     /**
@@ -220,15 +124,48 @@ class Application
         throw new Application_Exception_UnexpectedInstanceType(Application_Feedback::class, $collection);
     }
 
+    public static function requireClassExists(string $className) : void
+    {
+        if(class_exists($className))
+        {
+            return;
+        }
+
+        throw new Application_Exception(
+            'Class does not exist',
+            sprintf(
+                'The class [%s] cannot be auto-loaded.',
+                $className
+            ),
+            self::ERROR_CLASS_NOT_FOUND
+        );
+    }
+
     /**
      * @return Application_Bootstrap_Screen
      */
-    public function getBootScreen()
+    public function getBootScreen() : Application_Bootstrap_Screen
     {
         return $this->bootScreen;
     }
 
-    public function getID()
+    /**
+     * @return UI_Page
+     *
+     * @throws Application_Exception
+     * @see Application::ERROR_APPLICATION_NOT_STARTED
+     */
+    public function getPage() : UI_Page
+    {
+        if(isset($this->page))
+        {
+            return $this->page;
+        }
+
+        throw $this->createNotStartedException();
+    }
+
+    public function getID() : int
     {
         return $this->id;
     }
@@ -242,16 +179,9 @@ class Application
      */
     public function start(Application_Driver $driver) : void
     {
-        Application::log(sprintf('Starting application.'));
+        self::log('Starting application.');
 
-        if (!defined('APP_RUN_MODE'))
-        {
-            throw new Application_Exception(
-                'No application run mode set',
-                'The [APP_RUN_MODE] configuration must be present to start the application.',
-                self::ERROR_NO_RUN_MODE_SET
-            );
-        }
+        $runMode = boot_constant('APP_RUN_MODE');
 
         $this->started = true;
         $this->driver = $driver;
@@ -273,7 +203,7 @@ class Application
         // method cannot be called before this is done.
         $this->driver->prepare();
 
-        if (APP_RUN_MODE == self::RUN_MODE_UI)
+        if ($runMode === self::RUN_MODE_UI)
         {
             $pageID = $driver->getPageID();
             if (empty($pageID))
@@ -285,28 +215,22 @@ class Application
                 );
             }
 
-            Application::log(sprintf('Determined active page to be [%s].', $pageID));
+            self::log(sprintf('Determined active page to be [%s].', $pageID));
 
             $this->page = $this->ui->createPage($pageID);
             $this->ui->setPage($this->page);
             $this->driver->setPage($this->page);
         }
-        else
+        else if ($runMode !== self::RUN_MODE_SCRIPT)
         {
-            if (APP_RUN_MODE == self::RUN_MODE_SCRIPT)
-            {
-            }
-            else
-            {
-                throw new Application_Exception(
-                    'Invalid application run mode',
-                    sprintf(
-                        'The run mode [%s] is not a valid application run mode.',
-                        APP_RUN_MODE
-                    ),
-                    self::ERROR_INVALID_RUN_MODE
-                );
-            }
+            throw new Application_Exception(
+                'Invalid application run mode',
+                sprintf(
+                    'The run mode [%s] is not a valid application run mode.',
+                    $runMode
+                ),
+                self::ERROR_INVALID_RUN_MODE
+            );
         }
 
         $this->driver->start();
@@ -389,7 +313,7 @@ class Application
     /**
      * @return UI
      */
-    public function getUI()
+    public function getUI() : UI
     {
         return $this->ui;
     }
@@ -397,23 +321,31 @@ class Application
     /**
      * @return UI_Themes_Theme
      */
-    public function getTheme()
+    public function getTheme() : UI_Themes_Theme
     {
-        return $this->ui->getTheme();
+        return $this->getUI()->getTheme();
     }
 
     /**
      * @return Application_Driver
+     *
+     * @throws Application_Exception
+     * @see Application::ERROR_APPLICATION_NOT_STARTED
      */
-    public function getDriver()
+    public function getDriver() : Application_Driver
     {
-        return $this->driver;
+        if(isset($this->driver))
+        {
+            return $this->driver;
+        }
+
+        throw $this->createNotStartedException();
     }
 
     /**
      * @return Application_Session
      */
-    public static function getSession()
+    public static function getSession() : Application_Session
     {
         if (isset(self::$session))
         {
@@ -434,16 +366,7 @@ class Application
      */
     public static function getUser() : Application_User
     {
-        if (!isset(self::$session))
-        {
-            throw new Application_Exception(
-                'User management error',
-                'No session set yet, user object is not available at this point.',
-                self::ERROR_NO_USER_PRIOR_TO_SESSION
-            );
-        }
-
-        return self::$session->getUser();
+        return self::getSession()->getUser();
     }
 
     /**
@@ -451,16 +374,8 @@ class Application
      */
     public function display() : void
     {
-        if (!$this->started)
-        {
-            throw new Application_Exception(
-                'Application not started',
-                'Cannot display the rendered contents, the application [start] method was not called.',
-                self::ERROR_APPLICATION_NOT_STARTED
-            );
-        }
-
-        $content = $this->driver->renderContent();
+        $page = $this->getPage();
+        $content = $this->getDriver()->renderContent();
 
         if (empty($content))
         {
@@ -471,14 +386,16 @@ class Application
             );
         }
 
-        $this->page->setContent($content);
-        $this->page->display();
+        $page->setContent($content);
+        $page->display();
     }
 
     /**
      * Loads the specified template and returns its rendered content.
      *
      * @param string $templateID
+     * @param array<string,mixed> $vars
+     * @return string
      */
     public function renderTemplate(string $templateID, array $vars = array()) : string
     {
@@ -492,17 +409,32 @@ class Application
      * @param string $templateID
      * @return UI_Page_Template
      */
-    public function createTemplate($templateID)
+    public function createTemplate(string $templateID) : UI_Page_Template
     {
-        return $this->page->createTemplate($templateID);
+        return $this->getPage()->createTemplate($templateID);
     }
 
     /**
      * @return Application_Request
+     * @throws Application_Exception
      */
-    public function getRequest()
+    public function getRequest() : Application_Request
     {
-        return $this->request;
+        if(isset($this->request))
+        {
+            return $this->request;
+        }
+
+        throw $this->createNotStartedException();
+    }
+
+    private function createNotStartedException() : Application_Exception
+    {
+        throw new Application_Exception(
+            'Application has not been started yet',
+            '',
+            self::ERROR_APPLICATION_NOT_STARTED
+        );
     }
 
     /**
@@ -512,11 +444,14 @@ class Application
      *
      * @param string $className
      * @param boolean $exception Whether to throw an exception if the class cannot be loaded. If disabled, this will return a boolean true on success or an error message otherwise.
-     * @return boolean|string
+     * @param bool $checkSyntax
+     * @return true|string
      * @throws Application_Exception
+     * @throws FileHelper_Exception
+     * @throws JsonException
      * @deprecated Autoloading is used now
      */
-    public static function requireClass($className, $exception = true, $checkSyntax = false)
+    public static function requireClass(string $className, bool $exception = true, bool $checkSyntax = false)
     {
         if (class_exists($className))
         {
@@ -564,7 +499,7 @@ class Application
                         'The file for class [%s] has syntax errors in [%s]. Validation messages: %s',
                         $className,
                         $filePath,
-                        json_encode($checkResult)
+                        json_encode($checkResult, JSON_THROW_ON_ERROR)
                     ),
                     self::ERROR_PHP_FILE_SYNTAX_ERRORS
                 );
@@ -740,7 +675,7 @@ class Application
      * @return string
      * @throws Application_Exception
      */
-    public static function getStorageSubfolderPath($subfolderName) : string
+    public static function getStorageSubfolderPath(string $subfolderName) : string
     {
         if (isset(self::$knownStorageFolders[$subfolderName]))
         {
@@ -776,12 +711,12 @@ class Application
 
     public static function getMessageLog() : Application_Messagelogs
     {
-        if (!isset(self::$messagelogs))
+        if (!isset(self::$messageLogs))
         {
-            self::$messagelogs = new Application_Messagelogs();
+            self::$messageLogs = new Application_Messagelogs();
         }
 
-        return self::$messagelogs;
+        return self::$messageLogs;
     }
 
     /**
@@ -811,10 +746,7 @@ class Application
         return Connectors::createConnector($type);
     }
 
-    /**
-     * @var bool|NULL
-     */
-    protected static $isDevUser;
+    protected static ?bool $isDevUser = null;
 
     /**
      * Checks whether the application is in simulation mode, which
@@ -856,7 +788,7 @@ class Application
             self::$isDevUser = self::getUser()->isDeveloper();
         }
 
-        return self::$isDevUser !== null;
+        return self::$isDevUser;
     }
 
     /**
@@ -945,10 +877,10 @@ class Application
      * exception if this fails.
      *
      * @param integer $seconds The limit to set. Use 0 for no limit.
-     * @param string $operation Human readable label of the operation that needs the time limit, shown in the exception.
+     * @param string $operation Human-readable label of the operation that needs the time limit, shown in the exception.
      * @throws Application_Exception
      */
-    public static function setTimeLimit($seconds, $operation)
+    public static function setTimeLimit(int $seconds, string $operation) : void
     {
         if (set_time_limit($seconds) === false)
         {
@@ -1090,7 +1022,7 @@ class Application
             'Invalid callback',
             sprintf(
                 'The callback is not callable: [%s].',
-                \AppUtils\parseVariable($callable)->enableType()->toString()
+                parseVariable($callable)->enableType()->toString()
             ),
             $errorCode
         );
@@ -1098,12 +1030,12 @@ class Application
 
     public static function getRunMode() : string
     {
-        return strval(boot_constant('APP_RUN_MODE'));
+        return (string)boot_constant('APP_RUN_MODE');
     }
 
     public static function isUIEnabled() : bool
     {
-        return self::getRunMode() === Application::RUN_MODE_UI;
+        return self::getRunMode() === self::RUN_MODE_UI;
     }
 
     public static function isAuthenticationEnabled() : bool
@@ -1324,7 +1256,7 @@ class Application
      */
     public static function getUserIDByForeignID(string $foreignID) : ?int
     {
-        $result = DBHelper::fetchKey(
+        $result = DBHelper::fetchKeyInt(
             'user_id',
             "SELECT
                 user_id
@@ -1336,10 +1268,12 @@ class Application
                 'foreign_id' => $foreignID
             )
         );
-        if ($result !== null)
+
+        if ($result !== 0)
         {
-            return intval($result);
+            return $result;
         }
+
         return null;
     }
 
@@ -1470,6 +1404,11 @@ class Application
             'lastname' => 'Application',
             'foreign_id' => '__system'
         );
+    }
+
+    public function isStarted() : bool
+    {
+        return $this->started;
     }
 
     public static function isSessionReady() : bool
