@@ -1,5 +1,7 @@
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
+- Forms: Fixed submit buttons now being shown in the form footer.
+- Forms: Fixed submit buttons not having any label.
 - Documentation: Added button examples in the interface references.
 - UI: Fixed buttons mixing submit and link attributes.
 - UnitTests: Added button tests.
