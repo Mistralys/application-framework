@@ -7,10 +7,7 @@ declare(strict_types=1);
  */
 trait UI_Traits_ClientConfirmable
 {
-    /**
-     * @var UI_ClientConfirmable_Message|NULL
-     */
-    protected $confirmMessage;
+    protected ?UI_ClientConfirmable_Message $confirmMessage = null;
 
     /**
      * Adds a confirmation dialog with the specified message
@@ -19,12 +16,12 @@ trait UI_Traits_ClientConfirmable
      * style, e.g. if it's a danger button the dialog will be
      * a dangerous operation dialog.
      *
-     * @param scalar|UI_Renderable_Interface $message Can contain HTML code.
-     * @param boolean $withInput Whether to have the user confirm the operation by typing a confirm string.
+     * @param string|number|UI_Renderable_Interface|NULL $message Can contain HTML code.
+     * @param boolean $withInput Whether to have the user confirm the operation by typing a confirmation string.
      * @return $this
      * @throws UI_Exception
      */
-    public function makeConfirm($message, bool $withInput=false)
+    public function makeConfirm($message, bool $withInput=false) : self
     {
         $this->getConfirmMessage()
             ->setMessage($message)
@@ -34,7 +31,7 @@ trait UI_Traits_ClientConfirmable
     }
 
     /**
-     * Returns the confirm message instance to be able to configure it further.
+     * Returns the confirmation message instance to be able to configure it further.
      * If none exists yet, it is created.
      *
      * @return UI_ClientConfirmable_Message
