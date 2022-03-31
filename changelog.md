@@ -1,4 +1,4 @@
-### v2.1.0 - Bugfix release
+### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
 - Documentation: Added button examples in the interface references.
 - UI: Fixed buttons mixing submit and link attributes.
