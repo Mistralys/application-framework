@@ -94,7 +94,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                 'examples' => array(
                     'sections' => t('Automatic sections'),
                     'tabs' => t('With tabs'),
-                    'custom-elements' => t('Custom app input elements')
+                    'custom-elements' => t('Custom app input elements'),
+                    'footer-buttons' => t('Footer with buttons')
                 )
             ),
             'errors' => array(
