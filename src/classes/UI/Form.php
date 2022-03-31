@@ -20,7 +20,7 @@ use function AppUtils\parseVariable;
  * @subpackage Forms
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Form extends UI_Renderable implements UI_Renderable_Interface
+class UI_Form extends UI_Renderable
 {
     public const ERROR_DUPLICATE_ELEMENT_ID = 45524001;
     public const ERROR_INVALID_FORM_DATA = 45524002;
@@ -838,12 +838,12 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string $url
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addLinkButton(string $url, $label, $tooltip='') : UI_Form_Element_UIButton
+    public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addButton($this->generateDummyName())
             ->setTooltip($tooltip)
@@ -857,12 +857,12 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string $name
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addPrimarySubmit($label, string $name='save', $tooltip='') : UI_Form_Element_UIButton
+    public function addPrimarySubmit($label, string $name='save', $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addSubmit($label, $name, $tooltip)
             ->makePrimary();
@@ -875,13 +875,13 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      *
      * @param string $label
      * @param string $name
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function addDevPrimarySubmit(string $label, string $name='save') : UI_Form_Element_UIButton
+    public function addDevPrimarySubmit(string $label, string $name='save') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addSubmit($label, $name)
             ->makeDeveloper()
@@ -894,20 +894,20 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * and action.
      *
      * @param string $name
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
      */
-    public function addButton(string $name) : UI_Form_Element_UIButton
+    public function addButton(string $name) : HTML_QuickForm2_Element_UIButton
     {
         $button = $this->addElement('uibutton', $name, $this->form);
 
-        if($button instanceof UI_Form_Element_UIButton)
+        if($button instanceof HTML_QuickForm2_Element_UIButton)
         {
             return $button;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(UI_Form_Element_UIButton::class, $button);
+        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_UIButton::class, $button);
     }
 
     /**
@@ -916,11 +916,11 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string $name
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addSubmit($label, string $name='save', $tooltip=null) : UI_Form_Element_UIButton
+    public function addSubmit($label, string $name='save', $tooltip=null) : HTML_QuickForm2_Element_UIButton
     {
         return $this->addButton($name)
             ->makeSubmit()
