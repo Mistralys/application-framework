@@ -77,10 +77,11 @@ H3.form-header.form-header-first {
 
 .form-condensed .input-append,
 .form-condensed .input-prepend{
-margin-bottom:3px !important;
+    margin-bottom:3px !important;
 }
 
-.form-actions > BUTTON {
+.form-actions > BUTTON.btn,
+.form-actions > A.btn {
 	margin-right:6px;
 }
 
