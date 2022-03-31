@@ -6,8 +6,12 @@
  * @see UI_Page_Section
  */
 
+use Application\Exception\ClassNotExistsException;
+use AppUtils\OutputBuffering;
+use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Classable;
 use AppUtils\Interface_Classable;
+use function AppUtils\parseNumber;
 
 /**
  * Helper class for creating and rendering content sections
@@ -42,12 +46,12 @@ abstract class UI_Page_Section
     public const ERROR_INVALID_CONTEXT_BUTTON = 511001;
     public const ERROR_TAB_ALREADY_EXISTS = 511002;
     
-    protected $templateName = 'frame.content.section';
+    protected string $templateName = 'frame.content.section';
 
     /**
      * @var array<int,UI_Button|UI_Bootstrap_ButtonDropdown>
      */
-    protected $contextButtons = array();
+    protected array $contextButtons = array();
     
    /**
     * The section properties: these get submitted as is
@@ -72,10 +76,7 @@ abstract class UI_Page_Section
         'anchor' => ''
     );
 
-    /**
-     * @var UI_QuickSelector|NULL
-     */
-    private $quickSelector = null;
+    private ?UI_QuickSelector $quickSelector = null;
 
     /**
      * Every section gets a dynamically created ID. This can
@@ -104,7 +105,7 @@ abstract class UI_Page_Section
     * @param string $templateName
     * @return $this
     */
-    public function setTemplateName($templateName)
+    public function setTemplateName(string $templateName) : self
     {
         $this->templateName = $templateName;
         return $this;
@@ -117,7 +118,7 @@ abstract class UI_Page_Section
     * @param string $id
     * @return $this
     */
-    public function setID($id)
+    public function setID(string $id) : self
     {
         return $this->setProperty('id', $id);
     }
@@ -126,17 +127,18 @@ abstract class UI_Page_Section
     * Retrieves the section's ID attribute.
     * @return string
     */
-    public function getID()
+    public function getID() : string
     {
-        return $this->getProperty('id');
+        return (string)$this->getProperty('id');
     }
-    
-   /**
-    * Optional. Sets the section's heading title.
-    * @param string|number|UI_Renderable_Interface $title
-    * @return $this
-    */
-    public function setTitle($title)
+
+    /**
+     * Optional. Sets the section's heading title.
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTitle($title) : self
     {
         return $this->setProperty('title', toString($title));
     }
@@ -145,54 +147,54 @@ abstract class UI_Page_Section
      * @param string $anchor
      * @return $this
      */
-    public function setAnchor(string $anchor)
+    public function setAnchor(string $anchor) : self
     {
         return $this->setProperty('anchor', $anchor);
     }
 
     public function getAnchor() : string
     {
-        return strval($this->getProperty('anchor'));
+        return (string)$this->getProperty('anchor');
     }
 
    /**
-    * Wheter to skip the section rendering if its contents are empty.
+    * Whether to skip the section rendering if its contents are empty.
     * @return boolean
     */
-    public function isVisibleIfEmpty()
+    public function isVisibleIfEmpty() : bool
     {
-        if($this->getProperty('visible-if-empty') === true) {
-            return true;
-        }
-        
-        return false;
+        return $this->getProperty('visible-if-empty') === true;
     }
     
    /**
     * Turns off the behavior that a section with empty
     * content is not displayed in the generated HTML.
-    * This is mainly used to allows using a sections 
+    * This is mainly used to allow using a section
     * clientside, and fill it there. 
     * 
     * @param bool $visible
     * @return $this
     */
-    public function setVisibleIfEmpty($visible=true)
+    public function setVisibleIfEmpty(bool $visible=true) : self
     {
         return $this->setProperty('visible-if-empty', $visible);
     }
-    
-    public function setGroup($group)
+
+    /**
+     * @param string $group
+     * @return $this
+     */
+    public function setGroup(string $group) : self
     {
         return $this->setProperty('group', $group);
     }
     
-    public function getGroup()
+    public function getGroup() : string
     {
-        return $this->getProperty('group');
+        return (string)$this->getProperty('group');
     }
     
-    const BACKGROUND_TYPE_LIGHT = 'light';
+    public const BACKGROUND_TYPE_LIGHT = 'light';
     
    /**
     * Makes the section's background a solid color, with the specified
@@ -202,10 +204,9 @@ abstract class UI_Page_Section
     * @param string $type
     * @return $this
     */
-    public function makeSolidBackground(string $type) : UI_Page_Section
+    public function makeSolidBackground(string $type) : self
     {
-        $this->addClass('solid-background-'.$type);
-        return $this;
+        return $this->addClass('solid-background-'.$type);
     }
     
    /**
@@ -214,7 +215,7 @@ abstract class UI_Page_Section
     * 
     * @return $this
     */
-    public function makeLightBackground() : UI_Page_Section
+    public function makeLightBackground() : self
     {
         return $this->makeSolidBackground(self::BACKGROUND_TYPE_LIGHT);
     }
@@ -227,35 +228,37 @@ abstract class UI_Page_Section
     {
         return (string)$this->getProperty('title');
     }
-    
-   /**
-    * Optional. Sets the tagline under the title. 
-    * Note: only used if a title is also set.
-    * 
-    * @param string|number|UI_Renderable_Interface $text
-    * @return $this
-    */
-    public function setTagline($text)
+
+    /**
+     * Optional. Sets the tagline under the title.
+     * Note: only used if a title is also set.
+     *
+     * @param string|number|UI_Renderable_Interface $text
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTagline($text) : self
     {
         return $this->setProperty('tagline', toString($text));
     }
 
     public function getTagline() : string
     {
-        return strval($this->getProperty('tagline'));
+        return (string)$this->getProperty('tagline');
     }
 
     public function hasTagline() : bool
     {
         return $this->getTagline() !== '';
     }
-    
-   /**
-    * Optional. Sets an abstract text that explains the contents of the section.
-    * @param string|number|UI_Renderable_Interface $text
-    * @return $this
-    */
-    public function setAbstract($text)
+
+    /**
+     * Optional. Sets an abstract text that explains the contents of the section.
+     * @param string|number|UI_Renderable_Interface $text
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setAbstract($text) : self
     {
         return $this->setProperty('abstract', toString($text));
     }
@@ -265,22 +268,23 @@ abstract class UI_Page_Section
         return (string)$this->getProperty('abstract');
     }
 
-   /**
-    * Sets the markup to use as body for the section. If this is not set,
-    * the section will not be rendered.
-    * 
-    * @param string|number|UI_Renderable_Interface $content
-    * @return $this
-    * @see startCapture()
-    */
-    public function setContent($content)
+    /**
+     * Sets the markup to use as body for the section. If this is not set,
+     * the section will not be rendered.
+     *
+     * @param string|number|UI_Renderable_Interface $content
+     * @return $this
+     * @throws UI_Exception
+     * @see startCapture()
+     */
+    public function setContent($content) : self
     {
         return $this->setProperty('content', toString($content));
     }
 
     public function getContent() : string
     {
-        return strval($this->getProperty('content'));
+        return (string)$this->getProperty('content');
     }
     
    /**
@@ -291,28 +295,30 @@ abstract class UI_Page_Section
     * @param int $height
     * @return $this
     */
-    public function setMaxBodyHeight(int $height)
+    public function setMaxBodyHeight(int $height) : self
     {
         return $this->setProperty('max-body-height', $height);
     }
-    
-   /**
-    * Appends markup to the existing section content.
-    * @param string|number|UI_Renderable_Interface $content
-    * @return $this
-    * @see prependContent()
-    */
-    public function appendContent($content)
+
+    /**
+     * Appends markup to the existing section content.
+     * @param string|number|UI_Renderable_Interface $content
+     * @return $this
+     * @throws UI_Exception
+     * @see prependContent()
+     */
+    public function appendContent($content) : self
     {
         return $this->setContent($this->getProperty('content').toString($content));
     }
-    
-   /**
-    * Prepends content to the existing section content.
-    * @param string|number|UI_Renderable_Interface $content
-    * @return $this
-    */
-    public function prependContent($content)
+
+    /**
+     * Prepends content to the existing section content.
+     * @param string|number|UI_Renderable_Interface $content
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function prependContent($content) : self
     {
         return $this->setContent(toString($content).$this->getProperty('content'));
     }
@@ -325,7 +331,7 @@ abstract class UI_Page_Section
     * @param mixed $value
     * @return $this
     */
-    protected function setProperty(string $name, $value)
+    protected function setProperty(string $name, $value) : self
     {
         $this->properties[$name] = $value;
         return $this;
@@ -334,7 +340,7 @@ abstract class UI_Page_Section
    /**
     * Retrieves a property value.
     * @param string $name
-    * @return mixed
+    * @return mixed|NULL
     */
     protected function getProperty(string $name)
     {
@@ -347,20 +353,21 @@ abstract class UI_Page_Section
     
     public function getMaxBodyHeight() : int
     {
-        $height = $this->getProperty('max-body-height');
+        $height = parseNumber($this->getProperty('max-body-height'));
 
-        if(!empty($height)) {
-            return intval($height);
+        if(!$height->isEmpty()) {
+            return (int)$height->getNumber();
         }
         
         return 0;
     }
-    
-   /**
-    * Renders the section's markup and returns it.
-    * @return string
-    */
-    protected function _render()
+
+    /**
+     * Renders the section's markup and returns it.
+     * @return string
+     * @throws UI_Themes_Exception
+     */
+    protected function _render() : string
     {
         if(!$this->isValid()) {
             return '';
@@ -391,12 +398,18 @@ abstract class UI_Page_Section
     private function renderContent() : string
     {
         $content = '';
-        if(!empty($this->contents)) {
-            foreach($this->contents as $renderable) {
-                if($this->isLocked() && $renderable instanceof Application_LockableItem_Interface) {
+        $locked = $this->isLocked();
+
+        if(!empty($this->contents))
+        {
+            foreach($this->contents as $renderable)
+            {
+                if($locked && $renderable instanceof Application_LockableItem_Interface)
+                {
                     $renderable->makeLockable();
                     $renderable->lock($this->lockReason);
                 }
+
                 $content .= $renderable->render();
             }
         }
@@ -424,34 +437,37 @@ abstract class UI_Page_Section
         return !empty($this->contextButtons);
     }
     
-    protected $capturing = false;
-    
-   /**
-    * Starts output buffering to capture the content to use for the section's body.
-    * @return $this
-    * @see endCapture()
-    */
-    public function startCapture()
+    protected bool $capturing = false;
+
+    /**
+     * Starts output buffering to capture the content to use for the section's body.
+     * @return $this
+     * @throws OutputBuffering_Exception
+     * @see endCapture()
+     */
+    public function startCapture() : self
     {
         if(!$this->capturing) {
             $this->capturing = true;
-            ob_start(); 
+            OutputBuffering::start();
         }
         
         return $this;
     }
-    
-   /**
-    * Stops the output buffering started with {@link startCapture()}. 
-    * Note: this is done automatically whenever you call {@link render()} 
-    * or {@link display()}.
-    * 
-    * @return $this
-    */
-    public function endCapture()
+
+    /**
+     * Stops the output buffering started with {@link startCapture()}.
+     * Note: this is done automatically whenever you call {@link render()}
+     * or {@link display()}.
+     *
+     * @return $this
+     * @throws OutputBuffering_Exception
+     * @throws UI_Exception
+     */
+    public function endCapture() : self
     {
         if($this->capturing) {
-            $this->setContent(ob_get_clean());
+            $this->setContent(OutputBuffering::get());
             $this->capturing = false; 
         }
 
@@ -460,22 +476,20 @@ abstract class UI_Page_Section
 
     /**
      * Turns the section into an empty section with just an informational message.
-     * The message is automatically set to not dismissable, and the message itself
+     * The message is automatically set to not dismissible, and the message itself
      * is prepended with an information icon.
      *
-     * @param string $message
-     * @return UI_Page_Section
+     * @param string|int|float|UI_Renderable_Interface|NULL $message
+     * @return $this
+     * @throws UI_Exception
      */
-    public function makeInfoMessage($message)
+    public function makeInfoMessage($message) : self
     {
         return $this->setContent(
-            $this->page->renderInfoMessage(
-                UI::icon()->information() . ' ' .
-                $message,
-                array(
-                    'dismissable' => false
-                )
-            )
+            $this->page->createMessage($message)
+                ->makeNotDismissable()
+                ->makeInfo()
+                ->enableIcon()
         );
     }
     
@@ -488,7 +502,7 @@ abstract class UI_Page_Section
     * @return $this
     * @see UI_Page_Section::makeStatic()
     */
-    public function makeCollapsible($collapsed=false)
+    public function makeCollapsible(bool $collapsed=false) : self
     {
         $this->setProperty('collapsible', true);
         $this->setProperty('collapsed', $collapsed);
@@ -502,7 +516,7 @@ abstract class UI_Page_Section
     * @param UI_Icon $icon
     * @return $this
     */
-    public function setIcon(UI_Icon $icon)
+    public function setIcon(UI_Icon $icon) : self
     {
         return $this->setProperty('icon', $icon);
     }
@@ -526,7 +540,7 @@ abstract class UI_Page_Section
     }
     
    /**
-    * Checks whether the specified property has a non empty value set.
+    * Checks whether the specified property has a non-empty value set.
     * @param string $name
     * @return boolean
     */
@@ -544,14 +558,17 @@ abstract class UI_Page_Section
     * @return $this
     * @see UI_Page_Section::makeCollapsible()
     */
-    public function makeStatic()
+    public function makeStatic() : self
     {
         $this->setProperty('collapsible', false);
         $this->setProperty('collapsed', false);
         return $this;
     }
 
-    public function makeCompact()
+    /**
+     * @return $this
+     */
+    public function makeCompact() : self
     {
         return $this->setProperty('compact', true);
     }
@@ -564,7 +581,7 @@ abstract class UI_Page_Section
     /**
      * @return $this
      */
-    public function expand()
+    public function expand() : self
     {
         return $this->makeCollapsible(false);
     }
@@ -572,7 +589,7 @@ abstract class UI_Page_Section
     /**
      * @return $this
      */
-    public function collapse()
+    public function collapse() : self
     {
         return $this->makeCollapsible(true);
     }
@@ -581,12 +598,12 @@ abstract class UI_Page_Section
      * @param bool $collapsed
      * @return $this
      */
-    public function setCollapsed(bool $collapsed=true)
+    public function setCollapsed(bool $collapsed=true) : self
     {
         return $this->makeCollapsible($collapsed);
     }
     
-    public function isExpanded()
+    public function isExpanded() : bool
     {
         if(!$this->isCollapsible()) {
             return true;
@@ -594,17 +611,32 @@ abstract class UI_Page_Section
 
         return $this->getProperty('collapsed') !== true;
     }
+
+    public function getForm() : ?UI_Form
+    {
+        foreach($this->contents as $content)
+        {
+            if($content instanceof UI_Form)
+            {
+                return $content;
+            }
+        }
+
+        return null;
+    }
     
     public function isCollapsed() : bool
     {
-        if(!$this->isCollapsible()) {
+        if(!$this->isCollapsible())
+        {
             return false;
         }
 
-        if(isset($this->form) && $this->form->isSubmitted()){
-            if(!$this->form->validate()) {
-                return false;
-            }
+        $form = $this->getForm();
+
+        if($form !== null && $form->isSubmitted() && !$form->isValid())
+        {
+            return false;
         }
         
         return $this->getProperty('collapsed') === true;
@@ -633,7 +665,7 @@ abstract class UI_Page_Section
     * @param UI_QuickSelector $quick
     * @return $this
     */
-    public function setQuickSelector(UI_QuickSelector $quick)
+    public function setQuickSelector(UI_QuickSelector $quick) : self
     {
         $this->quickSelector = $quick;
         return $this;
@@ -658,7 +690,7 @@ abstract class UI_Page_Section
      * @return $this
      * @throws Application_Exception
      */
-    public function addContextButton($button)
+    public function addContextButton($button) : self
     {
         if(!$button instanceof UI_Button && !$button instanceof UI_Bootstrap_ButtonDropdown) {
             throw new Application_Exception(
@@ -680,17 +712,20 @@ abstract class UI_Page_Section
     {
         return $this->contextButtons;
     }
-    
-    protected $contents = array();
+
+    /**
+     * @var UI_Renderable_Interface[]
+     */
+    protected array $contents = array();
     
    /**
-    * Adds a new items selector content to the section, which
+    * Adds a new item selector content to the section, which
     * can be used to display a list of possible items to choose
     * from.
     * 
     * @return UI_ItemsSelector
     */
-    public function addItemsSelector()
+    public function addItemsSelector() : UI_ItemsSelector
     {
         $selector = new UI_ItemsSelector();
         $this->addRenderable($selector);
@@ -703,7 +738,7 @@ abstract class UI_Page_Section
     * 
     * @return $this
     */
-    public function makeSidebar()
+    public function makeSidebar() : self
     {
         $this->setTemplateName('frame.sidebar.section');
         $this->removeClass('content-section');
@@ -719,7 +754,7 @@ abstract class UI_Page_Section
     * 
     * @return $this
     */
-    public function makeSubsection()
+    public function makeSubsection() : self
     {
         $this->removeClass('content-section');
         $this->addClass('content-subsection');
@@ -728,7 +763,7 @@ abstract class UI_Page_Section
         return $this;
     }
     
-    public function getJSExpand()
+    public function getJSExpand() : string
     {
         if(!$this->isCollapsible()) {
             return '';
@@ -737,7 +772,7 @@ abstract class UI_Page_Section
         return "UI.ExpandSections('".$this->getGroup()."')";
     }
     
-    public function getJSCollapse()
+    public function getJSCollapse() : string
     {
         if(!$this->isCollapsible()) {
             return '';
@@ -750,8 +785,12 @@ abstract class UI_Page_Section
     {
         return $this->getProperty('collapsible') === true;
     }
-    
-    public function addForm(UI_Form $form)
+
+    /**
+     * @param UI_Form $form
+     * @return $this
+     */
+    public function addForm(UI_Form $form) : self
     {
         return $this->addRenderable($form);
     }
@@ -765,7 +804,7 @@ abstract class UI_Page_Section
     * @param UI_Form $form
     * @return $this
     */
-    public function setForm(UI_Form $form)
+    public function setForm(UI_Form $form) : self
     {
         return $this->addRenderable($form);
     }
@@ -775,8 +814,9 @@ abstract class UI_Page_Section
     * These will be rendered in the order they are added.
     * 
     * @param UI_Renderable_Interface $renderable
+    * @return $this
     */
-    public function addRenderable(UI_Renderable_Interface $renderable)
+    public function addRenderable(UI_Renderable_Interface $renderable) : self
     {
         $this->contents[] = $renderable;
         return $this;
@@ -786,10 +826,10 @@ abstract class UI_Page_Section
     * Adds a template to render as content in the section.
     * 
     * @param string $templateID
-    * @param array $params
+    * @param array<string,mixed> $params
     * @return $this
     */
-    public function addTemplate($templateID, $params=array())
+    public function addTemplate(string $templateID, array $params=array()) : self
     {
         return $this->addRenderable(
             $this->createContent('Template')
@@ -799,16 +839,16 @@ abstract class UI_Page_Section
     }
 
    /**
-    * Adds custom HTML code to the section.
+    * Adds custom HTML to the section.
     * 
     * @param string $html
     * @return $this
     */
-    public function addHTML($html)
+    public function addHTML(string $html) : self
     {
         return $this->addRenderable(
             $this->createContent('HTML')
-            ->setOption('html', $html)
+                ->setOption('html', $html)
         );
     }
     
@@ -816,14 +856,18 @@ abstract class UI_Page_Section
     * Adds a separator between other contents.
     * @return $this
     */
-    public function addSeparator()
+    public function addSeparator() : self
     {
         return $this->addRenderable(
             $this->createContent('Separator')
         );
     }
-    
-    public function addHeading($title)
+
+    /**
+     * @param string|int|float|UI_Renderable_Interface|NULL $title
+     * @return $this
+     */
+    public function addHeading($title) : self
     {
         return $this->addRenderable(
             $this->createContent('Heading')
@@ -831,24 +875,35 @@ abstract class UI_Page_Section
         );
     }
     
-    public function addSubsection()
+    public function addSubsection() : UI_Page_Section
     {
         $sub = $this->page->createSubsection();
         $this->addRenderable($sub);
         return $sub;
     }
-    
-   /**
-    * Creates a section-specific content class.
-    * 
-    * @param string $type
-    * @return UI_Page_Section_Content
-    */
-    protected function createContent($type)
+
+    /**
+     * Creates a section-specific content class.
+     *
+     * @param string $type
+     * @return UI_Page_Section_Content
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     */
+    protected function createContent(string $type) : UI_Page_Section_Content
     {
-        $class = 'UI_Page_Section_Content_'.$type;
-        
-        return new $class($this);
+        $class = UI_Page_Section_Content::class.'_'.$type;
+
+        Application::requireClassExists($class);
+
+        $content = new $class($this);
+
+        if($content instanceof UI_Page_Section_Content)
+        {
+            return $content;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Section_Content::class, $content);
     }
     
    /**
@@ -857,12 +912,12 @@ abstract class UI_Page_Section
     * 
     * @return $this
     */
-    public function disablePadding()
+    public function disablePadding() : self
     {
         return $this->addClass('nopadding');
     }
     
-    public function enablePadding()
+    public function enablePadding() : self
     {
         return $this->removeClass('nopadding');
     }
@@ -879,7 +934,7 @@ abstract class UI_Page_Section
     * @param string $label Human-readable label of the tab.
     * @return UI_Page_Section_Tab
     */
-    public function addTab($name, $label)
+    public function addTab(string $name, string $label) : UI_Page_Section_Tab
     {
         if(isset($this->tabs[$name])) {
             throw new Application_Exception(
@@ -920,26 +975,19 @@ abstract class UI_Page_Section
         return false;
     }
     
-    /**
-     * @var UI_Page_Sidebar_ItemInterface|NULL
-     */
-    protected $previousSibling;
-    
-    /**
-     * @var UI_Page_Sidebar_ItemInterface|NULL
-     */
-    protected $nextSibling;
-    
+    protected ?UI_Page_Sidebar_ItemInterface $previousSibling = null;
+    protected ?UI_Page_Sidebar_ItemInterface $nextSibling = null;
+
     /**
      * Registers the position of the item in the sidebar. Called automatically
      * by the sidebar before it is rendered.
      *
-     * @param UI_Page_Sidebar_ItemInterface $prev
-     * @param UI_Page_Sidebar_ItemInterface $next
-     * @return UI_Page_Sidebar_ItemInterface
+     * @param UI_Page_Sidebar_ItemInterface|null $prev
+     * @param UI_Page_Sidebar_ItemInterface|null $next
+     * @return $this
      * @see UI_Page_Sidebar::getItems()
      */
-    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null)
+    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null) : self
     {
         $this->previousSibling = $prev;
         $this->nextSibling = $next;
@@ -950,7 +998,7 @@ abstract class UI_Page_Section
      * Retrieves the previous item in the sidebar before this one, if any.
      * @return UI_Page_Sidebar_ItemInterface|NULL
      */
-    public function getPreviousSibling()
+    public function getPreviousSibling() : ?UI_Page_Sidebar_ItemInterface
     {
         return $this->previousSibling;
     }
@@ -959,7 +1007,7 @@ abstract class UI_Page_Section
      * Retrieves the next item in the sidebar after this one, if any.
      * @return UI_Page_Sidebar_ItemInterface|NULL
      */
-    public function getNextSibling()
+    public function getNextSibling() : ?UI_Page_Sidebar_ItemInterface
     {
         return $this->nextSibling;
     }
