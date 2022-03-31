@@ -111,15 +111,12 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->initFormable($form);
     }
     
-   /**
-    * @var boolean
-    */
-    protected $formableInitialized = false;
+    protected bool $formableInitialized = false;
     
    /**
     * @var UI
     */
-    protected $ui;
+    protected UI $ui;
     
    /**
     * Initializes the form management with the specified, previously created form object.

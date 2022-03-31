@@ -43,7 +43,16 @@ interface Application_Interfaces_Admin_LockableScreen extends Application_Admin_
     public function getLockMode();
     
     public function getLockManager() : ?Application_LockManager;
-    
+
+    /**
+     * Like {@see Application_Interfaces_Admin_LockableScreen::getLockManager()},
+     * but throws an exception if the manager instance is not set.
+     *
+     * @return Application_LockManager
+     * @throws Application_Exception
+     */
+    public function requireLockManager() : Application_LockManager;
+
     public function getLockManagerPrimary();
     
    /**

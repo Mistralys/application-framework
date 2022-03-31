@@ -253,26 +253,23 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->page;
     }
 
+    private static ?Application_Session $session = null;
+
     /**
      * Creates/returns the driver's session instance used
      * to handle session data.
      *
      * @return Application_Session
      */
-    public static function getSession()
+    public static function getSession() : Application_Session
     {
         $className = APP_CLASS_NAME . '_Session';
 
-        static $sessionObj = null;
-
-        if ($sessionObj instanceof $className)
-        {
-            return $sessionObj;
-        }
-
-        Application::requireClass($className);
+        Application::requireClassExists($className);
 
         $sessionObj = new $className();
+
+        if($sessionObj)
 
         return $sessionObj;
     }
@@ -489,19 +486,15 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->app->getRequest()->buildURL($params);
     }
 
-    /**
-     * @var Application_AjaxHandler
-     */
-    protected $ajaxHandler;
+    protected ?Application_AjaxHandler $ajaxHandler = null;
 
     /**
      * @return Application_AjaxHandler
      */
-    public function getAjaxHandler()
+    public function getAjaxHandler() : Application_AjaxHandler
     {
         if (!isset($this->ajaxHandler))
         {
-            Application::requireClass('Application_AjaxHandler');
             $this->ajaxHandler = new Application_AjaxHandler($this);
         }
 
@@ -571,7 +564,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $areaName = $this->areaIndex[$lcID];
 
-        $key = $areaName . AppUtils\ConvertHelper::bool2string($adminMode);
+        $key = $areaName . ConvertHelper::bool2string($adminMode);
 
         if (isset($this->areas[$key]))
         {
@@ -579,15 +572,14 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         $className = $this->getID() . '_Area_' . $areaName;
-        $result = Application::requireClass($className, false);
-        if ($result !== true)
+
+        if (!class_exists($className))
         {
             throw new Application_Exception(
                 'Cannot load administration area class',
                 sprintf(
-                    'The class file for administration area [%s] cannot be loaded. Reason given: [%s].',
-                    $id,
-                    $result
+                    'The class file for administration area [%s] cannot be loaded.',
+                    $id
                 ),
                 self::ERROR_CANNOT_LOAD_ADMIN_AREA_CLASS
             );
@@ -1248,6 +1240,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves the instance of the currently active administration area.
      * @return Application_Admin_Area
+     * @throws Application_Exception
      */
     public function getActiveArea() : Application_Admin_Area
     {
@@ -1267,11 +1260,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves the currently active administration screen instance.
      *
      * @return Application_Admin_ScreenInterface
+     * @throws Application_Exception
      */
     public function getActiveScreen() : Application_Admin_ScreenInterface
     {
-        $area = $this->getActiveArea();
-        return $area->getActiveScreen();
+        return $this->getActiveArea()->getActiveScreen();
     }
 
     /**

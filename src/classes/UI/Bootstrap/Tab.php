@@ -55,7 +55,7 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
     protected $selected = false;
 
     /**
-     * @var array<string,string[]>
+     * @var array<string,array<int,string>>
      */
     protected $clientEvents = array();
 

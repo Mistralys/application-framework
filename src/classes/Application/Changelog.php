@@ -166,12 +166,12 @@ class Application_Changelog
         return $this->owner->getChangelogTable();
     }
     
-    protected $cachedFilters;
+    protected ?Application_Changelog_FilterCriteria $cachedFilters = null;
     
     public function getFilters()
     {
-        if(!isset($this->cachedFilters)) {
-            Application::requireClass('Application_Changelog_FilterCriteria');
+        if(!isset($this->cachedFilters))
+        {
             $this->cachedFilters = new Application_Changelog_FilterCriteria($this);
         }
         

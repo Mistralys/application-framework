@@ -9,16 +9,6 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
     const LAYOUT_LARGE = 'large';
     
    /**
-    * @var UI
-    */
-    protected $ui;
-
-   /**
-    * @var UI_Page
-    */
-    protected $page;
-    
-   /**
     * @var array<string,mixed>
     */
     protected $properties;

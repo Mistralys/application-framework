@@ -140,7 +140,12 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
         return
             $group->render().
-            '<input id="' . $id . '-storage" type="hidden" name="' . $this->getName() . '" value="' . $value . '"/>';
+            sprintf(
+                '<input id="%s-storage" type="hidden" name="%s" value="%s"/>',
+                $id,
+                $this->getName(),
+                $value
+            );
     }
 
     private function resolveCategory() : string

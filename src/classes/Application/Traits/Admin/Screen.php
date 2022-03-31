@@ -255,9 +255,9 @@ trait Application_Traits_Admin_Screen
         {
             $sub->$publicMethod($subject);
         }
-        else if($this->isLocked() && $subject instanceof Application_LockableItem_Interface)
+        else if($subject instanceof Application_LockableItem_Interface && $this->isLocked())
         {
-            $subject->lock($this->lockManager->getLockReason());
+            $subject->lock($this->requireLockManager()->getLockReason());
         }
         
         return true;

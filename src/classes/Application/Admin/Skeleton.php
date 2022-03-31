@@ -36,46 +36,22 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
     public const ERROR_NO_SUCH_CHILD_ADMIN_SCREEN = 13003;
+    public const ERROR_LOCK_MANAGER_NOT_SET = 13004;
 
-    /**
-     * @var Application_Driver
-     */
-    protected $driver;
+    public const LOCK_MODE_PRIMARYLESS = 'primaryless';
+    public const LOCK_MODE_PRIMARYBASED = 'primarybased';
 
-    /**
-     * @var Application_User
-     */
-    protected $user;
-
-    /**
-     * @var Application_Request
-     */
-    protected $request;
-
-    /**
-     * @var UI_Page|NULL
-     */
-    protected $page;
-
-    /**
-     * @var UI
-     */
-    protected $ui;
-
-    /**
-     * @var UI_Page_Breadcrumb
-     */
-    protected $breadcrumb;
-
-   /**
-    * @var Application_Session
-    */
-    protected $session;
-    
-   /**
-    * @var Application_LockManager
-    */
-    protected $lockManager;
+    protected Application_Driver $driver;
+    protected Application_User $user;
+    protected Application_Request $request;
+    protected ?UI_Page $page = null;
+    protected UI $ui;
+    protected ?UI_Page_Breadcrumb $breadcrumb = null;
+    protected Application_Session $session;
+    protected ?Application_LockManager $lockManager = null;
+    protected ?Application_Admin_ScreenInterface $parentScreen = null;
+    protected static bool $simulationStarted = false;
+    protected bool $outputToConsole = false;
 
     /**
      * @var UI_Page_Help
@@ -89,15 +65,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     * 
     * @var boolean
     */
-    protected $adminMode = true;
-    
-   /**
-    * @var Application_Admin_ScreenInterface|NULL
-    */
-    protected $parentScreen;
-    
-    public const LOCK_MODE_PRIMARYLESS = 'primaryless';
-    public const LOCK_MODE_PRIMARYBASED = 'primarybased';
+    protected bool $adminMode = true;
     
     public function __construct(Application_Driver $driver, ?Application_Admin_ScreenInterface $parent=null)
     {
@@ -623,7 +591,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     */
     protected function createRevisionableTitle(Application_RevisionableStateless $revisionable)
     {
-        return $this->page->createRevisionableTitle($revisionable);
+        return $this->requirePage()->createRevisionableTitle($revisionable);
     }
     
    /**
@@ -676,10 +644,22 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     {
         return $this->lockManager;
     }
-    
-    protected static $simulationStarted = false;
-    
-    protected $outputToConsole = false;
+
+    public function requireLockManager() : Application_LockManager
+    {
+        $manager = $this->getLockManager();
+
+        if($manager !== null)
+        {
+            return $manager;
+        }
+
+        throw new Application_Exception(
+            'No lock manager available',
+            '',
+            self::ERROR_LOCK_MANAGER_NOT_SET
+        );
+    }
     
    /**
     * If the simulation mode is active, starts the simulation mode which

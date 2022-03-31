@@ -382,14 +382,13 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string|null $value
      * @param string|null $id
      * @return HTML_QuickForm2_Element_InputHidden
-     * @throws Application_Formable_Exception
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
     public function addHiddenVar(string $name, ?string $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
     {
         if (!isset($this->hiddens[$name]))
         {
-            $this->hiddens[$name] = $this->addElement('hidden', $name, $this->form);
+            $this->hiddens[$name] = $this->form->addHidden($name);
         }
 
         if($value === null)
@@ -847,9 +846,9 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
     public function addLinkButton(string $url, $label, $tooltip='') : UI_Form_Element_UIButton
     {
         return $this->addButton($this->generateDummyName())
-            ->setLabel($label)
+            ->setTooltip($tooltip)
             ->link($url)
-            ->setTooltip($tooltip);
+            ->setLabel($label);
     }
 
     /**

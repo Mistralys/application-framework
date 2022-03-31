@@ -284,7 +284,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * @throws Application_Exception
      * @return Application_Media_Document
      */
-    public static function create($media_id)
+    public static function create(int $media_id) : Application_Media_Document
     {
         $data = DBHelper::fetch(
             "SELECT
@@ -308,10 +308,18 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             );
         }
 
-        $class = 'Application_Media_Document_' . $data['media_type'];
-        Application::requireClass($class);
+        $class = Application_Media_Document::class.'_' . $data['media_type'];
 
-        return new $class($media_id);
+        Application::requireClassExists($class);
+
+        $media = new $class($media_id);
+
+        if($media instanceof Application_Media_Document)
+        {
+            return $media;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Media_Document::class, $media);
     }
 
     /**

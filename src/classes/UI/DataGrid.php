@@ -781,13 +781,15 @@ class UI_DataGrid
     /**
      * @param string $name
      * @param null|string $default
-     * @return string
+     * @return string|NULL
      */
-    protected function getCookie($name, $default = null)
+    protected function getCookie(string $name, ?string $default = null) : ?string
     {
         $cookieName = $this->getCookieName($name);
-        if (isset($_COOKIE[$cookieName])) {
-            return $_COOKIE[$cookieName];
+
+        if (isset($_COOKIE[$cookieName]))
+        {
+            return (string)$_COOKIE[$cookieName];
         }
 
         return $default;
@@ -1748,16 +1750,18 @@ class UI_DataGrid
         return $this->request->buildURL($params, $this->dispatcher);
     }
 
-    protected function getSetting(string $name)
+    protected function getSetting(string $name) : ?string
     {
         $value = $this->getCookie($name);
 
-        $requestValue = $this->request->getParam($name);
-        if (!is_null($requestValue)) {
+        $requestValue = (string)$this->request->getParam($name);
+        if ($requestValue !== '')
+        {
             $value = $requestValue;
         }
 
-        if (is_null($value)) {
+        if (is_null($value))
+        {
             $value = $this->getRequestDefault($name);
         }
 
@@ -1769,13 +1773,14 @@ class UI_DataGrid
      * be set via the request.
      *
      * @param string $name
-     * @return mixed
+     * @return string|NULL
      */
-    protected function getRequestDefault(string $name)
+    protected function getRequestDefault(string $name) : ?string
     {
-        switch ($name) {
+        switch ($name)
+        {
             case 'datagrid_perpage':
-                return $this->limitCurrent;
+                return (string)$this->limitCurrent;
         }
 
         return null;

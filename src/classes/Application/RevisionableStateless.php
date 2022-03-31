@@ -36,38 +36,15 @@ abstract class Application_RevisionableStateless
     use Application_Traits_LockableWithManager;
     use Application_Traits_Disposable;
     use Application_Traits_Eventable;
+    use Application_Traits_Loggable;
 
-    /**
-     * @var Application_RevisionStorage
-     */
-    protected $revisions;
-
-    protected $requiresNewRevision = false;
-
-    /**
-     * Stores the starting revision number for a transaction
-     * @var int|NULL
-     * @see $transactionTargetRevision
-     * @see startTransaction()
-     */
-    protected $transactionSourceRevision = null;
-
-    /**
-     * Stores the new revision number for a transaction
-     * @var int|NULL
-     * @see $transactionSourceRevision
-     * @see startTransaction()
-     */
-    protected $transactionTargetRevision = null;
-
-    protected static $instanceCounter = 0;
-    
-   /**
-    * @var int
-    */
-    protected $instanceID;
-    
-    protected $initialized = false;
+    protected Application_RevisionStorage $revisions;
+    protected bool $requiresNewRevision = false;
+    protected ?int $transactionSourceRevision = null;
+    protected ?int $transactionTargetRevision = null;
+    protected static int $instanceCounter = 0;
+    protected int $instanceID;
+    protected bool $initialized = false;
     
     /**
      * Initializes the underlying objects like the revision
@@ -80,14 +57,6 @@ abstract class Application_RevisionableStateless
         
         self::$instanceCounter++;
         $this->instanceID = self::$instanceCounter;
-
-        if (!$this->revisions instanceof Application_RevisionStorage) {
-            throw new Application_Exception(
-                'Invalid revision storage',
-                'The revision storage is not an instance of the Application_RevisionStorage class.',
-                self::ERROR_INVALID_REVISION_STORAGE
-            );
-        }
 
         $this->initRevisionEvents();
 
@@ -117,7 +86,7 @@ abstract class Application_RevisionableStateless
      *
      * @return Application_RevisionStorage
      */
-    protected function createRevisionStorage()
+    protected function createRevisionStorage() : Application_RevisionStorage
     {
         return new Application_RevisionStorage_Memory($this);
     }

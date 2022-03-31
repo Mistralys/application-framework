@@ -297,7 +297,7 @@ class Application_ErrorLog
     * to be viewed later.
     *
     * @param string $message
-    * @param boolean $writeLog Wether to write the application log to file for this error
+    * @param boolean $writeLog Whether to write the application log to file for this error
     * @param string $logID The ID to use for the logfile. Defaults to an auto generated ID.
     * @return string The log ID used to save the error.
     */
@@ -323,13 +323,16 @@ class Application_ErrorLog
         
         try
         {
-            if(Application::isActive())
+            if(Application::isSessionReady())
             {
                 $user = Application::getUser();
                 $userID = $user->getID();
             }
         }
-        catch (Application_Exception $e) {};
+        catch (Application_Exception $e)
+        {
+            $e->disableLogging();
+        }
         
         $tokens = array(
             '{::}', // this is used to parse the log

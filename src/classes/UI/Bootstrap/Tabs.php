@@ -221,14 +221,15 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
         
         return $this;
     }
- 
-   /**
-    * Adds a new tab at the end of the tabs list.
-    * 
-    * @param string $label
-    * @param string $name
-    * @return UI_Bootstrap_Tab
-    */
+
+    /**
+     * Adds a new tab at the end of the tabs list.
+     *
+     * @param string $label
+     * @param string $name
+     * @return UI_Bootstrap_Tab
+     * @throws Application_Exception
+     */
     public function appendTab(string $label, string $name='') : UI_Bootstrap_Tab
     {
         $tab = new UI_Bootstrap_Tab($this->ui);
@@ -281,6 +282,17 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
     */
     public function getTabs() : array
     {
-        return $this->getChildren();
+        $children = $this->getChildren();
+        $result = array();
+
+        foreach($children as $child)
+        {
+            if($child instanceof UI_Bootstrap_Tab)
+            {
+                $result[] = $child;
+            }
+        }
+
+        return $result;
     }
 }

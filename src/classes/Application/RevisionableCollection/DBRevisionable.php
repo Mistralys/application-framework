@@ -94,27 +94,28 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
    /**
     * @see Application_RevisionStorage_CollectionDB
     */
-    protected function createRevisionStorage()
+    protected function createRevisionStorage() : Application_RevisionStorage_CollectionDB
     {
         $className = $this->collection->getRevisionsStorageClass();
         
-        Application::requireClass($className);
+        Application::requireClassExists($className);
         
         $storage = new $className($this);
         
-        if(!$storage instanceof Application_RevisionStorage_CollectionDB) {
-            throw new Application_Exception(
-                'Invalid revision storage',
-                sprintf(
-                    'The revision storage for [%s] must extend the base [%s] class.',
-                    get_class($this),
-                    'Application_RevisionStorage_CollectionDB'
-                ),
-                self::ERROR_INVALID_REVISION_STORAGE
-            );
+        if($storage instanceof Application_RevisionStorage_CollectionDB)
+        {
+            return $storage;
         }
-        
-        return $storage;
+
+        throw new Application_Exception(
+            'Invalid revision storage',
+            sprintf(
+                'The revision storage for [%s] must extend the base [%s] class.',
+                get_class($this),
+                'Application_RevisionStorage_CollectionDB'
+            ),
+            self::ERROR_INVALID_REVISION_STORAGE
+        );
     }
     
     public function getID() : int
@@ -383,7 +384,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         $where = $this->collection->getCampaignKeys();
         $where[$this->collection->getPrimaryKeyName()] = $this->getID();
         
-        return DBHelper::fetchKey(
+        return DBHelper::fetchKeyInt(
             'export_revision',
             sprintf(
                 "SELECT

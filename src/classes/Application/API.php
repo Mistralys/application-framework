@@ -118,9 +118,6 @@ class Application_API
             );
         }
 
-        require_once 'Application/API/Method.php';
-
-        Application::requireClass($class);
         $method = new $class($this);
 
         if (!$method instanceof Application_API_Method) {

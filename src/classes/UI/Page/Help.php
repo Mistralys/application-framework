@@ -19,10 +19,9 @@ declare(strict_types=1);
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Traits_Admin_Screen::_handleHelp()
- * @see Application_Admin_Skeleton::$help
  * @see template_default_frame_page_help
  */
-class UI_Page_Help extends UI_Renderable implements UI_Renderable_Interface
+class UI_Page_Help extends UI_Renderable
 {
    /**
     * @var string

@@ -106,12 +106,7 @@ class TimeOfDay
 
     protected function resolveType() : string
     {
-        $hour = intval($this->time->format('h'));
-
-        if($hour === 0)
-        {
-            return self::TIME_NIGHT;
-        }
+        $hour = (int)$this->time->format('h');
 
         $prev = '';
         foreach (self::$times as $until => $type)

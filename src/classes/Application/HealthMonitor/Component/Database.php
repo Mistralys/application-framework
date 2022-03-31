@@ -48,10 +48,10 @@ class Application_HealthMonitor_Component_Database extends Application_HealthMon
             return;
         }
 
-        try {
+        try
+        {
             $this->durationStart();
 
-            Application::requireClass('DBHelper');
             DBHelper::init();
 
             $data = DBHelper::fetch(

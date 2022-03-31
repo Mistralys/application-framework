@@ -6,6 +6,8 @@
  * @see UI_page
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Page utility class that offers common functionality
  * for pages. Note that only the application driver
@@ -20,54 +22,38 @@
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
- * @link http://www.mistralys.com
  */
 class UI_Page extends UI_Renderable
 {
     public const ERROR_UNKNOWN_NAVIGATION = 45001;
-    
     public const ERROR_PAGE_TITLE_CONTAINS_HTML = 45002;
     
-    /**
-     * @var string
-     */
-    private $id;
-
-   /**
-    * @var string
-    */
-    private $title = '';
-
-    /**
-     * @var UI_Page_Sidebar
-     */
-    private $sidebar;
+    private string $id;
+    private string $title = '';
+    private UI_Page_Sidebar $sidebar;
+    private UI_Page_Header $header;
+    private UI_Page_Footer $footer;
+    private string $content = '';
+    private UI_Page_Breadcrumb $breadcrumb;
+    private Application_User $user;
+    protected string $consoleOutput = '';
+    protected string $frame = 'frame';
 
     /**
-     * @var UI_Page_Header
+     * @var array<string,UI_Page_Navigation>
      */
-    private $header;
+    protected array $navigations = array();
 
     /**
-     * @var UI_Page_Footer
+     * @var array<string,UI_Page_Breadcrumb>
      */
-    private $footer;
-
-   /**
-    * @var string
-    */
-    private $content = '';
+    protected array $breadcrumbs = array();
 
     /**
-     * @var UI_Page_Breadcrumb
+     * @var array<string,UI_QuickSelector>
      */
-    private $breadcrumb;
+    protected array $quickSelectors = array();
 
-   /**
-    * @var Application_User
-    */
-    private $user;
-    
     public function __construct(UI $ui, string $id)
     {
         $this->id = $id;
@@ -83,6 +69,14 @@ class UI_Page extends UI_Renderable
         $this->footer = new UI_Page_Footer($this);
         $this->breadcrumb = $this->createBreadcrumb('main');
     }
+
+    /**
+     * @return Application_User
+     */
+    public function getUser() : Application_User
+    {
+        return $this->user;
+    }
     
    /**
     * Sets the document title shown in the browser's toolbar.
@@ -90,7 +84,7 @@ class UI_Page extends UI_Renderable
     * NOTE: May not contain any HTML code.
     * 
     * @param string|number|UI_Renderable_Interface $title
-    * @throws Application_Exception
+    * @throws UI_Exception
     * @return UI_Page
     * 
     * @see UI_Page::ERROR_PAGE_TITLE_CONTAINS_HTML
@@ -99,9 +93,9 @@ class UI_Page extends UI_Renderable
     {
         $this->title = toString($title);
         
-        if(\AppUtils\ConvertHelper::isStringHTML($this->title)) 
+        if(ConvertHelper::isStringHTML($this->title))
         {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'The page title may not contain HTML code.',
                 sprintf(
                     'The title [%s] may not contain HTML.',
@@ -158,38 +152,41 @@ class UI_Page extends UI_Renderable
     /**
      * Sets the HTML markup to use as content of the page.
      * Note that this is set automatically by the application
-     * driver. Anyting you set here manually gets replaced.
+     * driver. Anything you set here manually gets replaced.
      *
-     * @param string $content
-     * @return UI_Page
+     * @param string|int|float|UI_Renderable_Interface $content
+     * @return $this
+     * @throws UI_Exception
      */
-    public function setContent($content) : UI_Page
+    public function setContent($content) : self
     {
-        $this->content = (string)$content;
+        $this->content = toString($content);
         
         return $this;
     }
 
-    protected $frame = 'frame';
-
     /**
      * Selects the frame to use to render the page.
+     *
      * @param string $frameName
+     * @return $this
      */
-    public function selectFrame($frameName)
+    public function selectFrame(string $frameName) : self
     {
         $this->frame = $frameName;
+        return $this;
     }
 
     /**
      * Renders the HTML markup for the content of the page.
      * @return string
+     * @throws UI_Themes_Exception
      */
-    protected function _render()
+    protected function _render() : string
     {
         return $this->createTemplate($this->frame)
-        ->setVar('html.content', $this->content)
-        ->render();
+            ->setVar('html.content', $this->content)
+            ->render();
     }
 
     /**
@@ -198,7 +195,7 @@ class UI_Page extends UI_Renderable
      * method for a list of options.
      *
      * @param string $message
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return string
      */
     public function renderErrorMessage(string $message, array $options = array()) : string
@@ -212,7 +209,7 @@ class UI_Page extends UI_Renderable
      * method for a list of options.
      *
      * @param string $message
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return string
      */
     public function renderInfoMessage(string $message, array $options = array()) : string
@@ -226,7 +223,7 @@ class UI_Page extends UI_Renderable
      * method for a list of options.
      *
      * @param string $message
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return string
      */
     public function renderSuccessMessage(string $message, array $options = array()) : string
@@ -240,7 +237,7 @@ class UI_Page extends UI_Renderable
      * method for a list of options.
      *
      * @param string $message
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return string
      */
     public function renderWarningMessage(string $message, array $options = array()) : string
@@ -255,15 +252,13 @@ class UI_Page extends UI_Renderable
      *
      * @param string $message
      * @param string $type
-     * @param array $options
+     * @param array<string,mixed> $options
      * @return string
      */
     public function renderMessage(string $message, string $type, array $options = array()) : string
     {
         return $this->createMessage($message, $type, $options)->render();
     }
-   
-    protected $navigations = array();
 
     /**
      * Creates a navigation renderer helper class instance
@@ -303,14 +298,19 @@ class UI_Page extends UI_Renderable
     {
         return $this->hasNavigation('subnav');
     }
-    
+
+    /**
+     * @param string $navigationID
+     * @return UI_Page_Navigation
+     * @throws UI_Exception
+     */
     public function getNavigation(string $navigationID) : UI_Page_Navigation
     {
         if(isset($this->navigations[$navigationID])) {
             return $this->navigations[$navigationID];
         }
         
-        throw new Application_Exception(
+        throw new UI_Exception(
             'No such navigation',
             sprintf(
                 'The navigation [%1$s] does not exist. Available navigations are [%2$s].',
@@ -325,8 +325,6 @@ class UI_Page extends UI_Renderable
     {
         return $this->getNavigation('subnav');
     }
-
-    protected $breadcrumbs = array();
 
     /**
      * Creates a breadcrumb navigation helper class instance that
@@ -355,10 +353,11 @@ class UI_Page extends UI_Renderable
      * optional request parameters. This is the raw
      * link to the page (without additional page-specific
      * request parameters). If you need a permalink, use
-     * the {@link getPermalink()} method.
+     * the {@see UI_Page::getPermalink()} method.
      *
      * @param array $params
-     * @see getPermalink()
+     * @return string
+     * @see UI_Page::getPermalink()
      */
     public function getURL(array $params = array()) : string
     {
@@ -388,20 +387,16 @@ class UI_Page extends UI_Renderable
     }
 
     /**
-     * Collects the console output.
-     * @var string
-     */
-    protected $consoleOutput = '';
-
-    /**
      * Adds output to the console output, which is displayed
      * for developer users.
      *
      * @param string $markup
+     * @return $this
      */
-    public function addConsoleOutput($markup)
+    public function addConsoleOutput(string $markup) : self
     {
         $this->consoleOutput .= $markup;
+        return $this;
     }
 
     /**
@@ -409,7 +404,7 @@ class UI_Page extends UI_Renderable
      *
      * @return boolean
      */
-    public function hasConsoleOutput()
+    public function hasConsoleOutput() : bool
     {
         return !empty($this->consoleOutput);
     }
@@ -419,7 +414,7 @@ class UI_Page extends UI_Renderable
      *
      * @return string
      */
-    public function getConsoleOutput()
+    public function getConsoleOutput() : string
     {
         return $this->consoleOutput;
     }
@@ -427,7 +422,7 @@ class UI_Page extends UI_Renderable
     /**
      * @return UI_Page_Breadcrumb
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb() : UI_Page_Breadcrumb
     {
         return $this->breadcrumb;
     }
@@ -446,14 +441,13 @@ class UI_Page extends UI_Renderable
             $type = 'Default';
         }
 
-        $class = 'UI_Page_Section_Type_' . $type;
+        $class = UI_Page_Section::class.'_Type_' . $type;
 
-        $section = new $class($this);
-        return $section;
+        return new $class($this);
     }
     
    /**
-    * Creates a new steps navigation helper class that can
+    * Creates a step navigation helper class instance, which can
     * be used to render a navigation with incremental steps
     * like in a wizard or order process.
     * 
@@ -461,15 +455,9 @@ class UI_Page extends UI_Renderable
     */
     public function createStepsNavigator() : UI_Page_StepsNavigator
     {
-        $nav = new UI_Page_StepsNavigator($this);
-        return $nav;
+        return new UI_Page_StepsNavigator($this);
     }
     
-   /**
-    * @var UI_QuickSelector[]
-    */
-    protected $quickSelectors = array();
-
     public function addQuickSelector(string $selectorID) : UI_QuickSelector
     {
         $quick = UI::getInstance()->createQuickSelector($selectorID);
@@ -487,7 +475,7 @@ class UI_Page extends UI_Renderable
         return null;
     }
 
-    public function hasQuickSelector($selectorID)
+    public function hasQuickSelector(string $selectorID) : bool
     {
         return isset($this->quickSelectors[$selectorID]);
     }
@@ -501,7 +489,7 @@ class UI_Page extends UI_Renderable
      * @param Application_Revisionable_Interface $revisionable
      * @return UI_Page_RevisionableTitle
      */
-    public function createRevisionableTitle(Application_Revisionable_Interface $revisionable)
+    public function createRevisionableTitle(Application_Revisionable_Interface $revisionable) : UI_Page_RevisionableTitle
     {
         return new UI_Page_RevisionableTitle($this, $revisionable);
     }
@@ -514,7 +502,7 @@ class UI_Page extends UI_Renderable
      * @param string $type The section type to create. This is one of the types from the UI/Page/Section subfolder (case sensitive).
      * @return UI_Page_Section
      */
-    public function createSidebarSection(string $type='')
+    public function createSidebarSection(string $type='') : UI_Page_Section
     {
         $section = $this->createSection($type);
         $section->makeSidebar();
@@ -529,7 +517,7 @@ class UI_Page extends UI_Renderable
     * @param string $type
     * @return UI_Page_Section
     */
-    public function createSubsection(string $type='')
+    public function createSubsection(string $type='') : UI_Page_Section
     {
         $section = $this->createSection($type);
         $section->makeSubsection();
@@ -540,13 +528,18 @@ class UI_Page extends UI_Renderable
      * Creates a developer panel sidebar section instance.
      *
      * @return UI_Page_Section_Type_Developer
+     * @throws Application_Exception_UnexpectedInstanceType
      */
     public function createDeveloperPanel() : UI_Page_Section_Type_Developer
     {
-        return ensureType(
-            UI_Page_Section_Type_Developer::class,
-            $this->createSidebarSection('Developer')
-        );
+        $section = $this->createSidebarSection('Developer');
+
+        if($section instanceof UI_Page_Section_Type_Developer)
+        {
+            return $section;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Section_Type_Developer::class, $section);
     }
     
    /**
@@ -555,35 +548,39 @@ class UI_Page extends UI_Renderable
     * 
     * @return UI_Page_Help
     */
-    public function createHelp()
+    public function createHelp() : UI_Page_Help
     {
         return new UI_Page_Help($this);
     }
-    
-   /**
-    * @return Application_Admin_Area
-    */
-    public function getActiveArea()
+
+    /**
+     * @return Application_Admin_Area
+     * @throws Application_Exception
+     */
+    public function getActiveArea() : Application_Admin_Area
     {
         return $this->driver->getActiveArea();
     }
-    
-   /**
-    * Retrieves the currently active administration screen.
-    * @return Application_Admin_ScreenInterface
-    */
-    public function getActiveScreen()
+
+    /**
+     * Retrieves the currently active administration screen.
+     *
+     * @return Application_Admin_ScreenInterface
+     * @throws Application_Exception
+     */
+    public function getActiveScreen() : Application_Admin_ScreenInterface
     {
         return $this->driver->getActiveScreen();
     }
-    
-   /**
-    * Retrieves the lock manager instance used in the current
-    * administration screen, if any.
-    * 
-    * @return Application_LockManager|NULL
-    */
-    public function getLockManager()
+
+    /**
+     * Retrieves the lock manager instance used in the current
+     * administration screen, if any.
+     *
+     * @return Application_LockManager|NULL
+     * @throws Application_Exception
+     */
+    public function getLockManager() : ?Application_LockManager
     {
         $screen = $this->getActiveScreen();
         
@@ -595,9 +592,10 @@ class UI_Page extends UI_Renderable
         return null;
     }
     
-    public function renderMessages()
+    public function renderMessages() : string
     {
-        if (!$this->ui->hasMessages() || $this->ui->isMessagesDeferred()) {
+        if (!$this->ui->hasMessages() || $this->ui->isMessagesDeferred())
+        {
             return '';
         }
         
@@ -612,18 +610,19 @@ class UI_Page extends UI_Renderable
         );
     }
     
-    public function renderMaintenance()
+    public function renderMaintenance() : string
     {
         return $this->renderTemplate('frame.maintenance');
     }
     
-    public function renderConsole()
+    public function renderConsole() : string
     {
-        if(!$this->hasConsoleOutput()) {
-            return;
+        if($this->hasConsoleOutput())
+        {
+            return $this->renderTemplate('frame.dev-console');
         }
-        
-        return $this->renderTemplate('frame.dev-console');
+
+        return '';
     }
     
    /**
@@ -644,7 +643,6 @@ class UI_Page extends UI_Renderable
     * NOTE: Check if it is available first.
     * 
     * @return UI_Bootstrap_DropdownMenu
-    * @throws Application_Exception 
     */
     public function getContextMenu() : UI_Bootstrap_DropdownMenu
     {
@@ -654,7 +652,7 @@ class UI_Page extends UI_Renderable
    /**
     * Resolves the actual page title to use in the
     * document: this is the specified page title with
-    * the applcation name appended.
+    * the application name appended.
     * 
     * @return string
     */
