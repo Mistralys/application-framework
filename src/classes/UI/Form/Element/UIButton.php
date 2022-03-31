@@ -42,4 +42,14 @@ class UI_Form_Element_UIButton extends HTML_QuickForm2_Element_Button
     {
         return $this->button;
     }
+
+    /**
+     * @param string $label
+     * @return $this
+     */
+    public function setLabel($label) : self
+    {
+        $this->button->setLabel($label);
+        return $this;
+    }
 }
