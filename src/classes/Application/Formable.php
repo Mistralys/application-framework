@@ -594,7 +594,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         }
         
         $group = $container->addGroup($name);
-        $group->setAttribute('rel', 'layoutlessGroup');
+        $group->setAttribute('rel', UI_Form::REL_LAYOUT_LESS_GROUP);
         
         return $group;
     }

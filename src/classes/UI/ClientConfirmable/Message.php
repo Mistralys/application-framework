@@ -21,45 +21,14 @@ class UI_ClientConfirmable_Message
 {
     public const ERROR_UNSUPPORTED_ELEMENT_MODE = 54401;
 
-    /**
-     * @var string
-     */
-    protected $commentsRequestVar = 'confirm_comments';
-    
-   /**
-    * @var UI_Interfaces_ClientConfirmable
-    */
-    protected $uiElement;
-    
-   /**
-    * @var string
-    */
-    protected $message = '';
-    
-   /**
-    * @var boolean
-    */
-    protected $withInput = false;
-    
-   /**
-    * @var string
-    */
-    protected $loaderText = '';
-    
-   /**
-    * @var UI
-    */
-    protected $ui;
-
-    /**
-     * @var bool
-     */
-    private $withComments;
-
-    /**
-     * @var string
-     */
-    private $commentsDesc = '';
+    protected string $commentsRequestVar = 'confirm_comments';
+    protected UI_Interfaces_ClientConfirmable $uiElement;
+    protected string $message = '';
+    protected bool $withInput = false;
+    protected string $loaderText = '';
+    protected UI $ui;
+    private bool $withComments = false;
+    private string $commentsDesc = '';
 
     /**
      * @param UI_Interfaces_ClientConfirmable $uiElement
@@ -73,7 +42,7 @@ class UI_ClientConfirmable_Message
     /**
      * Sets the message body of the dialog. May contain HTML.
      *
-     * @param scalar|UI_Renderable_Interface $message
+     * @param string|int|float|UI_Renderable_Interface|NULL $message
      * @return UI_ClientConfirmable_Message
      * @throws UI_Exception
      */
@@ -117,7 +86,7 @@ class UI_ClientConfirmable_Message
 
     /**
      * Sets a description text for the comments field (used only if
-     * the comments field is enabled).
+     * the comment field is enabled).
      *
      * @param string $description
      * @return $this
@@ -134,7 +103,7 @@ class UI_ClientConfirmable_Message
      * Sets the text to display in the loader shown when the user
      * confirms (to replace the default loading text).
      *
-     * @param scalar|UI_Renderable_Interface $text
+     * @param string|int|float|UI_Renderable_Interface|NULL $text
      * @throws UI_Exception
      */
     public function setLoaderText($text) : UI_ClientConfirmable_Message
@@ -171,7 +140,7 @@ class UI_ClientConfirmable_Message
     {
         return $this->commentsRequestVar;
     }
-    
+
     public function getJavaScript() : string
     {
         $jsID = nextJSID();
@@ -199,6 +168,11 @@ class UI_ClientConfirmable_Message
                 ".MakeClickable(function(comments) {%s})",
                 $this->uiElement->getJavascript()
             );
+        }
+        else if($this->uiElement->isSubmittable())
+        {
+            // STOPPED HERE
+            $code .= "";
         }
         else
         {

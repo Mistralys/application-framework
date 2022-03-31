@@ -1,6 +1,6 @@
 <?php
 
-class UI_Form_Renderer extends UI_Renderable implements UI_Renderable_Interface
+class UI_Form_Renderer extends UI_Renderable
 {
     /**
      * @var UI_Form

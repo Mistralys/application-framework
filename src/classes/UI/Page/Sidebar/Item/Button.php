@@ -17,7 +17,7 @@ use function AppUtils\parseVariable;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see UI_Traits_Conditional
+ * @see template_default_sidebar_button
  */
 class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
 {
@@ -26,13 +26,18 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     public const STATE_DISABLED = 'disabled';
     public const STATE_ENABLED = 'enabled';
 
+    public const MODE_SUBMIT = 'submit';
+    public const MODE_NONE = 'none';
+    public const MODE_LINKED = 'linked';
+    public const MODE_CLICKABLE = 'clickable';
+
     use Application_Traits_Iconizable;
     use Traits_Classable;
     use UI_Traits_ClientConfirmable;
 
     protected string $title = '';
     protected string $name;
-    protected string $mode = 'none';
+    protected string $mode = self::MODE_NONE;
     protected string $url = '';
     protected string $javascript = '';
     protected string $state = 'enabled';
@@ -101,7 +106,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
             $url = (string)$urlOrParams;
         }
 
-        $this->mode = 'linked';
+        $this->mode = self::MODE_LINKED;
         $this->url = $url;
         
         if($newWindow) {
@@ -117,7 +122,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     */
     public function isLinked() : bool
     {
-        return $this->mode === 'linked';
+        return $this->mode === self::MODE_LINKED;
     }
     
    /**
@@ -147,7 +152,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      */
     public function makeClickable(string $javascript) : self
     {
-        $this->mode = 'clickable';
+        $this->mode = self::MODE_CLICKABLE;
         $this->javascript = $javascript;
 
         return $this;
@@ -178,7 +183,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     */
     public function isClickable() : bool
     {
-        return $this->mode == 'clickable';
+        return $this->mode == self::MODE_CLICKABLE;
     }
     
     public function isFormSubmit() : bool
@@ -302,8 +307,13 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
      */
     public function makeSubmit() : self
     {
-        $this->mode = 'submit';
+        $this->mode = self::MODE_SUBMIT;
         return $this;
+    }
+
+    public function isSubmittable() : bool
+    {
+        return $this->mode === self::MODE_SUBMIT;
     }
 
     /**

@@ -9,6 +9,7 @@
  */
 class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
 {
+    public const MODE_DROPDOWN_MENU = 'dropmenu';
     protected UI_Bootstrap_DropdownMenu $menu;
     protected bool $caret = true;
 
@@ -48,7 +49,7 @@ class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
     
     protected function _render() : string
     {
-        $this->mode = 'dropmenu';
+        $this->mode = self::MODE_DROPDOWN_MENU;
         
         return parent::_render();
     }

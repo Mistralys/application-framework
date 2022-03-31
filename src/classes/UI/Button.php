@@ -36,6 +36,7 @@ class UI_Button
 
     public const MODE_CLICKABLE = 'clickable';
     public const MODE_LINKED = 'linked';
+    public const MODE_SUBMIT = 'submit';
 
     public const SIZE_SMALL = 'small';
     public const SIZE_LARGE = 'large';
@@ -55,6 +56,7 @@ class UI_Button
     private string $javascript = '';
     private ?UI_Bootstrap_Popover $popover = null;
     private bool $active = false;
+    private string $submitValue = '';
 
    /**
     * @var array<string,string>
@@ -325,16 +327,21 @@ class UI_Button
     * Turns the button into a submit button.
     * 
     * @param string $name
-    * @param mixed $value
+    * @param string|int|float|UI_Renderable_Interface $value
     * @return $this
     */
     public function makeSubmit(string $name, $value) : self
     {
-        $this->type = 'submit';
-        $this->setAttribute('name', $name);
-        $this->setAttribute('value', (string)$value);
-        
+        $this->mode = self::MODE_SUBMIT;
+        $this->setName($name);
+        $this->submitValue = (string)$value;
+
         return $this;
+    }
+
+    public function setName(string $name) : self
+    {
+        return $this->setAttribute('name', $name);
     }
 
    /**
@@ -429,6 +436,16 @@ class UI_Button
         return $this->render();
     }
 
+    public function getType() : string
+    {
+        if($this->mode === self::MODE_SUBMIT)
+        {
+            return 'submit';
+        }
+
+        return 'button';
+    }
+
     /**
      * @return array<string,string>
      * @throws Application_Exception
@@ -443,9 +460,9 @@ class UI_Button
         }
 
         $attribs = array_merge($this->dataAttributes, $this->attributes);
-    
+
         $attribs['id'] = $this->id;
-        $attribs['type'] = $this->type;
+        $attribs['type'] = $this->getType();
         $attribs['autocomplete'] = 'off'; // avoid firefox autocompletion bug
     
         $classes = $this->classes;
@@ -518,9 +535,13 @@ class UI_Button
                 case self::MODE_CLICKABLE:
                     $attribs['onclick'] = $this->getJavaScript();
                     break;
+
+                case self::MODE_SUBMIT:
+                    $attribs['value'] = $this->submitValue;
+                    break;
             }
         }
-        
+
         if($this->locked) 
         {
             $attribs['onclick'] = "LockManager.DialogActionDisabled()";
@@ -686,13 +707,17 @@ class UI_Button
 
     public function isClickable() : bool
     {
-        $js = $this->getJavascript();
-        return !empty($js);
+        return $this->mode === self::MODE_CLICKABLE;
     }
 
     public function isLinked() : bool
     {
-        return !empty($this->url);
+        return $this->mode === self::MODE_LINKED;
+    }
+
+    public function isSubmittable() : bool
+    {
+        return $this->mode === self::MODE_SUBMIT;
     }
 
     public function getJavascript() : string

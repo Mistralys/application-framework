@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\Exception\ClassNotExistsException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -131,14 +132,7 @@ class Application
             return;
         }
 
-        throw new Application_Exception(
-            'Class does not exist',
-            sprintf(
-                'The class [%s] cannot be auto-loaded.',
-                $className
-            ),
-            self::ERROR_CLASS_NOT_FOUND
-        );
+        throw new ClassNotExistsException($className);
     }
 
     /**

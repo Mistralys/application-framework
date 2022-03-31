@@ -147,7 +147,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
     * @param array<string,mixed> $options
     * @return UI_Message
     */
-    public function createMessage($message, string $type, array $options=array()) : UI_Message
+    public function createMessage($message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
     {
         return $this->ui->createMessage($message, $type, $options);
     }

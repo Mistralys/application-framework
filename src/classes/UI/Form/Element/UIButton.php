@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the class {@see UI_Form_Element_UIButton}.
+ * File containing the class {@see HTML_QuickForm2_Element_UIButton}.
  *
  * @package User Interface
  * @subpackage Form Elements
- * @see UI_Form_Element_UIButton
+ * @see HTML_QuickForm2_Element_UIButton
  */
 
 declare(strict_types=1);
@@ -16,7 +16,7 @@ declare(strict_types=1);
  * @subpackage Form Elements
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Form_Element_UIButton extends HTML_QuickForm2_Element_Button
+class HTML_QuickForm2_Element_UIButton extends HTML_QuickForm2_Element_Button
 {
     /**
      * NOTE: We are not implementing the button interface
@@ -36,6 +36,7 @@ class UI_Form_Element_UIButton extends HTML_QuickForm2_Element_Button
         parent::initNode();
         
         $this->button = UI::button();
+        $this->button->makeSubmit($this->getName(), 'yes');
     }
 
     public function getButtonInstance() : UI_Button
@@ -51,5 +52,10 @@ class UI_Form_Element_UIButton extends HTML_QuickForm2_Element_Button
     {
         $this->button->setLabel($label);
         return $this;
+    }
+
+    public function __toString() : string
+    {
+        return $this->button->render();
     }
 }

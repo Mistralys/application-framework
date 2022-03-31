@@ -20,7 +20,7 @@ use function AppUtils\parseVariable;
  * @subpackage Forms
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Form extends UI_Renderable implements UI_Renderable_Interface
+class UI_Form extends UI_Renderable
 {
     public const ERROR_DUPLICATE_ELEMENT_ID = 45524001;
     public const ERROR_INVALID_FORM_DATA = 45524002;
@@ -43,32 +43,24 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * Stores the string that form element IDs get prefixed with.
      * @var string
      */
-    const ID_PREFIX = 'f-';
+    public const ID_PREFIX = 'f-';
 
-    /**
-     * @var string
-     */
-    protected $id;
+    public const REL_BUTTON = 'Button';
+    public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
 
-    /**
-     * @var HTML_QuickForm2
-     */
-    protected $form;
-
-    /**
-     * @var HTML_QuickForm2_DataSource_Array
-     */
-    protected $defaultDataSource;
+    protected string $id;
+    protected HTML_QuickForm2 $form;
+    protected HTML_QuickForm2_DataSource_Array $defaultDataSource;
 
     /**
      * Creates a new form. Use the {@link getForm()} method to configure
      * the QuickForm object.
      *
      * @param UI $ui
-     * @param string $id
+     * @param string $formID
      * @param array<string,mixed> $defaultData
      */
-    public function __construct(UI $ui, string $id, string $method, array $defaultData = array())
+    public function __construct(UI $ui, string $formID, string $method, array $defaultData = array())
     {
         parent::__construct($ui->getPage());
         
@@ -86,13 +78,13 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
             );
         }
         
-        $this->id = $id;
+        $this->id = $formID;
         $this->defaultDataSource = new HTML_QuickForm2_DataSource_Array($defaultData);
-        $this->form = new HTML_QuickForm2('form-' . $id, $method);
+        $this->form = new HTML_QuickForm2('form-' . $formID, $method);
         $this->form->addDataSource($this->defaultDataSource);
-        $this->form->setAttribute('data-jsid', $id);
+        $this->form->setAttribute('data-jsid', $formID);
         
-        $id = $this->form->getEventHandler()->onNodeAdded(array($this, 'callback_onNodeAdded'));
+        $this->form->getEventHandler()->onNodeAdded(array($this, 'callback_onNodeAdded'));
 
         if($ui->hasPage()) {
             $this->addHiddenVar('page', $this->ui->getPage()->getID());
@@ -838,12 +830,12 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string $url
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addLinkButton(string $url, $label, $tooltip='') : UI_Form_Element_UIButton
+    public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addButton($this->generateDummyName())
             ->setTooltip($tooltip)
@@ -857,12 +849,12 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string $name
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addPrimarySubmit($label, string $name='save', $tooltip='') : UI_Form_Element_UIButton
+    public function addPrimarySubmit($label, string $name='save', $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addSubmit($label, $name, $tooltip)
             ->makePrimary();
@@ -875,13 +867,13 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      *
      * @param string $label
      * @param string $name
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      *
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function addDevPrimarySubmit(string $label, string $name='save') : UI_Form_Element_UIButton
+    public function addDevPrimarySubmit(string $label, string $name='save') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addSubmit($label, $name)
             ->makeDeveloper()
@@ -894,20 +886,20 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * and action.
      *
      * @param string $name
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
      */
-    public function addButton(string $name) : UI_Form_Element_UIButton
+    public function addButton(string $name) : HTML_QuickForm2_Element_UIButton
     {
         $button = $this->addElement('uibutton', $name, $this->form);
 
-        if($button instanceof UI_Form_Element_UIButton)
+        if($button instanceof HTML_QuickForm2_Element_UIButton)
         {
             return $button;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(UI_Form_Element_UIButton::class, $button);
+        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_UIButton::class, $button);
     }
 
     /**
@@ -916,15 +908,15 @@ class UI_Form extends UI_Renderable implements UI_Renderable_Interface
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string $name
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return UI_Form_Element_UIButton
+     * @return HTML_QuickForm2_Element_UIButton
      * @throws Application_Exception_UnexpectedInstanceType
      * @throws UI_Exception|Application_Formable_Exception
      */
-    public function addSubmit($label, string $name='save', $tooltip=null) : UI_Form_Element_UIButton
+    public function addSubmit($label, string $name='save', $tooltip=null) : HTML_QuickForm2_Element_UIButton
     {
         return $this->addButton($name)
             ->makeSubmit()
-            ->setContent(toString($label))
+            ->setLabel(toString($label))
             ->setTooltip($tooltip);
     }
 

@@ -1,3 +1,14 @@
+### v2.0.1 - Bugfix release
+- Forms: Fixed the loading of the UIButton element.
+- Forms: Fixed submit buttons now being shown in the form footer.
+- Forms: Fixed submit buttons not having any label.
+- Documentation: Added button examples in the interface references.
+- UI: Fixed buttons mixing submit and link attributes.
+- UnitTests: Added button tests.
+- UI: Added `isSubmittable()` to the `ClientConfirmable` interface. 
+- UI: Sections: Fixed the collapse check when containing forms.
+- UI: Sections: The header text now supports renderables.
+
 ### v2.0.0 - PHP7.4 Update
 - Requirements: Now using PHP v7.4 as minimum requirement.
 - UI: Fixed the dropdown menu's `setIcon()` method not doing anything (#25).
