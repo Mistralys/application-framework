@@ -1,3 +1,5 @@
+[![Build Status](https://app.travis-ci.com/Mistralys/application-framework.svg?branch=main)](https://app.travis-ci.com/Mistralys/application-framework)
+
 # Application admin UI framework
 
 The app framework is a PHP-based framework for building frontends for web and intranet tools.

@@ -6,6 +6,8 @@
  * @see UI_Page_Section_Content
  */
 
+declare(strict_types=1);
+
 use AppUtils\Interface_Optionable;
 use AppUtils\Traits_Optionable;
 
@@ -17,19 +19,13 @@ use AppUtils\Traits_Optionable;
  * @package UI
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class UI_Page_Section_Content extends UI_Renderable implements UI_Renderable_Interface, Interface_Optionable
+abstract class UI_Page_Section_Content
+    extends UI_Renderable
+    implements Interface_Optionable
 {
     use Traits_Optionable;
     
-   /**
-    * @var UI_Page_Section
-    */
-    protected $section;
-    
-   /**
-    * @var UI_Page
-    */
-    protected $page;
+    protected UI_Page_Section $section;
     
     public function __construct(UI_Page_Section $section)
     {
@@ -40,7 +36,7 @@ abstract class UI_Page_Section_Content extends UI_Renderable implements UI_Rende
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }

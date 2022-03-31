@@ -7,21 +7,21 @@
  */
 class Application_Ratings extends DBHelper_BaseCollection
 {
-    const MAX_RATING = 5;
+    public const MAX_RATING = 5;
     
     public function getRecordClassName() : string
     {
-        return 'Application_Ratings_Rating';
+        return Application_Ratings_Rating::class;
     }
 
     public function getRecordFiltersClassName() : string
     {
-        return 'Application_Ratings_FilterCriteria';        
+        return Application_Ratings_FilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName() : string
     {
-        return 'Application_Ratings_FilterSettings';
+        return Application_Ratings_FilterSettings::class;
     }
 
     public function getRecordDefaultSortKey() : string
@@ -70,8 +70,11 @@ class Application_Ratings extends DBHelper_BaseCollection
     {
         return self::MAX_RATING;
     }
-   
-    protected $labels;
+
+    /**
+     * @var array<int,string>|NULL
+     */
+    protected ?array $labels = null;
    
     public function getRatingLabel($rating)
     {
@@ -88,7 +91,7 @@ class Application_Ratings extends DBHelper_BaseCollection
         return $this->labels[$rating];
     }
     
-    public function injectJS(UI $ui)
+    public function injectJS(UI $ui) : void
     {
         $ui->addStylesheet('ui-ratings.css');
         $ui->addJavascript('ratings.js');
@@ -96,28 +99,29 @@ class Application_Ratings extends DBHelper_BaseCollection
         $ui->addJavascriptHeadVariable('Ratings.MaxRating', self::MAX_RATING);
         $ui->addJavascriptOnload('Ratings.Start()');
     }
-    
-   /**
-    * Renders the HTML code for the rating widget in the user interface.
-    * 
-    * @return string
-    * @template frame.ratings
-    */
+
+    /**
+     * Renders the HTML code for the rating widget in the user interface.
+     *
+     * @return string
+     * @throws UI_Exception
+     * @throws UI_Themes_Exception
+     */
     public function renderWidget() : string
     {
-        $page = UI::getInstance()->getPage();
-        
-        return $page->renderTemplate(
-            'frame.ratings',
-            array(
-                'ratings' => $this,
-                'rating' => null
-            )
-        );
+        return UI::getInstance()
+            ->getPage()
+            ->renderTemplate(
+                'frame.ratings',
+                array(
+                    'ratings' => $this,
+                    'rating' => null
+                )
+            );
     }
   
    /**
-    * Creates/gets an instance of the screens collection,
+    * Creates/gets an instance of the screen collection,
     * which is used to handle the application screens that
     * have been accessed by the rating system.
     * 

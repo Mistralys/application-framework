@@ -176,10 +176,12 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     public function handleUI()
     {
         $this->log('UI layer | Starting the UI.');
-        
-        $subnav = $this->page->createNavigation('subnav');
-        $sidebar = $this->page->getSidebar();
-        $help = $this->page->createHelp();
+
+        $page = $this->requirePage();
+
+        $subnav = $page->createNavigation('subnav');
+        $sidebar = $page->getSidebar();
+        $help = $page->createHelp();
         $contextMenu = $this->ui->createDropdownMenu();
         $tabs = $this->ui->createTabs('page-content-tabs');
         

@@ -1,4 +1,11 @@
 <?php
+/**
+ * File containing the class {@see Application_Bootstrap_Screen_Documentation}.
+ *
+ * @package Application
+ * @subpackage Bootstrap
+ * @see Application_Bootstrap_Screen_Documentation
+ */
 
 declare(strict_types=1);
 
@@ -6,46 +13,71 @@ use AppUtils\FileHelper;
 use Mistralys\MarkdownViewer\DocsManager;
 use Mistralys\MarkdownViewer\DocsViewer;
 
+/**
+ * Documentation bootstrapper, which loads both the application's
+ * documentation files (if any), and those of the framework.
+ *
+ * @package Application
+ * @subpackage Bootstrap
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    private DocsManager $manager;
+
+    public function getDispatcher() : string
     {
         return 'documentation/index.php';
     }
 
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->enableScriptMode();
         $this->createEnvironment();
 
-        $manager = new DocsManager();
-        $appDocFolder = APP_ROOT.'/documentation';
+        $this->manager = new DocsManager();
 
-        if(is_dir($appDocFolder))
-        {
-            $files = FileHelper::createFileFinder($appDocFolder)
-                ->includeExtension('md')
-                ->makeRecursive()
-                ->setPathmodeAbsolute()
-                ->getAll();
+        $this->addFilesFromFolder(APP_ROOT.'/documentation');
 
-            foreach ($files as $file) {
-                $manager->addFile(FileHelper::removeExtension($file), $file);
-            }
-        }
-
-        $manager->addFile(
-            'Framework documentation',
-            $this->app->getVendorFolder().'/1and1/application_framework/docs/Documentation.md'
+        $frameworkFolder = sprintf(
+            '%s/%s/docs',
+            $this->app->getVendorFolder(),
+            PackageInfo::getComposerID()
         );
+
+        $this->addFilesFromFolder($frameworkFolder);
 
         // The viewer needs to know the URL to the vendor/ folder, relative
         // to the script. This is needed to load the clientside dependencies,
         // like jQuery and Bootstrap.
-        (new DocsViewer($manager, '../vendor'))
+        (new DocsViewer($this->manager, '../vendor'))
             ->setTitle(sprintf('%1$s Documentation', $this->driver->getAppNameShort()))
             ->display();
 
         Application::exit('Documentation displayed');
+    }
+
+    private function addFilesFromFolder(string $targetPath) : void
+    {
+        if(!is_dir($targetPath))
+        {
+            return;
+        }
+
+        $files = $this->findDocumentationFiles($targetPath);
+
+        foreach ($files as $file)
+        {
+            $this->manager->addFile(FileHelper::removeExtension($file), $file);
+        }
+    }
+
+    private function findDocumentationFiles(string $targetPath) : array
+    {
+        return FileHelper::createFileFinder($targetPath)
+            ->includeExtension('md')
+            ->makeRecursive()
+            ->setPathmodeAbsolute()
+            ->getAll();
     }
 }

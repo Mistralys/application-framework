@@ -121,20 +121,7 @@ class UI_Bootstrap_DropdownAnchor
 
         ?>
         <li <?php echo $this->renderAttributes() ?>>
-            <?php
-            if($this->hasClass('active'))
-            {
-                ?>
-                <a>
-                    <?php echo $this->anchor->renderIconLabel($this->anchor->getLabel()) ?>
-                </a>
-                <?php
-            }
-            else
-            {
-                echo $this->anchor->render();
-            }
-            ?>
+            <?php echo $this->anchor->render() ?>
         </li>
         <?php
         

@@ -518,14 +518,11 @@ abstract class Application_RevisionableCollection implements Application_Collect
         $where = $this->getCampaignKeys();
         $where[$key] = $value;
         
-        if(!empty($where)) 
-        {
-            $keys = array_keys($where);
-            foreach($keys as $whereKey) {
-                $query .= " AND revs.`$whereKey` = :$whereKey";
-            }
+        $keys = array_keys($where);
+        foreach($keys as $whereKey) {
+            $query .= " AND revs.`$whereKey` = :$whereKey";
         }
-        
+
         $record = DBHelper::fetch($query, $where);
         if(!empty($record)) {
             return $record[$primaryKey];
@@ -560,7 +557,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return array<string,string>
     */
-    public function getCampaignKeys()
+    public function getCampaignKeys() : array
     {
         return $this->campaignKeys;
     }

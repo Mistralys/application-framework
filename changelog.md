@@ -1,17 +1,28 @@
 ### v2.0.0 - PHP7.4 Update
 - Requirements: Now using PHP v7.4 as minimum requirement.
 - UI: Fixed the dropdown menu's `setIcon()` method not doing anything (#25).
-- UI: Fixed meu items' icons disappearing when they are active (#25).
+- UI: Fixed menu items' icons disappearing when they are active (#25).
+- UI: External links now have the same color as other items in the dropdown menu
+- UI: Fixed dropdown menu item not rendering correctly when set to "active"
+- Admin: Added the static `Application_Admin_Skeleton::getPageParamNames()`.
 - Formable: Marked `addElementHeader()` as deprecated.
 - Request: Added `Application_Request::resolveParams()`.
-- UI: Skeleton: Added the static `Application_Admin_Skeleton::getPageParamNames()`.
 - Application: Added the `DriverSettings` class to easily access global settings.
 - Application: Added `Application_Driver::createSettings()`.
+- Application: Added `requireClassExists()` for a useful exception.
+- Dependencies: Bugfix for the documentation viewer (See [v1.1.0 release](https://github.com/Mistralys/markdown-viewer/releases/tag/1.1.0)).
+- Themes: Added the `VariableMissingException` for variables missing in templates.
+- Themes: Added an interface for templates, `PageTemplateInterface`.
 
-**Breaking changes:**
-- Minimum requirement now PHP 7.4
+#### Breaking changes
 
-**Deprecated methods:**
+- Minimum requirement is now PHP 7.4.
+- Wizard methods have been renamed:
+  - `setSetting()` > `setWizardSetting()`
+  - `getSetting()` > `getWizardSetting()`
+
+#### Deprecated methods
+
 - `Application_Driver::setSetting()`
 - `Application_Driver::setBoolSetting()`
 - `Application_Driver::setSettingExpiry()`
@@ -19,7 +30,12 @@
 - `Application_Driver::getBoolSetting()`
 - `Application_Driver::deleteSetting()`
 
-These methods will be removed in a future release.
+These methods will be removed in a future release. Use the 
+`Application_Driver::createSettings()` API instead.
+
+### v1.23.2 - Bugfix release
+
+- Fixed the error logs list missing hidden request variables.
 
 ### v1.23.1 - Maintenance release
 - Sessions: Added error checks in the session initialization.

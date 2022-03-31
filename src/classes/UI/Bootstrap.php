@@ -62,7 +62,11 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     {
         return (string)$this->getAttribute('id');
     }
-    
+
+    /**
+     * @param string $id
+     * @return $this
+     */
     public function setID(string $id) : self
     {
         return $this->setAttribute('id', $id);
@@ -121,7 +125,7 @@ abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Boots
     /**
      * @param string $name
      * @param string|number|NULL $value
-     * @return void
+     * @return $this
      */
     public function setStyle(string $name, $value) : self
     {

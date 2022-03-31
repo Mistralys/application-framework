@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\ConvertHelper;
+
 class Application_Media
 {
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
@@ -129,13 +131,20 @@ class Application_Media
         return null;
     }
 
-    protected $extensions;
+    /**
+     * @var array<string,string>|NULL
+     */
+    protected ?array $extensions = null;
 
-    protected $types;
+    /**
+     * @var array<string,array{label:string,extensions:array<int,string>}>|NULL
+     */
+    protected ?array $types = null;
 
-    protected function loadTypes()
+    protected function loadTypes() : void
     {
-        if (isset($this->extensions)) {
+        if (isset($this->extensions))
+        {
             return;
         }
 
@@ -144,19 +153,23 @@ class Application_Media
 
         $folder = $this->driver->getApplication()->getClassesFolder() . '/Application/Media/Document';
         $d = new DirectoryIterator($folder);
-        foreach ($d as $item) {
-            if (!$item->isFile()) {
+
+        foreach ($d as $item)
+        {
+            if (!$item->isFile())
+            {
                 continue;
             }
 
             $info = pathinfo($item->getFilename());
-            if (!isset($info['extension']) || strtolower($info['extension']) != 'php') {
+            if (!isset($info['extension']) || strtolower($info['extension']) !== 'php') {
                 continue;
             }
 
-            $id = AppUtils\ConvertHelper::filenameRemoveExtension($info['basename']);
-            $class = 'Application_Media_Document_' . $id;
-            Application::requireClass($class);
+            $id = ConvertHelper::filenameRemoveExtension($info['basename']);
+            $class = Application_Media_Document::class.'_' . $id;
+
+            Application::requireClassExists($class);
 
             $extensions = call_user_func(array($class, 'getExtensions'));
             foreach ($extensions as $extension) {
@@ -164,7 +177,7 @@ class Application_Media
             }
 
             $this->types[$id] = array(
-                'label' => call_user_func(array($class, 'getLabel')),
+                'label' => (string)call_user_func(array($class, 'getLabel')),
                 'extensions' => $extensions
             );
         }
@@ -181,13 +194,20 @@ class Application_Media
     * @return Application_Media_Configuration
     * @throws Application_Exception
     */
-    public function createConfiguration($type)
+    public function createConfiguration(string $type) : Application_Media_Configuration
     {
-        require_once 'Application/Media/Configuration.php';
-        $class = 'Application_Media_Configuration_'.$type;
-        Application::requireClass($class);
+        $class = Application_Media_Configuration::class.'_'.$type;
+
+        Application::requireClassExists($class);
         
-        return new $class();
+        $obj = new $class();
+
+        if($obj instanceof Application_Media_Configuration)
+        {
+            return $obj;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(Application_Media_Configuration::class, $obj);
     }
     
    /**

@@ -7,18 +7,16 @@
  * @see UI_Page_Template
  */
 
+use AppUtils\FileHelper;
+use UI\Interfaces\PageTemplateInterface;
 use function AppUtils\parseVariable;
 
 /**
- * Template class: this class is instantiated for each
- * template file, and is the context of the template 
- * in $this.
- * 
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Page_Template extends UI_Renderable
+class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
 {
     public const ERROR_TEMPLATE_FILE_NOT_FOUND = 27301;
     public const ERROR_NOT_EXPECTED_OBJECT_INSTANCE = 27302;
@@ -65,33 +63,26 @@ class UI_Page_Template extends UI_Renderable
      */
     protected $user;
 
-   /**
-    * @var UI_Themes_Theme_ContentRenderer
-    */
-    protected $renderer;
-    
     public function __construct(UI_Page $page, $templateID)
     {
         parent::__construct($page);
         
         $this->application = $this->ui->getApplication();
-        $this->driver = $this->application->getDriver();
         $this->request = $this->application->getRequest();
         $this->user = $this->driver->getUser();
         $this->sidebar = $this->page->getSidebar();
         $this->header = $this->page->getHeader();
         $this->footer = $this->page->getFooter();
-        $this->renderer = $this->page->getRenderer();
 
-        if(stristr($templateID, '.php')) {
-            $templateID = \AppUtils\FileHelper::removeExtension($templateID, true);
+        if(stripos($templateID, '.php') !== false) {
+            $templateID = FileHelper::removeExtension($templateID, true);
         }
 
         $this->templateID = $templateID;
         $this->templateFile = $this->theme->getTemplatePath($templateID.'.php');
 
         if (!file_exists($this->templateFile)) {
-            throw new Application_Exception(
+            throw new UI_Themes_Exception(
                 sprintf(
                     'Template %s does not exist',
                     $templateID
@@ -114,10 +105,6 @@ class UI_Page_Template extends UI_Renderable
         return ob_get_clean();
     }
 
-    /**
-     * @param array<string,mixed> $vars
-     * @return $this
-     */
     public function setVars(array $vars) : UI_Page_Template
     {
         foreach ($vars as $var => $value) {
@@ -127,32 +114,63 @@ class UI_Page_Template extends UI_Renderable
         return $this;
     }
 
-    public function renderSuccessMessage($message, $options = array())
+    /**
+     * @param string $message
+     * @param array<string,mixed> $options
+     * @return string
+     */
+    public function renderSuccessMessage(string $message, array $options = array()) : string
     {
         return $this->page->renderSuccessMessage($message, $options);
     }
 
-    public function renderMessage($message, $type, $options = array())
+    /**
+     * @param string $message
+     * @param string $type
+     * @param array<string,mixed> $options
+     * @return string
+     */
+    public function renderMessage(string $message, string $type, array $options = array()) : string
     {
         return $this->page->renderMessage($message, $type, $options);
     }
 
-    public function renderInfoMessage($message, $options = array())
+    /**
+     * @param string $message
+     * @param array<string,mixed> $options
+     * @return string
+     */
+    public function renderInfoMessage(string $message, array $options = array()) : string
     {
         return $this->page->renderInfoMessage($message, $options);
     }
 
-    public function renderErrorMessage($message, $options = array())
+    /**
+     * @param string $message
+     * @param array<string,mixed> $options
+     * @return string
+     */
+    public function renderErrorMessage(string $message, array $options = array()) : string
     {
         return $this->page->renderErrorMessage($message, $options);
     }
 
-    public function setVar(string $name, $value) : UI_Page_Template
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setVar(string $name, $value) : self
     {
         $this->options[$name] = $value;
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param mixed|NULL $default
+     * @return mixed|NULL
+     */
     public function getVar(string $name, $default = null)
     {
         if (array_key_exists($name, $this->options)) {
@@ -161,15 +179,15 @@ class UI_Page_Template extends UI_Renderable
 
         return $default;
     }
-    
-   /**
-    * Retrieves the variable, and ensures that is is an instance
-    * of the specified class.
-    * 
-    * @param string $name
-    * @param string $className
-    * @return object
-    */
+
+    /**
+     * @param string $name
+     * @param string $className
+     * @return object
+     *
+     * @throws UI_Themes_Exception
+     * @see UI_Page_Template::ERROR_INVALID_TEMPLATE_CLASS
+     */
     public function getObjectVar(string $name, string $className) : object
     {
         $result = $this->getVar($name);
@@ -179,7 +197,7 @@ class UI_Page_Template extends UI_Renderable
             return $result;
         }
         
-        throw new Application_Exception(
+        throw new UI_Themes_Exception(
             'Invalid object instance in template variable.',
             sprintf(
                 'Expected [%s], given [%s].',
@@ -211,39 +229,50 @@ class UI_Page_Template extends UI_Renderable
     {
         return (string)$this->getVar($name);
     }
-    
-    public function printVar($name, $default = null)
+
+    /**
+     * @param string $name
+     * @param mixed|NULL $default
+     * @return $this
+     */
+    public function printVar(string $name, $default = null) : self
     {
         echo $this->getVar($name, $default);
+        return $this;
     }
 
-    public function getLogoutURL()
+    public function getLogoutURL() : string
     {
         return $this->buildURL(array('logout' => 'yes'));
     }
 
-    public function buildURL($params)
+    /**
+     * @param array<string,string> $params
+     * @return string
+     */
+    public function buildURL(array $params) : string
     {
         return $this->request->buildURL($params);
     }
 
-    public function getImageURL($imageName)
+    public function getImageURL(string $imageName) : string
     {
         return $this->theme->getImageURL($imageName);
     }
 
-    public function printTemplate($templateID, $params = array())
+    /**
+     * @param string $templateID
+     * @param array<string,mixed> $params
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function printTemplate(string $templateID, array $params = array()) : self
     {
         echo $this->renderTemplate($templateID, $params);
+        return $this;
     }
 
-    /**
-     * Checks if the specified variable has been set.
-     *
-     * @since 3.3.7
-     * @return boolean
-     */
-    public function hasVar($name)
+    public function hasVar(string $name) : bool
     {
         return isset($this->options[$name]);
     }
@@ -260,9 +289,8 @@ class UI_Page_Template extends UI_Renderable
      * @param string $title
      * @param string $titleRight HTML content to float on the right of the title
      * @return string
-     * @throws Application_Exception
      */
-    public function renderContentWithSidebar($content, $title = null, $titleRight = null)
+    public function renderContentWithSidebar(string $content, string $title = '', string $titleRight = '')
     {
         return $this->renderTemplate(
             'frame.content.with-sidebar',
@@ -279,10 +307,15 @@ class UI_Page_Template extends UI_Renderable
      *
      * @param string $content
      * @param string $title
+     * @param string $titleRight
+     * @return $this
+     *
+     * @throws Application_Exception
      */
-    public function printContentWithSidebar($content, $title = null, $titleRight = null)
+    public function printContentWithSidebar(string $content, string $title = '', string $titleRight = '') : self
     {
         echo $this->renderContentWithSidebar($content, $title, $titleRight);
+        return $this;
     }
 
     /**
@@ -356,7 +389,7 @@ class UI_Page_Template extends UI_Renderable
     * 
     * @return UI_Page_Section
     */
-    public function createSection()
+    public function createSection() : UI_Page_Section
     {
         return $this->page->createSection();
     }
@@ -376,12 +409,12 @@ class UI_Page_Template extends UI_Renderable
         );
     }
     
-    public function getAppNameShort()
+    public function getAppNameShort() : string
     {
         return $this->driver->getAppNameShort();
     }
     
-    public function getAppName()
+    public function getAppName() : string
     {
         return $this->driver->getAppName();
     }

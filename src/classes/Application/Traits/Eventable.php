@@ -25,19 +25,11 @@ use AppUtils\ConvertHelper;
 trait Application_Traits_Eventable
 {
     /**
-     * @var array<string,Application_EventHandler_EventableListener[]>
+     * @var array<string,array<int,Application_EventHandler_EventableListener>>
      */
-    protected $eventListeners = array();
-
-    /**
-     * @var int
-     */
-    protected $eventListenerCounter = 0;
-
-    /**
-     * @var bool
-     */
-    protected $eventsDisabled = false;
+    protected array $eventListeners = array();
+    protected int $eventListenerCounter = 0;
+    protected bool $eventsDisabled = false;
 
     /**
      * @param string $message

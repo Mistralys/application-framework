@@ -83,7 +83,8 @@ class Application_HealthMonitor
         }
     
         $className = $baseClassName.'_' . $componentID;
-        Application::requireClass($className);
+
+        Application::requireClassExists($className);
     
         $this->components[$componentID] = new $className();
     

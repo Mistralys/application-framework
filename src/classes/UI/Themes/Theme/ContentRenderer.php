@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper;
 use AppUtils\Traits_Optionable;
 use AppUtils\Interface_Optionable;
 
@@ -31,37 +32,21 @@ class UI_Themes_Theme_ContentRenderer implements Interface_Optionable, UI_Render
     use UI_Traits_RenderableGeneric;
     
    /**
-    * @var array
+    * @var array<string,string>
     */
     protected $templates = array(
-        false => 'frame.content.without-sidebar',
-        true => 'frame.content.with-sidebar'
+        'false' => 'frame.content.without-sidebar',
+        'true' => 'frame.content.with-sidebar'
     );
     
    /**
-    * @var array
+    * @var array<string,mixed>
     */
-    protected $templateVars = array();
-
-    /**
-     * @var string
-     */
-    protected $content = '';
-    
-   /**
-    * @var UI
-    */
-    protected $ui;
-    
-    /**
-     * @var UI_Page_Title
-     */
-    protected $title;
-    
-    /**
-     * @var UI_Page_Subtitle
-     */
-    protected $subtitle;
+    protected array $templateVars = array();
+    protected string $content = '';
+    protected UI $ui;
+    protected ?UI_Page_Title $title = null;
+    protected ?UI_Page_Subtitle $subtitle = null;
     
     public function getDefaultOptions() : array
     {
@@ -225,8 +210,10 @@ class UI_Themes_Theme_ContentRenderer implements Interface_Optionable, UI_Render
     
     public function render() : string
     {
+        $enabled = ConvertHelper::boolStrict2string($this->isWithSidebar());
+
         return $this->getPage()->renderTemplate(
-            $this->templates[$this->isWithSidebar()],
+            $this->templates[$enabled],
             array(
                 'renderer' => $this
             )

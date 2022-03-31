@@ -8,6 +8,8 @@
  * @see UI_Renderable_Interface
  */
 
+use AppUtils\FileHelper;
+
 /**
  * Base class for elements that can be rendered to HTML.
  * Made to be extended, and offer some utility methods
@@ -24,42 +26,19 @@ abstract class UI_Renderable implements UI_Renderable_Interface
     
     public const ERROR_INVALID_TEMPLATE_CLASS = 62301;
     
-   /**
-    * @var UI
-    */
-    protected $ui;
-    
-   /**
-    * @var Application_Driver
-    */
-    protected $driver;
-    
-   /**
-    * @var UI_Themes_Theme
-    */
-    protected $theme;
-    
+    protected UI $ui;
+    protected Application_Driver $driver;
+    protected UI_Themes_Theme $theme;
+    protected UI_Page $page;
+    protected string $instanceID;
+    protected UI_Themes_Theme_ContentRenderer $renderer;
+
    /**
     * The unique key of the UI instance.
-    * @var string
+    * @var int
     */
-    protected $uiKey;
-    
-   /**
-    * @var UI_Page
-    */
-    protected $page;
-    
-   /**
-    * @var string
-    */
-    protected $instanceID;
-    
-    /**
-     * @var UI_Themes_Theme_ContentRenderer
-     */
-    protected $renderer;
-    
+    protected int $uiKey;
+
     public function __construct(?UI_Page $page=null)
     {
         $this->instanceID = nextJSID();
@@ -77,29 +56,33 @@ abstract class UI_Renderable implements UI_Renderable_Interface
         
         $this->initRenderable();
     }
-    
-   /**
-    * Creates a new template object for the specified template.
-    * Templates are stored in the templates/ subfolder, specifiy
-    * the name here (without the extension).
-    *
-    * Example:
-    *
-    * createTemplate('content.mytemplate'); => loads templates/content.mytemplate.php
-    *
-    * @param string $templateID
-    * @return UI_Page_Template
-    */
+
+    /**
+     * Creates a new template object for the specified template.
+     * Templates are stored in the `templates` sub-folder, specify
+     * the name here (without the extension).
+     *
+     * Example:
+     *
+     * <pre>
+     * // loads templates/content.my-template.php
+     * createTemplate('content.my-template');
+     * </pre>
+     *
+     * @param string $templateID
+     * @return UI_Page_Template
+     * @throws UI_Themes_Exception
+     */
     public function createTemplate(string $templateID) : UI_Page_Template
     {
-        if(stristr($templateID, '.php')) {
-            $templateID = \AppUtils\FileHelper::removeExtension($templateID, true);
+        if(stripos($templateID, '.php') !== false) {
+            $templateID = FileHelper::removeExtension($templateID, true);
         }
         
         $templateFile = $this->theme->getTemplatePath($templateID.'.php');
 
         $className = '';
-        if(strstr($templateFile, $this->theme->getDriverPath()))
+        if(strpos($templateFile, $this->theme->getDriverPath()) !== false)
         {
             $className = 'driver_';
         }
@@ -115,7 +98,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
                 return $instance;
             }
             
-            throw new Application_Exception(
+            throw new UI_Themes_Exception(
                 'Invalid template class',
                 sprintf(
                     'The class [%s] does not extend the [%s] class.',
@@ -131,11 +114,12 @@ abstract class UI_Renderable implements UI_Renderable_Interface
 
     /**
      * Creates a template, renders it and returns the generated contents.
+     *
      * @param string $templateID
      * @param array<string,mixed> $params
      * @return string
-     * @throws Application_Exception
-     * @see createTemplate()
+     * @throws UI_Themes_Exception
+     * @see UI_Renderable::createTemplate()
      */
     public function renderTemplate(string $templateID, array $params = array()) : string
     {
@@ -148,7 +132,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
     /**
      * @param string $templateID
      * @param array<string,mixed> $params
-     * @throws Application_Exception
+     * @throws UI_Themes_Exception
      */
     public function displayTemplate(string $templateID, array $params=array()) : void
     {
@@ -160,7 +144,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
     *
     * @param string|number|UI_Renderable_Interface $message
     * @param string $type
-    * @param array $options
+    * @param array<string,mixed> $options
     * @return UI_Message
     */
     public function createMessage($message, string $type, array $options=array()) : UI_Message

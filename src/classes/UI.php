@@ -35,12 +35,18 @@ class UI
     public const MESSAGE_TYPE_INFO = 'info';
 
     private const SESSION_VAR_APP_MESSAGES = 'application_messages';
-    public const DUMMY_INSTANCE_ID = '_dummy';
+    public const DUMMY_INSTANCE_ID = -1;
 
-    /**
-     * @var Application
-     */
-    private $app;
+    private Application $app;
+    private Application_Session $session;
+    private int $instanceKey;
+    private UI_Themes $themes;
+    private bool $deferMessages = false;
+    private static bool $formsInitDone = false;
+    private UI_ResourceManager $resourceManager;
+    private ?UI_Page $page = null;
+    private string $loadKey = '';
+    private static int $bootstrapVersion = 2;
 
     /**
      * Stores javascript statements to run when the
@@ -50,60 +56,31 @@ class UI
      * @var string[]
      * @see addJavascriptOnload()
      */
-    private $onloadJS = array();
+    private array $onloadJS = array();
 
     /**
      * Stores javascript statements to run in the page
      * head.
      *
-     * @var array
+     * @var string[]
      * @see addJavascriptHead()
      */
-    private $headJS = array();
+    private array $headJS = array();
 
-    /**
-     * @var Application_Session
-     */
-    private $session;
-
-   /**
-    * @var string
-    */
-    private $instanceKey;
-
-   /**
-    * @var UI_Themes
-    */
-    private $themes;
-    
-   /**
-    * @var boolean
-    */
-    private $deferMessages = false;
-    
-   /**
-    * @var boolean
-    */
-    private static $formsInitDone = false;
-    
     /**
      * @var UI_MarkupEditor[]
      */
-    private $markupEditorInstances = array();
-    
-   /**
-    * @var UI_ResourceManager
-    */
-    private $resourceManager;
-    
+    private array $markupEditorInstances = array();
+
     /**
      * Note that the UI object is created automatically by
      * the application, you do not have to do this manually.
      *
-     * @param string $instanceKey
+     * @param int $instanceKey
      * @param Application $app
+     * @throws Application_Exception
      */
-    protected function __construct(string $instanceKey, Application $app)
+    protected function __construct(int $instanceKey, Application $app)
     {
         $this->instanceKey = $instanceKey;
         $this->app = $app;
@@ -128,15 +105,15 @@ class UI
     * Retrieves this UI object's instance key, which is unique
     * to each UI object.
     * 
-    * @return string
+    * @return int
     */
-    public function getInstanceKey() : string
+    public function getInstanceKey() : int
     {
         return $this->instanceKey;   
     }
 
     /**
-     * Retrieves the currently selected UI instance. An UI instance
+     * Retrieves the currently selected UI instance. A UI instance
      * is created automatically be the application when it is instantiated,
      * after that this can be called to retrieve the active instance.
      * 
@@ -146,31 +123,25 @@ class UI
      */
     public static function getInstance() : UI
     {
-        if(empty(self::$instances)) {
-            throw new UI_Exception(
-                'No UI instance available',
-                'Tried getting a UI instance, but none has been created yet.',
-                self::ERROR_NO_UI_INSTANCE_AVAILABLE_YET    
-            );
+        if(self::$activeInstanceID !== null && isset(self::$instances[self::$activeInstanceID]))
+        {
+            return self::$instances[self::$activeInstanceID];
         }
-        
-        return self::$instances[self::$activeInstanceID];
+
+        throw new UI_Exception(
+            'No UI instance available',
+            'Tried getting a UI instance, but none has been created yet.',
+            self::ERROR_NO_UI_INSTANCE_AVAILABLE_YET
+        );
     }
 
-    /**
-     * @var string|null
-     */
-    private static $previousKey;
-
-    /**
-     * @var string|null
-     */
-    private static $activeInstanceID;
+    private static ?int $previousKey = null;
+    private static ?int $activeInstanceID = null;
     
    /**
-    * @var array<string, UI>
+    * @var array<int,UI>
     */
-    private static $instances = array();
+    private static array $instances = array();
     
    /**
     * Creates a new UI instance for the specified application.
@@ -219,7 +190,8 @@ class UI
             self::$instances[self::DUMMY_INSTANCE_ID] = $ui;
         }
 
-        if(self::$activeInstanceID !== self::DUMMY_INSTANCE_ID) {
+        if(self::$activeInstanceID !== self::DUMMY_INSTANCE_ID)
+        {
             self::$previousKey = self::$activeInstanceID;
             self::$activeInstanceID = self::DUMMY_INSTANCE_ID;
         }
@@ -237,18 +209,21 @@ class UI
     */
     public static function selectPreviousInstance(bool $ignoreErrors=false) : void
     {
-        if(!isset(self::$previousKey)) {
-            if($ignoreErrors) {
-                return;
-            }
-            throw new Application_Exception(
-                'No previous UI instance available',
-                'Tried selecting a previous instance, but no instance was switched yet.',
-                self::ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE
-            );
+        if(isset(self::$previousKey))
+        {
+            self::$activeInstanceID = self::$previousKey;
         }
 
-        self::$activeInstanceID = self::$previousKey;
+        if($ignoreErrors)
+        {
+            return;
+        }
+
+        throw new Application_Exception(
+            'No previous UI instance available',
+            'Tried selecting a previous instance, but no instance was switched yet.',
+            self::ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE
+        );
     }
 
     /**
@@ -355,7 +330,7 @@ class UI
     {
         $statement = rtrim($statement, ';') . ';';
         
-        if($avoidDuplicates && in_array($statement, $this->onloadJS)) {
+        if($avoidDuplicates && in_array($statement, $this->onloadJS, true)) {
             return;
         }
 
@@ -647,11 +622,6 @@ class UI
     }
 
     /**
-     * @var UI_Page
-     */
-    protected $page;
-
-    /**
      * Sets the current page object; this is done automatically by the
      * application on startup.
      *
@@ -905,7 +875,7 @@ class UI
      */
     public function addConsoleOutput(string $markup) : void
     {
-        $this->page->addConsoleOutput($markup);
+        $this->getPage()->addConsoleOutput($markup);
     }
 
     /**
@@ -928,7 +898,7 @@ class UI
     }
     
    /**
-    * Creates an returns a new UI button object.
+    * Creates and returns a new UI button object.
     * Use the button's API to configure its looks 
     * and functions. It supports string conversion.
     * 
@@ -940,11 +910,6 @@ class UI
     	return new UI_Button($label);
     }
 
-   /**
-    * @var string
-    */
-    protected $loadKey = '';
-
     /**
      * Sets the key to add to all scripts to make sure they are
      * refreshed on the client when the key changes. Note that this
@@ -952,7 +917,6 @@ class UI
      * is used everywhere.
      *
      * @param string $key
-     * @since 3.3.10
      */
     public function setIncludesLoadKey(string $key) : void
     {
@@ -962,8 +926,6 @@ class UI
     /**
      * Adds clientside support for adding progress bars to the page
      * using the ProgressBar class.
-     *
-     * @since 3.3.11
      */
     public function addProgressBar() : void
     {
@@ -1195,11 +1157,6 @@ class UI
         return $this->themes->getTheme();
     }
     
-   /**
-    * @var integer
-    */
-    protected static $bootstrapVersion = 2;
-    
     public static function selectBootstrap4() : void
     {
         self::$bootstrapVersion = 4;
@@ -1239,7 +1196,7 @@ class UI
     */
     public function createTemplate(string $templateID) : UI_Page_Template
     {
-        return $this->page->createTemplate($templateID);
+        return $this->getPage()->createTemplate($templateID);
     }
     
     public static function string() : UI_StringBuilder

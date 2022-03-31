@@ -119,13 +119,20 @@ class Application_Updaters
 	    $this->showSelectionScreen();
 	}
 
-	protected function createUpdater($id)
+	protected function createUpdater(string $id) : Application_Updaters_Updater
 	{
 		$class = APP_CLASS_NAME.'_Updaters_'.$id;
-		Application::requireClass($class);
+
+        Application::requireClassExists($class);
 
 		$updater = new $class($this);
-		return $updater;
+
+        if($updater instanceof Application_Updaters_Updater)
+        {
+            return $updater;
+        }
+
+		throw new Application_Exception_UnexpectedInstanceType(Application_Updaters_Updater::class, $updater);
 	}
 
 	public function getByID($id)
