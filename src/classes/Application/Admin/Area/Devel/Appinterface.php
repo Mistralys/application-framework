@@ -24,24 +24,25 @@ declare(strict_types=1);
  */
 abstract class Application_Admin_Area_Devel_Appinterface extends Application_Admin_Area_Mode
 {
-   /**
+    public const URL_NAME = 'appinterface';
+    /**
     * @var array<string,array<string,mixed>>
     */
-    private $examples;
+    private array $examples;
     
    /**
     * @var string[]
     */
-    private $exampleIDs = array();
+    private array $exampleIDs = array();
     
    /**
     * @var string
     */
-    private $activeExample;
+    private string $activeExample = '';
     
     public function getURLName() : string
     {
-        return 'appinterface';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string
@@ -84,7 +85,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             'ui-elements' => array(
                 'label' => t('UI elements'),
                 'examples' => array(
-                    'pretty-bool' => t('Pretty booleans')
+                    'buttons-styles' => t('Button styles'),
+                    'pretty-bool' => t('Pretty booleans'),
                 )
             ),
             'forms' => array(
@@ -117,8 +119,9 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             }
         }
         
-        $active = $this->request->getParam('example');
-        if(!empty($active) && in_array($active, $this->exampleIDs)) {
+        $active = (string)$this->request->getParam('example');
+        if(!empty($active) && in_array($active, $this->exampleIDs))
+        {
             $this->activeExample = $active;
         }
 
@@ -127,10 +130,12 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
 
     protected function _handleSidebar() : void
     {
-        foreach($this->examples as $categoryID => $category) {
+        foreach($this->examples as $categoryID => $category)
+        {
             $section = $this->sidebar->addSection()
-            ->setTitle($category['label'])
-            ->makeCollapsible();
+                ->setGroup('app-interface')
+                ->setTitle($category['label'])
+                ->collapse();
             
             $section->appendContent('<ul class="unstyled">');
             foreach($category['examples'] as $exampleID => $exampleTitle) {

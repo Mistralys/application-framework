@@ -1,0 +1,35 @@
+<?php
+
+sb()
+    ->add(
+        UI::button('Default')
+    )
+    ->add(
+        UI::button('Primary')
+            ->makePrimary()
+    )
+    ->add(
+        UI::button('Warning')
+            ->makeWarning()
+    )
+    ->add(
+        UI::button('Success')
+            ->makeSuccess()
+    )
+    ->add(
+        UI::button('Info')
+            ->makeInfo()
+    )
+    ->add(
+        UI::button('Inverted')
+            ->makeInverse()
+    )
+    ->add(
+        UI::button('Dangerous')
+            ->makeDangerous()
+    )
+    ->add(
+        UI::button('Developer')
+            ->makeDeveloper()
+    )
+    ->display();
