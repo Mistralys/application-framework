@@ -1,5 +1,7 @@
 ### v2.0.2 - Maintenance release
 - Forms: Fixed link buttons in the footer not having any right margin.
+- DBHelper: Fixed a DB error when saving single modified keys.
+- DBHelper: Added the record method `saveChained()` for chaining support.
 
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
