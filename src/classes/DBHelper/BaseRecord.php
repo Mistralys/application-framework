@@ -69,12 +69,8 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      */
     protected $recordID;
 
-    /**
-     * @var string
-     */
-    protected $instanceID;
-
-    protected static $instanceCounter = 0;
+    protected string $instanceID;
+    protected static int $instanceCounter = 0;
 
     /**
      * @param int $primary_id
@@ -90,19 +86,11 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
         $this->recordTypeName = $collection->getRecordTypeName();
         $this->recordID = $primary_id;
-        $this->instanceID = strval(self::$instanceCounter);
+        $this->instanceID = (string)self::$instanceCounter;
 
-        if($primary_id == self::DUMMY_ID) {
-            $this->isDummy = true;
-
-            $this->recordData = array(
-                $this->recordPrimaryName => self::DUMMY_ID
-            );
-            $this->recordKeys = array(
-                $this->recordPrimaryName
-            );
-            
-            $this->initDummy();
+        if($primary_id === self::DUMMY_ID)
+        {
+            $this->constructDummy();
             return;
         }
         
@@ -111,6 +99,19 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->recordKeys = array_keys($this->recordData);
         
         $this->init();
+    }
+
+    private function constructDummy() : void
+    {
+        $this->isDummy = true;
+
+        $this->recordData = array(
+            $this->recordPrimaryName => self::DUMMY_ID
+        );
+
+        $this->recordKeys = array_keys($this->recordData);
+
+        $this->initDummy();
     }
 
     /**
@@ -239,7 +240,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @var string[]
      */
-    protected $recordKeys;
+    protected array $recordKeys = array();
     
     public function getID() : int
     {
@@ -479,15 +480,16 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     /**
      * @param string $name
-     * @throws Application_Exception
+     * @return bool
+     * @throws Application_Exception_DisposableDisposed|DBHelper_Exception
      */
-    protected function requireKey($name)
+    protected function requireKey(string $name) : bool
     {
         if($this->isDummy || $this->recordKeyExists($name)) {
-            return;
+            return true;
         }
         
-        throw new Application_Exception(
+        throw new DBHelper_Exception(
             'Unknown record key',
             sprintf(
                 'Cannot set key [%s] of [%s] record, it does not exist. Available keys are: [%s].',
@@ -523,7 +525,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     * Retrieves the names of all keys that have been modified since the last save.
     * @return string[]
     */
-    public function getModifiedKeys()
+    public function getModifiedKeys() : array
     {
         return $this->modified;
     }
@@ -539,7 +541,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      *
      * @return boolean Whether there was anything to save.
      * @throws Application_Exception_DisposableDisposed
-     * @throws DBHelper_Exception
+     * @throws DBHelper_Exception|ConvertHelper_Exception
      */
     public function save(bool $silent=false) : bool
     {
@@ -555,10 +557,13 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
         $sets = array();
         $keys = array_keys($this->recordData);
+        $saveKeys = array();
         foreach($keys as $key) {
-            if($key == $this->recordPrimaryName || !$this->isModified($key)) {
+            if($key === $this->recordPrimaryName || !$this->isModified($key)) {
                 continue;
             }
+
+            $saveKeys[] = $key;
             
             $sets[] = sprintf(
                 "`%s`=:%s",
@@ -581,9 +586,18 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
             implode(',', $sets),
             DBHelper::buildWhereFieldsStatement($where)
         );
-        
-        $data = array_merge($this->recordData, $where);
-        
+
+        // Only use the keys that were modified
+        $data = array();
+        foreach($saveKeys as $key)
+        {
+            $data[$key] = $this->recordData[$key];
+        }
+
+        // Add the where keys, ensuring that they
+        // get overwritten if present.
+        $data = array_merge($data, $where);
+
         DBHelper::update($query, $data);
         
         $this->modified = array();
@@ -612,6 +626,21 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->postSave($context);
         
         return true;
+    }
+
+    /**
+     * Like {@see DBHelper_BaseRecord::save()}, but
+     * returns $this instead of the boolean status.
+     *
+     * @param bool $silent
+     * @return $this
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
+    public function saveChained(bool $silent=false) : self
+    {
+        $this->save($silent);
+        return $this;
     }
 
     /**
