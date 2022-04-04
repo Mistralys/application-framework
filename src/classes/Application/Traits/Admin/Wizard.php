@@ -84,6 +84,11 @@ trait Application_Traits_Admin_Wizard
      */
     protected InvalidationHandler $invalidationHandler;
 
+    /**
+     * @var bool
+     */
+    protected bool $hasPrevTransaction = true;
+
     abstract public function getWizardID() : string;
 
     abstract public function getClassBase() : string;
@@ -174,11 +179,28 @@ trait Application_Traits_Admin_Wizard
 
     }
 
+    protected function startWizardTransaction() : void
+    {
+        if (!$this->isTransactionStarted())
+        {
+            $this->startTransaction();
+            $this->hasPrevTransaction = false;
+        }
+    }
+
+    protected function endWizardTransaction() : void
+    {
+        if (!$this->hasPrevTransaction)
+        {
+            $this->endTransaction();
+        }
+    }
+
     protected function _handleActions() : bool
     {
         $this->checkWizardExpiry();
 
-        $this->startTransaction();
+        $this->startWizardTransaction();
 
         // Initialize the steps before cancelling, since the
         // cancel URL may need to access the existing step's data.
@@ -210,14 +232,14 @@ trait Application_Traits_Admin_Wizard
                 $this->processCompleteWizard();
             }
 
-            $this->endTransaction();
+            $this->endWizardTransaction();
 
             $this->redirectTo($this->getURL(array(
                 'step' => $nextStep->getID()
             )));
         }
 
-        $this->endTransaction();
+        $this->endWizardTransaction();
 
         return true;
     }
@@ -420,7 +442,8 @@ trait Application_Traits_Admin_Wizard
         $this->log(sprintf('Registered steps [%s].', implode(', ', array_keys($this->steps))));
 
         $activeStepName = (string)$this->getWizardSetting('activeStep', $this->initialStepName);
-        if(!$this->stepExists($activeStepName)) {
+        if (!$this->stepExists($activeStepName))
+        {
             $activeStepName = $this->initialStepName;
         }
 
@@ -557,9 +580,9 @@ trait Application_Traits_Admin_Wizard
 
     private function getStepData(string $name) : array
     {
-        $data = $this->getWizardSetting('step_'.$name);
+        $data = $this->getWizardSetting('step_' . $name);
 
-        if(is_array($data))
+        if (is_array($data))
         {
             return $data;
         }
@@ -567,18 +590,19 @@ trait Application_Traits_Admin_Wizard
         return array();
     }
 
-   /**
-    * Retrieves a setting from the session.
-    *
-    * @param string $name
-    * @param mixed|NULL $default
-    * @return mixed
-    */
-    protected function getWizardSetting(string $name, $default=null)
+    /**
+     * Retrieves a setting from the session.
+     *
+     * @param string $name
+     * @param mixed|NULL $default
+     * @return mixed
+     */
+    protected function getWizardSetting(string $name, $default = null)
     {
-        $key = $this->settingPrefix.'-'.$name;
+        $key = $this->settingPrefix . '-' . $name;
 
-        if(isset($this->sessionData[$key])) {
+        if (isset($this->sessionData[$key]))
+        {
 
             return $this->sessionData[$key];
         }
@@ -604,8 +628,9 @@ trait Application_Traits_Admin_Wizard
     protected function saveSettings() : void
     {
         // get a fresh copy of the data of each step
-        foreach($this->steps as $step) {
-            $this->setWizardSetting('step_'.$step->getID(), $step->getData());
+        foreach ($this->steps as $step)
+        {
+            $this->setWizardSetting('step_' . $step->getID(), $step->getData());
         }
 
         $this->session->setValue($this->sessionID, $this->sessionData);

@@ -13,8 +13,14 @@ class TestDriver extends Application_Driver
     {
         return array(
             'devel' => 'Devel',
-            'settings' => 'Settings'
+            'settings' => 'Settings',
+            'wizardtest' => 'WizardTest'
         );
+    }
+
+    public function redirectTo($paramsOrURL = null)
+    {
+        return;
     }
 
     protected function setUpUI()
