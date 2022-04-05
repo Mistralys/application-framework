@@ -701,18 +701,16 @@ trait Application_Traits_Admin_Wizard
      * @param string $stepURL
      * @param string $reasonMessage
      * @param int $callingStep
-     * @return $this
      */
-    protected function checkInvalidation(string $stepURL, string $reasonMessage, int $callingStep)
+    protected function checkInvalidation(string $stepURL, string $reasonMessage, int $callingStep) : void
     {
         if (!$this->invalidationHandler->isInvalidated())
         {
-            $this->invalidationHandler->setInvalidationMessage($reasonMessage);
-            $this->invalidationHandler->setInvalidationURL($stepURL);
-            $this->invalidationHandler->setIsInvalidated(true);
-            $this->invalidationHandler->setInvalidationCallingStep($callingStep);
+            $this->invalidationHandler->setInvalidationMessage($reasonMessage)
+                ->setInvalidationURL($stepURL)
+                ->setIsInvalidated(true)
+                ->setInvalidationCallingStep($callingStep);
         }
-        return $this;
     }
 
     /**

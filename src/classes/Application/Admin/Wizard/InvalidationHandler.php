@@ -57,10 +57,12 @@ class InvalidationHandler
 
     /**
      * @param bool $isInvalidated
+     * @return InvalidationHandler
      */
-    public function setIsInvalidated(bool $isInvalidated) : void
+    public function setIsInvalidated(bool $isInvalidated) : self
     {
         $this->isInvalidated = $isInvalidated;
+        return $this;
     }
 
     /**
@@ -73,10 +75,12 @@ class InvalidationHandler
 
     /**
      * @param string $invalidationMessage
+     * @return InvalidationHandler
      */
-    public function setInvalidationMessage(string $invalidationMessage) : void
+    public function setInvalidationMessage(string $invalidationMessage) : self
     {
         $this->invalidationMessage = $invalidationMessage;
+        return $this;
     }
 
     /**
@@ -89,10 +93,12 @@ class InvalidationHandler
 
     /**
      * @param string $invalidationURL
+     * @return InvalidationHandler
      */
-    public function setInvalidationURL(string $invalidationURL) : void
+    public function setInvalidationURL(string $invalidationURL) : self
     {
         $this->invalidationURL = $invalidationURL;
+        return $this;
     }
 
     /**
@@ -105,14 +111,15 @@ class InvalidationHandler
 
     /**
      * This parameter is used for checking which step started invalidation check.
-     * @see Application_Traits_Admin_Wizard
-     * handle_stepUpdated function is calling recursively so system must decide
-     * which step is started this progress.
-     *
+     * Application_Traits_Admin_Wizard->handle_stepUpdated function is calling recursively
+     * so system must decide which step is started this progress.
      * @param int $invalidationCallingStep
+     * @return InvalidationHandler
+     * @see Application_Traits_Admin_Wizard
      */
-    public function setInvalidationCallingStep(int $invalidationCallingStep) : void
+    public function setInvalidationCallingStep(int $invalidationCallingStep) : self
     {
         $this->invalidationCallingStep = $invalidationCallingStep;
+        return $this;
     }
 }
