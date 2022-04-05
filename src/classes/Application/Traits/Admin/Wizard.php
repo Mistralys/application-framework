@@ -124,7 +124,7 @@ trait Application_Traits_Admin_Wizard
             );
             $this->invalidationHandler = new InvalidationHandler();
             $this->invalidationHandler->setIsInvalidated(false);
-            $this->sessionData['invalidationHandler'] = $this->invalidationHandler;
+            $this->setWizardSetting('invalidationHandler', $this->invalidationHandler);
 
             $this->session->setValue($this->sessionID, $this->sessionData);
 
@@ -135,7 +135,7 @@ trait Application_Traits_Admin_Wizard
             $this->log(sprintf('Using existing wizard ID.'));
 
             $this->sessionData = $this->session->getValue($this->sessionID);
-            $this->invalidationHandler = $this->sessionData['invalidationHandler'];
+            $this->invalidationHandler = $this->getWizardSetting('invalidationHandler');
 
             if ($this->sessionData['userID'] != $this->user->getID())
             {
@@ -692,13 +692,27 @@ trait Application_Traits_Admin_Wizard
         $this->handle_stepUpdated($step);
         $step->setComplete(false);
         $this->saveSettings();
+        $this->checkInvalidation($step->getURL(), $reasonMessage, $callingStep);
+    }
+
+    /**
+     * Determine first invalidated step for redirecting to this page at the end of all steps' checks.
+     *
+     * @param string $stepURL
+     * @param string $reasonMessage
+     * @param int $callingStep
+     * @return $this
+     */
+    protected function checkInvalidation(string $stepURL, string $reasonMessage, int $callingStep)
+    {
         if (!$this->invalidationHandler->isInvalidated())
         {
             $this->invalidationHandler->setInvalidationMessage($reasonMessage);
-            $this->invalidationHandler->setInvalidationURL($step->getURL());
+            $this->invalidationHandler->setInvalidationURL($stepURL);
             $this->invalidationHandler->setIsInvalidated(true);
             $this->invalidationHandler->setInvalidationCallingStep($callingStep);
         }
+        return $this;
     }
 
     /**
@@ -707,6 +721,7 @@ trait Application_Traits_Admin_Wizard
      *
      * @param string $name
      * @return boolean
+     * @throws Application_Exception
      */
     public function isStepComplete(string $name) : bool
     {

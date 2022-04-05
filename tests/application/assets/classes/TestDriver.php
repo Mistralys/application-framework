@@ -18,7 +18,14 @@ class TestDriver extends Application_Driver
         );
     }
 
-    public function redirectTo($paramsOrURL = null)
+    /**
+     * At testing phase we don't need redirect to any page.
+     * It is stopping test because of page change.
+     *
+     * @param $paramsOrURL
+     * @return void
+     */
+    public function redirectTo($paramsOrURL = null) : void
     {
         return;
     }

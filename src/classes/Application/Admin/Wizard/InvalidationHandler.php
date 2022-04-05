@@ -38,6 +38,11 @@ class InvalidationHandler
     protected string $invalidationURL;
 
     /**
+     * This parameter is used for checking which step started invalidation check.
+     * @see Application_Traits_Admin_Wizard
+     * handle_stepUpdated function is calling recursively so system must decide
+     * which step is started this progress.
+     *
      * @var int
      */
     protected int $invalidationCallingStep;
@@ -99,6 +104,11 @@ class InvalidationHandler
     }
 
     /**
+     * This parameter is used for checking which step started invalidation check.
+     * @see Application_Traits_Admin_Wizard
+     * handle_stepUpdated function is calling recursively so system must decide
+     * which step is started this progress.
+     *
      * @param int $invalidationCallingStep
      */
     public function setInvalidationCallingStep(int $invalidationCallingStep) : void
