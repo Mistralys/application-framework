@@ -1,8 +1,23 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
 
 declare(strict_types=1);
 
-final class DBHelper_StatementBuilderTests extends DBHelperTestCase
+namespace testsuites\DBHelper;
+
+use DBHelper_StatementBuilder;
+use DBHelperTestCase;
+use function statementBuilder;
+use function statementValues;
+
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
+final class StatementBuilderTests extends DBHelperTestCase
 {
     public function test_tableName() : void
     {
@@ -71,7 +86,7 @@ final class DBHelper_StatementBuilderTests extends DBHelperTestCase
         $result = (string)statementValues()
             ->field('container_placeholder', 'container')
             ->statement(
-            "{internal_placeholder} {container_placeholder}"
+                "{internal_placeholder} {container_placeholder}"
             )
             ->field('internal_placeholder', 'internal');
 
@@ -81,7 +96,7 @@ final class DBHelper_StatementBuilderTests extends DBHelperTestCase
     public function test_caseSensitivity() : void
     {
         $result = (string)statementBuilder("{recognized} {NOTRECOGNIZED}")
-        ->field('recognized', 'OK');
+            ->field('recognized', 'OK');
 
         $this->assertEquals('`OK` {NOTRECOGNIZED}', $result);
     }
