@@ -3,7 +3,7 @@
  * File containing the class {@see DBHelper_StatementBuilder}.
  *
  * @package DBHelper
- * @subpackage Helpers
+ * @subpackage StatementBuilder
  * @see DBHelper_StatementBuilder
  */
 
@@ -23,7 +23,7 @@ declare(strict_types=1);
  * </pre>
  *
  * @package DBHelper
- * @subpackage Helpers
+ * @subpackage StatementBuilder
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContainer implements UI_Renderable_Interface
@@ -36,7 +36,7 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
     /**
      * @var string
      */
-    private $template;
+    private string $template;
 
     public function __construct(string $statementTemplate)
     {
@@ -51,16 +51,17 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
     /**
      * @param string $placeholderName
      * @param string $value
-     * @return DBHelper_StatementBuilder
+     * @param int $valueType
+     * @return $this
      *
      * @throws DBHelper_Exception
      * @see DBHelper_StatementBuilder::ERROR_PLACEHOLDER_NOT_FOUND
      */
-    protected function add(string $placeholderName, string $value)
+    protected function add(string $placeholderName, string $value, int $valueType) : self
     {
         $this->requirePlaceholderExists($placeholderName);
 
-        return parent::add($placeholderName, $value);
+        return parent::add($placeholderName, $value, $valueType);
     }
 
     /**
@@ -70,7 +71,7 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
      */
     private function requirePlaceholderExists(string $placeholder) : void
     {
-        if(strstr($this->template, $placeholder))
+        if(strpos($this->template, $placeholder) !== false)
         {
             return;
         }
@@ -132,7 +133,7 @@ class DBHelper_StatementBuilder extends DBHelper_StatementBuilder_ValuesContaine
      */
     public static function detectPlaceholderNames(string $subject) : array
     {
-        preg_match_all('/{([a-z0-9_-]+)}/sU', $subject, $result, PREG_PATTERN_ORDER);
+        preg_match_all('/{([a-z0-9_-]+)}/U', $subject, $result);
         return $result[1];
     }
 
