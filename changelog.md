@@ -2,6 +2,9 @@
 - Forms: Fixed link buttons in the footer not having any right margin.
 - DBHelper: Fixed a DB error when saving single modified keys.
 - DBHelper: Added the record method `saveChained()` for chaining support.
+- Countries: Added the utility class `CountriesCollection`.
+- Forms: Added the `ExpandableSelect` custom element.
+- DBHelper: Added get methods to the statement builder.
 
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
