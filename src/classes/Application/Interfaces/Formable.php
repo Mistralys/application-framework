@@ -1,21 +1,20 @@
 <?php
+/**
+ * File containing the interface {@see Application_Interfaces_Formable}.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @see Application_Interfaces_Formable
+ */
 
 /**
- * Utility class for classes that create forms: offers a standardized API
- * for instantiating QuickForm2 form elements, with productivity related
- * methods.
- *
- * Usage:
- *
- * <ul>
- *    <li>Extend this class</li>
- *    <li>Call the <code>createFormableForm()</code> method to set up the form environment</li>
- *    <li>Build the form</li>
- * </ul>
+ * Interface for classes that can act as an input form.
  *
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Formable
  */
 interface Application_Interfaces_Formable extends UI_Renderable_Interface
 {
@@ -140,6 +139,14 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * @return HTML_QuickForm2_Element_ImageUploader
      */
     public function addElementImageUploader(string $name, string $label, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_ImageUploader;
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_ExpandableSelect
+     */
+    public function addElementExpandableSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect;
 
     /**
      * Adds a visual select element, that lets users select values by
@@ -609,5 +616,19 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      */
     public function addElementRenderCallback(HTML_QuickForm2_Node $element, $callback): void;
 
-    public function makeReadonly(): Application_Formable;
+    /**
+     * @return $this
+     */
+    public function makeReadonly(): self;
+
+    /**
+     * Requires the form to be submitted and valid. Throws
+     * an exception otherwise.
+     *
+     * @return $this
+     *
+     * @throws Application_Formable_Exception
+     * @see Application_Formable::ERROR_FORM_NOT_VALID
+     */
+    public function requireFormValid() : self;
 }

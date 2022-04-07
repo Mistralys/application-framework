@@ -32,6 +32,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     public const ERROR_INVALID_RULE_OPERATOR = 38732002;
     public const ERROR_ELEMENT_NOT_FOUND_BY_NAME = 38732003;
     public const ERROR_NO_PAGE_INSTANCE = 38732004;
+    public const ERROR_FORM_NOT_VALID = 38732005;
 
    /**
     * @var UI_Form
@@ -206,9 +207,9 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Ensures that the formable has been initialized. This should
     * be used for all operations that are done after the initialization.
     * 
-    * @throws Application_Exception
+    * @throws Application_Formable_Exception
     */
-    protected function requireFormableInitialized()
+    protected function requireFormableInitialized() : void
     {
         if(isset($this->activeHeader)) {
             $this->activeHeader->apply();
@@ -218,7 +219,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
            return; 
         }
         
-        throw new Application_Exception(
+        throw new Application_Formable_Exception(
             'The formable has not been initialized',
             (string)sb()
             ->sf(
@@ -462,14 +463,26 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     */
     public function addElementImageUploader(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ImageUploader
     {
-        $el = $this->addElement('imageuploader', $name, $container);
+        $el = $this->getFormInstance()->addImageUploader($name, $container);
         $el->setLabel($label);
         $el->setComment(t('May only contain letters, numbers and the characters - and _.'));
         
-        return ensureType(
-            HTML_QuickForm2_Element_ImageUploader::class,
-            $el
-        );
+        return $el;
+    }
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_ExpandableSelect
+     * @throws Application_Exception_UnexpectedInstanceType
+     */
+    public function addElementExpandableSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
+    {
+        $el = $this->getFormInstance()->addExpandableSelect($name, $container);
+        $el->setLabel($label);
+
+        return $el;
     }
     
    /**
@@ -1479,13 +1492,40 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     {
         $this->formableForm->addRenderCallback($element, $callback);
     }
-    
-    public function makeReadonly() : Application_Formable
+
+    /**
+     * @return $this
+     * @throws Application_Formable_Exception
+     */
+    public function makeReadonly() : self
     {
         $this->requireFormableInitialized();
         
         $this->formableForm->makeReadonly();
         
         return $this;
+    }
+
+    /**
+     * Requires the form to be submitted and valid. Throws
+     * an exception otherwise.
+     *
+     * @return $this
+     *
+     * @throws Application_Formable_Exception
+     * @see Application_Formable::ERROR_FORM_NOT_VALID
+     */
+    public function requireFormValid() : self
+    {
+        if($this->isFormValid())
+        {
+            return $this;
+        }
+
+        throw new Application_Formable_Exception(
+            'The form has not been submitted or is not valid.',
+            '',
+            self::ERROR_FORM_NOT_VALID
+        );
     }
 }

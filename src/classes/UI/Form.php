@@ -225,6 +225,18 @@ class UI_Form extends UI_Renderable
         throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_ImageUploader::class, $el);
     }
 
+    public function addExpandableSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
+    {
+        $el = $this->addElement('ExpandableSelect', $name, $container);
+
+        if($el instanceof HTML_QuickForm2_Element_ExpandableSelect)
+        {
+            return $el;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_ExpandableSelect::class, $el);
+    }
+
     /**
      * @param string $type
      * @param string $name
