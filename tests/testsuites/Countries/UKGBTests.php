@@ -1,12 +1,26 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
 
 declare(strict_types=1);
 
-final class Countries_UKGBTests extends CountriesTestCase
+namespace testsuites\Countries;
+
+use Application_Countries;
+use Application_Countries_Country;
+use classes\CountriesTestCase;
+
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
+final class UKGBTests extends CountriesTestCase
 {
     public function test_isoExists_UK() : void
     {
-        $this->countries->createNewCountry('gb', 'Great Britain');
+        $this->createTestCountry('gb');
 
         $this->assertTrue($this->countries->isoExists('GB'));
         $this->assertTrue($this->countries->isoExists('UK'));
@@ -14,7 +28,7 @@ final class Countries_UKGBTests extends CountriesTestCase
 
     public function test_isoExists_GB() : void
     {
-        $this->countries->createNewCountry('uk', 'United Kingdom');
+        $this->createTestCountry('uk');
 
         $this->assertTrue($this->countries->isoExists('GB'));
         $this->assertTrue($this->countries->isoExists('UK'));
@@ -22,11 +36,11 @@ final class Countries_UKGBTests extends CountriesTestCase
 
     public function test_getCountryByLocale_UK() : void
     {
-        $this->countries->createNewCountry('uk', 'United Kingdom');
-        
+        $this->createTestCountry('uk');
+
         $this->countries->getByISO('GB');
         $this->countries->getByISO('UK');
-        
+
         $this->addToAssertionCount(1);
     }
 

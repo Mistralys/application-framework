@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Countries_UKGBTests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
-    <CommandLine workingDirectory="$PROJECT_DIR$" />
-    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="Countries_UKGBTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/testsuites/Countries/UKGBTests.php" scope="Class" use_alternative_bootstrap_file="true" />
-    <method v="2" />
-  </configuration>
-</component>

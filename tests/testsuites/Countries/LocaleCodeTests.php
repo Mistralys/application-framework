@@ -1,8 +1,20 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
 
 declare(strict_types=1);
 
-final class Countries_LocaleCodeTests extends CountriesTestCase
+namespace testsuites\Countries;
+
+use classes\CountriesTestCase;
+
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
+final class LocaleCodeTests extends CountriesTestCase
 {
     public function test_parseLocaleCode() : void
     {
@@ -20,5 +32,12 @@ final class Countries_LocaleCodeTests extends CountriesTestCase
             $this->countries->getByISO('mx'),
             $this->countries->getByLocaleCode('es_MX')
         );
+    }
+
+    protected function setUp() : void
+    {
+        parent::setUp();
+
+        $this->createTestCountry('mx');
     }
 }
