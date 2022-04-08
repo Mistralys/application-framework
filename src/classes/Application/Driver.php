@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
@@ -1884,11 +1885,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Creates a new instance of the API to access the information
      * from the WHATSNEW.xml file.
      *
-     * @return Application_Whatsnew
+     * @return WhatsNew
      */
-    public static function createWhatsnew() : Application_Whatsnew
+    public static function createWhatsnew() : WhatsNew
     {
-        return new Application_Whatsnew();
+        return new WhatsNew();
     }
 
     /**

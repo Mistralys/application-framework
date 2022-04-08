@@ -1,5 +1,7 @@
 <?php
 
+use Application\WhatsNew;
+
 class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
 {
     public function processJSON()
@@ -43,7 +45,7 @@ class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
     protected $lastVersion;
     
    /**
-    * @var Application_Whatsnew
+    * @var WhatsNew
     */
     protected $whatsnew;
 
