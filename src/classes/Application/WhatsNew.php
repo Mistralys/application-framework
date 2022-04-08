@@ -1,12 +1,23 @@
 <?php
+/**
+ * File containing the class {@see \Application\WhatsNew}.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @see \Application\WhatsNew
+ */
 
 declare(strict_types=1);
 
 namespace Application;
 
+use Application\WhatsNew\XMLFileWriter;
+use Application\WhatsNew\PlainTextRenderer;
+use Application\WhatsNew\XMLRenderer;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_WhatsNewEditor;
 use Application_Admin_Area_Devel_WhatsNewEditor_Create;
+use Application_Admin_Area_Devel_WhatsNewEditor_List;
 use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
@@ -15,6 +26,15 @@ use AppUtils\FileHelper;
 use Parsedown;
 use const APP_ROOT;
 
+/**
+ * Handles reading the application's `WHATSNEW.xml` file, as
+ * well as offering methods to modify it and convert the contents
+ * to different output formats.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class WhatsNew
 {
     public const ERROR_WHATS_NEW_FILE_NOT_FOUND = 30001;
@@ -28,9 +48,14 @@ class WhatsNew
      */
     protected array $versions = array();
 
-    public function __construct()
+    public function __construct(string $sourceFile='')
     {
-        $this->file = APP_ROOT . '/WHATSNEW.xml';
+        if(empty($sourceFile))
+        {
+            $sourceFile = APP_ROOT . '/WHATSNEW.xml';
+        }
+
+        $this->file = $sourceFile;
         $this->parseDown = new Parsedown();
 
         if (!file_exists($this->file))
@@ -43,6 +68,11 @@ class WhatsNew
         }
 
         $this->parse();
+    }
+
+    public function getPath() : string
+    {
+        return $this->file;
     }
 
     /**
@@ -117,7 +147,7 @@ class WhatsNew
      * @param array<string,string> $params
      * @return string
      */
-    public function getAdminURLCreate(array $params=array()) : string
+    public function getAdminCreateURL(array $params=array()) : string
     {
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_Create::URL_NAME;
 
@@ -136,5 +166,45 @@ class WhatsNew
         return Application_Driver::getInstance()
             ->getRequest()
             ->buildURL($params);
+    }
+
+    /**
+     * @param array<string,string> $params
+     * @return string
+     */
+    public function getAdminListURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_List::URL_NAME;
+
+        return $this->getAdminURL($params);
+    }
+
+    public function addVersion(string $version) : AppVersion
+    {
+        $xml = sprintf('<version id="%s"></version>', $version);
+
+        $node = simplexml_load_string($xml);
+        $instance = new AppVersion($this, $node);
+
+        array_unshift($this->versions, $instance);
+
+        $this->writeToDisk();
+
+        return $instance;
+    }
+
+    private function writeToDisk() : void
+    {
+        (new XMLFileWriter($this))->write($this->getPath());
+    }
+
+    public function toPlainText(string $langID) : string
+    {
+        return (new PlainTextRenderer($this))->render($langID);
+    }
+
+    public function toXML() : string
+    {
+        return (new XMLRenderer($this))->render();
     }
 }
