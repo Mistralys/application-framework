@@ -3,8 +3,10 @@
 - DBHelper: Fixed a DB error when saving single modified keys.
 - DBHelper: Added the record method `saveChained()` for chaining support.
 - Countries: Added the utility class `CountriesCollection`.
+- Countries: Added the `getCollection()` method to fetch them as a collection.
 - Forms: Added the `ExpandableSelect` custom element.
 - DBHelper: Added get methods to the statement builder.
+- Functions: Added namespace support to `getClassTypeName()`.
 
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
