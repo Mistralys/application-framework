@@ -34,6 +34,7 @@ class CountriesCollection
      */
     private array $countries = array();
     private Application_Countries $collection;
+    private bool $excludeInvariant = false;
 
     private function __construct(array $countries=array())
     {
@@ -131,6 +132,11 @@ class CountriesCollection
 
         foreach ($countries as $country)
         {
+            if($this->excludeInvariant === true && $country->isInvariant())
+            {
+                continue;
+            }
+
             $result[] = $country->getID();
         }
 
@@ -141,7 +147,14 @@ class CountriesCollection
 
     public function hasID(int $id) : bool
     {
-        return isset($this->countries[$id]);
+        $exists = isset($this->countries[$id]);
+
+        if($exists === true && $this->excludeInvariant && $this->countries[$id]->isInvariant())
+        {
+            return false;
+        }
+
+        return $exists;
     }
 
     public function hasISO(string $iso) : bool
@@ -216,6 +229,11 @@ class CountriesCollection
 
         foreach ($countries as $country)
         {
+            if($this->excludeInvariant === true && $country->isInvariant())
+            {
+                continue;
+            }
+
             $result[] = $country->getISO();
         }
 
@@ -229,7 +247,32 @@ class CountriesCollection
      */
     public function getAll() : array
     {
-        return array_values($this->countries);
+        $countries = array_values($this->countries);
+
+        if($this->excludeInvariant === false)
+        {
+            return $countries;
+        }
+
+        $result = array();
+
+        foreach ($countries as $country)
+        {
+            if($country->isInvariant())
+            {
+                continue;
+            }
+
+            $result[] = $country;
+        }
+
+        return $result;
+    }
+
+    public function excludeInvariant(bool $exclude=true) : self
+    {
+        $this->excludeInvariant = $exclude;
+        return $this;
     }
 
     /**
@@ -260,5 +303,15 @@ class CountriesCollection
         });
 
         return $countries;
+    }
+
+    public function hasInvariant() : bool
+    {
+        return in_array(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO, $this->getISOs());
+    }
+
+    public function hasCountry(Application_Countries_Country $country) : bool
+    {
+        return $this->hasID($country->getID());
     }
 }
