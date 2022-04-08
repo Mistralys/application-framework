@@ -1,4 +1,11 @@
 <?php
+/**
+ * File containing the class {@see \Application\WhatsNew\AppVersion\VersionLanguage}.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @see \Application\WhatsNew\AppVersion\VersionLanguage
+ */
 
 declare(strict_types=1);
 
@@ -13,6 +20,15 @@ use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use SimpleXMLElement;
 
+/**
+ * Container for a single language in a what's new version entry.
+ *
+ * Path: whatsnew.version.language
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 abstract class VersionLanguage
 {
     public const ERROR_UNKNOWN_LANGUAGE_ID = 30101;
@@ -36,7 +52,7 @@ abstract class VersionLanguage
         self::requireLangExists($langID);
 
         $base = __CLASS__;
-        $class = $base.'\\'.getClassTypeName($base).'\\'.$langID;
+        $class = $base.'\\'.$langID;
 
         Application::requireClassExists($class);
 
@@ -141,6 +157,11 @@ abstract class VersionLanguage
     public function getCategories() : array
     {
         return array_values($this->categories);
+    }
+
+    public function hasCategories() : bool
+    {
+        return !empty($this->categories);
     }
 
     /**
