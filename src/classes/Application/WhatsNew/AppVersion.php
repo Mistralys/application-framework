@@ -1,4 +1,11 @@
 <?php
+/**
+ * File containing the class {@see \Application\WhatsNew\AppVersion}.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @see \Application\WhatsNew\AppVersion
+ */
 
 declare(strict_types=1);
 
@@ -11,6 +18,15 @@ use Application_Exception;
 use Application\WhatsNew\AppVersion\VersionLanguage;
 use SimpleXMLElement;
 
+/**
+ * Container for a single version in a what's new file.
+ *
+ * Path: whatsnew.version
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class AppVersion
 {
     public const ERROR_UNKNOWN_LANGUAGE = 31201;
@@ -32,12 +48,24 @@ class AppVersion
 
         foreach ($langIDs as $langID)
         {
-            if (!isset($node->$langID))
+            $lower = strtolower($langID);
+            $found = null;
+
+            if (isset($node->$langID))
+            {
+                $found = $node->$langID;
+            }
+            else if(isset($node->$lower))
+            {
+                $found = $node->$lower;
+            }
+
+            if($found === null)
             {
                 continue;
             }
 
-            $lang = VersionLanguage::createLanguage($langID, $this, $node->$langID);
+            $lang = VersionLanguage::createLanguage($langID, $this, $found);
 
             if ($lang->isValid())
             {
@@ -62,6 +90,14 @@ class AppVersion
     public function hasLanguage(string $langID) : bool
     {
         return isset($this->languages[$langID]);
+    }
+
+    /**
+     * @return VersionLanguage[]
+     */
+    public function getLanguages() : array
+    {
+        return array_values($this->languages);
     }
 
     public function getLanguage(string $langID) : VersionLanguage
