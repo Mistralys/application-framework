@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <whatsnew>
+    <version id="5.0.0">
+
+    </version>
     <version id="1.0.0">
-        <en>
-            <item category="Category">
-                English text
-            </item>
-        </en>
         <de>
             <item category="Kategorie">
                 Deutscher Text
@@ -16,5 +14,10 @@
                 Developer text
             </item>
         </dev>
+        <en>
+            <item category="Category">
+                English text
+            </item>
+        </en>
     </version>
 </whatsnew>
