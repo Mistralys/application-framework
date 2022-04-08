@@ -2,9 +2,11 @@
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
 {
+    public const URL_NAME = 'devel';
+
     public function getURLName() : string
     {
-        return 'devel';
+        return self::URL_NAME;
     }
     
     public function getDefaultMode() : string
@@ -47,7 +49,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         return array();
     }
     
-    abstract protected function initItems();
+    abstract protected function initItems() : void;
     
     protected $items;
     
@@ -93,6 +95,16 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     {
         $this->registerCoreItem('errorlog', t('Error logs'), t('Logs'), $category);
     }
+
+    protected function registerWhatsNewEditor($category=null)
+    {
+        $this->registerCoreItem(
+            Application_Admin_Area_Devel_WhatsNewEditor::URL_NAME,
+            t('What\'s new editor'),
+            t('Tools'),
+            $category
+        );
+    }
     
     protected function registerAppLogs($category=null)
     {
@@ -133,7 +145,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     * @param string $defaultCategory
     * @param string|NULL $categoryLabel
     */
-    protected function registerCoreItem($urlName, $label, $defaultCategory, $categoryLabel=null)
+    protected function registerCoreItem(string $urlName, string $label, string $defaultCategory, ?string $categoryLabel=null)
     {
         if(empty($categoryLabel)) {
             $categoryLabel = $defaultCategory;
@@ -158,13 +170,13 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         foreach($items as $mode => $title) {
             if(is_array($title)) {
                 foreach($title as $mmode => $ttitle) {
-                    $subnav->addInternalLink('devel', $ttitle, array('mode' => $mmode))->setGroup($mode);
+                    $subnav->addInternalLink(self::URL_NAME, $ttitle, array('mode' => $mmode))->setGroup($mode);
                 }
                 
                 continue;
             }
             
-            $subnav->addInternalLink('devel', $title, array('mode' => $mode));
+            $subnav->addInternalLink(self::URL_NAME, $title, array('mode' => $mode));
         }
     }
 }
