@@ -7,6 +7,8 @@
 - Forms: Added the `ExpandableSelect` custom element.
 - DBHelper: Added get methods to the statement builder.
 - Functions: Added namespace support to `getClassTypeName()`.
+- WhatsNew: Added render classes for plain text and XML.
+- WhatsNew: Added possibility to add new versions.
 
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
