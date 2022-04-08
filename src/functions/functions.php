@@ -1096,8 +1096,10 @@ function getClassTypeName($subject) : string
     {
         $className = $subject;
     }
-    
-    $tokens = explode('_', $className);
+
+    $tokens = explode('\\', $className);
+    $workName = array_pop($tokens);
+    $tokens = explode('_', $workName);
     
     return array_pop($tokens);
 }
