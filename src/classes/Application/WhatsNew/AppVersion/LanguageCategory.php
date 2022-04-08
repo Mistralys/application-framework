@@ -1,4 +1,11 @@
 <?php
+/**
+ * File containing the class {@see \Application\WhatsNew\AppVersion\LanguageCategory}.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @see \Application\WhatsNew\AppVersion\LanguageCategory
+ */
 
 declare(strict_types=1);
 
@@ -7,6 +14,16 @@ namespace Application\WhatsNew\AppVersion;
 use Application\WhatsNew;
 use SimpleXMLElement;
 
+/**
+ * Container for entries within a single category from
+ * a what's new language entry.
+ *
+ * Path: whatsnew.version.language.item[category]
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class LanguageCategory
 {
     protected VersionLanguage $language;
