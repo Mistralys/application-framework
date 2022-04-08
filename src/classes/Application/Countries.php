@@ -5,6 +5,7 @@
  * @subpackage Countries
  */
 
+use Application\Countries\CountriesCollection;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
@@ -193,6 +194,12 @@ class Application_Countries extends DBHelper_BaseCollection
 
         return $result;
     }
+
+    public function getCollection() : CountriesCollection
+    {
+        return CountriesCollection::create($this->getFilterCriteria()->getItemsObjects());
+    }
+
 
     /**
      * @param bool $includeInvariant
