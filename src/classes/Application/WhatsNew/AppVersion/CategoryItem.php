@@ -1,4 +1,11 @@
 <?php
+/**
+ * File containing the class {@see \Application\WhatsNew\AppVersion\CategoryItem}.
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @see \Application\WhatsNew\AppVersion\CategoryItem
+ */
 
 declare(strict_types=1);
 
@@ -9,6 +16,15 @@ use Application_Driver;
 use SimpleXMLElement;
 use const APP_URL;
 
+/**
+ * Container for a single entry in a what's new file.
+ *
+ * Path: whatsnew.version.language.item
+ *
+ * @package Application
+ * @subpackage WhatsNew
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class CategoryItem
 {
     protected LanguageCategory $category;
@@ -42,6 +58,11 @@ class CategoryItem
         }
 
         $this->rawText = (string)$node;
+    }
+
+    public function getRawText() : string
+    {
+        return $this->rawText;
     }
 
     public function getText() : string
