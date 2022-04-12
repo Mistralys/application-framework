@@ -36,18 +36,27 @@ abstract class VersionLanguage
     protected static ?array $languageIDs = null;
 
     protected AppVersion $version;
+    protected int $itemCounter = 0;
 
-    public function __construct(AppVersion $version, SimpleXMLElement $node)
+    /**
+     * @var CategoryItem[]
+     */
+    private array $items = array();
+
+    public function __construct(AppVersion $version, ?SimpleXMLElement $node=null)
     {
         $this->version = $version;
 
-        $this->parse($node);
+        if($node !== null)
+        {
+            $this->parse($node);
+        }
     }
 
     abstract public function isDeveloperOnly() : bool;
     abstract public function getMiscLabel() : string;
 
-    public static function createLanguage(string $langID, AppVersion $appVersion, SimpleXMLElement $node) : VersionLanguage
+    public static function createLanguage(string $langID, AppVersion $appVersion, ?SimpleXMLElement $node=null) : VersionLanguage
     {
         self::requireLangExists($langID);
 
@@ -95,6 +104,8 @@ abstract class VersionLanguage
         self::$languageIDs = FileHelper::createFileFinder(__DIR__.'/VersionLanguage')
             ->getPHPClassNames();
 
+        sort(self::$languageIDs);
+
         return self::$languageIDs;
     }
 
@@ -122,33 +133,41 @@ abstract class VersionLanguage
     /**
      * @var LanguageCategory[]
      */
-    protected array $categories = array();
+    protected array $knownCategories = array();
 
     protected function parse(SimpleXMLElement $node) : void
     {
         foreach ($node->item as $itemNode)
         {
-            $categoryLabel = (string)$itemNode['category'];
-            if (empty($categoryLabel))
-            {
-                $categoryLabel = $this->getMiscLabel();
-            }
-
-            $category = $this->getCategoryByLabel($categoryLabel);
-            $category->addItem($itemNode);
+            $category = $this->getCategoryByLabel((string)$itemNode['category']);
+            $this->registerItem($category, $itemNode);
         }
+    }
 
-        ksort($this->categories);
+    private function registerItem(LanguageCategory $category, ?SimpleXMLElement $node) : CategoryItem
+    {
+        $this->itemCounter++;
+
+        $item = new CategoryItem($category, $this->itemCounter, $node);
+
+        $this->items[] = $item;
+
+        return $item;
     }
 
     public function getCategoryByLabel(string $label) : LanguageCategory
     {
-        if (!isset($this->categories[$label]))
+        if (empty($label))
         {
-            $this->categories[$label] = new LanguageCategory($this, $label);
+            $label = $this->getMiscLabel();
         }
 
-        return $this->categories[$label];
+        if (!isset($this->knownCategories[$label]))
+        {
+            $this->knownCategories[$label] = new LanguageCategory($this, $label);
+        }
+
+        return $this->knownCategories[$label];
     }
 
     /**
@@ -156,12 +175,28 @@ abstract class VersionLanguage
      */
     public function getCategories() : array
     {
-        return array_values($this->categories);
+        $stack = array();
+
+        foreach($this->items as $item)
+        {
+            $category = $item->getCategory();
+            $label = $category->getLabel();
+
+            if(!isset($stack[$label]))
+            {
+                $stack[$label] = $category;
+            }
+        }
+
+        ksort($stack);
+
+        return array_values($stack);
     }
 
     public function hasCategories() : bool
     {
-        return !empty($this->categories);
+        $categories = $this->getCategories();
+        return !empty($categories);
     }
 
     /**
@@ -170,12 +205,31 @@ abstract class VersionLanguage
     public function toArray() : array
     {
         $result = array();
+        $categories = $this->getCategories();
 
-        foreach ($this->categories as $category)
+        foreach ($categories as $category)
         {
             $result[] = $category->toArray();
         }
 
         return $result;
+    }
+
+    /**
+     * @return CategoryItem[]
+     */
+    public function getItems() : array
+    {
+        return $this->items;
+    }
+
+    public function addItem(string $category, string $text, string $author, string $issue) : CategoryItem
+    {
+        $category = $this->getCategoryByLabel($category);
+
+        return $this->registerItem($category, null)
+            ->setText($text)
+            ->setAuthor($author)
+            ->setIssue($issue);
     }
 }
