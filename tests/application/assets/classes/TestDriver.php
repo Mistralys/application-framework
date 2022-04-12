@@ -19,15 +19,22 @@ class TestDriver extends Application_Driver
     }
 
     /**
-     * At testing phase we don't need redirect to any page.
-     * It is stopping test because of page change.
+     * Overridden to check if the test driver is running
+     * in unit test mode: In this case, the redirect is
+     * ignored to support testing admin screen classes.
      *
      * @param $paramsOrURL
      * @return void
+     * @throws Application_Exception
      */
     public function redirectTo($paramsOrURL = null) : void
     {
-        return;
+        if(defined('APP_FRAMEWORK_TESTS'))
+        {
+            return;
+        }
+
+        parent::redirectTo($paramsOrURL);
     }
 
     protected function setUpUI()
