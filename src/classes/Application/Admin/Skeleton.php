@@ -283,7 +283,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         */
 
         $this->simulationRedirect('Error', $message, $paramsOrURL);
-        
+
         $this->driver->redirectWithErrorMessage($message, $paramsOrURL);
     }
 
