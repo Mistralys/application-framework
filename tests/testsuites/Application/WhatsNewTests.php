@@ -36,10 +36,23 @@ class WhatsNewTests extends ApplicationTestCase
         $this->assertCount(3, $version->getLanguages());
     }
 
+    public function test_getCategories() : void
+    {
+        $whatsNew = TestDriver::createWhatsnew();
+        $version = $whatsNew->getCurrentVersion();
+
+        $this->assertNotNull($version);
+
+        $language = $version->getLanguage('DEV');
+        $categories = $language->getCategories();
+
+        $this->assertCount(1, $categories);
+        $this->assertSame('Framework', $categories[0]->getLabel());
+    }
+
     public function test_write() : void
     {
         $whatsNew = TestDriver::createWhatsnew();
-
         $whatsNew->addVersion('5.0.0');
 
         $writer = new XMLFileWriter($whatsNew);
