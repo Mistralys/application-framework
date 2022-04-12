@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c4e374b4e5e5e488aa4b21a3a40248ba",
+    "content-hash": "63e40609275a762a230a716725d44c50",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -313,16 +313,16 @@
         },
         {
             "name": "hybridauth/hybridauth",
-            "version": "3.7.1",
+            "version": "v3.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hybridauth/hybridauth.git",
-                "reference": "0ec1b8cb8b230aae739422c5e42bc5733b3a7316"
+                "reference": "c76bea6638376394c74a52791dd637fef4deaf08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/0ec1b8cb8b230aae739422c5e42bc5733b3a7316",
-                "reference": "0ec1b8cb8b230aae739422c5e42bc5733b3a7316",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/c76bea6638376394c74a52791dd637fef4deaf08",
+                "reference": "c76bea6638376394c74a52791dd637fef4deaf08",
                 "shasum": ""
             },
             "require": {
@@ -369,9 +369,9 @@
             "support": {
                 "gitter": "https://gitter.im/hybridauth/hybridauth",
                 "issues": "https://github.com/hybridauth/hybridauth/issues",
-                "source": "https://github.com/hybridauth/hybridauth/tree/3.7.1"
+                "source": "https://github.com/hybridauth/hybridauth/tree/v3.8.0"
             },
-            "time": "2021-03-13T17:35:33+00:00"
+            "time": "2022-04-08T09:49:25+00:00"
         },
         {
             "name": "marcj/css-element-queries",
@@ -746,19 +746,20 @@
         },
         {
             "name": "mistralys/subsetsum",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/subsetsum.git",
-                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643"
+                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
-                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
+                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
+                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
                 "shasum": ""
             },
             "require": {
+                "ext-bcmath": "*",
                 "php": ">=7.1"
             },
             "require-dev": {
@@ -788,9 +789,9 @@
             "description": "PHP SubsetSum implementation to search for number combinations.",
             "support": {
                 "issues": "https://github.com/Mistralys/subsetsum/issues",
-                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.1"
+                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.2"
             },
-            "time": "2021-10-22T05:31:19+00:00"
+            "time": "2021-10-31T09:29:24+00:00"
         },
         {
             "name": "neitanod/forceutf8",
@@ -3829,8 +3830,9 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "php": ">=7.4"
+        "php": ">=7.4",
+        "ext-simplexml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
