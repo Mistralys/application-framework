@@ -13,6 +13,7 @@ namespace Application\WhatsNew\AppVersion;
 
 use Application\WhatsNew;
 use Application_Driver;
+use AppUtils\ConvertHelper;
 use SimpleXMLElement;
 use const APP_URL;
 
@@ -32,12 +33,31 @@ class CategoryItem
     protected string $issue;
     protected string $rawText;
     protected string $text;
+    protected int $number;
 
-    public function __construct(LanguageCategory $category, SimpleXMLElement $node)
+    public function __construct(LanguageCategory $category, int $itemNumber, ?SimpleXMLElement $node)
     {
+        $this->number = $itemNumber;
         $this->category = $category;
 
-        $this->parse($node);
+        if($node !== null) {
+            $this->parse($node);
+        }
+    }
+
+    public function getNumber(): int
+    {
+        return $this->number;
+    }
+
+    public function getLanguage() : VersionLanguage
+    {
+        return $this->getCategory()->getLanguage();
+    }
+
+    public function getCategory(): LanguageCategory
+    {
+        return $this->category;
     }
 
     public function getWhatsNew() : WhatsNew
@@ -49,12 +69,12 @@ class CategoryItem
     {
         if (isset($node['author']))
         {
-            $this->author = (string)$node['author'];
+            $this->setAuthor((string)$node['author']);
         }
 
         if (isset($node['issue']))
         {
-            $this->issue = (string)$node['issue'];
+            $this->setIssue((string)$node['issue']);
         }
 
         $this->rawText = (string)$node;
@@ -63,6 +83,14 @@ class CategoryItem
     public function getRawText() : string
     {
         return $this->rawText;
+    }
+
+    public function getFormText() : string
+    {
+        // Remove all indentation in the text
+        $lines = ConvertHelper::explodeTrim("\n", $this->getRawText());
+
+        return implode(PHP_EOL, $lines);
     }
 
     public function getText() : string
@@ -221,5 +249,37 @@ class CategoryItem
             'author' => $this->getAuthor(),
             'issue' => $this->getIssue()
         );
+    }
+
+    public function setText(string $text) : self
+    {
+        $this->rawText = $text;
+        return $this;
+    }
+
+    public function setAuthor(string $author) : self
+    {
+        if($this->getLanguage()->isDeveloperOnly())
+        {
+            $this->author = $author;
+        }
+
+        return $this;
+    }
+
+    public function setIssue(string $issue) : self
+    {
+        if($this->getLanguage()->isDeveloperOnly())
+        {
+            $this->issue = $issue;
+        }
+
+        return $this;
+    }
+
+    public function setCategoryLabel(string $label) : self
+    {
+        $this->category = $this->getLanguage()->getCategoryByLabel($label);
+        return $this;
     }
 }
