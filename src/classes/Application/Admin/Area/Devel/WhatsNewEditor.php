@@ -49,4 +49,12 @@ class Application_Admin_Area_Devel_WhatsNewEditor extends Application_Admin_Area
     {
         $this->renderer->setTitle($this->getTitle());
     }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendArea($this->area);
+
+        $this->breadcrumb->appendItem($this->getNavigationTitle())
+            ->makeLinked(Application_Driver::createWhatsnew()->getAdminListURL());
+    }
 }
