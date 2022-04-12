@@ -30,6 +30,10 @@ use SimpleXMLElement;
 class AppVersion
 {
     public const ERROR_UNKNOWN_LANGUAGE = 31201;
+    public const ERROR_CANNOT_OVERWRITE_LANGUAGE = 31202;
+
+    public const REQUEST_PARAM_NUMBER = 'app_version';
+    const REQUEST_PARAM_LANG_ID = 'lang_id';
 
     protected string $version;
     private WhatsNew $whatsNew;
@@ -119,6 +123,24 @@ class AppVersion
         );
     }
 
+    public function addLanguage(string $langID) : VersionLanguage
+    {
+        if($this->hasLanguage($langID))
+        {
+            throw new WhatsNewException(
+                'Cannot overwrite existing language.',
+                '',
+                self::ERROR_CANNOT_OVERWRITE_LANGUAGE
+            );
+        }
+
+        $lang = VersionLanguage::createLanguage($langID, $this);
+
+        $this->languages[$langID] = $lang;
+
+        return $lang;
+    }
+
     /**
      * @param array<string,string> $params
      * @return string
@@ -126,7 +148,15 @@ class AppVersion
     public function getAdminEditURL(array $params=array()) : string
     {
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_Edit::URL_NAME;
+        $params[self::REQUEST_PARAM_NUMBER] = $this->getNumber();
 
         return $this->getWhatsNew()->getAdminURL($params);
+    }
+
+    public function getAdminLanguageURL(string $language, array $params=array()) : string
+    {
+        $params[self::REQUEST_PARAM_LANG_ID] = $language;
+
+        return $this->getAdminEditURL($params);
     }
 }
