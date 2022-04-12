@@ -13,8 +13,21 @@ class TestDriver extends Application_Driver
     {
         return array(
             'devel' => 'Devel',
-            'settings' => 'Settings'
+            'settings' => 'Settings',
+            'wizardtest' => 'WizardTest'
         );
+    }
+
+    /**
+     * At testing phase we don't need redirect to any page.
+     * It is stopping test because of page change.
+     *
+     * @param $paramsOrURL
+     * @return void
+     */
+    public function redirectTo($paramsOrURL = null) : void
+    {
+        return;
     }
 
     protected function setUpUI()

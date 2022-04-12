@@ -714,6 +714,16 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
             DBHelper::startTransaction();
         }
     }
+
+    /**
+     * Check transaction is started or not.
+     *
+     * @return bool
+     */
+    public function isTransactionStarted() : bool
+    {
+        return DBHelper::isTransactionStarted();
+    }
     
    /**
     * Ends a DB transaction safely, using current simulation settings.

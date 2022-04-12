@@ -29,10 +29,12 @@
 	boot_define('APP_URL', '');
     boot_define('APP_INSTANCE_ID', '');
 	boot_define('APP_DB_HOST', TESTSUITE_DB_HOST);
+	boot_define('APP_DB_PORT', TESTSUITE_DB_PORT);
 	boot_define('APP_DB_NAME', TESTSUITE_DB_NAME);
 	boot_define('APP_DB_USER', TESTSUITE_DB_USER);
 	boot_define('APP_DB_PASSWORD', TESTSUITE_DB_PASSWORD);
 	boot_define('APP_DB_TESTS_HOST', TESTSUITE_DB_HOST);
+	boot_define('APP_DB_TESTS_PORT', TESTSUITE_DB_PORT);
 	boot_define('APP_DB_TESTS_NAME', TESTSUITE_DB_NAME);
 	boot_define('APP_DB_TESTS_USER', TESTSUITE_DB_USER);
 	boot_define('APP_DB_TESTS_PASSWORD', TESTSUITE_DB_PASSWORD);
