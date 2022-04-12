@@ -460,7 +460,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @return never
      * @throws Application_Exception
      */
-    public function redirectTo($paramsOrURL = null)
+    public function redirectTo($paramsOrURL = null) : void
     {
         if (is_array($paramsOrURL))
         {
@@ -1889,7 +1889,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function createWhatsnew() : WhatsNew
     {
-        return new WhatsNew();
+        return new WhatsNew(APP_ROOT . '/WHATSNEW.xml');
     }
 
     /**
