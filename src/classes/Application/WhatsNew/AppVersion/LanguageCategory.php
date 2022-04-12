@@ -29,20 +29,15 @@ class LanguageCategory
     protected VersionLanguage $language;
     protected string $label;
 
-    /**
-     * @var CategoryItem[]
-     */
-    protected array $items = array();
-
     public function __construct(VersionLanguage $language, $label)
     {
         $this->language = $language;
         $this->label = $label;
     }
 
-    public function addItem(SimpleXMLElement $node) : void
+    public function getLanguage(): VersionLanguage
     {
-        $this->items[] = new CategoryItem($this, $node);
+        return $this->language;
     }
 
     /**
@@ -50,7 +45,18 @@ class LanguageCategory
      */
     public function getItems() : array
     {
-        return $this->items;
+        $items = $this->language->getItems();
+        $result = array();
+
+        foreach($items as $item)
+        {
+            if($item->getCategory() === $this)
+            {
+                $result[] = $item;
+            }
+        }
+
+        return $result;
     }
 
     public function getWhatsNew() : WhatsNew
@@ -78,7 +84,9 @@ class LanguageCategory
             'items' => array()
         );
 
-        foreach ($this->items as $item)
+        $items = $this->getItems();
+
+        foreach ($items as $item)
         {
             $result['items'][] = $item->toArray();
         }
