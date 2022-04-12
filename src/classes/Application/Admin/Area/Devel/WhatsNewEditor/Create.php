@@ -121,14 +121,15 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Create extends Application_Adm
     {
         $new = $this->whatsNew->addVersion($version);
 
+        $this->whatsNew->writeToDisk();
+
         $this->redirectWithSuccessMessage(
             t(
                 'The version %1$s was created successfully at %2$s.',
-                $new,
+                $new->getNumber(),
                 sb()->time()
             ),
             $new->getAdminEditURL()
         );
-
     }
 }
