@@ -38,8 +38,6 @@ class PlainTextRenderer
 
         $versions = $this->whatsNew->getVersionsByLanguage($langID);
 
-        echo count($versions);
-
         foreach($versions as $version)
         {
             $this->renderVersion($version, $langID);
