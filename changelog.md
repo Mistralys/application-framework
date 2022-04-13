@@ -1,3 +1,6 @@
+### v2.1.1 - Bugfix release
+- DBHelper: Fixed a bug when saving a record that only has custom keys modified. 
+
 ### v2.1.0 - What's new editor release
 - WhatsNew: Added a UI to edit the changelog in the developer tools.
 - WhatsNew: Added render classes for plain text and XML.
