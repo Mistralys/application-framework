@@ -159,13 +159,19 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         
         return $this->renderer
         ->appendDataGrid($this->datagrid, $entries)
-        ->makeWithSidebar()
-        ->setAbstract(
-            t('This allows managing custom application settings.').' '.
-            t('They are not used by the application itself, but can be used to store arbitrary data for custom processes.')
-        );
+        ->makeWithSidebar();
     }
-    
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer
+            ->setTitle($this->getTitle())
+            ->setAbstract(
+                t('This allows managing custom application settings.').' '.
+                t('They are not used by the application itself, but can be used to store arbitrary data for custom processes.')
+            );
+    }
+
     protected function _handleSidebar() : void
     {
         $this->sidebar->addFilterSettings($this->filterSettings);
