@@ -78,6 +78,13 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Edit extends AppVersionEditSub
 
         $this->sidebar->addButton('cancel', t('Cancel'))
             ->makeLinked($this->whatsNew->getAdminListURL());
+
+        $this->sidebar->addSeparator();
+
+        $this->sidebar->addButton('view-as-text', t('Developer changelog'))
+            ->setIcon(UI::icon()->text())
+            ->setTooltip(t('Displays the developer changelog in plain text.'))
+            ->makeLinked(Application_Driver::getInstance()->getAdminURLChangelog(), true);
     }
 
     protected function _renderContent() : UI_Renderable_Interface
