@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace testsuites\Application;
 
 use Application\WhatsNew;
+use Application\WhatsNew\AppVersion\VersionLanguage;
 use ApplicationTestCase;
 use AppUtils\FileHelper;
 use TestDriver;
@@ -61,6 +62,27 @@ class WhatsNewTests extends ApplicationTestCase
         $updated = new WhatsNew($this->outputFile);
 
         $this->assertCount(2, $updated->getVersions());
+    }
+
+    public function test_sortLanguageIDs() : void
+    {
+        $expected = array(
+            'DE',
+            'EN',
+            'DEV'
+        );
+
+        $actual = VersionLanguage::getLanguageIDs();
+
+        $this->assertSame(
+            $expected,
+            $actual,
+            'The sorting order does not match.'.PHP_EOL.
+            'Expected:'.PHP_EOL.
+            print_r($expected, true).PHP_EOL.
+            'Given:'.PHP_EOL.
+            print_r($actual, true)
+        );
     }
 
     // endregion
