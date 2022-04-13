@@ -104,7 +104,15 @@ abstract class VersionLanguage
         self::$languageIDs = FileHelper::createFileFinder(__DIR__.'/VersionLanguage')
             ->getPHPClassNames();
 
-        sort(self::$languageIDs);
+        usort(self::$languageIDs, static function(string $a, string $b) : int
+        {
+            if($b === WhatsNew::getDeveloperLangID())
+            {
+                return -1;
+            }
+
+            return strnatcasecmp($a, $b);
+        });
 
         return self::$languageIDs;
     }

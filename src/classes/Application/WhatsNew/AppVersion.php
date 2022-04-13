@@ -76,6 +76,16 @@ class AppVersion
                 $this->languages[$langID] = $lang;
             }
         }
+
+        uasort($this->languages, static function(VersionLanguage $a, VersionLanguage $b) : int
+        {
+            if($b->isDeveloperOnly())
+            {
+                return -1;
+            }
+
+            return strnatcasecmp($a->getID(), $b->getID());
+        });
     }
 
     /**
