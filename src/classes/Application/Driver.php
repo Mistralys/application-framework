@@ -2054,4 +2054,10 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         return $this->oauth;
     }
+
+    public function getAdminURLChangelog(array $params=array()) : string
+    {
+        return $this->getRequest()
+            ->buildURL($params, Application_Bootstrap_Screen_Changelog::DISPATCHER);
+    }
 }
