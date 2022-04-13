@@ -27,7 +27,7 @@ use AppUtils\XMLHelper;
  */
 class XMLRenderer
 {
-    private int $textWrapping = 40;
+    private int $textWrapping = 65;
     private WhatsNew $whatsNew;
 
     public function __construct(WhatsNew $whatsNew)
@@ -112,14 +112,14 @@ EOT;
     private function renderCategories(VersionLanguage $language) : string
     {
         $categories = $language->getCategories();
-        $result = '';
+        $result = array();
 
         foreach($categories as $category)
         {
-            $result .= $this->renderCategory($category);
+            $result[] = $this->renderCategory($category);
         }
 
-        return $result;
+        return implode(PHP_EOL, $result);
     }
 
     private function renderCategory(LanguageCategory $category) : string
@@ -164,9 +164,14 @@ EOT;
         );
     }
 
+    private function unindentText(string $text) : string
+    {
+        return implode(PHP_EOL, ConvertHelper::explodeTrim("\n", $text));
+    }
+
     private function indentText(string $text) : string
     {
-        $wrapped = ConvertHelper::wordwrap(trim($text), $this->textWrapping);
+        $wrapped = ConvertHelper::wordwrap($this->unindentText($text), $this->textWrapping);
 
         $lines = ConvertHelper::explodeTrim("\n", $wrapped);
         $result = array();
