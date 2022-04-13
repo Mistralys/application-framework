@@ -1,9 +1,17 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
 
 declare(strict_types=1);
 
 use AppUtils\Microtime;
 
+/**
+ * @package Application
+ * @subpackage UnitTests
+ */
 final class DBHelper_CoreTests extends DBHelperTestCase
 {
     public function test_filterValue() : void
