@@ -9,6 +9,9 @@
 - Functions: Added namespace support to `getClassTypeName()`.
 - WhatsNew: Added render classes for plain text and XML.
 - WhatsNew: Added possibility to add new versions.
+- WhatsNew: Added a UI to edit the changelog in the developer tools.
+- UnitTests: Reaching a fully functional state of the test application.
+- Driver: Added `getAdminURLChangelog()`.
 
 ### v2.0.1 - Bugfix release
 - Forms: Fixed the loading of the UIButton element.
