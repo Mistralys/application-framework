@@ -73,9 +73,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     
    /**
     * Retrieves the searchable columns as an associative array
-    * with column name => human readable label pairs.
+    * with column name => human-readable label pairs.
     * 
-    * @return array[string]string
+    * @return array<string,string>
     */
     abstract public function getRecordSearchableColumns() : array;
 
