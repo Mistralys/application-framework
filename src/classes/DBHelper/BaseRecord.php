@@ -555,52 +555,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
         $this->log('Saving the record.');
 
-        $sets = array();
-        $keys = array_keys($this->recordData);
-        $saveKeys = array();
-        foreach($keys as $key) {
-            if($key === $this->recordPrimaryName || !$this->isModified($key)) {
-                continue;
-            }
-
-            $saveKeys[] = $key;
-            
-            $sets[] = sprintf(
-                "`%s`=:%s",
-                $key,
-                $key
-            );
-        }
-        
-        $where = $this->collection->getForeignKeys();
-        $where[$this->recordPrimaryName] = $this->getID();
-        
-        $query = sprintf(
-            "UPDATE
-                `%s`
-            SET
-                %s
-            WHERE
-                %s",
-            $this->recordTable,
-            implode(',', $sets),
-            DBHelper::buildWhereFieldsStatement($where)
-        );
-
-        // Only use the keys that were modified
-        $data = array();
-        foreach($saveKeys as $key)
-        {
-            $data[$key] = $this->recordData[$key];
-        }
-
-        // Add the where keys, ensuring that they
-        // get overwritten if present.
-        $data = array_merge($data, $where);
-
-        DBHelper::update($query, $data);
-        
-        $this->modified = array();
+        $this->saveDataKeys();
         
         // are there any custom fields that were modified?
         if(!empty($this->customModified))
@@ -626,6 +581,64 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->postSave($context);
         
         return true;
+    }
+
+    private function saveDataKeys() : void
+    {
+        $sets = array();
+        $keys = array_keys($this->recordData);
+        $saveKeys = array();
+        foreach($keys as $key) {
+            if($key === $this->recordPrimaryName || !$this->isModified($key)) {
+                continue;
+            }
+
+            $saveKeys[] = $key;
+
+            $sets[] = sprintf(
+                "`%s`=:%s",
+                $key,
+                $key
+            );
+        }
+
+        // This can be empty if only some custom fields
+        // were modified, and no actual record keys were
+        // modified.
+        if(empty($sets))
+        {
+            return;
+        }
+
+        $where = $this->collection->getForeignKeys();
+        $where[$this->recordPrimaryName] = $this->getID();
+
+        $query = sprintf(
+            "UPDATE
+                `%s`
+            SET
+                %s
+            WHERE
+                %s",
+            $this->recordTable,
+            implode(',', $sets),
+            DBHelper::buildWhereFieldsStatement($where)
+        );
+
+        // Only use the keys that were modified
+        $data = array();
+        foreach($saveKeys as $key)
+        {
+            $data[$key] = $this->recordData[$key];
+        }
+
+        // Add the where keys, ensuring that they
+        // get overwritten if present.
+        $data = array_merge($data, $where);
+
+        DBHelper::update($query, $data);
+
+        $this->modified = array();
     }
 
     /**
