@@ -1,4 +1,7 @@
-### v2.0.2 - Maintenance release
+### v2.1.0 - What's new editor release
+- WhatsNew: Added a UI to edit the changelog in the developer tools.
+- WhatsNew: Added render classes for plain text and XML.
+- WhatsNew: Added possibility to add new versions.
 - Forms: Fixed link buttons in the footer not having any right margin.
 - DBHelper: Fixed a DB error when saving single modified keys.
 - DBHelper: Added the record method `saveChained()` for chaining support.
@@ -7,9 +10,6 @@
 - Forms: Added the `ExpandableSelect` custom element.
 - DBHelper: Added get methods to the statement builder.
 - Functions: Added namespace support to `getClassTypeName()`.
-- WhatsNew: Added render classes for plain text and XML.
-- WhatsNew: Added possibility to add new versions.
-- WhatsNew: Added a UI to edit the changelog in the developer tools.
 - UnitTests: Reaching a fully functional state of the test application.
 - Driver: Added `getAdminURLChangelog()`.
 
