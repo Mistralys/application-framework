@@ -1,11 +1,10 @@
 <?php
 /**
-* Changelog view for developers: text-based with only the
-* dev changelog entries from the WHATSNEW.xml file.
+* Media script for displaying media files.
 *
 * @package Application
 * @subpackage TestDriver
-* @see Application_Bootstrap_Screen_Changelog
+* @see Application_Bootstrap_Screen_Media
 */
 
 declare(strict_types=1);
@@ -16,4 +15,4 @@ declare(strict_types=1);
  */
 require_once __DIR__.'/bootstrap.php';
 
-Application_Bootstrap::bootClass(Application_Bootstrap_Screen_Changelog::class);
+Application_Bootstrap::bootClass(Application_Bootstrap_Screen_Media::class);

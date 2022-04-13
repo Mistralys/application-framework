@@ -1,12 +1,14 @@
 <?php
 /**
- * Main dispatcher file, displays the framework test UI.
- *
- * @package Application
- * @subpackage TestDriver
- */
+* Main dispatcher file, displays the framework test UI.
+*
+* @package Application
+* @subpackage TestDriver
+* @see Application_Bootstrap_Screen_Main
+*/
 
-    require_once __DIR__.'/bootstrap.php';
+declare(strict_types=1);
 
-    Application_Bootstrap::boot('Main');
+require_once __DIR__.'/bootstrap.php';
 
+Application_Bootstrap::bootClass(Application_Bootstrap_Screen_Main::class);

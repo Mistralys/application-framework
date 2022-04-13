@@ -1,11 +1,11 @@
 <?php
 /**
- * Ajax dispatcher: determines the ajax method to run
- * and displays the result in the requested format.
+ * Upload dispatcher: backend used to upload media files
+ * to be added to the media library.
  *
  * @package Application
  * @subpackage TestDriver
- * @see Application_Bootstrap_Screen_Ajax
+ * @see Application_Bootstrap_Screen_Upload
  */
 
 declare(strict_types=1);
@@ -16,4 +16,4 @@ declare(strict_types=1);
  */
 require_once __DIR__ . '/../bootstrap.php';
 
-Application_Bootstrap::bootClass(Application_Bootstrap_Screen_Ajax::class);
+Application_Bootstrap::bootClass(Application_Bootstrap_Screen_Upload::class);
