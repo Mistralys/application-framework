@@ -62,7 +62,7 @@ class HTML_QuickForm2_Element_ExpandableSelect extends HTML_QuickForm2_Element_S
 
     public function __toString() : string
     {
-        $this->setAttribute('size', $this->getSize());
+        $this->setAttribute('size', (string)$this->getSize());
 
         return
             parent::__toString().
