@@ -66,6 +66,11 @@ class WhatsNew
         $this->parse();
     }
 
+    public static function getDeveloperLangID() : string
+    {
+        return getClassTypeName(AppVersion\VersionLanguage\DEV::class);
+    }
+
     public function getPath() : string
     {
         return $this->file;
