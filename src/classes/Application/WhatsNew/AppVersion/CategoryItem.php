@@ -29,9 +29,9 @@ use const APP_URL;
 class CategoryItem
 {
     protected LanguageCategory $category;
-    protected string $author;
-    protected string $issue;
-    protected string $rawText;
+    protected string $author = '';
+    protected string $issue = '';
+    protected string $rawText = '';
     protected string $text;
     protected int $number;
 
