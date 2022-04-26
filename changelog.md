@@ -1,10 +1,7 @@
-### v2.1.2 - Dependency maintenance release
-
-- DeepL: Updated `mistralys/deepl-xml-translator` to v2 branch.
-- DeepL: Preparing for fix in the `scn/deepl-api-connector` package.
-
 ### v2.1.1 - Bugfix release
 - DBHelper: Fixed a bug when saving a record that only has custom keys modified. 
+- DeepL: Updated `mistralys/deepl-xml-translator` to v2 branch.
+- DeepL: Preparing for fix in the `scn/deepl-api-connector` package.
 
 ### v2.1.0 - What's new editor release
 - WhatsNew: Added a UI to edit the changelog in the developer tools.
