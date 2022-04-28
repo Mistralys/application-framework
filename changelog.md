@@ -1,3 +1,6 @@
+### v2.1.2 - Bugfix release
+- Forms: Fixed an issue causing hidden form element values to not be updated when submitted.
+
 ### v2.1.1 - Bugfix release
 - DBHelper: Fixed a bug when saving a record that only has custom keys modified. 
 - DeepL: Updated `mistralys/deepl-xml-translator` to v2 branch.
