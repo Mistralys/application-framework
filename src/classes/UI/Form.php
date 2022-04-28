@@ -395,17 +395,13 @@ class UI_Form extends UI_Renderable
             $this->hiddens[$name] = $this->form->addHidden($name);
         }
 
-        if($value === null)
-        {
-            $value = $this->hiddens[$name]->getValue();
-
-            if(empty($value))
-            {
-                $value = '';
-            }
+        if($value === null) {
+            $value = (string)$this->hiddens[$name]->getValue();
         }
 
-        $this->hiddens[$name]->setAttribute('value', $value);
+        if(!empty($value)) {
+            $this->hiddens[$name]->setAttribute('value', $value);
+        }
 
         if ($id === null)
         {
