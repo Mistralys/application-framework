@@ -58,6 +58,11 @@ abstract class Application_Formable_RecordSelector extends Application_Formable_
         
         return $name; 
     }
+
+    public function getFilters() : DBHelper_BaseFilterCriteria
+    {
+        return $this->filters;
+    }
     
     protected function getDefaultLabel() : string
     {
