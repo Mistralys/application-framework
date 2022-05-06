@@ -1070,20 +1070,19 @@
         },
         {
             "name": "mistralys/subsetsum",
-            "version": "1.0.2",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/subsetsum.git",
-                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe"
+                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
-                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
+                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
+                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
                 "shasum": ""
             },
             "require": {
-                "ext-bcmath": "*",
                 "php": ">=7.1"
             },
             "require-dev": {
@@ -1113,9 +1112,9 @@
             "description": "PHP SubsetSum implementation to search for number combinations.",
             "support": {
                 "issues": "https://github.com/Mistralys/subsetsum/issues",
-                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.2"
+                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.1"
             },
-            "time": "2021-10-31T09:29:24+00:00"
+            "time": "2021-10-22T05:31:19+00:00"
         },
         {
             "name": "neitanod/forceutf8",
@@ -1854,16 +1853,16 @@
         },
         {
             "name": "scn/deepl-api-connector",
-            "version": "v3.0.3",
+            "version": "v3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/SC-Networks/deepl-api-connector.git",
-                "reference": "50520c0da685e6ddac4648e5da3f3aaafef884fc"
+                "reference": "222006a1b157fbcf3d9e6c1bfa7140c37808d017"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SC-Networks/deepl-api-connector/zipball/50520c0da685e6ddac4648e5da3f3aaafef884fc",
-                "reference": "50520c0da685e6ddac4648e5da3f3aaafef884fc",
+                "url": "https://api.github.com/repos/SC-Networks/deepl-api-connector/zipball/222006a1b157fbcf3d9e6c1bfa7140c37808d017",
+                "reference": "222006a1b157fbcf3d9e6c1bfa7140c37808d017",
                 "shasum": ""
             },
             "require": {
@@ -1910,9 +1909,9 @@
             ],
             "support": {
                 "issues": "https://github.com/SC-Networks/deepl-api-connector/issues",
-                "source": "https://github.com/SC-Networks/deepl-api-connector/tree/v3.0.3"
+                "source": "https://github.com/SC-Networks/deepl-api-connector/tree/v3.0.4"
             },
-            "time": "2022-03-01T07:45:14+00:00"
+            "time": "2022-04-27T11:58:56+00:00"
         },
         {
             "name": "shark/simple_html_dom",
@@ -2672,16 +2671,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.6.0",
+            "version": "1.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "b480ba2ae0699a72d43a340c20b9c00ede91ee3e"
+                "reference": "d41c39cb2e487663bce9bbd97c660e244b73abad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b480ba2ae0699a72d43a340c20b9c00ede91ee3e",
-                "reference": "b480ba2ae0699a72d43a340c20b9c00ede91ee3e",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d41c39cb2e487663bce9bbd97c660e244b73abad",
+                "reference": "d41c39cb2e487663bce9bbd97c660e244b73abad",
                 "shasum": ""
             },
             "require": {
@@ -2707,7 +2706,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.6.0"
+                "source": "https://github.com/phpstan/phpstan/tree/1.6.7"
             },
             "funding": [
                 {
@@ -2727,7 +2726,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-26T05:43:03+00:00"
+            "time": "2022-05-04T22:55:41+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -4321,5 +4320,5 @@
         "ext-simplexml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.1.0"
 }
