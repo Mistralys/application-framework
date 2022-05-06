@@ -1,3 +1,7 @@
+### v2.1.3 - Minor feature release
+- Formable: Added `getFilters()` to the `Application_Formable_Selector` class to customize them.
+- Countries: Added `useCustomCollection()` to the countries formable selector.
+
 ### v2.1.2 - Bugfix release
 - Forms: Fixed an issue causing hidden form element values to not be updated when submitted.
 
