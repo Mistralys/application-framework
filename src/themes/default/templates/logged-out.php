@@ -40,6 +40,7 @@ class template_default_logged_out extends UI_Page_Template_Custom
         echo UI::icon()->information()->makeInformation().' ';
         pt('You have been logged out.')
     ?></span></p>
+    <?php echo implode(' ', $this->getAdditionalMessages()) ?>
 </div>
 <hr/>
 <p>
@@ -79,6 +80,16 @@ class template_default_logged_out extends UI_Page_Template_Custom
      * @return UI_Button[]
      */
     protected function getAdditionalButtons() : array
+    {
+        return array();
+    }
+
+    /**
+     * Method can be extended in an application template.
+     *
+     * @return array
+     */
+    protected function getAdditionalMessages() : array
     {
         return array();
     }
