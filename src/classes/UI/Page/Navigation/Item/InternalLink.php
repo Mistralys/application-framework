@@ -109,6 +109,7 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
 
     public function isActive() : bool
     {
+
         if(parent::isActive())
         {
             return true;
@@ -116,7 +117,7 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
 
         foreach ($this->params as $name => $value)
         {
-            if ($this->request->getParam($name) !== $value)
+            if ((string)$this->request->getParam($name) !== (string)$value)
             {
                 return false;
             }
