@@ -162,7 +162,7 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
      * the active navigation item.
      *
      * Note: this is not detected automatically, your
-     * driver has to specifiy this manually as there
+     * driver has to specify this manually as there
      * is no way for navigation items to know this
      * for themselves (unless you extend an existing
      * navigation item and add this functionality for
