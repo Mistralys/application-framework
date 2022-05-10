@@ -2,6 +2,7 @@
 - Formable: Added `getFilters()` to the `Application_Formable_Selector` class to customize them.
 - Countries: Added `useCustomCollection()` to the countries formable selector.
 - Navigation: Fixed active items not being recognized in navigations.
+- Themes: Added the possibility to display custom messages in the "Logged out" template #45.
 
 ### v2.1.2 - Bugfix release
 - Forms: Fixed an issue causing hidden form element values to not be updated when submitted.
