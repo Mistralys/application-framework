@@ -87,6 +87,9 @@ class template_default_logged_out extends UI_Page_Template_Custom
     /**
      * Method can be extended in an application template.
      *
+     * NOTE: Return messages wrapped in paragraph tags, or
+     * any other block level tags.
+     *
      * @return array
      */
     protected function getAdditionalMessages() : array
