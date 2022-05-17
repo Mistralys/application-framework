@@ -99,6 +99,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public const TYPE_COLORS = 'colors';
     public const TYPE_COMBINATION = 'combination';
     public const TYPE_COMBINE = 'combine';
+    public const TYPE_COMMAND_DECK = 'command_deck';
     public const TYPE_COMMANDS = 'commands';
     public const TYPE_COMMENT = 'comment';
     public const TYPE_COMTYPES = 'comtypes';
@@ -306,6 +307,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         self::TYPE_COLORS => 'palette',
         self::TYPE_COMBINATION => 'object-group',
         self::TYPE_COMBINE => 'link',
+        self::TYPE_COMMAND_DECK => 'fas:dice-d20',
         self::TYPE_COMMANDS => 'terminal',
         self::TYPE_COMMENT => 'comment',
         self::TYPE_COMTYPES => 'broadcast-tower',
@@ -523,6 +525,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public function colors() : UI_Icon { return $this->setType(self::TYPE_COLORS); }
     public function combination() : UI_Icon { return $this->setType(self::TYPE_COMBINATION); }
     public function combine() : UI_Icon { return $this->setType(self::TYPE_COMBINE); }
+    public function commandDeck() : UI_Icon { return $this->setType(self::TYPE_COMMAND_DECK); }
     public function commands() : UI_Icon { return $this->setType(self::TYPE_COMMANDS); }
     public function comment() : UI_Icon { return $this->setType(self::TYPE_COMMENT); }
     public function comtypes() : UI_Icon { return $this->setType(self::TYPE_COMTYPES); }

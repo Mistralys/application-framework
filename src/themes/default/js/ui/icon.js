@@ -61,6 +61,7 @@ var UI_Icon =
     'TYPE_COLORS':'colors',
     'TYPE_COMBINATION':'combination',
     'TYPE_COMBINE':'combine',
+    'TYPE_COMMAND_DECK':'command_deck',
     'TYPE_COMMANDS':'commands',
     'TYPE_COMMENT':'comment',
     'TYPE_COMTYPES':'comtypes',
@@ -270,6 +271,7 @@ var UI_Icon =
         this.types[this.TYPE_COLORS] = 'palette';
         this.types[this.TYPE_COMBINATION] = 'object-group';
         this.types[this.TYPE_COMBINE] = 'link';
+        this.types[this.TYPE_COMMAND_DECK] = 'fas:dice-d20';
         this.types[this.TYPE_COMMANDS] = 'terminal';
         this.types[this.TYPE_COMMENT] = 'comment';
         this.types[this.TYPE_COMTYPES] = 'broadcast-tower';
@@ -564,6 +566,7 @@ var UI_Icon =
     Colors:function() { return this.SetType(this.TYPE_COLORS); },
     Combination:function() { return this.SetType(this.TYPE_COMBINATION); },
     Combine:function() { return this.SetType(this.TYPE_COMBINE); },
+    CommandDeck:function() { return this.SetType(this.TYPE_COMMAND_DECK); },
     Commands:function() { return this.SetType(this.TYPE_COMMANDS); },
     Comment:function() { return this.SetType(this.TYPE_COMMENT); },
     Comtypes:function() { return this.SetType(this.TYPE_COMTYPES); },

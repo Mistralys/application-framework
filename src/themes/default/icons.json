@@ -806,5 +806,9 @@
   "yes": {
     "icon": "check",
     "type": ""
+  },
+  "command_deck":{
+    "icon": "dice-d20",
+    "type": "fas"
   }
 }
