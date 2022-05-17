@@ -136,6 +136,56 @@ class Application
     }
 
     /**
+     * Requires the target class name to exist, and extend
+     * or implement the specified class/interface. If it does
+     * not, an exception is thrown.
+     *
+     * @param class-string $targetClass
+     * @param class-string $extendsClass
+     * @return void
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     */
+    public static function requireClassExtends(string $targetClass, string $extendsClass) : void
+    {
+        self::requireClassExists($targetClass);
+
+        if(is_a($targetClass, $extendsClass, true))
+        {
+            return;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType($extendsClass, $targetClass);
+    }
+
+    /**
+     * If the target object is not an instance of the target class
+     * or interface, throws an exception.
+     *
+     * @template ClassInstanceType
+     * @param class-string<ClassInstanceType> $class
+     * @param object $object
+     * @return ClassInstanceType
+     *
+     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     */
+    public static function requireInstanceOf(string $class, object $object)
+    {
+        if(!class_exists($class) && !interface_exists($class) && !trait_exists($class))
+        {
+            throw new ClassNotExistsException($class);
+        }
+
+        if(is_a($object, $class, true))
+        {
+            return $object;
+        }
+
+        throw new Application_Exception_UnexpectedInstanceType($class, $object);
+    }
+
+    /**
      * @return Application_Bootstrap_Screen
      */
     public function getBootScreen() : Application_Bootstrap_Screen
