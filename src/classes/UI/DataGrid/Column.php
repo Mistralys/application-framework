@@ -275,13 +275,50 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         
         return $this;
     }
+
+    public function setSortingDateTime(?string $dataColumn=null) : UI_DataGrid_Column
+    {
+        return $this->setSortingCallback(
+            static function(DateTime $a, DateTime $b) : int
+            {
+                if($a > $b) {
+                    return 1;
+                }
+
+                if($a < $b) {
+                    return -1;
+                }
+
+                return 0;
+            },
+            $dataColumn
+        );
+    }
     
     public function setSortingNumeric(?string $dataColumn=null) : UI_DataGrid_Column
     {
         return $this->setSortingCallback(
-            function($a, $b) 
+        /**
+         * @param string|int|float $a
+         * @param string|int|float $b
+         * @return int
+         */
+            static function($a, $b) : int
             {
-                return $b-$a;
+                $floatA = (float)$a;
+                $floatB = (float)$b;
+
+                if($floatA > $floatB)
+                {
+                    return 1;
+                }
+
+                if($floatA < $floatB)
+                {
+                    return -1;
+                }
+
+                return 0;
             },
             $dataColumn
         );
@@ -290,9 +327,14 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     public function setSortingString(?string $dataColumn=null) : UI_DataGrid_Column
     {
         return $this->setSortingCallback(
-            function($a, $b)
+        /**
+         * @param string|int|float $a
+         * @param string|int|float $b
+         * @return int
+         */
+            static function($a, $b) : int
             {
-                return strnatcasecmp($a, $b);
+                return strnatcasecmp((string)$a, (string)$b);
             },
             $dataColumn
         );
