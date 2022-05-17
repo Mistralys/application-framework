@@ -1,3 +1,12 @@
+### v2.1.4 - Minor feature release
+- Application: Added PHPStan-friendly `requireInstanceOf()`.
+- Application: Added `requireClassExtends()`.
+- Countries: Added the `$includeInvariant` parameter to `getSupportedISOs()`.
+- UI: Icons: Added the "commandDeck" icon.
+- DBHelper: Added the `val()` method in the values container.
+- DataGrid: Added `setSortingDateTime()` to columns.
+- 
+
 ### v2.1.3 - Minor feature release
 - Formable: Added `getFilters()` to the `Application_Formable_Selector` class to customize them.
 - Countries: Added `useCustomCollection()` to the countries formable selector.
