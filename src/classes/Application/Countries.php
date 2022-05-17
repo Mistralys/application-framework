@@ -270,23 +270,29 @@ class Application_Countries extends DBHelper_BaseCollection
 
    /**
     * Gets a list of all country ISO codes supported by
-    * the countries management.
-    * 
-    * @return array
+    * the country management.
+    *
+    * @param bool $includeInvariant
+    * @return string[]
     */
-    public function getSupportedISOs() : array
+    public function getSupportedISOs(bool $includeInvariant=true) : array
     {
         $countries = $this->getAll();
         
-        $isos = array();
+        $result = array();
         
         foreach($countries as $country)
         {
-            $isos[] = $country->getISO();
-            $isos[] = $country->getAlpha2();
+            if(!$includeInvariant && $country->isCountryIndependent())
+            {
+                continue;
+            }
+
+            $result[] = $country->getISO();
+            $result[] = $country->getAlpha2();
         }
         
-        return array_unique($isos);
+        return array_unique($result);
     }
     
     /**
@@ -504,5 +510,10 @@ class Application_Countries extends DBHelper_BaseCollection
         }
 
         return $iso;
+    }
+
+    public function isValidISO(string $iso) : bool
+    {
+        return strlen($iso) === 2 && ctype_alpha($iso);
     }
 }
