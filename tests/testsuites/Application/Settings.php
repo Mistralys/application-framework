@@ -2,10 +2,10 @@
 
 final class Application_SettingsTest extends ApplicationTestCase
 {
-    private $settingName = 'expiry_test';
-    private $settingValue = 'bar';
-    private $settingUpdatedValue = 'bar2';
-    private $expiryColumnExists = false;
+    private string $settingName = 'expiry_test';
+    private string $settingValue = 'bar';
+    private string $settingUpdatedValue = 'bar2';
+    private bool $expiryColumnExists = false;
 
     protected function setUp() : void
     {
@@ -34,6 +34,37 @@ final class Application_SettingsTest extends ApplicationTestCase
         $settings->set($this->settingName, $this->settingValue);
 
         $this->assertSame($this->settingValue, $settings->get($this->settingName));
+    }
+
+    public function test_setArray() : void
+    {
+        $settings = Application_Driver::createSettings();
+
+        $settings->setArray('array_setting', array('value' => 'true'));
+
+        $this->assertSame(array('value' => 'true'), $settings->getArray('array_setting'));
+    }
+
+    public function test_getFromTestDriver() : void
+    {
+        TestDriver::createSettings()
+            ->setArray('array_setting', array('value' => 'true'));
+
+        $this->assertSame(
+            array('value' => 'true'),
+            TestDriver::createSettings()->getArray('array_setting')
+        );
+    }
+
+    public function test_longName() : void
+    {
+        $settings = Application_Driver::createSettings();
+
+        $name = 'setting_with_long_name_'.md5('very long name');
+
+        $settings->set($name, 'value');
+
+        $this->assertSame('value', $settings->get($name));
     }
 
     public function test_updateSetting() : void

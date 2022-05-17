@@ -28,6 +28,15 @@ final class StatementBuilderTests extends DBHelperTestCase
         );
     }
 
+    public function test_rawValue() : void
+    {
+        $this->assertSame(
+            'raw-value',
+            (string)statementBuilder('{raw}')
+                ->val('raw', 'raw-value')
+        );
+    }
+
     public function test_tableAlias() : void
     {
         $this->assertSame(
