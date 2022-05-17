@@ -26,6 +26,7 @@ class DBHelper_StatementBuilder_ValuesContainer
     public const VALUE_TYPE_SYMBOL = 1;
     public const VALUE_TYPE_INTEGER = 2;
     public const VALUE_TYPE_STRING_LITERAL = 3;
+    public const VALUE_TYPE_RAW = 4;
 
     /**
      * @var array<string,ValueDefinition>
@@ -72,6 +73,19 @@ class DBHelper_StatementBuilder_ValuesContainer
     public function int(string $name, int $value) : self
     {
         return $this->add($name, (string)$value, self::VALUE_TYPE_INTEGER);
+    }
+
+    /**
+     * Adds a placeholder for a raw value, which will be
+     * inserted as-is, without any transformations.
+     *
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function val(string $name, string $value) : self
+    {
+        return $this->add($name, $value, self::VALUE_TYPE_RAW);
     }
 
     public function text(string $name, string $value) : self
