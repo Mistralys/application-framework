@@ -5,7 +5,6 @@
 - UI: Icons: Added the "commandDeck" icon.
 - DBHelper: Added the `val()` method in the values container.
 - DataGrid: Added `setSortingDateTime()` to columns.
-- 
 
 ### v2.1.3 - Minor feature release
 - Formable: Added `getFilters()` to the `Application_Formable_Selector` class to customize them.
