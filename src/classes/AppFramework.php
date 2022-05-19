@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFramework;
 
+use AppUtils\FileHelper;
 use Mistralys\VersionParser\VersionParser;
 
 class AppFramework
@@ -19,6 +20,11 @@ class AppFramework
         $this->installFolder = __DIR__.'/../../';
     }
 
+    public function getName() : string
+    {
+        return 'AppFramework';
+    }
+
     public function getInstallFolder(): string
     {
         return $this->installFolder;
@@ -32,7 +38,7 @@ class AppFramework
     public function getVersion() : VersionParser
     {
         if(!isset($this->version)) {
-            $this->version = VersionParser::create($this->getVersionPath());
+            $this->version = VersionParser::create(FileHelper::readContents($this->getVersionPath()));
         }
 
         return $this->version;
