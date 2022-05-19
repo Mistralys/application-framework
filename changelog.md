@@ -1,3 +1,6 @@
+### v2.1.6 - Minor feature release
+- Framework: Added the utility class `AppFramework`.
+
 ### v2.1.5 - Bugfix release
 - WhatsNew: Fixed the sorting of the languages, to have DEV at the end.
 - BasicEnum: Added `requireValidValue()`.
