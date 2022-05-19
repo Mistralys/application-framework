@@ -1,3 +1,6 @@
+### v2.1.7 - Maintenance release
+- Framework: Added `AppFramework::getName()`.
+
 ### v2.1.6 - Minor feature release
 - Framework: Added the utility class `AppFramework`.
 
