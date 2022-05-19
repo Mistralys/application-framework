@@ -14,7 +14,7 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
     
     public function makeLabel() : self
     {
-        $this->badge = UI::label('');
+        $this->badge = UI::label($this->getLabel());
         return $this;
     }
     
