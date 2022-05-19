@@ -1,3 +1,11 @@
+### v2.1.5 - Bugfix release
+- WhatsNew: Fixed the sorting of the languages, to have DEV at the end.
+- BasicEnum: Added `requireValidValue()`.
+- CriticalityEnum: Added namespace.
+- UI: Badge dropdown: Fixed `makeLabel()` resetting the label of the badge. 
+- UI: Badge dropdown: `makeLabel()` is now chainable.
+- UI: Badge dropdown: `setLabel()` now supports renderable values.
+
 ### v2.1.4 - Minor feature release
 - Application: Added PHPStan-friendly `requireInstanceOf()`.
 - Application: Added `requireClassExtends()`.
