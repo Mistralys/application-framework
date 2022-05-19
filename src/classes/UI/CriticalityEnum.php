@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
-class UI_CriticalityEnum extends BasicEnum
+namespace UI;
+
+use BasicEnum;
+
+class CriticalityEnum extends BasicEnum
 {
-    const DANGEROUS = 'important';
-    const INFO = 'info';
-    const SUCCESS = 'success';
-    const WARNING = 'warning';
-    const INVERSE = 'inverse';
-    const INACTIVE = 'default';
+    public const DANGEROUS = 'important';
+    public const INFO = 'info';
+    public const SUCCESS = 'success';
+    public const WARNING = 'warning';
+    public const INVERSE = 'inverse';
+    public const INACTIVE = 'default';
 }

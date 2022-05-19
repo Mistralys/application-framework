@@ -49,7 +49,11 @@ abstract class UI_Bootstrap_BaseDropdown
         return $this;
     }
 
-    public function setLabel(string $label)
+    /**
+     * @param string $label
+     * @return $this
+     */
+    public function setLabel(string $label) : self
     {
         $this->label = $label;
         return $this;

@@ -7,6 +7,8 @@
  * @see UI_Badge
  */
 
+use UI\CriticalityEnum;
+
 /**
  * UI helper class for creating colored badges.
  * 
@@ -18,30 +20,16 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
 {
     use Application_Traits_Iconizable;
     
-    public const ERROR_INVALID_BADGE_TYPE = 430001;
     public const ERROR_WRAPPER_PLACEHOLDER_MISSING = 430002;
     
     public const WRAPPER_PLACEHOLDER = '{badge}';
 
-    /**
-     * @var string
-     */
-    protected $label;
+    public const TYPE_DEFAULT = 'default';
 
-    /**
-     * @var string
-     */
-	protected $layout = 'default';
-	
-   /**
-    * @var string
-    */
-	protected $classType;
-	
-   /**
-    * @var string
-    */
-	protected $wrapper = '';
+    protected string $label;
+	protected string $classType;
+	protected string $wrapper = '';
+    protected string $layout = self::TYPE_DEFAULT;
 
     /**
      * @param string|number|UI_Renderable_Interface $label
@@ -61,16 +49,18 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * A placeholder must be inserted in the code to
     * specify where the badge will be injected.
     * 
-    * @param string $code
+    * @param string|number|UI_Renderable_Interface|NULL $code
     * @throws Application_Exception
     * @return $this
     * 
     * @see UI_Badge::WRAPPER_PLACEHOLDER
     * @see UI_Badge::ERROR_WRAPPER_PLACEHOLDER_MISSING
     */
-    public function setWrapper(string $code)
+    public function setWrapper($code) : self
     {
-        if(!strstr($code, self::WRAPPER_PLACEHOLDER)) 
+        $code = toString($code);
+
+        if(strpos($code, self::WRAPPER_PLACEHOLDER) === false)
         {
             throw new Application_Exception(
                 'Badge placeholder missing in the wrapper',
@@ -116,16 +106,17 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
         
         return $html;
     }
-    
-   /**
-    * Sets the badge's label, overwriting the existing label.
-    * 
-    * @param string $label
-    * @return $this
-    */
-    public function setLabel($label)
+
+    /**
+     * Sets the badge's label, overwriting the existing label.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setLabel($label) : self
     {
-        $this->label = $label;
+        $this->label = toString($label);
         return $this;
     }
     
@@ -134,9 +125,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * 
     * @returns $this
     */
-	public function makeDangerous()
+	public function makeDangerous() : self
 	{
-		return $this->makeType(UI_CriticalityEnum::DANGEROUS);
+		return $this->makeType(CriticalityEnum::DANGEROUS);
 	}
 	
    /**
@@ -144,9 +135,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * 
     * @returns $this
     */
-	public function makeInfo()
+	public function makeInfo() : self
 	{
-		return $this->makeType(UI_CriticalityEnum::INFO);
+		return $this->makeType(CriticalityEnum::INFO);
 	}
 	
    /**
@@ -154,9 +145,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * 
     * @returns $this
     */
-	public function makeSuccess()
+	public function makeSuccess() : self
 	{
-		return $this->makeType(UI_CriticalityEnum::SUCCESS);
+		return $this->makeType(CriticalityEnum::SUCCESS);
 	}
 	
    /**
@@ -164,9 +155,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * 
     * @returns $this
     */
-	public function makeWarning()
+	public function makeWarning() : self
 	{
-		return $this->makeType(UI_CriticalityEnum::WARNING);
+		return $this->makeType(CriticalityEnum::WARNING);
 	}
 	
    /**
@@ -174,9 +165,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     * 
     * @returns $this
     */
-	public function makeInverse()
+	public function makeInverse() : self
 	{
-		return $this->makeType(UI_CriticalityEnum::INVERSE);
+		return $this->makeType(CriticalityEnum::INVERSE);
 	}
 
     /**
@@ -185,41 +176,19 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
      * @return $this
      * @throws Application_Exception
      */
-	public function makeInactive()
+	public function makeInactive() : self
 	{
-	    return $this->makeType(UI_CriticalityEnum::INACTIVE);
+	    return $this->makeType(CriticalityEnum::INACTIVE);
 	}
-
-    /**
-     * @var string[]
-     */
-	protected $validTypes = array(
-	    'default',
-	    'info',
-	    'warning',
-	    'success',
-	    'inverse',
-	    'important'
-	);
 
     /**
      * @param string $type
      * @return $this
      * @throws Application_Exception
      */
-	public function makeType($type)
+	public function makeType(string $type) : self
 	{
-	    if(!in_array($type, $this->validTypes)) {
-	       throw new Application_Exception(
-	           'Invalid badge type',
-	           sprintf(
-	               'The badge type [%s] is not valid. Valid types are: [%s].',
-	               $type,
-                   implode(', ', $this->validTypes)
-               ),
-	           self::ERROR_INVALID_BADGE_TYPE
-           ); 
-	    }
+	    CriticalityEnum::requireValidValue($type);
 	    
 		$this->layout = $type;
 		return $this;
@@ -227,9 +196,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
 	
    /**
     * Sets the cursor of the element to the "help" cursor.
-    * @return UI_Badge
+    * @return $this
     */
-	public function cursorHelp()
+	public function cursorHelp() : self
 	{
 	    return $this->addStyle('cursor', 'help');
 	}
@@ -237,9 +206,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
    /**
     * Makes the whole badge larger.
     * 
-    * @return UI_Badge
+    * @return $this
     */
-	public function makeLarge()
+	public function makeLarge() : self
 	{
 	    return $this->addClass('badge-large');
 	}
@@ -247,9 +216,9 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
     /**
      * Makes the whole badge small.
      *
-     * @return UI_Badge
+     * @return $this
      */
-    public function makeSmall()
+    public function makeSmall() : self
     {
         return $this->addClass('badge-small');
     }

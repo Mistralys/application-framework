@@ -78,7 +78,7 @@ abstract class UI_HTMLElement extends UI_Renderable implements UI_Renderable_Int
     * @param string $value
     * @return $this
     */
-    public function addStyle($name, $value)
+    public function addStyle(string $name, string $value) : self
     {
         $this->styles[$name] = $value;
         return $this;

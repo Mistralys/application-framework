@@ -54,7 +54,7 @@ final class Global_EnumsTest extends ApplicationTestCase
         }
         catch (Application_Exception $e)
         {
-            $this->assertSame(ENUM_ERROR_VALUE_DOES_NOT_EXIST, $e->getCode());
+            $this->assertSame(ENUM_ERROR_NAME_DOES_NOT_EXIST, $e->getCode());
             return;
         }
 

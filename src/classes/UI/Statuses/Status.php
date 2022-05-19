@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use UI\CriticalityEnum;
+
 /**
  * Container for an individual status.
  *
@@ -20,7 +22,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
 {
     use Application_Traits_Iconizable;
 
-    const DEFAULT_CRITICALITY = UI_CriticalityEnum::INFO;
+    const DEFAULT_CRITICALITY = CriticalityEnum::INFO;
 
     /**
      * @var string
@@ -109,7 +111,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
      */
     public function makeInformation()
     {
-        return $this->setCriticality(UI_CriticalityEnum::INFO);
+        return $this->setCriticality(CriticalityEnum::INFO);
     }
 
     /**
@@ -117,7 +119,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
      */
     public function makeWarning()
     {
-        return $this->setCriticality(UI_CriticalityEnum::WARNING);
+        return $this->setCriticality(CriticalityEnum::WARNING);
     }
 
     /**
@@ -125,7 +127,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
      */
     public function makeSuccess()
     {
-        return $this->setCriticality(UI_CriticalityEnum::SUCCESS);
+        return $this->setCriticality(CriticalityEnum::SUCCESS);
     }
 
     /**
@@ -133,7 +135,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
      */
     public function makeDangerous()
     {
-        return $this->setCriticality(UI_CriticalityEnum::DANGEROUS);
+        return $this->setCriticality(CriticalityEnum::DANGEROUS);
     }
 
     /**
@@ -141,7 +143,7 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
      */
     public function makeInactive()
     {
-        return $this->setCriticality(UI_CriticalityEnum::INACTIVE);
+        return $this->setCriticality(CriticalityEnum::INACTIVE);
     }
 
     /**
@@ -166,26 +168,26 @@ class UI_Statuses_Status implements UI_Interfaces_Statuses_Status
 
     public function isSuccess() : bool
     {
-        return $this->isCriticality(UI_CriticalityEnum::SUCCESS);
+        return $this->isCriticality(CriticalityEnum::SUCCESS);
     }
 
     public function isWarning() : bool
     {
-        return $this->isCriticality(UI_CriticalityEnum::WARNING);
+        return $this->isCriticality(CriticalityEnum::WARNING);
     }
 
     public function isInformation() : bool
     {
-        return $this->isCriticality(UI_CriticalityEnum::INFO);
+        return $this->isCriticality(CriticalityEnum::INFO);
     }
 
     public function isInactive() : bool
     {
-        return $this->isCriticality(UI_CriticalityEnum::INACTIVE);
+        return $this->isCriticality(CriticalityEnum::INACTIVE);
     }
 
     public function isDangerous() : bool
     {
-        return $this->isCriticality(UI_CriticalityEnum::DANGEROUS);
+        return $this->isCriticality(CriticalityEnum::DANGEROUS);
     }
 }

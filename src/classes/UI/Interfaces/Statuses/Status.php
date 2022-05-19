@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use UI\CriticalityEnum;
+
 interface UI_Interfaces_Statuses_Status extends Application_Interfaces_Iconizable
 {
     /**
@@ -56,7 +58,7 @@ interface UI_Interfaces_Statuses_Status extends Application_Interfaces_Iconizabl
     /**
      * @param string $criticality
      * @return $this
-     * @see UI_CriticalityEnum
+     * @see CriticalityEnum
      */
     public function setCriticality(string $criticality);
 

@@ -3,18 +3,19 @@
 class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI_Interfaces_Badge
 {
    /**
-    * @var UI_Badge
+    * @var UI_Badge|UI_Label
     */
     protected $badge;
     
     protected function init() : void
     {
-        $this->badge = $this->ui->badge('');
+        $this->badge = UI::badge('');
     }
     
-    public function makeLabel()
+    public function makeLabel() : self
     {
-        $this->badge = $this->ui->label('');
+        $this->badge = UI::label($this->getLabel());
+        return $this;
     }
     
     protected function _render()
@@ -35,8 +36,13 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
         
         return '<div'.$this->renderAttributes().'>'.$this->badge->render().''.$this->menu->render().'</div>';
     }
-    
-    public function setLabel(string $label)
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setLabel($label) : self
     {
         $this->badge->setLabel($label);
         return $this;
@@ -46,62 +52,96 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
     {
         return $this->badge->getLabel();
     }
-    
-    public function setWrapper(string $code)
+
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $code
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function setWrapper($code) : self
     {
         $this->badge->setWrapper($code);
         return $this;
     }
-    
-    public function makeDangerous()
+
+    /**
+     * @return $this
+     */
+    public function makeDangerous() : self
     {
         $this->badge->makeDangerous();
         return $this;
     }
-    
-    public function makeInfo()
+
+    /**
+     * @return $this
+     */
+    public function makeInfo() : self
     {
         $this->badge->makeInfo();
         return $this;
     }
-    
-    public function makeSuccess()
+
+    /**
+     * @return $this
+     */
+    public function makeSuccess() : self
     {
         $this->badge->makeSuccess();
         return $this;
     }
-    
-    public function makeWarning()
+
+    /**
+     * @return $this
+     */
+    public function makeWarning() : self
     {
         $this->badge->makeWarning();
         return $this;
     }
-    
-    public function makeInverse()
+
+    /**
+     * @return $this
+     */
+    public function makeInverse() : self
     {
         $this->badge->makeInverse();
         return $this;
     }
-    
-    public function makeInactive()
+
+    /**
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function makeInactive() : self
     {
         $this->badge->makeInactive();
         return $this;
     }
-    
-    public function cursorHelp()
+
+    /**
+     * @return $this
+     */
+    public function cursorHelp() : self
     {
         $this->badge->cursorHelp();
         return $this;
     }
-    
-    public function makeLarge()
+
+    /**
+     * @return $this
+     */
+    public function makeLarge() : self
     {
         $this->badge->makeLarge();
         return $this;
     }
-    
-    public function setIcon(UI_Icon $icon)
+
+    /**
+     * @param UI_Icon $icon
+     * @return $this
+     */
+    public function setIcon(UI_Icon $icon) : self
     {
         $this->badge->setIcon($icon);
         return $this;
