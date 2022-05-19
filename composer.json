@@ -70,6 +70,7 @@
     "mistralys/deepl-xml-translator": "^2.0.0",
     "mistralys/subsetsum": "^1.0.0",
     "mistralys/markdown-viewer": "^1.1.0",
+    "mistralys/version-parser": "^1.0.0",
     "pear/http_request2": "^v2.5.0",
     "shark/simple_html_dom": "dev-master",
     "ccampbell/mousetrap": "dev-master",

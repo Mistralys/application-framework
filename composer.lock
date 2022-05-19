@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "050ec7ef8bfa97bc28dad84ff6665055",
+    "content-hash": "ca650b6d37f63a9208e246ae72e00b28",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -1070,19 +1070,20 @@
         },
         {
             "name": "mistralys/subsetsum",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/subsetsum.git",
-                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643"
+                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
-                "reference": "e91f24bbdc1d8148e84525ecc8ae7c559e2ec643",
+                "url": "https://api.github.com/repos/Mistralys/subsetsum/zipball/ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
+                "reference": "ea41a29d8b0e403222b7fcf18a8f828a10016bbe",
                 "shasum": ""
             },
             "require": {
+                "ext-bcmath": "*",
                 "php": ">=7.1"
             },
             "require-dev": {
@@ -1112,9 +1113,51 @@
             "description": "PHP SubsetSum implementation to search for number combinations.",
             "support": {
                 "issues": "https://github.com/Mistralys/subsetsum/issues",
-                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.1"
+                "source": "https://github.com/Mistralys/subsetsum/tree/1.0.2"
             },
-            "time": "2021-10-22T05:31:19+00:00"
+            "time": "2021-10-31T09:29:24+00:00"
+        },
+        {
+            "name": "mistralys/version-parser",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mistralys/version-parser.git",
+                "reference": "c11b2b8bb2f189ebcb2594723510041d6cf98e7a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mistralys/version-parser/zipball/c11b2b8bb2f189ebcb2594723510041d6cf98e7a",
+                "reference": "c11b2b8bb2f189ebcb2594723510041d6cf98e7a",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpstan/phpstan": ">=0.12",
+                "phpunit/phpunit": ">=8.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Mistralys\\VersionParser\\": "src/"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Sebastian Mordziol",
+                    "email": "s.mordziol@mistralys.eu",
+                    "role": "Lead"
+                }
+            ],
+            "description": "Class used to parse version numbers.",
+            "support": {
+                "issues": "https://github.com/Mistralys/version-parser/issues",
+                "source": "https://github.com/Mistralys/version-parser/tree/1.0.0"
+            },
+            "time": "2020-09-08T19:08:49+00:00"
         },
         {
             "name": "neitanod/forceutf8",
@@ -2671,16 +2714,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.6.7",
+            "version": "1.6.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "d41c39cb2e487663bce9bbd97c660e244b73abad"
+                "reference": "d76498c5531232cb8386ceb6004f7e013138d3ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d41c39cb2e487663bce9bbd97c660e244b73abad",
-                "reference": "d41c39cb2e487663bce9bbd97c660e244b73abad",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d76498c5531232cb8386ceb6004f7e013138d3ba",
+                "reference": "d76498c5531232cb8386ceb6004f7e013138d3ba",
                 "shasum": ""
             },
             "require": {
@@ -2706,7 +2749,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.6.7"
+                "source": "https://github.com/phpstan/phpstan/tree/1.6.8"
             },
             "funding": [
                 {
@@ -2726,7 +2769,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-05-04T22:55:41+00:00"
+            "time": "2022-05-10T06:54:21+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -4320,5 +4363,5 @@
         "ext-simplexml": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
