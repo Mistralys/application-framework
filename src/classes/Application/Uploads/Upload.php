@@ -131,7 +131,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
         return $this->id;
     }
 
-    public function getThumbnailURL($width = null, $height = null)
+    public function getThumbnailURL(?int $width = null, ?int $height = null) : string
     {
         return APP_URL . '/media.php?' . http_build_query(array(
             'source' => 'upload',

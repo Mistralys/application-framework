@@ -353,11 +353,11 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * of the media file. The width and height parameters can be set as
      * needed to resample the thumbnail to the target size.
      *
-     * @param string $width
-     * @param string $height
+     * @param integer|NULL $width
+     * @param integer|NULL $height
      * @return string
      */
-    public function getThumbnailURL($width = null, $height = null)
+    public function getThumbnailURL(?int $width = null, ?int $height = null) : string
     {
         return APP_URL . '/media.php?' . http_build_query(array(
             'source' => 'media',

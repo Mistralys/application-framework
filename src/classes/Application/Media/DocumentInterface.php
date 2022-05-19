@@ -33,12 +33,14 @@ interface Application_Media_DocumentInterface extends Application_Interfaces_Log
      * @return string
      */
     public function getPath();
-    
-   /**
-    * Retrieves the URL to a thumbnail of the document, in the specified size.
-    * @return string
-    */
-    public function getThumbnailURL($width = null, $height = null);
+
+    /**
+     * Retrieves the URL to a thumbnail of the document, in the specified size.
+     * @param int|null $width
+     * @param int|null $height
+     * @return string
+     */
+    public function getThumbnailURL(?int $width = null, ?int $height = null) : string;
     
     /**
      * Retrieves the extension of the file. Always lowercase.
