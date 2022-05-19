@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 use function AppUtils\parseVariable;
 
-const ENUM_ERROR_VALUE_DOES_NOT_EXIST = 87001;
+// Error constants are outside the class
+// on purpose, as it uses reflection to
+// fetch the list of available constants.
+// This would pollute the enum's values
+// with the error constants.
+
+const ENUM_ERROR_NAME_DOES_NOT_EXIST = 87001;
+const ENUM_ERROR_INVALID_VALUE = 87002;
 
 abstract class BasicEnum
 {
@@ -19,7 +26,7 @@ abstract class BasicEnum
      */
     public static function getNames() : array
     {
-        return array_keys(self::resolveEnumValues(get_called_class()));
+        return array_keys(self::resolveEnumValues(static::class));
     }
 
     /**
@@ -63,27 +70,45 @@ abstract class BasicEnum
      */
     public static function getValues() : array
     {
-        return self::resolveEnumValues(get_called_class());
+        return self::resolveEnumValues(static::class);
     }
 
     public static function isValidName(string $name) : bool
     {
-        $values = self::resolveEnumValues(get_called_class());
+        $values = self::resolveEnumValues(static::class);
 
         return isset($values[$name]);
     }
 
     public static function isValidValue($value) : bool
     {
-        $values = array_values(self::resolveEnumValues(get_called_class()));
+        $values = array_values(self::resolveEnumValues(static::class));
         return in_array($value, $values, true);
+    }
+
+    public static function requireValidValue($value) : void
+    {
+        if(self::isValidValue($value))
+        {
+            return;
+        }
+
+        throw new Application_Exception(
+            'Invalid enum value.',
+            sprintf(
+                'The enum [%s] does not have the value [%s].',
+                static::class,
+                parseVariable($value)->enableType()->toString()
+            ),
+            ENUM_ERROR_INVALID_VALUE
+        );
     }
 
     /**
      * Attempts to retrieve the name of an enum's constant
      * by its value.
      *
-     * @param scalar $value
+     * @param string|int|float|bool $value
      * @return string
      * @throws Application_Exception
      *
@@ -92,7 +117,7 @@ abstract class BasicEnum
      */
     public static function getNameByValue($value) : string
     {
-        $values = self::resolveEnumValues(get_called_class());
+        $values = self::resolveEnumValues(static::class);
 
         foreach($values as $name => $checkValue) {
             if($value === $checkValue) {
@@ -106,7 +131,7 @@ abstract class BasicEnum
                 'Tried getting name for value [%s].',
                 parseVariable($value)->enableType()->toString()
             ),
-            ENUM_ERROR_VALUE_DOES_NOT_EXIST
+            ENUM_ERROR_NAME_DOES_NOT_EXIST
         );
     }
 }
