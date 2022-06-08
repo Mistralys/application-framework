@@ -81,10 +81,10 @@ class UI_Bootstrap_DropdownAnchor
     }
     
    /**
-    * @param UI_Icon $icon
+    * @param UI_Icon|NULL $icon
     * @return UI_Bootstrap_DropdownAnchor
     */
-    public function setIcon(UI_Icon $icon) : self
+    public function setIcon(?UI_Icon $icon) : self
     {
         $this->anchor->setIcon($icon);
         return $this;

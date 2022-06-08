@@ -26,13 +26,13 @@ trait Application_Traits_Iconizable
    /**
     * @var UI_Icon|NULL
     */
-    protected $icon;
+    protected ?UI_Icon $icon = null;
 
     /**
-     * @param UI_Icon $icon
+     * @param UI_Icon|NULL $icon
      * @return $this
      */
-    public function setIcon(UI_Icon $icon)
+    public function setIcon(?UI_Icon $icon) : self
     {
         $this->icon = $icon;
         return $this;
