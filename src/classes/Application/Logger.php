@@ -26,47 +26,63 @@ class Application_Logger
 
     public const LINE_LENGTH = 65;
 
-   /**
-    * Stores all log messages.
-    * @var array
-    * @see log()
-    */
-    private $log = array();
-    
-   /**
-    * @var int
-    */
-    private $logMode = self::LOG_MODE_NONE;
-    
-   /**
-    * @var boolean
-    */
-    private $html = false;
-    
-   /**
-    * @var string
-    */
-    private $separator;
-    
-   /**
-    * @var string
-    */
-    private $logFile;
-    
+    public const CATEGORY_GENERAL = 'GEN';
+    public const CATEGORY_UI = 'UI';
+    public const CATEGORY_ERROR = 'ERR';
+    public const CATEGORY_EVENT = 'EVENT';
+    public const CATEGORY_REQUEST = 'REQ';
+
+    private int $logMode = self::LOG_MODE_NONE;
+    private bool $html = false;
+    private string $separator;
+    private string $logFile;
+
+    /**
+     * Stores all log messages.
+     * @var string[]
+     * @see log()
+     */
+    private array $log = array();
+
+    /**
+     * @var array<string,bool>
+     */
+    private array $enabledCategories = array();
+
     public function __construct()
     {
         $this->separator = str_repeat('-', self::LINE_LENGTH);
         $this->logFile = $this->getLogFolder().'/trace.log';
     }
-    
-   /**
-    * Whether logging is enabled.
-    * 
-    * @return bool
-    */
-    public function isLoggingEnabled() : bool
+
+    /**
+     * Whether logging is enabled.
+     *
+     * @param string $category
+     * @return bool
+     */
+    public function isLoggingEnabled(string $category='') : bool
     {
-        return boot_constant('APP_LOGGING_ENABLED') === true;
+        return
+            boot_constant('APP_LOGGING_ENABLED') === true
+            &&
+            $this->isCategoryEnabled($category);
+    }
+
+    public function setCategoryEnabled(string $category, bool $enabled) : self
+    {
+        $this->enabledCategories[$category] = $enabled;
+        return $this;
+    }
+
+    public function isCategoryEnabled(string $category) : bool
+    {
+        if(!empty($category) && isset($this->enabledCategories[$category]))
+        {
+            return $this->enabledCategories[$category];
+        }
+
+        return true;
     }
     
    /**
@@ -116,7 +132,7 @@ class Application_Logger
      * @param bool $header
      * @return Application_Logger
      */
-    public function log($message = null, bool $header=false) : Application_Logger
+    public function log($message = null, bool $header=false, string $category=self::CATEGORY_GENERAL) : Application_Logger
     {
         if($header === true)
         {
@@ -125,7 +141,7 @@ class Application_Logger
 
         if (empty($message))
         {
-            return $this->addLogMessage('', false);
+            return $this->logEmptyLine();
         }
 
         if(is_array($message))
@@ -133,12 +149,12 @@ class Application_Logger
             return $this->logData($message);
         }
         
-        return $this->addLogMessage((string)$message, true);
+        return $this->addLogMessage((string)$message, $category, true);
     }
 
-    public function logSF(string $message, ...$args) : Application_Logger
+    public function logSF(string $message, string $category=self::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
-        return $this->addLogMessage($message, true, ...$args);
+        return $this->addLogMessage($message, $category, true, ...$args);
     }
 
     /**
@@ -149,14 +165,7 @@ class Application_Logger
      */
     public function logEvent(string $eventName, string $message='', ...$args) : Application_Logger
     {
-        $sep = ' | ';
-
-        if(empty($message))
-        {
-            $sep = '';
-        }
-
-        return $this->addLogMessage('Event ['.$eventName.']'.$sep.$message, true, ...$args);
+        return $this->addLogMessage($eventName.' | '.$message, self::CATEGORY_EVENT, true, ...$args);
     }
     
    /**
@@ -195,7 +204,7 @@ class Application_Logger
 
         $this->logEmptyLine();
         $this->logSeparator();
-        $this->addLogMessage(mb_strtoupper($message), false);
+        $this->addLogMessage(mb_strtoupper($message), '', false);
         $this->logSeparator();
         
         return $this;
@@ -203,7 +212,7 @@ class Application_Logger
 
     public function logSeparator() : Application_Logger
     {
-        return $this->addLogMessage($this->separator, false);
+        return $this->addLogMessage($this->separator, '', false);
     }
 
     public function logCloseSection(string $sectionLabel, ...$args) : Application_Logger
@@ -225,29 +234,30 @@ class Application_Logger
         $message = substr($this->separator, 0, $length).$sectionLabel;
 
         return $this
-            ->addLogMessage($message, false)
+            ->addLogMessage($message, '', false)
             ->logEmptyLine();
     }
 
     public function logEmptyLine() : Application_Logger
     {
-        return $this->addLogMessage('', false);
+        return $this->addLogMessage('', '', false);
     }
 
     /**
      * Logs a data array.
      *
      * @param array $data
+     * @param string $category
      * @return Application_Logger
      * @throws JsonException
      */
-    public function logData(array $data) : Application_Logger
+    public function logData(array $data, string $category=self::CATEGORY_GENERAL) : Application_Logger
     {
         $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $json = str_replace('\/', '/', $json);
 
-        $this->addLogMessage('Data dump:', true);
-        $this->addLogMessage($json, false);
+        $this->addLogMessage('Data dump:', $category, true);
+        $this->addLogMessage($json, '', false);
         
         return $this;
     }
@@ -259,18 +269,24 @@ class Application_Logger
      */
     public function logError(string $message, ...$args) : Application_Logger
     {
-        return $this->addLogMessage('ERROR | '.$message, true, ...$args);
+        return $this->addLogMessage($message, self::CATEGORY_ERROR, true, ...$args);
+    }
+
+    public function logUI(string $message, ...$args) : Application_Logger
+    {
+        return $this->addLogMessage($message, self::CATEGORY_UI, true, $args);
     }
 
     /**
      * @param string $message
+     * @param string $category
      * @param bool $withTime
      * @param mixed ...$args
      * @return $this
      */
-    private function addLogMessage(string $message, bool $withTime, ...$args) : Application_Logger
+    private function addLogMessage(string $message, string $category, bool $withTime, ...$args) : Application_Logger
     {
-        if(!$this->isLoggingEnabled())
+        if(!$this->isLoggingEnabled($category))
         {
             return $this;
         }
@@ -283,6 +299,11 @@ class Application_Logger
         if($withTime === true)
         {
             $message = $this->getTime().' | '.$message;
+        }
+
+        if(!empty($category))
+        {
+            $message = $category . ' | ' . $message;
         }
 
         $this->log[] = $message;
@@ -421,7 +442,6 @@ class Application_Logger
      * Writes the log to disk, under `storage/logs/request/Y/m/d/H`.
      *
      * @return Application_RequestLog_LogWriter
-     * @throws Application_Exception
      * @throws FileHelper_Exception
      */
     public function write() : Application_RequestLog_LogWriter

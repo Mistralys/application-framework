@@ -71,6 +71,25 @@ trait Application_Traits_Loggable
                 $this->getLogIdentifier(),
                 $message
             ),
+            Application_Logger::CATEGORY_GENERAL,
+            ...$args
+        );
+    }
+
+    protected function logCategory(string $message, string $category, ...$args) : void
+    {
+        if($this->isLoggingEnabled() === false)
+        {
+            return;
+        }
+
+        Application::getLogger()->logSF(
+            sprintf(
+                '%s | %s',
+                $this->getLogIdentifier(),
+                $message
+            ),
+            $category,
             ...$args
         );
     }
@@ -99,6 +118,16 @@ trait Application_Traits_Loggable
     protected function logCloseSection(string $sectionLabel, ...$args) : void
     {
         Application::getLogger()->logCloseSection($sectionLabel, ...$args);
+    }
+
+    protected function logUI(string $message, ...$args) : void
+    {
+        if($this->isLoggingEnabled() === false)
+        {
+            return;
+        }
+
+        Application::getLogger()->logUI($message, $args);
     }
 
     protected function logData(array $data) : void
