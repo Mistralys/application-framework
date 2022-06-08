@@ -32,12 +32,6 @@ trait Application_Traits_Eventable
     protected bool $eventsDisabled = false;
 
     /**
-     * @param string $message
-     * @param mixed ...$args
-     */
-    abstract protected function log(string $message, ...$args) : void;
-
-    /**
      * @param string $eventName
      * @param callable $callback
      * @return Application_EventHandler_EventableListener
