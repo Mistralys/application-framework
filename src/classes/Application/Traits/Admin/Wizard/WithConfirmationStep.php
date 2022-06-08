@@ -9,6 +9,10 @@
 
 declare(strict_types=1);
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
+
 /**
  * @package Application
  * @subpackage Wizards
@@ -28,18 +32,15 @@ trait Application_Traits_Admin_Wizard_WithConfirmationStep
      * @return Application_Interfaces_Admin_Wizard_Step_Confirmation
      *
      * @throws Application_Exception
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function getStepConfirmation() : Application_Interfaces_Admin_Wizard_Step_Confirmation
     {
-        $step = $this->getStep(Application_Interfaces_Admin_Wizard_Step_Confirmation::STEP_NAME);
-
-        if($step instanceof Application_Interfaces_Admin_Wizard_Step_Confirmation)
-        {
-            return $step;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Interfaces_Admin_Wizard_Step_Confirmation::class, $step);
+        return ClassFinder::requireInstanceOf(
+            Application_Interfaces_Admin_Wizard_Step_Confirmation::class,
+            $this->getStep(Application_Interfaces_Admin_Wizard_Step_Confirmation::STEP_NAME)
+        );
     }
 
     /**
@@ -47,9 +48,11 @@ trait Application_Traits_Admin_Wizard_WithConfirmationStep
      * confirmation step.
      *
      * @return string
-     * @throws Application_Exception_UnexpectedInstanceType
      *
      * @throws Application_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     *
      * @see Application_Interfaces_Admin_Wizard_Step_Confirmation::ERROR_NO_REFERENCE_ID_SET
      */
     public function getSelectedReferenceID() : string

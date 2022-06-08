@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\FileHelper;
 
 class Application_EventHandler_OfflineEvents_OfflineEvent
@@ -194,19 +198,18 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
     /**
      * @param string $name
      * @return Application_EventHandler_OfflineEvents_OfflineListener
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     private function createListener(string $name) : Application_EventHandler_OfflineEvents_OfflineListener
     {
-        $className = $this->eventClass.'_'.$name;
+        $className = ClassFinder::requireResolvedClass($this->eventClass.'_'.$name);
 
-        $listener = new $className($this);
-
-        if($listener instanceof Application_EventHandler_OfflineEvents_OfflineListener)
-        {
-            return $listener;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_EventHandler_OfflineEvents_OfflineListener::class, $listener);
+        return ClassFinder::requireInstanceOf(
+            Application_EventHandler_OfflineEvents_OfflineListener::class,
+            new $className($this)
+        );
     }
 }

@@ -9,6 +9,10 @@
 
 declare(strict_types=1);
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
+
 /**
  * @package Application
  * @subpackage Wizards
@@ -28,27 +32,26 @@ trait Application_Traits_Admin_Wizard_WithCountryStep
      * @return Application_Interfaces_Admin_Wizard_SelectCountryStep
      *
      * @throws Application_Exception
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function getStepCountry() : Application_Interfaces_Admin_Wizard_SelectCountryStep
     {
-        $step = $this->getStep(Application_Interfaces_Admin_Wizard_SelectCountryStep::STEP_NAME);
-
-        if($step instanceof Application_Interfaces_Admin_Wizard_SelectCountryStep)
-        {
-            return $step;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Interfaces_Admin_Wizard_SelectCountryStep::class, $step);
+        return ClassFinder::requireInstanceOf(
+            Application_Interfaces_Admin_Wizard_SelectCountryStep::class,
+            $this->getStep(Application_Interfaces_Admin_Wizard_SelectCountryStep::STEP_NAME)
+        );
     }
 
     /**
      * Retrieves the country instance selected in the country step.
      *
      * @return Application_Countries_Country
-     * @throws Application_Exception_UnexpectedInstanceType
      *
      * @throws Application_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     *
      * @see Application_Interfaces_Admin_Wizard_SelectCountryStep::ERROR_NO_COUNTRY_SELECTED
      */
     public function getSelectedCountry() : Application_Countries_Country

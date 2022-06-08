@@ -6,6 +6,10 @@
  * @see DBHelper_BaseCollection
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
@@ -709,11 +713,14 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     /**
      * Retrieves all records from the database, ordered by the default sorting key.
+     *
      * @return DBHelper_BaseRecord[]
      *
      * @throws Application_Exception_DisposableDisposed
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
      * @throws DBHelper_Exception
+     * @throws UnexpectedInstanceException
      */
     public function getAll() : array
     {
@@ -739,66 +746,68 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * which is used to query the records.
      *
      * @return DBHelper_BaseFilterCriteria
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws DBHelper_Exception|Application_Exception_DisposableDisposed
+     *
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     * @throws ClassFinderException
      */
     public function getFilterCriteria() : DBHelper_BaseFilterCriteria
     {
         $this->requireNotDisposed('Get filter criteria');
 
-        if(empty($this->recordFiltersClassName) || !class_exists($this->recordFiltersClassName))
+        if(empty($this->recordFiltersClassName))
         {
             throw new DBHelper_Exception(
-                'Filter criteria class not found.',
+                'Filter criteria class not specified.',
                 sprintf(
-                    'Filter criteria class [%s] not found for collection [%s].',
-                    $this->recordFiltersClassName,
+                    'No filter criteria class has been specified in collection [%s].',
                     get_class($this)
                 ),
                 self::ERROR_FILTER_CRITERIA_CLASS_NOT_FOUND
             );
         }
 
-        $filters = new $this->recordFiltersClassName($this);
+        $class = ClassFinder::requireResolvedClass($this->recordFiltersClassName);
 
-        if($filters instanceof DBHelper_BaseFilterCriteria)
-        {
-            return $filters;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(DBHelper_BaseFilterCriteria::class, $filters);
+        return ClassFinder::requireInstanceOf(
+            DBHelper_BaseFilterCriteria::class,
+            new $class($this)
+        );
     }
 
     /**
      * @return DBHelper_BaseFilterSettings
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws DBHelper_Exception|Application_Exception_DisposableDisposed
+     *
+     * @throws Application_Exception_DisposableDisposed
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     * @throws DBHelper_Exception
+     * @throws UnexpectedInstanceException
      */
     public function getFilterSettings() : DBHelper_BaseFilterSettings
     {
         $this->requireNotDisposed('Get filter settings.');
 
-        if(empty($this->recordFilterSettingsClassName) || !class_exists($this->recordFilterSettingsClassName))
+        if(empty($this->recordFilterSettingsClassName))
         {
             throw new DBHelper_Exception(
-                'Filter settings class not found.',
+                'Filter settings class not specified.',
                 sprintf(
-                    'Filter settings class [%s] not found for collection [%s].',
-                    $this->recordFilterSettingsClassName,
+                    'No filter settings class has been specified for collection [%s].',
                     get_class($this)
                 ),
                 self::ERROR_FILTER_SETTINGS_CLASS_NOT_FOUND
             );
         }
 
-        $filters = new $this->recordFilterSettingsClassName($this);
+        $class = ClassFinder::requireResolvedClass($this->recordFilterSettingsClassName);
 
-        if($filters instanceof DBHelper_BaseFilterSettings)
-        {
-            return $filters;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(DBHelper_BaseFilterSettings::class, $filters);
+        return ClassFinder::requireInstanceOf(
+            DBHelper_BaseFilterSettings::class,
+            new $class($this)
+        );
     }
 
     /**

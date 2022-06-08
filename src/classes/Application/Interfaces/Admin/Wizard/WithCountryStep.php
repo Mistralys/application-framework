@@ -26,8 +26,6 @@ interface Application_Interfaces_Admin_Wizard_WithCountryStep
      *
      * @return Application_Countries_Country
      *
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws Application_Exception
      * @see Application_Interfaces_Admin_Wizard_SelectCountryStep::ERROR_NO_COUNTRY_SELECTED
      */
     public function getSelectedCountry() : Application_Countries_Country;

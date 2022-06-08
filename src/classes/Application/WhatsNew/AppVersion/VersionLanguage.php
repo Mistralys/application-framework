@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace Application\WhatsNew\AppVersion;
 
 use Application;
+use Application\ClassFinder;
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion;
 use Application_Exception;
-use Application_Exception_UnexpectedInstanceType;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use SimpleXMLElement;
@@ -60,19 +60,12 @@ abstract class VersionLanguage
     {
         self::requireLangExists($langID);
 
-        $base = __CLASS__;
-        $class = $base.'\\'.$langID;
+        $class = ClassFinder::requireResolvedClass(__CLASS__.'_'.$langID);
 
-        Application::requireClassExists($class);
-
-        $language = new $class($appVersion, $node);
-
-        if($language instanceof self)
-        {
-            return $language;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(VersionLanguage::class, $language);
+        return ClassFinder::requireInstanceOf(
+            self::class,
+            new $class($appVersion, $node)
+        );
     }
 
     public function getWhatsNew() : WhatsNew

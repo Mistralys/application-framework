@@ -7,6 +7,8 @@
  * @see Application_EventHandler
  */
 
+use Application\ClassFinder;
+
 /**
  * Event management class: handles registering and triggering events
  * and any listeners. This is used for all events, so event names
@@ -94,7 +96,6 @@ class Application_EventHandler
      * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
      * @return Application_EventHandler_Event
      * @throws Application_EventHandler_Exception
-     * @throws Application_Exception_UnexpectedInstanceType
      *
      * @see Application_EventHandler::ERROR_MISSING_EVENT_CLASS
      * @see Application_EventHandler::ERROR_INVALID_EVENT_CLASS
@@ -203,47 +204,13 @@ class Application_EventHandler
         return self::$offlineEvents;
     }
 
-    /**
-     * @param string $class
-     * @param string $eventName
-     * @throws Application_EventHandler_Exception
-     */
-    private static function requireEventClassExists(string $class, string $eventName) : void
-    {
-        if (class_exists($class))
-        {
-            return;
-        }
-
-        throw new Application_EventHandler_Exception(
-            'Missing event class',
-            sprintf(
-                'Event [%s]: The [%s] class could not be found. Custom event classes must be loaded prior to triggering the event.',
-                $eventName,
-                $class
-            ),
-            self::ERROR_MISSING_EVENT_CLASS
-        );
-    }
-
     private static function createEvent(string $eventName, string $class, array $args) : Application_EventHandler_Event
     {
-        self::requireEventClassExists($class, $eventName);
+        $actualClass = ClassFinder::requireResolvedClass($class);
 
-        $event = new $class($eventName, $args);
-
-        if($event instanceof Application_EventHandler_Event)
-        {
-            return $event;
-        }
-
-        throw new Application_EventHandler_Exception(
-            'Invalid event class',
-            sprintf(
-                'The event class [%s] does not extend the [%s] class.',
-                $class,
-                Application_EventHandler_Event::class
-            ),
+        return ClassFinder::requireInstanceOf(
+            Application_EventHandler_Event::class,
+            new $actualClass($eventName, $args),
             self::ERROR_INVALID_EVENT_CLASS
         );
     }

@@ -7,6 +7,9 @@
  * @see UI_Form
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\RegexHelper;
@@ -215,26 +218,27 @@ class UI_Form extends UI_Renderable
      */
     public function addImageUploader(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ImageUploader
     {
-        $el = $this->addElement('imageuploader', $name, $container);
-
-        if($el instanceof HTML_QuickForm2_Element_ImageUploader)
-        {
-            return $el;
-        }
-        
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_ImageUploader::class, $el);
+        return ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Element_ImageUploader::class,
+            $this->addElement('imageuploader', $name, $container)
+        );
     }
 
+    /**
+     * @param string $name
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_ExpandableSelect
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     */
     public function addExpandableSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
     {
-        $el = $this->addElement('ExpandableSelect', $name, $container);
-
-        if($el instanceof HTML_QuickForm2_Element_ExpandableSelect)
-        {
-            return $el;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_ExpandableSelect::class, $el);
+        return ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Element_ExpandableSelect::class,
+            $this->addElement('ExpandableSelect', $name, $container)
+        );
     }
 
     /**
@@ -839,9 +843,10 @@ class UI_Form extends UI_Renderable
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
      * @return HTML_QuickForm2_Element_UIButton
-     *
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws UI_Exception|Application_Formable_Exception
+     * @throws UnexpectedInstanceException
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UI_Exception
      */
     public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
@@ -859,8 +864,10 @@ class UI_Form extends UI_Renderable
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
      * @return HTML_QuickForm2_Element_UIButton
      *
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws UI_Exception|Application_Formable_Exception
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UI_Exception
+     * @throws UnexpectedInstanceException
      */
     public function addPrimarySubmit($label, string $name='save', $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
@@ -877,9 +884,10 @@ class UI_Form extends UI_Renderable
      * @param string $name
      * @return HTML_QuickForm2_Element_UIButton
      *
-     * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
      * @throws UI_Exception
+     * @throws UnexpectedInstanceException
      */
     public function addDevPrimarySubmit(string $label, string $name='save') : HTML_QuickForm2_Element_UIButton
     {
@@ -895,19 +903,16 @@ class UI_Form extends UI_Renderable
      *
      * @param string $name
      * @return HTML_QuickForm2_Element_UIButton
-     * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function addButton(string $name) : HTML_QuickForm2_Element_UIButton
     {
-        $button = $this->addElement('uibutton', $name, $this->form);
-
-        if($button instanceof HTML_QuickForm2_Element_UIButton)
-        {
-            return $button;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_UIButton::class, $button);
+        return ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Element_UIButton::class,
+            $this->addElement('uibutton', $name, $this->form)
+        );
     }
 
     /**
@@ -917,8 +922,11 @@ class UI_Form extends UI_Renderable
      * @param string $name
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
      * @return HTML_QuickForm2_Element_UIButton
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws UI_Exception|Application_Formable_Exception
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UI_Exception
+     * @throws UnexpectedInstanceException
      */
     public function addSubmit($label, string $name='save', $tooltip=null) : HTML_QuickForm2_Element_UIButton
     {
@@ -1616,21 +1624,21 @@ class UI_Form extends UI_Renderable
      * @param string $label
      * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_Multiselect
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
      * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function addMultiselect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Multiselect
     {
-        $el = $this->addElement('multiselect', $name, $container);
+        $el = ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Element_Multiselect::class,
+            $this->addElement('multiselect', $name, $container)
+        );
 
-        if($el instanceof HTML_QuickForm2_Element_Multiselect)
-        {
-            $el->setLabel($label);
+        $el->setLabel($label);
 
-            return $el;
-        }
-        
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_Multiselect::class, $el);
+        return $el;
     }
 
     /**
@@ -1642,7 +1650,10 @@ class UI_Form extends UI_Renderable
      * @param string|null $comment Additional text to prepend before the validation hints.
      * @param boolean $structural Whether this alias is to be marked as a structural field.
      * @return HTML_QuickForm2_Element_InputText
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function addAlias(?string $name=null, ?string $label=null, ?string $comment=null, bool $structural=true) : HTML_QuickForm2_Element_InputText
     {
@@ -1684,36 +1695,31 @@ class UI_Form extends UI_Renderable
      * @param string $label
      * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_Datepicker
-     * @throws Application_Exception_UnexpectedInstanceType
      * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Datepicker
     {
         $this->registerCustomElement('datepicker', 'BootstrapDatepicker');
         
-        $element = $this->addElement('datepicker', $name, $container);
-        
-        if($element instanceof HTML_QuickForm2_Element_Datepicker)
-        {
-            $element->setLabel($label);
-
-            $this->addRuleRegex(
-                $element,
-                $element->getRegex(),
-                t(
-                    'Please enter a valid date, in the format %1$s.', 
-                    $element->getPlaceholder()
-                )
-            );
-            
-            return $element;
-        }
-        
-        throw new Application_Exception_UnexpectedInstanceType(
+        $element = ClassFinder::requireInstanceOf(
             HTML_QuickForm2_Element_Datepicker::class,
-            $element,
-            self::ERROR_INVALID_DATEPICKER_ELEMENT
+            $this->addElement('datepicker', $name, $container)
         );
+        
+        $element->setLabel($label);
+
+        $this->addRuleRegex(
+            $element,
+            $element->getRegex(),
+            t(
+                'Please enter a valid date, in the format %1$s.',
+                $element->getPlaceholder()
+            )
+        );
+
+        return $element;
     }
     
    /**
@@ -1785,18 +1791,23 @@ class UI_Form extends UI_Renderable
      * @param HTML_QuickForm2_Element $element
      * @param callable $callback
      * @param string $errorMessage
-     * @param mixed[] $arguments Arguments for the callback, as indexed array of parameters.
+     * @param array $arguments Arguments for the callback, as indexed array of parameters.
      * @return HTML_QuickForm2_Rule_Callback
      *
+     * @throws ClassNotExistsException
      * @throws HTML_QuickForm2_InvalidArgumentException
      * @throws HTML_QuickForm2_NotFoundException
+     * @throws UnexpectedInstanceException
      */
     public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
-        $rule = $element->addRule(
-            'callback',
-            $errorMessage,
-            'trim'
+        $rule = ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Rule_Callback::class,
+            $element->addRule(
+                'callback',
+                $errorMessage,
+                'trim'
+            )
         );
 
         if(!is_array($arguments)) {
@@ -1814,15 +1825,7 @@ class UI_Form extends UI_Renderable
             'arguments' => $arguments
         ));
 
-        if($rule instanceof HTML_QuickForm2_Rule_Callback)
-        {
-            return $rule;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(
-            HTML_QuickForm2_Rule_Callback::class,
-            $rule
-        );
+        return $rule;
     }
     
    /**
@@ -1834,7 +1837,7 @@ class UI_Form extends UI_Renderable
     */
     public function addRuleFilename(HTML_QuickForm2_Element $element)
     {
-        $element->addRule('regex', t('Please enter a valid name.'), AppUtils\RegexHelper::REGEX_FILENAME);
+        $element->addRule('regex', t('Please enter a valid name.'), RegexHelper::REGEX_FILENAME);
         
         $element->setAttribute('data-type', 'filename');
         
@@ -2483,18 +2486,27 @@ class UI_Form extends UI_Renderable
         
         $element->setRuntimeProperty('render-callbacks', $collection);
     }
-    
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     */
     public function addText(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
-        $el = $this->addElement('text', $name, $container);
+        $el = ClassFinder::requireInstanceOf(
+            HTML_QuickForm2_Element_InputText::class,
+            $this->addElement('text', $name, $container)
+        );
+
         $el->setLabel($label);
 
-        if($el instanceof HTML_QuickForm2_Element_InputText)
-        {
-            return $el;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_InputText::class, $el);
+        return $el;
     }
     
     protected function resolveContainer(?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Container

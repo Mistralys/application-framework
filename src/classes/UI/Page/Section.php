@@ -6,7 +6,10 @@
  * @see UI_Page_Section
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
 use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Classable;
@@ -513,10 +516,10 @@ abstract class UI_Page_Section
     * Sets the icon to use for the section. Note that if the 
     * section has no title, this is likely not to be shown.
     * 
-    * @param UI_Icon $icon
+    * @param UI_Icon|NULL $icon
     * @return $this
     */
-    public function setIcon(UI_Icon $icon) : self
+    public function setIcon(?UI_Icon $icon) : self
     {
         return $this->setProperty('icon', $icon);
     }
@@ -887,23 +890,19 @@ abstract class UI_Page_Section
      *
      * @param string $type
      * @return UI_Page_Section_Content
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
      * @throws ClassNotExistsException
+     * @throws ClassFinderException
+     * @throws UnexpectedInstanceException
      */
     protected function createContent(string $type) : UI_Page_Section_Content
     {
-        $class = UI_Page_Section_Content::class.'_'.$type;
+        $class = ClassFinder::requireResolvedClass(UI_Page_Section_Content::class.'_'.$type);
 
-        Application::requireClassExists($class);
-
-        $content = new $class($this);
-
-        if($content instanceof UI_Page_Section_Content)
-        {
-            return $content;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Section_Content::class, $content);
+        return ClassFinder::requireInstanceOf(
+            UI_Page_Section_Content::class,
+            new $class($this)
+        );
     }
     
    /**

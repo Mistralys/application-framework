@@ -7,6 +7,12 @@
  * @see Application_Users
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
+use Application\Users\UsersFilterCriteria;
+use Application\Users\UsersFilterSettings;
+
 /**
  * User management class: allows retrieving and modifiying the
  * users available in the database. This is not like the 
@@ -44,12 +50,12 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordFiltersClassName() : string
     {
-        return Application_Users_FilterCriteria::class;
+        return UsersFilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName() : string
     {
-        return '';
+        return UsersFilterSettings::class;
     }
     
     /**
@@ -165,20 +171,18 @@ class Application_Users extends DBHelper_BaseCollection
     /**
      * @param int $record_id
      * @return Application_Users_User
+     *
      * @throws Application_Exception_DisposableDisposed
-     * @throws Application_Exception_UnexpectedInstanceType
      * @throws DBHelper_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function getByID(int $record_id) : DBHelper_BaseRecord
     {
-        $user = parent::getByID($record_id);
-
-        if($user instanceof Application_Users_User)
-        {
-            return $user;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Users_User::class, $user);
+        return ClassFinder::requireInstanceOf(
+            Application_Users_User::class,
+            parent::getByID($record_id)
+        );
     }
 
     public function initSystemUsers() : void
@@ -243,5 +247,19 @@ class Application_Users extends DBHelper_BaseCollection
         {
             $this->log(sprintf('User [%s] | No changes necessary.', $userID));
         }
+    }
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    public function getAdminURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
+
+        return Application_Driver::getInstance()
+            ->getRequest()
+            ->buildURL($params);
     }
 }

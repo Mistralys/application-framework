@@ -6,6 +6,8 @@
  * @see Connectors
  */
 
+use Application\Exception\UnexpectedInstanceException;
+
 /**
  * External API connectors manager: handles access to
  * connector classes for the available connections to 
@@ -28,7 +30,7 @@ class Connectors
     * @param string $type
     * @return Connectors_Connector
     *
-    * @throws Application_Exception_UnexpectedInstanceType
+    * @throws UnexpectedInstanceException
     * @see Connectors::ERROR_INVALID_CONNECTOR_TYPE
     */
     public static function createConnector(string $type) : Connectors_Connector
@@ -46,7 +48,7 @@ class Connectors
             return $connector;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(
+        throw new UnexpectedInstanceException(
             Connectors_Connector::class,
             $connector,
             self::ERROR_INVALID_CONNECTOR_TYPE
@@ -62,6 +64,6 @@ class Connectors
             return $dummy;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Connectors_Connector_Dummy::class, $dummy);
+        throw new UnexpectedInstanceException(Connectors_Connector_Dummy::class, $dummy);
     }
 }

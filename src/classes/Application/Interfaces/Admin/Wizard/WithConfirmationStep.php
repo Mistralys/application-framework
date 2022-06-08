@@ -27,8 +27,6 @@ interface Application_Interfaces_Admin_Wizard_WithConfirmationStep
      *
      * @return string
      *
-     * @throws Application_Exception_UnexpectedInstanceType
-     * @throws Application_Exception
      * @see Application_Interfaces_Admin_Wizard_Step_Confirmation::ERROR_NO_REFERENCE_ID_SET
      */
     public function getSelectedReferenceID() : string;

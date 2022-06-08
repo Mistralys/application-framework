@@ -5,6 +5,7 @@
  * @see UI
  */
 
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\OutputBuffering;
@@ -975,7 +976,8 @@ class UI
      * @param HTML_QuickForm2_Element $element
      * @param Application_Countries_Country $country
      * @return UI_MarkupEditor_Redactor
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws UnexpectedInstanceException
      */
     public function addRedactor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_Redactor
     {
@@ -986,7 +988,7 @@ class UI
             return $editor;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(UI_MarkupEditor_Redactor::class, $editor);
+        throw new UnexpectedInstanceException(UI_MarkupEditor_Redactor::class, $editor);
     }
     
    /**
