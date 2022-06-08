@@ -79,19 +79,6 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
         );
     }
 
-    /**
-     * Creates an action instance or returns an existing one.
-     * @param string $id
-     * @return Application_Admin_Area_Mode_Submode_Action
-     */
-    public function createAction(string $id) : Application_Admin_Area_Mode_Submode_Action
-    {
-        return ensureType(
-            Application_Admin_Area_Mode_Submode_Action::class,
-            $this->createSubscreen($id)
-        );
-    }
-
     public function isUserAllowed() : bool
     {
         return true;
