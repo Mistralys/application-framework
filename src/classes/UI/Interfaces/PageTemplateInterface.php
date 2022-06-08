@@ -43,11 +43,12 @@ interface PageTemplateInterface
      * Retrieves the variable, and ensures that it is an instance
      * of the specified class.
      *
+     * @template ClassInstanceType
      * @param string $name
-     * @param string $className
-     * @return object
+     * @param class-string<ClassInstanceType> $className
+     * @return ClassInstanceType
      */
-    public function getObjectVar(string $name, string $className) : object;
+    public function getObjectVar(string $name, string $className);
 
     public function getBoolVar(string $name) : bool;
 

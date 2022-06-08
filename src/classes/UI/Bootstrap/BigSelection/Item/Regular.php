@@ -5,7 +5,6 @@ declare(strict_types=1);
 use AppUtils\OutputBuffering;
 
 /**
- * @method UI_Bootstrap_BigSelection_Item_Regular setIcon(UI_Icon $icon)
  */
 class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_Item
 {

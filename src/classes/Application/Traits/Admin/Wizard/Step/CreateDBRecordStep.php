@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper_Exception;
+
 /**
  * Step in a record creation wizard: Confirm the selection, and
  * create the record.
@@ -132,10 +134,11 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
      * Creates the mailing and the initial audience.
      *
      * @return DBHelper_BaseRecord
+     *
      * @throws Application_Exception
      * @throws Application_Exception_DisposableDisposed
-     * @throws Application_Exception_UnexpectedInstanceType
      * @throws DBHelper_Exception
+     * @throws ConvertHelper_Exception
      */
     protected function createRecord() : DBHelper_BaseRecord
     {

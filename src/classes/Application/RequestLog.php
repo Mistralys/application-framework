@@ -133,6 +133,7 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
      *
      * @param Application_Logger $logger
      * @return Application_RequestLog_LogWriter
+     * @throws FileHelper_Exception
      */
     public function writeLog(Application_Logger $logger) : Application_RequestLog_LogWriter
     {

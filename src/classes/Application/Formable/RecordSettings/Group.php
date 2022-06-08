@@ -16,8 +16,6 @@ declare(strict_types=1);
  * @package Application
  * @subpackage Formable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
- * @method Application_Formable_RecordSettings_Group setIcon($icon)
  */
 class Application_Formable_RecordSettings_Group implements Application_Interfaces_Iconizable
 {

@@ -6,9 +6,6 @@ use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Classable;
 
-/**
- * @method UI_DataGrid_Action setIcon($icon)
- */
 abstract class UI_DataGrid_Action
     implements
     Application_Interfaces_Iconizable,

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
 
 class Application_RequestLog_LogWriter implements Application_Interfaces_Loggable
@@ -128,6 +129,10 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
         return $path;
     }
 
+    /**
+     * @return $this
+     * @throws FileHelper_Exception
+     */
     public function write() : Application_RequestLog_LogWriter
     {
         // Ignore writing the log if we are in the request log
@@ -145,6 +150,10 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
         return $this;
     }
 
+    /**
+     * @return void
+     * @throws FileHelper_Exception
+     */
     private function writeLogFile() : void
     {
         $path = $this->getLogPath();
