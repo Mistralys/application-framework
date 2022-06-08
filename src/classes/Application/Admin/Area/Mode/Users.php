@@ -1,10 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Admin\Area\Mode\Users\UsersListSubmode;
+
 abstract class Application_Admin_Area_Mode_Users extends Application_Admin_Area_Mode
 {
+    public const URL_NAME = 'users';
+
     public function getDefaultSubmode() : string
     {
-        return 'list';
+        return UsersListSubmode::URL_NAME;
     }
     
     public function getNavigationTitle() : string
@@ -19,11 +25,16 @@ abstract class Application_Admin_Area_Mode_Users extends Application_Admin_Area_
     
     public function getURLName() : string
     {
-        return 'users';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string
     {
-        return t('Users');
+        return t('Users management');
+    }
+
+    public function getNavigationIcon() : ?UI_Icon
+    {
+        return UI::icon()->users();
     }
 }
