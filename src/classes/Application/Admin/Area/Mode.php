@@ -43,24 +43,6 @@ abstract class Application_Admin_Area_Mode extends Application_Admin_Skeleton
         return null;
     }
 
-    /**
-     * Creates a submode instance or returns an existing one.
-     * 
-     * @param string $id
-     * @return Application_Admin_Area_Mode_Submode|NULL
-     */
-    public function createSubmode(string $id) : ?Application_Admin_Area_Mode_Submode
-    {
-        $screen = $this->createSubscreen($id);
-        
-        if($screen instanceof Application_Admin_Area_Mode_Submode)
-        {
-            return $screen;
-        }
-        
-        return null;
-    }
-
     public function render() : string
     {
         return $this->renderContent();
