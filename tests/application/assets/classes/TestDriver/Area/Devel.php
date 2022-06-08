@@ -11,5 +11,8 @@ class TestDriver_Area_Devel extends Application_Admin_Area_Devel
         $this->registerAppInterface();
         $this->registerAppLogs();
         $this->registerWhatsNewEditor();
+        $this->registerMaintenance();
+        $this->registerRightsOverview();
+        $this->registerUsers();
     }
 }
