@@ -1,7 +1,17 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Disposable
+ * @see Application_Exception_DisposableDisposed
+ */
 
 declare(strict_types=1);
 
+/**
+ * @package Application
+ * @subpackage Disposable
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class Application_Exception_DisposableDisposed extends Application_Exception
 {
     public const ERROR_DISPOSABLE_DISPOSED = 92101;
