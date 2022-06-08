@@ -3,11 +3,11 @@
 use AppUtils\Interface_Optionable;
 use AppUtils\Traits_Optionable;
 
-/**
- * 
- * @method UI_Page_Section_Tab setIcon($icon)
- */
-class UI_Page_Section_Tab extends UI_Renderable implements UI_Renderable_Interface, Interface_Optionable, Application_Interfaces_Iconizable
+class UI_Page_Section_Tab
+    extends UI_Renderable
+    implements
+    Interface_Optionable,
+    Application_Interfaces_Iconizable
 {
     use Traits_Optionable;
     use Application_Traits_Iconizable;
@@ -20,6 +20,8 @@ class UI_Page_Section_Tab extends UI_Renderable implements UI_Renderable_Interfa
     
     public function __construct(UI_Page_Section $section, $name, $label)
     {
+        parent::__construct($section->getPage());
+
         $this->section = $section;
         $this->name = $name;
         $this->label = $label;
