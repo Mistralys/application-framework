@@ -1,29 +1,68 @@
 <?php
 
-class UI_Page_Header
-{
-    /**
-     * @var UI_Page
-     */
-    private $page;
+declare(strict_types=1);
 
-    private $navigations = array();
+class UI_Page_Header implements UI_Renderable_Interface
+{
+    use UI_Traits_RenderableGeneric;
+
+    public const ERROR_NAVIGATION_ALREADY_EXISTS = 108901;
+    public const NAVIGATION_ID_MAIN = 'main';
+
+    private UI_Page $page;
+
+    /**
+     * @var UI_Page_Navigation[]
+     */
+    private array $navigations = array();
 
     public function __construct(UI_Page $page)
     {
         $this->page = $page;
     }
 
+    public function getPage() : UI_Page
+    {
+        return $this->page;
+    }
+
+    public function addMainNavigation() : UI_Page_Navigation
+    {
+        return $this->addNavigation(self::NAVIGATION_ID_MAIN);
+    }
+
     /**
      * @param string $navigationID
      * @return UI_Page_Navigation
+     * @throws UI_Exception
      */
-    public function addNavigation($navigationID)
+    public function addNavigation(string $navigationID) : UI_Page_Navigation
     {
         $nav = $this->page->createNavigation($navigationID);
-        $this->navigations[$navigationID] = $nav;
+
+        $this->addNavigationInstance($nav);
 
         return $nav;
+    }
+
+    public function addNavigationInstance(UI_Page_Navigation $nav) : self
+    {
+        $navigationID = $nav->getID();
+
+        if(!isset($this->navigations[$navigationID]))
+        {
+            $this->navigations[$navigationID] = $nav;
+            return $this;
+        }
+
+        throw new UI_Exception(
+            'Navigation already added.',
+            sprintf(
+                'The navigation [%s] has already been added, and may not be overwritten.',
+                $navigationID
+            ),
+            self::ERROR_NAVIGATION_ALREADY_EXISTS
+        );
     }
 
     /**
@@ -32,7 +71,7 @@ class UI_Page_Header
      * @param string $navigationID
      * @return UI_Page_Navigation|NULL
      */
-    public function getNavigation($navigationID)
+    public function getNavigation(string $navigationID) : ?UI_Page_Navigation
     {
         if (array_key_exists($navigationID, $this->navigations)) {
             return $this->navigations[$navigationID];
@@ -41,28 +80,29 @@ class UI_Page_Header
         return null;
     }
 
+    public function renderNavigation(string $navigationID) : string
+    {
+        $nav = $this->getNavigation($navigationID);
+
+        if($nav !== null)
+        {
+            return $nav->render();
+        }
+
+        return '';
+    }
+
     /**
      * Renders the header using the corresponding template and
      * returns the generated HTML code.
      *
      * @return string
+     * @throws UI_Themes_Exception
      */
-    public function render()
+    public function render() : string
     {
-        $template = $this->page->createTemplate('frame.header');
-
-        $out = $template->render();
-
-        return $out;
-    }
-
-    /**
-     * Displays the HTML code for the header.
-     *
-     * @see render()
-     */
-    public function display()
-    {
-        echo $this->render();
+        return $this->page
+            ->createTemplate('frame.header')
+            ->render();
     }
 }
