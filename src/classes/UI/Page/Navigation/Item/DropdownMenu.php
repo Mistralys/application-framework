@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\OutputBuffering;
+use function AppUtils\parseURL;
 
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 {
@@ -127,7 +128,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
         $this->addClass('dropdown');
 
-        if ($this->active)
+        if ($this->isActive())
         {
             $this->addClass('active');
         }
@@ -219,7 +220,22 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      */
     public function addLink(string $label, string $url) : UI_Bootstrap_DropdownAnchor
     {
+        $this->registerURL($url);
+
         return $this->menu->addLink($label, $url);
+    }
+
+    /**
+     * @var string[]
+     */
+    private array $trackURLs = array();
+
+    private function registerURL(string $url) : void
+    {
+        if(!array_key_exists($url, $this->trackURLs) && strpos($url, APP_URL) !== false)
+        {
+            $this->trackURLs[$url] = null;
+        }
     }
 
     /**
@@ -229,5 +245,49 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     public function addSeparator() : UI_Bootstrap_DropdownMenu
     {
         return $this->menu->addSeparator();
+    }
+
+    public function isActive() : bool
+    {
+        if(empty($this->trackURLs))
+        {
+            return false;
+        }
+
+        $urls = array_keys($this->trackURLs);
+
+        foreach($urls as $url)
+        {
+            if($this->isURLActive($url)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isURLActive(string $url) : bool
+    {
+        if(isset($this->trackURLs[$url]))
+        {
+            $parsed = $this->trackURLs[$url];
+        }
+        else
+        {
+            $parsed = parseURL($url);
+            $this->trackURLs[$url] = $parsed;
+        }
+
+        $urlParams = $parsed->getParams();
+
+        foreach($urlParams as $name => $value)
+        {
+            if(!isset($_REQUEST[$name]) || $_REQUEST[$name] !== $value)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
