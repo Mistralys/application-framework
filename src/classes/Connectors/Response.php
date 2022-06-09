@@ -260,15 +260,6 @@ class Connectors_Response implements Application_Interfaces_Loggable
         return array();
     }
     
-    protected function log($message)
-    {
-        Application::log(sprintf(
-            'Connector [%s] | Response | %s',
-            $this->connector->getID(),
-            $message
-        ));
-    }
-    
    /**
     * Throws an exception for the response error.
     * 
