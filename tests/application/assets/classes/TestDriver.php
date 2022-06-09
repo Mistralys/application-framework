@@ -21,6 +21,7 @@ class TestDriver extends Application_Driver
     public function getAdminAreas() : array
     {
         return array(
+            \TestDriver\Area\Welcome::URL_NAME_WELCOME => getClassTypeName(\TestDriver\Area\Welcome::class),
             Application_Admin_Area_Devel::URL_NAME => getClassTypeName(TestDriver_Area_Devel::class),
             Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
