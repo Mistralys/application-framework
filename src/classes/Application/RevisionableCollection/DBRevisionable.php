@@ -289,10 +289,18 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
             $this->collection->getRevisionKeyName() => $this->getRevision()
         );
     }
-    
-    abstract public function getAdminStatusURL($params=array());
-    
-    abstract public function getAdminChangelogURL($params=array());
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    abstract public function getAdminStatusURL(array $params=array()) : string;
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    abstract public function getAdminChangelogURL(array $params=array()) : string;
     
    /**
     * Selects the last revision of the record by a specific state.
