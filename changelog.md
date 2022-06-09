@@ -12,6 +12,8 @@
 - Screens: URL names may now differ from the file name (BETA).
 - Logging: Added support for log message categories.
 - Moved the Deepl methods to the new `DeeplHelper` class.
+- Unit Tests: The test application has been fleshed out further.
+- Code Quality: PHPStan analysis now clean at level 5. 
 
 #### Deprecated methods and classes
 
