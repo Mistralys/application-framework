@@ -337,7 +337,7 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
 
     protected function renderTemplate($templateID, $vars = array())
     {
-        return $this->driver->renderTemplate($templateID, $vars);
+        return $this->getPage()->renderTemplate($templateID, $vars);
     }
 
     protected function renderInfoMessage($message, $options = array())
@@ -391,15 +391,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         ->render();
     }
     
-    protected function createFormRenderer(UI_Form $form, $title=null)
-    {
-        if(empty($title)) {
-            $title = $this->getTitle();
-        }
-        
-        return $this->driver->createFormRenderer($form, $title);
-    }
-
     public function renderTitleSubline($text)
     {
         return '<br/><small>' . $text . '</small>';
@@ -427,11 +418,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         ->makeWithoutSidebar()
         ->setContent($content)
         ->render();
-    }
-    
-    protected function renderSection($content, $title = null, $options=array())
-    {
-        return $this->driver->renderSection($content, $title, $options);
     }
     
    /**
@@ -469,11 +455,10 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
     
    /**
     * @return UI_Page_Section
-    * @see Application_Driver::createSection()
     */
-    protected function createSection()
+    protected function createSection() : UI_Page_Section
     {
-        return $this->driver->createSection();
+        return $this->getUI()->createSection();
     }
 
     /**
