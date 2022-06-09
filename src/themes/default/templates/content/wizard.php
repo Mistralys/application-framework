@@ -52,37 +52,19 @@ class template_default_content_wizard extends UI_Page_Template_Custom
         echo $this->activeStep->render();
     }
 
-    /**
-     * @var Application_Admin_Wizard_Step
-     */
-    private $activeStep;
+    private Application_Admin_Wizard_Step $activeStep;
+    private Application_Admin_Wizard $wizard;
 
     /**
      * @var Application_Admin_Wizard_Step[]
      */
-    private $steps;
-
-    /**
-     * @var Application_Admin_Wizard
-     */
-    private $wizard;
+    private array $steps;
 
     protected function preRender() : void
     {
-        $this->wizard = $this->getWizard();
+        $this->wizard = $this->getObjectVar('wizard', Application_Admin_Wizard::class);
         $this->steps = $this->wizard->getSteps();
         $this->activeStep = $this->wizard->getActiveStep();
-    }
-
-    private function getWizard() : Application_Admin_Wizard
-    {
-        $wizard = $this->getVar('wizard');
-
-        if($wizard instanceof Application_Admin_Wizard) {
-            return $wizard;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Admin_Wizard::class, $wizard);
     }
 
     private function renderLabel(Application_Admin_Wizard_Step $step) : string
