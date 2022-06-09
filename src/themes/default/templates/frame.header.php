@@ -7,7 +7,7 @@
 	<div class="container" id="nav-container">
         <?php echo $this->renderTemplate('frame.header.appswitcher'); ?>
 
-        <?php $this->header->getNavigation('main')->display(); ?>
+        <?php echo $this->header->renderNavigation('main'); ?>
 
         <ul class="nav navbar-nav navbar-meta pull-right" id="app-metanav">
             <?php
@@ -47,8 +47,9 @@
             ?>
         </ul>
     </div>
-    <?php 
-        
+    <?php
+        echo $this->header->renderNavigation(Application_Admin_Area::NAV_AREA_QUICK_NAVIGATION);
+
         $lockManager = $this->page->getLockManager();
         
         if($lockManager && $lockManager->isEnabled()) 
