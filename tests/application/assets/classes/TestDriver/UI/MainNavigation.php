@@ -7,6 +7,7 @@ namespace TestDriver\UI;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
+use TestDriver\Area\Welcome;
 use TestDriver_Area_Devel_Appinterface;
 use TestDriver_Area_QuickNav;
 use TestDriver_Area_WizardTest;
@@ -17,6 +18,7 @@ class MainNavigation extends NavConfigurator
 {
     public function configure() : void
     {
+        $this->addArea(Welcome::URL_NAME_WELCOME, true);
         $this->configureManageMenu($this->addMenu(t('Manage')));
         $this->configureReferencesMenu($this->addMenu(t('References')));
     }
