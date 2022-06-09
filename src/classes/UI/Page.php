@@ -364,7 +364,7 @@ class UI_Page extends UI_Renderable
      */
     public function getURL(array $params = array()) : string
     {
-        return $this->ui->getApplication()->getDriver()->getPageURL($this, $params);
+        return Application_Driver::getInstance()->getPageURL($this, $params);
     }
 
     /**
