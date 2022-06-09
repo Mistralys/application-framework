@@ -12,11 +12,6 @@ declare(strict_types=1);
  */
 class TestDriver extends Application_Driver
 {
-    protected function getCookieNamespace() : string
-    {
-        return 'app-testcases';
-    }
-
     /**
      * NOTE: Uses the custom navigation generation,
      * see {@see \TestDriver\UI\MainNavigation}.
@@ -72,6 +67,10 @@ class TestDriver extends Application_Driver
         return array();
     }
 
+    /**
+     * @param UI_Page $page
+     * @return array<string,string|number>
+     */
     public function getPageParams(UI_Page $page) : array
     {
         return array();
