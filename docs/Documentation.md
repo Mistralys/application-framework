@@ -234,15 +234,74 @@ protected function _renderContent()
 
 ## The main navigation
 
-The menu items available in the main navigation are determined by the application's
-`getAdminAreas()` method.
+There are two ways to generate the application's main navigation:
 
-### Customizing navigation items
+1. Automatic mode - simple, few customization options 
+2. Manual mode - class-based, all customizations available
+
+For an application with a limited amount of main menu items, 
+option 1 is sufficient, and needs only a minimal amount of work.  
+
+### Automatic mode
+
+#### What it does
+
+The menu items available in the main navigation are determined by the application's
+`getAdminAreas()` method. All areas listed there are automatically added to the
+navigation, in the order listed.
+
+#### Customizing items
 
 Further configuration of the menu item is done in the admin area class itself:
 
 - **Setting a submenu:** Return a menu name in the `getNavigationGroup()` method.
 - **Setting an icon:** Simply return the icon in the area's `getNavigationIcon()` method.
+
+### Manual mode
+
+#### What it does
+
+The menu items are added manually in a specialized class. This allows
+more detailed dropdown menus for example, with separators and external
+links, which are not possible in the simple mode.
+
+The class must be stored here:
+
+```
+/htdocs/assets/classes/DriverName/UI/MainNavigation.php
+```
+
+> This is used automatically if it exists, instead of the automatic mode.
+> To switch back to automatic mode, the class must be either renamed or
+> deleted.
+
+#### Class skeleton
+
+```php
+declare(strict_types=1);
+
+namespace DriverName\UI;
+
+use UI\Page\Navigation\NavConfigurator;
+
+class MainNavigation extends NavConfigurator
+{
+    public function configure() : void
+    {
+        // configure navigation elements
+    }
+}
+```
+
+### User right checks
+
+User rights for the specified areas are checked, so that only the items
+the user is authorized for are shown.
+
+> It is important to have screens included in the navigation that have
+> no special right restrictions (like the user settings), which can be
+> used as fallback if a user does not have rights for any of the available
+> areas.
 
 ## The sidebar
 
