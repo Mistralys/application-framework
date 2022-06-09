@@ -3,6 +3,9 @@
 /**
  * The SQL mode string as used on the live servers.
  */
+
+use Application\ClassFinder;
+
 define('APP_DEVEL_SQL_MODE', 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION');
 
 abstract class Application_Bootstrap_Screen
@@ -13,7 +16,12 @@ abstract class Application_Bootstrap_Screen
     public const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
 
     protected array $params = array();
-    
+    protected Application $app;
+    protected Application_Driver $driver;
+    protected Application_Session $session;
+    protected Application_User $user;
+    private bool $environmentCreated = false;
+
     public function __construct($params)
     {
         $this->params = $params;
@@ -40,31 +48,6 @@ abstract class Application_Bootstrap_Screen
     abstract public function getDispatcher();
 
     abstract protected function _boot();
-    
-   /**
-    * @var Application
-    */
-    protected Application $app;
-    
-   /**
-    * @var Application_Driver
-    */
-    protected Application_Driver $driver;
-    
-   /**
-    * @var Application_Session
-    */
-    protected Application_Session $session;
-    
-   /**
-    * @var Application_User
-    */
-    protected Application_User $user;
-
-    /**
-     * @var bool
-     */
-    private bool $environmentCreated = false;
     
     /**
      * Creates the environment by instantiating the
@@ -141,11 +124,20 @@ abstract class Application_Bootstrap_Screen
         if (!defined('APP_DEVELOPER_MODE')) {
             define('APP_DEVELOPER_MODE', false);
         }
-        
-        $driverClass = APP_CLASS_NAME;
-        $this->driver = new $driverClass($this->app);
-        
+
+        $this->initDriver();
+
         $this->app->start($this->driver);
+    }
+
+    private function initDriver() : void
+    {
+        $driverClass = APP_CLASS_NAME;
+
+        $this->driver = ClassFinder::requireInstanceOf(
+            Application_Driver::class,
+            new $driverClass($this->app)
+        );
     }
     
     protected function initDatabase() : void
