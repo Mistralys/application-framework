@@ -5,6 +5,7 @@
  */
 
 use Application\ClassFinder;
+use AppUtils\FileHelper_Exception;
 
 define('APP_DEVEL_SQL_MODE', 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION');
 
@@ -61,77 +62,97 @@ abstract class Application_Bootstrap_Screen
         }
         
         $this->environmentCreated = true;
-        
-        if(!defined('APP_NO_AUTHENTICATION')) {
-            define('APP_NO_AUTHENTICATION', false);
-        }
-        
+
         date_default_timezone_set('Europe/Berlin');
-        
-        // enable the logging for the DB helper
-        DBHelper::setLogCallback(array('Application', 'log'));
-        
-        if(!class_exists(APP_CLASS_NAME)) 
-        {
-            header('Content-Type:text/plain; charset=UTF-8');
-            
-            die(sprintf(
-                'Could not find the driver class [%s].',
-                APP_CLASS_NAME
-            ));
-        }
-        
-        // make sure no one tries to set the developer mode manually
-        if (defined('APP_DEVELOPER_MODE')) {
-            die('<pre><b style="color:#cc0000">Error:</b> The APP_DEVELOPER_MODE constant may not be set manually.<br/>Please remove it from your local configuration file.</pre>');
-        }
-        
-        // default is to run the application in UI mode
-        if(!defined('APP_RUN_MODE')) {
-            define('APP_RUN_MODE', Application::RUN_MODE_UI);
-        }
-        
-        if(Application::isDatabaseEnabled()) 
-        {
-            $this->initDatabase();
-        }
-        
-        $this->session = call_user_func(array(APP_CLASS_NAME, 'getSession'));
-        $this->user = $this->session->getUser();
-        
+
+        $this->initConfigurationDefaults();
+        $this->initDatabase();
+        $this->initSession();
+
         $this->app = new Application($this);
 
-        // needs to be done after application has been instantiated, and
-        // before the user is authenticated, as that triggers the roles
-        // to be initialized, which require translation.
-        Application_Localization::init();
-        Application_Localization::select();
-        
-        // some parts of the application do not use the authentication,
-        // like the XML export.
-        if (!defined('APP_NO_AUTHENTICATION') || !APP_NO_AUTHENTICATION)
-        {
-            $this->authenticateUser();
-        }
-        
-        if (isset($this->user) && $this->user->isDeveloper() && $this->user->getSetting('developer_mode') === 'yes')
-        {
-            define('APP_DEVELOPER_MODE', true);
-            error_reporting(E_ALL);
-            ini_set('display_errors', '1');
-        }
-        
-        if (!defined('APP_DEVELOPER_MODE')) {
-            define('APP_DEVELOPER_MODE', false);
-        }
-
+        $this->initLocalization();
+        $this->authenticateUser();
+        $this->initDeveloperMode();
         $this->initDriver();
 
         $this->app->start($this->driver);
     }
 
+    private function initConfigurationDefaults() : void
+    {
+        if(!defined('APP_NO_AUTHENTICATION'))
+        {
+            define('APP_NO_AUTHENTICATION', false);
+        }
+
+        // make sure no one tries to set the developer mode manually
+        if (defined('APP_DEVELOPER_MODE'))
+        {
+            die('<pre><b style="color:#cc0000">Error:</b> The APP_DEVELOPER_MODE constant may not be set manually.<br/>Please remove it from your local configuration file.</pre>');
+        }
+
+        // default is to run the application in UI mode
+        if(!defined('APP_RUN_MODE'))
+        {
+            define('APP_RUN_MODE', Application::RUN_MODE_UI);
+        }
+    }
+
+    /**
+     * NOTE: Must be done after application has been instantiated,
+     * and before the user is authenticated, as that triggers the
+     * roles to be initialized, which require translation.
+     *
+     * @return void
+     * @throws Application_EventHandler_Exception
+     * @throws Application_Exception
+     * @throws UI_Exception
+     * @throws FileHelper_Exception
+     */
+    private function initLocalization() : void
+    {
+        Application_Localization::init();
+        Application_Localization::select();
+    }
+
+    public function isDeveloperModeEnabled() : bool
+    {
+        return
+        isset($this->user)
+        &&
+        $this->user->isDeveloper()
+        &&
+        $this->user->getSetting('developer_mode') === 'yes';
+    }
+
+    private function initDeveloperMode() : void
+    {
+        if ($this->isDeveloperModeEnabled())
+        {
+            define('APP_DEVELOPER_MODE', true);
+            error_reporting(E_ALL);
+            ini_set('display_errors', '1');
+        }
+
+        if (!defined('APP_DEVELOPER_MODE'))
+        {
+            define('APP_DEVELOPER_MODE', false);
+        }
+    }
+
     private function initDriver() : void
     {
+        if(!class_exists(APP_CLASS_NAME))
+        {
+            header('Content-Type:text/plain; charset=UTF-8');
+
+            die(sprintf(
+                'Could not find the driver class [%s].',
+                APP_CLASS_NAME
+            ));
+        }
+
         $driverClass = APP_CLASS_NAME;
 
         $this->driver = ClassFinder::requireInstanceOf(
@@ -139,20 +160,51 @@ abstract class Application_Bootstrap_Screen
             new $driverClass($this->app)
         );
     }
+
+    protected function initSession() : void
+    {
+        $class = ClassFinder::requireResolvedClass(APP_CLASS_NAME.'_Session');
+
+        $this->session = ClassFinder::requireInstanceOf(
+            Application_Session::class,
+            new $class()
+        );
+
+        $this->user = $this->session->getUser();
+    }
     
     protected function initDatabase() : void
     {
+        if(!Application::isDatabaseEnabled())
+        {
+            return;
+        }
+
+        // enable the logging for the DB helper
+        DBHelper::setLogCallback(array('Application', 'log'));
+
         DBHelper::init();
         
         // in the development environment, ensure that the SQL mode
-        // is the same than on the live servers.
-        if(Application::isDevelEnvironment()) {
-            DBHelper::execute(DBHelper_OperationTypes::TYPE_SET, "SET SESSION sql_mode = '".APP_DEVEL_SQL_MODE."'");
+        // is the same as on the live servers.
+        if(Application::isDevelEnvironment())
+        {
+            DBHelper::execute(
+                DBHelper_OperationTypes::TYPE_SET,
+                "SET SESSION sql_mode = '".APP_DEVEL_SQL_MODE."'"
+            );
         }
     }
     
     protected function authenticateUser() : void
     {
+        // some parts of the application do not use the authentication,
+        // like the XML export.
+        if (defined('APP_NO_AUTHENTICATION') && APP_NO_AUTHENTICATION === true)
+        {
+            return;
+        }
+
         $user = $this->session->requireUser();
         
         if (isset($_REQUEST['develmode_enable']) && in_array($_REQUEST['develmode_enable'], array('yes', 'no')))
