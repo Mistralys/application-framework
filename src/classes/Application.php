@@ -385,7 +385,18 @@ class Application
     }
 
     /**
+     * Gets the active session instance.
+     *
+     * NOTE: Will throw an exception if trying to
+     * use this method before the session has been
+     * initialized. Use the method {@see Application::isSessionReady()}
+     * to check if it is available.
+     *
      * @return Application_Session
+     * @see Application::isSessionReady()
+     *
+     * @throws Application_Exception
+     * @see Application::ERROR_SESSION_NOT_AVAILABLE_YET
      */
     public static function getSession() : Application_Session
     {
@@ -773,6 +784,18 @@ class Application
         }
 
         return self::$media;
+    }
+
+    private static ?DeeplHelper $deeplHelper = null;
+
+    public static function createDeeplHelper() : DeeplHelper
+    {
+        if(!isset(self::$deeplHelper))
+        {
+            self::$deeplHelper = new DeeplHelper();
+        }
+
+        return self::$deeplHelper;
     }
 
     /**
