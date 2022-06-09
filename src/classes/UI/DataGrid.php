@@ -2153,10 +2153,12 @@ class UI_DataGrid
             )
         );
 
-        $page->setContent($driver->renderContentWithoutSidebar(
-            $content,
-            t('Processing selected entries')
-        ));
+        $page->setContent(
+            $page->getRenderer()
+                ->setTitle(t('Processing selected entries'))
+                ->setContent($content)
+                ->render()
+        );
 
         echo $page->render();
 
