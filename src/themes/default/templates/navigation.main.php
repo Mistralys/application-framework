@@ -72,19 +72,26 @@ $nav->addClass('navbar-main');
             }
         
             $item->addClass('nav-link');
-        
-            $type = 'regular';
-            
-            if ($item->isActive()) 
+
+            if($item instanceof UI_Page_Navigation_Item_DropdownMenu)
             {
-                $type = 'active';
+                echo $item->render();
             }
-            
-            ?>
-            	<li class="<?php echo $type ?>">
-            		<?php echo $item->render() ?>
-        		</li>
-            <?php 
+            else
+            {
+                $type = 'regular';
+
+                if ($item->isActive())
+                {
+                    $type = 'active';
+                }
+
+                ?>
+                    <li class="<?php echo $type ?>">
+                        <?php echo $item->render() ?>
+                    </li>
+                <?php
+            }
         }
     ?>
 </ul>
