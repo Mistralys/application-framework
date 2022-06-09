@@ -23,7 +23,7 @@ $nav->addClass('navbar-main');
         {
             $group = $item->getGroup();
             
-            if ($group && in_array($group, $trackGroups)) 
+            if ($group && in_array($group, $trackGroups, true))
             {
                 continue;
             }
@@ -37,15 +37,6 @@ $nav->addClass('navbar-main');
         
                 if ($nav->isGroupActive($group)) {
                     $active = ' nav-group-active';
-        
-                    // append the name of the active subitem to the
-                    // group label
-                    foreach ($groupItems as $groupItem) {
-                        if ($groupItem->isActive()) {
-                            $groupLabel .= ': ' . $groupItem->getTitle();
-                            break;
-                        }
-                    }
                 }
         
                 ?>
