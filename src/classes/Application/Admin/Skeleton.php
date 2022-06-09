@@ -325,16 +325,6 @@ abstract class Application_Admin_Skeleton extends Application_Formable implement
         $this->driver->redirectTo($paramsOrURL);
     }
 
-    protected function setCookie($name, $value)
-    {
-        $this->driver->setCookie($name, $value);
-    }
-
-    protected function getCookie($name, $default = null)
-    {
-        return $this->driver->getCookie($name, $default);
-    }
-
     protected function renderTemplate($templateID, $vars = array())
     {
         return $this->getPage()->renderTemplate($templateID, $vars);
