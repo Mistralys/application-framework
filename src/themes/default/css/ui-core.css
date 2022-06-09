@@ -1,73 +1,56 @@
 BODY {
     padding-top: 40px;
-    background: #062c6b;
     position: absolute; /* to make it fill the viewport even in smaller resolutions */
     min-width: fit-content; /* to fix the body being smaller than the content in smaller resolutions */
     width: 100%;
-    color:rgba(0,0,0,0.7);
 }
 
 .clickable {
     cursor: pointer;
 }
 
-.navbar {
-    height: 40px;
-    margin: 0;
-}
+/* --------------------------------------------------------------
+   NAVIGATION
+-----------------------------------------------------------------*/
 
-.navbar .nav > li > .brand {
-    padding: 4px 10px 0 0 !important;
+/* region: Navigation - Main */
+
+#app-mainnav .brand {
+    padding: 3px 0 0 0 !important;
+    margin:0;
     outline: none;
-    font-size: 14px;
-    color: #777;
 }
 
-.nav.navbar-nav {
-    margin-right: 0;
+#app-mainnav .brand > IMG{
+    height: 34px;
 }
 
-.navbar .nav > li > a {
-    color: #3f3f3f;
-    text-shadow: none;
-    font-weight: bold;
+#app-mainnav .navbar-toolbars {
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
 }
 
-.navbar .nav > li > a:focus,
-.navbar .nav > li > a:hover {
-    color: #000;
+.navbar-appswitcher {
+    margin-left: 20px !important;
 }
 
-.navbar .nav > .active > a,
-.navbar .nav > .active > a:hover,
-.navbar .nav > .active > a:focus,
-.navbar .nav > li > a.nav-group-active,
-.navbar .nav > li > a.nav-group-active:hover,
-.navbar .nav > li > a.nav-group-active:focus {
-    color: #FFF !important;
+.nav.navbar-meta > LI > A{
+    padding-left:8px !important;
+    padding-right:8px !important;
 }
 
-.navbar .nav > li > .dropdown-menu:before,
-.navbar .nav > li > .dropdown-menu:after {
-    display: none;
+/* endregion */
+
+/* region: Navigation - Quicknav */
+
+#app-quicknav .nav > LI > A{
+    padding: 2px 8px;
+    margin: 4px 0;
+    line-height: normal;
+    font-size:80%;
+    font-weight: 400;
 }
 
-.navbar .nav li.dropdown.open > .dropdown-toggle,
-.navbar .nav li.dropdown.active > .dropdown-toggle,
-.navbar .nav li.dropdown.open.active > .dropdown-toggle {
-    background-color: transparent;
-    color: #000;
-}
-
-.nav-pills > .active > a .muted,
-.nav-pills > .active > a:hover .muted {
-    color: #ccc;
-}
-
-.navbar .nav > .has-avatar > a {
-    padding: 4px;
-    line-height: 10px;
-}
+/* endregion */
 
 BODY,
 INPUT,
@@ -76,45 +59,6 @@ SELECT,
 TEXTAREA {
     font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-
-.navbar-toolbars {
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
-}
-
-.navbar-appswitcher {
-    margin-left: 20px !important;
-}
-
-#app-mainnav {
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
-}
-
-.navbar {
-    background: url(../img/bg-header.png) repeat-x;
-}
-
-.navbar-main LI.regular:hover {
-    background: url(../img/bg-header.png) 0 -100px repeat-x;
-}
-
-.navbar .nav > .active > a,
-.navbar .nav > .active > a:hover,
-.navbar .nav > .active > a:focus,
-.navbar .nav > li > a.nav-group-active,
-.navbar .nav > li > a.nav-group-active:hover,
-.navbar .nav > li > a.nav-group-active:focus {
-    color: #FFF !important;
-    background: url(../img/bg-nav-active.png) repeat-x;
-}
-
-#footer {
-    background: url(../img/bg-footer.png) repeat-x;
-}
-
-#footer section {
-    background: url(../img/footer-separator.png) no-repeat right;
-}
-
 
 #useravatar {
     display: inline-block;
@@ -132,50 +76,34 @@ TEXTAREA {
     position: relative;
 }
 
+/* ---------------------------------------------------------------------
+   FOOTER
+----------------------------------------------------------------------*/
+
+/* region: Footer */
+
 #footer {
-    margin: 0;
-    padding: 0;
-    height: 275px;
-    color: #a3c7ee;
+    margin:40px 0 0 0;
+    padding:0;
     font-size: 91%;
 }
 
-#footer A:link,
-#footer A:visited {
-    color: #60a1ff;
-}
-
-#footer A:active,
-#footer A:hover {
-    color: #aff2fc;
-}
-
 #footer_frame {
-    margin: 0 auto;
-    padding-top: 71px;
-    width: 1130px;
+    padding:40px 60px;
+    display:flex;
 }
 
-#footer section {
-    float: left;
-    height: 194px;
+#footer_frame > SECTION {
     padding-left: 30px;
     padding-right: 30px;
+    flex:1;
 }
 
-#footer section:first-child {
-
-}
-
-#footer section:last-child {
-    background: none;
-}
-
-footer p {
+#footer_frame P {
     line-height: 80%;
 }
 
-footer H2 {
+#footer_frame H2 {
     font-weight: normal;
     color: #fff;
     font-size: 16px;
@@ -183,6 +111,14 @@ footer H2 {
     padding: 0;
     margin: 0 0 20px 0;
 }
+
+/* endregion */
+
+/* -------------------------------------------------------------------
+   MISC ITEMS - BUTTONS, ETC
+   ------------------------------------------------------------------- */
+
+/* region: Miscellaneous */
 
 .clear {
     clear: both;
@@ -192,10 +128,6 @@ footer H2 {
 .ui-effects-wrapper .fa {
     color: #cc0000;
 }
-
-/* -------------------------------------------------------------------
-   MISC ITEMS - BUTTONS, ETC
-   ------------------------------------------------------------------- */
 
 CODE.clickable{
     color:#08c;
@@ -477,6 +409,8 @@ TD.nowrap {
     color: #005580;
 }
 
+/* endregion */
+
 /* ------------------------------------------------------------------------
    TEXT FORMATTING
    ------------------------------------------------------------------------*/
@@ -526,6 +460,8 @@ TD.nowrap {
  * @see global_functions.js:highlightURL()
  */
 
+/* region: URL highlighting */
+
 .url-origin {
     color: #005fd6;
 }
@@ -556,6 +492,7 @@ TD.nowrap {
     color: #60ABD8;
 }
 
+/* endregion */
 
 /**
  * ------------------------------------------------------------------
@@ -840,10 +777,6 @@ BODY.fontsize-bigger.non-zoomable {
     width: 90.9%;
 }
 
-.navbar .nav > li > .brand {
-    padding-right: 0;
-}
-
 #content_frame > .nav-pills {
     padding: 0;
     border-top: solid 1px #e9e9e9;
@@ -914,16 +847,6 @@ BODY.fontsize-bigger.non-zoomable {
 
 #messages-container > .alert:last-child {
     margin-bottom: 0;
-}
-
-#header .navbar-nav > li > a {
-    padding-left: 6px;
-    padding-right: 6px;
-}
-
-#header .navbar-nav > li.active > a {
-    padding-left: 12px;
-    padding-right: 12px;
 }
 
 A[target="_blank"]:not([type="button"]) {
@@ -1063,6 +986,8 @@ UL.unstyled.compact > LI {
    ALERTS
    ------------------------------------------------------------------- */
 
+/* region: Alerts */
+
 .alert > P:last-child {
     margin-bottom: 0;
 }
@@ -1109,10 +1034,13 @@ UL.unstyled.compact > LI {
     font-size: 120%;
 }
 
+/* endregion */
 
 /* -------------------------------------------------------------------
    HEADINGS
    ------------------------------------------------------------------- */
+
+/* region: Headings */
 
 /* Avoid the help button displacing the title context elements when no breadcrumb is present */
 .title-wrapper-title{
@@ -1226,9 +1154,13 @@ H3.page-abstract {
     left: auto;
 }
 
+/* endregion */
+
 /* -------------------------------------------------------------------
    BADGES
    ------------------------------------------------------------------- */
+
+/* region: Badges */
 
 .badge-dropdown {
     display: inline-block;
@@ -1248,3 +1180,5 @@ H3.page-abstract {
 .badge.badge-small {
     line-height: 0.8em;
 }
+
+/* endregion */
