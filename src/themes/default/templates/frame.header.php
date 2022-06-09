@@ -16,17 +16,16 @@
                 ?>
                 <li>
                     <a href="#" onclick="<?php echo Application_User_Notepad::getJSOpen() ?>">
-                        <?php UI::icon()->notepad()
+                        <?php echo UI::icon()->notepad()
                             ->setTooltip(Application_User_Notepad::getTooltipText())
                             ->makeTooltipBottom()
-                            ->makeInformation()
                             ->setAttribute('data-placement', 'left')
                         ?>
                     </a>
                 </li>
                 <li>
                     <a href="#" onclick="Driver.DialogLookup();">
-                        <?php UI::icon()->search()
+                        <?php echo UI::icon()->search()
                         ->setTooltip(t('Look up an item'))
                         ->makeTooltipBottom()
                         ->setAttribute('data-placement', 'left')
@@ -35,7 +34,7 @@
                 </li>
                 <li>
                     <a href="#" onclick="window.print();">
-                        <?php UI::icon()->printer()
+                        <?php echo UI::icon()->printer()
                         ->setTooltip(t('Print this page'))
                         ->makeTooltipBottom()
                         ->setAttribute('data-placement', 'left')
@@ -52,7 +51,7 @@
 
         $lockManager = $this->page->getLockManager();
         
-        if($lockManager && $lockManager->isEnabled()) 
+        if($lockManager && Application_LockManager::isEnabled())
         {
             ?>
                 <div class="navbar-toolbars">
