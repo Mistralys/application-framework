@@ -13,6 +13,7 @@ use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\NamedClosure;
 use Closure;
+use UI;
 use UI\Page\Navigation\QuickNavigation\Items\ScreenNavItem;
 use UI\Page\Navigation\QuickNavigation\Items\URLNavItem;
 use UI\Page\Navigation\QuickNavigation\ScreenItemsContainer;
@@ -53,6 +54,11 @@ class QuickNavigation implements Application_Interfaces_Loggable
                 array($this, 'event_areaUIHandlingComplete')
             )
         );
+    }
+
+    public function getUI() : UI
+    {
+        return $this->header->getUI();
     }
 
     private function event_areaUIHandlingComplete(UIHandlingCompleteEvent $event) : void
