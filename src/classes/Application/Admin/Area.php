@@ -1,10 +1,13 @@
 <?php
 
+use Application\Admin\Area\Events\UIHandlingCompleteEvent;
+use UI\Page\Navigation\QuickNavigation;
+
 abstract class Application_Admin_Area extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;
 
-    public const NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
+    public const EVENT_UI_HANDLING_COMPLETE = 'UIHandlingComplete';
 
     public function __construct(Application_Driver $driver, bool $adminMode = false)
     {
@@ -172,22 +175,25 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         $this->logUI('Starting the UI.');
 
         $page = $this->requirePage();
+        $subNav = $page->createNavigation('subnav');
 
-        $subnav = $page->createNavigation('subnav');
-        $sidebar = $page->getSidebar();
-        $help = $page->createHelp();
-        $contextMenu = $this->ui->createDropdownMenu();
-        $tabs = $this->ui->createTabs('page-content-tabs');
-
-        $this->handleSubnavigation($subnav);
-        $this->handleQuickNavigation($page->getHeader());
+        $this->handleSubnavigation($subNav);
         $this->handleBreadcrumb();
-        $this->handleHelp($help);
-        $this->handleContextMenu($contextMenu);
-        $this->handleSidebar($sidebar);
-        $this->handleTabs($tabs);
-        
-        $subnav->initDone();
+        $this->handleHelp($page->createHelp());
+        $this->handleContextMenu($this->ui->createDropdownMenu());
+        $this->handleSidebar($page->getSidebar());
+        $this->handleTabs($this->ui->createTabs('page-content-tabs'));
+        $this->handleQuickNavigation($this->createQuickNav());
+
+        Application_EventHandler::trigger(
+            self::EVENT_UI_HANDLING_COMPLETE,
+            array(
+                $this
+            ),
+            UIHandlingCompleteEvent::class
+        );
+
+        $subNav->initDone();
     }
     
     /**
@@ -233,33 +239,8 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         return $this->renderContent();
     }
 
-    /**
-     * Allows the area to add items to show in the quick
-     * navigation, which is shown whenever the area is
-     * active.
-     *
-     * @param UI_Page_Navigation $nav
-     * @return void
-     */
-    protected function _handleQuickNavigation(UI_Page_Navigation $nav) : void
+    private function createQuickNav() : QuickNavigation
     {
-
-    }
-
-    private function handleQuickNavigation(UI_Page_Header $header) : void
-    {
-        $quickNav = $header->getPage()->createNavigation(self::NAV_AREA_QUICK_NAVIGATION);
-
-        $this->_handleQuickNavigation($quickNav);
-
-        if($quickNav->hasItems())
-        {
-            $this->logUI('Area has quick navigation items.');
-            $header->addNavigationInstance($quickNav);
-        }
-        else
-        {
-            $this->logUI('Area has no quick navigation items.');
-        }
+        return new QuickNavigation($this->getPage()->getHeader());
     }
 }
