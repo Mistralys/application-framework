@@ -8,6 +8,9 @@
  * @see UI_Renderable_Interface
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\FileHelper;
 
 /**
@@ -71,7 +74,10 @@ abstract class UI_Renderable implements UI_Renderable_Interface
      *
      * @param string $templateID
      * @return UI_Page_Template
+     *
      * @throws UI_Themes_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function createTemplate(string $templateID) : UI_Page_Template
     {
@@ -91,21 +97,9 @@ abstract class UI_Renderable implements UI_Renderable_Interface
         
         if(class_exists($className))
         {
-            $instance = new $className($this->page, $templateID);
-            
-            if($instance instanceof UI_Page_Template_Custom)
-            {
-                return $instance;
-            }
-            
-            throw new UI_Themes_Exception(
-                'Invalid template class',
-                sprintf(
-                    'The class [%s] does not extend the [%s] class.',
-                    $className,
-                    UI_Page_Template_Custom::class
-                ),
-                self::ERROR_INVALID_TEMPLATE_CLASS
+            return ClassFinder::requireInstanceOf(
+                UI_Page_Template_Custom::class,
+                new $className($this->page, $templateID)
             );
         }
         
