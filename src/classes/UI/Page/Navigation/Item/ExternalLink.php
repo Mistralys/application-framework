@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
+use AppUtils\AttributeCollection;
+use UI\Page\Navigation\LinkItemBase;
+
+class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
 {
     protected string $url;
-    protected string $target = '';
 
     /**
      * @param UI_Page_Navigation $nav
@@ -32,17 +34,6 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
         return $this->url;
     }
 
-    public function setTarget(string $target) : self
-    {
-        $this->target = $target;
-        return $this;
-    }
-
-    public function makeNewTab() : self
-    {
-        return $this->setTarget('_blank');
-    }
-
     public function render(array $attributes = array()) : string
     {
         if(!$this->isValid())
@@ -50,20 +41,21 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
             return '';
         }
 
-        $attributes = array_merge(
-            $attributes,
-            array(
-                'href' => $this->getURL(),
-                'class' => implode(' ', $this->classes),
-                'target' => $this->target
-            )
-        );
+        $attribs = AttributeCollection::create($attributes)
+            ->href($this->getURL())
+            ->addClasses($this->classes)
+            ->attr('target', $this->target);
 
         $label = $this->getTitle();
         if (isset($this->icon)) {
             $label = $this->icon->render() . ' ' . $label;
         }
 
-        return '<a' . compileAttributes($attributes) . '>' . $label . '</a>';
+        if(isset($this->tooltipInfo))
+        {
+            $this->tooltipInfo->injectAttributes($attribs);
+        }
+
+        return '<a' . $attribs . '>' . $label . '</a>';
     }
 }

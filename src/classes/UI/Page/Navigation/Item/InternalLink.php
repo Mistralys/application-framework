@@ -1,16 +1,12 @@
 <?php
 
-class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
-{
-    /**
-     * @var UI_Page
-     */
-    protected $page;
+use AppUtils\AttributeCollection;
+use UI\Page\Navigation\LinkItemBase;
 
-    /**
-     * @var bool
-     */
-    protected $locked = false;
+class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
+{
+    protected UI_Page $page;
+    protected bool $locked = false;
 
     /**
      * @param UI_Page_Navigation $nav
@@ -25,7 +21,7 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
     {
         parent::__construct($nav, $id);
 
-        $params['page'] = $targetPageID;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = $targetPageID;
 
         $this->page = $page;
         $this->title = $title;
@@ -62,13 +58,20 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
             return '';
         }
 
-        $attributes['href'] = $this->getURL();
-        $attributes['id'] = 'nav-'.str_replace('.', '-', $this->getURLPath());
-        $attributes['class'] = implode(' ', $this->classes);
+        $attribs = AttributeCollection::create($attributes)
+            ->href($this->getURL())
+            ->id($this->generateID())
+            ->addClasses($this->classes)
+            ->attr('target', $this->target);
 
         if($this->locked)
         {
             $this->setIcon(UI::icon()->locked());
+        }
+
+        if(isset($this->tooltipInfo))
+        {
+            $this->tooltipInfo->injectAttributes($attribs);
         }
         
         $label = $this->getTitle();
@@ -76,7 +79,26 @@ class UI_Page_Navigation_Item_InternalLink extends UI_Page_Navigation_Item
             $label = $this->icon->render() . ' ' . $label;
         }
         
-        return '<a' . compileAttributes($attributes) . '>' . $label . '</a>';
+        return '<a' . $attribs . '>' . $label . '</a>';
+    }
+
+    /**
+     * @var array<string,int>
+     */
+    private static $ids = array();
+
+    private function generateID() : string
+    {
+        $id = 'nav-'.str_replace('.', '-', $this->getURLPath());
+
+        if(!isset(self::$ids[$id]))
+        {
+            self::$ids[$id] = 1;
+            return $id;
+        }
+
+        self::$ids[$id]++;
+        return $id.'-'.self::$ids[$id];
     }
     
     public function getAdminScreen() : ?Application_Admin_ScreenInterface
