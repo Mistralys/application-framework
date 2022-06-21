@@ -9,7 +9,7 @@ abstract class ApplicationTestCase extends TestCase
     /**
      * @var array<string,int>
      */
-    private static $counter = array();
+    private static array $counter = array();
 
     protected function logHeader(string $testName) : void
     {
@@ -104,10 +104,7 @@ abstract class ApplicationTestCase extends TestCase
         return $formable;
     }
 
-    /**
-     * @var UI|null
-     */
-    protected static $ui = null;
+    protected static ?UI $ui = null;
 
     protected function createUI() : UI
     {
@@ -122,5 +119,24 @@ abstract class ApplicationTestCase extends TestCase
         }
 
         return self::$ui;
+    }
+
+    public function html2string(string $html) : string
+    {
+        $replaces = array(
+            '</p>' => PHP_EOL,
+            '</ul>' => PHP_EOL,
+            '</li>' => PHP_EOL,
+            '<br>' => PHP_EOL,
+            '</br>' => PHP_EOL,
+            '</div>' => PHP_EOL,
+            '</table>' => PHP_EOL
+        );
+
+        return strip_tags(str_replace(
+            array_keys($replaces),
+            array_values($replaces),
+            $html
+        ));
     }
 }
