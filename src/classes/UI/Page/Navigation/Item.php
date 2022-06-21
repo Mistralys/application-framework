@@ -16,8 +16,6 @@ use AppUtils\Traits_Classable;
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
- * @method UI_Page_Navigation_Item addClass($class) addClass(string $class)
  */
 abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconizable, Interface_Classable, UI_Interfaces_Conditional, Application_Interfaces_Loggable
 {
@@ -29,47 +27,24 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     public const ITEM_POSITION_INLINE = 'inline';
     public const ITEM_POSITION_BELOW = 'below';
     
-    /**
-     * @var Application_Request
-     */
-    protected $request;
-    
-    /**
-     * @var UI_Page_Navigation
-     */
-    protected $nav;
+    protected Application_Request $request;
+    protected UI_Page_Navigation $nav;
+    protected string $id;
+    protected bool $active = false;
+    protected string $title = '';
+    protected string $group = '';
+    protected string $alias = '';
+    protected UI $ui;
 
     /**
-     * @var string
+     * @var array<string,string|number>
      */
-    protected $id;
+    protected array $params = array();
 
     /**
-     * @var bool
+     * @var string[]
      */
-    protected $active = false;
-
-    /**
-     * @var string
-     */
-    protected $title = '';
-
-    protected $params = array();
-
-    /**
-     * @var string
-     */
-    protected $group = '';
-
-    /**
-     * @var string
-     */
-    protected $alias = '';
-
-   /**
-    * @var UI
-    */
-    protected $ui;
+    protected array $containerClasses = array();
 
     /**
      * @param UI_Page_Navigation $nav
@@ -123,11 +98,6 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
         return $this->getPosition() === self::ITEM_POSITION_BELOW;
     }
 
-    /**
-     * @var string[]
-     */
-    protected $containerClasses = array();
-    
    /**
     * Adds a class that will be added to the navigation item's container element,
     * typically the <li> element in a list.
@@ -137,13 +107,16 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     */
     public function addContainerClass(string $class) : self
     {
-        if(!in_array($class, $this->containerClasses)) {
+        if(!in_array($class, $this->containerClasses, true)) {
             $this->containerClasses[] = $class;
         }
         
         return $this;
     }
-    
+
+    /**
+     * @return string[]
+     */
     public function getContainerClasses() : array
     {
         return $this->containerClasses;
@@ -227,12 +200,13 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
     }
 
    /**
-    * Sets an alias for the item so it can easily be accessed later
-    * using the navigation's getByAlias() method.
+    * Sets an alias for the item, so it can easily be accessed later
+    * using the navigation's {@see UI_Page_Navigation::getItemByAlias()}
+    * method.
     * 
     * @param string $alias
     * @return UI_Page_Navigation_Item
-    * @see UI_Page_Navigation::getByAlias()
+    * @see UI_Page_Navigation::getItemByAlias()
     */
     public function setAlias(string $alias) : self
     {
