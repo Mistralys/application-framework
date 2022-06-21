@@ -102,6 +102,10 @@ class ScreenNavItem extends BaseQuickNavItem
         )
             ->setIcon($this->getIcon());
 
+        if(isset($this->tooltipInfo)) {
+            $url->setTooltip($this->tooltipInfo->makeBottom());
+        }
+
         if($this->newTab) {
             $url->makeNewTab();
         }

@@ -48,6 +48,10 @@ class URLNavItem extends BaseQuickNavItem
         $url = $navigation->addURL($this->label, $this->url)
             ->setIcon($this->getIcon());
 
+        if(isset($this->tooltipInfo)) {
+            $url->setTooltip($this->tooltipInfo->makeBottom());
+        }
+
         if($this->external) {
             $url->makeNewTab();
         }
