@@ -8,6 +8,8 @@
 
 use AppUtils\Interface_Classable;
 use AppUtils\Traits_Classable;
+use UI\Interfaces\TooltipableInterface;
+use UI\Traits\TooltipableTrait;
 
 /**
  * Base class for navigation items which should be extended
@@ -17,12 +19,20 @@ use AppUtils\Traits_Classable;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconizable, Interface_Classable, UI_Interfaces_Conditional, Application_Interfaces_Loggable
+abstract class UI_Page_Navigation_Item
+    implements
+    Application_Interfaces_Iconizable,
+    Interface_Classable,
+    UI_Interfaces_Conditional,
+    Application_Interfaces_Loggable,
+    TooltipableInterface
 {
     use Application_Traits_Iconizable;
     use Traits_Classable;
     use UI_Traits_Conditional;
     use Application_Traits_Loggable;
+    use TooltipableTrait;
+    use UI_Traits_RenderableGeneric;
 
     public const ITEM_POSITION_INLINE = 'inline';
     public const ITEM_POSITION_BELOW = 'below';
@@ -57,6 +67,11 @@ abstract class UI_Page_Navigation_Item implements Application_Interfaces_Iconiza
         $this->id = $id;
         $this->request = Application_Request::getInstance();
         $this->ui = UI::getInstance();
+    }
+
+    public function getUI() : UI
+    {
+        return $this->ui;
     }
 
     public function getID() : string
