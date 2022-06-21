@@ -13,7 +13,8 @@
 - Logging: Added support for log message categories.
 - Moved the Deepl methods to the new `DeeplHelper` class.
 - Unit Tests: The test application has been fleshed out further.
-- Code Quality: PHPStan analysis now clean at level 5. 
+- Code Quality: PHPStan analysis now clean at level 5.
+- Unit Tests: Added the method `string2html()` in the `ApplicationTestCase`. 
 
 #### Deprecated methods and classes
 
