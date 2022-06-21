@@ -164,6 +164,9 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
      * @param string|number|UI_Renderable_Interface|NULL $title
      * @param array<string,string> $params
      * @return UI_Page_Navigation_Item_InternalLink
+     *
+     * @throws Application_Exception
+     * @throws UI_Exception
      */
     public function addInternalLink(string $targetPageID, $title, array $params = array()) : UI_Page_Navigation_Item_InternalLink
     {
