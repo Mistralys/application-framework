@@ -33,6 +33,7 @@ class ScreenNavItem extends BaseQuickNavItem
     private array $params = array();
 
     private string $label;
+    private bool $newTab = false;
 
     /**
      * @param QuickNavigation $navigation
@@ -95,10 +96,20 @@ class ScreenNavItem extends BaseQuickNavItem
 
     public function injectNavigation(UI_Page_Navigation $navigation) : void
     {
-        $navigation->addURL(
+        $url = $navigation->addURL(
             $this->label,
             Application_Request::getInstance()->buildURL($this->params)
         )
             ->setIcon($this->getIcon());
+
+        if($this->newTab) {
+            $url->makeNewTab();
+        }
+    }
+
+    public function makeNewTab(bool $newTab=true) : self
+    {
+        $this->newTab = $newTab;
+        return $this;
     }
 }
