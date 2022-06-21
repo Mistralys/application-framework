@@ -11,6 +11,7 @@ use Application\ClassFinder;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Trait used by all administration screens: used to 
@@ -38,6 +39,7 @@ use AppUtils\FileHelper_Exception;
  * - _handleHelp
  * - _handleSidebar
  * - _handleSubnavigation
+ * - _handleQuickNavigation
  * 
  * @package Application
  * @subpackage Admin
@@ -126,6 +128,8 @@ trait Application_Traits_Admin_Screen
     * @var string|NULL
     */
     protected $subscreenURLParam;
+
+    protected QuickNavigation $quickNav;
     
    /**
     * Handles any actions that need to be executed before 
@@ -287,7 +291,12 @@ trait Application_Traits_Admin_Screen
     {
         
     }
-    
+
+    /**
+     * @param UI_Page_Sidebar $sidebar
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleSidebar()
+     */
     public function handleSidebar(UI_Page_Sidebar $sidebar) : void
     {
         $this->_handleUIMethodObject('Sidebar', 'sidebar', $sidebar);
@@ -297,6 +306,11 @@ trait Application_Traits_Admin_Screen
     {
     }
 
+    /**
+     * @param UI_Page_Navigation $subnav
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleSubnavigation()
+     */
     public function handleSubnavigation(UI_Page_Navigation $subnav) : void
     {
         $this->_handleUIMethodObject('Subnavigation', 'subnav', $subnav);
@@ -306,7 +320,12 @@ trait Application_Traits_Admin_Screen
     {
         
     }
-    
+
+    /**
+     * @param UI_Bootstrap_DropdownMenu $menu
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleContextMenu()
+     */
     public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void
     {
         $this->_handleUIMethodObject('ContextMenu', 'contextmenu', $menu);
@@ -316,7 +335,12 @@ trait Application_Traits_Admin_Screen
     {
         
     }
-    
+
+    /**
+     * @param UI_Bootstrap_Tabs $tabs
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleTabs()
+     */
     public function handleTabs(UI_Bootstrap_Tabs $tabs) : void
     {
         $this->_handleUIMethodObject('Tabs', 'tabs', $tabs);
@@ -324,9 +348,31 @@ trait Application_Traits_Admin_Screen
 
     protected function _handleTabs() : void
     {
-        
+
     }
-    
+
+    /**
+     * @param QuickNavigation $navigation
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleQuickNavigation()
+     */
+    public function handleQuickNavigation(QuickNavigation $navigation) : void
+    {
+        $navigation->setWorkScreen($this);
+
+        $this->_handleUIMethodObject('QuickNavigation', 'quickNav', $navigation);
+    }
+
+    protected function _handleQuickNavigation() : void
+    {
+
+    }
+
+    /**
+     * @param UI_Page_Help $help
+     * @return void
+     * @see Application_Traits_Admin_Screen::_handleHelp()
+     */
     public function handleHelp(UI_Page_Help $help) : void
     {
         $this->_handleUIMethodObject('Help', 'help', $help);
@@ -336,7 +382,11 @@ trait Application_Traits_Admin_Screen
     {
         
     }
-    
+
+    /**
+     * @return string
+     * @see Application_Traits_Admin_Screen::_renderContent()
+     */
     public function renderContent() : string
     {
         $this->log('Render content');
