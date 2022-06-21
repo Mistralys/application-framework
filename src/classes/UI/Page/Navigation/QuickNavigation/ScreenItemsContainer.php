@@ -42,7 +42,22 @@ class ScreenItemsContainer
 
     public function hasItems() : bool
     {
-        return !empty($this->items);
+        return count($this->getValidItems()) !== 0;
+    }
+
+    public function getValidItems() : array
+    {
+        $valid = array();
+
+        foreach($this->items as $item)
+        {
+            if($item->isValid())
+            {
+                $valid[] = $item;
+            }
+        }
+
+        return $valid;
     }
 
     public function makeExclusive() : self
@@ -89,7 +104,9 @@ class ScreenItemsContainer
 
     public function injectElements(UI_Page_Navigation $navigation)  : void
     {
-        foreach($this->items as $item)
+        $valid = $this->getValidItems();
+
+        foreach($valid as $item)
         {
             $item->injectNavigation($navigation);
         }
