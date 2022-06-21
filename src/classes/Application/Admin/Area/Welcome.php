@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class Application_Admin_Area_Welcome extends Application_Admin_Area
 {
-    const URL_NAME_WELCOME = 'welcome';
+    public const URL_NAME_WELCOME = 'welcome';
 
     public function getDefaultMode() : string
     {

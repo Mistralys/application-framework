@@ -6,6 +6,9 @@
  * @see UI_page
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -361,7 +364,7 @@ class UI_Page extends UI_Renderable
      */
     public function getURL(array $params = array()) : string
     {
-        return $this->ui->getApplication()->getDriver()->getPageURL($this, $params);
+        return Application_Driver::getInstance()->getPageURL($this, $params);
     }
 
     /**
@@ -528,18 +531,15 @@ class UI_Page extends UI_Renderable
      * Creates a developer panel sidebar section instance.
      *
      * @return UI_Page_Section_Type_Developer
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function createDeveloperPanel() : UI_Page_Section_Type_Developer
     {
-        $section = $this->createSidebarSection('Developer');
-
-        if($section instanceof UI_Page_Section_Type_Developer)
-        {
-            return $section;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Section_Type_Developer::class, $section);
+        return ClassFinder::requireInstanceOf(
+            UI_Page_Section_Type_Developer::class,
+            $this->createSidebarSection('Developer')
+        );
     }
     
    /**

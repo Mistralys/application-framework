@@ -761,7 +761,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function hasSubscreen(string $id): bool { return false; }
     public function getSubscreenIDs(): array { return array(); }
     public function hasSubscreens(): bool { return false; }
-    public function getSubscreenByID(string $id): Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode): Application_Admin_ScreenInterface
     {
         throw new Application_Exception(
             'Wizard steps have no subscreens.',

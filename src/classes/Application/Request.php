@@ -6,6 +6,11 @@
  * @see Application_Request
  */
 
+declare(strict_types=1);
+
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\Request;
 use function AppUtils\parseURL;
 
@@ -33,38 +38,35 @@ use function AppUtils\parseURL;
  */
 class Application_Request extends Request
 {
-    /**
-     * @var string|NULL
-     */
-    private static $requestID;
+    private static ?string $requestID = null;
 
     /**
      * @return void
      * @see Application_Driver::__construct()
      */
-    protected function init()
+    protected function init() : void
     {
         $this->setBaseURL(APP_URL);
 
         Application::getLogger()->logSF(
             'Initialized request [%s].',
+            Application_Logger::CATEGORY_REQUEST,
             self::getRequestID()
         );
     }
 
     /**
      * @return Application_Request
+     *
+     * @throws UnexpectedInstanceException
+     * @throws ClassNotExistsException
      */
-    public static function getInstance()
+    public static function getInstance() : self
     {
-        $instance = parent::getInstance();
-
-        if($instance instanceof Application_Request)
-        {
-            return $instance;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Request::class, $instance);
+        return ClassFinder::requireInstanceOf(
+            __CLASS__,
+            parent::getInstance()
+        );
     }
 
     public static function getRequestID() : string
@@ -85,19 +87,29 @@ class Application_Request extends Request
             ->getDispatcher();
     }
     
-    public function getExcludeParams()
+    public function getExcludeParams() : array
     {
         return array(
             Application_Session_Base::KEY_NAME_SIMULATED_ID,
             'lockmanager_enable'
         );
     }
-    
-    public function buildPrintURL($params = array())
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    public function buildPrintURL(array $params = array()) : string
     {
-        return $this->buildRefreshURL(array('print' => 'yes'));
+        $params['print'] = 'yes';
+
+        return $this->buildRefreshURL($params);
     }
 
+    /**
+     * @param string|array<string,string|number>$urlOrParams
+     * @return array
+     */
     public static function resolveParams($urlOrParams) : array
     {
         if(is_array($urlOrParams))

@@ -138,10 +138,10 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
     }
 
     /**
-     * @param UI_Icon $icon
+     * @param UI_Icon|NULL $icon
      * @return $this
      */
-    public function setIcon(UI_Icon $icon) : self
+    public function setIcon(?UI_Icon $icon) : self
     {
         $this->badge->setIcon($icon);
         return $this;

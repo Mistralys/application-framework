@@ -7,6 +7,7 @@
  * @see Application_FilterSettings
  */
 
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -547,7 +548,7 @@ abstract class Application_FilterSettings
             return $el;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element_InputText::class, $el);
+        throw new UnexpectedInstanceException(HTML_QuickForm2_Element_InputText::class, $el);
     }
     
    /**

@@ -32,7 +32,7 @@ class Application_Ratings extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'comments'
+            'comments' => t('Comments')
         );
     }
 

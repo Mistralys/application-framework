@@ -4,12 +4,12 @@ use AppLocalize\Localization;
 
 class Application_Admin_Area_Settings extends Application_Admin_Area
 {
-    const URL_NAME = 'settings';
+    public const URL_NAME = 'settings';
 
     /**
      * @var string
      */
-    protected $formName = 'usersettings';
+    protected string $formName = 'usersettings';
 
     public function getURLName() : string
     {
@@ -28,7 +28,7 @@ class Application_Admin_Area_Settings extends Application_Admin_Area
 
     public function getNavigationTitle() : string
     {
-        return t('Settings');
+        return t('User settings');
     }
 
     public function isUserAllowed() : bool

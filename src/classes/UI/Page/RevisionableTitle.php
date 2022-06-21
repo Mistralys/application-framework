@@ -99,31 +99,28 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         return $this;
     }
     
-    protected function configureBadges(UI_Page_Title $title, Application_Revisionable $revisionable)
+    protected function configureBadges(UI_Page_Title $title, Application_Revisionable $revisionable) : void
     {
         $state = $revisionable->getState();
-        $badge = $state->getBadge();
-        $typeName = strtolower($revisionable->getRevisionableTypeName());
 
-        // wrap the badge in a span so we can easily replace it clientside on state change.
-        $wrapper = sprintf(
-            '<span id="%s-title-state" class="revisionable-title-state">%s</span>',
-            $typeName,
-            UI_Badge::WRAPPER_PLACEHOLDER
-        );
-        
+        if($state === null)
+        {
+            return;
+        }
+
+        $badge = $state->getBadge();
+
         // add the state badge right at the beginning
         $this->prependBadge($badge);
 
-        if($revisionable->isExportable() && $state->getName() == 'draft') 
+        if($revisionable->isExportable() && $state->getName() === 'draft')
         {
             $this->addBadge(
-                $this->ui->label(t('Export notice'))
+                UI::label(t('Export notice'))
                 ->cursorHelp()
                 ->makeInfo()
                 ->setIcon(UI::icon()->warning())
                 ->setTooltip(t('Drafts are not exported automatically.'))
-                ->render()
             );
         }
     }

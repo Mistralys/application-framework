@@ -23,32 +23,17 @@ use AppUtils\Interface_Classable;
 class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
 {
     use Traits_Classable;
-    
-   /**
-    * @var string
-    */
-    private $id;
 
-   /**
-    * @var integer
-    */
-    private $counter = 0;
+    private string $id;
+    private int $counter = 0;
+    private string $append = '';
+    protected ?UI_Bootstrap_DropdownMenu $contextMenu = null;
 
     /**
      * @var UI_Page_Navigation_Item[]
      */
-    private $items = array();
+    private array $items = array();
 
-   /**
-    * @var string
-    */
-    private $append = '';
-    
-    /**
-     * @var UI_Bootstrap_DropdownMenu|NULL
-     */
-    protected $contextMenu;
-    
     public function __construct(UI_Page $page, string $id)
     {
         $this->id = $id;
@@ -62,6 +47,45 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     public function getID() : string
     {
         return $this->id;
+    }
+
+    /**
+     * Whether there are any items in the navigation.
+     *
+     * NOTE: Does NOT check whether the items are valid.
+     * Use {@see UI_Page_Navigation::hasValidItems()}
+     * instead if this is relevant.
+     *
+     * @return bool
+     */
+    public function hasItems() : bool
+    {
+        return !empty($this->items);
+    }
+
+    /**
+     * Checks whether the navigation has any items that
+     * are valid to be displayed (that fulfill all conditions
+     * that may have been defined for them, see {@see UI_Interfaces_Conditional}).
+     *
+     * @return bool
+     */
+    public function hasValidItems() : bool
+    {
+        if(!$this->hasItems())
+        {
+            return false;
+        }
+
+        foreach($this->items as $item)
+        {
+            if($item->isValid())
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -158,6 +182,22 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
 
         return $item;
     }
+
+    public function addExternalLink(string $title, $url) : UI_Page_Navigation_Item_ExternalLink
+    {
+        $this->counter++;
+
+        $item = new UI_Page_Navigation_Item_ExternalLink(
+            $this,
+            (string)$this->counter,
+            $url,
+            $title
+        );
+
+        $this->items[] = $item;
+
+        return $item;
+    }
     
     public function clearItems() : UI_Page_Navigation
     {
@@ -201,17 +241,22 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     * 
     * @param string|number|UI_Renderable_Interface|NULL $title
     * @param string $url
-    * @return UI_Page_Navigation_Item_InternalLink
+    * @return UI_Page_Navigation_Item_InternalLink|UI_Page_Navigation_Item_ExternalLink
     */
-    public function addURL($title, string $url) : UI_Page_Navigation_Item_InternalLink
+    public function addURL($title, string $url) : UI_Page_Navigation_Item
     {
         $params = Application_Request::resolveParams($url);
 
-        return $this->addInternalLink(
-            $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
-            $title,
-            $params
-        );
+        if(isset($params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]))
+        {
+            return $this->addInternalLink(
+                $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
+                $title,
+                $params
+            );
+        }
+
+        return $this->addExternalLink($title, $url);
     }
 
     /**

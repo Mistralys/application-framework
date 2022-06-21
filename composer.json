@@ -65,11 +65,12 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "mistralys/application-utils": "^1.9.1",
+    "mistralys/application-utils": "^2.0.0",
     "mistralys/application-localization": "^1.4.1",
     "mistralys/deepl-xml-translator": "^2.0.0",
     "mistralys/subsetsum": "^1.0.0",
     "mistralys/markdown-viewer": "^1.1.0",
+    "mistralys/html_quickform2": "^2.1.2",
     "mistralys/version-parser": "^1.0.0",
     "pear/http_request2": "^v2.5.0",
     "shark/simple_html_dom": "dev-master",

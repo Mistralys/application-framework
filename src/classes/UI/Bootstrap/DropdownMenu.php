@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
 
@@ -173,16 +176,18 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         return $this;
     }
 
+    /**
+     * @return UI_Bootstrap_DropdownDivider
+     * @throws Application_Exception
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     */
     private function createDivider() : UI_Bootstrap_DropdownDivider
     {
-        $divider = $this->ui->createBootstrap('DropdownDivider');
-
-        if($divider instanceof UI_Bootstrap_DropdownDivider)
-        {
-            return $divider;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(UI_Bootstrap_DropdownDivider::class, $divider);
+        return ClassFinder::requireInstanceOf(
+            UI_Bootstrap_DropdownDivider::class,
+            $this->ui->createBootstrap('DropdownDivider')
+        );
     }
 
     /**

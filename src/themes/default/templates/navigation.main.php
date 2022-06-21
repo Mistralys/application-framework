@@ -23,7 +23,7 @@ $nav->addClass('navbar-main');
         {
             $group = $item->getGroup();
             
-            if ($group && in_array($group, $trackGroups)) 
+            if ($group && in_array($group, $trackGroups, true))
             {
                 continue;
             }
@@ -37,15 +37,6 @@ $nav->addClass('navbar-main');
         
                 if ($nav->isGroupActive($group)) {
                     $active = ' nav-group-active';
-        
-                    // append the name of the active subitem to the
-                    // group label
-                    foreach ($groupItems as $groupItem) {
-                        if ($groupItem->isActive()) {
-                            $groupLabel .= ': ' . $groupItem->getTitle();
-                            break;
-                        }
-                    }
                 }
         
                 ?>
@@ -81,19 +72,26 @@ $nav->addClass('navbar-main');
             }
         
             $item->addClass('nav-link');
-        
-            $type = 'regular';
-            
-            if ($item->isActive()) 
+
+            if($item instanceof UI_Page_Navigation_Item_DropdownMenu)
             {
-                $type = 'active';
+                echo $item->render();
             }
-            
-            ?>
-            	<li class="<?php echo $type ?>">
-            		<?php echo $item->render() ?>
-        		</li>
-            <?php 
+            else
+            {
+                $type = 'regular';
+
+                if ($item->isActive())
+                {
+                    $type = 'active';
+                }
+
+                ?>
+                    <li class="<?php echo $type ?>">
+                        <?php echo $item->render() ?>
+                    </li>
+                <?php
+            }
         }
     ?>
 </ul>

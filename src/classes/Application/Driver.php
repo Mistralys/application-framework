@@ -6,14 +6,25 @@
  * @package Application
  */
 
+use Application\ClassFinder;
+use Application\Driver\DriverException;
+use Application\Exception\ClassFinderException;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
+use Mistralys\VersionParser\VersionParser;
+use UI\Page\Navigation\NavConfigurator;
 
 /**
  * Base class for the application "driver", which is where the
  * actual implementation of the application is done.
+ *
+ * NOTE: The driver instance is created in the bootstrap:
+ * {@see Application_Bootstrap_Screen::initDriver()}.
  *
  * @package Application
  * @subpackage Core
@@ -21,7 +32,8 @@ use AppUtils\ConvertHelper;
  */
 abstract class Application_Driver implements Application_Driver_Interface
 {
-    public const ERROR_SETTING_VALUE_NOT_A_STRING = 333001;
+    use Application_Traits_Loggable;
+
     public const ERROR_INVALID_REVISIONABLE_TYPE = 333002;
     public const ERROR_MISSING_REVISIONABLE_METHOD = 333003;
     public const ERROR_NOT_A_REVISIONABLE = 333004;
@@ -33,76 +45,46 @@ abstract class Application_Driver implements Application_Driver_Interface
     public const ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA = 333010;
     public const ERROR_MAIN_NAVIGATION_NOT_CONFIGURED = 333011;
     public const ERROR_UNKNOWN_ADMINISTRATION_AREA = 333012;
-    public const ERROR_UNSUPPORTED_ADMIN_AREA_CLASS = 333013;
     public const ERROR_CUSTOM_PROPERTY_OWNER_METHOD_MISSING = 333014;
     public const ERROR_CUSTOM_PROPERTY_OWNER_INVALID = 333015;
-    public const ERROR_VERSION_METHOD_NOT_IMPLEMENTED = 333016;
-    public const ERROR_CANNOT_LOAD_ADMIN_AREA_CLASS = 333017;
-    public const ERROR_DEEPL_API_KEY_NOT_SET = 333018;
     public const ERROR_UNHANDLED_SCREEN_TYPE = 333019;
     public const ERROR_NO_ACTIVE_AREA_AVAILABLE = 333020;
+    public const ERROR_DRIVER_INSTANCE_NOT_READY_YET = 333021;
+    public const ERROR_CANNOT_START_SECOND_INSTANCE = 333022;
 
-    const SETTING_ROLE_PERSISTENT = 'persistent';
-    const SETTING_ROLE_CACHE = 'cache';
-    const SETTING_NAME_MAX_LENGTH = 80;
+    public const SETTING_ROLE_PERSISTENT = 'persistent';
+    public const SETTING_ROLE_CACHE = 'cache';
+    public const SETTING_NAME_MAX_LENGTH = 80;
+    public const SETTING_USER_LAST_USED_VERSION = 'last_used_version';
 
-    const STORAGE_TYPE_DB = 'DB';
-    const STORAGE_TYPE_FILE = 'File';
-    const SETTING_USER_LAST_USED_VERSION = 'last_used_version';
+    public const STORAGE_TYPE_DB = 'DB';
+    public const STORAGE_TYPE_FILE = 'File';
 
-    /**
-     * @var Application
-     */
-    protected $app;
-
-    /**
-     * @var UI_Page
-     */
-    protected $page;
-
-    /**
-     * @var Application_User
-     */
-    protected $user;
-
-    /**
-     * @var Application_Request
-     */
-    protected $request;
-
-    /**
-     * @var Application_Driver
-     */
-    protected static $instance;
-
-    /**
-     * @var UI
-     */
-    protected $ui;
-
-    /**
-     * @var Application_Driver_Storage
-     */
-    protected static Application_Driver_Storage $storage;
+    protected Application $app;
+    protected UI_Page $page;
+    protected Application_User $user;
+    protected Application_Request $request;
+    protected static ?Application_Driver $instance = null;
+    protected UI $ui;
+    protected Application_Driver_Storage $storage;
+    protected DriverSettings $settings;
+    protected ?UI_Page_Navigation $mainNav = null;
+    protected bool $started = false;
+    protected ?Application_Admin_Area $activeArea = null;
+    private ?Application_OAuth $oauth = null;
 
     /**
      * The available URL parameters and the corresponding admin
      * screen base classes.
      *
-     * @var array
+     * @var array<string,string>
      */
-    protected $screensChain = array
-    (
-        'page' => Application_Admin_Area::class,
-        'mode' => Application_Admin_Area_Mode::class,
-        'submode' => Application_Admin_Area_Mode_Submode::class,
-        'action' => Application_Admin_Area_Mode_Submode_Action::class
+    protected array $screensChain = array(
+        Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE => Application_Admin_Area::class,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_MODE => Application_Admin_Area_Mode::class,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE => Application_Admin_Area_Mode_Submode::class,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION => Application_Admin_Area_Mode_Submode_Action::class
     );
-
-    /**
-     * @var Application_OAuth
-     */
-    private $oauth;
 
     public function __construct(Application $app)
     {
@@ -110,15 +92,63 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->user = $app->getUser();
         $this->ui = $app->getUI();
 
-        $requestClass = $this->getID() . '_Request';
-        $this->request = new $requestClass($app);
-
-        self::initStorage();
-        self::$instance = $this;
+        $this->initInstance();
+        $this->initRequest();
+        $this->initStorage();
+        $this->initSettings();
+        $this->initAppSets();
 
         $this->registerEventHandlers();
         $this->registerRequestParameters();
+    }
 
+    private function initRequest() : void
+    {
+        $requestClass = ClassFinder::requireResolvedClass($this->getID() . '_Request');
+
+        $this->request = ClassFinder::requireInstanceOf(
+            Application_Request::class,
+            new $requestClass($this->getApplication())
+        );
+    }
+
+    /**
+     * @return void
+     * @throws UnexpectedInstanceException
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     */
+    private function initStorage() : void
+    {
+        $storageClass = ClassFinder::requireResolvedClass(Application_Driver_Storage::class. '_' . self::getStorageType());
+
+        $this->storage = ClassFinder::requireInstanceOf(
+            Application_Driver_Storage::class,
+            new $storageClass()
+        );
+    }
+
+    private function initInstance() : void
+    {
+        if(isset(self::$instance))
+        {
+            throw new DriverException(
+                'Cannot start another driver instance.',
+                '',
+                self::ERROR_CANNOT_START_SECOND_INSTANCE
+            );
+        }
+
+        self::$instance = $this;
+    }
+
+    private function initSettings() : void
+    {
+        $this->settings = new DriverSettings($this->storage);
+    }
+
+    private function initAppSets() : void
+    {
         if (!defined('APP_APPSET'))
         {
             define('APP_APPSET', '__default');
@@ -126,39 +156,19 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $sets = $this->getApplicationSets();
 
-        if (!$sets->idExists(APP_APPSET))
+        if ($sets->idExists(APP_APPSET))
         {
-            throw new Application_Exception(
-                'The selected application set does not exist.',
-                sprintf(
-                    'The application set [%s] set using the [APP_APPSET] configuration setting does not exist.',
-                    APP_APPSET
-                ),
-                self::ERROR_APPLICATION_SET_DOES_NOT_EXIST
-            );
-        }
-
-        $this->appset = $sets->getByID(APP_APPSET);
-    }
-
-    protected static function initStorage() : void
-    {
-        if (isset(self::$storage))
-        {
+            $this->appset = $sets->getByID(APP_APPSET);
             return;
         }
 
-        $storageClass = Application_Driver_Storage::class. '_' . self::getStorageType();
-        $storage = new $storageClass();
-
-        if($storage instanceof Application_Driver_Storage) {
-            self::$storage = $storage;
-            return;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(
-            Application_Driver_Storage::class,
-            $storage
+        throw new DriverException(
+            'The selected application set does not exist.',
+            sprintf(
+                'The application set [%s] set using the [APP_APPSET] configuration setting does not exist.',
+                APP_APPSET
+            ),
+            self::ERROR_APPLICATION_SET_DOES_NOT_EXIST
         );
     }
 
@@ -189,7 +199,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * Overwrite this in your driver class as needed.
      */
-    protected function registerRequestParameters()
+    protected function registerRequestParameters() : void
     {
     }
 
@@ -203,44 +213,48 @@ abstract class Application_Driver implements Application_Driver_Interface
      *   Called after a new form has been created.
      *
      */
-    protected function registerEventHandlers()
+    protected function registerEventHandlers() : void
     {
     }
 
-    /**
-     * @return Application_User
-     */
-    public function getUser()
+    public function getUser() : Application_User
     {
         return $this->user;
     }
 
     /**
      * @return Application_Driver
+     * @throws DriverException
      */
-    public static function getInstance()
+    public static function getInstance() : Application_Driver
     {
-        return self::$instance;
+        if(isset(self::$instance))
+        {
+            return self::$instance;
+        }
+
+        throw new DriverException(
+            'Driver instance not ready yet',
+            '',
+            self::ERROR_DRIVER_INSTANCE_NOT_READY_YET
+        );
     }
 
     /**
      * Retrieves the application object used by the driver.
      * @return Application
      */
-    public function getApplication()
+    public function getApplication() : Application
     {
         return $this->app;
     }
 
-    /**
-     * @return UI
-     */
-    public function getUI()
+    public function getUI() : UI
     {
         return $this->ui;
     }
 
-    public function setPage(UI_Page $page)
+    public function setPage(UI_Page $page) : void
     {
         $this->page = $page;
     }
@@ -249,30 +263,26 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves the page object for the page currently being rendered.
      * @return UI_Page
      */
-    public function getPage()
+    public function getPage() : UI_Page
     {
         return $this->page;
     }
 
-    private static ?Application_Session $session = null;
-
     /**
-     * Creates/returns the driver's session instance used
-     * to handle session data.
+     * Creates/returns the application's session instance used
+     * to handle session data. It is an alias for the method
+     * {@see Application::getSession()}.
+     *
+     * Ignore the fact that this is unused: It is in use in applications.
      *
      * @return Application_Session
+     *
+     * @throws DriverException
+     * @throws Application_Exception
      */
     public static function getSession() : Application_Session
     {
-        $className = APP_CLASS_NAME . '_Session';
-
-        Application::requireClassExists($className);
-
-        $sessionObj = new $className();
-
-        if($sessionObj)
-
-        return $sessionObj;
+        return Application::getSession();
     }
 
     /**
@@ -281,13 +291,15 @@ abstract class Application_Driver implements Application_Driver_Interface
      * off, e.g. "3.3.7-alpha" will return "3.3.7".
      *
      * @return string
+     * @throws DriverException
      * @see Application_Driver::getExtendedVersion()
      */
-    public function getVersion()
+    public function getVersion() : string
     {
-        $driver = Application_Driver::getInstance();
+        $driver = self::getInstance();
         $version = trim($driver->getExtendedVersion());
-        if (stristr($version, '-'))
+
+        if (strpos($version, '-') !== false)
         {
             $tokens = explode('-', $version);
 
@@ -298,149 +310,20 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * Retrieves the full application version string, e.g. "3.3.7-SNAPSHOT".
-     *
-     * @return string
-     * @see Application_Driver::getVersion()
-     */
-    public function getExtendedVersion()
-    {
-        throw new Application_Exception(
-            'Version method not implemented',
-            'The getExtendedVersion() method must be implemented in the driver class.',
-            self::ERROR_VERSION_METHOD_NOT_IMPLEMENTED
-        );
-    }
-
-    /**
      * Retrieves the application's minor version, e.g. "3.3.0"
      * The patch version (last part) is always zero.
      *
      * @return string
      */
-    public function getMinorVersion()
+    public function getMinorVersion() : string
     {
-        $driver = Application_Driver::getInstance();
-        $version = $driver->getExtendedVersion();
-        $matches = array();
-        if (preg_match('#([0-9]*)\.([0-9]*)\..*#', $version, $matches))
-        {
-            $version = $matches[1] . '.' . $matches[2] . '.0';
-        }
-
-        return $version;
+        return (string)VersionParser::create($this->getExtendedVersion())
+            ->getMinorVersion();
     }
 
-    /**
-     * @return Application_Request
-     */
-    public function getRequest()
+    public function getRequest() : Application_Request
     {
         return $this->request;
-    }
-
-    /**
-     * Renders the specified template and returns the generated content.
-     *
-     * @param string $templateID
-     * @return string
-     * @see createTemplate()
-     */
-    public function renderTemplate($templateID, $vars = array())
-    {
-        return $this->app->renderTemplate($templateID, $vars);
-    }
-
-    /**
-     * Renders a typical data grid page.
-     *
-     * @param string $pageTitle
-     * @param UI_DataGrid $grid
-     * @param array $entries
-     * @return string
-     */
-    public function renderDatagrid($pageTitle, UI_DataGrid $grid, $entries, $withSidebar = true)
-    {
-        return $this->page->getRenderer()
-            ->setWithSidebar($withSidebar)
-            ->setTitle($pageTitle)
-            ->appendDataGrid($grid, $entries)
-            ->render();
-    }
-
-    /**
-     * Renders a typical form.
-     *
-     * @param string $pageTitle
-     * @param UI_Form $form
-     * @param boolean $withSidebar
-     * @return string
-     */
-    public function renderForm($pageTitle, UI_Form $form, $withSidebar = true)
-    {
-        return $this->createFormRenderer($form, $pageTitle)
-            ->setWithSidebar($withSidebar);
-    }
-
-    public function createFormRenderer(UI_Form $form, $title)
-    {
-        return $this->page->getRenderer()
-            ->appendForm($form)
-            ->setTitle($title);
-    }
-
-    public function renderContentWithSidebar($content, $title = null)
-    {
-        return $this->page->getRenderer()
-            ->setTitle($title)
-            ->setContent($content)
-            ->makeWithSidebar()
-            ->render();
-    }
-
-    public function renderContentWithoutSidebar($content, $title = null)
-    {
-        return $this->page->getRenderer()
-            ->setTitle($title)
-            ->setContent($content)
-            ->render();
-    }
-
-    /**
-     * Renders a content section with the specified content and
-     * optional title.
-     *
-     * @param string $content
-     * @param string $title
-     * @param string $abstract
-     * @return string
-     */
-    public function renderSection($content, $title = null, $abstract = null)
-    {
-        return $this->createSection()
-            ->setTitle($title)
-            ->setAbstract($abstract)
-            ->setContent($content)
-            ->render();
-    }
-
-    /**
-     * Creates and returns a content section helper class instance.
-     * @return UI_Page_Section
-     */
-    public function createSection()
-    {
-        return $this->page->createSection();
-    }
-
-    /**
-     * @param string $templateID
-     * @return UI_Page_Template
-     * @see renderTemplate()
-     */
-    public function createTemplate($templateID)
-    {
-        return $this->app->createTemplate($templateID);
     }
 
     /**
@@ -456,9 +339,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      * // redirect to an application internal URL by specifying parameters
      * redirectTo(array('page' => 'home'));
      *
-     * @param array|string|NULL $paramsOrURL
+     * @param array<string,string|number>|string|NULL $paramsOrURL
      * @return never
-     * @throws Application_Exception
+     * @throws DriverException
      */
     public function redirectTo($paramsOrURL = null) : void
     {
@@ -480,11 +363,16 @@ abstract class Application_Driver implements Application_Driver_Interface
         Application::redirect($url);
     }
 
-    public function getPageURL(UI_Page $page, $params = array())
+    /**
+     * @param UI_Page $page
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    public function getPageURL(UI_Page $page, array $params = array()) : string
     {
         $params = array_merge($this->getPageParams($page), $params);
 
-        return $this->app->getRequest()->buildURL($params);
+        return $this->getRequest()->buildURL($params);
     }
 
     protected ?Application_AjaxHandler $ajaxHandler = null;
@@ -542,7 +430,12 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $id
      * @param boolean $adminMode Whether to run the screen as the active administration screen. Set this to false to just retrieve information about the screen.
      * @return Application_Admin_Area
-     * @throws Application_Exception
+     *
+     * @throws DriverException
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     * @throws ConvertHelper_Exception
+     * @throws UnexpectedInstanceException
      */
     protected function _createArea(string $id, bool $adminMode = false) : Application_Admin_Area
     {
@@ -552,7 +445,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (!isset($this->areaIndex[$lcID]))
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Unknown administration area',
                 sprintf(
                     'The administration area [%s] does not exist. Available areas are: [%s].',
@@ -572,36 +465,16 @@ abstract class Application_Driver implements Application_Driver_Interface
             return $this->areas[$key];
         }
 
-        $className = $this->getID() . '_Area_' . $areaName;
+        $className = ClassFinder::requireResolvedClass(sprintf(
+            '%s_Area_%s',
+            APP_CLASS_NAME,
+            $areaName
+        ));
 
-        if (!class_exists($className))
-        {
-            throw new Application_Exception(
-                'Cannot load administration area class',
-                sprintf(
-                    'The class file for administration area [%s] cannot be loaded.',
-                    $id
-                ),
-                self::ERROR_CANNOT_LOAD_ADMIN_AREA_CLASS
-            );
-        }
-
-        $area = new $className($this, $adminMode);
-
-        if (!$area instanceof Application_Admin_Area)
-        {
-            throw new Application_Exception(
-                'Unsupported administration area',
-                sprintf(
-                    'The administration area [%1$s] is not of the expected type [%2$s].',
-                    $id,
-                    'Application_Admin_Area'
-                ),
-                self::ERROR_UNSUPPORTED_ADMIN_AREA_CLASS
-            );
-        }
-
-        $this->areas[$key] = $area;
+        $this->areas[$key] = ClassFinder::requireInstanceOf(
+            Application_Admin_Area::class,
+            new $className($this, $adminMode)
+        );
 
         return $this->areas[$key];
     }
@@ -615,7 +488,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         // create the lookup index for areas if it does not
         // exist yet: this allows us to specify an area in
-        // a case insensitive way, as well as by its URL name
+        // a case-insensitive way, as well as by its URL name
         // or actual name.
         $this->areaIndex = array();
         $areas = $this->getAdminAreas();
@@ -635,47 +508,14 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
     }
 
-    protected $id;
-
     /**
      * Retrieves the driver's ID (its class name).
      *
      * @return string
      */
-    public function getID()
+    public function getID() : string
     {
-        if (!isset($this->id))
-        {
-            $this->id = get_class($this);
-        }
-
-        return $this->id;
-    }
-
-    static protected $tempFolder;
-
-    /**
-     * Retrieves the full path to the application's temporary files folder.
-     * Creates the folder as needed if it does not exist.
-     *
-     * @return string
-     * @throws Application_Exception
-     */
-    public static function getTempFolder()
-    {
-        return Application::getTempFolder();
-    }
-
-    /**
-     * Retrieves the full path to a temporary file.
-     *
-     * @param string $name Leave empty to use an automatically generated name.
-     * @param string $extension
-     * @return string
-     */
-    public static function getTempFile(string $name = '', string $extension = 'tmp') : string
-    {
-        return Application::getTempFile($name, $extension);
+        return APP_CLASS_NAME;
     }
 
     /**
@@ -690,49 +530,22 @@ abstract class Application_Driver implements Application_Driver_Interface
         return self::createSettings()->get($name, $default);
     }
 
-    private static ?DriverSettings $settings = null;
-
     /**
      * Creates / gets the driver settings utility,
      * which is used to access and modify the global,
      * persistent application settings.
      *
      * @return DriverSettings
+     * @throws DriverException
      */
     public static function createSettings() : DriverSettings
     {
-        if(isset(self::$settings))
-        {
-            return self::$settings;
-        }
-
-        $settings = new DriverSettings(self::$storage);
-        self::$settings = $settings;
-
-        return $settings;
+        return self::getInstance()->getSettings();
     }
 
-    /**
-     * @param string $name
-     * @param bool $default
-     * @return bool
-     * @deprecated Use the createSettings() API instead.
-     */
-    public static function getBoolSetting(string $name, bool $default=false) : bool
+    public function getSettings() : DriverSettings
     {
-        return self::createSettings()->getBool($name, $default);
-    }
-
-    /**
-     * @param string $name
-     * @param bool $value
-     * @return void
-     * @throws Application_Exception
-     * @deprecated Use the createSettings() API instead.
-     */
-    public static function setBoolSetting(string $name, bool $value) : void
-    {
-        self::createSettings()->setBool($name, $value);
+        return $this->settings;
     }
 
     /**
@@ -746,7 +559,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $name
      * @param string|int|float|bool|NULL $value
      * @param string $role
-     * @throws Application_Exception
+     * @throws DriverException
      * @deprecated Use the createSettings() API instead.
      */
     public static function setSetting(string $name, $value, string $role = self::SETTING_ROLE_PERSISTENT) : void
@@ -759,23 +572,12 @@ abstract class Application_Driver implements Application_Driver_Interface
      * effect if the setting has already been deleted.
      *
      * @param string $name
-     * @throws Application_Exception
+     * @throws DriverException
      * @deprecated Use the createSettings() API instead.
      */
     public static function deleteSetting(string $name) : void
     {
         self::createSettings()->delete($name);
-    }
-
-    /**
-     * @param string $name
-     * @param DateTime $date
-     * @return void
-     * @deprecated Use the createSettings() API instead.
-     */
-    public static function setSettingExpiry(string $name, DateTime $date) : void
-    {
-        self::createSettings()->setExpiry($name, $date);
     }
 
     /**
@@ -808,10 +610,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @return boolean
      */
-    public static function isMaintenanceMode()
+    public static function isMaintenanceMode() : bool
     {
-        $driver = Application_Driver::getInstance();
-        return $driver->getMaintenance()->isEnabled();
+        return self::createMaintenance()->isEnabled();
     }
 
     /**
@@ -819,13 +620,16 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
-     * @throws Application_Exception
+     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
+     *
+     * @throws DriverException
+     * @throws UI_Exception
      */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null)
+    public function redirectWithInfoMessage($message, $paramsOrURL = null) : void
     {
-        $this->ui->addInfoMessage($message);
+        $this->getUI()->addInfoMessage($message);
+
         $this->redirectTo($paramsOrURL);
     }
 
@@ -834,11 +638,13 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
-     * @throws Application_Exception
+     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
+     *
+     * @throws UI_Exception
+     * @throws DriverException
      */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null)
+    public function redirectWithErrorMessage($message, $paramsOrURL = null) : void
     {
         $this->ui->addErrorMessage($message);
         $this->redirectTo($paramsOrURL);
@@ -849,71 +655,17 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array $paramsOrURL Target URL or parameters for an internal page
-     * @throws Application_Exception
+     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
+     *
+     * @throws UI_Exception
+     * @throws DriverException
      */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null)
+    public function redirectWithSuccessMessage($message, $paramsOrURL = null) : void
     {
         $this->ui->addSuccessMessage($message);
         $this->redirectTo($paramsOrURL);
     }
-
-    /**
-     * Sets a cookie by name.
-     *
-     * @param string $name
-     * @param string $value
-     */
-    public function setCookie($name, $value)
-    {
-        $cookieName = $this->getCookieName($name);
-        $_COOKIE[$cookieName] = $value;
-        if (!@setcookie($cookieName, $value, time() + 60 * 60 * 24 * 360, '/'))
-        {
-            Application::log('Could not write cookie ' . $cookieName);
-        }
-    }
-
-    /**
-     * Retrieves a cookie's value by name. Returns
-     * the specified default value if not set.
-     *
-     * @param string $name
-     * @param string $default
-     * @return string
-     */
-    public function getCookie($name, $default = null)
-    {
-        $cookieName = $this->getCookieName($name);
-        if (isset($_COOKIE[$cookieName]))
-        {
-            return $_COOKIE[$cookieName];
-        }
-
-        return $default;
-    }
-
-    /**
-     * Determines the name of the cookie to use
-     * by prepending an identifier to the specified
-     * name.
-     *
-     * @param string $name
-     * @return string
-     */
-    protected function getCookieName($name)
-    {
-        return $this->getCookieNamespace() . '_' . $name;
-    }
-
-    /**
-     * Must return a unique identifying string for cookies set
-     * by the application.
-     *
-     * @return string
-     */
-    abstract protected function getCookieNamespace();
 
     /**
      * @var UI_Page_Sidebar
@@ -931,16 +683,16 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     protected $enabledAreas;
 
-    protected $prepared = false;
+    protected bool $prepared = false;
 
     /**
      * Execute pre-start tasks.
      */
-    public function prepare()
+    final public function prepare() : void
     {
         if ($this->prepared)
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Driver has already been prepared',
                 'The prepare() method has already been called, and may not be called multiple times.',
                 self::ERROR_DRIVER_ALREADY_PREPARED
@@ -965,22 +717,11 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
     }
 
-    /**
-     * @var UI_Page_Navigation
-     */
-    protected $mainNav;
-
-    protected $started = false;
-
-    /**
-     * (non-PHPdoc)
-     * @see Application_Driver_Interface::start()
-     */
-    public function start()
+    final public function start() : void
     {
         if (!$this->prepared)
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Cannot start driver, not prepared.',
                 'The driver start() method must be called after the prepare() method.',
                 self::ERROR_DRIVER_NOT_PREPARED
@@ -989,7 +730,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if ($this->started)
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Cannot start driver again',
                 'The driver has already been started, and may not be started a second time.',
                 self::ERROR_DRIVER_ALREADY_STARTED
@@ -1007,8 +748,8 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (self::isMaintenanceMode() && !$this->user->isDeveloper())
         {
-            echo $this->renderMaintenanceScreen();
-            Application::exit('Maintenance enabled');
+            echo self::createMaintenance()->renderScreen($this->getPage());
+            Application::exit('Maintenance is enabled');
         }
 
         Application::log('Starting driver.');
@@ -1025,7 +766,7 @@ abstract class Application_Driver implements Application_Driver_Interface
                 Application_LockManager::enable();
             }
         }
-
+        
         // determine the administration area we
         // need to work with, and let it handle its
         // actions before we do anything UI-related.
@@ -1052,26 +793,9 @@ abstract class Application_Driver implements Application_Driver_Interface
             );
         }
 
-        if (!isset($this->mainNav))
-        {
-            throw new Application_Exception(
-                'Main navigation not configured',
-                'The main navigation instance is not present. This should be set up in the driver\'s [setUpUI] method.',
-                self::ERROR_MAIN_NAVIGATION_NOT_CONFIGURED
-            );
-        }
-
-        // Add the main navigation items. The admin areas
-        // themselves know if the current user has the necessary
-        // rights to view them.
-        foreach ($this->enabledAreas as $area)
-        {
-            $area->addToNavigation($this->mainNav);
-        }
+        $this->startMainNavigation();
 
         $this->activeArea->handleUI();
-
-        return true;
     }
 
     /**
@@ -1083,24 +807,50 @@ abstract class Application_Driver implements Application_Driver_Interface
      * NOTE: This is called even if the UI layer is
      * turned off with the APP_RUN_MODE.
      */
-    protected function _start()
+    protected function _start() : void
     {
 
     }
 
-    protected function renderMaintenanceScreen()
+    protected function getMainNav() : UI_Page_Navigation
     {
-        $this->page->selectFrame('maintenance');
+        if (isset($this->mainNav))
+        {
+            return $this->mainNav;
+        }
 
-        $maintenance = $this->getMaintenance();
-        $plan = $maintenance->getActivePlan();
-
-        return $this->page->renderTemplate(
-            'maintenance',
-            array(
-                'plan' => $plan
-            )
+        throw new DriverException(
+            'Main navigation not configured',
+            'The main navigation instance is not present. This should be set up in the driver\'s [setUpUI] method.',
+            self::ERROR_MAIN_NAVIGATION_NOT_CONFIGURED
         );
+    }
+
+    final protected function startMainNavigation() : void
+    {
+        $nav = $this->getMainNav();
+        $configClass = ClassFinder::resolveClass(APP_CLASS_NAME.'_UI_MainNavigation');
+
+        // No specialized navigation configurator present?
+        // We build the navigation automatically.
+        if($configClass === null)
+        {
+            // Add the main navigation items. The admin areas
+            // themselves know if the current user has the necessary
+            // rights to view them.
+            foreach ($this->enabledAreas as $area)
+            {
+                $area->addToNavigation($nav);
+            }
+
+            return;
+        }
+
+        ClassFinder::requireInstanceOf(
+            NavConfigurator::class,
+            new $configClass($this, $nav)
+        )
+            ->configure();
     }
 
     /**
@@ -1108,16 +858,16 @@ abstract class Application_Driver implements Application_Driver_Interface
      * none is set specifically in the request.
      *
      * @return string
-     * @throws Application_Exception
+     * @throws DriverException
      *
      * @see Application_Driver::ERROR_CANNOT_GET_PAGEID_BEFORE_PREPARE
      * @see Application_Driver::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
      */
-    public function getPageID()
+    public function getPageID() : string
     {
         if (!$this->prepared)
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Driver has not been prepared yet.',
                 'Cannot retrieve the page ID before the driver has been prepared.',
                 self::ERROR_CANNOT_GET_PAGEID_BEFORE_PREPARE
@@ -1151,7 +901,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * @return Application_Admin_Area
-     * @throws Application_Exception
+     * @throws DriverException
      *
      * @see Application_Driver::ERROR_USER_NOT_AUTHORIZED_FOR_ANY_AREA
      */
@@ -1168,7 +918,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $ids = array_keys($this->enabledAreas);
 
-        throw new Application_Exception(
+        throw new DriverException(
             'User is not authorized for any administration screens',
             sprintf(
                 'The user [%s] (ID [%s]) with the rights [%s] is not authorized for any administration screen. Available screens: [%s].',
@@ -1181,20 +931,19 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
     }
 
-    protected function log($message)
+    public function getLogIdentifier() : string
     {
-        Application::log(sprintf(
-            'Driver [%s] | %s',
-            $this->getID(),
-            $message
-        ));
+        return sprintf(
+            'Driver [%s]',
+            $this->getID()
+        );
     }
 
     /**
      * Retrieves all areas the current user is authorized to see.
      * @return Application_Admin_Area[]
      */
-    public function getAllowedAreas()
+    public function getAllowedAreas() : array
     {
         $result = array();
         foreach ($this->enabledAreas as $area)
@@ -1211,7 +960,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * @return Application_Admin_Area[]
      */
-    public function getAreas()
+    public function getAreas() : array
     {
         return $this->enabledAreas;
     }
@@ -1220,34 +969,23 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves the application sets manager.
      * @return Application_Sets
      */
-    public function getApplicationSets()
+    public function getApplicationSets() : Application_Sets
     {
         return $this->app->getSets();
     }
 
-    /**
-     * Must return an associative array with page name => administration class name
-     * pairs to generate the main administration tree.
-     */
-    abstract public function getAdminAreas();
-
-    abstract protected function setUpUI();
-
-    /**
-     * @var Application_Admin_Area
-     */
-    protected $activeArea;
+    abstract protected function setUpUI() : void;
 
     /**
      * Retrieves the instance of the currently active administration area.
      * @return Application_Admin_Area
-     * @throws Application_Exception
+     * @throws DriverException
      */
     public function getActiveArea() : Application_Admin_Area
     {
         if (!isset($this->activeArea))
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'An active area is not available at this time.',
                 '',
                 self::ERROR_NO_ACTIVE_AREA_AVAILABLE
@@ -1261,7 +999,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves the currently active administration screen instance.
      *
      * @return Application_Admin_ScreenInterface
-     * @throws Application_Exception
+     * @throws DriverException
      */
     public function getActiveScreen() : Application_Admin_ScreenInterface
     {
@@ -1272,7 +1010,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Shorthand for checking the user's "Login" right.
      * @return bool
      */
-    public function allowedToLogin()
+    public function allowedToLogin() : bool
     {
         if (!Application::isAuthenticationEnabled())
         {
@@ -1282,11 +1020,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->getUser()->canLogin();
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Application_Driver_Interface::renderContent()
-     */
-    public function renderContent()
+    public function renderContent() : string
     {
         if (!isset($this->activeArea))
         {
@@ -1297,10 +1031,6 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         return $this->activeArea->renderContent();
     }
-
-    abstract public function getAppName();
-
-    abstract public function getAppNameShort();
 
     /**
      * @var boolean
@@ -1324,7 +1054,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         if (isset($this->page))
         {
             $this->sidebar = $this->page->getSidebar();
-            $this->mainNav = $this->page->getHeader()->addNavigation('main');
+            $this->mainNav = $this->page->getHeader()->addMainNavigation();
         }
 
         // using md5 because the version itself is not enough to force the browser to reload it correctly
@@ -1342,7 +1072,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         // handle the what's new? Dialog: only if the user has used the
         // app before and his last used version does not fit the current one.
-        if ($lastVersion != $minorVersion)
+        if ($lastVersion !== $minorVersion)
         {
             $this->ui->addInfoMessage(t(
                 '%1$s has been updated to v%2$s. %3$s.',
@@ -1421,11 +1151,12 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @see Application_Driver::configureAdminUIFramework()
      */
-    protected function configureStyleIncludes()
+    protected function configureStyleIncludes() : void
     {
         $counter = 6000;
 
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
+        $this->ui->addStylesheet('ui-colors.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-dialogs.css', 'all', $counter--);
@@ -1598,14 +1329,14 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $type
      * @param array $primary
      * @return Application_RevisionableStateless
-     * @throws Application_Exception
+     * @throws DriverException
      */
     public function getRevisionable($type, $primary)
     {
         $types = $this->getRevisionableTypes();
         if (!in_array($type, $types))
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Unknown revisionable type',
                 sprintf(
                     'The revisionable type [%s] does not exist. Available types are: [%s].',
@@ -1619,7 +1350,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $method = 'getRevisionable_' . $type;
         if (!method_exists($this, $method))
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Missing revisionable support',
                 sprintf(
                     'The revisionable type method [%s] does not exist.',
@@ -1632,7 +1363,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $revisionable = $this->$method($primary);
         if (!$revisionable instanceof Application_RevisionableStateless)
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Not a revisionable',
                 sprintf(
                     'The revisionable method [%s] did not return a valid revisionable object instance.',
@@ -1650,7 +1381,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param boolean $includeCore Whether to include core areas, which cannot be disabled.
      * @return Application_Admin_Area[]
      */
-    public function getAdminAreaObjects($includeCore = true)
+    public function getAdminAreaObjects(bool $includeCore = true) : array
     {
         $ids = array_keys($this->getAdminAreas());
 
@@ -1669,16 +1400,11 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $adminAreas;
     }
 
-    public function getCurrentURLPath() : string
-    {
-        return $this->getActiveScreen()->getURLPath();
-    }
-
     /**
      * Retrieves the URL screen request parameter names
      * in the order from area > action.
      *
-     * @return array
+     * @return string[]
      */
     public function getURLParamNames() : array
     {
@@ -1691,7 +1417,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      *
      * @param Application_Admin_ScreenInterface $screen
      * @return string
-     * @throws Application_Exception
+     * @throws DriverException
      */
     public function resolveURLParam(Application_Admin_ScreenInterface $screen) : string
     {
@@ -1703,7 +1429,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             }
         }
 
-        throw new Application_Exception(
+        throw new DriverException(
             'Unhandled admin screen type.',
             sprintf(
                 'The screen [%s] is not an instance of any of the known classes: [%s].',
@@ -1720,7 +1446,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param string $path e.g. "products.edit.settings"
      * @return Application_Admin_ScreenInterface
      */
-    public function getScreenByPath(string $path) : ?Application_Admin_ScreenInterface
+    public function getScreenByPath(string $path, bool $adminMode=true) : ?Application_Admin_ScreenInterface
     {
         $tokens = explode('.', $path);
         $screen = $this->createArea(array_shift($tokens));
@@ -1729,7 +1455,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         {
             if ($screen->hasSubscreen($token))
             {
-                $screen = $screen->getSubscreenByID($token);
+                $screen = $screen->getSubscreenByID($token, $adminMode);
             }
             else
             {
@@ -1738,33 +1464,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         return $screen;
-    }
-
-    /**
-     * Checks whether the specified administration screen path exists.
-     *
-     * @param string $path
-     * @return bool
-     */
-    public function screenPathExists(string $path) : bool
-    {
-        $tokens = explode('.', $path);
-
-        $screen = $this->createArea(array_shift($tokens));
-
-        foreach ($tokens as $token)
-        {
-            if ($screen->hasSubscreen($token))
-            {
-                $screen = $screen->getSubscreenByID($token);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     protected $cachedPropertyOwners = array();
@@ -1797,7 +1496,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $method = 'resolveCustomPropertyOwner_' . $ownerType;
         if (!method_exists($this, $method))
         {
-            throw new Application_Exception(
+            throw new DriverException(
                 'Cannot resolve custom property owner',
                 sprintf(
                     'The method [%s] required to resolve the owner instance of a custom property is missing. ' .
@@ -1821,7 +1520,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             return $owner;
         }
 
-        throw new Application_Exception(
+        throw new DriverException(
             'Invalid propertizable item',
             sprintf(
                 'The property owner returned by method [%s] for owner key [%s] did not return an instance of a [%s] object.',
@@ -1833,25 +1532,25 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
     }
 
-    /**
-     * @var Application_Maintenance
-     */
-    protected $maintenance;
+    protected static ?Application_Maintenance $maintenance = null;
 
     /**
      * @return Application_Maintenance
      */
-    public function getMaintenance()
+    public static function createMaintenance() : Application_Maintenance
     {
-        if (!isset($this->maintenance))
+        if (!isset(self::$maintenance))
         {
-            $this->maintenance = new Application_Maintenance($this);
+            self::$maintenance = new Application_Maintenance(self::getInstance());
         }
 
-        return $this->maintenance;
+        return self::$maintenance;
     }
 
-    protected static $collections = array();
+    /**
+     * @var array<string,DBHelper_BaseCollection|Application_RevisionableCollection>
+     */
+    protected static array $collections = array();
 
     /**
      * Creates an instance of a generic collection, like
@@ -1859,10 +1558,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * only a singleton is returned every time.
      *
      * @param string $className
-     * @param array $parameters Any parameters the collection may need to be instantiated
+     * @param array<mixed> $parameters Any parameters the collection may need to be instantiated
      * @return DBHelper_BaseCollection|Application_RevisionableCollection
      */
-    protected static function createCollection($className, $parameters = array())
+    protected static function createCollection(string $className, array $parameters = array())
     {
         if (!isset(self::$collections[$className]))
         {
@@ -1897,7 +1596,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public function getTheme() : UI_Themes_Theme
     {
-        return $this->ui->getTheme();
+        return $this->getUI()->getTheme();
     }
 
     /**
@@ -1918,10 +1617,15 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * @return Application_Users
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public static function createUsers() : Application_Users
     {
-        return ensureType(Application_Users::class, self::createCollection('Application_Users'));
+        return ClassFinder::requireInstanceOf(
+            Application_Users::class,
+            self::createCollection(Application_Users::class)
+        );
     }
 
     /**
@@ -1951,7 +1655,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * the database dumps are stored.
      *
      * @return string
-     * @throws Application_Exception
+     * @throws DriverException
      * @see Application_DBDumps::getStoragePath()
      */
     public function getDBDumpsPath() : string
@@ -1967,7 +1671,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * no effect.
      *
      * @return Application_DBDumps_Dump The dump instance that was created.
-     * @throws Application_Exception
+     * @throws DriverException
      * @see Application_DBDumps::createDump()
      */
     public function createIncrementalDBDump() : Application_DBDumps_Dump
@@ -1985,43 +1689,6 @@ abstract class Application_Driver implements Application_Driver_Interface
     public function parseURL(string $url) : Application_URL
     {
         return new Application_URL($url);
-    }
-
-    /**
-     * Retrieves the filter criteria for the custom application settings.
-     * These settings are not used by the application itself, but can be
-     * used to store arbitrary data.
-     *
-     * @return Application_FilterCriteria_AppSettings
-     */
-    public static function createAppSettings()
-    {
-        return new Application_FilterCriteria_AppSettings();
-    }
-
-    /**
-     *
-     * @param Application_Countries_Country $fromCountry
-     * @param Application_Countries_Country $toCountry
-     * @return \DeeplXML\Translator
-     * @throws Application_Exception
-     */
-    public static function createDeeplHelper(Application_Countries_Country $fromCountry, Application_Countries_Country $toCountry)
-    {
-        if (!defined('APP_DEEPL_API_KEY'))
-        {
-            throw new Application_Exception(
-                'Missing DeepL API key',
-                'The configuration setting [APP_DEEPL_API_KEY] is not defined.',
-                self::ERROR_DEEPL_API_KEY_NOT_SET
-            );
-        }
-
-        return new \DeeplXML\Translator(
-            APP_DEEPL_API_KEY,
-            $fromCountry->getLanguageCode(),
-            $toCountry->getLanguageCode()
-        );
     }
 
     /**
@@ -2044,6 +1711,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * used to handle OAuth authentication.
      *
      * @return Application_OAuth
+     * @throws OAuth_Exception
      */
     public function createOAuth() : Application_OAuth
     {
@@ -2055,6 +1723,10 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->oauth;
     }
 
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
     public function getAdminURLChangelog(array $params=array()) : string
     {
         return $this->getRequest()

@@ -5,19 +5,10 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const ERROR_INVALID_REVISION_STORAGE = 14702;
     
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
-    
-   /**
-    * @var integer
-    */
-    protected $id;
-    
-    protected $customKeys;
-    
-    protected $currentRevision;
+    protected Application_RevisionableCollection $collection;
+    protected int $id;
+    protected array $customKeys;
+    protected int $currentRevision;
     
     public function __construct(Application_RevisionableCollection $collection, int $id, $customColumnValues=array())
     {
@@ -62,13 +53,9 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     * Whether this is a dummy object instance.
     * @return boolean
     */
-    public function isDummy()
+    public function isDummy() : bool
     {
-        if($this->id === Application_RevisionableCollection::DUMMY_ID) {
-            return true;
-        }
-        
-        return false;
+        return $this->id === Application_RevisionableCollection::DUMMY_ID;
     }
     
    /**
@@ -289,10 +276,18 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
             $this->collection->getRevisionKeyName() => $this->getRevision()
         );
     }
-    
-    abstract public function getAdminStatusURL($params=array());
-    
-    abstract public function getAdminChangelogURL($params=array());
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    abstract public function getAdminStatusURL(array $params=array()) : string;
+
+    /**
+     * @param array<string,string|number> $params
+     * @return string
+     */
+    abstract public function getAdminChangelogURL(array $params=array()) : string;
     
    /**
     * Selects the last revision of the record by a specific state.
@@ -357,14 +352,14 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     * 
     * @return integer|NULL
     */
-    public function getCurrentRevision()
+    public function getCurrentRevision() : ?int
     {
         return $this->collection->getCurrentRevision($this->getID());
     }
 
-    public function getPrettyRevision()
+    public function getPrettyRevision() : int
     {
-        return $this->revisions->getKey('pretty_revision');
+        return (int)$this->revisions->getKey('pretty_revision');
     }
 
     /**

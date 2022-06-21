@@ -7,6 +7,8 @@
  * @see Application_Traits_Admin_CollectionList
  */
 
+use Application\Interfaces\Admin\CollectionListInterface;
+
 /**
  * Trait used for simplify displaying lists of DBHelper records:
  * handles all the required configuration, and offers a standardized
@@ -75,7 +77,7 @@ trait Application_Traits_Admin_CollectionList
     
     public function getURLName() : string
     {
-        return 'list';
+        return CollectionListInterface::URL_NAME_DEFAULT;
     }
     
     protected function _handleActions() : bool

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 class TestDriver_Area_WizardTest extends Application_Admin_Area
 {
+    public const URL_NAME = 'wizardtest';
 
     public function getDefaultMode() : string
     {
@@ -32,17 +33,17 @@ class TestDriver_Area_WizardTest extends Application_Admin_Area
 
     public function getNavigationTitle() : string
     {
-        return '';
+        return t('Test wizard');
     }
 
     public function getTitle() : string
     {
-        return '';
+        return t('Test wizard');
     }
 
     public function getURLName() : string
     {
-        return 'wizardtest';
+        return self::URL_NAME;
     }
 
     public function isAdminMode() : bool

@@ -3,7 +3,9 @@
 abstract class Application_Admin_Area extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;
-    
+
+    public const NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
+
     public function __construct(Application_Driver $driver, bool $adminMode = false)
     {
         // we do as if the UI had already been started to avoid loading it yet,
@@ -64,19 +66,20 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
 
     /**
      * Cached property for the navigation item of the page for the main navigation.
-     * @var UI_Page_Navigation_Item
+     * @var UI_Page_Navigation_Item|NULL
      * @see addToNavigation()
      */
-    protected $navigationItem;
+    protected ?UI_Page_Navigation_Item $navigationItem = null;
 
     /**
      * Adds the page to the main navigation.
      * @param UI_Page_Navigation $nav
+     * @return UI_Page_Navigation_Item|null
      */
-    public function addToNavigation(UI_Page_Navigation $nav)
+    public function addToNavigation(UI_Page_Navigation $nav) : ?UI_Page_Navigation_Item
     {
         if (!$this->isUserAllowed()) {
-            return;
+            return null;
         }
 
         $urlName = $this->getURLName();
@@ -99,6 +102,8 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         if ($icon instanceof UI_Icon) {
             $this->navigationItem->setIcon($icon);
         }
+
+        return $this->navigationItem;
     }
 
     /**
@@ -151,17 +156,6 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     }
 
    /**
-    * Creates a mode object instance, or returns an existing instance.
-    * 
-    * @param string $id
-    * @return Application_Admin_Area_Mode
-    */
-    public function createMode(string $id) : Application_Admin_Area_Mode
-    {
-        return ensureType(Application_Admin_Area_Mode::class, $this->createSubscreen($id)); 
-    }
-
-   /**
     * Sets up the available UI elements, by calling
     * the according <code>handleXXX</code> methods.
     * These recurse into any subscreens as applicable.
@@ -173,9 +167,9 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     * @see Application_Traits_Admin_Screen::handleContextMenu()
     * @see Application_Traits_Admin_Screen::handleTabs()
     */
-    public function handleUI()
+    public function handleUI() : void
     {
-        $this->log('UI layer | Starting the UI.');
+        $this->logUI('Starting the UI.');
 
         $page = $this->requirePage();
 
@@ -184,12 +178,13 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         $help = $page->createHelp();
         $contextMenu = $this->ui->createDropdownMenu();
         $tabs = $this->ui->createTabs('page-content-tabs');
-        
-        $this->handleSidebar($sidebar);
+
         $this->handleSubnavigation($subnav);
+        $this->handleQuickNavigation($page->getHeader());
         $this->handleBreadcrumb();
         $this->handleHelp($help);
         $this->handleContextMenu($contextMenu);
+        $this->handleSidebar($sidebar);
         $this->handleTabs($tabs);
         
         $subnav->initDone();
@@ -236,5 +231,35 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     public function render() : string
     {
         return $this->renderContent();
+    }
+
+    /**
+     * Allows the area to add items to show in the quick
+     * navigation, which is shown whenever the area is
+     * active.
+     *
+     * @param UI_Page_Navigation $nav
+     * @return void
+     */
+    protected function _handleQuickNavigation(UI_Page_Navigation $nav) : void
+    {
+
+    }
+
+    private function handleQuickNavigation(UI_Page_Header $header) : void
+    {
+        $quickNav = $header->getPage()->createNavigation(self::NAV_AREA_QUICK_NAVIGATION);
+
+        $this->_handleQuickNavigation($quickNav);
+
+        if($quickNav->hasItems())
+        {
+            $this->logUI('Area has quick navigation items.');
+            $header->addNavigationInstance($quickNav);
+        }
+        else
+        {
+            $this->logUI('Area has no quick navigation items.');
+        }
     }
 }

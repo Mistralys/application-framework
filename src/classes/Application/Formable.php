@@ -6,6 +6,8 @@
  * @see Application_Formable
  */
 
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\RegexHelper;
 
@@ -262,7 +264,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         return $this;
     }
-    
+
     /**
      * Helper method to add a form element, which automatically sets
      * the correct ID for elements. If no container is specified, the
@@ -272,6 +274,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @param string $name
      * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element
+     *
+     * @throws Application_Formable_Exception
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     * @throws HTML_QuickForm2_NotFoundException
+     * @throws UnexpectedInstanceException
      */
     public function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element
     {
@@ -291,7 +298,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
             return $el;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(HTML_QuickForm2_Element::class, $el);
+        throw new UnexpectedInstanceException(HTML_QuickForm2_Element::class, $el);
     }
     
     /**
@@ -475,7 +482,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @param string $label
      * @param HTML_QuickForm2_Container|null $container
      * @return HTML_QuickForm2_Element_ExpandableSelect
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws Application_Formable_Exception
+     * @throws UnexpectedInstanceException
+     * @throws ClassNotExistsException
      */
     public function addElementExpandableSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
     {

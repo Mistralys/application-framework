@@ -1,5 +1,8 @@
 <?php
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 
 class Application_Media
@@ -192,13 +195,11 @@ class Application_Media
     * 
     * @param string $type The configuration type, e.g. "Image". Case sensitive.
     * @return Application_Media_Configuration
-    * @throws Application_Exception
+    * @throws UnexpectedInstanceException|ClassFinderException
     */
     public function createConfiguration(string $type) : Application_Media_Configuration
     {
-        $class = Application_Media_Configuration::class.'_'.$type;
-
-        Application::requireClassExists($class);
+        $class = ClassFinder::requireResolvedClass(Application_Media_Configuration::class.'_'.$type);
         
         $obj = new $class();
 
@@ -207,7 +208,7 @@ class Application_Media
             return $obj;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Application_Media_Configuration::class, $obj);
+        throw new UnexpectedInstanceException(Application_Media_Configuration::class, $obj);
     }
     
    /**

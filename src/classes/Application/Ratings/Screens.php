@@ -24,17 +24,17 @@ class Application_Ratings_Screens extends DBHelper_BaseCollection
 {
     public function getRecordClassName() : string
     {
-        return 'Application_Ratings_Screens_Screen';
+        return Application_Ratings_Screens_Screen::class;
     }
 
     public function getRecordFiltersClassName() : string
     {
-        return 'Application_Ratings_Screens_FilterCriteria';
+        return '';
     }
 
     public function getRecordFilterSettingsClassName() : string
     {
-        return 'Application_Ratings_Screens_FilterSettings';
+        return '';
     }
 
     public function getRecordDefaultSortKey() : string
@@ -45,9 +45,9 @@ class Application_Ratings_Screens extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'path',
-            'dispatcher',
-            'params'
+            'path' => t('Path'),
+            'dispatcher' => t('Dispatcher file'),
+            'params' => t('Parameters')
         );
     }
 

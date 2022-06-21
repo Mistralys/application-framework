@@ -5,6 +5,9 @@
  * @subpackage Core
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\XMLHelper;
@@ -1031,38 +1034,37 @@ function toString($subject) : string
 }
 
 /**
- * Can be used to ensure that the specified object 
- * is an instance of the target class. It the type 
+ * Can be used to ensure that the specified object
+ * is an instance of the target class. It the type
  * matches, the object is returned, and an exception
  * is thrown otherwise.
- * 
+ *
  * NOTE: This is PHPStan friendly.
- * 
+ *
  * Usage:
- * 
+ *
  * ```
  * function createClass() : ClassName
  * {
  *     $object = $this->getObject();
- *     
+ *
  *     return ensureType(ClassName::class, $object);
  * }
  * ```
- * 
+ *
  * @param string $className
  * @param object $object
  * @param int $code Optional code to override the built-in error code.
- * @throws Application_Exception_UnexpectedInstanceType
  * @return object
+ *
+ * @throws ClassNotExistsException
+ * @throws UnexpectedInstanceException
+ *
+ * @deprecated Use {@see \Application\ClassFinder::requireInstanceOf()} instead.
  */
-function ensureType(string $className, $object, int $code=0)
+function ensureType(string $className, object $object, int $code=0)
 {
-    if(is_a($object, $className))
-    {
-        return $object;
-    }
-    
-    throw new Application_Exception_UnexpectedInstanceType($className, $object, $code);
+    return ClassFinder::requireInstanceOf($className, $object, $code);
 }
 
 /**

@@ -52,7 +52,7 @@ class template_default_frame extends UI_Page_Template_Custom
 </div>
 
 <footer id="footer">
-    <div id="footer_frame">{FOOTER}</div>
+    <div id="footer_frame" class="container">{FOOTER}</div>
 </footer>
 
 </body>

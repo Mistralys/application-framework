@@ -7,6 +7,11 @@
  * @see Application_Traits_Admin_Screen
  */
 
+use Application\ClassFinder;
+use AppUtils\ConvertHelper;
+use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
+
 /**
  * Trait used by all administration screens: used to 
  * dispatch the <code>handleXXX</code> methods down the
@@ -158,14 +163,13 @@ trait Application_Traits_Admin_Screen
         {
             return false;
         }
-        
+
         if($this->hasSubscreens())
         {
             $this->log('Handling actions | Handling subscreen.');
-            
+
             $sub = $this->getActiveSubscreen();
-            
-            if($sub !== null) 
+            if($sub !== null)
             {
                 $this->log('Handling actions | Executing subscreen actions.');
                 $sub->handleActions();
@@ -237,7 +241,7 @@ trait Application_Traits_Admin_Screen
 
         $this->$property = $subject;
         
-        $this->log('UI Layer | Handling '.$name);
+        $this->logUI('Handling '.$name);
         
         if(!$this->isUserAllowed()) 
         {
@@ -359,6 +363,9 @@ trait Application_Traits_Admin_Screen
                 $this->log('Render content | Rending subscreen content.');
                 return $subscreen->renderContent();
             }
+        }
+        {
+            $this->log('RenderContent | No subscreens present.');
         }
         
         $this->log('Render content | No content has been rendered.');
@@ -614,7 +621,7 @@ trait Application_Traits_Admin_Screen
         $this->active = false;
         
         $mine = $this->getURLPath();
-        $current = $this->driver->getCurrentURLPath();
+        $current = $this->driver->getActiveScreen()->getURLPath();
         
         $this->active = substr($current, 0, strlen($mine)) === $mine;
         
@@ -637,15 +644,16 @@ trait Application_Traits_Admin_Screen
         
         return $target;
     }
-    
-    
-   /**
-    * Retrieves a list of IDs of all subscreens available for the screen, if any.
-    * 
-    * NOTE: Does not check if the file contains a valid subscreen class.
-    * 
-    * @return string[]
-    */
+
+
+    /**
+     * Retrieves a list of IDs of all subscreens available for the screen, if any.
+     *
+     * NOTE: Does not check if the file contains a valid subscreen class.
+     *
+     * @return array<string,string> Class ID => URL name pairs
+     * @throws FileHelper_Exception
+     */
     public function getSubscreenIDs() : array
     {
         if(isset($this->subscreenIDs))
@@ -656,11 +664,35 @@ trait Application_Traits_Admin_Screen
         $this->subscreenIDs = array();
         
         $folder = $this->getSubscreensFolder();
-        
-        if(file_exists($folder))
+
+        if(!is_dir($folder))
         {
-            $this->subscreenIDs = \AppUtils\FileHelper::createFileFinder($folder)
+            return $this->subscreenIDs;
+        }
+
+        $ids = FileHelper::createFileFinder($folder)
             ->getPHPClassNames();
+
+        foreach($ids as $id)
+        {
+            try
+            {
+                $screen = $this->createSubscreenInstance($id, false);
+                $this->subscreenIDs[$id] = $screen->getURLName();
+            }
+            catch (Throwable $e)
+            {
+                // Ignore the error here, as this method may
+                // be called in a context like the AJAX method
+                // DescribeAdminAreas.
+
+                $this->getLogger()->logError(
+                    'Cannot create screen instance: [%s.%s]. Error: [%s]',
+                    $this->getURLPath(),
+                    $id,
+                    $e->getMessage()
+                );
+            }
         }
         
         return $this->subscreenIDs;
@@ -700,39 +732,69 @@ trait Application_Traits_Admin_Screen
         return !empty($screenID);
     }
     
-    public function getSubscreenByID(string $id) : Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode) : Application_Admin_ScreenInterface
     {
-        return $this->createSubscreen($id);
+        return $this->createSubscreen($id, $adminMode);
     }
 
     /**
      * @param string $id
+     * @param bool $adminMode
      * @return Application_Admin_ScreenInterface
+     * @throws Application_Exception
      */
-    protected function createSubscreen(string $id) : Application_Admin_ScreenInterface
+    protected function createSubscreen(string $id, bool $adminMode) : Application_Admin_ScreenInterface
     {
         $screenID = $this->requireValidSubscreenID($id);
+        $key = $screenID.'.'.ConvertHelper::boolStrict2string($adminMode);
         
-        if(!isset($this->subscreens[$screenID])) 
+        if(isset($this->subscreens[$key]))
         {
-            $this->log(sprintf('Creating child screen [%s] with class ID [%s].', $id, $screenID));
-            
-            $className = get_class($this).'_'.$screenID;
-            
-            $this->subscreens[$screenID] = new $className($this->driver, $this);
+            return $this->subscreens[$key];
         }
-        
-        return $this->subscreens[$screenID];
+
+        $this->log(sprintf('Creating child screen [%s] with class ID [%s].', $id, $screenID));
+
+        $screen = $this->createSubscreenInstance($screenID, $adminMode);
+        $this->subscreens[$key] = $screen;
+
+        return $screen;
+    }
+
+    protected function createSubscreenInstance(string $screenID, bool $adminMode) : Application_Admin_ScreenInterface
+    {
+        $this->log(sprintf('Creating child screen with class ID [%s].', $screenID));
+
+        $class = ClassFinder::requireResolvedClass(sprintf(
+            '%s_%s',
+            get_class($this),
+            $screenID
+        ));
+
+        $previousMode = $this->adminMode;
+
+        if(!$adminMode && $this->adminMode) {
+            $this->adminMode = false;
+        }
+
+        $instance = ClassFinder::requireInstanceOf(
+            Application_Admin_ScreenInterface::class,
+            new $class($this->driver, $this)
+        );
+
+        $this->adminMode = $previousMode;
+
+        return $instance;
     }
 
     /**
      * Given the ID of a subscreen of this administration screen,
-     * returns the case sensitive ID of the class of the subscreen.
+     * returns the case-sensitive ID of the class of the subscreen.
      *
      * Example: Admin area "Products" requires child screen by
      * id "editproduct", which is its URL name. The class name
      * however, can have any case in its name, e.g. "EditProduct".
-     * This will return the matching case sensitive screen ID by
+     * This will return the matching case-sensitive screen ID by
      * finding the appropriate file in the filesystem.
      *
      * This presupposes that the case of the filename matches the
@@ -757,27 +819,33 @@ trait Application_Traits_Admin_Screen
                 'The administration screen [%s] has no child screen [%s]. Available child screens are [%s]. Looking in URL parameter [%s].',
                 get_class($this),
                 $id,
-                implode(', ', $this->getSubscreenIDs()),
+                implode(', ', array_keys($this->getSubscreenIDs())),
                 $this->getURLParam()
             ),
             Application_Admin_Skeleton::ERROR_NO_SUCH_CHILD_ADMIN_SCREEN
         );
     }
     
-    protected function resolveSubscreenID(string $id) : ?string
+    protected function resolveSubscreenID(string $search) : ?string
     {
         $ids = $this->getSubscreenIDs();
         
-        $compare = strtolower($id);
-        
-        foreach($ids as $existing)
+        $compare = strtolower($search);
+
+        foreach($ids as $subscreenID => $urlName)
         {
-            if(strtolower($existing) === $compare)
+            $sub = strtolower($subscreenID);
+
+            // The search term can be either the screen ID
+            // or a URL name, which is why we must check both.
+            // The screen ID takes precedence, as it is more
+            // precise and guaranteed to be unique.
+            if($compare === $sub || $compare === $urlName)
             {
-                return $existing;
+                return $subscreenID;
             }
         }
-        
+
         return null;
     }
     
@@ -802,7 +870,7 @@ trait Application_Traits_Admin_Screen
             $this->activeSubscreenID = (string)$this->request->registerParam($paramName)
             ->get($this->getDefaultSubscreenID());
         }
-        
+
         return $this->activeSubscreenID;
     }
     
@@ -864,9 +932,9 @@ trait Application_Traits_Admin_Screen
     {
         $id = $this->getActiveSubscreenID();
         
-        if(!empty($id)) 
+        if(!empty($id))
         {
-            return $this->createSubscreen($id);
+            return $this->createSubscreen($id, $this->adminMode);
         }
         
         return null;

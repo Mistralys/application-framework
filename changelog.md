@@ -1,3 +1,35 @@
+### v2.2.0 - UI update release
+- UI: Revamped the main navigation generation.
+- UI: The main navigation now supports class-based custom generation.
+- UI: Restyled the main navigation and footer.
+- UI: Added the quick navigation for often-used sub screens of areas.
+- UI: The `Iconizable::setIcon()` method now supports setting a `NULL` value.
+- Users: Implemented the users list in the devel users management screen.
+- Class loading: Added the static utility class `ClassFinder`.
+- Exceptions: Added `UnexpectedInstanceException`.
+- DBCollections: Filter criteria and settings classes now support namespaces.
+- Screens: Screen classes now support using namespaces (BETA).
+- Screens: URL names may now differ from the file name (BETA).
+- Logging: Added support for log message categories.
+- Moved the Deepl methods to the new `DeeplHelper` class.
+- Unit Tests: The test application has been fleshed out further.
+- Code Quality: PHPStan analysis now clean at level 5. 
+
+#### Deprecated methods and classes
+
+- `Application_Exception_UnexpectedInstanceType` - use `UnexpectedInstanceException` instead.
+- `ensureType()` - use `ClassFinder` instead.
+- `Application::requireClass()` - use `ClassFinder` instead.
+- `Application::requireClassExists()` - use `ClassFinder` instead.
+- `Application::requireClassExtends()` - use `ClassFinder` instead.
+- `Application::requireInstanceOf()` - use `ClassFinder` instead.
+- `Application_Driver::getCookieNamespace()` has been removed.
+
+#### Breaking changes
+
+- `Application_Driver->getMaintenance()` renamed to static `Application_Driver::createMaintenance()`.
+- `Application_Driver::`
+
 ### v2.1.7 - Maintenance release
 - Framework: Added `AppFramework::getName()`.
 

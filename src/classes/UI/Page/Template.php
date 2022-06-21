@@ -7,6 +7,9 @@
  * @see UI_Page_Template
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\FileHelper;
 use UI\Interfaces\PageTemplateInterface;
 use function AppUtils\parseVariable;
@@ -181,31 +184,17 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
     }
 
     /**
+     * @template ClassInstanceType
      * @param string $name
-     * @param string $className
-     * @return object
+     * @param class-string<ClassInstanceType> $className
+     * @return ClassInstanceType
      *
-     * @throws UI_Themes_Exception
-     * @see UI_Page_Template::ERROR_INVALID_TEMPLATE_CLASS
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
-    public function getObjectVar(string $name, string $className) : object
+    public function getObjectVar(string $name, string $className)
     {
-        $result = $this->getVar($name);
-        
-        if(is_a($result, $className))
-        {
-            return $result;
-        }
-        
-        throw new UI_Themes_Exception(
-            'Invalid object instance in template variable.',
-            sprintf(
-                'Expected [%s], given [%s].',
-                $className,
-                parseVariable($result)->enableType()->toString()
-            ),
-            self::ERROR_NOT_EXPECTED_OBJECT_INSTANCE
-        );
+        return ClassFinder::requireInstanceOf($className, $this->getVar($name));
     }
     
     public function getBoolVar(string $name) : bool

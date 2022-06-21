@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper_Exception;
+
 /**
  * Adds create and save capabilities to the base record settings form.
  * 
@@ -66,6 +68,7 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      *
      * @throws Application_Exception
      * @throws Application_Exception_DisposableDisposed
+     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public function createRecordFromValues(array $values) : DBHelper_BaseRecord

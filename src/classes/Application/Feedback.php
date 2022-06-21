@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\Microtime;
 
 class Application_Feedback extends DBHelper_BaseCollection
@@ -147,7 +148,7 @@ class Application_Feedback extends DBHelper_BaseCollection
      * @return Application_Feedback_Report
      * @throws Application_Exception
      * @throws Application_Exception_DisposableDisposed
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
     public function addFeedback(string $type, string $scope,string $text, string $url='', ?Application_User $user=null) : Application_Feedback_Report
@@ -171,6 +172,6 @@ class Application_Feedback extends DBHelper_BaseCollection
             return $record;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Application_Feedback_Report::class, $record);
+        throw new UnexpectedInstanceException(Application_Feedback_Report::class, $record);
     }
 }

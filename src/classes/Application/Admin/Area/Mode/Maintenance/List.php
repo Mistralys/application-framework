@@ -27,14 +27,11 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
         return t('Maintenance plans');
     }
     
-   /**
-    * @var Application_Maintenance
-    */
-    protected $maintenance;
+    protected Application_Maintenance $maintenance;
     
     protected function _handleActions() : bool
     {
-        $this->maintenance = $this->driver->getMaintenance();
+        $this->maintenance = Application_Driver::createMaintenance();
         
         if($this->request->getBool('simulate_plan')) {
             $this->handleSimulate();

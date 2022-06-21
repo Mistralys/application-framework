@@ -220,7 +220,7 @@ abstract class Application_AjaxMethod
      */
     protected function sendHTMLResponse(string $html) : void
     {
-        Application_Request::sendHTML($html, false);
+        Application_Request::sendHTML($html);
         Application::exit();
     }
     
@@ -362,14 +362,14 @@ abstract class Application_AjaxMethod
             Application::exit();
         }
         
-        Application_Request::sendJSON($json, false);
+        Application_Request::sendJSON($json);
         Application::exit();
     }
 
     /**
      * @var bool
      */
-    protected $debug = false;
+    protected bool $debug = false;
 
     public function enableDebug() : void
     {

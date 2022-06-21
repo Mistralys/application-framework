@@ -135,10 +135,10 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
     }
     
    /**
-    * @param UI_Icon $icon
-    * @return Application_RevisionableCollection_DataGridMultiAction
+    * @param UI_Icon|NULL $icon
+    * @return $this
     */
-    public function setIcon(UI_Icon $icon)
+    public function setIcon(?UI_Icon $icon) : self
     {
         $this->action->setIcon($icon);
         return $this;

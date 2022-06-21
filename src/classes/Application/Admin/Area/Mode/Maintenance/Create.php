@@ -62,7 +62,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
                 return true;
             }
             
-            $maintenance = $this->driver->getMaintenance();
+            $maintenance = Application_Driver::createMaintenance();
             $plan = $maintenance->addPlan($start, $values['duration']);
             $locales = Localization::getAppLocales();
             foreach($locales as $locale) {

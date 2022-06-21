@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Exception\ClassFinderException;
+use Application\Exception\UnexpectedInstanceException;
 use function AppUtils\parseVariable;
 
 /**
@@ -18,22 +20,22 @@ use function AppUtils\parseVariable;
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @deprecated Use {@see \Application\Exception\UnexpectedInstanceException} instead.
  */
-class Application_Exception_UnexpectedInstanceType extends Application_Exception
+class Application_Exception_UnexpectedInstanceType extends ClassFinderException
 {
-    public const ERROR_UNEXPECTED_INSTANCE_TYPE = 63801;
-    
-   /**
+    /**
     * @param string $expectedClass
     * @param mixed $given
     * @param int $code
-    * @param Exception|null $previous
+    * @param Throwable|null $previous
     */
-    public function __construct(string $expectedClass, $given, int $code=0, ?Exception $previous=null)
+    public function __construct(string $expectedClass, $given, int $code=0, ?Throwable $previous=null)
     {
         if($code === 0)
         {
-            $code = self::ERROR_UNEXPECTED_INSTANCE_TYPE;
+            $code = UnexpectedInstanceException::ERROR_UNEXPECTED_INSTANCE_TYPE;
         }
         
         parent::__construct(

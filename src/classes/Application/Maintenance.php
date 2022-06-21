@@ -200,4 +200,16 @@ class Application_Maintenance
         
         return null;
     }
+
+    public function renderScreen(UI_Page $page) : string
+    {
+        $page->selectFrame('maintenance');
+
+        return $page->renderTemplate(
+            'maintenance',
+            array(
+                'plan' => $this->getActivePlan()
+            )
+        );
+    }
 }

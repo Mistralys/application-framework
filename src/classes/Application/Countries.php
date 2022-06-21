@@ -6,6 +6,7 @@
  */
 
 use Application\Countries\CountriesCollection;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
@@ -461,7 +462,7 @@ class Application_Countries extends DBHelper_BaseCollection
             return $record;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Application_Countries_Country::class, $record);
+        throw new UnexpectedInstanceException(Application_Countries_Country::class, $record);
     }
 
     protected function _registerKeys() : void

@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\Request\RequestParam;
+
 class Application_API_Parameter
 {
-    /**
-     * @var AppUtils\Request_Param
-     */
-    protected $param;
+    protected RequestParam $param;
+    protected string $label;
+    protected bool $required;
+    protected string $description;
 
-    protected $label;
-
-    protected $required;
-
-    protected $description;
-
-    public function __construct(AppUtils\Request_Param $param, $label, $required = false, $description = null)
+    public function __construct(RequestParam $param, string $label, bool $required = false, string $description = '')
     {
         $this->param = $param;
         $this->label = $label;
@@ -21,32 +19,32 @@ class Application_API_Parameter
         $this->description = $description;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->param->getName();
     }
 
-    public function isRequired()
+    public function isRequired() : bool
     {
         return $this->required;
     }
 
-    public function getRequestParam()
+    public function getRequestParam() : RequestParam
     {
         return $this->param;
     }
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function hasDescription()
+    public function hasDescription() : bool
     {
         return !empty($this->description);
     }

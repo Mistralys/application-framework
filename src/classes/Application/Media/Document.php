@@ -1,5 +1,11 @@
 <?php
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ConvertHelper_Exception;
+
 abstract class Application_Media_Document implements Application_Media_DocumentInterface
 {
     use Application_Traits_Loggable;
@@ -281,8 +287,14 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * Creates a media file by its ID.
      *
      * @param int $media_id
-     * @throws Application_Exception
      * @return Application_Media_Document
+     *
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     * @throws ConvertHelper_Exception
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public static function create(int $media_id) : Application_Media_Document
     {
@@ -308,18 +320,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             );
         }
 
-        $class = Application_Media_Document::class.'_' . $data['media_type'];
+        $class = ClassFinder::requireResolvedClass(Application_Media_Document::class.'_' . $data['media_type']);
 
-        Application::requireClassExists($class);
-
-        $media = new $class($media_id);
-
-        if($media instanceof Application_Media_Document)
-        {
-            return $media;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(Application_Media_Document::class, $media);
+        return ClassFinder::requireInstanceOf(
+            Application_Media_Document::class,
+            new $class($media_id)
+        );
     }
 
     /**
@@ -561,21 +567,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $this->log('Deletion complete.');
     }
     
-   /**
-    * Logs messages for the document.
-    * @param string $message
-    */
-    protected function log($message)
+    public function isTypeSVG() : bool
     {
-        Application::log('Media document ['.$this->getID().'] | '.$message);
+        return strtolower($this->getExtension()) === 'svg';
     }
     
-    public function isTypeSVG()
-    {
-        return strtolower($this->getExtension()) == 'svg';
-    }
-    
-    public function isVector()
+    public function isVector() : bool
     {
         return $this->isTypeSVG();
     }

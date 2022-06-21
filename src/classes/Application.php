@@ -6,7 +6,9 @@
  * @package Application
  */
 
+use Application\ClassFinder;
 use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -110,7 +112,7 @@ class Application
 
     /**
      * @return Application_Feedback
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
     public static function createFeedback() : Application_Feedback
@@ -122,9 +124,17 @@ class Application
             return $collection;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Application_Feedback::class, $collection);
+        throw new UnexpectedInstanceException(Application_Feedback::class, $collection);
     }
 
+    /**
+     * @param string $className
+     * @return void
+     *
+     * @throws ClassNotExistsException
+     *
+     * @deprecated Use {@see ClassFinder::requireClassExists()} instead.
+     */
     public static function requireClassExists(string $className) : void
     {
         if(class_exists($className))
@@ -143,19 +153,15 @@ class Application
      * @param class-string $targetClass
      * @param class-string $extendsClass
      * @return void
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws UnexpectedInstanceException
      * @throws ClassNotExistsException
+     *
+     * @deprecated Use {@see ClassFinder::requireClassExtends()} instead.
      */
     public static function requireClassExtends(string $targetClass, string $extendsClass) : void
     {
-        self::requireClassExists($targetClass);
-
-        if(is_a($targetClass, $extendsClass, true))
-        {
-            return;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType($extendsClass, $targetClass);
+        ClassFinder::requireClassExtends($targetClass, $extendsClass);
     }
 
     /**
@@ -167,22 +173,14 @@ class Application
      * @param object $object
      * @return ClassInstanceType
      *
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws UnexpectedInstanceException
      * @throws ClassNotExistsException
+     *
+     * @deprecated Use {@see ClassFinder::requireInstanceOf()} instead.
      */
     public static function requireInstanceOf(string $class, object $object)
     {
-        if(!class_exists($class) && !interface_exists($class) && !trait_exists($class))
-        {
-            throw new ClassNotExistsException($class);
-        }
-
-        if(is_a($object, $class, true))
-        {
-            return $object;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType($class, $object);
+        return ClassFinder::requireInstanceOf($class, $object);
     }
 
     /**
@@ -317,9 +315,9 @@ class Application
         return self::getLogger()->log($message, $header);
     }
 
-    public static function logSF(string $message, ...$args) : Application_Logger
+    public static function logSF(string $message, string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
-        return self::getLogger()->logSF($message, ...$args);
+        return self::getLogger()->logSF($message, $category, ...$args);
     }
 
     public static function logEvent(string $eventName, string $message = '', ...$args) : Application_Logger
@@ -387,7 +385,18 @@ class Application
     }
 
     /**
+     * Gets the active session instance.
+     *
+     * NOTE: Will throw an exception if trying to
+     * use this method before the session has been
+     * initialized. Use the method {@see Application::isSessionReady()}
+     * to check if it is available.
+     *
      * @return Application_Session
+     * @see Application::isSessionReady()
+     *
+     * @throws Application_Exception
+     * @see Application::ERROR_SESSION_NOT_AVAILABLE_YET
      */
     public static function getSession() : Application_Session
     {
@@ -777,13 +786,25 @@ class Application
         return self::$media;
     }
 
+    private static ?DeeplHelper $deeplHelper = null;
+
+    public static function createDeeplHelper() : DeeplHelper
+    {
+        if(!isset(self::$deeplHelper))
+        {
+            self::$deeplHelper = new DeeplHelper();
+        }
+
+        return self::$deeplHelper;
+    }
+
     /**
      * Creates the specified API connector and returns its instance.
      * The type is the filename of the connector minus the extension.
      *
      * @param string $type
      * @return Connectors_Connector
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws UnexpectedInstanceException
      */
     public static function createConnector(string $type) : Connectors_Connector
     {
@@ -901,7 +922,7 @@ class Application
      * which are used to handle user ratings of application screens.
      *
      * @return Application_Ratings
-     * @throws Application_Exception_UnexpectedInstanceType
+     * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
     public static function createRatings() : Application_Ratings
@@ -913,7 +934,7 @@ class Application
             return $collection;
         }
 
-        throw new Application_Exception_UnexpectedInstanceType(Application_Ratings::class, $collection);
+        throw new UnexpectedInstanceException(Application_Ratings::class, $collection);
     }
 
     /**

@@ -241,7 +241,7 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     
     public function hasSubscreen(string $id) : bool;
     
-    public function getSubscreenByID(string $id) : Application_Admin_ScreenInterface;
+    public function getSubscreenByID(string $id, bool $adminMode) : Application_Admin_ScreenInterface;
     
    /**
     * Retrieves the ID of the active subscreen, if any.

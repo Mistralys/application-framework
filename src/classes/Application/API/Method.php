@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\Request\RequestParam;
+
 require_once 'Application/CORS.php';
 
 abstract class Application_API_Method
@@ -273,12 +275,10 @@ abstract class Application_API_Method
      * @param string $name
      * @param string $label
      * @param string $description
-     * @return AppUtils\Request_Param
+     * @return RequestParam
      */
     protected function registerParam($name, $label, $required = false, $description = null)
     {
-        require_once 'Application/API/Parameter.php';
-
         if (in_array($name, $this->reservedParams)) {
             throw new Application_Exception(
                 'Tried registering a reserved parameter',

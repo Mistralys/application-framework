@@ -154,9 +154,9 @@ abstract class Application_RevisionableStateless
         return $this->revisions->getFilterCriteria();
     }
     
-    public function getPrettyRevision()
+    public function getPrettyRevision() : int
     {
-        return $this->getRevision();
+        return (int)$this->getRevision();
     }
 
     /**

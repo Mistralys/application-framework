@@ -105,7 +105,7 @@ interface Application_Revisionable_Interface
     * Returns the pretty revision number as relevant for humans.
     * @return int
     */
-    public function getPrettyRevision();
+    public function getPrettyRevision() : int;
 
     /**
      * Saves the item using whatever storage the item uses.

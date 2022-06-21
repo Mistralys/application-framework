@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\ClassFinder;
+
 /**
  * Handles the "Explain this screen" inline page help interface rendering.
  *
@@ -79,21 +81,10 @@ class template_default_frame_page_help extends UI_Page_Template_Custom
 <?php
     }
 
-    /**
-     * @var UI_Page_Help
-     */
-    private $help;
+    private UI_Page_Help $help;
 
     protected function preRender() : void
     {
-        $help = $this->getVar('help');
-
-        if($help instanceof UI_Page_Help)
-        {
-            $this->help = $help;
-            return;
-        }
-
-        throw new Application_Exception_UnexpectedInstanceType(UI_Page_Help::class, $help);
+        $this->help = $this->getObjectVar('help', UI_Page_Help::class);
     }
 }

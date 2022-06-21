@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @property Application_RevisionableCollection_DBRevisionable $revisionable
+ */
 abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends Application_Admin_Area_Mode_Submode_Action
 {
     public const ERROR_INVALID_REVISIONABLE_ID = 15301;
@@ -24,11 +27,6 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
      */
     protected $revisionableID;
     
-    /**
-     * @var Application_RevisionableCollection_DBRevisionable
-     */
-    protected $revisionable;
- 
     protected function _handleBeforeActions() : void
     {
         $this->requireRevisionable();

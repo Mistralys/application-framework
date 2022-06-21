@@ -50,9 +50,9 @@ class Application_Exception extends BaseException
      * @param string $message
      * @param string $developerInfo
      * @param int $code
-     * @param Exception|null $previous
+     * @param Throwable|null $previous
      */
-    public function __construct(string $message, string $developerInfo = '', int $code = 0, ?Exception $previous = null)
+    public function __construct(string $message, string $developerInfo = '', int $code = 0, ?Throwable $previous = null)
     {
         self::$exceptionCounter++;
 

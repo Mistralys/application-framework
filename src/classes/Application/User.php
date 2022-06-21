@@ -7,6 +7,10 @@
  * @see Application_User
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassFinderException;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use function \AppUtils\parseVariable;
 use AppUtils\ConvertHelper;
 
@@ -104,16 +108,26 @@ abstract class Application_User implements Application_User_Interface, Applicati
      * Application_User constructor.
      * @param int $userID
      * @param array<string,string> $data
-     * @throws Application_Exception_UnexpectedInstanceType
+     *
+     * @throws ClassFinderException
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
      */
     public function __construct(int $userID, array $data)
     {
         $this->id = $userID;
         $this->data = $data;
 
-        $typeClass = 'Application_User_Storage_'.$this->getStorageType();
-        
-        $this->storage = ensureType(Application_User_Storage::class, new $typeClass($this));
+        $typeClass = ClassFinder::requireResolvedClass(sprintf(
+            '%s_%s',
+            Application_User_Storage::class,
+            $this->getStorageType()
+        ));
+
+        $this->storage = ClassFinder::requireInstanceOf(
+            Application_User_Storage::class,
+            new $typeClass($this)
+        );
     }
 
    /**
