@@ -9,7 +9,7 @@ use Application_Admin_Area_Welcome_Overview;
 /**
  * @see Maileditor_User_Recent
  */
-class Overview extends Application_Admin_Area_Welcome_Overview
+class OverviewScreen extends Application_Admin_Area_Welcome_Overview
 {
 
 }
