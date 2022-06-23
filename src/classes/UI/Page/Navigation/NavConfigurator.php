@@ -16,6 +16,8 @@ use UI_Page_Navigation_Item_DropdownMenu;
 
 abstract class NavConfigurator
 {
+    public const DRIVER_CONFIGURATOR_CLASS_NAME = 'MainNavConfigurator';
+
     protected UI_Page_Navigation $navigation;
     protected Application_Driver $driver;
 

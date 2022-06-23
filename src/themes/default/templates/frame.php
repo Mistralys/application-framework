@@ -64,22 +64,11 @@ class template_default_frame extends UI_Page_Template_Custom
    /**
     * @var array<string,string>
     */
-    private $variables;
+    private array $variables;
     
-   /**
-    * @var Application_Ratings
-    */
-    private $ratings;
-    
-   /**
-    * @var Application_Admin_ScreenInterface
-    */
-    private $screen;
-    
-   /**
-    * @var Application_LockManager|NULL
-    */
-    private $lockManager;
+    private Application_Ratings $ratings;
+    private Application_Admin_ScreenInterface $screen;
+    private ?Application_LockManager $lockManager;
     
     protected function preRender() : void
     {
@@ -94,11 +83,11 @@ class template_default_frame extends UI_Page_Template_Custom
         $this->resolveVariables();
     }
     
-    private function resolveVariables()
+    private function resolveVariables() : void
     {
         $contentHTML = $this->getVar('html.content');
         
-        if(strstr($contentHTML, '{SIDEBAR}'))
+        if(strpos($contentHTML, '{SIDEBAR}') !== false)
         {
             $contentHTML = str_replace('{SIDEBAR}', $this->sidebar->render(), $contentHTML);
         }

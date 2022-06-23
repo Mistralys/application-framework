@@ -32,6 +32,8 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      */
     protected $click = '';
 
+    private bool $autoActivate = true;
+
     /**
      * UI_Page_Navigation_Item_DropdownMenu constructor.
      * @param UI_Page_Navigation $nav
@@ -238,6 +240,12 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         }
     }
 
+    public function setAutoActivate(bool $auto) : self
+    {
+        $this->autoActivate = $auto;
+        return $this;
+    }
+
     /**
      * @return UI_Bootstrap_DropdownMenu
      * @throws Application_Exception
@@ -249,6 +257,11 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
     public function isActive() : bool
     {
+        if($this->active || !$this->autoActivate)
+        {
+            return $this->active;
+        }
+
         if(empty($this->trackURLs))
         {
             return false;

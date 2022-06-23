@@ -9,6 +9,7 @@ use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\OutputBuffering;
+use UI\TooltipInfo;
 use function AppUtils\parseVariable;
 
 /**
@@ -1296,5 +1297,27 @@ class UI
     public static function popover(string $attachToID) : UI_Bootstrap_Popover
     {
         return (new UI_Bootstrap_Popover(self::getInstance()))->setAttachToID($attachToID);
+    }
+
+    /**
+     * Creates a tooltip info instance, used to hold information
+     * for a tooltip, and configure it.
+     *
+     * Usage:
+     *
+     * 1) Set the element ID to attach it to.
+     *    Either use {@see TooltipInfo::attachToID()}, or
+     *    {@see TooltipInfo::injectAttributes()} to use an
+     *    existing `id` attribute (or create one automatically).
+     * 2) Enable the tooltip. It will be automatically enabled
+     *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
+     *    is called, or if {@see TooltipInfo::injectJS()} is called.
+     *
+     * @param $content
+     * @return TooltipInfo
+     */
+    public static function tooltip($content) : TooltipInfo
+    {
+        return new TooltipInfo($content);
     }
 }

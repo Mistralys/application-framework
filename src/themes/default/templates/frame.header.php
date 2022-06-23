@@ -1,8 +1,26 @@
 <?php
+/**
+ * @package UserInterface
+ * @subpackage Templates
+ * @see  template_default_frame_header
+ */
 
-	/* @var $this UI_Page_Template */
+declare(strict_types=1);
 
-?>
+use UI\Page\Navigation\QuickNavigation;
+
+/**
+ * Header including the main navigation.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class template_default_frame_header extends UI_Page_Template_Custom
+{
+    protected function generateOutput() : void
+    {
+        ?>
 <nav class="navbar navbar-default navbar-fixed-top" id="app-mainnav">
 	<div class="container" id="nav-container">
         <?php echo $this->renderTemplate('frame.header.appswitcher'); ?>
@@ -47,7 +65,7 @@
         </ul>
     </div>
     <?php
-        echo $this->header->renderNavigation(Application_Admin_Area::NAV_AREA_QUICK_NAVIGATION);
+        echo $this->header->renderNavigation(QuickNavigation::NAV_AREA_QUICK_NAVIGATION);
 
         $lockManager = $this->page->getLockManager();
         
@@ -62,3 +80,10 @@
         
     ?>
 </nav>
+<?php
+    }
+
+    protected function preRender() : void
+    {
+    }
+}

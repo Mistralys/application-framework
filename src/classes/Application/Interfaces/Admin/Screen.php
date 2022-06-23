@@ -7,6 +7,8 @@
  * @see Application_Admin_ScreenInterface
  */
 
+use UI\Page\Navigation\QuickNavigation;
+
 /**
  * Interface for administration screens: defines all methods
  * that administration screens have to share beyond what the
@@ -95,6 +97,14 @@ interface Application_Admin_ScreenInterface extends Application_Interfaces_Forma
     * @param UI_Bootstrap_Tabs $tabs
     */
     public function handleTabs(UI_Bootstrap_Tabs $tabs) : void;
+
+    /**
+     * Allows configuring the quick navigation for commonly used tasks in the current screen.
+     *
+     * @param QuickNavigation $navigation
+     * @return void
+     */
+    public function handleQuickNavigation(QuickNavigation $navigation) : void;
     
    /**
     * Whether the current user is allowed to access this screen / feature.

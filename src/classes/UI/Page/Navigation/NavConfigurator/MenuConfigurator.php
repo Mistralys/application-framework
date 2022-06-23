@@ -19,6 +19,12 @@ class MenuConfigurator
         $this->menu = $menu;
     }
 
+    public function setAutoActivate(bool $auto) : self
+    {
+        $this->menu->setAutoActivate($auto);
+        return $this;
+    }
+
     public function addAreaChained(string $urlName) : self
     {
         $this->addArea($urlName);

@@ -6,6 +6,8 @@
 
 declare(strict_types=1);
 
+use TestDriver\Area\QuickNavScreen;
+
 /**
  * @package TestDriver
  * @subpackage Driver
@@ -14,18 +16,18 @@ class TestDriver extends Application_Driver
 {
     /**
      * NOTE: Uses the custom navigation generation,
-     * see {@see \TestDriver\UI\MainNavigation}.
+     * see {@see \TestDriver\UI\MainNavConfigurator}.
      *
      * @return array<string,string>
      */
     public function getAdminAreas() : array
     {
         return array(
-            \TestDriver\Area\Welcome::URL_NAME_WELCOME => getClassTypeName(\TestDriver\Area\Welcome::class),
+            \TestDriver\Area\WelcomeScreen::URL_NAME_WELCOME => getClassTypeName(\TestDriver\Area\WelcomeScreen::class),
             Application_Admin_Area_Devel::URL_NAME => getClassTypeName(TestDriver_Area_Devel::class),
             Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
-            TestDriver_Area_QuickNav::URL_NAME => getClassTypeName(TestDriver_Area_QuickNav::class)
+            QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class)
         );
     }
 

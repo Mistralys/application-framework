@@ -829,7 +829,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     final protected function startMainNavigation() : void
     {
         $nav = $this->getMainNav();
-        $configClass = ClassFinder::resolveClass(APP_CLASS_NAME.'_UI_MainNavigation');
+        $configClass = ClassFinder::resolveClass(APP_CLASS_NAME.'_UI_'. NavConfigurator::DRIVER_CONFIGURATOR_CLASS_NAME);
 
         // No specialized navigation configurator present?
         // We build the navigation automatically.

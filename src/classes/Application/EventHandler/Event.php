@@ -7,6 +7,9 @@
  * @see Application_EventHandler_Event
  */
 
+use Application\ClassFinder;
+use Application\Exception\ClassNotExistsException;
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -119,7 +122,7 @@ class Application_EventHandler_Event
 
     public function getArgumentString(int $index) : string
     {
-        return strval($this->getArgument($index));
+        return (string)$this->getArgument($index);
     }
 
     public function getArgumentArray(int $index) : array
@@ -135,12 +138,28 @@ class Application_EventHandler_Event
 
     public function getArgumentInt(int $index) : int
     {
-        return intval($this->getArgument($index));
+        return (int)$this->getArgument($index);
     }
 
     public function getArgumentBool(int $index) : bool
     {
         return ConvertHelper::string2bool($index);
+    }
+
+    /**
+     * Fetches an object instance as argument, for the specified class.
+     *
+     * @template ClassInstanceType
+     * @param int $int
+     * @param class-string<ClassInstanceType> $class
+     * @return ClassInstanceType
+     *
+     * @throws ClassNotExistsException
+     * @throws UnexpectedInstanceException
+     */
+    protected function getArgumentObject(int $int, string $class)
+    {
+        return ClassFinder::requireInstanceOf($class, $this->getArgument($int));
     }
 
    /**

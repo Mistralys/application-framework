@@ -8,6 +8,7 @@
  */
 
 use AppUtils\OutputBuffering;
+use UI\Page\Navigation\QuickNavigation;
 use function AppUtils\parseVariable;
 
 /**
@@ -752,6 +753,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function handleTabs(UI_Bootstrap_Tabs $tabs) : void {}
     public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void {}
     public function handleSubnavigation(UI_Page_Navigation $subnav) : void {}
+    public function handleQuickNavigation(QuickNavigation $navigation) : void {}
+
     public function isUserAllowed() : bool {return true; }
     public function isArea(): bool { return false; }
     public function handleHelp(UI_Page_Help $help) : void {}

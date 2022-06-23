@@ -17,11 +17,6 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     protected $countries = array();
     
    /**
-    * @var Application_Request
-    */
-    protected $request;
-    
-   /**
     * @var array<string,string>
     */
     protected $hiddens = array();

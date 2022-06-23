@@ -4,6 +4,9 @@
 - UI: Restyled the main navigation and footer.
 - UI: Added the quick navigation for often-used sub screens of areas.
 - UI: The `Iconizable::setIcon()` method now supports setting a `NULL` value.
+- UI: Added `UI::tooltip()` to create a `TooltipInfo` instance.
+- UI: Added the interface `TooltipableInterface` and matching trait.
+- UI: Some navigation items now support tooltips.
 - Users: Implemented the users list in the devel users management screen.
 - Class loading: Added the static utility class `ClassFinder`.
 - Exceptions: Added `UnexpectedInstanceException`.

@@ -1,22 +1,27 @@
 <?php
 
-class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
+declare(strict_types=1);
+
+use AppUtils\AttributeCollection;
+use UI\Page\Navigation\LinkItemBase;
+
+class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
 {
-   /**
-    * @var string
-    */
-    protected $url;
-    
-   /**
-    * @var string
-    */
-    protected $title;
-    
-    public function __construct(UI_Page_Navigation $nav, $id, $url, $title)
+    protected string $url;
+
+    /**
+     * @param UI_Page_Navigation $nav
+     * @param string $id
+     * @param string $url
+     * @param string|number|UI_Renderable_Interface $title
+     * @throws Application_Exception
+     * @throws UI_Exception
+     */
+    public function __construct(UI_Page_Navigation $nav, string $id, string $url, $title)
     {
         parent::__construct($nav, $id);
         $this->url = $url;
-        $this->title = $title;
+        $this->title = toString($title);
     }
     
     public function getType() : string
@@ -24,7 +29,7 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
         return 'externallink';
     }
     
-    public function getURL()
+    public function getURL() : string
     {
         return $this->url;
     }
@@ -36,16 +41,21 @@ class UI_Page_Navigation_Item_ExternalLink extends UI_Page_Navigation_Item
             return '';
         }
 
-        $attributes = array(
-            'href' => $this->getURL(),
-            'class' => implode(' ', $this->classes)
-        );
+        $attribs = AttributeCollection::create($attributes)
+            ->href($this->getURL())
+            ->addClasses($this->classes)
+            ->attr('target', $this->target);
 
         $label = $this->getTitle();
         if (isset($this->icon)) {
             $label = $this->icon->render() . ' ' . $label;
         }
 
-        return '<a' . compileAttributes($attributes) . '>' . $label . '</a>';
+        if(isset($this->tooltipInfo))
+        {
+            $this->tooltipInfo->injectAttributes($attribs);
+        }
+
+        return '<a' . $attribs . '>' . $label . '</a>';
     }
 }

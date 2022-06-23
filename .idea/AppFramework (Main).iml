@@ -18,7 +18,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-timer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/php-text-template" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/theseer/tokenizer" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-ctype" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/neitanod/forceutf8" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/ulrichsg/getopt-php" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/parsecsv/php-parsecsv" />
@@ -75,9 +74,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/doctrine/instantiator" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/myclabs/deep-copy" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/phpunit/phpunit" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/version-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/html_quickform2" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/pear/html_common2" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/version-parser" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
