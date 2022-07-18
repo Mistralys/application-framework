@@ -13,19 +13,19 @@ class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
      * @param string $id
      * @param UI_Page $page
      * @param string $targetPageID
-     * @param string $title
+     * @param string|number|UI_Renderable_Interface|NULL $title
      * @param array<string,string> $params
      * @throws Application_Exception
      */
-    public function __construct(UI_Page_Navigation $nav, string $id, UI_Page $page, string $targetPageID, string  $title, array $params = array())
+    public function __construct(UI_Page_Navigation $nav, string $id, UI_Page $page, string $targetPageID, $title, array $params = array())
     {
         parent::__construct($nav, $id);
 
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = $targetPageID;
 
         $this->page = $page;
-        $this->title = $title;
         $this->params = $params;
+        $this->setTitle($title);
 
         if(!$this->isActive()) 
         {
