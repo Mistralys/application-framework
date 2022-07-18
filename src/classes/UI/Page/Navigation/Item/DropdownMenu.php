@@ -33,6 +33,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     protected $click = '';
 
     private bool $autoActivate = true;
+    private bool $caret = true;
 
     /**
      * UI_Page_Navigation_Item_DropdownMenu constructor.
@@ -47,6 +48,11 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         
         $this->menu = UI::getInstance()->createDropdownMenu();
         $this->setLabel($label);
+    }
+
+    public function getMenu() : UI_Bootstrap_DropdownMenu
+    {
+        return $this->menu;
     }
 
     /**
@@ -151,7 +157,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         <li class="<?php echo implode(' ', $this->classes) ?>">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <?php echo $this->renderLabel() ?>
-                <b class="caret"></b>
+                <?php if($this->caret) { ?><b class="caret"></b><?php } ?>
             </a>
             <?php echo $this->menu->render() ?>
         </li>
@@ -302,5 +308,11 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         }
 
         return true;
+    }
+
+    public function noCaret() : self
+    {
+        $this->caret = false;
+        return $this;
     }
 }
