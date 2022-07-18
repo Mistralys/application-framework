@@ -21,7 +21,8 @@ class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
     {
         parent::__construct($nav, $id);
         $this->url = $url;
-        $this->title = toString($title);
+
+        $this->setTitle($title);
     }
     
     public function getType() : string
@@ -46,16 +47,15 @@ class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
             ->addClasses($this->classes)
             ->attr('target', $this->target);
 
-        $label = $this->getTitle();
-        if (isset($this->icon)) {
-            $label = $this->icon->render() . ' ' . $label;
-        }
-
         if(isset($this->tooltipInfo))
         {
             $this->tooltipInfo->injectAttributes($attribs);
         }
 
-        return '<a' . $attribs . '>' . $label . '</a>';
+        return sprintf(
+            '<a%s>%s</a>',
+            $attribs,
+            $this->renderIconLabel($this->getTitle())
+        );
     }
 }
