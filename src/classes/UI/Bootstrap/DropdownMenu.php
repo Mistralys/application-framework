@@ -15,9 +15,6 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
     */
     protected array $items = array();
 
-    /**
-     * @var bool
-     */
     private bool $left = false;
 
     protected function _render() : string
