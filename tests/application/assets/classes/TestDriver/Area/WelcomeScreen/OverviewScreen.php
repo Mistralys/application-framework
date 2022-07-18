@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TestDriver\Area\Welcome;
+namespace TestDriver\Area\WelcomeScreen;
 
 use Application_Admin_Area_Welcome_Overview;
 
