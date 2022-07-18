@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use UI\Page\Navigation\MetaNavigation;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -27,42 +28,9 @@ class template_default_frame_header extends UI_Page_Template_Custom
 
         <?php echo $this->header->renderNavigation('main'); ?>
 
-        <ul class="nav navbar-nav navbar-meta pull-right" id="app-metanav">
-            <?php
-                echo $this->renderTemplate('frame.header.developer-menu');
-            
-                ?>
-                <li>
-                    <a href="#" onclick="<?php echo Application_User_Notepad::getJSOpen() ?>">
-                        <?php echo UI::icon()->notepad()
-                            ->setTooltip(Application_User_Notepad::getTooltipText())
-                            ->makeTooltipBottom()
-                            ->setAttribute('data-placement', 'left')
-                        ?>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="Driver.DialogLookup();">
-                        <?php echo UI::icon()->search()
-                        ->setTooltip(t('Look up an item'))
-                        ->makeTooltipBottom()
-                        ->setAttribute('data-placement', 'left')
-                            ?>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" onclick="window.print();">
-                        <?php echo UI::icon()->printer()
-                        ->setTooltip(t('Print this page'))
-                        ->makeTooltipBottom()
-                        ->setAttribute('data-placement', 'left')
-                        ?>
-                    </a>
-                </li>
-                <?php
-                echo $this->renderTemplate('frame.header.user-menu');
-            ?>
-        </ul>
+        <?php
+            echo $this->metaNav->render();
+        ?>
     </div>
     <?php
         echo $this->header->renderNavigation(QuickNavigation::NAV_AREA_QUICK_NAVIGATION);
@@ -83,7 +51,22 @@ class template_default_frame_header extends UI_Page_Template_Custom
 <?php
     }
 
+    protected MetaNavigation $metaNav;
+
     protected function preRender() : void
     {
+        $this->configureMetaNav();
+        $this->_handleMetaNav();
+    }
+
+    protected function _handleMetaNav() : void
+    {
+
+    }
+
+    private function configureMetaNav() : void
+    {
+        $this->metaNav = new MetaNavigation($this->getUI());
+        $this->metaNav->configure();
     }
 }

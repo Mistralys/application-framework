@@ -34,9 +34,12 @@ $nav->addClass('navbar-main');
                 $active = '';
                 $groupItems = $nav->getItemsByGroup($group);
                 $groupLabel = $group;
-        
-                if ($nav->isGroupActive($group)) {
+
+                $activeItem = $nav->getActiveGroupItem($group);
+
+                if ($activeItem !== null) {
                     $active = ' nav-group-active';
+                    $groupLabel .= ' - '.$activeItem->getTitle();
                 }
         
                 ?>
