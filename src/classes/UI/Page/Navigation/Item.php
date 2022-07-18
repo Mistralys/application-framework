@@ -69,6 +69,17 @@ abstract class UI_Page_Navigation_Item
         $this->ui = UI::getInstance();
     }
 
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTitle($title) : self
+    {
+        $this->title = toString($title);
+        return $this;
+    }
+
     public function getUI() : UI
     {
         return $this->ui;
