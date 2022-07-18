@@ -123,7 +123,7 @@ abstract class Application_Bootstrap_Screen
         &&
         $this->user->isDeveloper()
         &&
-        $this->user->getSetting('developer_mode') === 'yes';
+        $this->user->isDeveloperModeEnabled();
     }
 
     private function initDeveloperMode() : void
@@ -209,11 +209,12 @@ abstract class Application_Bootstrap_Screen
         
         if (isset($_REQUEST['develmode_enable']) && in_array($_REQUEST['develmode_enable'], array('yes', 'no')))
         {
-            $new = $_REQUEST['develmode_enable'];
-            $old = $user->getSetting('developer_mode', 'no');
-            $user->setSetting('developer_mode', $new);
-            if ($new != $old) {
-                if ($new === 'yes') {
+            $new = $_REQUEST['develmode_enable'] === 'yes';
+            $old = $user->isDeveloperModeEnabled();
+            $user->setDeveloperModeEnabled($new);
+
+            if ($new !== $old) {
+                if ($new === true) {
                     UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-success">enabled</b>.');
                 } else {
                     UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-error">disabled</b>.');
