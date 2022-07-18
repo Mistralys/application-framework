@@ -46,6 +46,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
     const RIGHT_LOGIN = 'Login';
     const RIGHT_TRANSLATE_UI = 'TranslateUI';
     const RIGHT_DEVELOPER = 'Developer';
+    public const SETTING_DEVELOPER_MODE = 'developer_mode';
 
     /**
     * Stores user right definitions.
@@ -765,6 +766,28 @@ abstract class Application_User implements Application_User_Interface, Applicati
         }
 
         return $this->can(self::RIGHT_DEVELOPER);
+    }
+
+    public function isDeveloperModeEnabled() : bool
+    {
+        if(!$this->isDeveloper()) {
+            return false;
+        }
+
+        return $this->getBoolSetting(self::SETTING_DEVELOPER_MODE);
+    }
+
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setDeveloperModeEnabled(bool $enabled) : self
+    {
+        if($this->isDeveloper()) {
+            $this->setBoolSetting(self::SETTING_DEVELOPER_MODE, $enabled);
+        }
+
+        return $this;
     }
 
     public function canTranslateUI() : bool { return $this->can(self::RIGHT_TRANSLATE_UI); }
