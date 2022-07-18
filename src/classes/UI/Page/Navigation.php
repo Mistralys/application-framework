@@ -89,6 +89,28 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
     }
 
     /**
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @param string $jsStatement
+     * @return UI_Page_Navigation_Item_Clickable
+     * @throws Application_Exception
+     */
+    public function addClickable($title, string $jsStatement) : UI_Page_Navigation_Item_Clickable
+    {
+        $this->counter++;
+
+        $item = new UI_Page_Navigation_Item_Clickable(
+            $this,
+            (string)$this->counter,
+            $title,
+            $jsStatement
+        );
+
+        $this->items[] = $item;
+
+        return $item;
+    }
+
+    /**
      * Renders the navigation using the corresponding template file
      * and returns the generated HTML code.
      *
@@ -140,6 +162,11 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
 
     public function isGroupActive(string $group) : bool
     {
+        return $this->getActiveGroupItem($group) !== null;
+    }
+
+    public function getActiveGroupItem(string $group) : ?UI_Page_Navigation_Item
+    {
         foreach ($this->items as $item)
         {
             if ($item->getGroup() !== $group)
@@ -149,11 +176,11 @@ class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
 
             if ($item->isActive())
             {
-                return true;
+                return $item;
             }
         }
 
-        return false;
+        return null;
     }
 
     /**
