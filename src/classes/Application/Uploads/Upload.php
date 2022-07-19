@@ -239,7 +239,6 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
     
     public function upgrade()
     {
-        require_once 'Application/Media.php';
         $media = Application_Media::getInstance();
         return $media->createFromUpload($this);
     }
