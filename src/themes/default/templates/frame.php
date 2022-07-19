@@ -8,6 +8,7 @@
  */
 
 declare(strict_types=1);
+use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -21,6 +22,11 @@ declare(strict_types=1);
  */
 class template_default_frame extends UI_Page_Template_Custom
 {
+    public const BODY_CLASS_WITH_QUICKNAV = 'with-quicknav';
+    public const BODY_CLASS_LOCKING_LOCKABLE = 'locking-lockable';
+    public const BODY_CLASS_LOCKING_LOCKED = 'locking-locked';
+    public const BODY_CLASS_LOCKING_UNLOCKED = 'locking-unlocked';
+
     protected function generateOutput() : void
     {
 
@@ -112,21 +118,36 @@ class template_default_frame extends UI_Page_Template_Custom
         $bodyClasses = array();
         $bodyClasses[] = 'layout-'.$this->user->getSetting('layout_width', 'standard');
         $bodyClasses[] = 'fontsize-'.$this->user->getSetting('layout_fontsize', 'standard');
-        
+
+        if($this->hasQuickNav()) {
+            $bodyClasses[] = self::BODY_CLASS_WITH_QUICKNAV;
+        }
+
         if($this->screen instanceof Application_Interfaces_Admin_LockableScreen && $this->screen->isLockable()) {
-            $bodyClasses[] = 'locking-lockable';
+            $bodyClasses[] = self::BODY_CLASS_LOCKING_LOCKABLE;
         }
         
         if(isset($this->lockManager) && $this->lockManager->isLocked()) 
         {
-            $bodyClasses[] = 'locking-locked';
+            $bodyClasses[] = self::BODY_CLASS_LOCKING_LOCKED;
         } 
         else if(isset($this->lockManager)) 
         {
-            $bodyClasses[] = 'locking-unlocked';
+            $bodyClasses[] = self::BODY_CLASS_LOCKING_UNLOCKED;
         }
         
         return $bodyClasses;
+    }
+
+    public function hasQuickNav() : bool
+    {
+        $page = $this->getPage();
+        $navID = QuickNavigation::NAV_AREA_QUICK_NAVIGATION;
+
+        return
+            $page->hasNavigation($navID)
+            &&
+            $page->getNavigation($navID)->hasValidItems();
     }
     
     protected function filterOutput(string $output) : string

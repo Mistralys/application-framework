@@ -2,10 +2,16 @@ BODY{
     color: rgba(0,0,0,0.7);
 }
 
+/* region: Main navigation */
+
 #app-mainnav{
     background: #001b41;
     background: linear-gradient(180deg, rgba(4,44,101,1) 0%, rgba(0,27,65,1) 100%);
     box-shadow: 0 7px 8px -4px rgba(0,0,0,0.75);
+}
+
+#app-mainnav .navbar-toolbars {
+    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
 }
 
 #app-mainnav .nav > LI > A {
@@ -66,6 +72,8 @@ BODY{
 #app-mainnav .navbar-main .nav-link.dropdown > A:hover > B.caret{
     border-top-color:rgba(255, 255, 255, 1);
 }
+
+/* endregion */
 
 
 /* --------------------------------------------------------------

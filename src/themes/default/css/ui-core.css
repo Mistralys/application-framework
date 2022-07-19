@@ -25,10 +25,6 @@ BODY {
     height: 34px;
 }
 
-#app-mainnav .navbar-toolbars {
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.25);
-}
-
 .navbar-appswitcher {
     margin-left: 20px !important;
 }
@@ -41,6 +37,10 @@ BODY {
 /* endregion */
 
 /* region: Navigation - Quicknav */
+
+BODY.with-quicknav{
+    padding-top:60px;
+}
 
 #app-quicknav .nav > LI > A{
     padding: 2px 8px;
