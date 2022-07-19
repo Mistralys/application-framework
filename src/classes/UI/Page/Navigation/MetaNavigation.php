@@ -38,6 +38,11 @@ class MetaNavigation implements UI_Renderable_Interface
         return $this->ui;
     }
 
+    public function getNavigation() : UI_Page_Navigation
+    {
+        return $this->metaNav;
+    }
+
     public function configure() : void
     {
         $this->configureDeveloperMenu();
