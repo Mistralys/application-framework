@@ -5,6 +5,8 @@ use Application\Exception\ClassFinderException;
 use Application\Exception\ClassNotExistsException;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper_Exception;
 
 abstract class Application_Media_Document implements Application_Media_DocumentInterface
 {
@@ -54,11 +56,11 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      *
      * @param string $name
      * @param string $extension
-     * @param Application_User $user
-     * @param DateTime $date_added
+     * @param Application_User|NULL $user
+     * @param DateTime|NULL $date_added
      * @return Application_Media_Document
      */
-    public static function createNew($name, $extension, $user = null, $date_added = null)
+    public static function createNew(string $name, string $extension, ?Application_User $user = null, ?DateTime $date_added = null) : Application_Media_Document
     {
         if (!$user instanceof Application_User) {
             $user = Application::getUser();
@@ -71,7 +73,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $media = Application_Media::getInstance();
         $type = $media->getTypeByExtension($extension);
 
-        $media_id = intval(DBHelper::insert(
+        $media_id = (int)DBHelper::insert(
             "INSERT INTO
                 `media`
             SET
@@ -87,7 +89,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
                 'media_name' => $name,
                 'media_extension' => $extension
             )
-        ));
+        );
 
         return self::create($media_id);
     }
@@ -194,6 +196,20 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public function getUser()
     {
         return Application_User::createByID($this->data['user_id']);
+    }
+
+    public static function createNewFromFile(string $name, FileInfo $file, ?Application_User $user=null, ?DateTime $dateAdded=null) : Application_Media_Document
+    {
+        $document = self::createNew(
+            $name,
+            $file->getExtension(),
+            $user,
+            $dateAdded
+        );
+
+        $document->setSourceFile($file);
+
+        return $document;
     }
 
     /**
@@ -580,10 +596,22 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public function getLogIdentifier() : string
     {
         return sprintf(
-            'Media document [#%s] | Name [%s] | Size [%s]',
+            'Media document [#%s] | Name [%s]',
             $this->getID(),
-            $this->getFilename(),
-            $this->getFilesizeReadable()
+            $this->getFilename()
         );
+    }
+
+    /**
+     * Sets/overwrites the document from the specified file.
+     *
+     * @param FileInfo $file
+     * @return $this
+     * @throws FileHelper_Exception
+     */
+    public function setSourceFile(FileInfo $file) : self
+    {
+        $file->copyTo($this->getPath());
+        return $this;
     }
 }
