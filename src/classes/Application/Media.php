@@ -4,6 +4,7 @@ use Application\ClassFinder;
 use Application\Exception\ClassFinderException;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
+use AppUtils\FileHelper\FileInfo;
 
 class Application_Media
 {
@@ -52,9 +53,19 @@ class Application_Media
      * Retrieves the full path to the folder where media files are stored.
      * @return string
      */
-    public function getStorageFolder()
+    public function getStorageFolder() : string
     {
         return $this->storageFolder;
+    }
+
+    public function createFromFile(string $name, FileInfo $file, ?Application_User $user=null, ?DateTime $dateAdded=null) : Application_Media_Document
+    {
+        return Application_Media_Document::createNewFromFile(
+            $name,
+            $file,
+            $user,
+            $dateAdded
+        );
     }
 
     /**
@@ -66,8 +77,6 @@ class Application_Media
      */
     public function createFromUpload(Application_Uploads_Upload $upload)
     {
-        require_once 'Application/Media/Document.php';
-
         return Application_Media_Document::createNewFromUpload($upload);
     }
 
@@ -81,8 +90,6 @@ class Application_Media
      */
     public function getByID($media_id)
     {
-        require_once 'Application/Media/Document.php';
-
         return Application_Media_Document::create($media_id);
     }
     
