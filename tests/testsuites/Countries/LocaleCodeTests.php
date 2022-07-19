@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace testsuites\Countries;
 
-use classes\CountriesTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
 /**
  * @package Application

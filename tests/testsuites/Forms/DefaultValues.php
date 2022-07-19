@@ -1,5 +1,7 @@
 <?php
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class Forms_DefaultValuesTest extends ApplicationTestCase
 {
     public function test_default(): void

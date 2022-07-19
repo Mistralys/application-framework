@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppLocalize\Localization;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 
 final class DataGrids_EntriesTest extends ApplicationTestCase
 {

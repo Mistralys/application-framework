@@ -1,5 +1,7 @@
 <?php
 
+use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+
 final class User_RightsTest extends UserTestCase
 {
     public function test_registerGroup() : void

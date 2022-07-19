@@ -1,8 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+namespace Mistralys\AppFrameworkTests\TestClasses;
+
+use Application;
+use Application_Formable_Generic;
+use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
+use UI;
+use UI_Page;
 
 abstract class ApplicationTestCase extends TestCase
 {
@@ -11,23 +20,23 @@ abstract class ApplicationTestCase extends TestCase
      */
     private static array $counter = array();
 
-    protected function logHeader(string $testName) : void
+    protected function logHeader(string $testName): void
     {
-        Application::logHeader(get_class($this).' | '.$testName);
+        Application::logHeader(get_class($this) . ' | ' . $testName);
     }
 
-    protected function createEntryID() : string
+    protected function createEntryID(): string
     {
-        return 'entry'.$this->getTestCounter();
+        return 'entry' . $this->getTestCounter();
     }
 
-    protected function getTestCounter(string $name='') : int
+    protected function getTestCounter(string $name = ''): int
     {
-        if(empty($name)) {
+        if (empty($name)) {
             $name = '__default';
         }
 
-        if(!isset(self::$counter[$name])) {
+        if (!isset(self::$counter[$name])) {
             self::$counter[$name] = 0;
         }
 
@@ -36,42 +45,41 @@ abstract class ApplicationTestCase extends TestCase
         return self::$counter[$name];
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         $this->clearTransaction();
         $this->disableLogging();
     }
 
-    protected function startTransaction()
+    protected function startTransaction() : void
     {
         DBHelper::startConditional();
     }
 
-    protected function clearTransaction()
+    protected function clearTransaction() : void
     {
         DBHelper::rollbackConditional();
         DBHelper::disableDebugging();
     }
 
-    protected function startTest(string $name) : void
+    protected function startTest(string $name): void
     {
-        Application::logHeader(getClassTypeName(get_class($this)).' - '.$name);
+        Application::logHeader(getClassTypeName(get_class($this)) . ' - ' . $name);
     }
 
-    protected function enableLogging() : void
+    protected function enableLogging(): void
     {
         Application::getLogger()->logModeEcho();
     }
 
-    protected function disableLogging() : void
+    protected function disableLogging(): void
     {
         Application::getLogger()->logModeNone();
     }
 
-    protected function createTestLocale(string $name='') : Localization_Locale
+    protected function createTestLocale(string $name = ''): Localization_Locale
     {
-        if(empty($name))
-        {
+        if (empty($name)) {
             $names = DBHelper::createFetchMany('locales_application')
                 ->fetchColumn('locale_name');
 
@@ -81,39 +89,36 @@ abstract class ApplicationTestCase extends TestCase
         return Localization::getAppLocaleByName($name);
     }
 
-    protected function isRunViaApplication() : bool
+    protected function isRunViaApplication(): bool
     {
         return boot_defined('APP_FRAMEWORK_TESTS') !== true;
     }
 
-    protected function skipIfRunViaApplication() : bool
+    protected function skipIfRunViaApplication(): bool
     {
-        if ($this->isRunViaApplication())
-        {
+        if ($this->isRunViaApplication()) {
             $this->markTestSkipped();
         }
 
         return false;
     }
 
-    protected function createTestFormable(array $defaultValues=array()) : Application_Formable_Generic
+    protected function createTestFormable(array $defaultValues = array()): Application_Formable_Generic
     {
         $formable = new Application_Formable_Generic();
-        $formable->createFormableForm('formable-'.$this->getTestCounter(), $defaultValues);
+        $formable->createFormableForm('formable-' . $this->getTestCounter(), $defaultValues);
 
         return $formable;
     }
 
     protected static ?UI $ui = null;
 
-    protected function createUI() : UI
+    protected function createUI(): UI
     {
-        if(!isset(self::$ui))
-        {
+        if (!isset(self::$ui)) {
             self::$ui = UI::getInstance();
 
-            if(!self::$ui->hasPage())
-            {
+            if (!self::$ui->hasPage()) {
                 self::$ui->setPage(new UI_Page(self::$ui, 'unit-tests'));
             }
         }
@@ -121,7 +126,7 @@ abstract class ApplicationTestCase extends TestCase
         return self::$ui;
     }
 
-    public function html2string(string $html) : string
+    public function html2string(string $html): string
     {
         $replaces = array(
             '</p>' => PHP_EOL,

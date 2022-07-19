@@ -10,7 +10,7 @@ namespace testsuites\Countries;
 
 use Application_Countries;
 use Application_Countries_Country;
-use classes\CountriesTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
 /**
  * @package Application

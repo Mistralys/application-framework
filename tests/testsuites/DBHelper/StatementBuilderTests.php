@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace testsuites\DBHelper;
 
 use DBHelper_StatementBuilder;
-use DBHelperTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 use function statementBuilder;
 use function statementValues;
 

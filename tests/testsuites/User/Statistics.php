@@ -1,5 +1,7 @@
 <?php
 
+use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+
 final class User_StatisticsTest extends UserTestCase
 {
     public function test_resetStatistics(): void

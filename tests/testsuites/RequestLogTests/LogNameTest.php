@@ -8,7 +8,7 @@ use Application;
 use Application_RequestLog_LogInfo;
 use Application_RequestLog_LogWriter;
 use AppUtils\Microtime;
-use RequestLogTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\RequestLogTestCase;
 
 class LogNameTest extends RequestLogTestCase
 {

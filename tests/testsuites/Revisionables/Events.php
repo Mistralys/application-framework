@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 class Revisionables_EventsTests extends ApplicationTestCase
 {
 

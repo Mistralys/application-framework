@@ -10,7 +10,7 @@ namespace testsuites\Application;
 
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion\VersionLanguage;
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use AppUtils\FileHelper;
 use TestDriver;
 use Application\WhatsNew\XMLFileWriter;

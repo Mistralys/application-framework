@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Microtime;
+use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
 final class DBHelper_DataTableTests extends DBHelperTestCase
 {

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 /**
  * The test driver has exactly two strategies configured:
  * `Google` and `GitHub`.

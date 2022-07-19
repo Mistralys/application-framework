@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 class Disposables_CoreTests extends ApplicationTestCase
 {
     /**

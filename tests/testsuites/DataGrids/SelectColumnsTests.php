@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class DataGrids_SelectColumnsTests extends ApplicationTestCase
 {
     protected function setUp() : void

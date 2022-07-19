@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace testsuites\UI;
 
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use UI\CriticalityEnum;
 
 final class CriticalityEnumTests extends ApplicationTestCase

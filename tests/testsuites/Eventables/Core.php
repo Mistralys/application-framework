@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class Eventables_CoreTests extends ApplicationTestCase
 {
     public function test_removeListener() : void

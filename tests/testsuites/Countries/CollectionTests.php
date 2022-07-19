@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace testsuites\Countries;
 
 use Application\Countries\CountriesCollection;
-use classes\CountriesTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
 /**
  * @package Application

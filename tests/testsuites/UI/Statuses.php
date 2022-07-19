@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class UI_StatusesTest extends ApplicationTestCase
 {
     public function test_getAll() : void

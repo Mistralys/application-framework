@@ -7,6 +7,7 @@
 declare(strict_types=1);
 
 use AppUtils\Microtime;
+use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
 /**
  * @package Application

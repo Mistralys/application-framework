@@ -6,7 +6,7 @@ namespace testsuites\SessionTests;
 
 use Application_Session_Exception;
 use Application_Session_Native;
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use TestDriver_Session;
 
 class InitExceptionTest extends ApplicationTestCase

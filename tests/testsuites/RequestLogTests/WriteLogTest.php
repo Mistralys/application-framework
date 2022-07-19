@@ -6,7 +6,7 @@ namespace testsuites\RequestLogTests;
 
 use Application;
 use AppUtils\FileHelper;
-use RequestLogTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\RequestLogTestCase;
 
 class WriteLogTest extends RequestLogTestCase
 {

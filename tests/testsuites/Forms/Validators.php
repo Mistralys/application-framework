@@ -1,6 +1,7 @@
 <?php
 
 use AppUtils\BaseException;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use function AppUtils\parseVariable;
 
 final class Forms_ValidatorsTest extends ApplicationTestCase

@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace testsuites\UI\Forms\CustomElements;
 
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use UI;
 use UI_Form;
 

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+
 /**
  * These tests can only be run from the application's
  * own tests suite, because they require the testsuite

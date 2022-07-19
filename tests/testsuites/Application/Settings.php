@@ -1,5 +1,7 @@
 <?php
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class Application_SettingsTest extends ApplicationTestCase
 {
     private string $settingName = 'expiry_test';

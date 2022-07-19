@@ -5,7 +5,7 @@ namespace testsuites\Application\Admin\Wizard;
 use Application_Driver;
 use TestDriver_Area_WizardTest_Wizard;
 
-final class WizardTest extends \ApplicationTestCase
+final class WizardTest extends \Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase
 {
     protected TestDriver_Area_WizardTest_Wizard $wizard;
 

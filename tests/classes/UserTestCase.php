@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
+namespace Mistralys\AppFrameworkTests\TestClasses;
+
+use Application;
+use Application_User;
+
 abstract class UserTestCase extends ApplicationTestCase
 {
-    /**
-     * @var Application_User
-     */
-    protected $user;
+    protected Application_User $user;
 
     protected function setUp(): void
     {

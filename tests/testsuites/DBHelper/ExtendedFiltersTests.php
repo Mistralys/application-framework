@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
+
 final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 {
     public function test_getCustomSelects() : void

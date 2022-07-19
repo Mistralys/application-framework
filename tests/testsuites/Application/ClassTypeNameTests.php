@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace testsuites\Application;
 
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 
 /**
  * @package Application

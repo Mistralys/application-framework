@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
+
 final class Global_EnumsTest extends ApplicationTestCase
 {
     public function test_getValues() : void

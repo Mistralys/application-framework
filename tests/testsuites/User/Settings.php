@@ -1,5 +1,7 @@
 <?php
 
+use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
+
 final class User_SettingsTest extends UserTestCase
 {
     public function test_setSetting() : void

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace testsuites\TypeHinter;
 
 use Application;
-use ApplicationTestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use AppUtils\FileHelper;
 use TypeHinter;
 use TypeHinter_UpdateV1_21;
