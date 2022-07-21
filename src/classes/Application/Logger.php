@@ -274,7 +274,7 @@ class Application_Logger
 
     public function logUI(string $message, ...$args) : Application_Logger
     {
-        return $this->addLogMessage($message, self::CATEGORY_UI, true, $args);
+        return $this->addLogMessage($message, self::CATEGORY_UI, true, ...$args);
     }
 
     /**
@@ -307,7 +307,7 @@ class Application_Logger
         }
 
         $this->log[] = $message;
-   
+
         if($this->logMode === self::LOG_MODE_ECHO)
         {
             echo $this->format($message);
