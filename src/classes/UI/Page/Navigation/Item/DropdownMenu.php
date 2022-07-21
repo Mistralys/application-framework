@@ -310,6 +310,9 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         return true;
     }
 
+    /**
+     * @return $this
+     */
     public function noCaret() : self
     {
         $this->caret = false;

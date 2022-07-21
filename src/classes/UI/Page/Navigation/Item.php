@@ -231,7 +231,7 @@ abstract class UI_Page_Navigation_Item
     * method.
     * 
     * @param string $alias
-    * @return UI_Page_Navigation_Item
+    * @return $this
     * @see UI_Page_Navigation::getItemByAlias()
     */
     public function setAlias(string $alias) : self
