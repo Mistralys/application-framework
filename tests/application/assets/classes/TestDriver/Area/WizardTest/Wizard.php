@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
-class TestDriver_Area_WizardTest_Wizard extends \Application_Admin_Wizard
+class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 {
+    public const URL_NAME = 'wizard';
+
     protected function init() : void
     {
         parent::init();
@@ -11,7 +13,7 @@ class TestDriver_Area_WizardTest_Wizard extends \Application_Admin_Wizard
 
     public function getURLName() : string
     {
-        return 'wizard';
+        return self::URL_NAME;
     }
 
     protected function _initSteps() : void

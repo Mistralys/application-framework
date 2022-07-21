@@ -8,7 +8,7 @@ class TestDriver_Area_WizardTest extends Application_Admin_Area
 
     public function getDefaultMode() : string
     {
-        return 'wizard';
+        return TestDriver_Area_WizardTest_Wizard::URL_NAME;
     }
 
     public function getNavigationGroup() : string
