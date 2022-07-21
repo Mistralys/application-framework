@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\PHPFile;
 use AppUtils\FileHelper_PHPClassInfo;
 
 class TypeHinter implements Application_Interfaces_Loggable
@@ -90,7 +91,7 @@ class TypeHinter implements Application_Interfaces_Loggable
 
     private function processFile(string $file) : void
     {
-        $info = new FileHelper_PHPClassInfo($file);
+        $info = new FileHelper_PHPClassInfo(PHPFile::factory($file));
 
         if(!$info->hasClasses())
         {
