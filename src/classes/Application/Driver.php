@@ -60,7 +60,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     public const STORAGE_TYPE_FILE = 'File';
 
     protected Application $app;
-    protected UI_Page $page;
+    protected ?UI_Page $page = null;
     protected Application_User $user;
     protected Application_Request $request;
     protected static ?Application_Driver $instance = null;
@@ -259,9 +259,9 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * Retrieves the page object for the page currently being rendered.
-     * @return UI_Page
+     * @return UI_Page|NULL
      */
-    public function getPage() : UI_Page
+    public function getPage() : ?UI_Page
     {
         return $this->page;
     }

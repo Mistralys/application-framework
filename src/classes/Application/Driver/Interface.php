@@ -47,7 +47,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getActiveScreen() : Application_Admin_ScreenInterface;
 
-    public function getPage() : UI_Page;
+    public function getPage() : ?UI_Page;
 
     public function getScreenByPath(string $path, bool $adminMode=true) : ?Application_Admin_ScreenInterface;
 
