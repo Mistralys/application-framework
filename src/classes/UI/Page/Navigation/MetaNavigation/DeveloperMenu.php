@@ -88,19 +88,15 @@ class DeveloperMenu
             $presets = $session->getRightPresets();
             foreach ($presets as $presetName => $rights)
             {
-                if(is_array($rights)) {
-                    $rights = implode(',', $rights);
-                }
-
                 $link = $menu->addLink(
                     $presetName,
                     $this->request->buildRefreshURL(array(
                             Application_Session_Base::KEY_NAME_RIGHTS_PRESET => $presetName
-                        )
-                    ))
-                    ->setTitle($rights);
+                    )
+                ))
+                    ->setTitle(implode(', ', $rights));
 
-                if ($presetName == $current) {
+                if ($presetName === $current) {
                     $link->setIcon(UI::icon()->itemActive());
                 } else {
                     $link->setIcon(UI::icon()->itemInactive());
