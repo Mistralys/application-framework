@@ -113,51 +113,65 @@ trait Application_Traits_Admin_Wizard
 
         if (empty($this->sessionID))
         {
-            $this->sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $this->user->getID());
-
-            $this->log(sprintf('Generated the wizard ID [%s].', $this->sessionID));
-
-            $this->sessionData = array(
-                'sessionID' => $this->sessionID,
-                'userID' => $this->user->getID(),
-                'lastActive' => time()
-            );
-            $this->invalidationHandler = new InvalidationHandler();
-            $this->invalidationHandler->setIsInvalidated(false);
-            $this->setWizardSetting('invalidationHandler', $this->invalidationHandler);
-
-            $this->session->setValue($this->sessionID, $this->sessionData);
-
-            $this->redirectTo($this->getURL($this->request->getRefreshParams()));
+            $this->createSession();
         }
-        else
+
+        $data = $this->session->getValue($this->sessionID);
+
+        if(empty($data))
         {
-            $this->log(sprintf('Using existing wizard ID.'));
-
-            $this->sessionData = $this->session->getValue($this->sessionID);
-            $this->invalidationHandler = $this->getWizardSetting('invalidationHandler');
-
-            if ($this->sessionData['userID'] != $this->user->getID())
-            {
-                $this->redirectWithInfoMessage(
-                    UI::icon()->information() . ' ' .
-                    t('Wizards can not be shared between users.'),
-                    $this->getCanceledURL()
-                );
-            }
+            $this->createSession();
         }
+
+        $this->log('Using existing wizard ID.');
+
+        $this->sessionData = $this->session->getValue($this->sessionID);
+        $this->invalidationHandler = $this->getWizardSetting('invalidationHandler');
+
+        if ($this->sessionData['userID'] !== $this->user->getID())
+        {
+            $this->redirectWithInfoMessage(
+                UI::icon()->information() . ' ' .
+                t('Wizards can not be shared between users.'),
+                $this->getCanceledURL()
+            );
+        }
+    }
+
+    /**
+     * @return never
+     * @throws Application_Exception
+     */
+    private function createSession() : void
+    {
+        $this->sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $this->user->getID());
+
+        $this->log(sprintf('Generated the wizard ID [%s].', $this->sessionID));
+
+        $this->sessionData = array(
+            'sessionID' => $this->sessionID,
+            'userID' => $this->user->getID(),
+            'lastActive' => time()
+        );
+        $this->invalidationHandler = new InvalidationHandler();
+        $this->invalidationHandler->setIsInvalidated(false);
+        $this->setWizardSetting('invalidationHandler', $this->invalidationHandler);
+
+        $this->session->setValue($this->sessionID, $this->sessionData);
+
+        $this->redirectTo($this->getURL($this->request->getRefreshParams()));
     }
 
     public function getSuccessURL() : string
     {
-        return $this->area->getURL();
+        return APP_URL;
     }
 
     /**
      * The session duration in minutes before it expires and must be started anew.
      * @var integer
      */
-    protected $sessionDuration = 200;
+    protected int $sessionDuration = 200;
 
     public function reset() : void
     {
@@ -603,7 +617,6 @@ trait Application_Traits_Admin_Wizard
 
         if (isset($this->sessionData[$key]))
         {
-
             return $this->sessionData[$key];
         }
 
@@ -747,5 +760,14 @@ trait Application_Traits_Admin_Wizard
 
         // the user is active: reset the expiry timer
         $this->sessionData['lastActive'] = time();
+    }
+
+    /**
+     * A wizard has no sub-screens.
+     * @return array<string,string>
+     */
+    public function getSubscreenIDs() : array
+    {
+        return array();
     }
 }
