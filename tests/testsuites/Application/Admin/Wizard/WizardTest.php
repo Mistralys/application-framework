@@ -3,9 +3,11 @@
 namespace testsuites\Application\Admin\Wizard;
 
 use Application_Driver;
+use AppUtils\ConvertHelper;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use TestDriver_Area_WizardTest_Wizard;
 
-final class WizardTest extends \Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase
+final class WizardTest extends ApplicationTestCase
 {
     protected TestDriver_Area_WizardTest_Wizard $wizard;
 
@@ -15,14 +17,11 @@ final class WizardTest extends \Mistralys\AppFrameworkTests\TestClasses\Applicat
         $this->startTransaction();
         $driver = Application_Driver::getInstance();
         $screen = $driver->getScreenByPath('wizardtest.wizard');
-        if ($screen instanceof TestDriver_Area_WizardTest_Wizard)
-        {
-            $this->wizard = $screen;
-        }
-        else
-        {
-            $this->fail('Wizard could not created.');
-        }
+
+        $this->assertNotNull($screen, 'Screen could not be found by path.');
+        $this->assertInstanceOf(TestDriver_Area_WizardTest_Wizard::class, $screen);
+
+        $this->wizard = $screen;
     }
 
     public function test_wizardSteps() : void
