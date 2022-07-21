@@ -8,7 +8,6 @@
 - UI: Added the interface `TooltipableInterface` and matching trait.
 - UI: Some navigation items now support tooltips.
 - Users: Implemented the users list in the devel users management screen.
-- Exceptions: Added `UnexpectedInstanceException`.
 - DBCollections: Filter criteria and settings classes now support namespaces.
 - Screens: Screen classes now support using namespaces (BETA).
 - Screens: URL names may now differ from the file name (BETA).
@@ -33,6 +32,7 @@
 #### Breaking changes
 
 - `Application_Driver->getMaintenance()` renamed to static `Application_Driver::createMaintenance()`.
+- Moved the Deepl methods to the new `DeeplHelper` class.
 
 ### v2.1.7 - Maintenance release
 - Framework: Added `AppFramework::getName()`.
