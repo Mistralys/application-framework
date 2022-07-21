@@ -7,7 +7,7 @@
  * @see Application_Traits_Admin_Screen
  */
 
-use Application\ClassFinder;
+use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -815,7 +815,7 @@ trait Application_Traits_Admin_Screen
     {
         $this->log(sprintf('Creating child screen with class ID [%s].', $screenID));
 
-        $class = ClassFinder::requireResolvedClass(sprintf(
+        $class = ClassHelper::requireResolvedClass(sprintf(
             '%s_%s',
             get_class($this),
             $screenID
@@ -827,7 +827,7 @@ trait Application_Traits_Admin_Screen
             $this->adminMode = false;
         }
 
-        $instance = ClassFinder::requireInstanceOf(
+        $instance = ClassHelper::requireObjectInstanceOf(
             Application_Admin_ScreenInterface::class,
             new $class($this->driver, $this)
         );

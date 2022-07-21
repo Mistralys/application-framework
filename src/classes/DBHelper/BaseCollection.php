@@ -6,10 +6,9 @@
  * @see DBHelper_BaseCollection
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassFinderException;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
@@ -716,11 +715,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *
      * @return DBHelper_BaseRecord[]
      *
-     * @throws Application_Exception_DisposableDisposed
-     * @throws ClassFinderException
-     * @throws ClassNotExistsException
-     * @throws DBHelper_Exception
-     * @throws UnexpectedInstanceException
      */
     public function getAll() : array
     {
@@ -746,12 +740,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * which is used to query the records.
      *
      * @return DBHelper_BaseFilterCriteria
-     *
      * @throws Application_Exception_DisposableDisposed
-     * @throws DBHelper_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
-     * @throws ClassFinderException
+     * @throws ClassNotImplementsException
+     * @throws DBHelper_Exception
      */
     public function getFilterCriteria() : DBHelper_BaseFilterCriteria
     {
@@ -769,9 +761,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             );
         }
 
-        $class = ClassFinder::requireResolvedClass($this->recordFiltersClassName);
+        $class = ClassHelper::requireResolvedClass($this->recordFiltersClassName);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             DBHelper_BaseFilterCriteria::class,
             new $class($this)
         );
@@ -781,10 +773,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @return DBHelper_BaseFilterSettings
      *
      * @throws Application_Exception_DisposableDisposed
-     * @throws ClassFinderException
      * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      * @throws DBHelper_Exception
-     * @throws UnexpectedInstanceException
      */
     public function getFilterSettings() : DBHelper_BaseFilterSettings
     {
@@ -802,9 +793,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             );
         }
 
-        $class = ClassFinder::requireResolvedClass($this->recordFilterSettingsClassName);
+        $class = ClassHelper::requireResolvedClass($this->recordFilterSettingsClassName);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             DBHelper_BaseFilterSettings::class,
             new $class($this)
         );

@@ -7,12 +7,9 @@
  * @see UI_Page_Template
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use UI\Interfaces\PageTemplateInterface;
-use function AppUtils\parseVariable;
 
 /**
  * @package Application
@@ -189,12 +186,12 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
      * @param class-string<ClassInstanceType> $className
      * @return ClassInstanceType
      *
-     * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
      */
     public function getObjectVar(string $name, string $className)
     {
-        return ClassFinder::requireInstanceOf($className, $this->getVar($name));
+        return ClassHelper::requireObjectInstanceOf($className, $this->getVar($name));
     }
     
     public function getBoolVar(string $name) : bool

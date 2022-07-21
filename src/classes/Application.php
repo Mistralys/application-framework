@@ -6,9 +6,8 @@
  * @package Application
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -131,18 +130,13 @@ class Application
      * @param string $className
      * @return void
      *
-     * @throws ClassNotExistsException
+     * @throws ClassHelper\ClassNotExistsException
      *
-     * @deprecated Use {@see ClassFinder::requireClassExists()} instead.
+     * @deprecated Use {@see ClassHelper::requireClassExists()} instead.
      */
     public static function requireClassExists(string $className) : void
     {
-        if(class_exists($className))
-        {
-            return;
-        }
-
-        throw new ClassNotExistsException($className);
+        ClassHelper::requireClassExists($className);
     }
 
     /**
@@ -150,18 +144,17 @@ class Application
      * or implement the specified class/interface. If it does
      * not, an exception is thrown.
      *
-     * @param class-string $targetClass
-     * @param class-string $extendsClass
+     * @param string $targetClass
+     * @param string $extendsClass
      * @return void
      *
-     * @throws UnexpectedInstanceException
-     * @throws ClassNotExistsException
-     *
-     * @deprecated Use {@see ClassFinder::requireClassExtends()} instead.
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
+     * @deprecated Use {@see ClassHelper::requireClassInstanceOf()} instead.
      */
     public static function requireClassExtends(string $targetClass, string $extendsClass) : void
     {
-        ClassFinder::requireClassExtends($targetClass, $extendsClass);
+        ClassHelper::requireClassInstanceOf($targetClass, $extendsClass);
     }
 
     /**
@@ -169,18 +162,18 @@ class Application
      * or interface, throws an exception.
      *
      * @template ClassInstanceType
-     * @param class-string<ClassInstanceType> $class
+     * @param string $class
      * @param object $object
      * @return ClassInstanceType
      *
-     * @throws UnexpectedInstanceException
-     * @throws ClassNotExistsException
-     *
-     * @deprecated Use {@see ClassFinder::requireInstanceOf()} instead.
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
+     * @throws Throwable
+     * @deprecated Use {@see ClassHelper::requireObjectInstanceOf()} instead.
      */
     public static function requireInstanceOf(string $class, object $object)
     {
-        return ClassFinder::requireInstanceOf($class, $object);
+        return ClassHelper::requireObjectInstanceOf($class, $object);
     }
 
     /**

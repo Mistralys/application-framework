@@ -6,10 +6,9 @@
  * @see UI_Page_Section
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassFinderException;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Classable;
@@ -892,14 +891,13 @@ abstract class UI_Page_Section
      * @return UI_Page_Section_Content
      *
      * @throws ClassNotExistsException
-     * @throws ClassFinderException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     protected function createContent(string $type) : UI_Page_Section_Content
     {
-        $class = ClassFinder::requireResolvedClass(UI_Page_Section_Content::class.'_'.$type);
+        $class = ClassHelper::requireResolvedClass(UI_Page_Section_Content::class.'_'.$type);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             UI_Page_Section_Content::class,
             new $class($this)
         );

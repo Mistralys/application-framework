@@ -4,7 +4,7 @@
  * The SQL mode string as used on the live servers.
  */
 
-use Application\ClassFinder;
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper_Exception;
 
 define('APP_DEVEL_SQL_MODE', 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION');
@@ -155,7 +155,7 @@ abstract class Application_Bootstrap_Screen
 
         $driverClass = APP_CLASS_NAME;
 
-        $this->driver = ClassFinder::requireInstanceOf(
+        $this->driver = ClassHelper::requireObjectInstanceOf(
             Application_Driver::class,
             new $driverClass($this->app)
         );
@@ -163,9 +163,9 @@ abstract class Application_Bootstrap_Screen
 
     protected function initSession() : void
     {
-        $class = ClassFinder::requireResolvedClass(APP_CLASS_NAME.'_Session');
+        $class = ClassHelper::requireResolvedClass(APP_CLASS_NAME.'_Session');
 
-        $this->session = ClassFinder::requireInstanceOf(
+        $this->session = ClassHelper::requireObjectInstanceOf(
             Application_Session::class,
             new $class()
         );

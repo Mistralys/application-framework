@@ -6,9 +6,9 @@
  * @see Application_Formable
  */
 
-use Application\Exception\ClassNotExistsException;
 use Application\Exception\UnexpectedInstanceException;
-use AppUtils\ConvertHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\RegexHelper;
 
 /**
@@ -484,8 +484,8 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @return HTML_QuickForm2_Element_ExpandableSelect
      *
      * @throws Application_Formable_Exception
-     * @throws UnexpectedInstanceException
      * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      */
     public function addElementExpandableSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
     {

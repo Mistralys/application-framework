@@ -7,9 +7,9 @@
  * @see Application_EventHandler_Event
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -155,11 +155,11 @@ class Application_EventHandler_Event
      * @return ClassInstanceType
      *
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     protected function getArgumentObject(int $int, string $class)
     {
-        return ClassFinder::requireInstanceOf($class, $this->getArgument($int));
+        return ClassHelper::requireObjectInstanceOf($class, $this->getArgument($int));
     }
 
    /**

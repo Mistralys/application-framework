@@ -12,10 +12,10 @@ declare(strict_types=1);
 namespace Application\WhatsNew\AppVersion;
 
 use Application;
-use Application\ClassFinder;
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion;
 use Application_Exception;
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use SimpleXMLElement;
@@ -60,9 +60,9 @@ abstract class VersionLanguage
     {
         self::requireLangExists($langID);
 
-        $class = ClassFinder::requireResolvedClass(__CLASS__.'_'.$langID);
+        $class = ClassHelper::requireResolvedClass(__CLASS__.'_'.$langID);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             self::class,
             new $class($appVersion, $node)
         );

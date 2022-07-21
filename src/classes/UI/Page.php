@@ -6,9 +6,9 @@
  * @see UI_page
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -532,11 +532,11 @@ class UI_Page extends UI_Renderable
      *
      * @return UI_Page_Section_Type_Developer
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     public function createDeveloperPanel() : UI_Page_Section_Type_Developer
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             UI_Page_Section_Type_Developer::class,
             $this->createSidebarSection('Developer')
         );

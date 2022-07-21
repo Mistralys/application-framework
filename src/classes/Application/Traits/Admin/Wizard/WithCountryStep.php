@@ -9,9 +9,9 @@
 
 declare(strict_types=1);
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 
 /**
  * @package Application
@@ -33,11 +33,11 @@ trait Application_Traits_Admin_Wizard_WithCountryStep
      *
      * @throws Application_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     public function getStepCountry() : Application_Interfaces_Admin_Wizard_SelectCountryStep
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Interfaces_Admin_Wizard_SelectCountryStep::class,
             $this->getStep(Application_Interfaces_Admin_Wizard_SelectCountryStep::STEP_NAME)
         );
@@ -50,7 +50,7 @@ trait Application_Traits_Admin_Wizard_WithCountryStep
      *
      * @throws Application_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      *
      * @see Application_Interfaces_Admin_Wizard_SelectCountryStep::ERROR_NO_COUNTRY_SELECTED
      */

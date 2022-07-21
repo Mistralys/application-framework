@@ -6,14 +6,13 @@
  * @package Application
  */
 
-use Application\ClassFinder;
 use Application\Driver\DriverException;
-use Application\Exception\ClassFinderException;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use Mistralys\VersionParser\VersionParser;
@@ -104,9 +103,9 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     private function initRequest() : void
     {
-        $requestClass = ClassFinder::requireResolvedClass($this->getID() . '_Request');
+        $requestClass = ClassHelper::requireResolvedClass($this->getID() . '_Request');
 
-        $this->request = ClassFinder::requireInstanceOf(
+        $this->request = ClassHelper::requireObjectInstanceOf(
             Application_Request::class,
             new $requestClass($this->getApplication())
         );
@@ -114,15 +113,14 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * @return void
-     * @throws UnexpectedInstanceException
-     * @throws ClassFinderException
-     * @throws ClassNotExistsException
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
      */
     private function initStorage() : void
     {
-        $storageClass = ClassFinder::requireResolvedClass(Application_Driver_Storage::class. '_' . self::getStorageType());
+        $storageClass = ClassHelper::requireResolvedClass(Application_Driver_Storage::class. '_' . self::getStorageType());
 
-        $this->storage = ClassFinder::requireInstanceOf(
+        $this->storage = ClassHelper::requireObjectInstanceOf(
             Application_Driver_Storage::class,
             new $storageClass()
         );
@@ -431,11 +429,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @param boolean $adminMode Whether to run the screen as the active administration screen. Set this to false to just retrieve information about the screen.
      * @return Application_Admin_Area
      *
-     * @throws DriverException
-     * @throws ClassFinderException
-     * @throws ClassNotExistsException
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
      * @throws ConvertHelper_Exception
-     * @throws UnexpectedInstanceException
+     * @throws DriverException
      */
     protected function _createArea(string $id, bool $adminMode = false) : Application_Admin_Area
     {
@@ -465,13 +462,13 @@ abstract class Application_Driver implements Application_Driver_Interface
             return $this->areas[$key];
         }
 
-        $className = ClassFinder::requireResolvedClass(sprintf(
+        $className = ClassHelper::requireResolvedClass(sprintf(
             '%s_Area_%s',
             APP_CLASS_NAME,
             $areaName
         ));
 
-        $this->areas[$key] = ClassFinder::requireInstanceOf(
+        $this->areas[$key] = ClassHelper::requireObjectInstanceOf(
             Application_Admin_Area::class,
             new $className($this, $adminMode)
         );
@@ -829,7 +826,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     final protected function startMainNavigation() : void
     {
         $nav = $this->getMainNav();
-        $configClass = ClassFinder::resolveClass(APP_CLASS_NAME.'_UI_'. NavConfigurator::DRIVER_CONFIGURATOR_CLASS_NAME);
+        $configClass = ClassHelper::resolveClassName(APP_CLASS_NAME.'_UI_'. NavConfigurator::DRIVER_CONFIGURATOR_CLASS_NAME);
 
         // No specialized navigation configurator present?
         // We build the navigation automatically.
@@ -846,7 +843,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             return;
         }
 
-        ClassFinder::requireInstanceOf(
+        ClassHelper::requireObjectInstanceOf(
             NavConfigurator::class,
             new $configClass($this, $nav)
         )
@@ -1618,11 +1615,11 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * @return Application_Users
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     public static function createUsers() : Application_Users
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Users::class,
             self::createCollection(Application_Users::class)
         );

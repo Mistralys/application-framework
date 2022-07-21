@@ -5,9 +5,9 @@
  * @subpackage Core
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\XMLHelper;
@@ -1057,14 +1057,15 @@ function toString($subject) : string
  * @param int $code Optional code to override the built-in error code.
  * @return object
  *
- * @throws ClassNotExistsException
- * @throws UnexpectedInstanceException
  *
- * @deprecated Use {@see \Application\ClassFinder::requireInstanceOf()} instead.
+ * @throws ClassNotExistsException
+ * @throws ClassNotImplementsException
+ *
+ * @deprecated Use {@see ClassHelper::requireObjectInstanceOf()} instead.
  */
 function ensureType(string $className, object $object, int $code=0)
 {
-    return ClassFinder::requireInstanceOf($className, $object, $code);
+    return ClassHelper::requireObjectInstanceOf($className, $object, $code);
 }
 
 /**

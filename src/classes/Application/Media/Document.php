@@ -1,10 +1,10 @@
 <?php
 
-use Application\ClassFinder;
-use Application\Exception\ClassFinderException;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 
@@ -256,15 +256,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         }
 
         $targetFolder = dirname($targetFile);
-        if (!file_exists($targetFolder) && !@mkdir($targetFolder, 0777, true)) {
-            throw new Application_Exception(
-                'Failed creating media folder',
-                sprintf(
-                    'Tried finding and creating the folder [%1$s] to copy a media file to, but creating it failed.',
-                    $targetFolder
-                )
-            );
-        }
+        FileHelper::createFolder($targetFolder);
 
         if (file_exists($targetFile) && !@unlink($targetFile)) {
             throw new Application_Exception(
@@ -276,17 +268,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             );
         }
 
-        // copy the existing file on disk to the new location
-        if (!@copy($sourceFile, $targetFile)) {
-            throw new Application_Exception(
-                'Failed copying media file',
-                sprintf(
-                    'Tried creating a new media document from an existing upload, but copying the uploaded file [%1$s] to its destination [%2$s] failed.',
-                    $sourceFile,
-                    $targetFile
-                )
-            );
-        }
+        FileHelper::copyFile($sourceFile, $targetFile);
         
         if(!$started) {
             if($simulation) {
@@ -306,11 +288,10 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * @return Application_Media_Document
      *
      * @throws Application_Exception
-     * @throws DBHelper_Exception
-     * @throws ConvertHelper_Exception
-     * @throws ClassFinderException
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
      */
     public static function create(int $media_id) : Application_Media_Document
     {
@@ -336,9 +317,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             );
         }
 
-        $class = ClassFinder::requireResolvedClass(Application_Media_Document::class.'_' . $data['media_type']);
+        $class = ClassHelper::requireResolvedClass(Application_Media_Document::class.'_' . $data['media_type']);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Media_Document::class,
             new $class($media_id)
         );

@@ -7,11 +7,11 @@
  * @see Application_Users
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 
 /**
  * User management class: allows retrieving and modifiying the
@@ -173,13 +173,13 @@ class Application_Users extends DBHelper_BaseCollection
      * @return Application_Users_User
      *
      * @throws Application_Exception_DisposableDisposed
-     * @throws DBHelper_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
+     * @throws DBHelper_Exception
      */
     public function getByID(int $record_id) : DBHelper_BaseRecord
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,
             parent::getByID($record_id)
         );

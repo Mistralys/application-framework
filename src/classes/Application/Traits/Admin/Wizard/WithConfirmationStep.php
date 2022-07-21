@@ -9,9 +9,9 @@
 
 declare(strict_types=1);
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 
 /**
  * @package Application
@@ -33,11 +33,11 @@ trait Application_Traits_Admin_Wizard_WithConfirmationStep
      *
      * @throws Application_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     public function getStepConfirmation() : Application_Interfaces_Admin_Wizard_Step_Confirmation
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Interfaces_Admin_Wizard_Step_Confirmation::class,
             $this->getStep(Application_Interfaces_Admin_Wizard_Step_Confirmation::STEP_NAME)
         );
@@ -51,7 +51,7 @@ trait Application_Traits_Admin_Wizard_WithConfirmationStep
      *
      * @throws Application_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      *
      * @see Application_Interfaces_Admin_Wizard_Step_Confirmation::ERROR_NO_REFERENCE_ID_SET
      */

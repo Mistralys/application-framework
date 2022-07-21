@@ -1,8 +1,6 @@
 <?php
 
-use Application\ClassFinder;
-use Application\Exception\ClassFinderException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
 
@@ -192,30 +190,29 @@ class Application_Media
             );
         }
     }
-    
-   /**
-    * Creates a media configuration instance. These are document
-    * type specific, and are used to store configurations for 
-    * media pre-processing using the media processor class. For 
-    * example, they are used to store the size presets to resize
-    * images.
-    * 
-    * @param string $type The configuration type, e.g. "Image". Case sensitive.
-    * @return Application_Media_Configuration
-    * @throws UnexpectedInstanceException|ClassFinderException
-    */
+
+    /**
+     * Creates a media configuration instance. These are document
+     * type specific, and are used to store configurations for
+     * media pre-processing using the media processor class. For
+     * example, they are used to store the size presets to resize
+     * images.
+     *
+     * @param string $type The configuration type, e.g. "Image". Case sensitive.
+     * @return Application_Media_Configuration
+     *
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
+     * @throws Throwable
+     */
     public function createConfiguration(string $type) : Application_Media_Configuration
     {
-        $class = ClassFinder::requireResolvedClass(Application_Media_Configuration::class.'_'.$type);
-        
-        $obj = new $class();
+        $class = ClassHelper::requireResolvedClass(Application_Media_Configuration::class.'_'.$type);
 
-        if($obj instanceof Application_Media_Configuration)
-        {
-            return $obj;
-        }
-
-        throw new UnexpectedInstanceException(Application_Media_Configuration::class, $obj);
+        return ClassHelper::requireObjectInstanceOf(
+            Application_Media_Configuration::class,
+            new $class()
+        );
     }
     
    /**

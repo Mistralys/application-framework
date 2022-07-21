@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-use Application\Exception\ClassFinderException;
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use function AppUtils\parseVariable;
 
 /**
@@ -21,9 +21,9 @@ use function AppUtils\parseVariable;
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @deprecated Use {@see \Application\Exception\UnexpectedInstanceException} instead.
+ * @deprecated Use the {@see \AppUtils\ClassHelper} methods instead.
  */
-class Application_Exception_UnexpectedInstanceType extends ClassFinderException
+class Application_Exception_UnexpectedInstanceType extends ClassNotImplementsException
 {
     /**
     * @param string $expectedClass

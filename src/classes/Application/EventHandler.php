@@ -7,7 +7,7 @@
  * @see Application_EventHandler
  */
 
-use Application\ClassFinder;
+use AppUtils\ClassHelper;
 
 /**
  * Event management class: handles registering and triggering events
@@ -206,9 +206,9 @@ class Application_EventHandler
 
     private static function createEvent(string $eventName, string $class, array $args) : Application_EventHandler_Event
     {
-        $actualClass = ClassFinder::requireResolvedClass($class);
+        $actualClass = ClassHelper::requireResolvedClass($class);
 
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_EventHandler_Event::class,
             new $actualClass($eventName, $args),
             self::ERROR_INVALID_EVENT_CLASS

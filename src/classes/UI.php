@@ -6,6 +6,9 @@
  */
 
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\OutputBuffering;
@@ -1231,22 +1234,20 @@ class UI
             self::ERROR_NOT_A_RENDERABLE
         );
     }
-    
+
+    /**
+     * @param string $type
+     * @return UI_Interfaces_Bootstrap
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
     public function createBootstrap(string $type) : UI_Interfaces_Bootstrap
     {
-        $class = 'UI_Bootstrap_'.$type;
-        
-        $instance = new $class($this);
-        
-        if($instance instanceof UI_Interfaces_Bootstrap)
-        {
-            return $instance;
-        }
-        
-        throw new Application_Exception(
-            'Invalid child element',
-            sprintf('No bootstrap element [%s] found.', $class),
-            self::ERROR_INVALID_BOOTSTRAP_ELEMENT
+        $class = ClassHelper::requireResolvedClass('UI_Bootstrap_'.$type);
+
+        return ClassHelper::requireObjectInstanceOf(
+            UI_Interfaces_Bootstrap::class,
+            new $class($this)
         );
     }
 

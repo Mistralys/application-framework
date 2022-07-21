@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 
 class Application_Traits_Disposable_Event_Disposed extends Application_EventHandler_EventableEvent
 {
@@ -12,11 +12,11 @@ class Application_Traits_Disposable_Event_Disposed extends Application_EventHand
      * @return Application_Interfaces_Disposable
      *
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
      */
     public function getDisposable() : Application_Interfaces_Disposable
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Interfaces_Disposable::class,
             $this->getArgument(0)
         );

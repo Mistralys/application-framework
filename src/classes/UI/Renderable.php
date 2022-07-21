@@ -8,10 +8,11 @@
  * @see UI_Renderable_Interface
  */
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
 
 /**
  * Base class for elements that can be rendered to HTML.
@@ -75,9 +76,10 @@ abstract class UI_Renderable implements UI_Renderable_Interface
      * @param string $templateID
      * @return UI_Page_Template
      *
-     * @throws UI_Themes_Exception
      * @throws ClassNotExistsException
-     * @throws UnexpectedInstanceException
+     * @throws ClassNotImplementsException
+     * @throws UI_Themes_Exception
+     * @throws FileHelper_Exception
      */
     public function createTemplate(string $templateID) : UI_Page_Template
     {
@@ -97,7 +99,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
         
         if(class_exists($className))
         {
-            return ClassFinder::requireInstanceOf(
+            return ClassHelper::requireObjectInstanceOf(
                 UI_Page_Template_Custom::class,
                 new $className($this->page, $templateID)
             );

@@ -6,7 +6,8 @@
  * @subpackage Maintenance
  */
 
-use Application\ClassFinder;use Application\Exception\UnexpectedInstanceException;use AppUtils\OutputBuffering;
+use AppUtils\ClassHelper;
+use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 
 /**
@@ -121,10 +122,12 @@ class Application_Updaters
 
 	protected function createUpdater(string $id) : Application_Updaters_Updater
 	{
-		$class = ClassFinder::requireResolvedClass(APP_CLASS_NAME.'_Updaters_'.$id);
-        $updater = new $class($this);
+		$class = ClassHelper::requireResolvedClass(APP_CLASS_NAME.'_Updaters_'.$id);
 
-        return ClassFinder::requireInstanceOf(Application_Updaters_Updater::class, $updater);
+        return ClassHelper::requireObjectInstanceOf(
+            Application_Updaters_Updater::class,
+            new $class($this)
+        );
 	}
 
 	public function getByID($id)

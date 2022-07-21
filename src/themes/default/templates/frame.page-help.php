@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-use Application\ClassFinder;
-
 /**
  * Handles the "Explain this screen" inline page help interface rendering.
  *

@@ -8,9 +8,9 @@
 
 declare(strict_types=1);
 
-use Application\ClassFinder;
-use Application\Exception\ClassNotExistsException;
-use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Request;
 use function AppUtils\parseURL;
 
@@ -58,12 +58,12 @@ class Application_Request extends Request
     /**
      * @return Application_Request
      *
-     * @throws UnexpectedInstanceException
      * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      */
     public static function getInstance() : self
     {
-        return ClassFinder::requireInstanceOf(
+        return ClassHelper::requireObjectInstanceOf(
             __CLASS__,
             parent::getInstance()
         );
