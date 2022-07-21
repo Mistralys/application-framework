@@ -44,25 +44,19 @@ abstract class Application_Session_Base implements Application_Session
     /**
      * @var array<int,string>
      */
-    protected $simulateableUsers = array(
+    protected array $simulateableUsers = array(
         Application::USER_ID_SYSTEM => 'System',
         Application::USER_ID_DUMMY => 'Dummy'
     );
 
-    /**
-     * @var int
-     */
-    protected $defaultSimulatedUser = Application::USER_ID_SYSTEM;
+    protected int $defaultSimulatedUser = Application::USER_ID_SYSTEM;
 
     /**
-     * @var array<string,string|array<int,string>>
+     * @var array<string,array<int,string>>
      */
     protected $rightPresets = array();
 
-    /**
-     * @var Application_User|null
-     */
-    protected $user;
+    protected ?Application_User $user = null;
 
     abstract protected function start() : void;
     abstract protected function handleLogout() : void;
@@ -326,6 +320,10 @@ abstract class Application_Session_Base implements Application_Session
         return APP_URL;
     }
 
+    /**
+     * @return array<string,array<int,string>>
+     * @throws Application_Exception
+     */
     public function getRightPresets() : array
     {
         $this->requireSimulatedSession();

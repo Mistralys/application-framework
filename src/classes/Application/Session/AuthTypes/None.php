@@ -40,12 +40,15 @@ trait Application_Session_AuthTypes_None
             ->getByID(Application::USER_ID_SYSTEM);
     }
 
+    /**
+     * @return array<string,array<int,string>>
+     */
     public function getRightPresets() : array
     {
         return array(
             self::ADMIN_PRESET_ID => array(
-                'Login',
-                'Developer'
+                Application_User::RIGHT_LOGIN,
+                Application_User::RIGHT_DEVELOPER
             ),
         );
     }

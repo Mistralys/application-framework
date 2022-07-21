@@ -109,11 +109,11 @@ interface Application_Session extends Application_Interfaces_Loggable
      * Example:
      *
      * array(
-     *     'Admin' => 'AddRecord,DeleteRecord,PublishRecord',
-     *     'Reader' => 'ViewRecord'
+     *     'Admin' => array('AddRecord', 'DeleteRecord', 'PublishRecord'),
+     *     'Reader' => array('ViewRecord')
      * )
      *
-     * @return array<string,string>
+     * @return array<string,array<int,string>>
      */
     public function getRightPresets() : array;
 
