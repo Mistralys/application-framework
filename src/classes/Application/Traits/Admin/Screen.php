@@ -702,7 +702,9 @@ trait Application_Traits_Admin_Screen
      * NOTE: Does not check if the file contains a valid subscreen class.
      *
      * @return array<string,string> Class ID => URL name pairs
+     *
      * @throws FileHelper_Exception
+     * @throws UI_Exception
      */
     public function getSubscreenIDs() : array
     {
@@ -732,15 +734,18 @@ trait Application_Traits_Admin_Screen
             }
             catch (Throwable $e)
             {
-                // Ignore the error here, as this method may
-                // be called in a context like the AJAX method
-                // DescribeAdminAreas.
-
-                $this->getLogger()->logError(
+                $this->getLogger()->logUI(
                     'Cannot create screen instance: [%s.%s]. Error: [%s]',
                     $this->getURLPath(),
                     $id,
                     $e->getMessage()
+                );
+
+                throw new UI_Exception(
+                    'Cannot instantiate admin screen.',
+                    'An exception occurred when creating the screen.',
+                    Application_Admin_ScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
+                    $e
                 );
             }
         }
