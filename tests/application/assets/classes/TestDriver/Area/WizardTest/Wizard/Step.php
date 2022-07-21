@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-
-abstract class TestDriver_Area_WizardTest_Wizard_Step extends \Application_Admin_Wizard_Step
+abstract class TestDriver_Area_WizardTest_Wizard_Step extends Application_Admin_Wizard_Step
 {
     protected function init() : void
     {
