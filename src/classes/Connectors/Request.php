@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\ConvertHelper;
+
 abstract class Connectors_Request implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
@@ -638,7 +640,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             $this->log(sprintf(
                 'Timeout is set to %s seconds (%s).',
                 $this->timeoutSeconds,
-                AppUtils\ConvertHelper::time2string($this->timeoutSeconds)
+                ConvertHelper::time2string($this->timeoutSeconds)
             ));
             
             $req->setConfig('timeout', $this->timeoutSeconds);
@@ -646,22 +648,40 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         
         if($this->isPUT() || $this->isPOST())
         {
+            $totalSize = 0;
+
             if(!empty($this->postData))
             {
                 foreach($this->postData as $param => $value)
                 {
                     $req->addPostParameter($param, $value);
                 }
+
+                $dataSize = strlen(serialize($this->postData));
+                $totalSize += $dataSize;
                 
-                $this->log(sprintf('Also sending data keys via post: [%s].', implode(', ', array_keys($this->postData))));
+                $this->log(sprintf('Also sending data keys via POST: [%s].', implode(', ', array_keys($this->postData))));
+                $this->log(sprintf('POST data length: [%s] characters (approximate).', number_format($dataSize, 0, '.', ' ')));
             }
             
             if(!empty($this->body))
             {
                 $req->setBody($this->body);
-                
-                $this->log(sprintf('Also sending a body via post, of length [%s].', mb_strlen($this->body)));
+
+                $bodySize = strlen($this->body);
+                $totalSize += $bodySize;
+
+                $this->log('Also sending a body via POST.');
+                $this->log(sprintf('POST body length: [%s] characters.', number_format($bodySize, 0, '.', ' ')));
             }
+
+            $this->log(sprintf(
+                'POST total size: [%s] characters (~%s) (approximate)',
+                number_format($totalSize, 0, '.', ' '),
+                ConvertHelper::bytes2readable($totalSize)
+            ));
+
+            $this->log('POST maximum size: [%s]', ini_get('post_max_size'));
         }
         
         // when not in a development environment, make sure
