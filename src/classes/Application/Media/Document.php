@@ -614,4 +614,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $file->copyTo($this->getPath());
         return $this;
     }
+
+    public function getFileInfo() : FileInfo
+    {
+        return FileInfo::factory($this->getPath());
+    }
 }
