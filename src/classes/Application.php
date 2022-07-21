@@ -8,6 +8,8 @@
 
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
@@ -144,12 +146,12 @@ class Application
      * or implement the specified class/interface. If it does
      * not, an exception is thrown.
      *
-     * @param string $targetClass
-     * @param string $extendsClass
+     * @param class-string $targetClass
+     * @param class-string $extendsClass
      * @return void
      *
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      * @deprecated Use {@see ClassHelper::requireClassInstanceOf()} instead.
      */
     public static function requireClassExtends(string $targetClass, string $extendsClass) : void
@@ -162,13 +164,13 @@ class Application
      * or interface, throws an exception.
      *
      * @template ClassInstanceType
-     * @param string $class
+     * @param class-string<ClassInstanceType> $class
      * @param object $object
      * @return ClassInstanceType
      *
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
-     * @throws Throwable
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     *
      * @deprecated Use {@see ClassHelper::requireObjectInstanceOf()} instead.
      */
     public static function requireInstanceOf(string $class, object $object)
