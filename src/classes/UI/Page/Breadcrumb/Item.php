@@ -1,33 +1,48 @@
 <?php
 
-class UI_Page_Breadcrumb_Item
+declare(strict_types=1);
+
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
+
+class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
 {
+    use UI_Traits_RenderableGeneric;
+
+    protected UI_Page_Breadcrumb $breadcrumb;
+    protected string $label;
+    protected string $mode = '';
+    protected string $url = '';
+    protected string $javascript = '';
+    protected bool $first = false;
+    protected bool $last = false;
+
     /**
-     * @var UI_Page_Breadcrumb
+     * @param UI_Page_Breadcrumb $breadcrumb
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @throws UI_Exception
      */
-    protected $breadcrumb;
-
-    protected $label;
-
-    protected $mode;
-
-    protected $url;
-
-    protected $javascript;
-
     public function __construct(UI_Page_Breadcrumb $breadcrumb, $label)
     {
-        $this->label = $label;
+        $this->label = toString($label);
         $this->breadcrumb = $breadcrumb;
+    }
+
+    public function getUI() : UI
+    {
+        return $this->breadcrumb->getUI();
     }
 
     /**
      * Makes the item link to the specified URL.
      *
-     * @param string|array $urlOrParams
-     * @return UI_Page_Breadcrumb_Item
+     * @param string|array<string,mixed> $urlOrParams
+     * @return $this
+     *
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      */
-    public function makeLinked($urlOrParams)
+    public function makeLinked($urlOrParams) : self
     {
         $url = $urlOrParams;
         if (is_array($urlOrParams)) {
@@ -44,13 +59,14 @@ class UI_Page_Breadcrumb_Item
      * Turns the item into a javascript click link, which will
      * execute the specified javascript code when clicked.
      *
-     * @param string $javascript
-     * @return UI_Page_Breadcrumb_Item
+     * @param string|UI_Renderable_Interface $javascript
+     * @return $this
+     * @throws UI_Exception
      */
-    public function makeClickable($javascript)
+    public function makeClickable($javascript) : self
     {
         $this->mode = 'clickable';
-        $this->javascript = $javascript;
+        $this->javascript = toString($javascript);
 
         return $this;
     }
@@ -59,10 +75,12 @@ class UI_Page_Breadcrumb_Item
      * Makes the item link to the specified administration area.
      *
      * @param Application_Admin_Area $area
-     * @param array $params
-     * @return UI_Page_Breadcrumb_Item
+     * @param array<string,mixed> $params
+     * @return $this
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      */
-    public function makeLinkedFromArea(Application_Admin_Area $area, $params = array())
+    public function makeLinkedFromArea(Application_Admin_Area $area, array $params = array()) : self
     {
         return $this->makeLinked($area->getURL($params));
     }
@@ -71,10 +89,13 @@ class UI_Page_Breadcrumb_Item
      * Makes the item link to the specified administration mode.
      *
      * @param Application_Admin_Area_Mode $mode
-     * @param array $params
-     * @return UI_Page_Breadcrumb_Item
+     * @param array<string,mixed> $params
+     * @return $this
+     *
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      */
-    public function makeLinkedFromMode(Application_Admin_Area_Mode $mode, $params = array())
+    public function makeLinkedFromMode(Application_Admin_Area_Mode $mode, array $params = array()) : self
     {
         return $this->makeLinked($mode->getURL($params));
     }
@@ -83,18 +104,18 @@ class UI_Page_Breadcrumb_Item
      * Makes the item link to the specified administration submode.
      *
      * @param Application_Admin_Area_Mode_Submode $submode
-     * @param array $params
-     * @return UI_Page_Breadcrumb_Item
+     * @param array<string,mixed> $params
+     * @return $this
      */
-    public function makeLinkedFromSubmode(Application_Admin_Area_Mode_Submode $submode, $params = array())
+    public function makeLinkedFromSubmode(Application_Admin_Area_Mode_Submode $submode, array $params = array()) : self
     {
         return $this->makeLinked($submode->getURL($params));
     }
 
-    public function render()
+    public function render() : string
     {
-        if (!isset($this->mode)) {
-            return $this->label;
+        if (empty($this->mode)) {
+            return $this->getLabel();
         }
 
         return $this->breadcrumb->getPage()->renderTemplate(
@@ -105,75 +126,78 @@ class UI_Page_Breadcrumb_Item
         );
     }
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
 
-    public function getURL()
+    public function getURL() : string
     {
         return $this->url;
     }
 
-    public function getJavascript()
+    public function getJavascript() : string
     {
         return $this->javascript;
     }
 
-    public function getMode()
+    public function getMode() : string
     {
         return $this->mode;
     }
 
-    public function isLinked()
+    public function isLinked() : bool
     {
-        if ($this->mode == 'linked') {
-            return true;
-        }
-
-        return false;
+        return $this->mode === 'linked';
     }
 
-    public function isClickable()
+    public function isClickable() : bool
     {
-        if ($this->mode == 'clickable') {
-            return true;
-        }
-
-        return false;
+        return $this->mode === 'clickable';
     }
 
-    protected $first = false;
-
-    protected $last = false;
-
-    public function reset()
+    public function reset() : void
     {
         $this->first = false;
         $this->last = false;
     }
 
-    public function setFirst()
+    /**
+     * @return $this
+     */
+    public function setFirst() : self
     {
         $this->first = true;
+        return $this;
     }
 
-    public function setLast()
+    /**
+     * @return $this
+     */
+    public function setLast() : self
     {
         $this->last = true;
+        return $this;
     }
 
-    public function isFirst()
+    public function isFirst() : bool
     {
         return $this->first;
     }
 
-    public function isLast()
+    public function isLast() : bool
     {
         return $this->last;
     }
-    
-    public function makeLinkedRefresh($params=array())
+
+    /**
+     * @param array<string,mixed> $params
+     * @return $this
+     *
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    public function makeLinkedRefresh(array $params=array()) : self
     {
         $request = Application_Request::getInstance();
         $request->getRefreshParams($params);
