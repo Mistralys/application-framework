@@ -12,6 +12,9 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
+use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
+use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
+use function AppUtils\parseVariable;
 
 /**
  * Base management class for a collection of database records
@@ -54,190 +57,17 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     public const VALUE_UNDEFINED = '__undefined';
 
-    /**
-     * @return string
-     */
-    abstract public function getRecordClassName() : string;
-
-    /**
-     * @return string
-     */
-    abstract public function getRecordFiltersClassName() : string;
-
-    /**
-     * @return string
-     */
-    abstract public function getRecordFilterSettingsClassName() : string;
-
-    /**
-     * @return string
-     */
-    abstract public function getRecordDefaultSortKey() : string;
-    
-   /**
-    * Retrieves the searchable columns as an associative array
-    * with column name => human-readable label pairs.
-    * 
-    * @return array<string,string>
-    */
-    abstract public function getRecordSearchableColumns() : array;
-
-    /**
-     * The name of the table storing the records.
-     *
-     * @return string
-     */
-    abstract public function getRecordTableName() : string;
-
-    /**
-     * The name of the database column storing the primary key.
-     *
-     * @return string
-     */
-    abstract public function getRecordPrimaryName() : string;
-
-    /**
-     * @return string
-     */
-    abstract public function getRecordTypeName() : string;
-
-    /**
-     * Human readable label of the collection, e.g. "Products".
-     *
-     * @return string
-     */
-    abstract public function getCollectionLabel() : string;
-
-    /**
-     * Human readable label of the records, e.g. "Product".
-     *
-     * @return string
-     */
-    abstract public function getRecordLabel() : string;
-
-    /**
-     * Retrieves a list of properties availabable in the
-     * collection's records, in the following format:
-     *
-     * <pre>
-     * array(
-     *    array(
-     *        'key' => 'alias',
-     *        'name' => 'Alias',
-     *        'type' => 'string'
-     *    )
-     * )
-     * </pre>
-     *
-     * @return array<int,array<string,string>>
-     */
-    abstract public function getRecordProperties() : array;
-    
-   /**
-    * Retrieves the name of the data grid used to 
-    * display the collection items.
-    * 
-    * It is used to namespace the grid's filter settings,
-    * which allows inheriting settings between data grids
-    * when using the same name.
-    *
-    * The CollectionList admin screen classes automatically
-    * use this name.
-    *
-    * @return string
-    * 
-    * @see Application_Traits_Admin_CollectionList
-    * @see Application_Admin_Area_Mode_CollectionList
-    * @see Application_Admin_Area_Mode_Submode_CollectionList
-    * @see Application_Admin_Area_Mode_Submode_Action_CollectionList
-    */
-    public function getDataGridName() : string
-    {
-        return $this->getRecordTypeName().'-datagrid';
-    }
-
-    /**
-     * @return string
-     */
-    public function getRecordDefaultSortDir() : string
-    {
-        return self::SORT_DIR_ASC;
-    }
-
-    /**
-     * @return string
-     */
-    public function getParentCollectionClass() : string
-    {
-        return '';
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasParentCollection() : bool
-    {
-        $parentClass = $this->getParentCollectionClass();
-
-        return !empty($parentClass);
-    }
-
-    /**
-     * @var string
-     */
-    protected $recordIDTable;
-
-    /**
-     * @var string
-     */
-    protected $recordClassName;
-
-    /**
-     * @var string
-     */
-    protected $recordSortKey;
-
-    /**
-     * @var string
-     */
-    protected $recordSortDir;
-    
-   /**
-    * @var DBHelper_BaseRecord|NULL
-    */
-    protected $dummyRecord;
-
-    /**
-     * @var string
-     */
-    protected $recordFiltersClassName;
-
-    /**
-     * @var string
-     */
-    protected $recordFilterSettingsClassName;
-
-    /**
-     * @var string
-     */
-    protected $instanceID;
-
-    /**
-     * @var bool
-     */
-    protected $requiresParent = false;
-    
-   /**
-    * @var Application_EventHandler
-    */
-    protected $eventHandler;
-
-    /**
-     * @var DBHelper_BaseCollection_Keys
-     */
-    protected $keys;
-
-    protected static $instanceCounter = 0;
+    protected string $recordIDTable;
+    protected string $recordClassName;
+    protected string $recordSortKey;
+    protected string $recordSortDir;
+    protected ?DBHelper_BaseRecord $dummyRecord = null;
+    protected string $recordFiltersClassName;
+    protected string $recordFilterSettingsClassName;
+    protected string $instanceID;
+    protected bool $requiresParent = false;
+    protected DBHelper_BaseCollection_Keys $keys;
+    protected static int $instanceCounter = 0;
     
    /**
     * NOTE: classes extending this class may not create
@@ -247,7 +77,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * 
     * NOTE: Extend the <code>init()</code> method to 
     * handle any required initialization once the 
-    * collectiopn has been fully set up.
+    * collection has been fully set up.
     * 
     * @see DBHelper::createCollection()
     * @see DBHelper_BaseCollection::init()
@@ -256,7 +86,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         self::$instanceCounter++;
 
-        $this->instanceID = strval(self::$instanceCounter);
+        $this->instanceID = (string)self::$instanceCounter;
         $this->recordClassName = $this->getRecordClassName();
         $this->recordSortDir = $this->getRecordDefaultSortDir();
         $this->recordSortKey = $this->getRecordDefaultSortKey();
@@ -265,7 +95,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->recordPrimaryName = $this->getRecordPrimaryName();
         $this->recordTable = $this->getRecordTableName();
         $this->requiresParent = $this->hasParentCollection();
-        $this->eventHandler = new Application_EventHandler();
         $this->keys = new DBHelper_BaseCollection_Keys($this);
 
         $this->postConstruct();
@@ -273,26 +102,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->_registerKeys();
     }
 
-    /**
-     * Called after the class has been initialized, but
-     * before the keys are registered.
-     */
-    protected function postConstruct() : void
-    {
-
-    }
-    
-   /**
-    * Can be overwritten to initialize needed tasks and properties.
-    */
-    protected function init() : void
-    {
-    }
-
-    protected function _registerKeys() : void
-    {
-    }
-    
    /**
     * @var DBHelper_BaseRecord|NULL
     */
@@ -342,26 +151,155 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         );
     }
 
+    // region: Abstract & extensible methods
+
     /**
-     * Fetch a fresh instance of the parent record of the
-     * collection when that record instance has been disposed.
-     * If the record does not exist anymore, no changes are
-     * made - an exception will be thrown if the record is
-     * accessed.
+     * @return string
      */
-    private function callback_parentRecordDisposed() : void
+    abstract public function getRecordClassName() : string;
+
+    /**
+     * @return string
+     */
+    abstract public function getRecordFiltersClassName() : string;
+
+    /**
+     * @return string
+     */
+    abstract public function getRecordFilterSettingsClassName() : string;
+
+    /**
+     * @return string
+     */
+    abstract public function getRecordDefaultSortKey() : string;
+
+    /**
+     * Retrieves the searchable columns as an associative array
+     * with column name => human-readable label pairs.
+     *
+     * @return array<string,string>
+     */
+    abstract public function getRecordSearchableColumns() : array;
+
+    /**
+     * The name of the table storing the records.
+     *
+     * @return string
+     */
+    abstract public function getRecordTableName() : string;
+
+    /**
+     * The name of the database column storing the primary key.
+     *
+     * @return string
+     */
+    abstract public function getRecordPrimaryName() : string;
+
+    /**
+     * @return string
+     */
+    abstract public function getRecordTypeName() : string;
+
+    /**
+     * Human-readable label of the collection, e.g. "Products".
+     *
+     * @return string
+     */
+    abstract public function getCollectionLabel() : string;
+
+    /**
+     * Human-readable label of the records, e.g. "Product".
+     *
+     * @return string
+     */
+    abstract public function getRecordLabel() : string;
+
+    /**
+     * Retrieves a list of properties available in the
+     * collection's records, in the following format:
+     *
+     * <pre>
+     * array(
+     *    array(
+     *        'key' => 'alias',
+     *        'name' => 'Alias',
+     *        'type' => 'string'
+     *    )
+     * )
+     * </pre>
+     *
+     * @return array<int,array<string,string>>
+     */
+    abstract public function getRecordProperties() : array;
+
+    /**
+     * @return string
+     */
+    public function getParentCollectionClass() : string
     {
-        $collection = $this->parentRecord->getCollection();
-
-        if($collection->idExists($this->parentRecord->getID()))
-        {
-            $this->parentRecord = $collection->getByID($this->parentRecord->getID());
-            return;
-        }
-
-        $this->dispose();
+        return '';
     }
-    
+
+    /**
+     * Called after the class has been initialized, but
+     * before the keys are registered.
+     */
+    protected function postConstruct() : void
+    {
+
+    }
+
+    /**
+     * Can be overwritten to initialize needed tasks and properties.
+     */
+    protected function init() : void
+    {
+    }
+
+    /**
+     * Allows formally registering the available data keys
+     * for the record's database columns. Use the internal
+     * property {@see DBHelper_BaseCollection::$keys} to
+     * register them.
+     *
+     * @return void
+     */
+    protected function _registerKeys() : void
+    {
+    }
+
+    /**
+     * Can be extended to use a different name than the primary
+     * column for specifying a record ID in a request when working
+     * with {@see DBHelper_BaseCollection::getByRequest()}.
+     *
+     * @return string
+     */
+    public function getRecordRequestPrimaryName() : string
+    {
+        return $this->getRecordPrimaryName();
+    }
+
+    // endregion
+
+    /**
+     * @return string
+     */
+    public function getRecordDefaultSortDir() : string
+    {
+        return self::SORT_DIR_ASC;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasParentCollection() : bool
+    {
+        $parentClass = $this->getParentCollectionClass();
+
+        return !empty($parentClass);
+    }
+
     protected $started = false;
     
    /**
@@ -451,7 +389,30 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $columns = $this->getRecordSearchableColumns();
         return array_values($columns);
     }
-    
+
+    /**
+     * Retrieves the name of the data grid used to
+     * display the collection items.
+     *
+     * It is used to namespace the grid's filter settings,
+     * which allows inheriting settings between data grids
+     * when using the same name.
+     *
+     * The CollectionList admin screen classes automatically
+     * use this name.
+     *
+     * @return string
+     *
+     * @see Application_Traits_Admin_CollectionList
+     * @see Application_Admin_Area_Mode_CollectionList
+     * @see Application_Admin_Area_Mode_Submode_CollectionList
+     * @see Application_Admin_Area_Mode_Submode_Action_CollectionList
+     */
+    public function getDataGridName() : string
+    {
+        return $this->getRecordTypeName().'-datagrid';
+    }
+
    /**
     * @var DBHelper_BaseRecord[]
     */
@@ -562,10 +523,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         $request = Application_Request::getInstance();
         
-        $record_id = $request->registerParam($this->getRecordPrimaryName())
-        ->setInteger()
-        ->setCallback(array($this, 'idExists'))
-        ->get();
+        $record_id = (int)$request->registerParam($this->getRecordRequestPrimaryName())
+            ->setInteger()
+            ->setCallback(array($this, 'idExists'))
+            ->get();
         
         if($record_id) {
             return $this->getByID($record_id);
@@ -840,12 +801,13 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
         $event = $this->triggerBeforeCreateRecord($data);
         
-        if($event->isCancelled())
+        if($event !== null && $event->isCancelled())
         {
             throw new DBHelper_Exception(
                 'Creating new record has been cancelled.',
                 sprintf(
-                    'The event has been cancelled. Reason given: '.$event->getCancelReason()
+                    'The event has been cancelled. Reason given: %s',
+                    $event->getCancelReason()
                 ),
                 self::ERROR_CREATE_RECORD_CANCELLED
             );
@@ -854,13 +816,13 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         // use a special table for generating the record id?
         if(isset($this->recordIDTable)) 
         {
-            $record_id = intval(DBHelper::insert(sprintf(
+            $record_id = (int)DBHelper::insert(sprintf(
                 "INSERT INTO
                     `%s`
                 SET `%s` = DEFAULT",
                 $this->recordIDTable,
                 $this->recordPrimaryName
-            )));
+            ));
             
             $data[$this->recordPrimaryName] = $record_id;
             
@@ -871,10 +833,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         } 
         else 
         {
-            $record_id = intval(DBHelper::insertDynamic(
-                $this->recordTable, 
+            $record_id = (int)DBHelper::insertDynamic(
+                $this->recordTable,
                 $data
-            ));
+            );
         }
 
         $this->log(sprintf('Created with ID [%s].', $record_id));
@@ -890,6 +852,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         }
 
         $record->onCreated($context);
+
+        $this->triggerAfterCreateRecord($record, $context);
         
         return $record;
     }
@@ -979,53 +943,132 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return self::VALUE_UNDEFINED;
     }
 
+    // region: Event handling
+
+    public const EVENT_BEFORE_CREATE_RECORD = 'BeforeCreateRecord';
+    public const EVENT_AFTER_CREATE_RECORD = 'AfterCreateRecord';
+
     /**
-    * Adds a listener to the BeforeCreateRecord event.
-    * 
-    * @param callable $callback
-    * @param string $sourceLabel
-    */
-    public final function onBeforeCreateRecord($callback, string $sourceLabel='')
+     * Listens to any new records being created, and allows
+     * reviewing the data set before the record is added to
+     * the database. It allows canceling the event if needed.
+     *
+     * NOTE: If the aim is to validate the record's data set,
+     * you should register the data keys instead. This allows
+     * finer control, with per-key validation callbacks and more.
+     * See {@see DBHelper_BaseCollection::_registerKeys()}
+     * for details.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     * @see BeforeCreateRecordEvent
+     */
+    final public function onBeforeCreateRecord(callable $callback) : Application_EventHandler_EventableListener
     {
-        $this->eventHandler->addListener(
-            'BeforeCreateRecord', 
-            $callback,
-            $sourceLabel
-        );
+        return $this->addEventListener(self::EVENT_BEFORE_CREATE_RECORD, $callback);
     }
-    
-   /**
-    * Triggers the BeforeCreatedRecord event.
-    * 
-    * @throws DBHelper_Exception
-    * @return DBHelper_BaseCollection_Event_BeforeCreateRecord
-    */
-    final protected function triggerBeforeCreateRecord(array $data) : DBHelper_BaseCollection_Event_BeforeCreateRecord
+
+    /**
+     * Listens to any new records created in the collection.
+     * This allows tasks to execute on the collection level
+     * when records are created, as compared to the record's
+     * own created event handled via {@see DBHelper_BaseRecord::onCreated()}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     * @see AfterCreateRecordEvent
+     */
+    final public function onAfterCreateRecord(callable $callback) : Application_EventHandler_EventableListener
     {
-        $event = $this->eventHandler->trigger(
-            'BeforeCreateRecord',
+        return $this->addEventListener(self::EVENT_AFTER_CREATE_RECORD, $callback);
+    }
+
+    /**
+     * Triggers the BeforeCreatedRecord event.
+     *
+     * @param array<string,mixed> $data
+     *
+     * @return BeforeCreateRecordEvent
+     * @throws Application_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    final protected function triggerBeforeCreateRecord(array $data) : ?BeforeCreateRecordEvent
+    {
+        $event = $this->triggerEvent(
+            self::EVENT_BEFORE_CREATE_RECORD,
             array(
                 $this,
                 $data
-            ),
-            'DBHelper_BaseCollection_Event_BeforeCreateRecord'
+            )
         );
-        
-        if($event instanceof DBHelper_BaseCollection_Event_BeforeCreateRecord)
+
+        if($event !== null)
         {
-            return $event;
+            return ClassHelper::requireObjectInstanceOf(
+                BeforeCreateRecordEvent::class,
+                $event
+            );
         }
-        
-        throw new DBHelper_Exception(
-            'Invalid event type',
-            sprintf(
-                'Expected class of type [%s], given [%s].',
-                DBHelper_BaseCollection_Event_BeforeCreateRecord::class,
-                \AppUtils\parseVariable($event)->enableType()->toString()
-            ),
-            self::ERROR_INVALID_EVENT_TYPE
-        );
+
+        return null;
     }
+
+    /**
+     * Triggered after a new record has been created, and after the record's
+     * {@see DBHelper_BaseRecord::onCreated()} method has been called.
+     *
+     * @param DBHelper_BaseRecord $record
+     * @param DBHelper_BaseCollection_OperationContext_Create $context
+     * @return AfterCreateRecordEvent
+     *
+     * @throws Application_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    final protected function triggerAfterCreateRecord(DBHelper_BaseRecord $record, DBHelper_BaseCollection_OperationContext_Create $context) : ?AfterCreateRecordEvent
+    {
+        $event = $this->triggerEvent(
+            self::EVENT_AFTER_CREATE_RECORD,
+            array(
+                $this,
+                $record,
+                $context
+            )
+        );
+
+        if($event !== null)
+        {
+            return ClassHelper::requireObjectInstanceOf(
+                AfterCreateRecordEvent::class,
+                $event
+            );
+        }
+
+        return null;
+    }
+
+    /**
+     * Fetch a fresh instance of the parent record of the
+     * collection when that record instance has been disposed.
+     * If the record does not exist anymore, no changes are
+     * made - an exception will be thrown if the record is
+     * accessed.
+     */
+    private function callback_parentRecordDisposed() : void
+    {
+        $collection = $this->parentRecord->getCollection();
+
+        if($collection->idExists($this->parentRecord->getID()))
+        {
+            $this->parentRecord = $collection->getByID($this->parentRecord->getID());
+            return;
+        }
+
+        $this->dispose();
+    }
+
+    // endregion
 
     /**
      * Checks whether a specific column value exists
@@ -1074,7 +1117,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * @param string $tableName
      */
-    protected function setIDTable($tableName)
+    protected function setIDTable(string $tableName) : void
     {
         $this->recordIDTable = $tableName;
     }
