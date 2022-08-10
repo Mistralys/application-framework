@@ -319,18 +319,20 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     /**
      * Disables the button, so it gets displayed, but not clickable
      *
-     * @param string|number|UI_Renderable_Interface $helpText If specified, adds a tooltip that explains why the button is disabled.
-     * @see enable()
+     * @param string|number|UI_Renderable_Interface $reason If specified, adds a tooltip that explains why the button is disabled.
      * @return $this
+     * @throws UI_Exception
+     *
+     * @see enable()
      */
-    public function disable($helpText='') : self
+    public function disable($reason ='') : self
     {
         $this->state = self::STATE_DISABLED;
         
         // to allow using disable() keeping a previously set tooltip
-        if(!empty($helpText)) 
+        if(!empty($reason))
         {
-            $this->disabledTooltip = toString($helpText);
+            $this->disabledTooltip = toString($reason);
         }
 
         return $this;
