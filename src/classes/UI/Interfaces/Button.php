@@ -7,8 +7,17 @@ interface UI_Interfaces_Button
     Application_Interfaces_Iconizable,
     Interface_Classable,
     Application_LockableItem_Interface,
-    UI_Interfaces_ClientConfirmable
+    UI_Interfaces_ClientConfirmable,
+    UI_Interfaces_Conditional
 {
+    /**
+     * @param string|number|UI_Renderable_Interface|NULL $reason
+     * @return $this
+     */
+    public function disable($reason='') : self;
+
+    public function isDisabled() : bool;
+
     /**
      * Styles the button as a button for a dangerous operation, like deleting records.
      *
