@@ -864,6 +864,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         return isset($this->joins[$joinID]);
     }
 
+    protected function isJoinRegistered($joinID) : bool
+    {
+        return isset($this->registeredJoins[$joinID]);
+    }
+
     /**
      * Gets a join statement, either from those that have
      * been added, or who have been registered but not added
