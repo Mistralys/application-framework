@@ -21,17 +21,18 @@ use AppUtils\StringBuilder;
  * @see UI_Renderable_Interface
  * @see UI_Traits_RenderableGeneric
  */
-class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface 
+class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface, UI_Interfaces_Conditional
 {
     use UI_Traits_RenderableGeneric;
+    use UI_Traits_Conditional;
 
-    const CLASS_BTN_CLIPBOARD_COPY = 'btn-clipboard-copy';
+    public const CLASS_BTN_CLIPBOARD_COPY = 'btn-clipboard-copy';
 
     /**
      * Delay, in seconds, after which to hide the status
      * text saying that the text has been copied.
      */
-    const FADE_OUT_DELAY = 2.1;
+    public const FADE_OUT_DELAY = 2.1;
 
     /**
     * Adds an icon.
@@ -281,5 +282,14 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface
                 $jsID.'-status',
                 t('Text copied successfully.')
             );
+    }
+
+    public function render() : string
+    {
+        if($this->isValid()) {
+            return parent::render();
+        }
+
+        return '';
     }
 }
