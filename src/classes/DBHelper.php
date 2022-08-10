@@ -98,7 +98,7 @@ class DBHelper
      * error information can be accessed via {@link getErrorMessage()}.
      *
      * @param int $operationType
-     * @param string $statement The full SQL query to run with placeholders for variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array $variables Associative array with placeholders and values to replace in the query
      * @param bool $exceptionOnError
      * @return boolean
@@ -107,11 +107,13 @@ class DBHelper
      * @see getErrorCode()
      * @see getErrorMessage()
      */
-    public static function execute(int $operationType, string $statement, array $variables = array(), bool $exceptionOnError=true) : bool
+    public static function execute(int $operationType, $statementOrBuilder, array $variables = array(), bool $exceptionOnError=true) : bool
     {
         if(self::isQueryTrackingEnabled()) {
             self::$startTime = microtime(true);
         }
+
+        $statement = (string)$statementOrBuilder;
 
         self::$queryCount++;
         self::$activeQuery = array($statement, $variables);
@@ -293,14 +295,14 @@ class DBHelper
     * could go wrong, there is no need to check the return value of
     * this method.
     *
-    * @param string $statement
+    * @param string|DBHelper_StatementBuilder $statementOrBuilder
     * @param array<string,mixed> $variables
     * @return string
     * @throws DBHelper_Exception|ConvertHelper_Exception|JsonException
     */
-    public static function insert(string $statement, array $variables = array()) : string
+    public static function insert($statementOrBuilder, array $variables = array()) : string
     {
-        if (!self::executeAndRegister(DBHelper_OperationTypes::TYPE_INSERT, $statement, $variables, false)) 
+        if (!self::executeAndRegister(DBHelper_OperationTypes::TYPE_INSERT, $statementOrBuilder, $variables, false))
         {
             throw self::createException(
                 self::ERROR_INSERTING,
@@ -310,17 +312,21 @@ class DBHelper
         
         return self::getDB()->lastInsertId();
     }
-    
-   /**
-    * Like `insert`, but converts the result to an integer.
-    * 
-    * @param string $statement
-    * @param array $variables
-    * @return int
-    */
-    public static function insertInt(string $statement, array $variables=array()) : int
+
+    /**
+     * Like `insert`, but converts the result to an integer.
+     *
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array $variables
+     * @return int
+     *
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    public static function insertInt($statementOrBuilder, array $variables=array()) : int
     {
-        return (int)self::insert($statement, $variables);
+        return (int)self::insert($statementOrBuilder, $variables);
     }
 
     /**
@@ -330,11 +336,11 @@ class DBHelper
      * {@link getSQL()} and {@link getSQLHighlighted()} methods.
      *
      * @param int $operationType
-     * @param string $statement
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
      * @param array $variables
      * @param bool $result
      */
-    protected static function registerQuery(int $operationType, string $statement, array $variables, bool $result) : void
+    protected static function registerQuery(int $operationType, $statementOrBuilder, array $variables, bool $result) : void
     {
         if (self::$queryLogging === true) {
             self::log(self::getSQL());
@@ -346,7 +352,7 @@ class DBHelper
 
         if(self::isQueryTrackingEnabled()) {
             $time = microtime(true)-self::$startTime;
-            self::$queries[] = array($statement, $variables, $time, $operationType);
+            self::$queries[] = array((string)$statementOrBuilder, $variables, $time, $operationType);
         } 
     }
 
@@ -446,32 +452,32 @@ class DBHelper
      * to add specific functionality at a later time. It is recommended
      * to use this method if you run UPDATE queries.
      *
-     * @param string $statement The full SQL query to run with placeholders for variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
-    public static function update(string $statement, array $variables = array()) : bool
+    public static function update($statementOrBuilder, array $variables = array()) : bool
     {
-        return self::executeAndRegister(DBHelper_OperationTypes::TYPE_UPDATE, $statement, $variables);
+        return self::executeAndRegister(DBHelper_OperationTypes::TYPE_UPDATE, $statementOrBuilder, $variables);
     }
 
     /**
      * Executes the query and registers it internally.
      *
      * @param int $operationType
-     * @param string $statement
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
      * @param bool $exceptionOnError
      * @return boolean
      * @throws DBHelper_Exception
      * @throws JsonException
      */
-    protected static function executeAndRegister(int $operationType, string $statement, array $variables=array(), bool $exceptionOnError=true) : bool
+    protected static function executeAndRegister(int $operationType, $statementOrBuilder, array $variables=array(), bool $exceptionOnError=true) : bool
     {
-        $result = self::execute($operationType, $statement, $variables, $exceptionOnError);
-        self::registerQuery($operationType, $statement, $variables, $result);
+        $result = self::execute($operationType, $statementOrBuilder, $variables, $exceptionOnError);
+        self::registerQuery($operationType, $statementOrBuilder, $variables, $result);
         return $result;
     }
 
@@ -481,25 +487,28 @@ class DBHelper
      * to add specific functionality at a later time. It is recommended
      * to use this method if you run DELETE queries.
      *
-     * @param string $statement The full SQL query to run with placeholders for variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
+     * @throws DBHelper_Exception
+     * @throws JsonException
      */
-    public static function delete(string $statement, array $variables = array()) : bool
+    public static function delete($statementOrBuilder, array $variables = array()) : bool
     {
-        return self::executeAndRegister(DBHelper_OperationTypes::TYPE_DELETE, $statement, $variables);
+        return self::executeAndRegister(DBHelper_OperationTypes::TYPE_DELETE, $statementOrBuilder, $variables);
     }
 
     /**
      * Fetches a single entry as an associative array from a SELECT query.
-     * @param string $statement The full SQL query to run with placeholders for variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
-     * @return array|NULL
-     * @throws DBHelper_Exception|ConvertHelper_Exception
+     * @return array<mixed>|NULL
+     * @throws DBHelper_Exception
+     * @throws JsonException
      */
-    public static function fetch(string $statement, array $variables = array()) : ?array
+    public static function fetch($statementOrBuilder, array $variables = array()) : ?array
     {
-        self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statement, $variables);
+        self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
         $fetch = self::$activeStatement->fetch(PDO::FETCH_ASSOC);
         
@@ -554,14 +563,14 @@ class DBHelper
      * Fetches all entries matching a SELECT query, as an indexed array
      * with associative arrays for each record.
      *
-     * @param string $statement The full SQL query to run with placeholders for variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception|ConvertHelper_Exception
      */
-    public static function fetchAll(string $statement, array $variables = array()) : array
+    public static function fetchAll(string $statementOrBuilder, array $variables = array()) : array
     {
-        self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statement, $variables);
+        self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
         $result = self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
         
@@ -1206,15 +1215,19 @@ class DBHelper
      * contain a "count" field which is then returned. In all
      * other cases, this will return 0.
      *
-     * @param string $statement
-     * @param array $variables
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array<string,mixed> $variables
+     * @param string $columName
      * @return int
+     *
+     * @throws DBHelper_Exception
+     * @throws JsonException
      */
-    public static function fetchCount(string $statement, array $variables = array()) : int
+    public static function fetchCount($statementOrBuilder, array $variables = array(), string $columName='count') : int
     {
-        $entry = self::fetch($statement, $variables);
-        if (is_array($entry) && isset($entry['count'])) {
-            return $entry['count'];
+        $entry = self::fetch($statementOrBuilder, $variables);
+        if ($entry !== null && isset($entry[$columName])) {
+            return $entry[$columName];
         }
 
         return 0;
@@ -1552,21 +1565,24 @@ class DBHelper
     	
     	return self::$cachedColumnExist[$key];
     }
-    
-   /**
-    * Fetches a single row using the {@link fetch()} method, and returns
-    * the specified key from the result set. Returns null if the key is
-    * not found.
-    * 
-    * @param string $key
-    * @param string $statement
-    * @param array $variables
-    * @return string|NULL
-    */
-    public static function fetchKey(string $key, string $statement, array $variables=array()) : ?string
+
+    /**
+     * Fetches a single row using the {@link fetch()} method, and returns
+     * the specified key from the result set. Returns null if the key is
+     * not found.
+     *
+     * @param string $key
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array<string,mixed> $variables
+     * @return string|NULL
+     *
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    public static function fetchKey(string $key, $statementOrBuilder, array $variables=array()) : ?string
     {
-        $data = self::fetch($statement, $variables);
-        if(is_array($data) && isset($data[$key])) {
+        $data = self::fetch($statementOrBuilder, $variables);
+        if($data !== null && isset($data[$key])) {
             return $data[$key];
         }
         
@@ -1587,18 +1603,21 @@ class DBHelper
     {
         return new DBHelper_FetchMany($table);
     }
-    
-   /**
-    * Fetches a key, and returns an integer value.
-    * 
-    * @param string $key
-    * @param string $statement
-    * @param array $variables
-    * @return integer
-    */
-    public static function fetchKeyInt(string $key, string $statement, array $variables=array()) : int
+
+    /**
+     * Fetches a key, and returns an integer value.
+     *
+     * @param string $key
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array<string,mixed> $variables
+     * @return integer
+     *
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    public static function fetchKeyInt(string $key, $statementOrBuilder, array $variables=array()) : int
     {
-        $value = self::fetchKey($key, $statement, $variables);
+        $value = self::fetchKey($key, $statementOrBuilder, $variables);
         
         if($value === null) {
             return 0;
@@ -1606,58 +1625,58 @@ class DBHelper
         
         return (int)$value;
     }
-    
-   /**
-    * Fetches all matching rows using the {@link fetchAll()} method, and
-    * returns an indexed array with all available values for the specified
-    * key in the result set. Returns an empty array if the key is not found,
-    * or if no records match.
-    * 
-    * @param string $key
-    * @param string $statement
-    * @param array<string,mixed> $variables
-    * @return string[]
-    */
-    public static function fetchAllKey(string $key, string $statement, array $variables=array()) : array
+
+    /**
+     * Fetches all matching rows using the {@link fetchAll()} method, and
+     * returns an indexed array with all available values for the specified
+     * key in the result set. Returns an empty array if the key is not found,
+     * or if no records match.
+     *
+     * @param string $key
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array<string,mixed> $variables
+     * @return string[]
+     *
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    public static function fetchAllKey(string $key, $statementOrBuilder, array $variables=array()) : array
     {
         $result = array();
-        
-        $entries = self::fetchAll($statement, $variables);
-        if (!is_array($entries)) {
-            return $result;
-        }
-        
-        $total = count($entries);
-        for ($i=0; $i<$total; $i++) {
-           if(isset($entries[$i][$key])) {
-               $result[] = $entries[$i][$key];
+        $entries = self::fetchAll($statementOrBuilder, $variables);
+
+        foreach ($entries as $record)
+        {
+           if(isset($record[$key])) {
+               $result[] = $record[$key];
            } 
         }
-        
+
         return $result;
     }
-    
-   /**
-    * Like <code>fetchAllKey</code>, but enforces int
-    * values for all values that were found.
-    * 
-    * @param string $key
-    * @param string $statement
-    * @param array $variables
-    * @return int[]
-    */
-    public static function fetchAllKeyInt(string $key, string $statement, array $variables=array()) : array
+
+    /**
+     * Like <code>fetchAllKey</code>, but enforces int
+     * values for all values that were found.
+     *
+     * @param string $key
+     * @param string|DBHelper_StatementBuilder $statementOrBuilder
+     * @param array<string,mixed> $variables
+     * @return int[]
+     *
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     */
+    public static function fetchAllKeyInt(string $key, string $statementOrBuilder, array $variables=array()) : array
     {
-        $items = self::fetchAllKey($key, $statement, $variables);
-        
+        $items = self::fetchAllKey($key, $statementOrBuilder, $variables);
         $result = array();
-        $total = count($items);
-        
-        for($i=0; $i < $total; $i++)
+
+        foreach ($items as $value)
         {
-            $result[] = (int)$items[$i];
+            $result[] = (int)$value;
         }
-        
+
         return $result;
     }
     
