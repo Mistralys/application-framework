@@ -59,7 +59,6 @@ use UI\Page\Navigation\QuickNavigation;
  * @property UI_Bootstrap_Tabs $tabs
  * @property Application_Request $request
  * @property Application_Admin_ScreenInterface|NULL $parentScreen
- * @method string getURLName()
  */
 trait Application_Traits_Admin_Screen
 {
