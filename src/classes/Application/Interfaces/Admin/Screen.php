@@ -7,6 +7,7 @@
  * @see Application_Admin_ScreenInterface
  */
 
+use Application\Interfaces\Admin\ScreenAccessInterface;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -27,7 +28,11 @@ use UI\Page\Navigation\QuickNavigation;
  * @see Application_Admin_Skeleton
  * @see Application_Interfaces_Formable
  */
-interface Application_Admin_ScreenInterface extends Application_Interfaces_Formable, Application_Interfaces_Loggable
+interface Application_Admin_ScreenInterface
+    extends
+    Application_Interfaces_Formable,
+    Application_Interfaces_Loggable,
+    ScreenAccessInterface
 {
     public const ERROR_SIDEBAR_NOT_AVAILABLE_YET = 96701;
     public const ERROR_MISSING_URL_PARAMETER = 96702;
