@@ -9,8 +9,6 @@
 
 declare(strict_types=1);
 
-use AppUtils\ConvertHelper;
-
 /**
  * Trait for working with database records, independently of a
  * full-fledged DB records collection. 
@@ -87,7 +85,7 @@ trait DBHelper_Traits_LooseRecord
      *
      * @see DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
      */
-    private final function loadData() : void
+    private function loadData() : void
     {
         $this->recordData = DBHelper::createFetchOne($this->recordTable)
         ->whereValue($this->recordPrimary, strval($this->recordID))
