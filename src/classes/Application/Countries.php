@@ -31,17 +31,20 @@ class Application_Countries extends DBHelper_BaseCollection
 
     public const PRIMARY_NAME = 'country_id';
     public const TABLE_NAME = 'countries';
+    public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
 
-    /**
-     * @var Application_Countries
-     */
-    protected static $instance;
+    protected static ?Application_Countries $instance = null;
 
     public function getRecordDefaultSortKey() : string
     {
         return 'label';
     }
-    
+
+    public function getRecordRequestPrimaryName() : string
+    {
+        return self::REQUEST_PARAM_ID;
+    }
+
     public function getRecordClassName() : string
     {
         return Application_Countries_Country::class;
@@ -81,7 +84,7 @@ class Application_Countries extends DBHelper_BaseCollection
     }
     
     /**
-     * Returns the global instance of the countries manager,
+     * Returns the global instance of the country manager,
      * creating it as needed.
      *
      * @return Application_Countries
