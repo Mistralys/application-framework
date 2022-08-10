@@ -1,4 +1,19 @@
-### v2.2.0 - UI update release
+### v2.3.0 - DBHelper update release (breaking)
+- DBHelper: Added the collection's `AfterCreateRecord` event.
+- DBHelper: Statement builder instances can now be passed to query methods.
+- DBHelper: Added the DB filter criteria `isJoinRegistered()` method.
+- UI: Added conditional interface to `UI_StringBuilder`.
+- UI: The button interface now includes `disable()` and `isDisabled()`.
+- Admin: Added the trait `RequestCountryTrait` for accessing a country instance.
+- StringBuilder: Now implements the Conditional interface.
+
+#### Breaking changes
+- DBHelper: The class `DBHelper_BaseCollection_Event_BeforeCreateRecord` has been
+  namespaced to `DBHelper\BaseCollection\Event\BeforeCreateRecordRecordEvent`.
+- Admin: The class `Application_Admin_Area_Mode_Users_List` has been namespaced
+  to `Application\Admin\Area\Mode\Users\UsersListSubmode`.
+
+### v2.2.0 - UI update release (breaking)
 - UI: Revamped the main navigation generation.
 - UI: The main navigation now supports class-based custom generation.
 - UI: Restyled the main navigation and footer.
@@ -96,7 +111,7 @@
 - UI: Sections: Fixed the collapse check when containing forms.
 - UI: Sections: The header text now supports renderables.
 
-### v2.0.0 - PHP7.4 Update
+### v2.0.0 - PHP7.4 Update (breaking)
 - Requirements: Now using PHP v7.4 as minimum requirement.
 - UI: Fixed the dropdown menu's `setIcon()` method not doing anything (#25).
 - UI: Fixed menu items' icons disappearing when they are active (#25).
@@ -138,7 +153,7 @@ These methods will be removed in a future release. Use the
 ### v1.23.1 - Maintenance release
 - Sessions: Added error checks in the session initialization.
 
-### v1.23.0 - Minor feature release
+### v1.23.0 - Minor feature release (breaking)
 - Forms: Improved the form TOC headers list styling.
 - Forms: Added `addStatusIcon()` to the headers.
 - Forms: Headers can now configure the final content section instances.
@@ -162,7 +177,7 @@ These methods will be removed in a future release. Use the
 - FilterSettings: Added `addElementText()` and typed getSetting methods.
 - DBHelper: Added query counts without enabling the full query tracking.
 
-**Breaking changes:**
+#### Breaking changes
 
 The `APP_REQUEST_LOG_PASSWORD` setting must be added in the configuration. We suggest
 adding in the `app-config.php` file, since it does not have to change regularly.
@@ -182,7 +197,7 @@ adding in the `app-config.php` file, since it does not have to change regularly.
 - Connectors: Fixed unique request IDs making unnecessary DB requests to generate the IDs.
 - Forms: Improved styles for file upload elements.
 
-### v1.22.0 - Maintenance release 
+### v1.22.0 - Maintenance release (breaking) 
 - Icons: Added `on()` and `off()`.
 - Icons: Improved internal color style handling.
 - Icons: Added `makeRegular()` to restore the default color style.
@@ -197,7 +212,7 @@ adding in the `app-config.php` file, since it does not have to change regularly.
 - Formables: Using getUI() now works without initializing the formable.
 - Connectors: Added `requireActiveResponse()`.
 
-**Breaking changes**
+#### Breaking changes
 
 Any classes extending the `Application_Formable` class must now implement
 the `render()` method. This does not affect admin screens, which have been
@@ -217,7 +232,7 @@ updated already.
 - UI: DataGrid: Added support for user-persisted hiding of columns.
 - TestSuites: Added functional application UI under `tests/application`.
 
-### v1.21.0 - Code quality and minor feature release
+### v1.21.0 - Code quality and minor feature release (breaking)
 - FilterCriteria: Improved the custom columns handling further.
 - FilterCriteria: Custom columns now automate even more tasks.
 - FilterCriteria: Custom columns detected and auto-enabled more reliably.
@@ -243,7 +258,7 @@ updated already.
 - Countries: Added `createNewCountry()`.
 - Countries: Added failsafe for adding unhandled ISO codes like `gb`.
 
-**Breaking changes**
+#### Breaking changes
 
 A big number of type hints have been added, notably in the admin
 screens handling. Especially affected is the `_handleAction()` method,
@@ -257,19 +272,19 @@ PHP files automatically. It is recommended to commit all changes prior to
 running this script. Simply call it in the `index.php` file of the application
 to run it.
 
-### v1.20.1 - Bugfix release
+### v1.20.1 - Bugfix release (breaking)
 - DBHelper: Added the class `DBHelper_CaseStatement` to create `CASE` statements.
 - DBHelper: Fixed order by and group by statements not using the custom column's value statement.
 - DBHelper: Fixed order by being overwritten by other custom columns.
 - FilterCriteria: Removed the no constructor limitation.
 - FilterCriteria: Now automatically passing initial constructor arguments in `createPristine()`.
 
-**Breaking changes**
+#### Breaking changes
 
 Filter criteria classes with custom constructors **must** always
 call the parent constructor.
 
-### v1.20.0 - Feature release
+### v1.20.0 - Feature release (breaking)
 - Wizards: Added a traits for selecting a country.
 - Wizards: Added a traits for a generic summary/confirmation step.
 - Wizards: Added registering completed steps to display the steps summary.
@@ -286,15 +301,15 @@ call the parent constructor.
 - DBHelper: Updated the extended filter criteria to support the use of statement builders.
 - DBHelper: Custom columns are now enabled automatically if used in the query.
 - DBHelper: Custom columns now support selecting localized country labels by country ID.
-- DBHelper: Custom columns now support selecting user names by user ID.
+- DBHelper: Custom columns now support selecting usernames by user ID.
 - DBHelper: Added registering `JOIN` statements, so they are only added if needed.
 - DBHelper: Join statements can now require other joins.
 - Feedback: Added the missing `AddFeedback` AJAX method.
-- Feedback: Added some of the missing collection classes.
+- Feedback: Added some missing collection classes.
 - DataGrids: Moved the sorting icons out of the header cells for better readability.
 - DataGrids: Aligned header cells to the top.
 
-**Breaking changes**
+#### Breaking changes
 
 The database filter criteria `addJoin()` method now returns the join instance
 instead of the filter criteria instance. Please verify if any of these calls
