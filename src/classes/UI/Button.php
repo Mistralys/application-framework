@@ -22,8 +22,7 @@ class UI_Button
     extends UI_BaseLockable
     implements
     UI_Renderable_Interface,
-    UI_Interfaces_Button,
-    UI_Interfaces_Conditional
+    UI_Interfaces_Button
 {
     use Application_Traits_Iconizable;
     use UI_Traits_RenderableGeneric;
@@ -685,19 +684,25 @@ class UI_Button
             JSHelper::phpVariable2JS($loaderText, AppUtils\JSHelper::QUOTE_STYLE_SINGLE)
         ));
     }
-    
-   /**
-    * Makes the button disabled.
-    * 
-    * @param string $helpText
-    * @return $this
-    */
-    public function disable(string $helpText='') : self
+
+    /**
+     * Makes the button disabled.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $reason
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function disable($reason='') : self
     {
         $this->disabled = true;
-        $this->disabledTooltip = $helpText;
+        $this->disabledTooltip = toString($reason);
         
         return $this;
+    }
+
+    public function isDisabled() : bool
+    {
+        return $this->disabled;
     }
 
     public function getURL() : string
