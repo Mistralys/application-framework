@@ -7,6 +7,7 @@
  * @see Application_Admin_Skeleton
  */
 
+use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ConvertHelper;
 
 /**
@@ -29,9 +30,14 @@ use AppUtils\ConvertHelper;
  * @see Application_Admin_ScreenInterface
  * @see Application_Traits_Admin_Screen
  */
-abstract class Application_Admin_Skeleton extends Application_Formable implements Application_Admin_ScreenInterface, Application_Interfaces_Admin_LockableScreen
+abstract class Application_Admin_Skeleton
+    extends Application_Formable
+    implements
+    Application_Admin_ScreenInterface,
+    Application_Interfaces_Admin_LockableScreen
 {
     use Application_Traits_Loggable;
+    use ScreenAccessTrait;
 
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
