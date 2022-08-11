@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_Mode_Submode
 {
     public function getURLName() : string
@@ -22,10 +24,7 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
         return '';
     }
     
-    /**
-     * @var Application_Sets
-     */
-    protected $sets;
+    protected Application_Sets $sets;
     
     protected function _handleActions() : bool
     {
@@ -63,8 +62,8 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
         $entries = array();
         
         $sets = $this->sets->getSets();
-        foreach($sets as $set) {
-            $active = '';
+        foreach($sets as $set)
+        {
             if($set->isActive()) {
                 $active = UI::icon()->ok()->makeSuccess();
             } else {
@@ -86,10 +85,7 @@ class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_M
         );
     }
     
-    /**
-     * @var UI_DataGrid
-     */
-    protected $dataGrid;
+    protected UI_DataGrid $dataGrid;
     
     protected function createDataGrid() : void
     {
