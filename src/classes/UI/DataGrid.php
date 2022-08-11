@@ -7,6 +7,8 @@
  * @see UI_DataGrid
  */
 
+use Application\Driver\DriverException;
+
 /**
  * Handles displaying data in a tabular grid, with extended functionality
  * like applying custom actions to entries, allowing the user to reorder
@@ -267,7 +269,7 @@ class UI_DataGrid
      * @param string|int|float $value
      * @return $this
      */
-    public function addHiddenVar(string $name, $value)
+    public function addHiddenVar(string $name, $value) : self
     {
         $this->hiddenVars[$name] = (string)$value;
         return $this;
@@ -277,13 +279,30 @@ class UI_DataGrid
      * @param array<string,int|string|float> $vars
      * @return $this
      */
-    public function addHiddenVars(array $vars) : UI_DataGrid
+    public function addHiddenVars(array $vars) : self
     {
         foreach($vars as $name => $value) {
             $this->addHiddenVar($name, $value);
         }
 
         return $this;
+    }
+
+    /**
+     * Adds all page-related variables (page / mode / submode...) for
+     * the current admin screen.
+     *
+     * NOTE: Only possible when in admin mode.
+     *
+     * @return $this
+     * @throws DriverException
+     */
+    public function addHiddenScreenVars() : self
+    {
+        return $this->addHiddenVars(Application_Driver::getInstance()
+            ->getActiveScreen()
+            ->getPageParams()
+        );
     }
 
     protected function addColumnObject(UI_DataGrid_Column $column) : void
@@ -564,11 +583,12 @@ class UI_DataGrid
      * elements, but which will display a confirmation dialog before
      * starting the action. Only works if multi select is enabled.
      * @param string $name
-     * @param string $label
-     * @param string $confirmMessage
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|number|UI_Renderable_Interface|NULL $confirmMessage
      * @return UI_DataGrid_Action_Confirm
+     * @throws UI_Exception
      */
-    public function addConfirmAction(string $name, string $label, string $confirmMessage) : UI_DataGrid_Action_Confirm
+    public function addConfirmAction(string $name, $label, $confirmMessage) : UI_DataGrid_Action_Confirm
     {
         $action = new UI_DataGrid_Action_Confirm($this, $name, $label, $confirmMessage);
         $this->actions[] = $action;
