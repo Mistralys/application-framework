@@ -7,6 +7,8 @@
  * @see Application_Admin_Area_Devel_AppSettings
  */
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
 
@@ -20,34 +22,23 @@ use AppUtils\OutputBuffering;
  */
 abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mode
 {
-   /**
-    * @var string
-    */
-    protected $formName = 'devel_app_settings';
-    
-    /**
-     * @var UI_DataGrid
-     */
-    protected $datagrid;
+    public const URL_NAME = 'appsettings';
+    protected string $formName = 'devel_app_settings';
+    protected UI_DataGrid $datagrid;
+    protected string $elDataKeyID = '';
+    protected string $elValueID = '';
+    protected Application_FilterSettings_AppSettings $filterSettings;
+    protected Application_FilterCriteria_AppSettings $filterCriteria;
 
     /**
      * @var array<string,array<string,mixed>>
      */
-    protected $settings = array();
+    protected array $settings = array();
 
-    /**
-     * @var string
-     */
-    private $elDataKeyID = '';
-
-    /**
-     * @var string
-     */
-    private $elValueID = '';
 
     public function getURLName() : string
     {
-        return 'appsettings';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string
@@ -76,19 +67,9 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
     
-   /**
-    * @var Application_FilterSettings_AppSettings
-    */
-    protected $filterSettings;
-    
-   /**
-    * @var Application_FilterCriteria_AppSettings
-    */
-    protected $filterCriteria;
-    
     protected function _handleActions() : bool
     {
-        $this->filterSettings = new Application_FilterSettings_AppSettings('appsettings');
+        $this->filterSettings = new Application_FilterSettings_AppSettings(self::URL_NAME);
         $this->filterCriteria = new Application_FilterCriteria_AppSettings();
 
         $this->createEditForm();
@@ -291,6 +272,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
     private function createDatagrid() : void
     {
         $grid = $this->ui->createDataGrid('custom_appsettings_grid');
+
         $grid->enableMultiSelect('data_key');
         $grid->addColumn('data_key', t('Data key'))->setCompact();
         $grid->addColumn('data_value', t('Value'));
@@ -307,8 +289,9 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         ->setIcon(UI::icon()->delete())
         ->setCallback(array($this, 'handle_multiDelete'));
 
+        $grid->addHiddenScreenVars();
         $grid->enableLimitOptionsDefault();
-        
+
         $this->datagrid = $grid;
     }
     
