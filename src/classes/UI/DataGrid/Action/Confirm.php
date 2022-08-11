@@ -7,8 +7,8 @@ class UI_DataGrid_Action_Confirm extends UI_DataGrid_Action_Default
     /**
      * @param UI_DataGrid $grid
      * @param string $name
-     * @param string|number|UI_Renderable_Interface $label
-     * @param string|number|UI_Renderable_Interface $confirmMessage
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|number|UI_Renderable_Interface|NULL $confirmMessage
      * @throws UI_Exception
      */
     public function __construct(UI_DataGrid $grid, string $name, $label, $confirmMessage)
