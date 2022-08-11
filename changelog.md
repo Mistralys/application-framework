@@ -6,6 +6,7 @@
 - UI: The button interface now includes `disable()` and `isDisabled()`.
 - Admin: Added the trait `RequestCountryTrait` for accessing a country instance.
 - StringBuilder: Now implements the Conditional interface.
+- DataGrid: Added `addHiddenScreenVars()` to add the current screen's params.
 
 #### Breaking changes
 - DBHelper: The class `DBHelper_BaseCollection_Event_BeforeCreateRecord` has been
