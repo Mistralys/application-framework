@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_ThrowableInfo;
 use Connectors\Response\ResponseError;
@@ -49,14 +50,9 @@ class Connectors_Response implements Application_Interfaces_Loggable
     protected string $json = '';
 
     /**
-     * @var array<string,mixed>
+     * @var ArrayDataCollection|NULL
      */
-    private array $responseData;
-
-    /**
-     * @var array<mixed>
-     */
-    protected array $data = array();
+    private ?ArrayDataCollection $responseData = null;
 
     /**
      * @var ResponseError|null
@@ -89,25 +85,27 @@ class Connectors_Response implements Application_Interfaces_Loggable
         }
         
         // method requests expect a specific return format
-        if (!isset($this->responseData[self::KEY_STATE])) {
+        if (!$this->responseData->keyExists(self::KEY_STATE)) {
             $this->setError(
                 t('The server response could not be read.'),
                 sprintf(
                     'The parsed json does not contain the [%s] key. Given keys: [%s].',
                     self::KEY_STATE,
-                    implode(', ', array_keys($this->responseData))
+                    implode(', ', array_keys($this->responseData->getData()))
                 ),
                 self::RETURNCODE_UNEXPECTED_FORMAT    
             );
             return;
         }
 
-        if(isset($this->responseData[self::KEY_EXCEPTION]) && !empty($this->responseData[self::KEY_EXCEPTION]))
+        if($this->responseData->keyHasValue(self::KEY_EXCEPTION))
         {
-            $this->exception = ConvertHelper_ThrowableInfo::fromSerialized($this->responseData[self::KEY_EXCEPTION]);
+            $this->exception = ConvertHelper_ThrowableInfo::fromSerialized(
+                $this->responseData->getJSONArray(self::KEY_EXCEPTION)
+            );
         }
 
-        if($this->responseData[self::KEY_STATE] === self::STATE_ERROR)
+        if($this->responseData->getString(self::KEY_STATE) === self::STATE_ERROR)
         {
             $this->setError(
                 t('The server returned an error.'),
@@ -133,7 +131,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
 
     public function getResponseState() : string
     {
-        return $this->responseData[self::KEY_STATE] ?? '';
+        return $this->responseData->getString(self::KEY_STATE);
     }
 
     /**
@@ -158,19 +156,19 @@ class Connectors_Response implements Application_Interfaces_Loggable
         }
 
         return new ResponseError(
-            $this->responseData[self::KEY_MESSAGE],
-            $this->responseData[self::KEY_DETAILS] ?? '',
-            $this->responseData[self::KEY_CODE] ?? 0,
+            $this->responseData->getString(self::KEY_MESSAGE),
+            $this->responseData->getString(self::KEY_DETAILS),
+            $this->responseData->getInt(self::KEY_CODE),
             $this->getEndpointException()
         );
     }
 
-    private function extractDataFromBody(string $body) : ?array
+    private function extractDataFromBody(string $body) : ?ArrayDataCollection
     {
         $body = trim($body);
 
         if(empty($body)) {
-            return array();
+            return ArrayDataCollection::create();
         }
 
         // if logging is enabled, the client may wrap the
@@ -206,7 +204,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
 
         if(is_array($decoded))
         {
-            return $decoded;
+            return ArrayDataCollection::create($decoded);
         }
 
         $this->setError(
@@ -348,13 +346,12 @@ class Connectors_Response implements Application_Interfaces_Loggable
         return $this->request->getHTTPMethod();
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getData() : array
     {
-        if(isset($this->responseData[self::KEY_DATA]) && is_array($this->responseData[self::KEY_DATA])) {
-            return $this->responseData[self::KEY_DATA];
-        }
-
-        return array();
+        return $this->responseData->getArray(self::KEY_DATA);
     }
     
    /**
