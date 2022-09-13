@@ -1,3 +1,20 @@
+### v2.3.1 - Connectors update
+- Connectors: Improved response error information handling.
+- Connectors: Response: Added the `exception` response parameter (accepts a serialized `ThrowableInfo`).
+- Connectors: Response: Added `getEndpointException()` to fetch the remote exception.
+- Connectors: Response: Added `getEndpointError()` to fetch the remote error details.
+- Connectors: Response: Added constants for relevant parameters and the JSON placeholders.
+- Connectors: Exception: Added `getConnectorResponse()`, as this was missing.
+
+#### Response error handling changes
+
+Previously, a response with the `error` state would hide the remote error's 
+details. The `getErrorXXX()` methods stay unchanged, still returning the 
+response's error code and details. The new `getEndpointError` method allows 
+accessing the remote error details. Additionally, the `getEndpointException()`
+gives access to any exception information sent along in the request 
+(independently of state).
+
 ### v2.3.0 - DBHelper update release (breaking)
 - DBHelper: Added the collection's `AfterCreateRecord` event.
 - DBHelper: Statement builder instances can now be passed to query methods.
