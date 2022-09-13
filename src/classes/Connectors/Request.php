@@ -219,10 +219,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $this;
     }
 
+    /**
+     * @return string
+     * @throws Connectors_Exception
+     */
     public function getRequestURL() : string
     {
-        $this->requireResponse();
-        return $this->response->getURL();
+        return $this->buildURL();
     }
     
    /**
@@ -530,14 +533,17 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         
         // check that the URL does not already contain a query
         // string, since we're adding one ourselves.
-        if(strstr($url, '?') || strstr($url, '&')) 
+        if(strpos($url, '?') !== false || strpos($url, '&') !== false)
         {
             $ex = new Connectors_Exception(
                 $this->connector,
                 'Invalid URL',
                 sprintf(
-                    'The base URL for the connector may not already contain a query string. '.
-                    'If you need to add GET parameters to the URL, there are methods to add them.'
+                    'The base URL for the connector may not already contain a query string. '.PHP_EOL.
+                    'If you need to add GET parameters to the URL, there are methods to add them. '.PHP_EOL.
+                    'URL given: '.PHP_EOL.
+                    '%s',
+                    $url
                 ),
                 self::ERROR_URL_MAY_NOT_CONTAIN_QUERY
             );
