@@ -24,6 +24,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
     use Application_Traits_Loggable;
 
     public const ERROR_INVALID_SERIALIZED_DATA = 80001;
+    public const ERROR_DATA_SET_IS_MISSING = 80002;
 
     public const STATE_ERROR = 'error';
     public const STATE_SUCCESS = 'success';
@@ -80,7 +81,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         
         $this->responseData = $this->extractDataFromBody($result->getBody());
         
-        if(!$request instanceof Connectors_Request_Method) {
+        if(!$request instanceof Connectors_Request_Method || $this->isError()) {
             return;
         }
         
@@ -163,7 +164,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         );
     }
 
-    private function extractDataFromBody(string $body) : ?ArrayDataCollection
+    private function extractDataFromBody(string $body) : ArrayDataCollection
     {
         $body = trim($body);
 
@@ -216,7 +217,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             self::RETURNCODE_JSON_NOT_PARSEABLE
         );
 
-        return null;
+        return ArrayDataCollection::create();
     }
     
     public function getRequest() : Connectors_Request
@@ -352,6 +353,22 @@ class Connectors_Response implements Application_Interfaces_Loggable
     public function getData() : array
     {
         return $this->responseData->getArray(self::KEY_DATA);
+    }
+
+    public function requireData() : array
+    {
+        $data = $this->getData();
+
+        if(!empty($data)) {
+            return $data;
+        }
+
+        throw new Connectors_Exception(
+            $this->connector,
+            'No data specified in the response',
+            'A data set is required to be sent with the response, but it is empty.',
+            self::ERROR_DATA_SET_IS_MISSING
+        );
     }
     
    /**
