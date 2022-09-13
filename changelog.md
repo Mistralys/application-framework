@@ -1,3 +1,6 @@
+### v2.3.2 - Connectors bugfix
+- Connectors: Response: Fixed a PHP error in some response configurations.
+
 ### v2.3.1 - Connectors update
 - Connectors: Improved response error information handling.
 - Connectors: Response: Added the `exception` response parameter (accepts a serialized `ThrowableInfo`).
