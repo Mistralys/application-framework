@@ -568,7 +568,7 @@ class DBHelper
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception|ConvertHelper_Exception
      */
-    public static function fetchAll(string $statementOrBuilder, array $variables = array()) : array
+    public static function fetchAll($statementOrBuilder, array $variables = array()) : array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
@@ -1667,7 +1667,7 @@ class DBHelper
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
-    public static function fetchAllKeyInt(string $key, string $statementOrBuilder, array $variables=array()) : array
+    public static function fetchAllKeyInt(string $key, $statementOrBuilder, array $variables=array()) : array
     {
         $items = self::fetchAllKey($key, $statementOrBuilder, $variables);
         $result = array();
