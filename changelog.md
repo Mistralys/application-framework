@@ -1,3 +1,8 @@
+### v2.3.3 - Connector tweaks
+- Connectors: Response: Added `requireData()`.
+- Connectors: Response: Fixed some error codes never being triggered.
+- Connectors: Response: Fixed the data set not bein initialized.
+
 ### v2.3.2 - Connectors bugfix
 - Connectors: Response: Fixed a PHP error in some response configurations.
 
