@@ -1,23 +1,28 @@
 <?php
+/**
+ * @package Connectors
+ * @see Connectors_Exception
+ */
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+
+/**
+ * Connector-specific exception, which gives access to all
+ * available information, from the request to the response.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class Connectors_Exception extends Application_Exception
 {
-   /**
-    * @var Connectors_Connector
-    */
-    protected $connector;
-    
-   /**
-    * @var HTTP_Request2_Response|NULL
-    */
-    protected $response = null;
-    
-   /**
-    * @var Connectors_Request|NULL
-    */
-    protected $request = null;
-    
-    public function __construct(Connectors_Connector $connector, string $message, string $developerInfo = '', int $code = 0, $previous = null)
+    protected Connectors_Connector $connector;
+    protected ?HTTP_Request2_Response $response = null;
+    protected ?Connectors_Request $request = null;
+    private ?Connectors_Response $connectorResponse = null;
+
+    public function __construct(Connectors_Connector $connector, string $message, string $developerInfo = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $developerInfo, $code, $previous);
         
@@ -45,8 +50,12 @@ class Connectors_Exception extends Application_Exception
     {
         return $this->request;
     }
-    
-    public function setResponse(HTTP_Request2_Response $response) : Connectors_Exception
+
+    /**
+     * @param HTTP_Request2_Response $response
+     * @return $this
+     */
+    public function setResponse(HTTP_Request2_Response $response) : self
     {
         $this->response = $response;
         
@@ -62,11 +71,27 @@ class Connectors_Exception extends Application_Exception
     {
         return $this->response;
     }
-    
+
+    public function setConnectorResponse(Connectors_Response $response) : self
+    {
+        $this->connectorResponse = $response;
+        return $this;
+    }
+
+    public function getConnectorResponse() : ?Connectors_Response
+    {
+        return $this->connectorResponse;
+    }
+
+    public function hasConnectorResponse() : bool
+    {
+        return isset($this->connectorResponse);
+    }
+
     public function getDeveloperInfo() : string
     {
         $lines = array();
-        $details = (string)parent::getDeveloperInfo();
+        $details = parent::getDeveloperInfo();
         
         if(!empty($details))
         {
@@ -95,7 +120,6 @@ class Connectors_Exception extends Application_Exception
         
         if(isset($this->request))
         {
-            $this->request->getHeaders();
             $lines[] = sprintf('Request method: [%s]', $this->request->getHTTPMethod());
             $lines[] = '';
             $lines[] = 'Request headers:';
@@ -133,22 +157,31 @@ class Connectors_Exception extends Application_Exception
     protected function parseBody(string $source) : string
     {
         $source = trim($source);
-        
-        if(strstr($source, '{'))
-        {
-            $data = @json_decode($source, true);
-            
-            if(is_array($data))
-            {
-                $source = json_encode($data, JSON_PRETTY_PRINT);
-            }
-        }
-        
+
         if(empty($source))
         {
-            $source = '(empty string)';
+            return '(empty string)';
         }
         
+        if($source[0] !== '{')
+        {
+            return $this->pre($source);
+        }
+
+        try
+        {
+            $data = json_decode($source, true, 512, JSON_THROW_ON_ERROR);
+
+            if(is_array($data))
+            {
+                $source = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
+                return $this->pre($source);
+            }
+        }
+        catch (JsonException $e)
+        {
+        }
+
         return $this->pre($source);
     }
     
@@ -159,6 +192,6 @@ class Connectors_Exception extends Application_Exception
             return $text;
         }
         
-        return '<pre>'.$text.'</pre>';
+        return ConvertHelper::print_r($text);
     }
 }
