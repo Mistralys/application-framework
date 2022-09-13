@@ -1,38 +1,68 @@
 <?php
+/**
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+
+declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_ThrowableInfo;
+use Connectors\Response\ResponseError;
 
+/**
+ * Information on a single response of a connector request.
+ * Allows accessing information on the state of the request,
+ * including detailed failure information, if any.
+ *
+ * @package Connectors
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class Connectors_Response implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
     public const ERROR_INVALID_SERIALIZED_DATA = 80001;
 
-    /**
-     * @var array|null
-     */
-    protected $data = null;
+    public const STATE_ERROR = 'error';
+    public const STATE_SUCCESS = 'success';
 
-   /**
-    * @var Connectors_Request
-    */
-    protected $request;
-    
-   /**
-    * @var HTTP_Request2_Response
-    */
-    protected $result;
-    
-   /**
-    * @var Connectors_Connector
-    */
-    protected $connector;
-    
-    const RETURNCODE_JSON_NOT_PARSEABLE = 400001;
-    const RETURNCODE_UNEXPECTED_FORMAT = 400002;
-    const RETURNCODE_ERROR_RESPONSE = 400003;
-    const RETURNCODE_WRONG_STATUSCODE = 400004;
-    
+    public const JSON_PLACEHOLDER_START = '{RESPONSE}';
+    public const JSON_PLACEHOLDER_END = '{/RESPONSE}';
+
+    public const KEY_STATE = 'state';
+    public const KEY_DETAILS = 'details';
+    public const KEY_MESSAGE = 'message';
+    public const KEY_DATA = 'data';
+    public const KEY_CODE = 'code';
+    public const KEY_EXCEPTION = 'exception';
+
+    public const RETURNCODE_JSON_NOT_PARSEABLE = 400001;
+    public const RETURNCODE_UNEXPECTED_FORMAT = 400002;
+    public const RETURNCODE_ERROR_RESPONSE = 400003;
+    public const RETURNCODE_WRONG_STATUSCODE = 400004;
+
+    protected Connectors_Request $request;
+    protected HTTP_Request2_Response $result;
+    protected Connectors_Connector $connector;
+    private ?ConvertHelper_ThrowableInfo $exception = null;
+    protected string $json = '';
+
+    /**
+     * @var array<string,mixed>
+     */
+    private array $responseData;
+
+    /**
+     * @var array<mixed>
+     */
+    protected array $data = array();
+
+    /**
+     * @var ResponseError|null
+     */
+    protected ?ResponseError $error = null;
+
     public function __construct(Connectors_Request $request, HTTP_Request2_Response $result)
     {
         $this->request = $request;
@@ -52,75 +82,143 @@ class Connectors_Response implements Application_Interfaces_Loggable
             return;
         }
         
-        $body = $result->getBody();
-        $json = '';
-        $data = array();
-        
-        if(!empty($body))
-        {
-            // if logging is enabled, the client may wrap the 
-            // actual response in the tags: {RESPONSE}response_data{/RESPONSE}
-            // The body contained in these tags is then used instead.
-            if(strstr($body, '{RESPONSE}')) 
-            {
-                $regs = array();
-                if(preg_match('%{RESPONSE}(.*){/RESPONSE}%six', $body, $regs)) 
-                {
-                    $json = $regs[1];
-                }
-            }
-            else
-            {
-                $json = $body;
-            }
-            
-            $data = json_decode($json, true);
-            
-            if(empty($data)) 
-            {
-                $this->setError(
-                    t('The server did not answer with valid JSON as expected.'),
-                    'The request return string could not be parsed as json, or no {RESPONSE} tags were present.',
-                    self::RETURNCODE_JSON_NOT_PARSEABLE,
-                    $body   
-                );
-                return;
-            }
-        }
+        $this->responseData = $this->extractDataFromBody($result->getBody());
         
         if(!$request instanceof Connectors_Request_Method) {
-            $this->data = $data;
             return;
         }
         
         // method requests expect a specific return format
-        if (!is_array($data) || !isset($data['state'])) {
+        if (!isset($this->responseData[self::KEY_STATE])) {
             $this->setError(
                 t('The server response could not be read.'),
                 sprintf(
-                    'The parsed json was either not an array [%s] or the [state] key was not present.',
-                    gettype($data)
+                    'The parsed json does not contain the [%s] key. Given keys: [%s].',
+                    self::KEY_STATE,
+                    implode(', ', array_keys($this->responseData))
                 ),
                 self::RETURNCODE_UNEXPECTED_FORMAT    
             );
             return;
         }
-        
-        if($data['state'] == 'error') {
-            if(!isset($data['details'])) {
-                $data['details'] = '';
-            }
-            
-            $this->setError(
-                t('The server returned an error:') . $data['message'],
-                $data['details'],
-                self::RETURNCODE_ERROR_RESPONSE,
-                $data 
-            );
-            return;
+
+        if(isset($this->responseData[self::KEY_EXCEPTION]) && !empty($this->responseData[self::KEY_EXCEPTION]))
+        {
+            $this->exception = ConvertHelper_ThrowableInfo::fromSerialized($this->responseData[self::KEY_EXCEPTION]);
         }
 
-        $this->data = $data['data'];
+        if($this->responseData[self::KEY_STATE] === self::STATE_ERROR)
+        {
+            $this->setError(
+                t('The server returned an error.'),
+                'Use the getEndpointXXX() methods to get the error details.',
+                self::RETURNCODE_ERROR_RESPONSE
+            );
+        }
+    }
+
+    /**
+     * If the endpoint sent exception details in the response payload,
+     * it can be accessed here.
+     *
+     * NOTE: This is available even if the response is considered valid,
+     * and exception details are present.
+     *
+     * @return ConvertHelper_ThrowableInfo|null
+     */
+    public function getEndpointException() : ?ConvertHelper_ThrowableInfo
+    {
+        return $this->exception;
+    }
+
+    public function getResponseState() : string
+    {
+        return $this->responseData[self::KEY_STATE] ?? '';
+    }
+
+    /**
+     * When the response returned an error, this is available
+     * to get the error message that the endpoint sent.
+     *
+     * ## Usage
+     *
+     * 1. Check if the response has errors {@see Connectors_Response::isError()},
+     * 2. Check that the code {@see Connectors_Response::getErrorCode()} matches {@see Connectors_Response::RETURNCODE_ERROR_RESPONSE},
+     * 3. Get the endpoint error.
+     *
+     * If an exception was included in the endpoint, it is
+     * available via {@see ResponseError::getException()}.
+     *
+     * @return ResponseError|null
+     */
+    public function getEndpointError() : ?ResponseError
+    {
+        if($this->getResponseState() !== self::STATE_ERROR) {
+            return null;
+        }
+
+        return new ResponseError(
+            $this->responseData[self::KEY_MESSAGE],
+            $this->responseData[self::KEY_DETAILS] ?? '',
+            $this->responseData[self::KEY_CODE] ?? 0,
+            $this->getEndpointException()
+        );
+    }
+
+    private function extractDataFromBody(string $body) : ?array
+    {
+        $body = trim($body);
+
+        if(empty($body)) {
+            return array();
+        }
+
+        // if logging is enabled, the client may wrap the
+        // actual response in the tags: {RESPONSE}response_data{/RESPONSE}
+        // The body contained in these tags is then used instead.
+        if(strpos($body, self::JSON_PLACEHOLDER_START) !== false)
+        {
+            $regex = sprintf(
+                '!%s(.*)%s!six',
+                preg_quote(self::JSON_PLACEHOLDER_START, '!'),
+                preg_quote(self::JSON_PLACEHOLDER_END, '!')
+            );
+
+            $regs = array();
+            if(preg_match($regex, $body, $regs))
+            {
+                $this->json = $regs[1];
+            }
+        }
+        else
+        {
+            $this->json = $body;
+        }
+
+        try
+        {
+            $decoded = json_decode($this->json, true, 512, JSON_THROW_ON_ERROR);
+        }
+        catch (JsonException $e)
+        {
+            $decoded = null;
+        }
+
+        if(is_array($decoded))
+        {
+            return $decoded;
+        }
+
+        $this->setError(
+            t('The server did not answer with valid JSON as expected.'),
+            sprintf(
+                'The request return string could not be parsed as json, or no %s tags were present.',
+                self::JSON_PLACEHOLDER_START
+            ),
+            self::RETURNCODE_JSON_NOT_PARSEABLE
+        );
+
+        return null;
     }
     
     public function getRequest() : Connectors_Request
@@ -142,17 +240,17 @@ class Connectors_Response implements Application_Interfaces_Loggable
     * Retrieves the raw JSON from the remote API request.
     * @return string
     */
-    public function getRawJSON()
+    public function getRawJSON() : string
     {
-        return $this->result->getBody();
+        return $this->json;
     }
     
-    public function getTimeTaken()
+    public function getTimeTaken() : float
     {
         return $this->request->getTimeTaken();
     }
 
-    public function isError()
+    public function isError() : bool
     {
         return isset($this->error);
     }
@@ -161,10 +259,14 @@ class Connectors_Response implements Application_Interfaces_Loggable
     {
         return (string)$this->result->getHeader($name);
     }
-    
-    protected $error;
-    
-    protected function setError($message, $details, $code, $data=null)
+
+    /**
+     * @param string $message
+     * @param string $details
+     * @param int $code
+     * @return void
+     */
+    protected function setError(string $message, string $details, int $code) : void
     {
         $this->log(sprintf(
             'Error [%s] | %s | %s',
@@ -173,48 +275,43 @@ class Connectors_Response implements Application_Interfaces_Loggable
             $details
         ));
         
-        $this->error = array(
-            'message' => $message,
-            'code' => $code,
-            'details' => $details,
-            'data' => $data
+        $this->error = new ResponseError(
+            $message,
+            $details,
+            $code
         );
     }
 
-    public function getErrorMessage()
+    public function getErrorMessage() : string
     {
         if (isset($this->error)) {
-            return $this->error['message'];
+            return $this->error->getMessage();
         }
 
-        return null;
+        return '';
     }
     
-    public function getErrorCode()
+    public function getErrorCode() : int
     {
         if(isset($this->error)) {
-            return $this->error['code'];
+            return $this->error->getCode();
         }
         
-        return null;
+        return 0;
     }
     
-    public function getErrorDetails()
+    public function getErrorDetails() : string
     {
         if(isset($this->error)) {
-            return $this->error['details'];
+            return $this->error->getDetails();
         }
         
-        return null;
+        return '';
     }
     
-    public function getErrorData()
+    public function getErrorData() : array
     {
-        if(isset($this->error)) {
-            return $this->error['data'];
-        }
-        
-        return null;
+        return $this->getData();
     }
 
    /**
@@ -231,7 +328,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         if(!empty($data)) 
         {
             $connect = '?';
-            if(strstr($url, '?')) {
+            if(strpos($url, '?') !== false) {
                 $connect = '&';
             }
             
@@ -246,15 +343,15 @@ class Connectors_Response implements Application_Interfaces_Loggable
         return $this->result;
     }
     
-    public function getMethod()
+    public function getMethod() : string
     {
         return $this->request->getHTTPMethod();
     }
 
     public function getData() : array
     {
-        if(isset($this->data)) {
-            return $this->data;
+        if(isset($this->responseData[self::KEY_DATA]) && is_array($this->responseData[self::KEY_DATA])) {
+            return $this->responseData[self::KEY_DATA];
         }
 
         return array();
@@ -296,6 +393,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         
         $ex->setRequest($this->request);
         $ex->setResponse($this->result);
+        $ex->setConnectorResponse($this);
         
         return $ex;
     }
@@ -311,20 +409,24 @@ class Connectors_Response implements Application_Interfaces_Loggable
             'statusCode' => $this->getStatusCode(),
             'url' => $this->request->getRequestURL(),
             'statusMessage' => $this->getStatusMessage(),
-            'body' => $this->getBody()
+            'body' => $this->getRawJSON()
         ));
     }
     
     public static function unserialize(Connectors_Request $request, string $serialized) : Connectors_Response
     {
-        $data = json_decode($serialized, true);
-        if($data === false)
+        try
+        {
+            $data = json_decode($serialized, true, 512, JSON_THROW_ON_ERROR);
+        }
+        catch (JsonException $e)
         {
             $ex = new Connectors_Exception(
                 $request->getConnector(),
                 'Invalid serialized data.',
                 '',
-                self::ERROR_INVALID_SERIALIZED_DATA
+                self::ERROR_INVALID_SERIALIZED_DATA,
+                $e
             );
 
             $ex->setRequest($request);
