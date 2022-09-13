@@ -128,9 +128,7 @@ class RequestTests extends TestCase
     {
         $response = $this->createTestResponse(sprintf(
             $this->strayOutputResponse,
-            Connectors_Response::JSON_PLACEHOLDER_START.
-            $this->successJSONResponse.
-            Connectors_Response::JSON_PLACEHOLDER_END
+            $this->successJSONResponse
         ));
 
         $this->assertFalse($response->isError());
@@ -157,9 +155,7 @@ class RequestTests extends TestCase
         // JSON relevant for the response.
         $response = $this->createTestResponse(sprintf(
             $this->strayOutputResponse,
-            Connectors_Response::JSON_PLACEHOLDER_START.
-            $body.
-            Connectors_Response::JSON_PLACEHOLDER_END
+            $body
         ));
 
         $serialized = $response->serialize();
@@ -187,6 +183,61 @@ class RequestTests extends TestCase
         $this->assertNotNull($restoredException);
         $this->assertSame($error->getCode(), $restoredError->getCode());
         $this->assertSame($exception->getCode(), $restoredException->getCode());
+    }
+
+    public function test_nonJSONResponse() : void
+    {
+        $response = $this->createTestResponse('Invalid JSON response');
+
+        $this->assertTrue($response->isError());
+        $this->assertEmpty($response->getResponseState());
+        $this->assertNull($response->getEndpointError());
+        $this->assertEmpty($response->getData());
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
+    }
+
+    public function test_invalidJSONResponse() : void
+    {
+        $response = $this->createTestResponse('{"foo":"bar"}');
+
+        $this->assertTrue($response->isError());
+        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $response->getErrorCode());
+    }
+
+    public function test_invalidJSONStrayOutputResponse() : void
+    {
+        $response = $this->createTestResponse(sprintf(
+            $this->strayOutputResponse,
+            '{"foo":"bar"}'
+        ));
+
+        $this->assertTrue($response->isError());
+        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $response->getErrorCode());
+    }
+
+    public function test_invalidFormatJSONStrayOutput() : void
+    {
+        $response = $this->createTestResponse(sprintf(
+            $this->strayOutputResponse,
+            'true'
+        ));
+
+        $this->assertTrue($response->isError());
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
+    }
+
+    /**
+     * <code>true</code> is a valid JSON value, but must not be accepted
+     * here, as we expect an array.
+     *
+     * @return void
+     */
+    public function test_invalidResponse() : void
+    {
+        $response = $this->createTestResponse('true');
+
+        $this->assertTrue($response->isError());
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
     }
 
     // endregion
@@ -217,7 +268,7 @@ EOT;
 
     private string $strayOutputResponse = <<<'EOT'
 This is some log message.
-The JSON is included here: %s.
+The JSON is included here: {RESPONSE}%s{/RESPONSE}.
 There is content all around it.
 EOT;
 
