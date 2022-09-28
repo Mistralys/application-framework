@@ -1,5 +1,7 @@
 ### v2.3.4 - Connector tweaks
 - Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
+- Connectors: Added serialization to the request.
+- Connectors: The response serialization now includes the request information.
 
 ### v2.3.3 - Connector tweaks
 - Connectors: Response: Added `requireData()`.
