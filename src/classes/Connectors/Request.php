@@ -1,7 +1,25 @@
 <?php
+/**
+ * @package Connectors
+ * @see Connectors_Request
+ */
 
+declare(strict_types=1);
+
+use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
+use AppUtils\FileHelper_Exception;
+use Connectors\Request\RequestSerializer;
 
+/**
+ * Handles all information for a request to send to a
+ * remote API service.
+ *
+ * @package Connectors
+ * @subpackage Request
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 abstract class Connectors_Request implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
@@ -15,108 +33,69 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     public const ERROR_URL_MAY_NOT_CONTAIN_QUERY = 339007;
     public const ERROR_INVALID_METHOD = 339008;
 
-    /**
-     * @var array<string,string>
-     */
-    protected $postData = array();
+    protected string $url;
+    protected int $timeoutSeconds = 0;
+    protected Connectors_Connector $connector;
+    protected string $body = '';
+    protected string $HTTPMethod = HTTP_Request2::METHOD_POST;
+    protected ?HTTP_Request2 $request = null;
+    private string $id;
+    protected Connectors_Request_Cache $cache;
+    protected Connectors_Response $response;
+    protected float $timeStart = 0.0;
+    protected float $timeTaken = 0.0;
 
     /**
      * @var array<string,string>
      */
-    protected $getData = array();
-
-    /**
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * @var int
-     */
-    protected $timeoutSeconds = 0;
-    
-   /**
-    * @var Connectors_Connector
-    */
-    protected $connector;
-    
-   /**
-    * @var string
-    */
-    protected $body = '';
-    
-   /**
-    * @var bool
-    */
-    protected $json = false;
-
-    /**
-     * @var string
-     */
-    protected $HTTPMethod = HTTP_Request2::METHOD_POST;
-    
-   /**
-    * @var HTTP_Request2
-    */
-    protected $request;
-
-    /**
-     * @var string
-     */
-    protected $requestURL = '';
-
-    /**
-     * @var Connectors_Response
-     */
-    protected $response;
-
-    /**
-     * @var float
-     */
-    protected $timeStart = 0;
-
-    /**
-     * @var float
-     */
-    protected $timeTaken;
+    protected array $postData = array();
 
     /**
      * @var array<string,string>
      */
-    protected $headers = array();
+    protected array $getData = array();
 
     /**
      * @var array<string,string>
      */
-    protected $auth;
+    protected array $headers = array();
 
     /**
-     * @var array<string,string>
+     * @var array<string,string>|NULL
      */
-    protected $proxyConfig;
+    protected ?array $auth = null;
 
     /**
-     * @var string
+     * @var array<string,string>|NULL
      */
-    private $id;
+    protected ?array $proxyConfig = null;
 
     /**
-     * @var Connectors_Request_Cache
+     * @var string[]
      */
-    protected $cache;
+    private static array $validHTTPMethods = array(
+        HTTP_Request2::METHOD_POST,
+        HTTP_Request2::METHOD_GET,
+        HTTP_Request2::METHOD_DELETE,
+        HTTP_Request2::METHOD_PUT
+    );
 
     /**
-    * @param Connectors_Connector $connector
-    * @param string $url The URL to the API endpoint
-    * @param array<string,mixed> $postData POST data to send with the request
-    * @param array<string,mixed> $getData GET data to append the URL
-    */
-    public function __construct(Connectors_Connector $connector, string $url, array $postData=array(), array $getData=array())
+     * @param Connectors_Connector $connector
+     * @param string $url The URL to the API endpoint
+     * @param array<string,mixed> $postData POST data to send with the request
+     * @param array<string,mixed> $getData GET data to append the URL
+     * @param string|null $id Request ID, used when restoring from serialized data.
+     *
+     * @throws Application_Exception
+     * @throws Connectors_Exception
+     */
+    public function __construct(Connectors_Connector $connector, string $url, array $postData=array(), array $getData=array(), ?string $id=null)
     {
         $this->url = $url;
         $this->connector = $connector;
         $this->cache = new Connectors_Request_Cache($this);
-        $this->id = $this->createID();
+        $this->id = $id ?? $this->createID();
         
         if(!empty($postData)) {
             foreach($postData as $name => $value) {
@@ -129,6 +108,38 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
                 $this->setGETData($name, $value);
             }
         }
+    }
+
+    /**
+     * @return string
+     *
+     * @throws Connectors_Exception
+     * @throws JSONConverterException
+     */
+    public function serialize() : string
+    {
+        return RequestSerializer::serialize($this);
+    }
+
+    /**
+     * Restores a request instance from a serialized package
+     * created with {@see Connectors_Request::serialize()}.
+     *
+     * LIMITATIONS: Proxy and authentication data are not
+     * persisted, so if used, the request object will not be
+     * directly usable.
+     *
+     * @param string $json
+     * @return Connectors_Request
+     *
+     * @throws Application_Exception
+     * @throws Connectors_Exception
+     * @throws JSONConverterException
+     * @throws UnexpectedInstanceException
+     */
+    public static function unserialize(string $json) : Connectors_Request
+    {
+        return RequestSerializer::unserialize($json);
     }
 
     /**
@@ -161,7 +172,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * @param string $password
     * @return $this
     */
-    public function useAuth(string $user, string $password)
+    public function useAuth(string $user, string $password) : self
     {
         $this->log(sprintf('Enabling use of authentication with user [%s].', $user));
         
@@ -184,13 +195,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * @throws Application_Exception
     * @return $this
     */
-    public function useProxy(string $host, string $port, string $user, string $password, string $authScheme=HTTP_Request2::AUTH_DIGEST)
+    public function useProxy(string $host, string $port, string $user, string $password, string $authScheme=HTTP_Request2::AUTH_DIGEST) : self
     {
         $this->log(sprintf('Enabling use of the proxy [%s].', $host));
         
         $validAuths = array(HTTP_Request2::AUTH_BASIC, HTTP_Request2::AUTH_DIGEST);
         
-        if(!in_array($authScheme, $validAuths)) 
+        if(!in_array($authScheme, $validAuths, true))
         {
             $ex = new Connectors_Exception(
                 $this->connector,
@@ -277,16 +288,10 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * @throws Application_Exception
     * @return $this
     */
-    public function setHTTPMethod(string $method)
+    public function setHTTPMethod(string $method) : self
     {
-        $validTypes = array(
-            HTTP_Request2::METHOD_POST, 
-            HTTP_Request2::METHOD_GET,
-            HTTP_Request2::METHOD_DELETE,
-            HTTP_Request2::METHOD_PUT
-        );
-        
-        if(!in_array($method, $validTypes)) 
+
+        if(!in_array($method, self::$validHTTPMethods, true))
         {
             $ex = new Connectors_Exception(
                 $this->connector,
@@ -308,7 +313,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Application_Exception
      */
-    public function makeGET()
+    public function makeGET() : self
     {
         return $this->setHTTPMethod(HTTP_Request2::METHOD_GET);
     }
@@ -317,7 +322,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Application_Exception
      */
-    public function makePOST()
+    public function makePOST() : self
     {
         return $this->setHTTPMethod(HTTP_Request2::METHOD_POST);
     }
@@ -357,9 +362,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * Set to 0 for no limit.
     * 
     * @param int $seconds
-    * @return Connectors_Request
+    * @return $this
     */
-    public function setTimeout($seconds)
+    public function setTimeout(int $seconds) : self
     {
         $this->timeoutSeconds = $seconds;
         return $this;
@@ -382,7 +387,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param string $mime
      * @return $this
      */
-    public function setContentType(string $mime)
+    public function setContentType(string $mime) : self
     {
         return $this->setHeader('Content-Type', $mime);
     }
@@ -393,7 +398,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * 
     * @return $this
     */
-    public function makeMultipart()
+    public function makeMultipart() : self
     {
         return $this->setContentType('multipart/form-data; boundary='.$this->getBoundary());
     }
@@ -417,26 +422,30 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
     
    /**
-    * Sets a HTTP header to send with the request. Overwrites
+    * Sets an HTTP header to send with the request. Overwrites
     * existing headers.
     * 
     * @param string $name
     * @param string $value
     * @return $this
     */
-    public function setHeader(string $name, string $value)
+    public function setHeader(string $name, string $value) : self
     {
         $this->headers[$name] = $value;
         
         return $this;
     }
 
-   /**
-    * Requests data from a SPIN API method.
-    *
-    * @throws Application_Exception
-    * @return Connectors_Response
-    */
+    /**
+     * Requests data from a SPIN API method.
+     *
+     * @return Connectors_Response
+     *
+     * @throws Connectors_Exception
+     * @throws HTTP_Request2_Exception
+     * @throws HTTP_Request2_LogicException
+     * @throws FileHelper_Exception
+     */
     public function getData() : Connectors_Response
     {
         $url = $this->buildURL();
@@ -475,14 +484,15 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
         return $response;
     }
-    
-   /**
-    * Creates a dummy response that matches a valid response code
-    * for the specified request method.
-    * 
-    * @param HTTP_Request2 $request
-    * @return HTTP_Request2_Response
-    */
+
+    /**
+     * Creates a dummy response that matches a valid response code
+     * for the specified request method.
+     *
+     * @param HTTP_Request2 $request
+     * @return HTTP_Request2_Response
+     * @throws HTTP_Request2_MessageException
+     */
     protected function simulateResponse(HTTP_Request2 $request) : HTTP_Request2_Response
     {   
         $this->log('Simulation mode | Creating a simulated response.');
@@ -713,9 +723,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     
    /**
     * Valid HTTP response codes by request method.
-    * @var array[string]array
+    * @var array<string,array<int,int>>
     */
-    protected $codesByMethod = array(
+    protected array $codesByMethod = array(
         HTTP_Request2::METHOD_GET => array(200),
         HTTP_Request2::METHOD_DELETE => array(200, 204),
         HTTP_Request2::METHOD_PUT => array(201, 202),
@@ -748,9 +758,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      */
     public function getCodesByMethod(string $method) : array
     {
-        if(isset($this->codesByMethod[$this->HTTPMethod]))
+        if(isset($this->codesByMethod[$method]))
         {
-            return $this->codesByMethod[$this->HTTPMethod];
+            return $this->codesByMethod[$method];
         }
 
         return array(200);
@@ -775,7 +785,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Connectors_Exception
      */
-    public function setPOSTData(string $name, $value)
+    public function setPOSTData(string $name, $value) : self
     {
         if(!is_string($value) && !is_numeric($value)) 
         {
@@ -795,8 +805,16 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             throw $ex;
         }
         
-        $this->postData[$name] = strval($value);
+        $this->postData[$name] = (string)$value;
         return $this;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getGetData() : array
+    {
+        return $this->getData;
     }
     
    /**
@@ -807,15 +825,16 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     {
         return $this->postData;
     }
-    
-   /**
-    * Sets/adds a GET parameter value.
-    * 
-    * @param string $name
-    * @param mixed $value
-    * @return $this
-    */
-    public function setGETData(string $name, $value)
+
+    /**
+     * Sets/adds a GET parameter value.
+     *
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     * @throws Connectors_Exception
+     */
+    public function setGETData(string $name, $value) : self
     {
         if(!is_string($value) && !is_numeric($value)) 
         {
@@ -859,7 +878,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param int $durationSeconds
      * @return $this
      */
-    public function setCacheEnabled(bool $enabled=true, int $durationSeconds = 0)
+    public function setCacheEnabled(bool $enabled=true, int $durationSeconds = 0) : self
     {
         $this->cache->setEnabled($enabled, $durationSeconds);
         return $this;
@@ -875,7 +894,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * individual requests to create a hash for caching
      * purposes.
      *
-     * @return mixed[]
+     * @return array<mixed>
      */
     protected function getHashData() : array
     {
@@ -890,4 +909,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
 
     abstract protected function _getHashData() : array;
+
+
+    /**
+     * @return int Timeout duration in seconds.
+     */
+    public function getTimeout() : int
+    {
+        return $this->timeoutSeconds;
+    }
 }
