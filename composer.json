@@ -65,24 +65,24 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "mistralys/application-utils": "^2.1.2",
+    "mistralys/application-utils": "^2.2.4",
     "mistralys/application-localization": "^1.4.1",
-    "mistralys/deepl-xml-translator": "^2.0.0",
-    "mistralys/subsetsum": "^1.0.0",
+    "mistralys/deepl-xml-translator": "^2.0.1",
+    "mistralys/subsetsum": "^1.0.2",
     "mistralys/markdown-viewer": "^1.1.0",
     "mistralys/html_quickform2": "^2.1.2",
     "mistralys/version-parser": "^1.0.0",
-    "pear/http_request2": "^v2.5.0",
+    "pear/http_request2": "^v2.5.1",
     "shark/simple_html_dom": "dev-master",
     "ccampbell/mousetrap": "dev-master",
-    "medialize/uri.js": "^1.19.7",
-    "ulrichsg/getopt-php": "^4.0.0",
+    "medialize/uri.js": "^1.19.11",
+    "ulrichsg/getopt-php": "^4.0.2",
     "components/flag-icon-css": "^3.5.0",
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
-    "hybridauth/hybridauth": "^3.7.1",
+    "hybridauth/hybridauth": "^3.8.2",
     "erusev\/parsedown": "^1.7.4",
-    "twbs/bootstrap": "^v4.6.0",
+    "twbs/bootstrap": "^v4.6.2",
     "zenorocha/clipboardjs": "v2.0.8",
     "ext-json": "*",
     "ext-mbstring": "*",
@@ -92,6 +92,6 @@
   },
   "require-dev": {
     "phpunit/phpunit": ">=9.5",
-    "phpstan/phpstan": ">=1.4"
+    "phpstan/phpstan": ">=1.8"
   }
 }
