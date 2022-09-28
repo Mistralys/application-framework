@@ -1,7 +1,19 @@
 <?php
+/**
+ * @package Connectors
+ * @supackage Response
+ * @see Connectors_ResponseCode
+ */
 
 declare(strict_types=1);
 
+/**
+ * List of known HTTP status codes.
+ *
+ * @package Connectors
+ * @supackage Response
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 class Connectors_ResponseCode extends BasicEnum
 {
     public const HTTP_CONTINUE = 100;

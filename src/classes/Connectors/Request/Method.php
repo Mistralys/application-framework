@@ -6,31 +6,30 @@
  * @see Connectors_Request_Method
  */
 
+declare(strict_types=1);
+
 /**
  * Method request: handles requests to a specific
  * API endpoint method.
  *
  * @package Connectors
+ * @subpackage Request
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class Connectors_Request_Method extends Connectors_Request
 {
-    /**
-     * @var string
-     */
-    protected $method;
-
-    /**
-     * @var string
-     */
-    protected $methodVar = 'method';
+    protected string $method;
+    protected string $methodVar = 'method';
 
     /**
      * @param Connectors_Connector $connector
      * @param string $url The URL to the API endpoint
      * @param string $method The API method to call
-     * @param array $postData POST parameters to send with the request
-     * @param array $getData GET parameters to append to the request URL
+     * @param array<string,string> $postData POST parameters to send with the request
+     * @param array<string,string> $getData GET parameters to append to the request URL
+     *
+     * @throws Application_Exception
+     * @throws Connectors_Exception
      */
     public function __construct(Connectors_Connector $connector, string $url, string $method, array $postData = array(), array $getData = array())
     {
@@ -51,7 +50,7 @@ class Connectors_Request_Method extends Connectors_Request
      * @param string $varName
      * @return $this
      */
-    public function setMethodVar(string $varName)
+    public function setMethodVar(string $varName) : self
     {
         $this->methodVar = $varName;
         return $this;

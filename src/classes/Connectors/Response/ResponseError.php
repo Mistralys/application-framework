@@ -1,6 +1,7 @@
 <?php
 /**
  * @package Connectors
+ * @subpackage Response
  * @see \Connectors\Response\ResponseError
  */
 
@@ -14,6 +15,7 @@ use AppUtils\ConvertHelper_ThrowableInfo;
  * Information on an error that occurred in a response.
  *
  * @package Connectors
+ * @subpackage Response
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class ResponseError
