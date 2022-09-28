@@ -167,7 +167,7 @@ class RequestTests extends TestCase
         $this->assertSame(42, $error->getCode());
         $this->assertSame(452, $exception->getCode());
 
-        $restored = Connectors_Response::unserialize($response->getRequest(), $serialized);
+        $restored = Connectors_Response::unserialize($serialized);
 
         $this->assertSame($response->getStatusCode(), $restored->getStatusCode());
         $this->assertSame($response->getRawJSON(), $restored->getRawJSON());
