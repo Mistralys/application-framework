@@ -1,3 +1,6 @@
+### v2.3.4 - Connector tweaks
+- Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
+
 ### v2.3.3 - Connector tweaks
 - Connectors: Response: Added `requireData()`.
 - Connectors: Response: Fixed some error codes never being triggered.
