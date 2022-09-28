@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper_Exception;
 use AppUtils\ConvertHelper_ThrowableInfo;
 use Connectors\Response\ResponseError;
 
@@ -476,5 +477,64 @@ class Connectors_Response implements Application_Interfaces_Loggable
     public function getLogIdentifier(): string
     {
         return $this->request->getLogIdentifier().' | Response';
+    }
+
+    /**
+     * @param string|int $code
+     * @return bool
+     */
+    public function hasErrorCode($code) : bool
+    {
+        return in_array((string)$code, $this->getErrorCodes(), true);
+    }
+
+    /**
+     * Retrieves all error codes available in the response,
+     * including exception codes.
+     *
+     * @return string[]
+     */
+    public function getErrorCodes() : array
+    {
+        $codes = array((string)$this->getErrorCode());
+
+        $error = $this->getEndpointError();
+
+        if($error !== null) {
+            $codes[] = (string)$error->getCode();
+        }
+
+        $exception = $this->getEndpointException();
+        if($exception !== null) {
+            $this->getExceptionCodesRecursive($exception, $codes);
+        }
+
+        $codes = array_unique($codes);
+        $result = array();
+
+        foreach($codes as $code) {
+            if($code !== '' && $code !== '0') {
+                $result[] = $code;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param ConvertHelper_ThrowableInfo $info
+     * @param string[] $result
+     * @return string[]
+     * @throws ConvertHelper_Exception
+     */
+    protected function getExceptionCodesRecursive(ConvertHelper_ThrowableInfo $info, array &$result=null) : array
+    {
+        $result[] = (string)$info->getCode();
+
+        if($info->hasPrevious()) {
+            $this->getExceptionCodesRecursive($info->getPrevious(), $result);
+        }
+
+        return $result;
     }
 }
