@@ -1,7 +1,8 @@
 <?php
 /**
  * @package Connectors
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @subpackage Response
+ * @see Connectors_Response
  */
 
 declare(strict_types=1);
@@ -11,6 +12,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\ConvertHelper_ThrowableInfo;
 use Connectors\Response\ResponseError;
+use Connectors\Response\ResponseSerializer;
 
 /**
  * Information on a single response of a connector request.
@@ -18,6 +20,7 @@ use Connectors\Response\ResponseError;
  * including detailed failure information, if any.
  *
  * @package Connectors
+ * @subpackage Response
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class Connectors_Response implements Application_Interfaces_Loggable
@@ -420,58 +423,12 @@ class Connectors_Response implements Application_Interfaces_Loggable
     
     public function serialize() : string
     {
-        return ConvertHelper::var2json(array(
-            'statusCode' => $this->getStatusCode(),
-            'url' => $this->request->getRequestURL(),
-            'statusMessage' => $this->getStatusMessage(),
-            'body' => $this->getRawJSON()
-        ));
+        return ResponseSerializer::serialize($this);
     }
     
-    public static function unserialize(Connectors_Request $request, string $serialized) : Connectors_Response
+    public static function unserialize(string $serialized) : Connectors_Response
     {
-        try
-        {
-            $data = json_decode($serialized, true, 512, JSON_THROW_ON_ERROR);
-        }
-        catch (JsonException $e)
-        {
-            $ex = new Connectors_Exception(
-                $request->getConnector(),
-                'Invalid serialized data.',
-                '',
-                self::ERROR_INVALID_SERIALIZED_DATA,
-                $e
-            );
-
-            $ex->setRequest($request);
-
-            throw $ex;
-        }
-
-        $logPrefix = $request->getLogIdentifier().' | Response | ';
-
-        Application::log(sprintf(
-            '%sCreating from serialized data. Status: [%s %s]. URL: [%s].',
-            $logPrefix,
-            $data['statusCode'],
-            $data['statusMessage'],
-            $data['url']
-        ));
-
-        $response = new HTTP_Request2_Response(
-            sprintf(
-                'HTTP/1.0 %s %s',
-                $data['statusCode'],
-                $data['statusMessage']
-            ),
-            false,
-            $data['url']
-        );
-
-        $response->appendBody($data['body']);
-
-        return new Connectors_Response($request, $response);
+        return ResponseSerializer::unserialize($serialized);
     }
 
     public function getLogIdentifier(): string
