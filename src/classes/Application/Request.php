@@ -42,7 +42,7 @@ class Application_Request extends Request
      * @return void
      * @see Application_Driver::__construct()
      */
-    protected function init()
+    protected function init() : void
     {
         $this->setBaseURL(APP_URL);
 
@@ -55,11 +55,11 @@ class Application_Request extends Request
     /**
      * @return Application_Request
      */
-    public static function getInstance()
+    public static function getInstance() : Application_Request
     {
         $instance = parent::getInstance();
 
-        if($instance instanceof Application_Request)
+        if($instance instanceof self)
         {
             return $instance;
         }
@@ -85,7 +85,7 @@ class Application_Request extends Request
             ->getDispatcher();
     }
     
-    public function getExcludeParams()
+    public function getExcludeParams() : array
     {
         return array(
             Application_Session_Base::KEY_NAME_SIMULATED_ID,
