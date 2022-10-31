@@ -76,8 +76,6 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/guzzle" />
-      <path value="$PROJECT_DIR$/vendor/mistralys/html_quickform2" />
-      <path value="$PROJECT_DIR$/vendor/pear/html_common2" />
       <path value="$PROJECT_DIR$/vendor/mistralys/version-parser" />
     </include_path>
   </component>
