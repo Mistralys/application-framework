@@ -1,3 +1,6 @@
+### v2.1.8 - Dependency release
+- Dependencies: Updated AppUtils to latest stable release.
+
 ### v2.1.7 - Maintenance release
 - Framework: Added `AppFramework::getName()`.
 
