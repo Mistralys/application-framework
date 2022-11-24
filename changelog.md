@@ -80,6 +80,9 @@ gives access to any exception information sent along in the request
 - `Application_Driver->getMaintenance()` renamed to static `Application_Driver::createMaintenance()`.
 - Moved the Deepl methods to the new `DeeplHelper` class.
 
+### v2.1.8 - Dependencies update
+- Dependencies: Updated AppUtils to latest [stable release v2.2.6](https://github.com/Mistralys/application-utils/releases/tag/2.2.6).
+
 ### v2.1.7 - Maintenance release
 - Framework: Added `AppFramework::getName()`.
 
