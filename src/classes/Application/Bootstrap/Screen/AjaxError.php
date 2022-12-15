@@ -1,19 +1,23 @@
 <?php
 
-require_once 'Application/ErrorLog/Log/Entry/AJAX.php';
+use AppUtils\ConvertHelper;
+use AppUtils\ImageHelper;
 
 class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return 'ajax/error.php';
     }
-    
-    protected $excludeVars = array(
+
+    /**
+     * @var string[]
+     */
+    protected array $excludeVars = array(
         '_loadkeys'
     );
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->disableAuthentication();
         $this->createEnvironment();
@@ -28,7 +32,7 @@ class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Scree
         $payload = $request->getJSON('payload');
         $data = $request->getJSON('data');
 
-        \AppUtils\ConvertHelper::arrayRemoveKeys($payload, $this->excludeVars);
+        ConvertHelper::arrayRemoveKeys($payload, $this->excludeVars);
         
         Application_ErrorLog_Log_Entry_AJAX::logError(
             $method,
@@ -44,6 +48,6 @@ class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Scree
         
         // since this gets inserted as an image in the document,
         // send the transparent pixel.
-        \AppUtils\ImageHelper::displayImage($theme->getImagePath('ajax-error.png'));
+        ImageHelper::displayImage($theme->getImagePath('ajax-error.png'));
     }
 }

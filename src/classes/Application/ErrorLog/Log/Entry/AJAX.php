@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use function AppUtils\parseVariable;
+
 class Application_ErrorLog_Log_Entry_AJAX extends Application_ErrorLog_Log_Entry
 {
     public function getTypeLabel() : string
@@ -53,11 +55,11 @@ class Application_ErrorLog_Log_Entry_AJAX extends Application_ErrorLog_Log_Entry
     {
         $grid->add(t('Method'), $this->getMethod());
         $grid->add(t('Details'), $this->getDetails());
-        $grid->add(t('Payload'), \AppUtils\parseVariable($this->getPayload())->toHTML());
-        $grid->add(t('Data'), \AppUtils\parseVariable($this->getData())->toHTML());
+        $grid->add(t('Payload'), parseVariable($this->getPayload())->toHTML());
+        $grid->add(t('Data'), parseVariable($this->getData())->toHTML());
     }
     
-    public static function logError(string $method, string $url, int $code, string $message, string $details, array $payload, array $data)
+    public static function logError(string $method, string $url, int $code, string $message, string $details, array $payload, array $data) : void
     {
         // 0 = code
         // 1 = method
@@ -74,8 +76,8 @@ class Application_ErrorLog_Log_Entry_AJAX extends Application_ErrorLog_Log_Entry
                 $message,
                 $details,
                 $url,
-                json_encode($payload),
-                json_encode($data)
+                json_encode($payload, JSON_THROW_ON_ERROR),
+                json_encode($data, JSON_THROW_ON_ERROR)
             )
         );
     }
