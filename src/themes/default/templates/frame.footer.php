@@ -2,6 +2,8 @@
 
 	/* @var $this UI_Page_Template */
 
+use Application\Bootstrap\DeployCallbackBootstrap;
+
 ?><section>
 	<h2><?php echo $this->driver->getAppNameShort() ?> V<?php echo $this->driver->getVersion() ?></h2>
 	<ul class="unstyled">
@@ -26,6 +28,20 @@
 					<li><a href="<?php echo APP_URL.'/upgrade.php' ?>"><?php pt('Maintenance') ?></a></li>
 					<li><a href="<?php echo APP_URL.'/xml/monitor/' ?>"><?php pt('Monitoring') ?></a></li>
 					<li><a href="<?php echo APP_URL.'/cronjobs.php?output=yes' ?>"><?php pt('Run cronjob script') ?></a></li>
+                    <li>
+                        <?php
+                            echo UI::button(t('Deploy callback...'))
+                                ->makeLink(false)
+                                ->makeConfirm(sb()
+                                    ->para(sb()
+                                        ->t('The deployment callback must only be executed once after each deployment.')
+                                        ->t('Executing it again may add duplicate deployment records, and overwrite stored release dates.')
+                                    )
+                                    ->para(sb()->cannotBeUndone())
+                                )
+                                ->link(APP_URL.'/'. DeployCallbackBootstrap::DISPATCHER_NAME.'?')
+                        ?>
+                    </li>
 				</ul>
 			</section>
 		<?php
