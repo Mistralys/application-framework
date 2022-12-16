@@ -1,5 +1,7 @@
 <?php
 
+use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
+
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
 {
     public const URL_NAME = 'devel';
@@ -105,8 +107,22 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
             $category
         );
     }
+
+    protected function registerDeploymentRegistry(?string $category=null) : void
+    {
+        if(!Application::isDatabaseEnabled()) {
+            return;
+        }
+
+        $this->registerCoreItem(
+            BaseDeploymentHistoryScreen::URL_NAME,
+            t('Deployment history'),
+            t('Tools'),
+            $category
+        );
+    }
     
-    protected function registerAppLogs($category=null)
+    protected function registerAppLogs(?string $category=null) : void
     {
         if(Application::isDatabaseEnabled()) {
             $this->registerCoreItem('messagelog', t('Message log'), t('Logs'), $category);
