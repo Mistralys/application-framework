@@ -8,6 +8,7 @@
  */
 
 use Application\Driver\DriverException;
+use function AppLocalize\tex;
 
 /**
  * Handles displaying data in a tabular grid, with extended functionality
@@ -134,12 +135,9 @@ class UI_DataGrid
     /**
      * @var string
      */
-    protected $footerCountText;
-
-    /**
-     * @var string
-     */
     private $dispatcher = '';
+
+    private string $footerCountText = '';
 
     /**
      * @param UI $ui
@@ -149,7 +147,7 @@ class UI_DataGrid
      */
     public function __construct(UI $ui, $id, bool $allowDuplicateID=false)
     {
-        $id = strtolower(str_replace(array(' ', '.', '-'), '_', strval($id)));
+        $id = strtolower(str_replace(array(' ', '.', '-'), '_', (string)$id));
 
     	if(in_array($id, self::$ids) && !$allowDuplicateID) {
     		throw new Application_Exception(
@@ -165,7 +163,6 @@ class UI_DataGrid
         $this->id = $id;
         $this->request = Application_Request::getInstance();
         $this->emptyMessage = t('No entries found.');
-        $this->footerCountText = t('Showing entries [FROM] to [TO], [TOTAL] total.');
 
         // Automatically add the screen's hidden variables
         // when the UI is enabled.
@@ -752,7 +749,7 @@ class UI_DataGrid
     /**
      * @var int[]
      */
-    const DEFAULT_LIMIT_CHOICES = array(10, 20, 40, 60, 120);
+    public const DEFAULT_LIMIT_CHOICES = array(10, 20, 40, 60, 120);
 
     /**
      * Enables the multiple choice selector for choosing the
@@ -760,18 +757,17 @@ class UI_DataGrid
      * choice is set, the first item in the selector is used.
      * The choices have to be an indexed array of numeric values.
      *
-     * @param array $choices
-     * @param int $currentChoice
+     * @param int[] $choices
      * @return UI_DataGrid
      */
-    public function enableLimitOptions(array $choices, int $currentChoice = 0) : UI_DataGrid
+    public function enableLimitOptions(array $choices) : UI_DataGrid
     {
         if(!$this->isFormEnabled())
         {
             return $this;
         }
 
-        $currentChoice = $this->getSetting('datagrid_perpage');
+        $currentChoice = (int)$this->getSetting('datagrid_perpage');
         if (empty($currentChoice) || !in_array($currentChoice, $choices)) {
             $currentChoice = $choices[0];
         }
@@ -787,7 +783,7 @@ class UI_DataGrid
 
     public function enableLimitOptionsDefault() : UI_DataGrid
     {
-        return $this->enableLimitOptions(UI_DataGrid::DEFAULT_LIMIT_CHOICES);
+        return $this->enableLimitOptions(self::DEFAULT_LIMIT_CHOICES);
     }
 
     /**
@@ -2691,10 +2687,23 @@ class UI_DataGrid
      */
     public function getFooterCountText(int $from, int $to, int $total): string
     {
-        $replacedFooter = $this->footerCountText;
-        $replacedFooter = str_replace('[FROM]',$this->formatAmount($from),$replacedFooter);
-        $replacedFooter = str_replace('[TO]',$this->formatAmount($to),$replacedFooter);
-        return str_replace('[TOTAL]',$this->formatAmount($total),$replacedFooter);
+        $text = $this->footerCountText;
+
+        if(empty($text)) {
+            $text = tex(
+                'Showing entries %1$s to %2$s, %3$s total.',
+                'Placeholders are entry counts: From / To / Total.',
+                '[FROM]',
+                '[TO]',
+                '[TOTAL]'
+            );
+        }
+
+        return str_replace(
+            array('[FROM]', '[TO]', '[TOTAL]'),
+            array($this->formatAmount($from), $this->formatAmount($to), $this->formatAmount($total)),
+            $text
+        );
     }
 
     private function formatAmount(int $amount) : string
