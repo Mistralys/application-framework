@@ -7,6 +7,8 @@
 declare(strict_types=1);
 
 use TestDriver\Area\QuickNavScreen;
+use TestDriver\Area\TranslationsScreen;
+use TestDriver\Area\WelcomeScreen;
 
 /**
  * @package TestDriver
@@ -23,9 +25,10 @@ class TestDriver extends Application_Driver
     public function getAdminAreas() : array
     {
         return array(
-            \TestDriver\Area\WelcomeScreen::URL_NAME_WELCOME => getClassTypeName(\TestDriver\Area\WelcomeScreen::class),
+            Application_Admin_Area_Welcome::URL_NAME_WELCOME => getClassTypeName(WelcomeScreen::class),
             Application_Admin_Area_Devel::URL_NAME => getClassTypeName(TestDriver_Area_Devel::class),
             Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
+            Application_Admin_TranslationsArea::URL_NAME => getClassTypeName(TranslationsScreen::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
             QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class)
         );
