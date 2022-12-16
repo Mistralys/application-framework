@@ -32,9 +32,22 @@ class WhatsNewTests extends ApplicationTestCase
         $this->assertCount(1, $versions);
 
         $version = $versions[0];
+        $languages = $version->getLanguages();
 
         $this->assertSame('1.0.0', $version->getNumber());
-        $this->assertCount(3, $version->getLanguages());
+        $this->assertCount(3, $languages);
+
+        foreach($languages as $language)
+        {
+            $items = $language->getItems();
+            $this->assertNotEmpty($items);
+
+            foreach($items as $item)
+            {
+                $this->assertNotEmpty($item->getCategory());
+                $this->assertNotEmpty($item->getText());
+            }
+        }
     }
 
     public function test_getCategories() : void
@@ -49,6 +62,22 @@ class WhatsNewTests extends ApplicationTestCase
 
         $this->assertCount(1, $categories);
         $this->assertSame('Framework', $categories[0]->getLabel());
+    }
+
+    public function test_getItems() : void
+    {
+        $whatsNew = TestDriver::createWhatsnew();
+        $version = $whatsNew->getCurrentVersion();
+
+        $this->assertNotNull($version);
+
+        $language = $version->getLanguage('DEV');
+        $items = $language->getItems();
+
+        $this->assertCount(1, $items);
+        $this->assertSame('Developer text', $items[0]->getText());
+        $this->assertSame('ISSUE-123', $items[0]->getIssue());
+        $this->assertSame('smordziol', $items[0]->getAuthor());
     }
 
     public function test_write() : void
