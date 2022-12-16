@@ -1,6 +1,7 @@
 <?php
 
 use Application\WhatsNew;
+use AppLocalize\Localization;
 
 class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
 {
@@ -42,31 +43,31 @@ class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
     /**
      * @var string
      */
-    protected $lastVersion;
+    protected string $lastVersion;
     
    /**
     * @var WhatsNew
     */
-    protected $whatsnew;
+    protected WhatsNew $whatsnew;
 
     /**
      * @var array<string,string>
      */
-    protected $languages = array(
+    protected array $languages = array(
         'versions' => 'en'
     );
     
-    protected function validateRequest()
+    protected function validateRequest() : void
     {
-        $this->whatsnew = $this->driver->createWhatsnew();
+        $this->whatsnew = Application_Driver::createWhatsnew();
 
-        $this->languages['versions'] = \AppLocalize\Localization::getAppLocale()->getShortName();
+        $this->languages['versions'] = strtoupper(Localization::getAppLocale()->getLanguageCode());
         
         if($this->user->isDeveloper()) {
-            $this->languages['dev'] = 'dev';
+            $this->languages['dev'] = 'DEV';
         }
         
-        $this->lastVersion = $this->request->getParam('last_version');
+        $this->lastVersion = (string)$this->request->getParam('last_version');
         if (empty($this->lastVersion)) {
             $this->lastVersion = $this->whatsnew->getCurrentVersion()->getNumber();
         }
