@@ -60,7 +60,7 @@ var Application_Dialog_Whatsnew =
 	{
 		var dialog = this;
 		var html = '';
-		$.each(this.data.versions, function(version, versionDef) {
+		$.each(this.data.versions, function(version) {
 			html += '<h3 class="whatsnew-version">v' + version + '</h3>'+
 			dialog.RenderCategories(version)+
 			'<hr/>';
@@ -79,7 +79,7 @@ var Application_Dialog_Whatsnew =
 		
 		var html = '';
 		var amount = 0;
-		$.each(categories, function(name, items){
+		$.each(categories, function() {
 			amount++;
 		});
 		
@@ -99,12 +99,12 @@ var Application_Dialog_Whatsnew =
 						text += t('%1$s:', item.devCategory);
 					}
 
-					if(item.issue != null)
+					if(item.issue !== null && item.issue !== '')
 					{
 						text += ' ' + t('Issue %1$s', item.issue);
 					}
 
-					if(item.author != null)
+					if(item.author !== null && item.author !== '')
 					{
 						text += ' <i class="muted">~'+item.author+'</i>';
 					}
