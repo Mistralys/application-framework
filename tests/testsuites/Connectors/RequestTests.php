@@ -174,6 +174,7 @@ class RequestTests extends TestCase
         $this->assertSame($response->getStatusMessage(), $restored->getStatusMessage());
         $this->assertSame($response->getURL(), $restored->getURL());
         $this->assertSame($response->getData(), $restored->getData());
+        $this->assertSame($response->getErrorDetails(), $restored->getErrorDetails());
         $this->assertSame($response->getErrorCode(), $restored->getErrorCode());
 
         $restoredError = $restored->getEndpointError();
