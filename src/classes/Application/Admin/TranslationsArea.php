@@ -7,9 +7,11 @@ use function AppLocalize\tex;
 
 abstract class Application_Admin_TranslationsArea extends Application_Admin_Area
 {
+    public const URL_NAME = 'translations';
+
     public function getURLName() : string
     {
-        return 'translations';
+        return self::URL_NAME;
     }
 
     public function getDefaultMode() : string
