@@ -71,11 +71,13 @@ final class DataGrids_EntriesTest extends ApplicationTestCase
 
     public function test_defaultFooterCountText_EN() : void
     {
+        Localization::selectAppLocale('de_DE');
+
         $grid = $this->createUI()->createDataGrid('grid'.$this->getTestCounter());
-        $this->assertSame('Showing entries 1 to 2, 2 total.',$grid->getFooterCountText(1,2,2));
-        $user = Application::getUser();
-        $user->setSetting('locale', 'en_UK');
-        $user->saveSettings();
+        $this->assertSame('Zeige Einträge 1 bis 2, 2 insgesamt.',$grid->getFooterCountText(1,2,2));
+
+        Localization::selectAppLocale('en_UK');
+
         $this->assertSame('Showing entries 1 to 2, 2 total.',$grid->getFooterCountText(1,2,2));
     }
 
@@ -90,7 +92,7 @@ final class DataGrids_EntriesTest extends ApplicationTestCase
     {
         Localization::selectAppLocale('en_UK');
         $grid = $this->createUI()->createDataGrid('grid'.$this->getTestCounter());
-        $grid->setFooterCountText(t('Showing communication types [FROM] to [TO], [TOTAL] total.'));
+        $grid->setFooterCountText(t('Showing communication types %1$s to %2$s, %3$s total.', '[FROM]', '[TO]', '[TOTAL]'));
         $this->assertSame('Showing communication types 1 to 2, 2 total.',$grid->getFooterCountText(1,2,2));
     }
 }
