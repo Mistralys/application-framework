@@ -2,7 +2,7 @@
 
 class Application_AjaxMethods_AddJSErrorLog extends Application_AjaxMethod
 {
-    public function processJSON()
+    public function processJSON() : void
     {
         $message = $this->request->getParam('message');
         $details = $this->request->getParam('details');
@@ -13,8 +13,6 @@ class Application_AjaxMethods_AddJSErrorLog extends Application_AjaxMethod
         $code = $this->request->registerParam('code')->setInteger()->get(0);
         $type = $this->request->registerParam('type')->setAlnum()->get();
 
-        require_once 'Application/ErrorLog/Log/Entry/JavaScript.php';
-        
         Application_ErrorLog_Log_Entry_JavaScript::logError(
             $code,
             $type,
