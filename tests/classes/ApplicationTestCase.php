@@ -144,4 +144,9 @@ abstract class ApplicationTestCase extends TestCase
             $html
         ));
     }
+
+    protected function setUp(): void
+    {
+        Localization::selectAppLocale('en_UK');
+    }
 }

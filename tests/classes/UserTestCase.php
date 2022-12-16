@@ -13,6 +13,8 @@ abstract class UserTestCase extends ApplicationTestCase
 
     protected function setUp(): void
     {
+        parent::setUp();
+
         //$this->enableLogging();
 
         Application::log('Tests | Set up');

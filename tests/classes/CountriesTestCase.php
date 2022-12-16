@@ -22,6 +22,8 @@ abstract class CountriesTestCase extends ApplicationTestCase
 
     protected function setUp() : void
     {
+        parent::setUp();
+
         $this->countries = Application_Countries::getInstance();
 
         $this->startTransaction();
