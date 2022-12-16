@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+
 /**
  * Trait for classes to add logging capability using the
  * application's logger. Adds protected utility methods for
@@ -29,6 +31,21 @@ declare(strict_types=1);
 trait Application_Traits_Loggable
 {
     abstract public function getLogIdentifier() : string;
+
+    private ?string $selfLogIdentifier = null;
+
+    protected function getIdentifierFromSelf(string $prefix) : string
+    {
+        if(!isset($this->selfLogIdentifier)) {
+            $this->selfLogIdentifier = sprintf(
+                '%s [%s]',
+                $prefix,
+                ClassHelper::getClassTypeName($this)
+            );
+        }
+
+        return $this->selfLogIdentifier;
+    }
 
     /**
      * @var bool|null
