@@ -245,7 +245,7 @@ trait Application_Traits_Admin_RevisionableChangelog
             $this->revisionable->getOwnerName()
         ));
         
-        $grid->enableLimitOptions(array(10, 30, 60, 120, 300), 30);
+        $grid->enableLimitOptionsDefault();
         
         $grid->addHiddenVars($this->getPageParams());
         $grid->addHiddenVar('revision', $this->revisionable->getRevision());

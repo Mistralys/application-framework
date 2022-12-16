@@ -161,7 +161,7 @@ trait Application_Traits_Admin_CollectionList
         
         $grid->setFullViewTitle($this->getTitle());
         $grid->enableMultiSelect($this->collection->getRecordPrimaryName());
-        $grid->enableLimitOptions(UI_DataGrid::DEFAULT_LIMIT_CHOICES);
+        $grid->enableLimitOptionsDefault();
         
         $names = $this->driver->getURLParamNames();
         foreach($names as $name)

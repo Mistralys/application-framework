@@ -80,7 +80,7 @@ trait Application_Traits_Admin_RevisionableList
         
         $grid->setFullViewTitle($this->getTitle());
         $grid->enableMultiSelect($this->collection->getPrimaryKeyName());
-        $grid->enableLimitOptions(UI_DataGrid::DEFAULT_LIMIT_CHOICES);
+        $grid->enableLimitOptionsDefault();
         
         $this->configureGrid($grid);
         
