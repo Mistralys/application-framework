@@ -7,10 +7,10 @@
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper_Exception;
 
-define('APP_DEVEL_SQL_MODE', 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION');
-
-abstract class Application_Bootstrap_Screen
+abstract class Application_Bootstrap_Screen implements Application_Interfaces_Loggable
 {
+    use Application_Traits_Loggable;
+
     public const ERROR_CONFIG_SETTING_ALREADY_DEFINED = 28201;
     public const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
 
@@ -60,7 +60,9 @@ abstract class Application_Bootstrap_Screen
         if($this->environmentCreated) {
             return;
         }
-        
+
+        $this->log('SETUP | Creating the environment.');
+
         $this->environmentCreated = true;
 
         date_default_timezone_set('Europe/Berlin');
@@ -172,13 +174,24 @@ abstract class Application_Bootstrap_Screen
 
         $this->user = $this->session->getUser();
     }
-    
+
+    private bool $dbInitialized = false;
+
     protected function initDatabase() : void
     {
-        if(!Application::isDatabaseEnabled())
-        {
+        if($this->dbInitialized) {
             return;
         }
+
+        $this->dbInitialized = true;
+
+        if(!Application::isDatabaseEnabled())
+        {
+            $this->log('SETUP | Database is disabled.');
+            return;
+        }
+
+        $this->log('SETUP | Initializing the database.');
 
         // enable the logging for the DB helper
         DBHelper::setLogCallback(array('Application', 'log'));
@@ -204,6 +217,8 @@ abstract class Application_Bootstrap_Screen
         {
             return;
         }
+
+        $this->log('SETUP | Authenticating the user.');
 
         $user = $this->session->requireUser();
         
@@ -274,8 +289,10 @@ abstract class Application_Bootstrap_Screen
     * 
     * @throws Application_Exception
     */
-    protected function disableAuthentication()
+    protected function disableAuthentication() : void
     {
+        $this->log('SETUP | Disabling authentication.');
+
         $this->setDefine('APP_NO_AUTHENTICATION', true);
     }
     
@@ -287,7 +304,10 @@ abstract class Application_Bootstrap_Screen
     */
     protected function disallowDBWriteOperations()
     {
-        if(!$this->disallowDBWriteOperations) {
+        if(!$this->disallowDBWriteOperations)
+        {
+            $this->log('SETUP | Disallowing database write operations.');
+
             DBHelper::onBeforeWriteOperation(array($this, 'handleEvent_beforeDBWriteOperation'));
         }
     }
@@ -326,8 +346,10 @@ abstract class Application_Bootstrap_Screen
      * Force the application into script mode, which makes
      * it bypass all the UI layer initialization.
      */
-    protected function enableScriptMode()
+    protected function enableScriptMode() : void
     {
+        $this->log('SETUP | Switching to script mode.');
+
         $this->setDefine('APP_RUN_MODE', 'script');
     }
     
@@ -390,5 +412,19 @@ abstract class Application_Bootstrap_Screen
     protected function createTemplate(string $templateID) : UI_Page_Template
     {
         return $this->createPage()->createTemplate($templateID);
+    }
+
+    private ?string $logIdentifier = null;
+
+    public function getLogIdentifier(): string
+    {
+        if(!isset($this->logIdentifier)) {
+            $this->logIdentifier = sprintf(
+                'Bootstrap screen [%s]',
+                ClassHelper::getClassTypeName($this)
+            );
+        }
+
+        return $this->logIdentifier;
     }
 }
