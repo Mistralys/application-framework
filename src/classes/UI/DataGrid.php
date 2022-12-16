@@ -166,6 +166,13 @@ class UI_DataGrid
         $this->request = Application_Request::getInstance();
         $this->emptyMessage = t('No entries found.');
         $this->footerCountText = t('Showing entries [FROM] to [TO], [TOTAL] total.');
+
+        // Automatically add the screen's hidden variables
+        // when the UI is enabled.
+        if(Application::isUIEnabled() && Application_Driver::getInstance()->isUIFrameworkConfigured())
+        {
+            $this->addHiddenScreenVars();
+        }
     }
 
     /**
