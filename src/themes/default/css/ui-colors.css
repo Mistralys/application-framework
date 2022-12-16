@@ -129,7 +129,8 @@ BODY{
 }
 
 #footer A:link,
-#footer A:visited {
+#footer A:visited,
+#footer A[type="button"]{
     color: #60a1ff;
 }
 

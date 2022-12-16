@@ -853,6 +853,10 @@ A[target="_blank"]:not([type="button"]) {
     color: #063aae;
 }
 
+A[type="button"] {
+    cursor:pointer;
+}
+
 /*Don't change color for external links in a dropdown menu*/
 .dropdown-menu > li > a[target="_blank"]:not([type="button"]) {
     color: #333;
