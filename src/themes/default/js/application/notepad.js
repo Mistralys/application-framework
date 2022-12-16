@@ -100,10 +100,6 @@ class Application_Notepad
             btnAdd.Render()+
             '<h1 class="notepad-header">'+
                 t('Your personal notepad')+
-                ' '+
-                UI.Label(t('BETA'))
-                    .MakeWarning()
-                    .Render()+
             '</h1>'
         );
 
