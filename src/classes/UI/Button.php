@@ -40,6 +40,7 @@ class UI_Button
     public const SIZE_SMALL = 'small';
     public const SIZE_LARGE = 'large';
     public const SIZE_MINI = 'mini';
+    const TYPE_LINK = 'link';
 
     protected string $label = '';
     protected string $id;
@@ -87,6 +88,7 @@ class UI_Button
      * @var array<string,string>
      */
     private array $dataAttributes = array();
+    private bool $buttonLink = true;
 
     public function __construct($label='')
     {
@@ -409,12 +411,15 @@ class UI_Button
     
    /**
     * Styles the button like a regular link (but keeping the button size).
-    * 
+    *
+    * @param bool $buttonLink Use the `btn-link` class? Otherwise, it will be a regular link tag.
     * @return $this
     */
-    public function makeLink() : self
+    public function makeLink(bool $buttonLink=true) : self
     {
-        return $this->makeType('link');
+        $this->buttonLink = $buttonLink;
+
+        return $this->makeType(self::TYPE_LINK);
     }
     
    /**
@@ -464,30 +469,7 @@ class UI_Button
         $attribs['type'] = $this->getType();
         $attribs['autocomplete'] = 'off'; // avoid firefox autocompletion bug
     
-        $classes = $this->classes;
-        $classes[] = 'btn';
-        $classes[] = 'btn-'.$this->layout;
-    
-        if(!empty($this->size)) 
-        {
-            $classes[] = 'btn-'.$this->size;
-        }
-
-        if($this->active)
-        {
-            $classes[] = 'active';
-        }
-        
-        if($this->locked) {
-            $this->disabled = true;
-            $classes[] = 'btn-locked';
-        }
-    
-        if($this->disabled) {
-            $classes[] = 'disabled';
-        }
-        
-        $attribs['class'] = implode(' ', $classes);
+        $attribs['class'] = implode(' ', $this->resolveClasses());
     
         if(!empty($this->styles)) {
             $attribs['style'] = compileStyles($this->styles);
@@ -557,7 +539,50 @@ class UI_Button
         
         return $attribs;
     }
-    
+
+    /**
+     * @return string[]
+     */
+    private function resolveClasses() : array
+    {
+        $classes = $this->classes;
+        $classes[] = 'btn';
+        $classes[] = 'btn-'.$this->layout;
+
+        if(!empty($this->size))
+        {
+            $classes[] = 'btn-'.$this->size;
+        }
+
+        if($this->active)
+        {
+            $classes[] = 'active';
+        }
+
+        if($this->locked) {
+            $this->disabled = true;
+            $classes[] = 'btn-locked';
+        }
+
+        if($this->disabled) {
+            $classes[] = 'disabled';
+        }
+
+        if($this->layout === self::TYPE_LINK && !$this->buttonLink)
+        {
+            $keep = array();
+            foreach($classes as $class) {
+                if(strpos($class, 'btn') !== 0) {
+                    $keep[] = $class;
+                }
+            }
+
+            $classes = $keep;
+        }
+
+        return $classes;
+    }
+
    /**
     * Ensures that the text in the button does not wrap to the next line.
     * 
