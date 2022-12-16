@@ -1,4 +1,7 @@
-### v2.3.5 - QoL changes
+### v2.3.4 - Connector tweaks and QoL changes
+- Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
+- Connectors: Added serialization to the request.
+- Connectors: The response serialization now includes the request information.
 - Loggable: Added the utility method `getIdentifierFromSelf()` to use the class type name.
 - Bootstrap: Screens now have logging available.
 - Bootstrap: Added the `DeploymentRegistry` manager to save deployment information.
@@ -10,11 +13,6 @@
 - QuickStart: Removed the BETA label.
 - DataGrids: Added auto-adding of hidden screen parameters (#36).
 - UI: Buttons: Added a parameter to `makeLink()` to omit the `btn-` classes on the tag.
-
-### v2.3.4 - Connector tweaks
-- Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
-- Connectors: Added serialization to the request.
-- Connectors: The response serialization now includes the request information.
 
 ### v2.3.3 - Connector tweaks
 - Connectors: Response: Added `requireData()`.
