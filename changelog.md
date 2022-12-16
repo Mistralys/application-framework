@@ -1,3 +1,16 @@
+### v2.3.5 - QoL changes
+- Loggable: Added the utility method `getIdentifierFromSelf()` to use the class type name.
+- Bootstrap: Screens now have logging available.
+- Bootstrap: Added the `DeploymentRegistry` manager to save deployment information.
+- Bootstrap: Added the `deployment-callback.php` dispatcher.
+- What's new: Fixed the dialog not showing any changes.
+- Admin: Added the deployments history screen in the developer management.
+- Test UI: Added the translation screen, which can also be used to do the translations.
+- Test UI: Added the deployment history screen.
+- QuickStart: Removed the BETA label.
+- DataGrids: Added auto-adding of hidden screen parameters (#36).
+- UI: Buttons: Added a parameter to `makeLink()` to omit the `btn-` classes on the tag.
+
 ### v2.3.4 - Connector tweaks
 - Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
 - Connectors: Added serialization to the request.
