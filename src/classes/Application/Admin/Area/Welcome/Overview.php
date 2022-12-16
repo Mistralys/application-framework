@@ -143,7 +143,6 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
         $this->renderer->setTitle(sb()
             ->add($this->getTitle())
-            ->add(UI::label(t('BETA'))->makeWarning())
         );
     }
 
