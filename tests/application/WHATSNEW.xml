@@ -15,6 +15,14 @@
             <item category="Category">
                 English text
             </item>
+            <item category="Image">
+                The changelog can integrate images:
+                {image:manage-menu.png}
+            </item>
+            <item category="Image">
+                The image size can be adjusted as well:
+                {image 120px:manage-menu.png}
+            </item>
         </en>
     </version>
 </whatsnew>
