@@ -12,6 +12,9 @@ declare(strict_types=1);
 use Application\Admin\Area\Mode\Submode\AppVersionEditSubmode;
 use Application\WhatsNew\AppVersion;
 use Application\WhatsNew\AppVersion\CategoryItem;
+use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
+use AppUtils\OutputBuffering;
 
 /**
  * User interface for editing the `WHATSNEW.xml` file.
@@ -24,10 +27,11 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Edit extends AppVersionEditSub
 {
     public const URL_NAME = 'edit';
     public const FORM_NAME = 'edit-version';
-    const KEY_NEW_CATEGORY = 'new-category';
-    const KEY_NEW_TEXT = 'new-text';
-    const KEY_NEW_AUTHOR = 'new-author';
-    const KEY_NEW_ISSUE = 'new-issue';
+
+    public const KEY_NEW_CATEGORY = 'new-category';
+    public const KEY_NEW_TEXT = 'new-text';
+    public const KEY_NEW_AUTHOR = 'new-author';
+    public const KEY_NEW_ISSUE = 'new-issue';
 
     /**
      * @var CategoryItem[]
@@ -85,6 +89,53 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Edit extends AppVersionEditSub
             ->setIcon(UI::icon()->text())
             ->setTooltip(t('Displays the developer changelog in plain text.'))
             ->makeLinked(Application_Driver::getInstance()->getAdminURLChangelog(), true);
+
+        $this->sidebar->addSeparator();
+
+        $this->addSidebarImagesList();
+    }
+
+    protected function addSidebarImagesList() : void
+    {
+        $images = $this->whatsNew->getAvailableImages();
+
+        if(!empty($images))
+        {
+            OutputBuffering::start();
+
+            ?>
+            <ul class="unstyled">
+                <?php
+                foreach($images as $image)
+                {
+                    ?>
+                    <li>
+                        <?php
+                        echo sb()
+                            ->link((string)sb()->mono($image->getName()), $image->getURL(), true)
+                            ->muted(sprintf('%s x %s', $image->getWidth(), $image->getHeight()));
+                        ?>
+                    </li>
+                    <?php
+                }
+                ?>
+            </ul>
+            <?php
+            $content = OutputBuffering::get();
+        }
+        else
+        {
+            $content = (string)$this->ui->createMessage(t('No images found.'))
+                ->makeSlimLayout()
+                ->makeNotDismissable()
+                ->enableIcon()
+                ->makeInfo();
+        }
+
+        $this->sidebar->addHelp(
+            sb()->t('Available images')->muted('('.count($images).')'),
+            $content
+        );
     }
 
     protected function _renderContent() : UI_Renderable_Interface
