@@ -1,48 +1,250 @@
 <?php
+/**
+ * @package UserInterface
+ * @subpackage Templates
+ * @see template_default_frame_footer
+ */
 
-	/* @var $this UI_Page_Template */
+declare(strict_types=1);
 
 use Application\Bootstrap\DeployCallbackBootstrap;
+use AppUtils\Interface_Stringable;
+use AppUtils\OutputBuffering;
+use Mistralys\AppFramework\AppFramework;
 
-?><section>
-	<h2><?php echo $this->driver->getAppNameShort() ?> V<?php echo $this->driver->getVersion() ?></h2>
-	<ul class="unstyled">
-		<li><a href="javascript:void(0);" onclick="application.dialogWhatsnew()"><?php pt('What\'s new') ?></a></li>
-	</ul>
-</section>
-<section>
-	<h2><?php echo mb_strtoupper(t('My account')) ?></h2>
-	<ul class="unstyled">
-		<li><a href="<?php echo $this->request->buildURL(array('page' => 'settings')) ?>"><?php pt('Settings') ?></a></li>
-	</ul>
-</section>
-<?php
+/**
+ * Page footer with configurable column contents.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class template_default_frame_footer extends UI_Page_Template_Custom
+{
+    protected function generateOutput() : void
+    {
+        $columns = array_keys($this->items);
 
-	if($this->user->isDeveloper()) 
-	{
-		?>
-			<section>
-				<h2><?php echo mb_strtoupper(t('Developer')) ?></h2>
-				<ul class="unstyled">
-					<li><a href="<?php echo APP_URL.'/changelog.php' ?>"><?php pt('Changelog') ?></a></li>
-					<li><a href="<?php echo APP_URL.'/upgrade.php' ?>"><?php pt('Maintenance') ?></a></li>
-					<li><a href="<?php echo APP_URL.'/xml/monitor/' ?>"><?php pt('Monitoring') ?></a></li>
-					<li><a href="<?php echo APP_URL.'/cronjobs.php?output=yes' ?>"><?php pt('Run cronjob script') ?></a></li>
+        foreach($columns as $column)
+        {
+            $this->generateColumn($column);
+        }
+    }
+
+    private function generateColumn(string $column) : void
+    {
+        if(empty($this->items[$column])) {
+            return;
+        }
+
+        ?>
+        <section>
+            <h2><?php echo mb_strtoupper($column) ?></h2>
+            <ul class="unstyled">
+                <?php
+
+                foreach($this->items[$column] as $linkDef)
+                {
+                    ?>
                     <li>
                         <?php
-                            echo UI::button(t('Deploy callback...'))
-                                ->makeLink(false)
-                                ->makeConfirm(sb()
-                                    ->para(sb()
-                                        ->t('The deployment callback must only be executed once after each deployment.')
-                                        ->t('Executing it again may add duplicate deployment records, and overwrite stored release dates.')
-                                    )
-                                    ->para(sb()->cannotBeUndone())
-                                )
-                                ->link(APP_URL.'/'. DeployCallbackBootstrap::DISPATCHER_NAME.'?')
+                        if(is_callable($linkDef))
+                        {
+                            echo $linkDef();
+                        }
+                        else if(is_string($linkDef))
+                        {
+                            echo $linkDef;
+                        }
+                        else if(isset($linkDef['onclick']))
+                        {
+                            ?>
+                            <a href="#" onclick="<?php echo $linkDef['onclick'] ?>;return false">
+                                <?php echo $linkDef['label'] ?>
+                            </a>
+                            <?php
+                        }
+                        else if(isset($linkDef['url']))
+                        {
+                            ?>
+                            <a href="<?php echo $linkDef['url'] ?>">
+                                <?php echo $linkDef['label'] ?>
+                            </a>
+                            <?php
+                        }
                         ?>
                     </li>
-				</ul>
-			</section>
-		<?php
-	}
+                    <?php
+                }
+                ?>
+            </ul>
+        </section>
+        <?php
+    }
+
+    private function addDeveloperColumn() : void
+    {
+        if(!$this->user->isDeveloper())
+        {
+            return;
+        }
+
+        $this->activeColumn = t('Developer');
+
+        $this
+            ->addItemURL(t('Changelog'), APP_URL.'/changelog.php')
+            ->addItemURL(t('Maintenance'), APP_URL.'/upgrade.php')
+            ->addItemURL(t('Monitoring'), APP_URL.'/xml/monitor/')
+            ->addItemURL(t('Run cronjob script'), APP_URL.'/cronjobs.php?output=yes')
+            ->addItemCallback(static function() : string {
+                return (string)UI::button(t('Deploy callback...'))
+                    ->makeLink(false)
+                    ->makeConfirm(sb()
+                        ->para(sb()
+                            ->t('The deployment callback must only be executed once after each deployment.')
+                            ->t('Executing it again may add duplicate deployment records, and overwrite stored release dates.')
+                        )
+                        ->para(sb()->cannotBeUndone())
+                    )
+                    ->link(APP_URL.'/'. DeployCallbackBootstrap::DISPATCHER_NAME.'?');
+            });
+
+        $this->registerDeveloperItems();
+    }
+
+    /**
+     * @var array<string,array<int,string|array{label:string,url:string}|array{label:string,onclick:string}|callable>>
+     */
+    private array $items = array();
+
+    /**
+     * @param callable $callback
+     * @return $this
+     */
+    protected function addItemCallback(callable $callback) : self
+    {
+        if(!isset($this->items[$this->activeColumn])) {
+            $this->items[$this->activeColumn] = array();
+        }
+
+        $this->items[$this->activeColumn][] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * @param string|Interface_Stringable $label
+     * @param string $url
+     * @return $this
+     */
+    protected function addItemURL($label, string $url) : self
+    {
+        if(!isset($this->items[$this->activeColumn])) {
+            $this->items[$this->activeColumn] = array();
+        }
+
+        $this->items[$this->activeColumn][] = array(
+            'label' => (string)$label,
+            'url' => $url
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param string|Interface_Stringable|NULL $html
+     * @return $this
+     */
+    protected function addItemHTML($html) : self
+    {
+        $this->items[$this->activeColumn][] = (string)$html;
+        return $this;
+    }
+
+    protected function addItemClickable($label, $statement) : self
+    {
+        if(!isset($this->items[$this->activeColumn])) {
+            $this->items[$this->activeColumn] = array();
+        }
+
+        $this->items[$this->activeColumn][] = array(
+            'label' => $label,
+            'onclick' => $statement
+        );
+
+        return $this;
+    }
+
+    private string $activeColumn = '';
+
+    final protected function preRender(): void
+    {
+        $this->addAppColumn();
+        $this->addAboutColumn();
+        $this->addAccountColumn();
+        $this->addDeveloperColumn();
+    }
+
+    private function addAboutColumn() : void
+    {
+        $this->activeColumn = t('About');
+
+        $this->registerAboutItems();
+    }
+
+    private function addAccountColumn() : void
+    {
+        $this->activeColumn = t('My account');
+
+        $this->addItemURL(t('Settings'), $this->request->buildURL(array('page' => 'settings')));
+
+        $this->registerAccountItems();
+    }
+
+    protected function registerAccountItems() : void
+    {
+
+    }
+
+    protected function registerAboutItems() : void
+    {
+
+    }
+
+    protected function registerDeveloperItems() : void
+    {
+
+    }
+
+    protected function registerAppItems() : void
+    {
+
+    }
+
+    private function addAppColumn() : void
+    {
+        $this->activeColumn = $this->driver->getAppNameShort().' '.t('v%1$s', $this->driver->getVersion());
+
+        $this->addItemClickable(t('What\'s new'), 'application.dialogWhatsnew()');
+
+        $this->registerAppItems();
+
+        $this->addItemCallback(static function() : string
+        {
+            $framework = AppFramework::getInstance();
+
+            OutputBuffering::start();
+            ?>
+            <div style="padding-top:12px">
+                <?php pt('Powered by:') ?><br>
+                <a href="<?php echo $framework->getGithubURL() ?>" target="_blank">
+                    <?php echo $framework->getName() ?>
+                    v<?php echo $framework->getVersion()->getVersion() ?>
+                </a>
+            </div>
+            <?php
+
+            return OutputBuffering::get();
+        });
+    }
+}
