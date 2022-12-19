@@ -1,3 +1,7 @@
+### v2.3.5 - Bugfixes
+- Connectors: Fixed empty response data for non-method-based requests.
+- Application: `Application::setTimeLimit()` no longer throws an exception during unit tests.
+
 ### v2.3.4 - Connector tweaks and QoL changes
 - Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
 - Connectors: Added serialization to the request.
