@@ -13,6 +13,9 @@
 - QuickStart: Removed the BETA label.
 - DataGrids: Added auto-adding of hidden screen parameters (#36).
 - UI: Buttons: Added a parameter to `makeLink()` to omit the `btn-` classes on the tag.
+- Templates: Added `startOutput()` and `endOutput()` helpers to capture content.
+- Themes: Updated the footer to a class based template with a system to add column items.
+- AppRatings: Fixed an SQL error when the screen has no path.
 
 ### v2.3.3 - Connector tweaks
 - Connectors: Response: Added `requireData()`.
