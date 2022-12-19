@@ -7,6 +7,8 @@
 - Bootstrap: Added the `DeploymentRegistry` manager to save deployment information.
 - Bootstrap: Added the `deployment-callback.php` dispatcher.
 - What's new: Fixed the dialog not showing any changes.
+- What's new: Added possibility to define image size.
+- What's new: Added syntax reference in the editor for the Markdown text field.
 - Admin: Added the deployments history screen in the developer management.
 - Test UI: Added the translation screen, which can also be used to do the translations.
 - Test UI: Added the deployment history screen.
