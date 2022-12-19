@@ -9,6 +9,7 @@
 - What's new: Fixed the dialog not showing any changes.
 - What's new: Added possibility to define image size.
 - What's new: Added syntax reference in the editor for the Markdown text field.
+- What's new: Added a list of available images in the editor sidebar.
 - Admin: Added the deployments history screen in the developer management.
 - Test UI: Added the translation screen, which can also be used to do the translations.
 - Test UI: Added the deployment history screen.
