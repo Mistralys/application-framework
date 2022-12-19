@@ -1,3 +1,6 @@
+### v2.3.5 - Bugfixes
+- Notepad: Fixed notes overlapping the notepad are in some cases (#34).
+
 ### v2.3.4 - Connector tweaks and QoL changes
 - Connectors: Added `getErrorCodes()` and `hasErrorCode()` to the response.
 - Connectors: Added serialization to the request.
