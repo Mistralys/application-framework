@@ -205,9 +205,26 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Edit extends AppVersionEditSub
     private function injectElementText(string $name) : void
     {
         $el = $this->addElementTextarea($name, t('Text'));
+
         $el->addClass('input-xxlarge');
         $el->setRows(3);
         $el->addFilterTrim();
+        $el->setComment((string)sb()
+            ->t('It is possible to use %1$s syntax.', 'Markdown')
+            ->nl()
+            ->t('Quick reference:')
+            ->ul(array(
+                sb()->mono('*'.t('Bold text').'*'),
+                sb()->mono('_'.t('Italic text').'_'),
+                sb()->mono('`'.t('Inline code').'`'),
+                sb()->mono('['.t('Link label').'](https://mistralys.eu)'),
+                sb()->mono('{image:filename.png}')->muted('('.t('Store image in theme image subfolder %1$s', sb()->code('whatsnew')).')'),
+                sb()->mono('{image 20%:filename.png}')->muted('('.t('With percentage width').')'),
+                sb()->mono('{image 120px:filename.png}')->muted('('.t('With pixel width').')'),
+                sb()->mono('### '.t('Heading'))->muted('('.t('Amount of hashes = level').')'),
+                sb()->mono('```')->nl()->mono(t('Code fence'))->nl()->mono('```'),
+            ))
+        );
     }
 
     private function injectElementAuthor(string $name) : void
