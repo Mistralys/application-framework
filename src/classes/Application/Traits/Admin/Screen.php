@@ -109,6 +109,11 @@ trait Application_Traits_Admin_Screen
     */
     protected $activeSubscreenID;
 
+    /**
+     * @var array<string,string|NULL>
+     */
+    private array $subscreenSearches = array();
+
    /**
     * Caches the screen's parent screens stack.
     * @var Application_Admin_ScreenInterface[]|NULL
@@ -879,11 +884,17 @@ trait Application_Traits_Admin_Screen
             Application_Admin_Skeleton::ERROR_NO_SUCH_CHILD_ADMIN_SCREEN
         );
     }
-    
+
     protected function resolveSubscreenID(string $search) : ?string
     {
+        if(array_key_exists($search, $this->subscreenSearches)) {
+            return $this->subscreenSearches[$search];
+        }
+
+        $this->subscreenSearches[$search] = null;
+
         $ids = $this->getSubscreenIDs();
-        
+
         $compare = strtolower($search);
 
         foreach($ids as $subscreenID => $urlName)
@@ -896,6 +907,7 @@ trait Application_Traits_Admin_Screen
             // precise and guaranteed to be unique.
             if($compare === $sub || $compare === $urlName)
             {
+                $this->subscreenSearches[$search] = $subscreenID;
                 return $subscreenID;
             }
         }
@@ -1010,7 +1022,7 @@ trait Application_Traits_Admin_Screen
         {
             return;
         }
-        
+
         $this->request->setParam($this->getURLParam(), $this->getURLName());
         $this->init();
     }
