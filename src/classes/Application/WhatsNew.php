@@ -11,7 +11,9 @@ declare(strict_types=1);
 
 namespace Application;
 
+use Application\Driver\DriverException;
 use Application\WhatsNew\WhatsNewException;
+use Application\WhatsNew\WhatsNewImage;
 use Application\WhatsNew\XMLFileWriter;
 use Application\WhatsNew\PlainTextRenderer;
 use Application\WhatsNew\XMLRenderer;
@@ -24,6 +26,7 @@ use Application_Driver;
 use Application_Exception;
 use Application\WhatsNew\AppVersion;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper_Exception;
 use Parsedown;
 
 /**
@@ -257,5 +260,35 @@ class WhatsNew
         }
 
         return false;
+    }
+
+    /**
+     * @return WhatsNewImage[]
+     * @throws DriverException
+     * @throws FileHelper_Exception
+     */
+    public function getAvailableImages() : array
+    {
+        $path = Application_Driver::getInstance()->getTheme()->getDriverImagesPath().'/whatsnew';
+
+        if(!is_dir($path)) {
+            return array();
+        }
+
+        $files = FileHelper::createFileFinder($path)
+            ->includeExtensions(array('png', 'jpg'))
+            ->setPathmodeAbsolute()
+            ->getAll();
+
+        usort($files, static function(string $a, string $b) : int {
+            return filemtime($a) - filemtime($b);
+        });
+
+        $result = array();
+        foreach($files as $file) {
+            $result[] = new WhatsNewImage($file);
+        }
+
+        return $result;
     }
 }
