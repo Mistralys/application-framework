@@ -942,18 +942,24 @@ class Application
      */
     public static function setTimeLimit(int $seconds, string $operation) : void
     {
-        if (set_time_limit($seconds) === false)
+        if (
+            set_time_limit($seconds) === true
+            ||
+            (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
+        )
         {
-            throw new Application_Exception(
-                'Cannot change the execution time.',
-                sprintf(
-                    'Tried changing the execution time to [%s] seconds for operation [%s].',
-                    $seconds,
-                    $operation
-                ),
-                self::ERROR_CANNOT_SET_EXECUTION_TIME
-            );
+            return;
         }
+
+        throw new Application_Exception(
+            'Cannot change the execution time.',
+            sprintf(
+                'Tried changing the execution time to [%s] seconds for operation [%s].',
+                $seconds,
+                $operation
+            ),
+            self::ERROR_CANNOT_SET_EXECUTION_TIME
+        );
     }
 
     /**
