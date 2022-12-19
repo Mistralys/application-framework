@@ -29,32 +29,32 @@ class Application_URL
     /**
      * @var string
      */
-    protected $rawURL;
+    protected string $rawURL = '';
 
     /**
      * @var string
      */
-    protected $dispatcher = '';
+    protected string $dispatcher = '';
 
     /**
      * @var string
      */
-    protected $screenPath;
+    protected string $screenPath = '';
 
     /**
      * @var URLInfo
      */
-    protected $info;
+    protected URLInfo $info;
 
-    public function __construct($url)
+    public function __construct(string $url)
     {
         $this->rawURL = $url;
-        $this->info = $info = \AppUtils\parseURL($this->rawURL);
+        $this->info = parseURL($this->rawURL);
 
         $this->parse();
     }
     
-    protected function parse()
+    protected function parse() : void
     {
         if(!$this->info->hasScheme())
         {
@@ -146,7 +146,7 @@ class Application_URL
     * 
     * @return string
     */
-    public function getScreenPath()
+    public function getScreenPath() : string
     {
         return $this->screenPath;
     }
@@ -170,7 +170,7 @@ class Application_URL
 
         foreach($params as $name => $value)
         {
-            if(!in_array($name, $pageVars))
+            if(!in_array($name, $pageVars, true))
             {
                 $result[$name] = $value;
             }
