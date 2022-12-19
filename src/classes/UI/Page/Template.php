@@ -9,6 +9,7 @@
 
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
+use AppUtils\OutputBuffering;
 use UI\Interfaces\PageTemplateInterface;
 
 /**
@@ -403,5 +404,16 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
     public function getAppName() : string
     {
         return $this->driver->getAppName();
+    }
+
+    public function startOutput() : self
+    {
+        OutputBuffering::start();
+        return $this;
+    }
+
+    public function endOutput() : string
+    {
+        return  OutputBuffering::get();
     }
 }
