@@ -15,6 +15,7 @@ use Application\WhatsNew;
 use Application_Driver;
 use AppUtils\ConvertHelper;
 use SimpleXMLElement;
+use function AppUtils\parseNumber;
 use const APP_URL;
 
 /**
@@ -190,7 +191,7 @@ class CategoryItem
         }
 
         $result = array();
-        preg_match_all('/{image:[ ]*(.+)}/U', $this->text, $result, PREG_PATTERN_ORDER);
+        preg_match_all('/{image:[ ]*(.+)}|{image[ ]*([0-9]+)(%|px):[ ]*(.+)}/U', $this->text, $result, PREG_PATTERN_ORDER);
 
         if (!isset($result[1]) && isset($result[1][0]))
         {
@@ -199,12 +200,41 @@ class CategoryItem
 
         $theme = Application_Driver::getInstance()->getTheme();
 
-        foreach ($result[1] as $idx => $imageName)
+        $indexes = array_keys($result[0]);
+
+        foreach ($indexes as $index)
         {
-            $search = $result[0][$idx];
+            $match = $result[0][$index];
+
+            $width = '';
+            $imageName = null;
+            // Image without width specified
+            if(!empty($result[1][$index]))
+            {
+                $imageName = $result[1][$index];
+            }
+            else if(!empty($result[2][$index]))
+            {
+                $percent = parseNumber($result[2][$index].$result[3][$index]);
+                if(!$percent->isEmpty()) {
+                    $width = sprintf(
+                        ' style="width:%s"',
+                        $percent->toCSS()
+                    );
+                }
+
+                $imageName = $result[4][$index];
+            }
+
+            if($imageName === null) {
+                continue;
+            }
+
             $imgURL = $theme->getImageURL('whatsnew/' . $imageName);
-            $replace = '<a href="' . $imgURL . '" target="_blank" class="whatsnew-image"><img src="' . $imgURL . '" alt=""/></a>';
-            $this->text = str_replace($search, $replace, $this->text);
+
+            $replace = '<a href="' . $imgURL . '" target="_blank" class="whatsnew-image"><img src="' . $imgURL . '" alt=""'.$width.'/></a>';
+
+            $this->text = str_replace($match, $replace, $this->text);
         }
     }
 
