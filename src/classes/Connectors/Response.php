@@ -63,6 +63,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
      * @var ResponseError|null
      */
     protected ?ResponseError $error = null;
+    private bool $looseData;
 
     public function __construct(Connectors_Request $request, HTTP_Request2_Response $result)
     {
@@ -86,8 +87,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
         $this->responseData = $this->extractDataFromBody($result->getBody());
         
         if(!$request instanceof Connectors_Request_Method || $this->isError()) {
+            $this->looseData = true;
             return;
         }
+
+        $this->looseData = false;
         
         // method requests expect a specific return format
         if (!$this->responseData->keyExists(self::KEY_STATE)) {
@@ -356,7 +360,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
      */
     public function getData() : array
     {
-        return $this->responseData->getArray(self::KEY_DATA);
+        if(!$this->looseData) {
+            return $this->responseData->getArray(self::KEY_DATA);
+        }
+
+        return $this->responseData->getData();
     }
 
     public function requireData() : array
