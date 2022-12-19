@@ -349,6 +349,7 @@ class Application_Notepad_Note
         // Observe the note container element being
         // resized, to automatically update the layout.
         new ResizeSensor(this.elContainer, function() {
+            note.log('Note element has been resized.');
             note.UpdateLayout();
         });
 
