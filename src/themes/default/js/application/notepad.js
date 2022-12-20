@@ -170,9 +170,7 @@ class Application_Notepad
 
         this.log('Registering new note ['+noteID+'].');
 
-        var note = new Application_Notepad_Note(this, noteID);
-
-        this.notes.push(note);
+        this.notes.push(new Application_Notepad_Note(this, noteID));
     }
 
     /**
@@ -196,9 +194,21 @@ class Application_Notepad
 
     Masonry()
     {
-        this.notesList.masonry({
-            'itemSelector':'.notepad-note'
-        });
+        this.log('Applying masonry to note elements.');
+
+        var list = this.notesList;
+
+        // Using a short timeout to give the dynamically
+        // created DOM elements the time to settle in their
+        // dimensions before applying the masonry.
+        setTimeout(
+            function () {
+                list.masonry({
+                    'itemSelector':'.notepad-note'
+                });
+            },
+            100
+        );
     }
 
     Refresh()
@@ -209,16 +219,17 @@ class Application_Notepad
             note.Refresh();
         });
 
-        this.Masonry();
-
         var notepad = this;
 
+        /*
         this.refreshTimer = setTimeout(
             function () {
                 notepad.LoadNotes();
             },
             this.refreshDelay * 1000
         );
+
+         */
     }
 
     log(message, category)
@@ -236,7 +247,7 @@ class Application_Notepad
     {
         this.log('New note was added successfully with ID ['+noteID+'].');
 
-        this.RegisterNote(noteID);
+        this.LoadNotes();
     }
 
     /**
