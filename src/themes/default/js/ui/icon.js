@@ -190,6 +190,7 @@ var UI_Icon =
     'TYPE_SEND':'send',
     'TYPE_SETTINGS':'settings',
     'TYPE_SHOP':'shop',
+    'TYPE_SNOWFLAKE':'snowflake',
     'TYPE_SORT':'sort',
     'TYPE_SORT_ASC':'sort_asc',
     'TYPE_SORT_DESC':'sort_desc',
@@ -400,6 +401,7 @@ var UI_Icon =
         this.types[this.TYPE_SEND] = 'envelope';
         this.types[this.TYPE_SETTINGS] = 'wrench';
         this.types[this.TYPE_SHOP] = 'shopping-cart';
+        this.types[this.TYPE_SNOWFLAKE] = 'far:snowflake';
         this.types[this.TYPE_SORT] = 'sort';
         this.types[this.TYPE_SORT_ASC] = 'angle-up';
         this.types[this.TYPE_SORT_DESC] = 'angle-down';
@@ -695,6 +697,7 @@ var UI_Icon =
     Send:function() { return this.SetType(this.TYPE_SEND); },
     Settings:function() { return this.SetType(this.TYPE_SETTINGS); },
     Shop:function() { return this.SetType(this.TYPE_SHOP); },
+    Snowflake:function() { return this.SetType(this.TYPE_SNOWFLAKE); },
     Sort:function() { return this.SetType(this.TYPE_SORT); },
     SortAsc:function() { return this.SetType(this.TYPE_SORT_ASC); },
     SortDesc:function() { return this.SetType(this.TYPE_SORT_DESC); },

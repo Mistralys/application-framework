@@ -810,5 +810,9 @@
   "command_deck":{
     "icon": "dice-d20",
     "type": "fas"
+  },
+  "snowflake":{
+    "icon": "snowflake",
+    "type": "far"
   }
 }

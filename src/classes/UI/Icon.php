@@ -228,6 +228,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public const TYPE_SEND = 'send';
     public const TYPE_SETTINGS = 'settings';
     public const TYPE_SHOP = 'shop';
+    public const TYPE_SNOWFLAKE = 'snowflake';
     public const TYPE_SORT = 'sort';
     public const TYPE_SORT_ASC = 'sort_asc';
     public const TYPE_SORT_DESC = 'sort_desc';
@@ -436,6 +437,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         self::TYPE_SEND => 'envelope',
         self::TYPE_SETTINGS => 'wrench',
         self::TYPE_SHOP => 'shopping-cart',
+        self::TYPE_SNOWFLAKE => 'far:snowflake',
         self::TYPE_SORT => 'sort',
         self::TYPE_SORT_ASC => 'angle-up',
         self::TYPE_SORT_DESC => 'angle-down',
@@ -654,6 +656,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     public function send() : UI_Icon { return $this->setType(self::TYPE_SEND); }
     public function settings() : UI_Icon { return $this->setType(self::TYPE_SETTINGS); }
     public function shop() : UI_Icon { return $this->setType(self::TYPE_SHOP); }
+    public function snowflake() : UI_Icon { return $this->setType(self::TYPE_SNOWFLAKE); }
     public function sort() : UI_Icon { return $this->setType(self::TYPE_SORT); }
     public function sortAsc() : UI_Icon { return $this->setType(self::TYPE_SORT_ASC); }
     public function sortDesc() : UI_Icon { return $this->setType(self::TYPE_SORT_DESC); }
