@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace UI\Themes\BaseTemplates;
 
+use DateTime;
+use JSHelper;
 use UI_Page_Navigation;
 use UI_Page_Navigation_Item;
 use UI_Page_Navigation_Item_DropdownMenu;
@@ -39,6 +41,8 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
 
         $this->generateItem($item);
     }
+
+    $this->generateSeasonal();
     ?>
 </ul>
 <!-- end <?php echo $this->nav->getID() ?> navigation -->
@@ -67,6 +71,42 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
         ?>
         <li class="<?php echo implode(' ', $classes) ?>">
             <?php echo $item->render() ?>
+        </li>
+        <?php
+    }
+
+    protected function generateSeasonal() : void
+    {
+        $date = new DateTime();
+        $year = date('Y');
+        $start = new DateTime($year.'-12-15');
+        $end = new DateTime(($year+1).'-01-15');
+
+        if(!($date >= $start && $date <= $end))
+        {
+            return;
+        }
+
+        $id = nextJSID();
+
+        JSHelper::tooltipify($id, JSHelper::TOOLTIP_LEFT);
+
+        ?>
+        <script>
+            const winterMessage =
+                '<p><?php pt('The %1$s team wishes you a merry christmas and a happy new year.', $this->driver->getAppNameShort()) ?></p>' +
+                '<img id="<?php echo $id ?>" style="width: 160px" src="<?php echo $this->theme->getImageURL('seasonals/winter-wonderland.gif') ?>" alt="">';
+        </script>
+        <li class="regular">
+            <a href="#" onclick="application.createDialogMessage(winterMessage, '<?php echo addslashes(t('Happy winter season!')) ?>').Show();return false;" style="padding-top:3px;padding-bottom:3px;">
+                <img
+                    id="<?php echo $id ?>"
+                    class="clickable"
+                    title="<?php pt('Happy winter season!') ?>"
+                    style="width: 34px;clip-path: circle(17px at center)"
+                    src="<?php echo $this->theme->getImageURL('seasonals/winter-wonderland.gif') ?>"
+                    alt=""
+                ></a>
         </li>
         <?php
     }
