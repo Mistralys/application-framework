@@ -39,7 +39,9 @@ class template_default_frame_footer extends UI_Page_Template_Custom
 
         ?>
         <section>
-            <h2><?php echo mb_strtoupper($column) ?></h2>
+            <h2 class="footer-column-header">
+                <?php echo $column ?>
+            </h2>
             <ul class="unstyled">
                 <?php
 
@@ -223,7 +225,26 @@ class template_default_frame_footer extends UI_Page_Template_Custom
 
     private function addAppColumn() : void
     {
-        $this->activeColumn = $this->driver->getAppNameShort().' '.t('v%1$s', $this->driver->getVersion());
+        $version =  $this->driver->getVersion();
+        $registry = Application::createDeploymentRegistry();
+
+        $this->activeColumn = $this->driver->getAppNameShort().' '.t('v%1$s', $version);
+
+        if($registry->versionExists($version))
+        {
+            $time = $registry->getByVersion($version);
+            
+            $this->activeColumn .= ' '.sb()->linkRight(
+                (string)UI::icon()
+                    ->time()
+                    ->setTooltip(t(
+                        'Deployed on %1$s',
+                        $time->getDate()->format('Y-m-d H:i:s')
+                    )),
+                $registry->getAdminURLHistory(),
+                Application_User::RIGHT_DEVELOPER
+            );
+        }
 
         $this->addItemClickable(t('What\'s new'), 'application.dialogWhatsnew()');
 
