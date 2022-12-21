@@ -436,6 +436,11 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $this;
     }
 
+    public function getCache() : Connectors_Request_Cache
+    {
+        return $this->cache;
+    }
+
     /**
      * Requests data from a SPIN API method.
      *
