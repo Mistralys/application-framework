@@ -1,3 +1,9 @@
+### v2.3.6 - Seasonals and layout tweaks
+- Seasonals: Added a winter greeting in the meta navigation.
+- UI: Fixed the maximized width setting causing a horizontal scroll bar.
+- UI: Reduced the spacing between navigation items to make it more compact.
+- UI: Added the deployment date in the footer, when available.
+
 ### v2.3.5 - Bugfixes
 - Connectors: Fixed empty response data for non-method-based requests.
 - Application: `Application::setTimeLimit()` no longer throws an exception during unit tests.
