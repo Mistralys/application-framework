@@ -1,3 +1,10 @@
+### v2.3.7 - Translations
+- Localization: Added missing UI translations.
+- Localization: DE: Changed "Änderungslog" to "Änderungsprotokoll".
+- Dialogs: Added `AddClass()` to all dialog types.
+- Icons: Added the `snowflake` icon.
+- Seasonals: Improved winter season dialog with custom theming.
+
 ### v2.3.6 - Seasonals and layout tweaks
 - Seasonals: Added a winter greeting in the meta navigation.
 - UI: Fixed the maximized width setting causing a horizontal scroll bar.
