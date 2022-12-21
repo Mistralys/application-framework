@@ -18,6 +18,28 @@ class RequestTests extends TestCase
 {
     // region: _Tests
 
+    public function test_disableCache() : void
+    {
+        $request = $this->createTestMethodRequest();
+        $cache = $request->getCache();
+
+        $cache->setEnabled(true, 1);
+        $this->assertTrue($cache->isEnabled());
+
+        $response = $this->createTestResponse(
+            $this->successJSONResponse
+        );
+
+        $cache->storeResponse($response);
+
+        $this->assertTrue($cache->isValid());
+
+        $request->setCacheEnabled(false);
+
+        $this->assertFalse($cache->isEnabled());
+        $this->assertFalse($cache->isValid());
+    }
+
     public function test_isValidResponseCode_Valid() : void
     {
         // Method: GET Response Code:200
