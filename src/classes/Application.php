@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\DeploymentRegistry;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -791,6 +792,17 @@ class Application
         }
 
         return self::$deeplHelper;
+    }
+
+    private static ?DeploymentRegistry $deploymentRegistry = null;
+
+    public static function createDeploymentRegistry() : DeploymentRegistry
+    {
+        if(!isset(self::$deploymentRegistry)) {
+            self::$deploymentRegistry = new DeploymentRegistry();
+        }
+
+        return self::$deploymentRegistry;
     }
 
     /**

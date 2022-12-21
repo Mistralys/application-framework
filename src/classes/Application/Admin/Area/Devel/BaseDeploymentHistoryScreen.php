@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Devel;
 
+use Application;
 use Application\DeploymentRegistry;
 use Application_Admin_Area_Mode;
 use AppUtils\ConvertHelper;
@@ -58,7 +59,7 @@ abstract class BaseDeploymentHistoryScreen extends Application_Admin_Area_Mode
 
     protected function _handleActions(): bool
     {
-        $this->registry = new DeploymentRegistry();
+        $this->registry = Application::createDeploymentRegistry();
 
         if($this->request->getBool(self::REQUEST_PARAM_DELETE_HISTORY))
         {

@@ -44,7 +44,7 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
 
         Application::getLogger()->logModeEcho();
 
-        $registry = new DeploymentRegistry();
+        $registry = Application::createDeploymentRegistry();
         $registry->registerDeployment();
 
         Application::getLogger()->logModeNone();
