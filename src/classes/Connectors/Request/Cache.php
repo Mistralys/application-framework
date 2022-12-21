@@ -42,6 +42,11 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
 
     public function isValid() : bool
     {
+        if(!$this->isEnabled())
+        {
+            return false;
+        }
+
         $file = $this->getCacheFile();
 
         if(!file_exists($file))
