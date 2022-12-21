@@ -25,3 +25,4 @@ tests/application/config/ui.php
 .DS_Store
 tests/application/storage/temp/localization.json
 tests/application/themes/default/js/localization/locale-de.js
+*.tmp
