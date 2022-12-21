@@ -87,6 +87,8 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
             return;
         }
 
+        $this->ui->addStylesheet('seasonals/winter.css');
+
         $id = nextJSID();
 
         JSHelper::tooltipify($id, JSHelper::TOOLTIP_LEFT);
@@ -95,10 +97,10 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
         <script>
             const winterMessage =
                 '<p><?php pt('The %1$s team wishes you a merry christmas and a happy new year.', $this->driver->getAppNameShort()) ?></p>' +
-                '<img id="<?php echo $id ?>" style="width: 160px" src="<?php echo $this->theme->getImageURL('seasonals/winter-wonderland.gif') ?>" alt="">';
+                '<img id="<?php echo $id ?>" style="width: 160px;clip-path: circle(79px at center)" src="<?php echo $this->theme->getImageURL('seasonals/winter-wonderland.gif') ?>" alt="">';
         </script>
         <li class="regular">
-            <a href="#" onclick="application.createDialogMessage(winterMessage, '<?php echo addslashes(t('Happy winter season!')) ?>').Show();return false;" style="padding-top:3px;padding-bottom:3px;">
+            <a href="#" onclick="application.createDialogMessage(winterMessage, '<?php echo addslashes(t('Happy winter season!')) ?>').AddClass('dialog-winter').SetIcon(UI.Icon().Snowflake()).Show();return false;" style="padding-top:3px;padding-bottom:3px;">
                 <img
                     id="<?php echo $id ?>"
                     class="clickable"

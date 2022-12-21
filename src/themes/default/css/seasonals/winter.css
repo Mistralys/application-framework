@@ -1,0 +1,22 @@
+.modal.dialog-winter{
+    background-color: #0f8A5f;
+    border: solid 4px #235e6f;
+}
+
+.modal.dialog-winter .modal-header{
+    background: #235e6f;
+    border-bottom-color: #124352;
+    color: #fff;
+}
+
+.modal.dialog-winter .modal-body{
+    color: #fff;
+}
+
+.modal.dialog-winter .modal-footer{
+    background-color: #235e6f;
+    border-top: 0;
+    border-radius: 0;
+    border-top: solid 1px #124352;
+    box-shadow: none;
+}
