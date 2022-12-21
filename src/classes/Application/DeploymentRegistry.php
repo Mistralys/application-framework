@@ -9,6 +9,7 @@ use Application\Driver\DriverException;
 use Application_Admin_Area_Devel;
 use Application_Admin_ScreenInterface;
 use Application_Driver;
+use Application_Exception;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
@@ -21,12 +22,15 @@ use JsonException;
 use Application\DeploymentRegistry\BaseDeployTask;
 use Application\DeploymentRegistry\DeploymentInfo;
 use Application\DeploymentRegistry\Tasks\StoreDeploymentInfo;
+use testsuites\DBHelper\RecordTests;
 
 class DeploymentRegistry implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
     public const SETTING_DEPLOYMENT_HISTORY = 'deployment_history';
+
+    public const ERROR_VERSION_DOES_NOT_EXIST = 123901;
 
     /**
      * @var BaseDeployTask[]
@@ -204,5 +208,49 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
     public function clearHistory() : void
     {
         Application_Driver::createSettings()->delete(self::SETTING_DEPLOYMENT_HISTORY);
+    }
+
+    public function versionExists(string $version) : bool
+    {
+        $history = $this->getHistory();
+
+        foreach($history as $item)
+        {
+            if($item->getVersion() === $version) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param string $version
+     * @return DeploymentInfo
+     *
+     * @throws Application_Exception
+     * @throws DriverException
+     * @throws JsonException
+     * @throws Microtime_Exception
+     */
+    public function getByVersion(string $version) : DeploymentInfo
+    {
+        $history = $this->getHistory();
+
+        foreach($history as $item)
+        {
+            if($item->getVersion() === $version) {
+                return $item;
+            }
+        }
+
+        throw new Application_Exception(
+            'Deployment version not found.',
+            sprintf(
+                'The version [%s] was not found in the deployment history.',
+                $version
+            ),
+            self::ERROR_VERSION_DOES_NOT_EXIST
+        );
     }
 }
