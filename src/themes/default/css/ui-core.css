@@ -25,6 +25,11 @@ BODY {
     height: 34px;
 }
 
+#app-mainnav .navbar-main > LI > A{
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
 .navbar-appswitcher {
     margin-left: 20px !important;
 }
