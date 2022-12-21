@@ -1,3 +1,6 @@
+### v2.3.8 - Connectors Cache Fix
+- Connectors: Fixed request using the cache even if cache is disabled.
+
 ### v2.3.7 - Translations
 - Localization: Added missing UI translations.
 - Localization: DE: Changed "Änderungslog" to "Änderungsprotokoll".
