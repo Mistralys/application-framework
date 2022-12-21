@@ -24,6 +24,7 @@ var Dialog_Basic =
 	'eventHandlers':null,
 	'preventClosing':null,
 	'data':null,
+	'classes':null,
 	
 	'ERROR_METHOD_NOT_IMPLEMENTED':3684233001,
 	
@@ -39,6 +40,7 @@ var Dialog_Basic =
 		this.large = false;
 		this.abstractText = '';
 		this.icon = '';
+		this.classes = [];
 		this.data = {};
 		this.buttons = {};
 		this.buttons[this.BUTTON_POSITION_LEFT] = [];
@@ -137,12 +139,18 @@ var Dialog_Basic =
 		);
 		
 		if(this.dangerous) {
-			this.dialog.addClass('modal-danger');
+			this.AddClass('modal-danger');
 		}
 		
 		if(this.large) {
-			this.dialog.addClass('modal-large');
+			this.AddClass('modal-large');
 		}
+
+		var dialog = this.dialog;
+
+		$.each(this.classes, function(idx, className) {
+			dialog.addClass(className);
+		});
 	},
 	
    /**
@@ -773,6 +781,19 @@ var Dialog_Basic =
 			this.dialog.addClass('modal-danger');
 		} 
 		
+		return this;
+	},
+
+	AddClass:function(className)
+	{
+		if(!in_array(className, this.classes, true)) {
+			this.classes.push(className);
+		}
+
+		if(this.IsReady()) {
+			this.dialog.AddClass(className);
+		}
+
 		return this;
 	},
 	
