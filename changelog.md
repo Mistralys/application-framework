@@ -1,10 +1,10 @@
 ### v2.3.9 - Formable enhancement
-- Formable: Added a workaround for #48.
+- Formable: Added a workaround for [#48](https://github.com/Mistralys/application-framework/issues/48).
 
 #### Recommended updates
 
-Formable setting managers: Review the notes for issue #48. It is
-now possible to having formable settings that have different names
+Formable setting managers: Review the [notes for issue #48](https://github.com/Mistralys/application-framework/issues/48). 
+It is now possible to having formable settings that have different names
 than the record's data columns. 
 
 ### v2.3.8 - Connectors Cache Fix
