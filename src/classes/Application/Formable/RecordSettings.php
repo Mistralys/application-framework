@@ -66,7 +66,16 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     * @var boolean
     */
     protected $settingsFormInitialized = false;
-    
+
+    /**
+     * Whether using {@see Application_Formable_RecordSettings::getDefaultValues()}
+     * will use the setting's storage names to fetch the data.
+     *
+     * @var bool
+     * @see Application_Formable_RecordSettings::setDefaultsUseStorageNames()
+     */
+    private bool $defaultsUseStorage = false;
+
     public function __construct(Application_Formable $formable, DBHelper_BaseCollection $collection, ?DBHelper_BaseRecord $record=null)
     {
         parent::__construct($formable);
@@ -239,7 +248,28 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     
         $this->settingsFormInitialized = true;
     }
-    
+
+    /**
+     * Whether using {@see Application_Formable_RecordSettings::getDefaultValues()}
+     * will use the specified storage data key names if specified via
+     * {@see Application_Formable_RecordSettings_Setting::setStorageName()}.
+     * The default is to use the setting name.
+     *
+     * HINT: Use this if the settings manager does not use the same names
+     * as the record's data keys, or to make sure that they can diverge in
+     * the future without breaking the default values.
+     *
+     * This method was added to stay compatible with older code.
+     *
+     * @param bool $useStorageNames
+     * @return $this
+     */
+    public function setDefaultsUseStorageNames(bool $useStorageNames) : self
+    {
+        $this->defaultsUseStorage = $useStorageNames;
+        return $this;
+    }
+
     public function getDefaultValues() : array
     {
         $this->handleSettings();
@@ -248,7 +278,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         if($this->isEditMode())
         {
-            $values = $this->record->getFormValues();
+            $values = $this->importRecordValues($this->record->getFormValues());
         }
 
         $settings = $this->getSettings();
@@ -267,6 +297,39 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         }
 
         return $values;
+    }
+
+    /**
+     * Converts the key names in the form values retrieved
+     * by the record when the defaults are set to use the
+     * storage names.
+     *
+     * Defaults disabled (default) = Key names are the record's column names
+     * Defaults enabled            = Key names are the settings manager's setting names
+     *
+     * @param array<string,mixed> $values
+     * @return array<string,mixed>
+     */
+    private function importRecordValues(array $values) : array
+    {
+        if(!$this->defaultsUseStorage) {
+            return $values;
+        }
+
+        $result = array();
+        $settings = $this->getSettings();
+
+        foreach ($settings as $setting)
+        {
+            $storageName = $setting->getStorageName();
+
+            if(array_key_exists($storageName, $values))
+            {
+                $result[$setting->getName()] = $values[$storageName];
+            }
+        }
+
+        return $result;
     }
 
     /**
