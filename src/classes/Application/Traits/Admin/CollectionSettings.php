@@ -266,6 +266,8 @@ trait Application_Traits_Admin_CollectionSettings
             );
         }
 
+        $this->_handleHiddenVars();
+
         if($this->isReadonly())
         {
             $this->log('Switching the form to readonly mode.');
@@ -280,6 +282,17 @@ trait Application_Traits_Admin_CollectionSettings
         }
 
         return true;
+    }
+
+    /**
+     * Can be overridden in the screen class to register any
+     * additional hidden variables that may be needed.
+     *
+     * @return void
+     */
+    protected function _handleHiddenVars() : void
+    {
+
     }
 
     private function handleFormSubmitted() : void
@@ -586,11 +599,17 @@ trait Application_Traits_Admin_CollectionSettings
     
     protected function _renderContent()
     {
-        return $this->page->getRenderer()
-        ->setTitle($this->resolveTitle())
-        ->setAbstract($this->getAbstract())
-        ->makeWithSidebar()
-        ->appendForm($this->formableForm);
+        $title = $this->resolveTitle();
+
+        if(!empty($title))
+        {
+            $this->renderer->setTitle($title);
+        }
+
+        return $this->renderer
+            ->setAbstract($this->getAbstract())
+            ->makeWithSidebar()
+            ->appendForm($this->formableForm);
     }
 
     protected function requireMethod(string $methodName) : Application_Exception
