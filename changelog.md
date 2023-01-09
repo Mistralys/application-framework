@@ -1,5 +1,11 @@
-### v2.3.9 - Formable enhancement
+### v2.3.9 - Formable and icon enhancements
 - Formable: Added a workaround for [#48](https://github.com/Mistralys/application-framework/issues/48).
+- CollectionSettings: Added extensible `_handleHiddenVars()`.
+- CollectionSettings: Turn off automatic page title by returning an empty string in `resolveTitle()`.
+- Icons: Added support for custom icons via `htdocs/themes/custom-icons.json`.
+- Icons: Added the new `GetIconsReference` AJAX method which returns a list of all icons.
+- Icons: Simplified the class structure.
+- Icons: The clientside reference sheet dialog now uses the AJAX method.
 
 #### Recommended updates
 
