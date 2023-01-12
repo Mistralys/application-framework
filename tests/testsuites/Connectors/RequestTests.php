@@ -167,8 +167,6 @@ class RequestTests extends ApplicationTestCase
 
     public function test_serialization() : void
     {
-        $this->enableLogging();
-
         $body = sprintf(
             $this->errorJSONResponse,
             json_encode(parseThrowable(
