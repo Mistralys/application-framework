@@ -1,4 +1,4 @@
-### v2.3.9 - Formable and icon enhancements
+### v2.4.0 - Connectors Cache fix redux
 - Formable: Added a workaround for [#48](https://github.com/Mistralys/application-framework/issues/48).
 - CollectionSettings: Added extensible `_handleHiddenVars()`.
 - CollectionSettings: Turn off automatic page title by returning an empty string in `resolveTitle()`.
@@ -8,12 +8,33 @@
 - Icons: The clientside reference sheet dialog now uses the AJAX method.
 - UI: Page title `addXXX()` methods now accept empty or null values for easier method chaining.
 - UI: Links within "muted" texts now also appear muted until hovered.
+- Connectors: Fixed the caching issues [#50](https://github.com/Mistralys/application-framework/issues/50)
+
+#### Breaking changes
+
+- `Connectors_Response::unserialize()` can now return `NULL`.
+- Connector response error handling modified: Endpoint errors are now handled via
+  the `ResponseEndpointError` class, so the return value of `getError()` must be
+  checked to get the error details.
+
+#### Deprecated methods
+
+- `Connectors_Response::getEndpointError()`
+- `Connectors_Response::getEndpointException()`
+- `Connectors_Response::getErrorCode()`
+- `Connectors_Response::getErrorData()`
+- `Connectors_Response::getErrorDetails()`
+- `Connectors_Response::getErrorMessage()`
+
+These have all been replaced by the new `Connectors_Response::getError()` method, which
+contains all the necessary information. 
 
 #### Recommended updates
 
-Formable setting managers: Review the [notes for issue #48](https://github.com/Mistralys/application-framework/issues/48). 
-Formable settings that have different setting names than the record's 
-data columns are now fully supported. 
+Formable setting managers: Review the [notes for issue #48](https://github.com/Mistralys/application-framework/issues/48).
+Formable settings that have different setting names than the record's
+data columns are now fully supported.
+
 
 ### v2.3.8 - Connectors Cache Fix
 - Connectors: Fixed request using the cache even if cache is disabled.
