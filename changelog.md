@@ -9,6 +9,7 @@
 - UI: Page title `addXXX()` methods now accept empty or null values for easier method chaining.
 - UI: Links within "muted" texts now also appear muted until hovered.
 - Connectors: Fixed the caching issues [#50](https://github.com/Mistralys/application-framework/issues/50)
+- Connectors: Easier error handling in the response via `getError()`.
 
 #### Breaking changes
 
