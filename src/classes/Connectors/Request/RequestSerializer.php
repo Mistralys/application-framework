@@ -58,7 +58,7 @@ class RequestSerializer
         return JSONConverter::var2json(array(
             self::KEY_REQUEST_TYPE => self::resolveRequestType($request),
             self::KEY_CONNECTOR_ID => $request->getConnector()->getID(),
-            self::KEY_URL => $request->getRequestURL(),
+            self::KEY_URL => $request->getBaseURL(),
             self::KEY_ID => $request->getID(),
             self::KEY_POST_DATA => $request->getPostData(),
             self::KEY_GET_DATA => $request->getGetData(),
