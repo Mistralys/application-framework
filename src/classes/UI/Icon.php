@@ -30,17 +30,17 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @var string
      */
-    protected $name = '';
+    protected string $name = '';
 
     /**
      * @var string[]
      */
-    protected $classes = array();
+    protected array $classes = array();
 
     /**
      * @var array{text:string,placement:string}
      */
-    protected $tooltip = array(
+    protected array $tooltip = array(
         'text' => '',
         'placement' => 'top'
     );
@@ -48,12 +48,12 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @var string
      */
-    protected $id;
+    protected string $id;
 
     /**
      * @var array<string,string|number>
      */
-    protected $attributes = array();
+    protected array $attributes = array();
 
     /**
      * @var string
