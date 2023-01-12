@@ -57,21 +57,29 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
         
         return $this;
     }
-    
-   /**
-    * Adds a bit of text that will be appended to the text.
-    * 
-    * The advantage of using this instead of adding it to the
-    * text itself and using setText() is that these bits of 
-    * text stay separate - the original text can still be 
-    * retrieved with getText(). 
-    * 
-    * @param string|number|UI_Renderable_Interface $text
-    * @return UI_Page_Title
-    */
+
+    /**
+     * Adds a bit of text that will be appended to the text.
+     *
+     * The advantage of using this instead of adding it to the
+     * text itself and using setText() is that these bits of
+     * text stay separate - the original text can still be
+     * retrieved with getText().
+     *
+     * NOTE: Empty strings or NULL values are ignored.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $text
+     * @return UI_Page_Title
+     * @throws UI_Exception
+     */
     public function addTextAppend($text) : UI_Page_Title
     {
-        $this->appends[] = toString($text);
+        $value = toString($text);
+
+        if($value !== '')
+        {
+            $this->appends[] = $value;
+        }
         
         return $this;
     }
@@ -98,16 +106,22 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
         
         return $this;
     }
-    
-   /**
-    * Adds a subline, appending it to any already existing sublines.
-    * 
-    * @param string|number|UI_Renderable_Interface $subline
-    * @return UI_Page_Title
-    */
+
+    /**
+     * Adds a subline, appending it to any already existing sublines.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $subline
+     * @return UI_Page_Title
+     * @throws UI_Exception
+     */
     public function addSubline($subline) : UI_Page_Title
     {
-        $this->subline[] = toString($subline);
+        $value = toString($subline);
+
+        if($value !== '')
+        {
+            $this->subline[] = $value;
+        }
         
         return $this;
     }
@@ -155,19 +169,29 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
    /**
     * Adds a badge that is displayed next to the title.
     * 
-    * @param UI_Interfaces_Badge $badge
+    * @param UI_Interfaces_Badge|NULL $badge Accepts null values for method chaining without additional checks.
     * @return UI_Page_Title
     */
-    public function addBadge(UI_Interfaces_Badge $badge) : UI_Page_Title
+    public function addBadge(?UI_Interfaces_Badge $badge) : UI_Page_Title
     {
-        $this->badges[] = $badge;
+        if($badge !== null)
+        {
+            $this->badges[] = $badge;
+        }
         
         return $this;
     }
-    
-    public function prependBadge(UI_Interfaces_Badge $badge) : UI_Page_Title
+
+    /**
+     * @param UI_Interfaces_Badge|null $badge Accepts null values for method chaining without additional checks.
+     * @return $this
+     */
+    public function prependBadge(?UI_Interfaces_Badge $badge) : UI_Page_Title
     {
-        array_unshift($this->badges, $badge);
+        if($badge !== null)
+        {
+            array_unshift($this->badges, $badge);
+        }
         
         return $this;
     }
@@ -191,10 +215,19 @@ class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Icon
     {
         return $this->badges;
     }
-    
-    public function addContextElement(UI_Renderable_Interface $element) : UI_Page_Title
+
+    /**
+     * Adds a context element to the title, like a badge.
+     *
+     * @param UI_Renderable_Interface|null $element Allows null values as utility for method chaining without additional checks.
+     * @return $this
+     */
+    public function addContextElement(?UI_Renderable_Interface $element) : UI_Page_Title
     {
-        $this->contextElements[] = $element;
+        if($element !== null)
+        {
+            $this->contextElements[] = $element;
+        }
         
         return $this;
     }
