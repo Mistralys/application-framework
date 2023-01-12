@@ -11,6 +11,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\FileHelper_Exception;
 use Connectors\Request\RequestSerializer;
+use function AppUtils\parseURL;
 
 /**
  * Handles all information for a request to send to a
@@ -92,11 +93,23 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      */
     public function __construct(Connectors_Connector $connector, string $url, array $postData=array(), array $getData=array(), ?string $id=null)
     {
-        $this->url = $url;
+        // Remove any GET parameters from the target URL, and
+        // merge them into the get data collection. We use only
+        // the base, parameterless URL for the endpoint.
+        $info = parseURL($url);
+        $getData = array_merge($info->getParams(), $getData);
+
+        $names = array_keys($getData);
+        foreach($names as $name)
+        {
+            $info->removeParam($name);
+        }
+
+        $this->url = $info->getNormalized();
         $this->connector = $connector;
         $this->cache = new Connectors_Request_Cache($this);
         $this->id = $id ?? $this->createID();
-        
+
         if(!empty($postData)) {
             foreach($postData as $name => $value) {
                 $this->setPOSTData($name, $value);
@@ -231,6 +244,19 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
 
     /**
+     * The base URL as specified as target URL for the request. Can contain
+     * parameters if they were included.
+     *
+     * @return string
+     */
+    public function getBaseURL() : string
+    {
+        return $this->url;
+    }
+
+    /**
+     * Retrieves the full request URL including all GET request parameters.
+     *
      * @return string
      * @throws Connectors_Exception
      */
@@ -551,32 +577,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         if(empty($getData)) {
             return $url;
         }
-        
-        // check that the URL does not already contain a query
-        // string, since we're adding one ourselves.
-        if(strpos($url, '?') !== false || strpos($url, '&') !== false)
-        {
-            $ex = new Connectors_Exception(
-                $this->connector,
-                'Invalid URL',
-                sprintf(
-                    'The base URL for the connector may not already contain a query string. '.PHP_EOL.
-                    'If you need to add GET parameters to the URL, there are methods to add them. '.PHP_EOL.
-                    'URL given: '.PHP_EOL.
-                    '%s',
-                    $url
-                ),
-                self::ERROR_URL_MAY_NOT_CONTAIN_QUERY
-            );
-            
-            $ex->setRequest($this);
-            
-            throw $ex;
+
+        $info = parseURL($url);
+
+        foreach($this->getData as $name => $value) {
+            $info->setParam($name, $value);
         }
-            
-        $url .= '?' . http_build_query($getData, '', '&');
-        
-        return $url;
+
+        return $info->getNormalized();
     }
 
    /**
