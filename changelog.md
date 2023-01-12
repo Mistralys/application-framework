@@ -2,7 +2,7 @@
 - Formable: Added a workaround for [#48](https://github.com/Mistralys/application-framework/issues/48).
 - CollectionSettings: Added extensible `_handleHiddenVars()`.
 - CollectionSettings: Turn off automatic page title by returning an empty string in `resolveTitle()`.
-- Icons: Added support for custom icons via `htdocs/themes/custom-icons.json`.
+- Icons: Added support for custom icons via `htdocs/themes/custom-icons.json` [#49](https://github.com/Mistralys/application-framework/issues/49).
 - Icons: Added the new `GetIconsReference` AJAX method which returns a list of all icons.
 - Icons: Simplified the class structure.
 - Icons: The clientside reference sheet dialog now uses the AJAX method.
