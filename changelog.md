@@ -6,6 +6,8 @@
 - Icons: Added the new `GetIconsReference` AJAX method which returns a list of all icons.
 - Icons: Simplified the class structure.
 - Icons: The clientside reference sheet dialog now uses the AJAX method.
+- UI: Page title `addXXX()` methods now accept empty or null values for easier method chaining.
+- UI: Links within "muted" texts now also appear muted until hovered.
 
 #### Recommended updates
 
