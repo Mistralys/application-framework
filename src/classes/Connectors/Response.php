@@ -11,6 +11,7 @@ use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\ConvertHelper_ThrowableInfo;
+use Connectors\Response\ResponseEndpointError;
 use Connectors\Response\ResponseError;
 use Connectors\Response\ResponseSerializer;
 
@@ -63,7 +64,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
      * @var ResponseError|null
      */
     protected ?ResponseError $error = null;
-    private bool $looseData;
+    private bool $looseData = false;
 
     public function __construct(Connectors_Request $request, HTTP_Request2_Response $result)
     {
@@ -85,16 +86,17 @@ class Connectors_Response implements Application_Interfaces_Loggable
         }
         
         $this->responseData = $this->extractDataFromBody($result->getBody());
-        
-        if(!$request instanceof Connectors_Request_Method || $this->isError()) {
+
+        if(!$request instanceof Connectors_Request_Method || $this->isError())
+        {
+            $this->log('Loose data detected.');
             $this->looseData = true;
             return;
         }
 
-        $this->looseData = false;
-        
         // method requests expect a specific return format
-        if (!$this->responseData->keyExists(self::KEY_STATE)) {
+        if (!$this->responseData->keyExists(self::KEY_STATE))
+        {
             $this->setError(
                 t('The server response could not be read.'),
                 sprintf(
@@ -107,21 +109,32 @@ class Connectors_Response implements Application_Interfaces_Loggable
             return;
         }
 
+        $state = $this->responseData->getString(self::KEY_STATE);
+
+        $this->log('Response state is [%s].', $state);
+
+        if($state !== self::STATE_ERROR) {
+            return;
+        }
+
+        $this->log('Error state | Fetching error details.');
+
         if($this->responseData->keyHasValue(self::KEY_EXCEPTION))
         {
+            $this->log('Error state | Found exception data.');
+
             $this->exception = ConvertHelper_ThrowableInfo::fromSerialized(
                 $this->responseData->getJSONArray(self::KEY_EXCEPTION)
             );
         }
 
-        if($this->responseData->getString(self::KEY_STATE) === self::STATE_ERROR)
-        {
-            $this->setError(
-                t('The server returned an error.'),
-                'Use the getEndpointXXX() methods to get the error details.',
-                self::RETURNCODE_ERROR_RESPONSE
-            );
-        }
+        $this->error = new ResponseEndpointError(
+            $this->responseData->getString(self::KEY_MESSAGE),
+            $this->responseData->getString(self::KEY_DETAILS),
+            $this->responseData->getInt(self::KEY_CODE),
+            $this->responseData->getArray(self::KEY_DATA),
+            $this->exception
+        );
     }
 
     /**
@@ -132,9 +145,16 @@ class Connectors_Response implements Application_Interfaces_Loggable
      * and exception details are present.
      *
      * @return ConvertHelper_ThrowableInfo|null
+     * @deprecated Use {@see Connectors_Response::getError()} and {@see ResponseEndpointError::getEndpointError()} instead.
      */
     public function getEndpointException() : ?ConvertHelper_ThrowableInfo
     {
+        $error = $this->getError();
+
+        if($error instanceof ResponseEndpointError) {
+            return $error->getEndpointError()->getException();
+        }
+
         return $this->exception;
     }
 
@@ -144,41 +164,30 @@ class Connectors_Response implements Application_Interfaces_Loggable
     }
 
     /**
-     * When the response returned an error, this is available
-     * to get the error message that the endpoint sent.
-     *
-     * ## Usage
-     *
-     * 1. Check if the response has errors {@see Connectors_Response::isError()},
-     * 2. Check that the code {@see Connectors_Response::getErrorCode()} matches {@see Connectors_Response::RETURNCODE_ERROR_RESPONSE},
-     * 3. Get the endpoint error.
-     *
-     * If an exception was included in the endpoint, it is
-     * available via {@see ResponseError::getException()}.
-     *
      * @return ResponseError|null
+     * @deprecated Use {@see Connectors_Response::getError()} and {@see ResponseEndpointError::getEndpointError()} instead.
      */
     public function getEndpointError() : ?ResponseError
     {
-        if($this->getResponseState() !== self::STATE_ERROR) {
-            return null;
+        if($this->error instanceof ResponseEndpointError) {
+            return $this->error->getEndpointError();
         }
 
-        return new ResponseError(
-            $this->responseData->getString(self::KEY_MESSAGE),
-            $this->responseData->getString(self::KEY_DETAILS),
-            $this->responseData->getInt(self::KEY_CODE),
-            $this->getEndpointException()
-        );
+        return null;
     }
 
     private function extractDataFromBody(string $body) : ArrayDataCollection
     {
         $body = trim($body);
 
-        if(empty($body)) {
+        if(empty($body))
+        {
+            $this->log('ExtractData | Empty body, ignoring.');
+
             return ArrayDataCollection::create();
         }
+
+        $this->log('ExtractData | Body length: [%s] characters.', strlen($body));
 
         // if logging is enabled, the client may wrap the
         // actual response in the tags: {RESPONSE}response_data{/RESPONSE}
@@ -196,11 +205,15 @@ class Connectors_Response implements Application_Interfaces_Loggable
             {
                 $this->json = $regs[1];
             }
+
+            $this->log('ExtractData | Extraneous content detected. JSON extracted using placeholders.');
         }
         else
         {
             $this->json = $body;
         }
+
+        $this->log('ExtractData | JSON content length: [%s].', strlen($this->json));
 
         try
         {
@@ -208,11 +221,16 @@ class Connectors_Response implements Application_Interfaces_Loggable
         }
         catch (JsonException $e)
         {
+            $this->log('ExtractData | The JSON could not be decoded: [%s]', $e->getMessage());
+            $this->logData(array('json' => $this->json));
+
             $decoded = null;
         }
 
         if(is_array($decoded))
         {
+            $this->log('ExtractData | JSON successfully decoded.');
+
             return ArrayDataCollection::create($decoded);
         }
 
@@ -261,6 +279,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
     {
         return isset($this->error);
     }
+
+    public function isLooseData() : bool
+    {
+        return $this->looseData;
+    }
     
     public function getHeader(string $name) : string
     {
@@ -289,6 +312,30 @@ class Connectors_Response implements Application_Interfaces_Loggable
         );
     }
 
+    /**
+     * There are two types of errors:
+     *
+     * 1. The response does not match the expectations. This can be an
+     *    HTTP response code not in the expected list, or the format
+     *    could not be recognized for example. The error will be an
+     *    instance of {@see ResponseError}.
+     *
+     * 2. The endpoint explicitly returned an error message. The error
+     *    object will be an instance of {@see ResponseEndpointError},
+     *    which offers additional error details as provided by the
+     *    endpoint. This can include exception details.
+     *
+     * @return ResponseError|null
+     */
+    public function getError() : ?ResponseError
+    {
+        return $this->error;
+    }
+
+    /**
+     * @return string
+     * @deprecated Use getError()->getMessage() instead.
+     */
     public function getErrorMessage() : string
     {
         if (isset($this->error)) {
@@ -297,7 +344,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
 
         return '';
     }
-    
+
+    /**
+     * @return int
+     * @deprecated Use getError()->getCode() instead.
+     */
     public function getErrorCode() : int
     {
         if(isset($this->error)) {
@@ -306,7 +357,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
         
         return 0;
     }
-    
+
+    /**
+     * @return string
+     * @deprecated Use getError()->getDetails() instead.
+     */
     public function getErrorDetails() : string
     {
         if(isset($this->error)) {
@@ -315,7 +370,11 @@ class Connectors_Response implements Application_Interfaces_Loggable
         
         return '';
     }
-    
+
+    /**
+     * @return mixed
+     * @deprecated Use getError()->getCode() instead.
+     */
     public function getErrorData() : array
     {
         return $this->getData();
@@ -356,15 +415,26 @@ class Connectors_Response implements Application_Interfaces_Loggable
     }
 
     /**
-     * @return array<string,mixed>
+     * Retrieves the decoded JSON data that was returned
+     * by the endpoint, if any.
+     *
+     * @return array<mixed>
      */
     public function getData() : array
     {
-        if(!$this->looseData) {
+        // Success response: The data is stored in the "data" key of
+        // the endpoint's payload.
+        if($this->getResponseState() === self::STATE_SUCCESS) {
             return $this->responseData->getArray(self::KEY_DATA);
         }
 
-        return $this->responseData->getData();
+        // Just loose data returned (response without state information)
+        if($this->isLooseData()) {
+            return $this->responseData->getData();
+        }
+
+        // Erroneous response, or no response
+        return array();
     }
 
     public function requireData() : array
@@ -397,19 +467,26 @@ class Connectors_Response implements Application_Interfaces_Loggable
     
     public function createException(string $message='', int $code=0) : Connectors_Exception
     {
-        $details = $this->getErrorDetails();
-        
-        $eMessage = $this->getErrorMessage();
-        if(!empty($message)) {
-            $eMessage = $message.' | Connector message: '.$eMessage;
+        $error = $this->getError();
+        $details = '';
+        $eMessage = '';
+        $eCode = 0;
+
+        if($error !== null)
+        {
+            $details = $error->getDetails();
+            $eMessage = $error->getMessage();
+            if (!empty($eMessage)) {
+                $eMessage = $message . ' | Connector message: ' . $eMessage;
+            }
+
+            $eCode = $error->getCode();
+            if (!empty($code)) {
+                $eMessage = 'Connector code: ' . $eCode . ' | ' . $eMessage;
+                $eCode = $code;
+            }
         }
-        
-        $eCode = $this->getErrorCode();
-        if(!empty($code)) {
-            $eMessage = 'Connector code: '.$eCode.' | '.$eMessage;
-            $eCode = $code;
-        }
-        
+
         $ex = new Connectors_Exception(
             $this->request->getConnector(),
             $eMessage,
@@ -434,7 +511,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         return ResponseSerializer::serialize($this);
     }
     
-    public static function unserialize(string $serialized) : Connectors_Response
+    public static function unserialize(string $serialized) : ?Connectors_Response
     {
         return ResponseSerializer::unserialize($serialized);
     }
@@ -461,45 +538,12 @@ class Connectors_Response implements Application_Interfaces_Loggable
      */
     public function getErrorCodes() : array
     {
-        $codes = array((string)$this->getErrorCode());
-
-        $error = $this->getEndpointError();
+        $error = $this->getError();
 
         if($error !== null) {
-            $codes[] = (string)$error->getCode();
+            return $error->getAllCodes();
         }
 
-        $exception = $this->getEndpointException();
-        if($exception !== null) {
-            $this->getExceptionCodesRecursive($exception, $codes);
-        }
-
-        $codes = array_unique($codes);
-        $result = array();
-
-        foreach($codes as $code) {
-            if($code !== '' && $code !== '0') {
-                $result[] = $code;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param ConvertHelper_ThrowableInfo $info
-     * @param string[] $result
-     * @return string[]
-     * @throws ConvertHelper_Exception
-     */
-    protected function getExceptionCodesRecursive(ConvertHelper_ThrowableInfo $info, array &$result=null) : array
-    {
-        $result[] = (string)$info->getCode();
-
-        if($info->hasPrevious()) {
-            $this->getExceptionCodesRecursive($info->getPrevious(), $result);
-        }
-
-        return $result;
+        return array();
     }
 }
