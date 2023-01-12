@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace testsuites\Connectors;
 
 use Application_Exception;
+use Connectors\Response\ResponseEndpointError;
 use Connectors_Connector_Dummy;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
 use Connectors_Response;
 use HTTP_Request2;
 use HTTP_Request2_Response;
-use PHPUnit\Framework\TestCase;
+use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use function AppUtils\parseThrowable;
 
-class RequestTests extends TestCase
+class RequestTests extends ApplicationTestCase
 {
     // region: _Tests
 
@@ -127,16 +128,22 @@ class RequestTests extends TestCase
 
         $this->assertTrue($response->isError());
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertSame(Connectors_Response::RETURNCODE_ERROR_RESPONSE, $response->getErrorCode());
-        $this->assertSame(array('foo' => 'Error bar'), $response->getData());
+        $this->assertEmpty($response->getData());
 
-        $error = $response->getEndpointError();
+        $error = $response->getError();
+
         $this->assertNotNull($error);
-        $this->assertSame(42, $error->getCode());
-        $this->assertSame('An error occurred.', $error->getMessage());
-        $this->assertSame('Developer details.', $error->getDetails());
+        $this->assertInstanceOf(ResponseEndpointError::class, $error);
+        $this->assertSame(Connectors_Response::RETURNCODE_ERROR_RESPONSE, $error->getCode());
 
-        $exception = $error->getException();
+        $endpointError = $error->getEndpointError();
+
+        $this->assertSame(42, $endpointError->getCode());
+        $this->assertSame('An error occurred.', $endpointError->getMessage());
+        $this->assertSame('Developer details.', $endpointError->getDetails());
+        $this->assertSame(array('foo' => 'Error bar'), $endpointError->getData());
+
+        $exception = $endpointError->getException();
 
         $this->assertNotNull($exception);
         $this->assertSame(452, $exception->getCode());
@@ -160,6 +167,8 @@ class RequestTests extends TestCase
 
     public function test_serialization() : void
     {
+        $this->enableLogging();
+
         $body = sprintf(
             $this->errorJSONResponse,
             json_encode(parseThrowable(
@@ -180,51 +189,66 @@ class RequestTests extends TestCase
             $body
         ));
 
+        $this->assertEmpty($response->getData());
+
         $serialized = $response->serialize();
-        $error = $response->getEndpointError();
-        $exception = $response->getEndpointException();
+        $error = $response->getError();
 
         $this->assertNotNull($error);
+        $this->assertInstanceOf(ResponseEndpointError::class, $error);
+
+        $endpointError = $error->getEndpointError();
+        $exception = $endpointError->getException();
+
+        $this->assertNotNull($endpointError);
         $this->assertNotNull($exception);
-        $this->assertSame(42, $error->getCode());
+        $this->assertSame(42, $endpointError->getCode());
         $this->assertSame(452, $exception->getCode());
 
         $restored = Connectors_Response::unserialize($serialized);
 
+        $this->assertNotNull($restored);
         $this->assertSame($response->getStatusCode(), $restored->getStatusCode());
         $this->assertSame($response->getRawJSON(), $restored->getRawJSON());
         $this->assertSame($response->getStatusMessage(), $restored->getStatusMessage());
         $this->assertSame($response->getURL(), $restored->getURL());
+        $this->assertSame($response->isLooseData(), $restored->isLooseData());
         $this->assertSame($response->getData(), $restored->getData());
-        $this->assertSame($response->getErrorDetails(), $restored->getErrorDetails());
-        $this->assertSame($response->getErrorCode(), $restored->getErrorCode());
 
-        $restoredError = $restored->getEndpointError();
-        $restoredException = $restored->getEndpointException();
+        $restoredError = $restored->getError();
+        $this->assertInstanceOf(ResponseEndpointError::class, $restoredError);
 
-        $this->assertNotNull($restoredError);
+        $restoredEndpointError = $restoredError->getEndpointError();
+        $restoredException = $restoredEndpointError->getException();
+
         $this->assertNotNull($restoredException);
         $this->assertSame($error->getCode(), $restoredError->getCode());
+        $this->assertSame($error->getDetails(), $restoredError->getDetails());
+        $this->assertSame($error->getData(), $restoredError->getData());
+        $this->assertSame($endpointError->getCode(), $restoredEndpointError->getCode());
         $this->assertSame($exception->getCode(), $restoredException->getCode());
     }
 
     public function test_nonJSONResponse() : void
     {
         $response = $this->createTestResponse('Invalid JSON response');
+        $error = $response->getError();
 
+        $this->assertNotNull($error);
         $this->assertTrue($response->isError());
         $this->assertEmpty($response->getResponseState());
-        $this->assertNull($response->getEndpointError());
+        $this->assertNotInstanceOf(ResponseEndpointError::class, $error);
         $this->assertEmpty($response->getData());
-        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $error->getCode());
     }
 
     public function test_invalidJSONResponse() : void
     {
         $response = $this->createTestResponse('{"foo":"bar"}');
+        $error = $response->getError();
 
-        $this->assertTrue($response->isError());
-        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $response->getErrorCode());
+        $this->assertNotNull($error);
+        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $error->getCode());
     }
 
     public function test_invalidJSONStrayOutputResponse() : void
@@ -234,8 +258,10 @@ class RequestTests extends TestCase
             '{"foo":"bar"}'
         ));
 
-        $this->assertTrue($response->isError());
-        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $response->getErrorCode());
+        $error = $response->getError();
+
+        $this->assertNotNull($error);
+        $this->assertSame(Connectors_Response::RETURNCODE_UNEXPECTED_FORMAT, $error->getCode());
     }
 
     public function test_invalidFormatJSONStrayOutput() : void
@@ -245,8 +271,10 @@ class RequestTests extends TestCase
             'true'
         ));
 
-        $this->assertTrue($response->isError());
-        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
+        $error = $response->getError();
+
+        $this->assertNotNull($error);
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $error->getCode());
     }
 
     /**
@@ -258,9 +286,10 @@ class RequestTests extends TestCase
     public function test_invalidResponse() : void
     {
         $response = $this->createTestResponse('true');
+        $error = $response->getError();
 
-        $this->assertTrue($response->isError());
-        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $response->getErrorCode());
+        $this->assertNotNull($error);
+        $this->assertSame(Connectors_Response::RETURNCODE_JSON_NOT_PARSEABLE, $error->getCode());
     }
 
     // endregion
