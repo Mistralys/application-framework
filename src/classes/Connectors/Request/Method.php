@@ -31,9 +31,9 @@ class Connectors_Request_Method extends Connectors_Request
      * @throws Application_Exception
      * @throws Connectors_Exception
      */
-    public function __construct(Connectors_Connector $connector, string $url, string $method, array $postData = array(), array $getData = array())
+    public function __construct(Connectors_Connector $connector, string $url, string $method, array $postData = array(), array $getData = array(), ?string $id=null)
     {
-        parent::__construct($connector, $url, $postData, $getData);
+        parent::__construct($connector, $url, $postData, $getData, $id);
 
         $this->method = $method;
     }
