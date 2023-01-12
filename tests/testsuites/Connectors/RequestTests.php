@@ -19,6 +19,8 @@ class RequestTests extends ApplicationTestCase
 {
     // region: _Tests
 
+    public const BASE_ENDPOINT_URL = 'https://endpoint';
+
     public function test_disableCache() : void
     {
         $request = $this->createTestMethodRequest();
@@ -163,6 +165,84 @@ class RequestTests extends ApplicationTestCase
         $this->assertFalse($response->isError());
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(array('foo' => 'bar'), $response->getData());
+    }
+
+    /**
+     * Ensures that the URLs are handled correctly regarding
+     * the GET parameters. Any parameters specified in the
+     * URL must be removed and added to the collection of GET
+     * parameters.
+     *
+     * NOTE: This is important because any GET parameters
+     * included in the URL are automatically stripped by the
+     * backend library.
+     */
+    public function test_URLHandling_serializeWithGETParams() : void
+    {
+        $body = sprintf(
+            $this->errorJSONResponse,
+            json_encode(parseThrowable(
+                new Application_Exception(
+                    'Endpoint exception',
+                    'Endpoint details',
+                    452
+                )
+            )->serialize(), JSON_THROW_ON_ERROR)
+        );
+
+        $baseURL = self::BASE_ENDPOINT_URL.'?argh=yes';
+
+        $response = $this->createTestResponse(
+            $body,
+            200,
+            null,
+            $baseURL,
+            array(
+                'foo' => 'bar'
+            )
+        );
+
+        $this->assertSame(self::BASE_ENDPOINT_URL, $response->getRequest()->getBaseURL());
+        $this->assertSame($baseURL.'&foo=bar', $response->getRequest()->getRequestURL());
+        $this->assertSame($baseURL.'&foo=bar', $response->getURL());
+
+        $serialized = $response->serialize();
+        $restored = Connectors_Response::unserialize($serialized);
+
+        $this->assertNotNull($restored);
+        $this->assertSame(self::BASE_ENDPOINT_URL, $restored->getRequest()->getBaseURL());
+        $this->assertSame($baseURL.'&foo=bar', $restored->getRequest()->getRequestURL());
+        $this->assertSame($baseURL.'&foo=bar', $restored->getURL());
+    }
+
+    public function test_URLHandling() : void
+    {
+        $body = sprintf(
+            $this->errorJSONResponse,
+            json_encode(parseThrowable(
+                new Application_Exception(
+                    'Endpoint exception',
+                    'Endpoint details',
+                    452
+                )
+            )->serialize(), JSON_THROW_ON_ERROR)
+        );
+
+        $baseURL = self::BASE_ENDPOINT_URL;
+
+        $response = $this->createTestResponse(
+            $body,
+            200,
+            null,
+            $baseURL,
+            array(
+                'foo' => 'bar'
+            )
+        );
+
+        $this->assertSame($baseURL, $response->getRequest()->getBaseURL());
+        $this->assertSame($baseURL.'?foo=bar', $response->getRequest()->getRequestURL());
+        $this->assertSame($baseURL.'?foo=bar', $response->getURL());
     }
 
     public function test_serialization() : void
@@ -323,17 +403,24 @@ There is content all around it.
 EOT;
 
 
-    public function createTestResponse(string $body, int $statusCode = 200, ?string $method = null, ?string $url = null) : Connectors_Response
+    public function createTestResponse(string $body, int $statusCode = 200, ?string $method = null, ?string $url = null, ?array $getData=null) : Connectors_Response
     {
         $request = $this->createTestMethodRequest($method, $url);
 
         $HTTPResponse = new HTTP_Request2_Response(
             'HTTP/1.1 ' . $statusCode . ' OK',
             false,
-            'https://endpoint'
+            self::BASE_ENDPOINT_URL
         );
 
         $HTTPResponse->appendBody($body);
+
+        if($getData !== null)
+        {
+            foreach($getData as $name => $value) {
+                $request->setGETData($name, $value);
+            }
+        }
 
         return new Connectors_Response($request, $HTTPResponse);
     }
@@ -342,7 +429,7 @@ EOT;
     {
         return new Connectors_Request_Method(
             new Connectors_Connector_Dummy(),
-            $url ?? 'https://endpoint',
+            $url ?? self::BASE_ENDPOINT_URL,
             $method ?? 'TestMethod'
         );
     }
