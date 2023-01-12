@@ -14,6 +14,7 @@ use AppUtils\ConvertHelper_ThrowableInfo;
 use Connectors\Response\ResponseEndpointError;
 use Connectors\Response\ResponseError;
 use Connectors\Response\ResponseSerializer;
+use function AppUtils\parseURL;
 
 /**
  * Information on a single response of a connector request.
@@ -382,26 +383,31 @@ class Connectors_Response implements Application_Interfaces_Loggable
 
    /**
     * Retrieves the full URL that has been requested. If any parameters
-    * were sent via post, they are included as well.
+    * were sent via GET or POST, they are included as well. Recommended
+    * to be used for verification purposes only.
     * 
     * @return string
+    * @see Connectors_Request::getBaseURL()
     */
     public function getURL() : string
     {
-        $url = $this->result->getEffectiveUrl();
-        
-        $data = $this->request->getPostData();
-        if(!empty($data)) 
+        $url = parseURL($this->result->getEffectiveUrl());
+
+        $data = $this->request->getGetData();
+
+        foreach ($data as $name => $value)
         {
-            $connect = '?';
-            if(strpos($url, '?') !== false) {
-                $connect = '&';
-            }
-            
-            $url .= $connect.http_build_query($data);
+            $url->setParam($name, $value);
+        }
+
+        $data = $this->request->getPostData();
+
+        foreach ($data as $name => $value)
+        {
+            $url->setParam($name, $value);
         }
         
-        return $url;
+        return $url->getNormalized();
     }
 
     public function getResult() : HTTP_Request2_Response
