@@ -1,3 +1,9 @@
+### v2.4.1 - Connector URL fix
+- Connectors: Removed the exception when using a URL with GET parameters.
+- Connectors: Added inheriting GET parameters from the endpoint URL.
+- Connectors: Fixed URL handling discrepancies.
+- Connectors: Added `Connectors_Request::getBaseURL()`.
+
 ### v2.4.0 - Connectors Cache fix redux
 - Formable: Added a workaround for [#48](https://github.com/Mistralys/application-framework/issues/48).
 - CollectionSettings: Added extensible `_handleHiddenVars()`.
