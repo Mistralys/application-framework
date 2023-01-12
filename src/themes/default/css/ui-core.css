@@ -199,17 +199,6 @@ LABEL.link {
     background-color: #828282;
 }
 
-A.whatsnew-image > IMG {
-    max-width: 60%;
-    border: solid 1px #ccc;
-    display: block;
-}
-
-/* avoid the arrow ususally shown on external links */
-A.whatsnew-image:after {
-    content: "" !important;
-}
-
 DIV.log > CODE {
     font-family: monospace;
     white-space: nowrap;
@@ -258,16 +247,6 @@ DIV.log > CODE {
 
 #auth .caret {
     border-top-color: #fff;
-}
-
-A.dark:link,
-A.dark:visited {
-    color: #d8e9ff;
-}
-
-A.dark:active,
-A.dark:hover {
-    color: #fff;
 }
 
 #developer_mode_hint {
@@ -855,27 +834,6 @@ BODY.fontsize-bigger.non-zoomable {
     margin-bottom: 0;
 }
 
-A[target="_blank"]:not([type="button"]) {
-    color: #063aae;
-}
-
-A[type="button"] {
-    cursor:pointer;
-}
-
-/*Don't change color for external links in a dropdown menu*/
-.dropdown-menu > li > a[target="_blank"]:not([type="button"]) {
-    color: #333;
-}
-
-/**
- * Add the " »" after external links, with a non
- * breaking space before it.
- */
-A[target="_blank"]:not([type="button"]):after {
-    content: "\00A0\00bb";
-}
-
 .text-warning {
     color: #e2500b;
 }
@@ -1189,6 +1147,57 @@ H3.page-abstract {
 
 .badge.badge-small {
     line-height: 0.8em;
+}
+
+/* endregion */
+
+/* region: Links */
+
+.muted A:link,
+.muted A:visited{
+    color: #999;
+}
+
+A.dark:link,
+A.dark:visited {
+    color: #d8e9ff;
+}
+
+A.dark:active,
+A.dark:hover {
+    color: #fff;
+}
+
+A.whatsnew-image > IMG {
+    max-width: 60%;
+    border: solid 1px #ccc;
+    display: block;
+}
+
+/* avoid the arrow ususally shown on external links */
+A.whatsnew-image:after {
+    content: "" !important;
+}
+
+A[target="_blank"]:not([type="button"]) {
+    color: #063aae;
+}
+
+/*Don't change color for external links in a dropdown menu*/
+.dropdown-menu > li > a[target="_blank"]:not([type="button"]) {
+    color: #333;
+}
+
+/**
+ * Add the " »" after external links, with a non
+ * breaking space before it.
+ */
+A[target="_blank"]:not([type="button"]):after {
+    content: "\00A0\00bb";
+}
+
+A[type="button"] {
+    cursor:pointer;
 }
 
 /* endregion */
