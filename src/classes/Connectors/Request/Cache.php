@@ -116,7 +116,7 @@ class Connectors_Request_Cache implements Application_Interfaces_Loggable
         return $this;
     }
 
-    public function fetchResponse() : Connectors_Response
+    public function fetchResponse() : ?Connectors_Response
     {
         $file = $this->getCacheFile();
 

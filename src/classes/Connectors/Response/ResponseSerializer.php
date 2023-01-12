@@ -42,11 +42,15 @@ class ResponseSerializer
         ));
     }
 
-    public static function unserialize(string $serialized) : Connectors_Response
+    public static function unserialize(string $serialized) : ?Connectors_Response
     {
         $data = ArrayDataCollection::create(JSONConverter::json2array($serialized));
 
         $request = Connectors_Request::unserialize($data->getString(self::KEY_REQUEST));
+        if($request === null)
+        {
+            return null;
+        }
 
         $logPrefix = $request->getLogIdentifier().' | Response | ';
 
@@ -68,6 +72,8 @@ class ResponseSerializer
             $request->getRequestURL()
         );
 
+        // Use the original response's body - the response object
+        // will interpret it just like it did the original response.
         $response->appendBody($data->getString(self::KEY_BODY));
 
         return new Connectors_Response($request, $response);

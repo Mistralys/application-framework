@@ -130,14 +130,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * directly usable.
      *
      * @param string $json
-     * @return Connectors_Request
+     * @return Connectors_Request|NULL Can be null if the data is invalid, or obsolete.
      *
      * @throws Application_Exception
      * @throws Connectors_Exception
      * @throws JSONConverterException
      * @throws UnexpectedInstanceException
      */
-    public static function unserialize(string $json) : Connectors_Request
+    public static function unserialize(string $json) : ?Connectors_Request
     {
         return RequestSerializer::unserialize($json);
     }
@@ -462,8 +462,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         // Bypass the request entirely if the cache is valid.
         if($this->cache->isValid())
         {
-            $this->log('Cache is valid, fetching cached response.');
-            return $this->cache->fetchResponse();
+            $this->log('Cache | Cache is valid, fetching cached response.');
+
+            $response = $this->cache->fetchResponse();
+            if($response !== null) {
+                return $response;
+            }
+
+            $this->log('Cache | No response returned, must have been invalid.');
         }
 
         $this->log('Cache is not valid, fetching live data.');
