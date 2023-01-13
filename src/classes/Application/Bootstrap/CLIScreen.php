@@ -7,12 +7,9 @@ use GetOpt\GetOpt;
 
 abstract class Application_Bootstrap_CLIScreen extends Application_Bootstrap_Screen
 {
-   /**
-    * @var GetOpt
-    */
-    protected $opt;
+    protected GetOpt $opt;
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->disableAuthentication();
         $this->enableScriptMode();
@@ -71,26 +68,7 @@ abstract class Application_Bootstrap_CLIScreen extends Application_Bootstrap_Scr
     
    /**
     * Used to set up all available command line switches
+    * @return void
     */
     abstract protected function configureCommands();
-
-   /**
-    * Logs a text to the console, with a newline appended.
-    * 
-    * @param mixed ...$params
-    */
-    protected function log(...$params)
-    {
-        echo call_user_func_array('sprintf', $params).PHP_EOL;
-    }
-    
-   /**
-    * Logs a text to the console, without newline appended.
-    * 
-    * @param mixed ...$params
-    */
-    protected function ilog(...$params)
-    {
-        echo call_user_func_array('sprintf', $params);
-    }
 }
