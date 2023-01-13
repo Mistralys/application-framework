@@ -1,3 +1,6 @@
+### v2.4.2 - Bugfix
+- CLIScreens: Fixed a PHP error in the overridden `log()` method.
+
 ### v2.4.1 - Connector URL fix
 - Connectors: Removed the exception when using a URL with GET parameters.
 - Connectors: Added inheriting GET parameters from the endpoint URL.
