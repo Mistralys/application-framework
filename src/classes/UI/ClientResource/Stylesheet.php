@@ -25,7 +25,11 @@ class UI_ClientResource_Stylesheet extends UI_ClientResource
     {
         return UI_Themes_Theme::FILE_TYPE_STYLESHEET;
     }
-    
+
+    protected function init() : void
+    {
+    }
+
     public function setMedia(string $media) : UI_ClientResource_Stylesheet
     {
         $this->media = $media;
