@@ -42,23 +42,6 @@
  * @see Application_Admin_Area_Mode_Submode_CollectionEdit
  * @see Application_Admin_Area_Mode_Submode_Action_CollectionEdit
  * @see Application_Interfaces_Admin_CollectionSettings
- *
- * @property UI $ui
- * @property UI_Page_Sidebar $sidebar
- * @property Application_Request $request
- * @property Application_Driver $driver
- * @property Application_User $user
- * @property UI_Page $page
- * @property UI_Page_Breadcrumb $breadcrumb
- * @property Application_Session $session
- * @property Application_LockManager $lockManager
- * @property UI_Themes_Theme_ContentRenderer $renderer 
- * @property bool $adminMode
- * @property string $instanceID
- * @property UI_Form $formableForm
- * @method void createFormableForm(string $name, array $defaultData=array())
- * @method void startTransaction()
- * @method void endTransaction()
  */
 trait Application_Traits_Admin_CollectionSettings
 {
