@@ -931,11 +931,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->addRuleRequiredIfOther($element, $message, $otherElement, '', '!=');
     }
     
-    public function addRuleFloat(HTML_QuickForm2_Element $element)
+    public function addRuleFloat(HTML_QuickForm2_Element $element, float $min=0, float $max=0)
     {
         $this->requireFormableInitialized();
         
-        return $this->formableForm->addRuleFloat($element);
+        return $this->formableForm->addRuleFloat($element, $min, $max);
     }
     
    /**
