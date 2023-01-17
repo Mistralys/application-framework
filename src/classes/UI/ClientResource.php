@@ -66,7 +66,11 @@ abstract class UI_ClientResource
         $this->key = $loadKey;
         $this->fileType = $this->_getFileType();
         $this->theme = $ui->getTheme();
+
+        $this->init();
     }
+
+    abstract protected function init() : void;
     
     abstract protected function _getFileType() : string;
     
