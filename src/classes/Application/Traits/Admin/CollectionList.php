@@ -25,23 +25,6 @@ use Application\Interfaces\Admin\CollectionListInterface;
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * 
- * @property UI $ui
- * @property UI_Page_Sidebar $sidebar
- * @property Application_Request $request
- * @property Application_Driver $driver
- * @property Application_User $user
- * @property UI_Page $page
- * @property UI_Page_Breadcrumb $breadcrumb
- * @property Application_Session $session
- * @property Application_LockManager $lockManager
- * @property UI_Themes_Theme_ContentRenderer $renderer 
- * @property bool $adminMode
- * @property string $instanceID
- * @method Application_Admin_Skeleton getParent()
- * @method void createFormableForm($defaultData, $jsid)
- * @method void startTransaction()
- * @method void endTransaction()
  */
 trait Application_Traits_Admin_CollectionList
 {
@@ -53,12 +36,12 @@ trait Application_Traits_Admin_CollectionList
    /**
     * @var string
     */
-    protected $gridName;
+    protected string $gridName;
     
     /**
      * @var UI_DataGrid
      */
-    protected $grid;
+    protected UI_DataGrid $grid;
     
     /**
      * @var DBHelper_BaseFilterSettings
@@ -73,7 +56,7 @@ trait Application_Traits_Admin_CollectionList
    /**
     * @var bool
     */
-    protected $filtersAdded = false;
+    protected bool $filtersAdded = false;
     
     public function getURLName() : string
     {
@@ -83,15 +66,22 @@ trait Application_Traits_Admin_CollectionList
     protected function _handleActions() : bool
     {
         $this->collection = $this->createCollection();
-        $this->gridName = $this->collection->getDataGridName();
+        $this->gridName = $this->getGridName();
         $this->filterSettings = $this->collection->getFilterSettings();
         $this->filters = $this->collection->getFilterCriteria();
-        
+
+        $this->filterSettings->setID($this->gridName);
+
         $this->validateRequest();
         
         $this->createDataGrid();
 
         return true;
+    }
+
+    public function getGridName() : string
+    {
+        return $this->collection->getDataGridName();
     }
     
     protected function validateRequest() : void
