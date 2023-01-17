@@ -1,3 +1,10 @@
+### v2.4.3 - Filter Settings enhancements
+- FilterSettings: Added `setSettingEnabled()` to turn individual settings on/off.
+- FilterSettings: Added lazy loading of settings.
+- FilterSettings: Added `setID()` to adjust the ID after instantiation.
+- FilterSettings: Added logging.
+- Formable: Added missing min and max arguments to `addRuleFloat()`.
+
 ### v2.4.2 - Bugfix
 - CLIScreens: Fixed a PHP error in the overridden `log()` method.
 
