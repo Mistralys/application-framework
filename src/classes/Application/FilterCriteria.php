@@ -588,14 +588,21 @@ abstract class Application_FilterCriteria
     }
 
     /**
-     * Whether any values have been added for the specified type.
+     * Whether any values have been added for the specified type(s).
      *
-     * @param string $type
+     * @param string ...$types
      * @return bool
      */
-    protected function hasCriteriaValues(string $type) : bool
+    protected function hasCriteriaValues(...$types) : bool
     {
-        return isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type]);
+        foreach($types as $type)
+        {
+            if(isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function isCount() : bool
