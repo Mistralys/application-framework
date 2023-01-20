@@ -4,6 +4,7 @@
 - FilterSettings: Added `setID()` to adjust the ID after instantiation.
 - FilterSettings: Added logging.
 - Formable: Added missing min and max arguments to `addRuleFloat()`.
+- FilterCriteria: `hasCriteriaValues()` can now be used with multiple types.
 
 ### v2.4.2 - Bugfix
 - CLIScreens: Fixed a PHP error in the overridden `log()` method.
