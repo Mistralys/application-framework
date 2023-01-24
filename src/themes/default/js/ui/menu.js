@@ -80,7 +80,7 @@ var UI_Menu =
 		// check if the previous item isn't already a separator
 		if(this.items.length >= 2) {
 			var previous = this.items[this.items.length-1];
-			if(previous.GetType()=='separator') {
+			if(previous.GetType() === 'separator') {
 				return this;
 			}
 		}
