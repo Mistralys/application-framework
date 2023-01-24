@@ -23,7 +23,7 @@ class Application_Updaters
    /**
     * @var Application_Updaters_Updater[]
     */
-	protected $updaters;
+	protected array $updaters = array();
 
 	protected $classesFolder;
 
@@ -69,14 +69,8 @@ class Application_Updaters
 		$this->request->registerParam('updater_id')->setEnum(array_keys($this->updaters));
 	}
 
-	protected function loadUpdaters()
+	protected function loadUpdaters() : void
 	{
-		if(isset($this->updaters)) {
-			return;
-		}
-
-		$this->updaters = array();
-
 		if(!file_exists($this->classesFolder) || !is_dir($this->classesFolder)) {
 			return;
 		}
@@ -101,10 +95,7 @@ class Application_Updaters
 		}
 	}
 
-   /**
-    * @var Application_Updaters_Updater
-    */
-	protected $activeUpdater;
+	protected ?Application_Updaters_Updater $activeUpdater = null;
 
 	public function start() : void
 	{

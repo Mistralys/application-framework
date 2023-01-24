@@ -886,7 +886,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 
     /* END METHODS */
 
-    public function spinner() : UI_Icon
+    public function spinner() : self
     {
         $this->setType('SPINNER');
         $this->makeSpinner();
@@ -897,9 +897,9 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * Sets the icon's type.
      * @param string $name
      * @param string $prefix
-     * @return UI_Icon
+     * @return $this
      */
-    public function setType(string $name, string $prefix='') : UI_Icon
+    public function setType(string $name, string $prefix='') : self
     {
         if(empty($prefix)) {
             $prefix = 'fa';
@@ -924,9 +924,9 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * icon tag's class attribute.
      *
      * @param string $className
-     * @return UI_Icon
+     * @return $this
      */
-    public function addClass(string $className) : UI_Icon
+    public function addClass(string $className) : self
     {
         if (!in_array($className, $this->classes)) {
             $this->classes[] = $className;
@@ -935,7 +935,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         return $this;
     }
 
-    public function makeSpinner() : UI_Icon
+    /**
+     * @return $this
+     */
+    public function makeSpinner() : self
     {
         return $this->addClass('fa-spin');
     }
@@ -945,7 +948,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @var string|null
      */
-    private $colorStyle = null;
+    private ?string $colorStyle = null;
 
     public const COLOR_STYLE_DANGER = 'danger';
     public const COLOR_STYLE_WARNING = 'warning';
@@ -957,7 +960,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @var array<string,string>
      */
-    private static $colorClasses = array(
+    private static array $colorClasses = array(
         self::COLOR_STYLE_DANGER => 'text-error',
         self::COLOR_STYLE_WARNING => 'text-warning',
         self::COLOR_STYLE_MUTED => 'muted',
@@ -988,7 +991,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         );
     }
 
-    public function makeColorStyle(string $style) : UI_Icon
+    public function makeColorStyle(string $style) : self
     {
         self::requireValidColorStyle($style);
 
@@ -1002,38 +1005,38 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      *
      * @return $this
      */
-    public function makeRegular() : UI_Icon
+    public function makeRegular() : self
     {
         $this->colorStyle = null;
         return $this;
     }
 
-    public function makeDangerous() : UI_Icon
+    public function makeDangerous() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_DANGER);
     }
     
-    public function makeWarning() : UI_Icon
+    public function makeWarning() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_WARNING);
     }
     
-    public function makeMuted() : UI_Icon
+    public function makeMuted() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_MUTED);
     }
 
-    public function makeSuccess() : UI_Icon
+    public function makeSuccess() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_SUCCESS);
     }
 
-    public function makeInformation() : UI_Icon
+    public function makeInformation() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_INFO);
     }
 
-    public function makeWhite() : UI_Icon
+    public function makeWhite() : self
     {
         return $this->makeColorStyle(self::COLOR_STYLE_WHITE);
     }
@@ -1045,7 +1048,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     * will be the click-enabled cursor. Optionally
     * a click handling statement can be specified.
     */
-    public function makeClickable(?string $statement=null) : UI_Icon
+    public function makeClickable(?string $statement=null) : self
     {
         if(!empty($statement))
         {
@@ -1060,14 +1063,14 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * @return $this
      * @throws UI_Exception
      */
-    public function setTooltip($text) : UI_Icon
+    public function setTooltip($text) : self
     {
         $this->tooltip['text'] = toString($text);
         
         return $this;
     }
 
-    public function setID(string $id) : UI_Icon
+    public function setID(string $id) : self
     {
         $this->id = $id;
 
@@ -1079,7 +1082,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * @param mixed $value
      * @return $this
      */
-    public function setAttribute(string $name, $value) : UI_Icon
+    public function setAttribute(string $name, $value) : self
     {
         $this->attributes[$name] = $value;
 
@@ -1178,9 +1181,9 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     
    /**
     * Displays a help cursor when hovering over the icon.
-    * @return UI_Icon
+    * @return self
     */
-    public function cursorHelp() : UI_Icon
+    public function cursorHelp() : self
     {
         return $this->setStyle('cursor', 'help');
     }
@@ -1196,15 +1199,19 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     * 
     * @param string $name
     * @param string $value
-    * @return UI_Icon
+    * @return $this
     */
-    public function setStyle(string $name, string $value) : UI_Icon
+    public function setStyle(string $name, string $value) : self
     {
         $this->styles[$name] = $value;
         return $this;
     }
 
-    public function removeStyle(string $name) : UI_Icon
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function removeStyle(string $name) : self
     {
         if(isset($this->styles[$name]))
         {
@@ -1214,7 +1221,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         return $this;
     }
 
-    protected $styles = array();
+    /**
+     * @var array<string,string>
+     */
+    protected array $styles = array();
 
     public const TOOLTIP_POSITION_TOP = 'top';
     public const TOOLTIP_POSITION_BOTTOM = 'bottom';
@@ -1250,10 +1260,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      * Sets the position for the tooltip, if one is used.
      *
      * @param string $position "top" (default), "left", "right", "bottom"
-     * @return UI_Icon
+     * @return self
      * @throws UI_Exception
      */
-    public function setTooltipPosition(string $position=self::TOOLTIP_POSITION_TOP) : UI_Icon
+    public function setTooltipPosition(string $position=self::TOOLTIP_POSITION_TOP) : self
     {
         self::requireValidTooltipPosition($position);
         
@@ -1261,35 +1271,27 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
         return $this;
     }
     
-    public function makeTooltipTop() : UI_Icon
+    public function makeTooltipTop() : self
     {
         return $this->setTooltipPosition('top');
     }
 
-    public function makeTooltipLeft() : UI_Icon
+    public function makeTooltipLeft() : self
     {
         return $this->setTooltipPosition('left');
     }
 
-    public function makeTooltipRight() : UI_Icon
+    public function makeTooltipRight() : self
     {
         return $this->setTooltipPosition('right');
     }
 
-    public function makeTooltipBottom() : UI_Icon
+    public function makeTooltipBottom() : self
     {
         return $this->setTooltipPosition('bottom');
     }
 
-    /**
-     * @return array<string,string>
-     */
-    public function getIconTypes() : array
-    {
-        return self::$types; 
-    }
-    
-    public function setHidden(bool $hidden=true) : UI_Icon
+    public function setHidden(bool $hidden=true) : self
     {
         if($hidden)
         {

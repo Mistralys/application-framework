@@ -115,15 +115,15 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
 
     /**
      * Runtime caching of the date object
-     * @var DateTime
+     * @var DateTime|NULL
      */
-    protected $dateAdded;
+    protected ?DateTime $dateAdded = null;
 
     /**
      * Retrieves the date that this document was added.
      * @return DateTime
      */
-    public function getDateAdded()
+    public function getDateAdded() : DateTime
     {
         if (!isset($this->dateAdded)) {
             $this->dateAdded = new DateTime($this->data['media_date_added']);
@@ -423,10 +423,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         return $this->cachedTypeID;
     }
     
-   /**
-    * @var Application_Media_Configuration
-    */
-    protected $config;
+    protected ?Application_Media_Configuration $config = null;
     
    /**
     * Sets the configuration to use for this media document,
@@ -434,9 +431,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     * 
     * @param Application_Media_Configuration $config
     */
-    public function setConfiguration(Application_Media_Configuration $config)
+    public function setConfiguration(Application_Media_Configuration $config) : void
     {
-        if($config->getTypeID() != $this->getTypeID()) {
+        if($config->getTypeID() !== $this->getTypeID()) {
             throw new Application_Exception(
                 'Media configuration error',
                 sprintf(
@@ -462,12 +459,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     
    /**
     * Retrieves the document's media configuration.
-    * NOTE: this is not always available, so you should check
-    * if it is using the {@link hasConfiguration} method.
+    *
+    * NOTE: this is not always available.
     * 
-    * @return Application_Media_Configuration
+    * @return Application_Media_Configuration|NULL
     */
-    public function getConfiguration()
+    public function getConfiguration() : ?Application_Media_Configuration
     {
         return $this->config;
     }
@@ -478,21 +475,21 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     * @throws Application_Exception
     * @return boolean
     */
-    public function isProcessRequired()
+    public function isProcessRequired() : bool
     {
-        if(!$this->hasConfiguration()) {
-            throw new Application_Exception(
-                'Media configuration missing',
-                sprintf(
-                    'Cannot check if the media document [%s] of type [%s] requires processing, no media configuration has been set.',
-                    $this->getID(),
-                    $this->getTypeID()    
-                ),
-                self::ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS
-            );
+        if(isset($this->config)) {
+            return $this->config->isProcessRequired($this);
         }
-        
-        return $this->config->isProcessRequired($this);
+
+        throw new Application_Exception(
+            'Media configuration missing',
+            sprintf(
+                'Cannot check if the media document [%s] of type [%s] requires processing, no media configuration has been set.',
+                $this->getID(),
+                $this->getTypeID()
+            ),
+            self::ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS
+        );
     }
     
     public function isUpload()

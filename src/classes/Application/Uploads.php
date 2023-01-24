@@ -22,18 +22,14 @@ class Application_Uploads
     public const ERROR_NO_UPLOAD_TMP_DIR = 42801;
     public const ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
     
-    /**
-     * The uploads manager instance.
-     * @var Application_Uploads
-     */
-    protected static $instance;
+    protected static ?Application_Uploads $instance = null;
 
     /**
      * The full path to the storage folder.
      * @see getStorageFolder()
      * @var string
      */
-    protected $storageFolder;
+    protected string $storageFolder;
 
     /**
      * Retrieves the global instance of the uploads manager. Creates
@@ -59,12 +55,12 @@ class Application_Uploads
      * Retrieves the full path to the folder where uploads are stored.
      * @return string
      */
-    public function getStorageFolder()
+    public function getStorageFolder() : string
     {
         return $this->storageFolder;
     }
 
-    protected $messages = array();
+    protected array $messages = array();
 
     /**
      * Resets all internal messages, discards all existing messages.

@@ -355,9 +355,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
     
    /**
-    * @var Application_RevisionableCollection_DBRevisionable[]
+    * @var Application_RevisionableCollection_DBRevisionable[]|NULL
     */
-    protected $cachedItems;
+    protected ?array $cachedItems = null;
     
    /**
     * @return Application_RevisionableCollection_DBRevisionable

@@ -72,21 +72,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
    /**
     * @var string[]
     */
-    protected $requestedRoles = array();
+    protected array $requestedRoles = array();
 
-    /**
-     * @var Application_User_Recent|NULL
-     */
-    protected $recent;
-
-    /**
-     * @var Application_User_Statistics|NULL
-     */
-    protected $statistics;
-    /**
-     * @var Application_User_ScreenTracker
-     */
-    private $screenTracker;
+    protected ?Application_User_Recent $recent = null;
+    protected ?Application_User_Statistics $statistics = null;
+    private ?Application_User_ScreenTracker $screenTracker = null;
 
     /**
      * @var int

@@ -30,6 +30,7 @@ abstract class Application_Session_Base implements Application_Session
     public const ERROR_INVALID_USER_CLASS = 22206;
     public const ERROR_INVALID_USER_ID = 22207;
     public const ERROR_NO_USER_AVAILABLE = 22208;
+    public const ERROR_PRESET_NOT_DEFINED = 22209;
 
     public const KEY_NAME_USER_ID = 'user_id';
     public const KEY_NAME_USER_RIGHTS = 'user_rights';
@@ -54,7 +55,7 @@ abstract class Application_Session_Base implements Application_Session
     /**
      * @var array<string,array<int,string>>
      */
-    protected $rightPresets = array();
+    protected array $rightPresets = array();
 
     protected ?Application_User $user = null;
 
@@ -114,22 +115,7 @@ abstract class Application_Session_Base implements Application_Session
         
         $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
 
-        // A user is present in the session and can be unpacked.
         $this->user = $this->unpackUser();
-
-        if ($this->user !== null)
-        {
-            return;
-        }
-
-        throw new Application_Exception(
-            'Invalid user credentials',
-            sprintf(
-                'Could not create User for ID [%s] as stored in the session.',
-                $this->getUserID()
-            ),
-            self::ERROR_INVALID_USER_ID
-        );
     }
 
     public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
@@ -189,10 +175,7 @@ abstract class Application_Session_Base implements Application_Session
      */
     protected function unpackUser() : Application_User
     {
-        $userClass = Application::getUserClass();
-        $userID = $this->getUserID();
-
-        $user = Application::createUser($userID);
+        $user = Application::createUser($this->getUserID());
         $user->setRights($this->unpackRights());
 
         return $user;
@@ -412,17 +395,30 @@ abstract class Application_Session_Base implements Application_Session
         );
     }
 
+    /**
+     * @return string
+     * @throws Application_Exception
+     * @throws Application_Session_Exception
+     */
     public function getCurrentRights() : string
     {
         $this->requireSimulatedSession();
 
-        $rights = $this->rightPresets[$this->getRightPreset()];
+        $presetID = $this->getRightPreset();
 
-        if(is_array($rights)) {
-            return implode(',', $rights);
+        if(isset($this->rightPresets[$presetID])) {
+            return implode(',', $this->rightPresets[$presetID]);
         }
 
-        return $rights;
+        throw new Application_Session_Exception(
+            'Right preset not defined',
+            sprintf(
+                'The right preset [%s] does not exist in class [%s].',
+                $presetID,
+                get_class($this)
+            ),
+            self::ERROR_PRESET_NOT_DEFINED
+        );
     }
 
     /**

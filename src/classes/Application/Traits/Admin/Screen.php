@@ -62,17 +62,14 @@ use UI\Page\Navigation\QuickNavigation;
  */
 trait Application_Traits_Admin_Screen
 {
-   /**
-    * @var string
-    */
-    protected $screenID;
+    protected ?string $screenID = null;
     
    /**
     * Cached flag for the active state of the page.
-    * @var boolean
+    * @var boolean|NULL
     * @see isActive()
     */
-    protected $active;
+    protected ?bool $active = null;
     
    /**
     * Caches subscreen IDs.
@@ -94,9 +91,9 @@ trait Application_Traits_Admin_Screen
     
    /**
     * Caches the screen's log prefix.
-    * @var string
+    * @var string|NULL
     */
-    protected $logPrefix;
+    protected ?string $logPrefix = null;
     
    /**
     * Caches the screen's URL path.
@@ -104,10 +101,7 @@ trait Application_Traits_Admin_Screen
     */
     protected $urlPath;
     
-   /**
-    * @var string
-    */
-    protected $activeSubscreenID;
+    protected ?string $activeSubscreenID = null;
 
     /**
      * @var array<string,string|NULL>

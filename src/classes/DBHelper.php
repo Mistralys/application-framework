@@ -47,9 +47,9 @@ class DBHelper
 
     /**
      * The statement object for the last query that was run, if any.
-     * @var PDOStatement
+     * @var PDOStatement|NULL
      */
-    protected static $activeStatement = null;
+    protected static ?PDOStatement $activeStatement = null;
 
     /**
      * @var array<string,PDO|NULL>

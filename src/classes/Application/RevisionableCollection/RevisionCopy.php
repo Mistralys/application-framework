@@ -35,16 +35,16 @@ abstract class Application_RevisionableCollection_RevisionCopy extends Applicati
         return $this->collection->getRecordCopyRevisionClass();
     }
 
-    protected function processParts()
+    protected function processParts(Application_RevisionableStateless $targetRevisionable) : void
     {
         // ensure this is always done first, as it is 
         // the basis for the rest.
-        $this->processSettings();
+        $this->processSettings($targetRevisionable);
         
-        parent::processParts();
+        parent::processParts($targetRevisionable);
     }
     
-    protected function processSettings()
+    protected function processSettings(Application_RevisionableStateless $targetRevisionable) : void
     {
         $this->log(sprintf('Copying revision data from table [%s].', $this->revisionTable));
 
@@ -78,7 +78,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends Applicati
         $data['date'] = $this->date->format('Y-m-d H:i:s');
         $data['author'] = $this->ownerID; 
         $data[$this->revisionKey] = $this->targetRevision;
-        $data[$this->primaryKey] = $this->targetRevisionable->getID();
+        $data[$this->primaryKey] = $targetRevisionable->getID();
         
         DBHelper::updateDynamic(
             $this->revisionTable,

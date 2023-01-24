@@ -39,10 +39,7 @@ class Application_Ratings_Rating extends DBHelper_BaseRecord
         return $this;
     }
     
-   /**
-    * @var Application_Ratings_Screens_Screen
-    */
-    protected $screen;
+    protected ?Application_Ratings_Screens_Screen $screen = null;
     
    /**
     * 

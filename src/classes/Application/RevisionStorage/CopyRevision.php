@@ -19,10 +19,7 @@ abstract class Application_RevisionStorage_CopyRevision
      */
     protected $revisionable;
     
-    /**
-     * @var Application_RevisionableStateless
-     */
-    protected $targetRevisionable;
+    protected ?Application_RevisionableStateless $targetRevisionable = null;
     
     protected $date;
     
@@ -58,12 +55,12 @@ abstract class Application_RevisionStorage_CopyRevision
      * Sets a target revisionable to copy the revision to.
      * @param Application_RevisionableStateless $revisionable
      */
-    public function setTarget(Application_RevisionableStateless $revisionable)
+    public function setTarget(Application_RevisionableStateless $revisionable) : void
     {
         $sourceType = $this->revisionable->getRevisionableTypeName();
         $targetType = $revisionable->getRevisionableTypeName();
         
-        if($sourceType != $targetType) {
+        if($sourceType !== $targetType) {
             throw new Application_Exception(
                 'Not a valid revisionable',
                 sprintf(
@@ -87,36 +84,39 @@ abstract class Application_RevisionStorage_CopyRevision
     
     abstract protected function getParts();
     
-    public function process()
+    public function process() : void
     {
         $this->log('Starting copy.');
-        
-        // if no target revisionable object has been set to copy the 
+
+        // if no target revisionable object has been set to copy the
         // revision to, we use the source revisionable to create a
         // copy within the same object.
-        if(!isset($this->targetRevisionable)) {
-            $this->targetRevisionable = $this->revisionable;
-        }
+        $target = $this->targetRevisionable ?? $this->revisionable;
+
+        // store it for anyone accessing the property
+        $this->targetRevisionable = $target;
 
         if($this->storage->hasRevdata()) {
-            $this->processRevdata();
+            $this->processRevdata($target);
         }
         
-        $this->processParts();
+        $this->processParts($target);
         
         $this->log('Copy complete.');
     }
     
-    protected function processParts()
+    protected function processParts(Application_RevisionableStateless $targetRevisionable) : void
     {
         $parts = $this->getParts();
-        foreach($parts as $part) {
+
+        foreach($parts as $part)
+        {
             $method = 'copy'.ucfirst($part);
-            $this->$method();
+            $this->$method($targetRevisionable);
         }
     }
     
-    protected function processRevdata()
+    protected function processRevdata(Application_RevisionableStateless $targetRevisionable) : void
     {
         if(!$this->storage->hasRevdata()) {
             $this->log('The revisionable has no revdata, skipping.');
@@ -125,11 +125,11 @@ abstract class Application_RevisionStorage_CopyRevision
         
         $this->log('Processing the revisionable\'s revdata.');
         
-        $this->_processRevdata();
+        $this->_processRevdata($targetRevisionable);
     }
     
-    abstract protected function _processRevdata();
-        
+    abstract protected function _processRevdata(Application_RevisionableStateless $targetRevisionable) : void;
+
     protected function log($message)
     {
         Application::log(sprintf(

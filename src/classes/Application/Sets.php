@@ -7,7 +7,10 @@
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 
+use Application\Driver\DriverException;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\JSONFile;
+use AppUtils\FileHelper_Exception;
 
 /**
  * Helper class used to manage application sets: these
@@ -25,26 +28,21 @@ class Application_Sets
     public const ERROR_CANNOT_SAVE_CONFIGURATION = 12703;
     public const ERROR_CANNOT_RENAME_INEXISTANT_SET = 12704;
     public const ERROR_CANNOT_RENAME_TO_EXISTING_NAME = 12705;
-    
-   /**
-    * @var Application_Sets
-    */
-    protected static $instance;
+    const DEFAULT_ID = '__default';
+
+    protected static ?Application_Sets $instance = null;
     
    /**
     * @var Application_Sets_Set[]
     */
-    protected $sets;
+    protected array $sets = array();
     
-   /**
-    * @var string
-    */
-    protected $configPath;
+    protected string $configPath;
  
    /**
     * @return Application_Sets
     */
-    public static function getInstance()
+    public static function getInstance() : Application_Sets
     {
         if(!isset(self::$instance)) {
             self::$instance = new Application_Sets();
@@ -58,26 +56,27 @@ class Application_Sets
         $driver = Application_Driver::getInstance();
         
         $this->configPath = $driver->getConfigFolder().'/appsets.json';
+
+        $this->load();
     }
     
    /**
     * @return Application_Sets_Set[]
     */
-    public function getSets()
+    public function getSets() : array
     {
-        $this->load();
-        
         return $this->sets;
     }
-    
-    protected function load()
+
+    /**
+     * @return void
+     *
+     * @throws Application_Exception
+     * @throws JsonException
+     * @throws FileHelper_Exception
+     */
+    protected function load() : void
     {
-        if(isset($this->sets)) {
-           return; 
-        }
-        
-        $this->sets = array();
-        
         if(!file_exists($this->configPath)) {
             return;
         }
@@ -120,10 +119,8 @@ class Application_Sets
     * @param Application_Admin_Area[] $enabledAreas
     * @return Application_Sets_Set
     */
-    public function createNew($id, Application_Admin_Area $defaultArea, $enabledAreas=array())
+    public function createNew(string $id, Application_Admin_Area $defaultArea, array $enabledAreas=array()) : Application_Sets_Set
     {
-        $this->load();
-        
         if($this->idExists($id)) {
             throw new Application_Exception(
                 'Application set ID already exists',
@@ -142,7 +139,7 @@ class Application_Sets
         }
         
         $this->sets[$id] = $set;
-        
+
         return $set;
     }
     
@@ -151,43 +148,36 @@ class Application_Sets
     * @param string $id
     * @return boolean
     */
-    public function idExists($id)
+    public function idExists(string $id) : bool
     {
-        if($id == '__default') {
+        if($id === self::DEFAULT_ID) {
             return true;
         }
-        
-        $this->load();
         
         return isset($this->sets[$id]);
     }
     
-   /**
-    * @var Application_Sets_Set
-    */
-    protected $default;
-    
-   /**
-    * Retrieves a set by its ID.
-    * @param string $id
-    * @return Application_Sets_Set|NULL
-    */
-    public function getByID($id)
+    protected ?Application_Sets_Set $default = null;
+
+    /**
+     * Retrieves a set by its ID.
+     * @param string $id
+     * @return Application_Sets_Set
+     *
+     * @throws Application_Exception
+     * @throws FileHelper_Exception
+     * @throws JsonException
+     * @throws DriverException
+     */
+    public function getByID(string $id) : Application_Sets_Set
     {
-        $this->load();
-        
         if(isset($this->sets[$id])) {
             return $this->sets[$id];
         }
         
-        if($id=='__default') {
-            if(!isset($this->default)) {
-                $driver = Application_Driver::getInstance();
-                $this->default = new Application_Sets_Set('__default', $driver->createArea('Settings'));
-                $this->default->enableAreas($driver->getAdminAreaObjects());
-            }
-            
-            return $this->default;
+        if($id === self::DEFAULT_ID)
+        {
+            return $this->getDefault();
         }
         
         throw new Application_Exception(
@@ -199,38 +189,56 @@ class Application_Sets
            self::ERROR_UNKNOWN_SET
         );
     }
-    
-   /**
-    * Saves all application sets to the configuration file.
-    * 
-    * @throws Application_Exception
-    */
-    public function save()
+
+    public function getDefault() : Application_Sets_Set
     {
-        $this->load();
-        
+        if(!isset($this->default)) {
+            $driver = Application_Driver::getInstance();
+            $this->default = new Application_Sets_Set(self::DEFAULT_ID, $driver->createArea('Settings'));
+            $this->default->enableAreas($driver->getAdminAreaObjects());
+        }
+
+        return $this->default;
+    }
+
+    /**
+     * Saves all application sets to the configuration file.
+     *
+     * @throws Application_Exception
+     * @throws FileHelper_Exception
+     * @throws JsonException
+     */
+    public function save() : void
+    {
         $data = array();
         foreach($this->sets as $set) {
             $data[$set->getID()] = $set->toArray();
         }
-        
-        if(!file_put_contents($this->configPath, json_encode($data, JSON_PRETTY_PRINT))) {
+
+        try
+        {
+            JSONFile::factory($this->configPath)->putData($data, true);
+        }
+        catch (Throwable $e)
+        {
             throw new Application_Exception(
                 'Cannot save the application sets configuration',
                 sprintf(
                     'Tried saving to the file [%s].',
                     $this->configPath
                 ),
-                self::ERROR_CANNOT_SAVE_CONFIGURATION
+                self::ERROR_CANNOT_SAVE_CONFIGURATION,
+                $e
             );
         }
     }
     
-    public function deleteSet(Application_Sets_Set $set)
+    public function deleteSet(Application_Sets_Set $set) : void
     {
         $setID = $set->getID();
-        
-        if(isset($this->sets[$setID])) {
+
+        if(isset($this->sets[$setID]))
+        {
             unset($this->sets[$setID]);
         }
     }
@@ -272,6 +280,7 @@ class Application_Sets
         }
         
         unset($this->sets[$set->getID()]);
+
         $this->sets[$newID] = $set;
     }
 }

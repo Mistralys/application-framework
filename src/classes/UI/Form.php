@@ -1017,9 +1017,9 @@ class UI_Form extends UI_Renderable
     }
     
    /**
-    * @var UI_Form_Renderer
+    * @var UI_Form_Renderer|NULL
     */
-    protected $formRenderer = null;
+    protected ?UI_Form_Renderer $formRenderer = null;
 
     /**
      * Renders the form to HTML using the forms.elements form based on QuickForm's

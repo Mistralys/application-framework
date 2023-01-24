@@ -22,32 +22,17 @@ class UI_Themes
 
     public const OPTION_SHOW_USER_NAME = 'theme_show_user_name';
 
-   /**
-    * @var UI
-    */
-    protected $ui;
-    
-   /**
-    * @var string
-    */
-    protected $defaultTheme = 'default';
+    protected UI $ui;
+    protected string $defaultTheme = 'default';
+    protected ?UI_Themes_Theme $theme = null;
+    protected ?string $themeID = null;
 
-   /**
+    /**
     * The paths to the framework templates and the app templates.
     * @var string[]
     */
-    protected $paths;
-    
-    /**
-     * @var UI_Themes_Theme
-     */
-    protected $theme;
-    
-    /**
-     * @var string
-     */
-    protected $themeID;
-    
+    protected array $paths;
+
     public function __construct(UI $ui)
     {
         $this->ui = $ui;
@@ -114,7 +99,7 @@ class UI_Themes
             }
         }
         
-        if(!$path) 
+        if($path === null)
         {
             throw new Application_Exception(
                 'Theme class file not found',

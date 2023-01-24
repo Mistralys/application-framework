@@ -78,7 +78,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
             $text->muted('- '.$this->comment);
         }
         
-        if(isset($this->helpText)) 
+        if(!empty($this->helpText))
         {
             $label->icon(
                 UI::icon()->help()
@@ -152,16 +152,16 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     /**
      * @var string
      */
-    protected $comment;
+    protected string $comment = '';
 
     /**
      * Typically shown inline next to the content of the property.
      *
-     * @param string|number|UI_Renderable_Interface $comment
+     * @param string|number|UI_Renderable_Interface|NULL $comment
      * @return $this
      * @throws UI_Exception
      */
-    public function setComment($comment)
+    public function setComment($comment) : self
     {
         $this->comment = toString($comment);
         return $this;
@@ -170,17 +170,17 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
     /**
      * @var string
      */
-    protected $helpText;
+    protected string $helpText = '';
 
     /**
      * This text is typically shown with a help icon, and available by
      * clicking on it.
      *
-     * @param string|number|UI_Renderable_Interface $help
+     * @param string|number|UI_Renderable_Interface|NULL $help
      * @return $this
      * @throws UI_Exception
      */
-    public function setHelpText($help)
+    public function setHelpText($help) : self
     {
         $this->helpText = toString($help);
         return $this;

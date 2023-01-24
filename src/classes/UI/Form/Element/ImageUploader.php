@@ -336,9 +336,9 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     }
     
    /**
-    * @var HTML_QuickForm2_Rule_Callback
+    * @var HTML_QuickForm2_Rule_Callback|NULL
     */
-    protected $ruleEvenSized;
+    protected ?HTML_QuickForm2_Rule_Callback $ruleEvenSized = null;
     
    /**
     * Ensures that the image dimensions are even sized (width and height).
@@ -356,9 +356,9 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     }
     
    /**
-    * @var HTML_QuickForm2_Rule_Callback
+    * @var HTML_QuickForm2_Rule_Callback|NULL
     */
-    protected $ruleMinSize;
+    protected ?HTML_QuickForm2_Rule_Callback $ruleMinSize = null;
     
    /**
     * Adds a rule for a minimum image size, with optionally a recommendation

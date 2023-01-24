@@ -12,9 +12,9 @@ abstract class UI_Form_Renderer_RenderType
     protected $renderDef;
     
    /**
-    * @var UI_Form_Renderer_Sections_Section
+    * @var UI_Form_Renderer_Sections_Section|NULL
     */
-    private $section;
+    private ?UI_Form_Renderer_Sections_Section $section;
     
    /**
     * @var UI_Form_Renderer

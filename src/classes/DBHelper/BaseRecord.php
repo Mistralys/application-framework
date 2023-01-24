@@ -27,12 +27,12 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     public const ERROR_RECORD_DOES_NOT_EXIST = 13301;
     public const ERROR_RECORD_KEY_UNKNOWN = 13302;
 
-    const DUMMY_ID = -1;
+    public const DUMMY_ID = -1;
 
     /**
-     * @var array<string,mixed>
+     * @var array<string,mixed>|NULL
      */
-    protected $recordData;
+    protected ?array $recordData = null;
 
     /**
      * @var string

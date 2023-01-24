@@ -22,14 +22,13 @@ class Application_Media_Processor
 {
     public const ERROR_MISSING_MEDIA_CONFIGURATION = 660001;
     
+    protected UI $ui;
+    protected string $redirectURL;
+
     /**
-     * @var UI
+     * @var Application_Media_Document[]
      */
-    protected $ui;
-
-    protected $redirectURL;
-
-    protected $documents = array();
+    protected array $documents = array();
     
     public function __construct($completedRedirectURL)
     {
@@ -37,22 +36,28 @@ class Application_Media_Processor
         $this->redirectURL = $completedRedirectURL;
     }
     
-    public function renderContent()
+    public function renderContent() : string
     {
-        /* @var $document Application_Media_Document */
-        
         $this->ui->addProgressBar();
         $this->ui->addJavascript('media/processor.js');
         $this->ui->addJavascriptHeadVariable('Media_Processor.redirect', $this->redirectURL);
         $this->ui->addJavascriptOnload('Media_Processor.Start()');
         
         $total = count($this->documents);
-        for($i=0; $i<$total; $i++) {
+        for($i=0; $i<$total; $i++)
+        {
             $document = $this->documents[$i];
+            $config = $document->getConfiguration();
+            $configID = '';
+
+            if($config !== null) {
+                $configID = $config->getID();
+            }
+
             $this->ui->addJavascriptHeadStatement(
                 'Media_Processor.AddDocument',
                 $document->getID(),
-                $document->getConfiguration()->getID()
+                $configID
             );
         }
         
@@ -92,7 +97,7 @@ class Application_Media_Processor
         }
     }
 
-    public function getDocumentsCount()
+    public function getDocumentsCount() : int
     {
         return count($this->documents);
     }

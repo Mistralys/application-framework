@@ -359,7 +359,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         $this->log(sprintf('Copied [%s] records.', count($data)));
     }
 
-    protected function _processRevdata()
+    protected function _processRevdata(Application_RevisionableStateless $targetRevisionable) : void
     {
         $revCol = $this->storage->getRevisionColumn();
         
@@ -368,7 +368,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             $revCol,
             array($revCol, 'data_key'),
             array($this->storage->getIDColumn() => $this->revisionable->getID()),
-            array($this->storage->getIDColumn() => $this->targetRevisionable->getID())
+            array($this->storage->getIDColumn() => $targetRevisionable->getID())
         );
     }
 }

@@ -1206,10 +1206,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         );
     }
 
-    /**
-     * @var string
-     */
-    protected $logPrefix;
+    protected ?string $logPrefix = null;
 
     public function getLogIdentifier() : string
     {

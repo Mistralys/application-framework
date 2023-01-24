@@ -20,9 +20,9 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     private $isLast = false;
     
    /**
-    * @var UI_Form_Renderer_RenderType
+    * @var UI_Form_Renderer_RenderType|NULL
     */
-    private $typeRenderer;
+    private ?UI_Form_Renderer_RenderType $typeRenderer = null;
     
    /**
     * @var UI_Form_Renderer_Sections_Section|NULL

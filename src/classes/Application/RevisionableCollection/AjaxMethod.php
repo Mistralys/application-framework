@@ -1,7 +1,5 @@
 <?php
 
-require_once 'Application/AjaxMethod.php';
-
 abstract class Application_RevisionableCollection_AjaxMethod extends Application_AjaxMethod
 {
    /**
@@ -9,15 +7,9 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
     */
     abstract protected function getCollection();
     
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
+    protected Application_RevisionableCollection $collection;
     
-   /**
-    * @var Application_RevisionableCollection_DBRevisionable
-    */
-    protected $revisionable;
+    protected ?Application_RevisionableCollection_DBRevisionable $revisionable = null;
     
    /**
     * @var int
@@ -36,7 +28,7 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
     * 
     * @return Application_RevisionableCollection_DBRevisionable
     */
-    protected function requireRevisionable()
+    protected function requireRevisionable() : Application_RevisionableCollection_DBRevisionable
     {
         if(isset($this->revisionable)) {
             return $this->revisionable;
@@ -57,24 +49,24 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
     
     protected function startRevisionableTransaction($comments=null)
     {
-        $this->requireRevisionable();
+        $revisionable = $this->requireRevisionable();
         $this->startTransaction();
         
-        $this->initialRevisionableState = $this->revisionable->getStateName();
+        $this->initialRevisionableState = $revisionable->getStateName();
         
-        $this->revisionable->setSimulation($this->isSimulationEnabled());
-        $this->revisionable->startCurrentUserTransaction($comments);
+        $revisionable->setSimulation($this->isSimulationEnabled());
+        $revisionable->startCurrentUserTransaction($comments);
     }
     
     protected function endRevisionableTransaction()
     {
-        $this->revisionable->endTransaction();
+        $this->requireRevisionable()->endTransaction();
         $this->endTransaction();
     }
     
     protected function hasStateChanged()
     {
-        if($this->revisionable->getStateName() != $this->initialRevisionableState) {
+        if($this->requireRevisionable()->getStateName() != $this->initialRevisionableState) {
             return true;
         }
         

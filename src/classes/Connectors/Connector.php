@@ -22,11 +22,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
 
     public const ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
     
-   /**
-    * @var string
-    * @see Connectors_Connector::getID()
-    */
-    protected $cachedID;
+    protected ?string $cachedID = null;
 
     /**
      * @var array<string,string>

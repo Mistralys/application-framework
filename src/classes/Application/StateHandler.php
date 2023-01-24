@@ -14,10 +14,7 @@ class Application_StateHandler
 
     protected $item;
 
-   /**
-    * @var Application_StateHandler_State
-    */
-    protected $initial = null;
+    protected ?Application_StateHandler_State $initial = null;
     
     public function __construct(Application_Revisionable_Interface $item)
     {

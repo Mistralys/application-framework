@@ -102,41 +102,22 @@ class UI_DataGrid
         'mini' => false,
     );
 
-    /**
-     * @var string
-     */
-    protected $emptyMessage;
+    protected string $emptyMessage;
 
     /**
      * @var string[]
      */
-    protected static $ids = array();
+    protected static array $ids = array();
 
-   /**
-    * @var bool
-    */
-    protected $filterHint = false;
-
-    /**
-     * @var UI_DataGrid_Row_Sums
-     */
-    protected $sumsRow;
-
-    /**
-     * @var bool
-     */
-    protected $rendering = false;
+    protected bool $filterHint = false;
+    protected ?UI_DataGrid_Row_Sums $sumsRow = null;
+    protected bool $rendering = false;
 
     /**
      * @var UI_DataGrid_Entry[]
      */
-    protected $entries = array();
-
-    /**
-     * @var string
-     */
-    private $dispatcher = '';
-
+    protected array $entries = array();
+    private string $dispatcher = '';
     private string $footerCountText = '';
 
     /**
@@ -1189,15 +1170,8 @@ class UI_DataGrid
         );
     }
 
-    /**
-     * @var Application_FilterCriteria
-     */
-    protected $filterCriteria;
-
-   /**
-    * @var Application_FilterSettings
-    */
-    protected $filterSettings;
+    protected ?Application_FilterCriteria $filterCriteria = null;
+    protected ?Application_FilterSettings $filterSettings = null;
 
     /**
      * Configures the data grid using the specified filter settings and filter criteria.
@@ -2044,7 +2018,6 @@ class UI_DataGrid
             }
 
             $this->processAllSelected($action);
-            return $this;
         }
 
         $action->executeCallback();
@@ -2120,10 +2093,27 @@ class UI_DataGrid
         return $this->request->getBool('datagrid_selectall');
     }
 
-    protected $selectAllBatchSize = 60;
+    protected int $selectAllBatchSize = 60;
 
-    protected function processAllSelected(UI_DataGrid_Action $action)
+    /**
+     * @param UI_DataGrid_Action $action
+     * @return never
+     *
+     * @throws Application_Exception
+     * @throws DriverException
+     * @throws UI_Exception
+     * @throws UI_Themes_Exception
+     */
+    protected function processAllSelected(UI_DataGrid_Action $action) : void
     {
+        if(!isset($this->filterCriteria)) {
+            throw new UI_Exception(
+                'No filter criteria instance available.',
+                '',
+                self::ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING
+            );
+        }
+
         $primary = $this->getPrimaryField();
         $this->filterCriteria->setLimit(0, 0);
         $entries = $this->filterCriteria->getItems();
@@ -2306,7 +2296,7 @@ class UI_DataGrid
      * @param integer $number
      * @return UI_DataGrid_Column|NULL
      */
-    public function getColumn($number)
+    public function getColumn(int $number) : ?UI_DataGrid_Column
     {
         $idx = $number - 1;
         if (isset($this->columns[$idx])) {
@@ -2316,24 +2306,23 @@ class UI_DataGrid
         return null;
     }
 
-    public function getLastColumn()
+    public function getLastColumn() : ?UI_DataGrid_Column
     {
         return $this->getColumn($this->countColumns());
     }
 
-    /**
-     * @var string
-     */
-    protected $title;
+    protected ?string $title = null;
 
     /**
      * Sets the optional title for the grid.
      *
-     * @param string $title
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @throws UI_Exception
      */
-    public function setTitle($title)
+    public function setTitle($title) : self
     {
-        $this->title = $title;
+        $this->title = toString($title);
+        return $this;
     }
 
     /**

@@ -8,23 +8,9 @@ class Application_Media
 {
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
     
-    /**
-     * The media manager instance.
-     * @var Application_Media
-     */
-    protected static $instance;
-
-    /**
-     * The full path to the storage folder.
-     * @see getStorageFolder()
-     * @var string
-     */
-    protected $storageFolder;
-    
-   /**
-    * @var Application_Driver
-    */
-    protected $driver;
+    protected static ?Application_Media $instance = null;
+    protected string $storageFolder;
+    protected Application_Driver $driver;
 
     /**
      * Retrieves the global instance of the media manager. Creates
@@ -32,7 +18,7 @@ class Application_Media
      *
      * @return Application_Media
      */
-    public static function getInstance()
+    public static function getInstance() : Application_Media
     {
         if (!isset(self::$instance)) {
             self::$instance = new Application_Media();

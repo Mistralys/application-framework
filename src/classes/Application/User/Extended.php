@@ -10,23 +10,18 @@ abstract class Application_User_Extended extends Application_User
      */
     abstract public function getRightGroups() : array;
 
-    /**
-     * @var Application_User_Rights
-     */
-    private static $rightsManager;
+    private static ?Application_User_Rights $rightsManager = null;
 
     public function getRightsManager() : Application_User_Rights
     {
-        $this->initRightsManager();
-
-        return self::$rightsManager;
+        return $this->initRightsManager();
     }
 
-    private function initRightsManager() : void
+    private function initRightsManager() : Application_User_Rights
     {
         if(isset(self::$rightsManager))
         {
-            return;
+            return self::$rightsManager;
         }
 
         self::$rightsManager = new Application_User_Rights();
@@ -43,6 +38,8 @@ abstract class Application_User_Extended extends Application_User
         }
 
         $this->registerRoles();
+
+        return self::$rightsManager;
     }
 
     abstract protected function registerRoles() : void;

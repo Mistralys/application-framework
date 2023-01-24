@@ -25,17 +25,17 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     /**
      * @var UI_Page
      */
-    private $page;
+    private UI_Page $page;
 
    /**
     * @var UI_Page_Sidebar_ItemInterface[]
     */
-    private $items = array();
+    private array $items = array();
 
     /**
-     * @var UI_Page_Template
+     * @var UI_Page_Template|NULL
      */
-    private $template;
+    private ?UI_Page_Template $template = null;
 
     /**
      * @var string[]
@@ -298,21 +298,22 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
 
         return $item;
     }
-    
-   /**
-    * Adds a collapsible help block with a short informational
-    * text for the current page.
-    * 
-    * @param string $title
-    * @param string $content
-    * @param bool $startCollapsed
-    * @return UI_Page_Sidebar_Item_Template
-    */
-    public function addHelp($title, $content, $startCollapsed=true)
+
+    /**
+     * Adds a collapsible help block with a short informational
+     * text for the current page.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $title
+     * @param string|number|UI_Renderable_Interface|NULL $content
+     * @param bool $startCollapsed
+     * @return UI_Page_Sidebar_Item_Template
+     * @throws UI_Exception
+     */
+    public function addHelp($title, $content, bool $startCollapsed=true) : UI_Page_Sidebar_Item_Template
     {
         $tmpl = new UI_Page_Sidebar_Item_Template($this, 'sidebar.helpblock');
-        $tmpl->setVar('title', $title);
-        $tmpl->setVar('content', $content);	
+        $tmpl->setVar('title', toString($title));
+        $tmpl->setVar('content', toString($content));
         $tmpl->setVar('collapsed', $startCollapsed);
         $this->items[] = $tmpl;
         

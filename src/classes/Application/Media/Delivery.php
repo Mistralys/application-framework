@@ -6,23 +6,16 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
     
-   /**
-    * The media manager instance.
-    * @var Application_Media_Delivery
-    */
-    private static $instance;
+    private static ?Application_Media_Delivery $instance = null;
 
    /**
     * The full path to the storage folder.
     * @see getStorageFolder()
     * @var string
     */
-    private $storageFolder;
+    private string $storageFolder;
 
-   /**
-    * @var Application_Request
-    */
-    private $request;
+    private Application_Request $request;
     
     /**
      * Retrieves the global instance of the media manager. Creates
@@ -30,7 +23,7 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
      *
      * @return Application_Media_Delivery
      */
-    public static function getInstance()
+    public static function getInstance() : Application_Media_Delivery
     {
         if (!isset(self::$instance)) {
             self::$instance = new Application_Media_Delivery();

@@ -431,9 +431,9 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     }
 
    /**
-    * @var UI_Page_Section
+    * @var UI_Page_Section|NULL
     */
-    protected $section;
+    protected ?UI_Page_Section $section = null;
 
    /**
     * Configures the grid to display in a content section.

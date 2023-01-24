@@ -74,10 +74,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     protected $groupBy = array();
 
-    /**
-     * @var string
-     */
-    protected $selectAlias;
+    protected ?string $selectAlias = null;
 
     /**
      * @var DBHelper_StatementBuilder_ValuesContainer|NULL
