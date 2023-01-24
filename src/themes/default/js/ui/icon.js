@@ -813,20 +813,23 @@ var UI_Icon =
 	{
 		return this.Delete();
 	},
-	
+
+    /**
+     * @returns {String|null}
+     */
 	GetType:function()
 	{
-		var current = this.type;
-		var found = null;
-		$.each(this.types, function(internalName, faName) {
-			if(faName == current) {
-				found = internalName;
-				return false;
-			}
-		});
-		
-		return found;
+		return this.type;
 	},
+
+    /**
+     * @returns {String}
+     * @constructor
+     */
+    GetPrefix:function()
+    {
+        return this.prefix;
+    },
 	
    /**
     * Makes the tooltip display on the bottom.
