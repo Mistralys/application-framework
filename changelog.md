@@ -5,6 +5,9 @@
 - FilterSettings: Added logging.
 - Formable: Added missing min and max arguments to `addRuleFloat()`.
 - FilterCriteria: `hasCriteriaValues()` can now be used with multiple types.
+- PHPStan: Fixed a number of wrongly documented nullable types.
+- Sessions: Property `$rightPresets` now requires the `array` type.
+- Icons: Fixed a clientside error.
 
 ### v2.4.2 - Bugfix
 - CLIScreens: Fixed a PHP error in the overridden `log()` method.
