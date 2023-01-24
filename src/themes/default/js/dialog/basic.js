@@ -443,7 +443,10 @@ var Dialog_Basic =
 		.MakePrimary();
 		
 		if(!isEmpty(this.icon)) {
-			button.SetIcon(UI.Icon().SetType(this.icon.GetType()));
+			let type = this.icon.GetType();
+			if(type !== null) {
+				button.SetIcon(UI.Icon().SetType(type, this.icon.GetPrefix()));
+			}
 		}
 		
 		var dialog = this;
