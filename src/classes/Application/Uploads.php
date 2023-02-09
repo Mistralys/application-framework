@@ -7,6 +7,9 @@
  * @see Application_Uploads
  */
 
+use Application\Uploads\LocalFileUpload;
+use AppUtils\FileHelper\FileInfo;
+
 /**
  * Upload manager: used to store uploaded files temporarily until
  * they can be converted to full-fledged media files. Keeps track
@@ -68,6 +71,11 @@ class Application_Uploads
     protected function resetMessages()
     {
         $this->messages = array();
+    }
+
+    public function addFromLocalFile(FileInfo $file) : LocalFileUpload
+    {
+        return LocalFileUpload::create($file);
     }
 
     /**
