@@ -2,13 +2,14 @@
     
 /* @var $this UI_Page_Template */
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper;
 
 if (!Application_Driver::isMaintenanceMode()) {
     return;
 }
     
-$plan = Application_Driver::createMaintenance()->getActivePlan();
+$plan = AppFactory::createMaintenance()->getActivePlan();
 $url = $this->request->buildURL(array('page' => 'devel', 'mode' => 'maintenance'));
 
 ?>

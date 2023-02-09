@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace testsuites\RequestLogTests;
 
 use Application;
+use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\RequestLogTestCase;
 
 class BrowseLogTest extends RequestLogTestCase
@@ -17,7 +18,7 @@ class BrowseLogTest extends RequestLogTestCase
     public function test_browseToLogFile() : void
     {
         // Add a log message and write it to disk
-        $logPath = Application::getLogger()
+        $logPath = AppFactory::createLogger()
             ->clearLog()
             ->log('Log message')
             ->write()
@@ -28,7 +29,7 @@ class BrowseLogTest extends RequestLogTestCase
         $day = (int)date('d');
         $hour = (int)date('H');
 
-        $log = Application::createRequestLog();
+        $log = AppFactory::createRequestLog();
         $this->assertTrue($log->hasYearNumber($year));
 
         $yearLog = $log->getYearByNumber($year);

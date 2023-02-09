@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace testsuites\Application;
 
+use Application\AppFactory;
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion\VersionLanguage;
 use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
@@ -25,7 +26,7 @@ class WhatsNewTests extends ApplicationTestCase
 
     public function test_create() : void
     {
-        $new = TestDriver::createWhatsnew();
+        $new = AppFactory::createWhatsNew();
 
         $versions = $new->getVersions();
 
@@ -52,7 +53,7 @@ class WhatsNewTests extends ApplicationTestCase
 
     public function test_getCategories() : void
     {
-        $whatsNew = TestDriver::createWhatsnew();
+        $whatsNew = AppFactory::createWhatsNew();
         $version = $whatsNew->getCurrentVersion();
 
         $this->assertNotNull($version);
@@ -66,7 +67,7 @@ class WhatsNewTests extends ApplicationTestCase
 
     public function test_getItems() : void
     {
-        $whatsNew = TestDriver::createWhatsnew();
+        $whatsNew = AppFactory::createWhatsNew();
         $version = $whatsNew->getCurrentVersion();
 
         $this->assertNotNull($version);
@@ -82,7 +83,7 @@ class WhatsNewTests extends ApplicationTestCase
 
     public function test_write() : void
     {
-        $whatsNew = TestDriver::createWhatsnew();
+        $whatsNew = AppFactory::createWhatsNew();
         $whatsNew->addVersion('5.0.0');
 
         $writer = new XMLFileWriter($whatsNew);

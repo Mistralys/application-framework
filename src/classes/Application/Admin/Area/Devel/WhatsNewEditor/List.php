@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion;
 
@@ -54,7 +55,7 @@ class Application_Admin_Area_Devel_WhatsNewEditor_List extends Application_Admin
 
     protected function _handleActions() : bool
     {
-        $this->whatsNew = Application_Driver::createWhatsnew();
+        $this->whatsNew = AppFactory::createWhatsNew();
 
         $this->createGrid();
 

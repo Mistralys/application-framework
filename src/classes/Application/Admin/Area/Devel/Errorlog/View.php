@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_Mode_Submode
 {
     public function getURLName() : string
@@ -40,7 +42,7 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
     
     protected function _handleActions() : bool
     {
-        $this->errorlog = Application::createErrorLog();
+        $this->errorlog = AppFactory::createErrorLog();
         $this->log = $this->errorlog->getByRequest();
         
         if($this->log === null) 

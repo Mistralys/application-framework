@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use function AppUtils\parseThrowable;
 
 class Application_ErrorLog_Log_Entry_Exception extends Application_ErrorLog_Log_Entry
@@ -161,7 +162,7 @@ class Application_ErrorLog_Log_Entry_Exception extends Application_ErrorLog_Log_
             self::addTokens($tokens, $prev);            
         }
         
-        $logger = Application::createErrorLog();
+        $logger = AppFactory::createErrorLog();
         $logID = $logger->logException(
             $tokens, 
             $exception->getID() // the ID to tie the app log to the exception

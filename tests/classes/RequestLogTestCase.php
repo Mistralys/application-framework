@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use Application;
+use Application\AppFactory;
 
 class RequestLogTestCase extends ApplicationTestCase
 {
@@ -12,13 +13,13 @@ class RequestLogTestCase extends ApplicationTestCase
     {
         parent::setUp();
 
-        Application::createRequestLog()->clearAllLogs();
+        AppFactory::createRequestLog()->clearAllLogs();
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        Application::createRequestLog()->clearAllLogs();
+        AppFactory::createRequestLog()->clearAllLogs();
     }
 }

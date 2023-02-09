@@ -7,6 +7,7 @@
  * @see Application_Admin_Area_Devel_Dbdump
  */
 
+use Application\AppFactory;
 use AppUtils\Request_Exception;
 
 /**
@@ -65,7 +66,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
     
     protected function _handleActions() : bool
     {
-        $this->dumps = Application_Driver::createDBDumps();
+        $this->dumps = AppFactory::createDBDumps();
         
         $this->createDataGrid();
         

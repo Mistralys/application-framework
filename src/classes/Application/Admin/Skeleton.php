@@ -7,6 +7,7 @@
  * @see Application_Admin_Skeleton
  */
 
+use Application\AppFactory;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ConvertHelper;
 
@@ -660,7 +661,7 @@ abstract class Application_Admin_Skeleton
         self::$simulationStarted = true;
 
         header('Content-Type:text/html; charset=UTF-8');
-        Application::getLogger()->enableHTML()->logModeEcho();
+        AppFactory::createLogger()->enableHTML()->logModeEcho();
         
         Application::logHeader('Simulation mode active');
         Application::log('Memory usage: '.memory_get_usage(true));

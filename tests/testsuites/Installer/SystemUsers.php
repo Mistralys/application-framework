@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 
 final class Installer_SystemUsersTest extends ApplicationTestCase
@@ -35,14 +36,13 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         $this->runTask();
 
         // Check that the users are now present
-        $users = Application_Driver::createUsers();
         $ids = Application::getSystemUserIDs();
 
         foreach ($ids as $id)
         {
             $found = DBHelper::createFetchKey('user_id', 'known_users')
-            ->whereValue('user_id', $id)
-            ->fetchInt();
+                ->whereValue('user_id', $id)
+                ->fetchInt();
 
             $this->assertSame($id, $found);
         }
@@ -99,7 +99,7 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         Application::log('Deleting all system users.');
 
         $ids = Application::getSystemUserIDs();
-        $users = Application_Driver::createUsers();
+        $users = AppFactory::createUsers();
 
         // Delete the system users from the database
         foreach ($ids as $id)

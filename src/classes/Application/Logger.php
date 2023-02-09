@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -446,6 +447,6 @@ class Application_Logger
      */
     public function write() : Application_RequestLog_LogWriter
     {
-        return Application::createRequestLog()->writeLog($this);
+        return AppFactory::createRequestLog()->writeLog($this);
     }
 }

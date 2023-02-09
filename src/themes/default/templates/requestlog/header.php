@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 /**
  * Template for the logout screen shown to users when they have logged out.
  *
@@ -35,7 +37,7 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
                 echo sb()->link($status->getToggleLabel(), $status->getAdminToggleURL())
                 ?>)
                 |
-                <a href="<?php echo Application::createRequestLog()->getAdminLogOutURL() ?>">
+                <a href="<?php echo AppFactory::createRequestLog()->getAdminLogOutURL() ?>">
                     <?php echo sb()
                         ->icon(UI::icon()->logOut())
                         ->t('Log out')
@@ -57,13 +59,10 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
         ?><hr/><?php
     }
 
-    /**
-     * @var Application_RequestLog
-     */
-    private $log;
+    private Application_RequestLog $log;
 
     protected function preRender(): void
     {
-        $this->log = Application::createRequestLog();
+        $this->log = AppFactory::createRequestLog();
     }
 }

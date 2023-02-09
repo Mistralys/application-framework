@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\Bootstrap\DeployCallbackBootstrap;
 use AppUtils\Interface_Stringable;
 use AppUtils\OutputBuffering;
@@ -226,7 +227,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
     private function addAppColumn() : void
     {
         $version =  $this->driver->getVersion();
-        $registry = Application::createDeploymentRegistry();
+        $registry = AppFactory::createDeploymentRegistry();
 
         $this->activeColumn = $this->driver->getAppNameShort().' '.t('v%1$s', $version);
 

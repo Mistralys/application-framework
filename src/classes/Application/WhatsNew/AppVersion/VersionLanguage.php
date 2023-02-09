@@ -94,20 +94,26 @@ abstract class VersionLanguage
             return self::$languageIDs;
         }
 
-        self::$languageIDs = FileHelper::createFileFinder(__DIR__.'/VersionLanguage')
+        $languageIDs = FileHelper::createFileFinder(__DIR__.'/VersionLanguage')
             ->getPHPClassNames();
 
         $devLang = WhatsNew::getDeveloperLangID();
 
-        usort(self::$languageIDs, static function(string $a, string $b) use($devLang) : int
-        {
-            if($a === $devLang)
-            {
-                return 1;
-            }
+        $key = array_search($devLang, $languageIDs, true);
+        if($key !== false) {
+            unset($languageIDs[$key]);
+        }
 
+        usort($languageIDs, static function(string $a, string $b) : int
+        {
             return strnatcasecmp($a, $b);
         });
+
+        if($key !== false) {
+            $languageIDs[] = $devLang;
+        }
+
+        self::$languageIDs = $languageIDs;
 
         return self::$languageIDs;
     }

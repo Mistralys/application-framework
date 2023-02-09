@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 require_once 'Application/ErrorLog/Log/Entry.php';
 
 class Application_ErrorLog_Log_Entry_JavaScript extends Application_ErrorLog_Log_Entry
@@ -86,6 +88,6 @@ class Application_ErrorLog_Log_Entry_JavaScript extends Application_ErrorLog_Log
             $column
         );
         
-        Application::createErrorLog()->logJavascriptError($tokens);
+        AppFactory::createErrorLog()->logJavascriptError($tokens);
     }
 }

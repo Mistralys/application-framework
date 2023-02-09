@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 /**
  * User interface for editing the `WHATSNEW.xml` file.
  *
@@ -55,6 +57,6 @@ class Application_Admin_Area_Devel_WhatsNewEditor extends Application_Admin_Area
         $this->breadcrumb->appendArea($this->area);
 
         $this->breadcrumb->appendItem($this->getNavigationTitle())
-            ->makeLinked(Application_Driver::createWhatsnew()->getAdminListURL());
+            ->makeLinked(AppFactory::createWhatsNew()->getAdminListURL());
     }
 }

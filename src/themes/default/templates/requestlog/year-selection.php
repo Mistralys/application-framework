@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\OutputBuffering;
 
 /**
@@ -57,10 +58,10 @@ class template_default_requestlog_year_selection extends UI_Page_Template_Custom
     /**
      * @var Application_RequestLog_LogItems_Year[]
      */
-    private $years;
+    private array $years;
 
     protected function preRender(): void
     {
-        $this->years = Application::createRequestLog()->getYears();
+        $this->years = AppFactory::createRequestLog()->getYears();
     }
 }

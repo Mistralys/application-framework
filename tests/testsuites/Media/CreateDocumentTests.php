@@ -11,11 +11,23 @@ final class CreateDocumentTests extends MediaTestCase
 {
     public function test_createFromFile() : void
     {
-        $file = $this->storageFolder.'/example-image.png';
-
-        $this->assertFileExists($file);
+        $file = $this->getExampleImagePath();
 
         $document = $this->media->createFromFile('example-image', FileInfo::factory($file));
+        $documentPath = $document->getPath();
+
+        $this->assertFileExists($documentPath);
+
+        $document->delete();
+
+        $this->assertFileDoesNotExist($documentPath);
+    }
+
+    public function test_createImageFromFile() : void
+    {
+        $file = $this->getExampleImagePath();
+
+        $document = $this->media->createImageFromFile('example-image', FileInfo::factory($file));
         $documentPath = $document->getPath();
 
         $this->assertFileExists($documentPath);

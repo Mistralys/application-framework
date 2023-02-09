@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use Application\WhatsNew;
 use AppLocalize\Localization;
 
@@ -59,7 +60,7 @@ class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
     
     protected function validateRequest() : void
     {
-        $this->whatsnew = Application_Driver::createWhatsnew();
+        $this->whatsnew = AppFactory::createWhatsNew();
 
         $this->languages['versions'] = strtoupper(Localization::getAppLocale()->getLanguageCode());
         

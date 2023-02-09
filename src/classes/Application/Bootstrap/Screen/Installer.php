@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 class Application_Bootstrap_Screen_Installer extends Application_Bootstrap_Screen
 {
     public function getDispatcher()
@@ -18,6 +20,6 @@ class Application_Bootstrap_Screen_Installer extends Application_Bootstrap_Scree
         $installer = Application::createInstaller();
         $installer->process();
 
-        Application::getLogger()->printLog(true);
+        AppFactory::createLogger()->printLog(true);
     }
 }

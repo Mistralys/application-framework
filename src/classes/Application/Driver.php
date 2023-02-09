@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
@@ -152,7 +153,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             define('APP_APPSET', '__default');
         }
 
-        $sets = $this->getApplicationSets();
+        $sets = AppFactory::createAppSets();
 
         if ($sets->idExists(APP_APPSET))
         {
@@ -609,7 +610,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     public static function isMaintenanceMode() : bool
     {
-        return self::createMaintenance()->isEnabled();
+        return AppFactory::createMaintenance()->isEnabled();
     }
 
     /**
@@ -745,7 +746,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (self::isMaintenanceMode() && !$this->user->isDeveloper())
         {
-            echo self::createMaintenance()->renderScreen($this->getPage());
+            echo AppFactory::createMaintenance()->renderScreen($this->getPage());
             Application::exit('Maintenance is enabled');
         }
 
@@ -965,10 +966,11 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves the application sets manager.
      * @return Application_Sets
+     * @deprecated Use the AppFactory instead.
      */
     public function getApplicationSets() : Application_Sets
     {
-        return $this->app->getSets();
+        return AppFactory::createAppSets();
     }
 
     abstract protected function setUpUI() : void;
@@ -1529,19 +1531,13 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
     }
 
-    protected static ?Application_Maintenance $maintenance = null;
-
     /**
      * @return Application_Maintenance
+     * @deprecated Use the AppFactory instead.
      */
     public static function createMaintenance() : Application_Maintenance
     {
-        if (!isset(self::$maintenance))
-        {
-            self::$maintenance = new Application_Maintenance(self::getInstance());
-        }
-
-        return self::$maintenance;
+        return AppFactory::createMaintenance();
     }
 
     /**
@@ -1571,10 +1567,11 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Returns the countries collection. Creates the object as needed.
      * @return Application_Countries
+     * @deprecated Use the AppFactory instead.
      */
     public static function createCountries() : Application_Countries
     {
-        return Application_Countries::getInstance();
+        return AppFactory::createCountries();
     }
 
     /**
@@ -1582,10 +1579,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * from the WHATSNEW.xml file.
      *
      * @return WhatsNew
+     * @deprecated Use the AppFactory instead.
      */
     public static function createWhatsnew() : WhatsNew
     {
-        return new WhatsNew(APP_ROOT . '/WHATSNEW.xml');
+        return AppFactory::createWhatsNew();
     }
 
     /**
@@ -1614,21 +1612,12 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     /**
      * @return Application_Users
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
+     * @deprecated Use the AppFactory instead.
      */
     public static function createUsers() : Application_Users
     {
-        return ClassHelper::requireObjectInstanceOf(
-            Application_Users::class,
-            self::createCollection(Application_Users::class)
-        );
+        return AppFactory::createUsers();
     }
-
-    /**
-     * @var Application_DBDumps
-     */
-    protected static $dbdumps;
 
     /**
      * Creates a new instance of the database dumps manager, which
@@ -1636,15 +1625,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * database, as well access information on existing dumps.
      *
      * @return Application_DBDumps
+     * @deprecated Use the AppFactory instead.
      */
     public static function createDBDumps() : Application_DBDumps
     {
-        if (!isset(self::$dbdumps))
-        {
-            self::$dbdumps = new Application_DBDumps(Application_Driver::getInstance());
-        }
-
-        return self::$dbdumps;
+        return AppFactory::createDBDumps();
     }
 
     /**
@@ -1652,12 +1637,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * the database dumps are stored.
      *
      * @return string
-     * @throws DriverException
      * @see Application_DBDumps::getStoragePath()
      */
     public function getDBDumpsPath() : string
     {
-        return self::createDBDumps()->getStoragePath();
+        return AppFactory::createDBDumps()->getStoragePath();
     }
 
     /**
@@ -1668,12 +1652,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * no effect.
      *
      * @return Application_DBDumps_Dump The dump instance that was created.
-     * @throws DriverException
      * @see Application_DBDumps::createDump()
      */
     public function createIncrementalDBDump() : Application_DBDumps_Dump
     {
-        return self::createDBDumps()->createDump();
+        return AppFactory::createDBDumps()->createDump();
     }
 
     /**

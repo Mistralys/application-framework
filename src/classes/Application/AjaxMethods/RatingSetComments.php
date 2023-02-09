@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 class Application_AjaxMethods_RatingSetComments extends Application_AjaxMethod
 {
     public function processJSON()
@@ -36,9 +38,9 @@ class Application_AjaxMethods_RatingSetComments extends Application_AjaxMethod
     */
     protected $comments;
     
-    protected function validateRequest()
+    protected function validateRequest() : void
     {
-        $this->ratings = Application::createRatings();
+        $this->ratings = AppFactory::createRatings();
         
         $this->comments = $this->request->getParam('comments');
         if(empty($this->comments)) {

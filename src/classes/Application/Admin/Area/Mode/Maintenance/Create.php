@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use AppLocalize\Localization;
 
 abstract class Application_Admin_Area_Mode_Maintenance_Create extends Application_Admin_Area_Mode_Submode
@@ -62,7 +63,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
                 return true;
             }
             
-            $maintenance = Application_Driver::createMaintenance();
+            $maintenance = AppFactory::createMaintenance();
             $plan = $maintenance->addPlan($start, $values['duration']);
             $locales = Localization::getAppLocales();
             foreach($locales as $locale) {

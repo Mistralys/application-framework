@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Mode\Submode;
 
+use Application\AppFactory;
 use Application\WhatsNew;
 use Application\WhatsNew\AppVersion;
 use Application\WhatsNew\AppVersion\VersionLanguage;
@@ -44,7 +45,7 @@ abstract class AppVersionEditSubmode extends Application_Admin_Area_Mode_Submode
 
     protected function _handleActions(): bool
     {
-        $this->whatsNew = Application_Driver::createWhatsnew();
+        $this->whatsNew = AppFactory::createWhatsNew();
 
         $this->resolveVersion();
         $this->resolveActiveLanguage();

@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
@@ -439,7 +440,7 @@ abstract class Application_AjaxMethod
             header('Content-Type:text/html; charset=UTF-8');
         }
        
-        $logger = Application::getLogger();
+        $logger = AppFactory::createLogger();
         $logger->enableHTML();
         $logger->logModeEcho();
         

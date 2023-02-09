@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use function AppUtils\parseVariable;
 
 class Application_ErrorLog_Log_Entry_AJAX extends Application_ErrorLog_Log_Entry
@@ -69,7 +70,7 @@ class Application_ErrorLog_Log_Entry_AJAX extends Application_ErrorLog_Log_Entry
         // 5 = payload
         // 6 = data
         
-        Application::createErrorLog()->logAjaxError(
+        AppFactory::createErrorLog()->logAjaxError(
             array(
                 $code,
                 $method,

@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Mode\Users;
 
+use Application\AppFactory;
+use Application\AppFactory\AppFactoryException;
 use Application\Exception\UnexpectedInstanceException;
 use Application_Admin_Area_Mode_Submode_CollectionList;
 use Application_Admin_Area_Mode_Users;
@@ -60,12 +62,11 @@ abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_Coll
 
     /**
      * @return Application_Users
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
+     * @throws AppFactoryException
      */
     protected function createCollection() : DBHelper_BaseCollection
     {
-        return Application_Driver::createUsers();
+        return AppFactory::createUsers();
     }
 
     protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array

@@ -4,6 +4,7 @@
  * The SQL mode string as used on the live servers.
  */
 
+use Application\AppFactory;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper_Exception;
 
@@ -398,9 +399,9 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
             );
         }
                
-        if(Application::createRequestLog()->getStatus()->isEnabled() === true)
+        if(AppFactory::createRequestLog()->getStatus()->isEnabled() === true)
         {
-            Application::getLogger()->write();
+            AppFactory::createLogger()->write();
         }
     }
 

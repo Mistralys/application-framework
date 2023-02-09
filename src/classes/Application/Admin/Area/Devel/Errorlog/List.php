@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 
 class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_Mode_Submode
@@ -31,7 +32,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
     
     protected function _handleActions() : bool
     {
-        $this->errorlog = Application::createErrorLog();
+        $this->errorlog = AppFactory::createErrorLog();
         
         if($this->request->getBool('deleteall')) {
             $this->handle_deleteAll();

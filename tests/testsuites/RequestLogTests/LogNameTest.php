@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace testsuites\RequestLogTests;
 
 use Application;
+use Application\AppFactory;
 use Application_RequestLog_LogInfo;
 use Application_RequestLog_LogWriter;
 use AppUtils\Microtime;
@@ -19,7 +20,7 @@ class LogNameTest extends RequestLogTestCase
     {
         $time = new Microtime('2022-02-01 10:40:25.555555');
 
-        $writer = new Application_RequestLog_LogWriter(Application::getLogger());
+        $writer = new Application_RequestLog_LogWriter(AppFactory::createLogger());
         $writer->setTime($time);
         $writer->write();
 

@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_Mode_Submode
 {
     public function getURLName() : string
@@ -39,7 +41,7 @@ class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_M
     
     protected function _handleActions() : bool
     {
-        $this->sets = $this->driver->getApplicationSets();
+        $this->sets = AppFactory::createAppSets();
         $this->areas = $this->driver->getAdminAreaObjects();
         
         $setID = $this->request->getParam('set_id');

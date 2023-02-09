@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 class Application_AjaxMethods_RatingAdd extends Application_AjaxMethod
 {
     public function processJSON()
@@ -47,6 +49,6 @@ class Application_AjaxMethods_RatingAdd extends Application_AjaxMethod
             $this->sendErrorUnknownElement(t('rating'));
         }
         
-        $this->ratings = Application::createRatings();
+        $this->ratings = AppFactory::createRatings();
     }
 }

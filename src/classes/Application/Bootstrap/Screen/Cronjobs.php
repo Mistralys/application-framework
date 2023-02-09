@@ -1,6 +1,8 @@
 <?php
 
 
+use Application\AppFactory;
+
 class Application_Bootstrap_Screen_Cronjobs extends Application_Bootstrap_Screen
 {
     public function getDispatcher()
@@ -22,7 +24,7 @@ class Application_Bootstrap_Screen_Cronjobs extends Application_Bootstrap_Screen
         // in debug mode, show all application log messages as well as the output
         if($this->isDebug()) 
         {
-            Application::getLogger()->logModeEcho();
+            AppFactory::createLogger()->logModeEcho();
             $_REQUEST['output'] = 'yes';
         }
         

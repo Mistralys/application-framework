@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 require_once 'Application/AjaxMethod.php';
 
 class Application_AjaxMethods_GetLookupItems extends Application_AjaxMethod
@@ -8,7 +10,7 @@ class Application_AjaxMethods_GetLookupItems extends Application_AjaxMethod
     {
         $payload = array();
         
-        $lookup = Application::createLookupItems();
+        $lookup = AppFactory::createLookupItems();
         $items = $lookup->getItems();
         foreach($items as $item) {
             $payload[] = $item->toArray();

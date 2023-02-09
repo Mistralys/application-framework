@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 abstract class Application_Admin_Area_Mode_Messagelog extends Application_Admin_Area_Mode
 {
     public function getDefaultSubmode() : string
@@ -44,7 +46,7 @@ abstract class Application_Admin_Area_Mode_Messagelog extends Application_Admin_
     
     protected function _handleActions() : bool
     {
-        $this->collection = Application::getMessageLog();
+        $this->collection = AppFactory::createMessageLog();
         $this->filterSettings = $this->collection->getFilterSettings();
         $this->filters = $this->collection->getFilterCriteria();
         

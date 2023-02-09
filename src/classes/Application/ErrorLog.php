@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 use AppUtils\ConvertHelper_ThrowableInfo;
 
@@ -92,7 +93,7 @@ class Application_ErrorLog
         
         $folder = sprintf(
             '%s/error/%s',
-            Application::getLogger()->getLogFolder(),
+            AppFactory::createLogger()->getLogFolder(),
             $year
         );
         
@@ -350,8 +351,8 @@ class Application_ErrorLog
         
         if($writeLog)
         {
-            $log = Application::getLogger()->getLog();
-            
+            $log = AppFactory::createLogger()->getLog();
+
             error_log(implode(PHP_EOL, $log), 3, $this->getLogFilePath($logID.'.log'));
         }
         

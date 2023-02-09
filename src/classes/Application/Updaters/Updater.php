@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use AppUtils\OutputBuffering_Exception;
 
 abstract class Application_Updaters_Updater  implements Application_Updaters_Interface
@@ -53,7 +54,7 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
 		
 	    if($this->isSimulation() && !self::$simulationStarted) 
 	    {
-	        $logger = Application::getLogger();
+	        $logger = AppFactory::createLogger();
 	        $logger->enableHTML();
 	        $logger->logModeEcho();
 	        

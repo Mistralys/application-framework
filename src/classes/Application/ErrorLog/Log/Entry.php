@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper_ThrowableInfo;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
@@ -91,7 +92,7 @@ abstract class Application_ErrorLog_Log_Entry
     {
         if(!isset($this->user)) 
         {
-            $users = Application_Driver::createUsers();
+            $users = AppFactory::createUsers();
             
             if($users->idExists($this->userID)) {
                 $this->user = $users->getByID($this->userID);

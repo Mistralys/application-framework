@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 /**
  * Base session class: defines the core mechanisms of the
  * available session systems. Also included in the mechanism
@@ -263,7 +265,7 @@ abstract class Application_Session_Base implements Application_Session
         {
             $this->log(sprintf('Using the user ID [%s] for the simulated session.', $simulateID));
 
-            $this->storeUser(Application_Driver::createUsers()->getByID($simulateID));
+            $this->storeUser(AppFactory::createUsers()->getByID($simulateID));
         }
     }
 
@@ -477,7 +479,7 @@ abstract class Application_Session_Base implements Application_Session
             $email
         ));
 
-        $users = Application_Driver::createUsers();
+        $users = AppFactory::createUsers();
         $user = $users->getByEmail($email);
 
         if($user !== null)
@@ -509,7 +511,7 @@ abstract class Application_Session_Base implements Application_Session
     {
         $this->log(sprintf('User [%s] | Inserting new user in the database.', $email));
 
-        $users = Application_Driver::createUsers();
+        $users = AppFactory::createUsers();
 
         DBHelper::startTransaction();
         $user = $users->createNewUser($email, $firstname, $lastname, $foreignID);

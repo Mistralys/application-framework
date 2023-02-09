@@ -8,7 +8,7 @@
  */
 
 declare(strict_types=1);
-use UI\Page\Navigation\QuickNavigation;
+use Application\AppFactory;use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -85,7 +85,7 @@ class template_default_frame extends UI_Page_Template_Custom
         
         Application_LockManager::injectJS($this->ui, $this->lockManager);
         
-        $this->ratings = Application::createRatings();
+        $this->ratings = AppFactory::createRatings();
         $this->ratings->injectJS($this->ui);
         
         $this->resolveVariables();

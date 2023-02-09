@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 abstract class Application_RevisionableCollection implements Application_CollectionInterface
 {
     use Application_Traits_Loggable;
@@ -629,7 +631,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     {
         DBHelper::requireTransaction('Destroy a revisionable');
         
-        Application::getMessageLog()->addInfo(
+        AppFactory::createMessageLog()->addInfo(
             t(
                 'Destroyed the %1$s %2$s.',
                 $this->getRecordReadableNameSingular(),

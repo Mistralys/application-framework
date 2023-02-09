@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Application\Bootstrap;
 
 use Application;
+use Application\AppFactory;
 use Application\DeploymentRegistry;
 use Application_Bootstrap_Screen;
 use DBHelper;
@@ -42,12 +43,12 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
 
         header('Content-Type: text/plain; charset=UTF-8');
 
-        Application::getLogger()->logModeEcho();
+        AppFactory::createLogger()->logModeEcho();
 
-        $registry = Application::createDeploymentRegistry();
+        $registry = AppFactory::createDeploymentRegistry();
         $registry->registerDeployment();
 
-        Application::getLogger()->logModeNone();
+        AppFactory::createLogger()->logModeNone();
 
         DBHelper::commitTransaction();
     }

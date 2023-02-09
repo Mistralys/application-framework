@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\WhatsNew;
 
 /**
@@ -36,7 +37,7 @@ class Application_Bootstrap_Screen_Changelog extends Application_Bootstrap_Scree
 
         header('Content-Type:text/plain; encoding=utf-8');
         
-        echo Application_Driver::createWhatsnew()->toPlainText(WhatsNew::getDeveloperLangID());
+        echo AppFactory::createWhatsNew()->toPlainText(WhatsNew::getDeveloperLangID());
 
         Application::exit('Shown the changelog.');
     }

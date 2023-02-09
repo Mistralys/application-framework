@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
@@ -34,9 +35,9 @@ class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
     */
     protected $items = array();
     
-    protected function validateRequest()
+    protected function validateRequest() : void
     {
-        $lookup = Application::createLookupItems();
+        $lookup = AppFactory::createLookupItems();
         $items = $lookup->getItems();
         
         foreach($items as $item)

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace testsuites\Application;
 
 use Application;
+use Application\AppFactory;
 use Application_Bootstrap;
 use Application_Exception;
 use PHPUnit\Framework\TestCase;
@@ -78,7 +79,7 @@ final class LoggingTests extends TestCase
      */
     public function test_loggable_messageArguments() : void
     {
-        $logger = Application::getLogger();
+        $logger = AppFactory::createLogger();
         $logger->clearLog();
 
         $loggable = new TestLoggable();

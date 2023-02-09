@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use Application;
+use Application\AppFactory;
 use Application_Formable_Generic;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
@@ -69,12 +70,12 @@ abstract class ApplicationTestCase extends TestCase
 
     protected function enableLogging(): void
     {
-        Application::getLogger()->logModeEcho();
+        AppFactory::createLogger()->logModeEcho();
     }
 
     protected function disableLogging(): void
     {
-        Application::getLogger()->logModeNone();
+        AppFactory::createLogger()->logModeNone();
     }
 
     protected function createTestLocale(string $name = ''): Localization_Locale

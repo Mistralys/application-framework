@@ -2,10 +2,12 @@
 
 	/* @var $this UI_Page_Template */
 
-	$data = $this->getVar('data');
+    use Application\AppFactory;
+
+    $data = $this->getVar('data');
 	$requestParams = json_decode($data['request_params'], true);
 	
-	$users = Application_Driver::createUsers();
+	$users = AppFactory::createUsers();
 	$user = $users->getByID($data['user_id']);
 	$date = new DateTime($data['date']);
 	

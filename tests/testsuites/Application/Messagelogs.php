@@ -1,5 +1,6 @@
 <?php
 
+use Application\AppFactory;
 use PHPUnit\Framework\TestCase;
 
 final class Application_MessagelogsTest extends TestCase
@@ -8,8 +9,8 @@ final class Application_MessagelogsTest extends TestCase
     {
         DBHelper::startTransaction();
         
-        $log = Application::getMessageLog()->addInfo('My message', 'category');
-        
+        $log = AppFactory::createMessageLog()->addInfo('My message', 'category');
+
         $user = Application::getUser();
         
         $this->assertEquals('My message', $log->getMessage());

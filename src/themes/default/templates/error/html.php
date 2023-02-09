@@ -2,7 +2,7 @@
 
     /* @var $error Application_ErrorDetails */
 
-    if(!isset($error))
+use Application\AppFactory;if(!isset($error))
     {
         return;
     }
@@ -78,7 +78,7 @@
                         <?php
                     }
 
-				    $logger = Application::getLogger();
+				    $logger = AppFactory::createLogger();
 				    
 				    if($logger->isLoggingEnabled() && $logger->getLogMode() !== Application_Logger::LOG_MODE_ECHO)
 				    {

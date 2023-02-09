@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 class Application_Messagelogs_Log extends DBHelper_BaseRecord
 {
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
@@ -65,7 +67,6 @@ class Application_Messagelogs_Log extends DBHelper_BaseRecord
     */
     public function getUser() : Application_Users_User
     {
-        $users = Application_Driver::createUsers();
-        return $users->getByID($this->getUserID());
+        return AppFactory::createUsers()->getByID($this->getUserID());
     }
 }

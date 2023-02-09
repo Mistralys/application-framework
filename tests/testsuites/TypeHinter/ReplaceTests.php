@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace testsuites\TypeHinter;
 
 use Application;
+use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 use AppUtils\FileHelper;
 use TypeHinter;
@@ -72,6 +73,9 @@ final class ReplaceTests extends ApplicationTestCase
 
         $this->addToAssertionCount(1);
 
-        FileHelper::saveFile(__DIR__.'/output.log', implode(PHP_EOL, Application::getLogger()->getLog()));
+        FileHelper::saveFile(
+            __DIR__.'/output.log',
+            implode(PHP_EOL, AppFactory::createLogger()->getLog())
+        );
     }
 }

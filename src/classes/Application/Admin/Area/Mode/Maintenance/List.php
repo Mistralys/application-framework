@@ -1,5 +1,7 @@
 <?php
 
+use Application\AppFactory;
+
 abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_Admin_Area_Mode_Submode
 {
    /**
@@ -31,7 +33,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_
     
     protected function _handleActions() : bool
     {
-        $this->maintenance = Application_Driver::createMaintenance();
+        $this->maintenance = AppFactory::createMaintenance();
         
         if($this->request->getBool('simulate_plan')) {
             $this->handleSimulate();

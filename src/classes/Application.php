@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\AppFactory;
 use Application\DeploymentRegistry;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
@@ -81,14 +82,10 @@ class Application
     private static ?bool $develEnvironment = null;
     private static string $storageFolder = '';
     private static array $knownStorageFolders = array();
-    private static ?Application_Messagelogs $messageLogs = null;
-    private static ?Application_Media $media = null;
     private static ?Application_Messaging $messaging = null;
     private static ?Application_LookupItems $lookupItems = null;
     private int $id;
     private static bool $exitEnabled = true;
-    protected static ?Application_ErrorLog $errorLog = null;
-    protected static ?Application_RequestLog $requestLog = null;
 
     public function __construct(Application_Bootstrap_Screen $bootScreen)
     {
@@ -288,15 +285,11 @@ class Application
      * log application messages and/or write them to disk.
      *
      * @return Application_Logger
+     * @deprecated Use the AppFactory instead.
      */
     public static function getLogger() : Application_Logger
     {
-        if (!isset(self::$logger))
-        {
-            self::$logger = new Application_Logger();
-        }
-
-        return self::$logger;
+        return AppFactory::createLogger();
     }
 
     /**
@@ -308,17 +301,17 @@ class Application
      */
     public static function log($message = null, bool $header = false) : Application_Logger
     {
-        return self::getLogger()->log($message, $header);
+        return AppFactory::createLogger()->log($message, $header);
     }
 
     public static function logSF(string $message, string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
-        return self::getLogger()->logSF($message, $category, ...$args);
+        return AppFactory::createLogger()->logSF($message, $category, ...$args);
     }
 
     public static function logEvent(string $eventName, string $message = '', ...$args) : Application_Logger
     {
-        return self::getLogger()->logEvent($eventName, $message, ...$args);
+        return AppFactory::createLogger()->logEvent($eventName, $message, ...$args);
     }
 
     /**
@@ -329,7 +322,7 @@ class Application
      */
     public static function logHeader(string $message) : Application_Logger
     {
-        return self::getLogger()->logHeader($message);
+        return AppFactory::createLogger()->logHeader($message);
     }
 
     /**
@@ -340,12 +333,12 @@ class Application
      */
     public static function logData(array $data) : Application_Logger
     {
-        return self::getLogger()->logData($data);
+        return AppFactory::createLogger()->logData($data);
     }
 
     public static function logError(string $message) : Application_Logger
     {
-        return self::getLogger()->logError($message);
+        return AppFactory::createLogger()->logError($message);
     }
 
     /**
@@ -585,7 +578,7 @@ class Application
      */
     public static function logModeEcho(bool $html = false) : Application_Logger
     {
-        return self::getLogger()->enableHTML($html)->logModeEcho();
+        return AppFactory::createLogger()->enableHTML($html)->logModeEcho();
     }
 
     /**
@@ -595,7 +588,7 @@ class Application
      */
     public static function logModeFile(bool $html = false) : Application_Logger
     {
-        return self::getLogger()->enableHTML($html)->logModeFile();
+        return AppFactory::createLogger()->enableHTML($html)->logModeFile();
     }
 
     /**
@@ -604,7 +597,7 @@ class Application
      */
     public static function logModeNone() : Application_Logger
     {
-        return self::getLogger()->logModeNone();
+        return AppFactory::createLogger()->logModeNone();
     }
 
     /**
@@ -758,51 +751,41 @@ class Application
         return $folder;
     }
 
+    /**
+     * @return Application_Messagelogs
+     * @deprecated Use the AppFactory instead.
+     */
     public static function getMessageLog() : Application_Messagelogs
     {
-        if (!isset(self::$messageLogs))
-        {
-            self::$messageLogs = new Application_Messagelogs();
-        }
-
-        return self::$messageLogs;
+        return AppFactory::createMessageLog();
     }
 
     /**
      * Creates the media manager instance, including the files as needed.
      * @return Application_Media
+     * @deprecated Use the AppFactory instead.
      */
     public static function createMedia() : Application_Media
     {
-        if (!isset(self::$media))
-        {
-            self::$media = Application_Media::getInstance();
-        }
-
-        return self::$media;
+        return AppFactory::createMedia();
     }
 
-    private static ?DeeplHelper $deeplHelper = null;
-
+    /**
+     * @return DeeplHelper
+     * @deprecated Use the AppFactory instead.
+     */
     public static function createDeeplHelper() : DeeplHelper
     {
-        if(!isset(self::$deeplHelper))
-        {
-            self::$deeplHelper = new DeeplHelper();
-        }
-
-        return self::$deeplHelper;
+        return AppFactory::createDeeplHelper();
     }
 
-    private static ?DeploymentRegistry $deploymentRegistry = null;
-
+    /**
+     * @return DeploymentRegistry
+     * @deprecated Use the AppFactory instead.
+     */
     public static function createDeploymentRegistry() : DeploymentRegistry
     {
-        if(!isset(self::$deploymentRegistry)) {
-            self::$deploymentRegistry = new DeploymentRegistry();
-        }
-
-        return self::$deploymentRegistry;
+        return AppFactory::createDeploymentRegistry();
     }
 
     /**
@@ -885,6 +868,7 @@ class Application
 
     /**
      * @return Application_Sets
+     * @deprecated Use the AppFactory instead.
      */
     public function getSets() : Application_Sets
     {
@@ -912,16 +896,11 @@ class Application
      * all items that can be searched for using the lookup dialog.
      *
      * @return Application_LookupItems
+     * @deprecated Use the AppFactory instead.
      */
     public static function createLookupItems() : Application_LookupItems
     {
-        if (!isset(self::$lookupItems))
-        {
-            $driver = Application_Driver::getInstance();
-            self::$lookupItems = new Application_LookupItems($driver);
-        }
-
-        return self::$lookupItems;
+        return AppFactory::createLookupItems();
     }
 
     /**
@@ -929,19 +908,11 @@ class Application
      * which are used to handle user ratings of application screens.
      *
      * @return Application_Ratings
-     * @throws UnexpectedInstanceException
-     * @throws DBHelper_Exception
+     * @deprecated Use the AppFactory instead.
      */
     public static function createRatings() : Application_Ratings
     {
-        $collection = DBHelper::createCollection(Application_Ratings::class);
-
-        if($collection instanceof Application_Ratings)
-        {
-            return $collection;
-        }
-
-        throw new UnexpectedInstanceException(Application_Ratings::class, $collection);
+        return AppFactory::createRatings();
     }
 
     /**
@@ -1021,24 +992,22 @@ class Application
         return APP_ROOT . '/vendor';
     }
 
+    /**
+     * @return Application_RequestLog
+     * @deprecated Use the AppFactory instead.
+     */
     public static function createRequestLog() : Application_RequestLog
     {
-        if(!isset(self::$requestLog))
-        {
-            self::$requestLog = new Application_RequestLog();
-        }
-
-        return self::$requestLog;
+        return AppFactory::createRequestLog();
     }
 
+    /**
+     * @return Application_ErrorLog
+     * @deprecated Use the AppFactory instead.
+     */
     public static function createErrorLog() : Application_ErrorLog
     {
-        if (!isset(self::$errorLog))
-        {
-            self::$errorLog = new Application_ErrorLog();
-        }
-
-        return self::$errorLog;
+        return AppFactory::createErrorLog();
     }
 
     private static $exited = false;
@@ -1231,7 +1200,7 @@ class Application
 
         if ($simulation)
         {
-            self::getLogger()->printLog(true);
+            AppFactory::createLogger()->printLog(true);
         }
 
         self::exit(sprintf('Redirected to [%s]', $url));

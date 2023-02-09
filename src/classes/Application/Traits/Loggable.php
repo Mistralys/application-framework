@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ClassHelper;
 
 /**
@@ -56,7 +57,7 @@ trait Application_Traits_Loggable
     {
         if($this->loggableLoggingEnabled === null)
         {
-            $this->loggableLoggingEnabled = Application::getLogger()->isLoggingEnabled();
+            $this->loggableLoggingEnabled = AppFactory::createLogger()->isLoggingEnabled();
         }
 
         return $this->loggableLoggingEnabled;
@@ -64,7 +65,7 @@ trait Application_Traits_Loggable
 
     public function getLogger() : Application_Logger
     {
-        return Application::getLogger();
+        return AppFactory::createLogger();
     }
 
     /**
@@ -82,7 +83,7 @@ trait Application_Traits_Loggable
             return;
         }
 
-        Application::getLogger()->logSF(
+        AppFactory::createLogger()->logSF(
             sprintf(
             '%s | %s',
                 $this->getLogIdentifier(),
@@ -100,7 +101,7 @@ trait Application_Traits_Loggable
             return;
         }
 
-        Application::getLogger()->logSF(
+        AppFactory::createLogger()->logSF(
             sprintf(
                 '%s | %s',
                 $this->getLogIdentifier(),
@@ -117,12 +118,12 @@ trait Application_Traits_Loggable
      */
     protected function logSeparator() : void
     {
-        Application::getLogger()->logSeparator();
+        AppFactory::createLogger()->logSeparator();
     }
 
     protected function logEmptyLine() : void
     {
-        Application::getLogger()->logEmptyLine();
+        AppFactory::createLogger()->logEmptyLine();
     }
 
     /**
@@ -134,7 +135,7 @@ trait Application_Traits_Loggable
      */
     protected function logCloseSection(string $sectionLabel, ...$args) : void
     {
-        Application::getLogger()->logCloseSection($sectionLabel, ...$args);
+        AppFactory::createLogger()->logCloseSection($sectionLabel, ...$args);
     }
 
     protected function logUI(string $message, ...$args) : void
@@ -144,12 +145,12 @@ trait Application_Traits_Loggable
             return;
         }
 
-        Application::getLogger()->logUI($message, $args);
+        AppFactory::createLogger()->logUI($message, $args);
     }
 
     protected function logData(array $data) : void
     {
-        Application::getLogger()->logData($data);
+        AppFactory::createLogger()->logData($data);
     }
     
     protected function logError(string $message, ...$args) : void
@@ -159,7 +160,7 @@ trait Application_Traits_Loggable
             return;
         }
 
-        Application::getLogger()->logError(
+        AppFactory::createLogger()->logError(
             sprintf(
                 '%s | %s',
                 $this->getLogIdentifier(),
@@ -183,11 +184,11 @@ trait Application_Traits_Loggable
             $sep = '';
         }
 
-        Application::getLogger()->logEvent($eventName, $this->getLogIdentifier().$sep.$message, ...$args);
+        AppFactory::createLogger()->logEvent($eventName, $this->getLogIdentifier().$sep.$message, ...$args);
     }
 
     protected function logHeader(string $message, ...$args) : void
     {
-        Application::getLogger()->logHeader($message, ...$args);
+        AppFactory::createLogger()->logHeader($message, ...$args);
     }
 }

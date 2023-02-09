@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\WhatsNew;
 
 /**
@@ -53,7 +54,7 @@ class Application_Admin_Area_Devel_WhatsNewEditor_Create extends Application_Adm
 
     protected function _handleActions() : bool
     {
-        $this->whatsNew = Application_Driver::createWhatsnew();
+        $this->whatsNew = AppFactory::createWhatsNew();
 
         $this->createSettingsForm();
 

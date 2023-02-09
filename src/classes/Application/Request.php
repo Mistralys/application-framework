@@ -8,6 +8,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -48,7 +49,7 @@ class Application_Request extends Request
     {
         $this->setBaseURL(APP_URL);
 
-        Application::getLogger()->logSF(
+        AppFactory::createLogger()->logSF(
             'Initialized request [%s].',
             Application_Logger::CATEGORY_REQUEST,
             self::getRequestID()

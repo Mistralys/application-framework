@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 /**
  * @see Application_RequestLog
  */
@@ -45,9 +47,9 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         $this->disableAuthentication();
         $this->createEnvironment();
 
-        $this->log = Application::createRequestLog();
+        $this->log = AppFactory::createRequestLog();
         $this->page = $this->driver->getUI()->createPage('request-log');
-        $this->request = Application_Driver::getInstance()->getRequest();
+        $this->request = AppFactory::createRequest();
         $breadcrumb = $this->page->getBreadcrumb();
 
         if($this->request->getBool(self::REQUEST_PARAM_LOG_OUT))

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Hybridauth\User\Profile;
 
 /**
@@ -36,7 +37,7 @@ trait Application_Session_AuthTypes_None
 
     protected function handleLogin() : Application_Users_User
     {
-        return Application_Driver::createUsers()
+        return AppFactory::createUsers()
             ->getByID(Application::USER_ID_SYSTEM);
     }
 

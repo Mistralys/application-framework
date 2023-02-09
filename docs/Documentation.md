@@ -2044,7 +2044,7 @@ extend the base class `BaseDeployTask`.
 The application's logger class is the central hub to access the logging system:
 
 ```php
-$logger = Application::getLogger();
+$logger = \Application\AppFactory::createLogger();
 ```
 
 #### Log modes
@@ -2057,7 +2057,7 @@ view it in the error log.
 The log mode can be changed on the fly:
 
 ```php
-$logger = Application::getLogger();
+$logger = \Application\AppFactory::createLogger();
 
 // Direct all log messages to the logs/trace.log file
 $logger->logModeFile();
@@ -2077,10 +2077,10 @@ be printed in one block with the following call:
 
 ```php
 // Print the log as plain text
-Application::getLogger()->printLog();
+\Application\AppFactory::createLogger()->printLog();
 
 // Print the log with HTML styling enabled
-Application::getLogger()->printLog(true);
+\Application\AppFactory::createLogger()->printLog(true);
 ```
 
 ### The loggable interface and trait
@@ -2151,7 +2151,7 @@ The following example shows how to get a list of all years for which there are
 request logs stored:
 
 ```php
-$log = Application::createRequestLog();
+$log = \Application\AppFactory::createRequestLog();
 
 $availableYears = $log->getYears();
 ```

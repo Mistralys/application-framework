@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interface_Optionable;
 use AppUtils\Traits_Optionable;
@@ -328,7 +329,7 @@ class Application_User_Recent_Category implements Interface_Optionable, Applicat
      */
     public function setLookupItemID(string $id) : Application_User_Recent_Category
     {
-        return $this->setLookupItem(Application::createLookupItems()->getItemByID($id));
+        return $this->setLookupItem(AppFactory::createLookupItems()->getItemByID($id));
     }
 
     /**
