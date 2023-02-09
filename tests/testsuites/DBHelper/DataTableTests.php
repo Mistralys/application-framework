@@ -52,7 +52,9 @@ final class DBHelper_DataTableTests extends DBHelperTestCase
     {
         $this->logHeader('Update data table key');
 
-        $this->dataTable->setKey($this->testDataName, $this->testDataValue);
+        $this->assertFalse($this->dataTable->hasModifiedKeys());
+        $this->assertTrue($this->dataTable->setKey($this->testDataName, $this->testDataValue));
+        $this->assertFalse($this->dataTable->hasModifiedKeys());
 
         $this->dataTable->setKey($this->testDataName, $this->testDataValue2);
 
