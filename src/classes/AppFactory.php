@@ -33,6 +33,7 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use DeeplHelper;
 use UI;
+use UI_Themes_Theme;
 use function AppUtils\parseVariable;
 
 /**
@@ -75,6 +76,11 @@ class AppFactory
     public static function createDBDumps() : Application_DBDumps
     {
         return self::createClassInstance(Application_DBDumps::class, Application_Driver::getInstance());
+    }
+
+    public static function createTheme() : UI_Themes_Theme
+    {
+        return self::createUI()->getTheme();
     }
 
     public static function createDriver() : Application_Driver
