@@ -1,0 +1,233 @@
+<?php
+/**
+ * @package Application
+ * @subpackage AppFactory
+ * @see \Application\AppFactory
+ */
+
+declare(strict_types=1);
+
+namespace Application;
+
+use Application;
+use Application\AppFactory\AppFactoryException;
+use Application\Driver\DriverException;
+use Application\Driver\DriverSettings;
+use Application_Countries;
+use Application_DBDumps;
+use Application_Driver;
+use Application_ErrorLog;
+use Application_Logger;
+use Application_LookupItems;
+use Application_Maintenance;
+use Application_Media;
+use Application_Messagelogs;
+use Application_Ratings;
+use Application_Request;
+use Application_RequestLog;
+use Application_Session;
+use Application_Sets;
+use Application_Uploads;
+use Application_Users;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use DeeplHelper;
+use UI;
+use function AppUtils\parseVariable;
+
+/**
+ * Centralized factory helper class: Easy access to most of the
+ * collections and utilities that the framework offers.
+ *
+ * @package Application
+ * @subpackage AppFactory
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class AppFactory
+{
+    // region: A - Factory methods
+
+    public static function createRequest() : Application_Request
+    {
+        return Application_Request::getInstance();
+    }
+
+    public static function createUploads() : Application_Uploads
+    {
+        return Application_Uploads::getInstance();
+    }
+
+    public static function createMedia() : Application_Media
+    {
+        return Application_Media::getInstance();
+    }
+
+    public static function createLogger() : Application_Logger
+    {
+        return self::createClassInstance(Application_Logger::class);
+    }
+
+    public static function createAppSets() : Application_Sets
+    {
+        return Application_Sets::getInstance();
+    }
+
+    public static function createDBDumps() : Application_DBDumps
+    {
+        return self::createClassInstance(Application_DBDumps::class, Application_Driver::getInstance());
+    }
+
+    public static function createDriver() : Application_Driver
+    {
+        return Application_Driver::getInstance();
+    }
+
+    public static function createUI() : UI
+    {
+        return UI::getInstance();
+    }
+
+    public static function createSession() : Application_Session
+    {
+        return Application::getSession();
+    }
+
+    public static function createCountries() : Application_Countries
+    {
+        return Application_Countries::getInstance();
+    }
+
+    public static function createDeeplHelper() : DeeplHelper
+    {
+        return self::createClassInstance(DeeplHelper::class);
+    }
+
+    public static function createDeploymentRegistry() : DeploymentRegistry
+    {
+        return self::createClassInstance(DeploymentRegistry::class);
+    }
+
+    public static function createMessageLog() : Application_Messagelogs
+    {
+        return self::createClassInstance(Application_Messagelogs::class);
+    }
+
+    public static function createMaintenance() : Application_Maintenance
+    {
+        return self::createClassInstance(Application_Maintenance::class, Application_Driver::getInstance());
+    }
+
+    /**
+     * Creates a new instance of the API to access the information
+     * from the WHATSNEW.xml file.
+     *
+     * @return WhatsNew
+     * @throws AppFactoryException
+     */
+    public static function createWhatsNew() : WhatsNew
+    {
+        return self::createClassInstance(WhatsNew::class, APP_ROOT . '/WHATSNEW.xml');
+    }
+
+    public function createDriverSettings() : DriverSettings
+    {
+        return Application_Driver::createSettings();
+    }
+
+    public static function createRequestLog() : Application_RequestLog
+    {
+        return self::createClassInstance(Application_RequestLog::class);
+    }
+
+    public static function createErrorLog() : Application_ErrorLog
+    {
+        return self::createClassInstance(Application_ErrorLog::class);
+    }
+
+    /**
+     * @return Application_Users
+     * @throws AppFactoryException
+     */
+    public static function createUsers() : Application_Users
+    {
+        return self::createClassInstance(Application_Users::class);
+    }
+
+    /**
+     * Creates/returns the instance of the application ratings,
+     * which are used to handle user ratings of application screens.
+     *
+     * @return Application_Ratings
+     * @throws AppFactoryException
+     */
+    public static function createRatings() : Application_Ratings
+    {
+        return self::createClassInstance(Application_Ratings::class);
+    }
+
+    /**
+     * Retrieves the lookup items manager: this provides access to
+     * all items that can be searched for using the lookup dialog.
+     *
+     * @return Application_LookupItems
+     * @throws AppFactoryException
+     * @throws DriverException
+     */
+    public static function createLookupItems() : Application_LookupItems
+    {
+        return self::createClassInstance(Application_LookupItems::class, Application_Driver::getInstance());
+    }
+
+    // endregion
+
+    // region: X - Support methods
+
+    public const ERROR_INVALID_INSTANCE_CLASS = 128401;
+
+    /**
+     * @var array<string,object>
+     */
+    private static array $instances = array();
+
+    /**
+     * Creates an instance of a generic collection, like
+     * a DBHelper collection, and returns it. Ensures that
+     * only a singleton is returned every time.
+     *
+     * @template CLASS
+     * @param class-string<CLASS> $className
+     * @param mixed $parameters Any parameters the collection may need to be instantiated
+     * @return CLASS
+     * @throws AppFactoryException
+     */
+    protected static function createClassInstance(string $className, ...$parameters)
+    {
+        if (!isset(self::$instances[$className]))
+        {
+            self::$instances[$className] = new $className(...$parameters);
+        }
+
+        try
+        {
+            return ClassHelper::requireObjectInstanceOf(
+                $className,
+                self::$instances[$className]
+            );
+        }
+        catch (BaseClassHelperException $e)
+        {
+            throw new AppFactoryException(
+                'Instantiated object is not of the expected class.',
+                sprintf(
+                    'Tried creating collection of class [%s], given: [%s].',
+                    $className,
+                    parseVariable(self::$instances[$className])->enableType()->toString()
+                ),
+                self::ERROR_INVALID_INSTANCE_CLASS,
+                $e
+            );
+        }
+    }
+
+    // endregion
+}
