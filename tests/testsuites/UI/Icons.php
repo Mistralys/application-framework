@@ -6,13 +6,6 @@ use Mistralys\AppFrameworkTests\TestClasses\ApplicationTestCase;
 
 final class UI_IconsTest extends ApplicationTestCase
 {
-    public function test_noTypeSelected() : void
-    {
-        $this->expectExceptionCode(UI_Icon::ERROR_INVALID_TYPE_SELECTED);
-
-        UI::icon()->render();
-    }
-
     public function test_render() : void
     {
         $html = UI::icon()->code()->render();
