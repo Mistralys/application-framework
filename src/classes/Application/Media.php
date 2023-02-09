@@ -1,13 +1,17 @@
 <?php
 
+use Application\Media\MediaException;
+use Application\Uploads\LocalFileUpload;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
 
 class Application_Media
 {
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
-    
+    public const ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
+
     protected static ?Application_Media $instance = null;
     protected string $storageFolder;
     protected Application_Driver $driver;
@@ -53,13 +57,48 @@ class Application_Media
     }
 
     /**
+     * Creates an image media document from a local file path.
+     *
+     * @param string $name
+     * @param FileInfo $file
+     * @param Application_User|null $user
+     * @param DateTime|null $dateAdded
+     * @return Application_Media_Document_Image
+     * @throws MediaException
+     */
+    public function createImageFromFile(string $name, FileInfo $file, ?Application_User $user=null, ?DateTime $dateAdded=null) : Application_Media_Document_Image
+    {
+        try
+        {
+            return ClassHelper::requireObjectInstanceOf(
+                Application_Media_Document_Image::class,
+                $this->createFromFile($name, $file, $user, $dateAdded)
+            );
+        }
+        catch (BaseClassHelperException $e)
+        {
+            throw new MediaException(
+                'Created media document is not an image.',
+                sprintf(
+                    'Source file: [%s].',
+                    $file->getPath()
+                ),
+                self::ERROR_NOT_AN_IMAGE_MEDIA_FILE,
+                $e
+            );
+        }
+    }
+
+    /**
      * Creates a new media document from a previously uploaded file.
      * Returns the new media document. Note that this does not delete
      * the upload: that has to be done manually as needed.
      *
      * @param Application_Uploads_Upload $upload
+     * @return Application_Media_Document
+     * @throws Application_Exception
      */
-    public function createFromUpload(Application_Uploads_Upload $upload)
+    public function createFromUpload(Application_Uploads_Upload $upload) : Application_Media_Document
     {
         return Application_Media_Document::createNewFromUpload($upload);
     }
