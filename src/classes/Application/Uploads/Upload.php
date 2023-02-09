@@ -7,6 +7,7 @@
  * @see Application_Uploads_Upload
  */
 
+use Application\AppFactory;
 use AppUtils\ImageHelper;
 
 /**
@@ -351,7 +352,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
             return false;
         }
         
-        return Application::createMedia()->idExists($media_id);
+        return AppFactory::createMedia()->idExists($media_id);
     }
     
    /**
@@ -367,7 +368,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
     public function getDocument() : Application_Media_Document
     {
         if($this->hasDocument()) {
-           return Application::createMedia()->getByID($this->getDocumentID()); 
+           return AppFactory::createMedia()->getByID($this->getDocumentID());
         }
         
         throw new Application_Exception(
