@@ -1,3 +1,31 @@
+### v2.4.4 - Local file uploads
+- Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
+- Media: Added `createImageFromFile()` to add an image document from a local file path.
+- AppFactory: Added the new centralized collection factory helper class `AppFactory`.
+- AppFactory: Replaced factory method calls for all framework-internal calls.
+- WhatsNew: Fixed the sorting of the languages not putting the DEV language at the end.
+
+#### Deprecated methods:
+
+The following methods have all been replaced by equivalent methods in the
+new `AppFactory` class:
+
+- `Application_Driver::createCountries()`
+- `Application_Driver::createMaintenance()`
+- `Application_Driver::createUsers()`
+- `Application_Driver::createWhatsnew()`
+- `Application_Driver::getApplicationSets()`
+- `Application::createDeeplHelper()`
+- `Application::createDeploymentRegistry()`
+- `Application::createMedia()`
+- `Application::createMessageLog()`
+- `Application::createLookupItems()`
+- `Application::createRatings()`
+- `Application::createErrorLog()`
+- `Application::createRequestLog()`
+- `Application::getLogger()`
+- `Application::getSets()`
+
 ### v2.4.3 - Filter Settings enhancements
 - FilterSettings: Added `setSettingEnabled()` to turn individual settings on/off.
 - FilterSettings: Added lazy loading of settings.
