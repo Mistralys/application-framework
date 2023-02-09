@@ -59,62 +59,33 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     /**
      * @var array<string,string>
      */
-    protected $valueCache = array();
+    protected array $valueCache = array();
 
     /**
      * @var string[]
      */
-    protected $modifiedKeys = array();
+    protected array $modifiedKeys = array();
 
-    /**
-     * @var string
-     */
-    private $tableName;
+    private string $tableName;
 
-    /**
-     * @var string
-     */
-    private $primaryName;
+    private string $primaryName;
 
-    /**
-     * @var int
-     */
-    private $primaryValue;
+    private int $primaryValue;
 
-    /**
-     * @var string
-     */
-    private $logPrefix;
+    private string $logIdentifier;
 
-    /**
-     * @var string
-     */
-    private $logIdentifier;
-
-    /**
-     * @var bool
-     */
-    private $autoSave = false;
+    private bool $autoSave = false;
 
     /**
      * @var string[]
      */
-    protected $deletedKeys = array();
+    protected array $deletedKeys = array();
 
-    /**
-     * @var string
-     */
-    private $keyValue = 'value';
+    private string $keyValue = 'value';
 
-    /**
-     * @var string
-     */
-    private $keyName = 'name';
+    private string $keyName = 'name';
 
-    /**
-     * @var int
-     */
-    private $maxKeyNameLength = 250;
+    private int $maxKeyNameLength = 250;
 
     public function __construct(string $tableName, string $primaryName, int $primaryValue, string $logPrefix)
     {
@@ -150,7 +121,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
     public function getKey(string $name) : string
     {
-        if ((array_search($name, $this->deletedKeys)) !== false)
+        if (in_array($name, $this->deletedKeys, true) !== false)
         {
             $this->valueCache[$name] = '';
         }
@@ -256,7 +227,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
     {
         $this->getKey($name);
 
-        if (($key = array_search($name, $this->deletedKeys)) !== false)
+        if (($key = array_search($name, $this->deletedKeys, true)) !== false)
         {
             unset($this->deletedKeys[$key]);
         }
@@ -268,7 +239,7 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
         $this->log(sprintf('DataTable | Key [%s] | Value modified.', $name));
 
-        if (!in_array($name, $this->modifiedKeys))
+        if (!in_array($name, $this->modifiedKeys, true))
         {
             $this->modifiedKeys[] = $name;
         }
@@ -292,12 +263,12 @@ class DBHelper_DataTable implements Application_Interfaces_Loggable, Application
 
         $this->log(sprintf('DataTable | Key [%s] | deleted.', $name));
 
-        if (!in_array($name, $this->deletedKeys))
+        if (!in_array($name, $this->deletedKeys, true))
         {
             $this->deletedKeys[] = $name;
         }
 
-        if (($key = array_search($name, $this->modifiedKeys)) !== false)
+        if (($key = array_search($name, $this->modifiedKeys, true)) !== false)
         {
             unset($this->modifiedKeys[$key]);
         }
