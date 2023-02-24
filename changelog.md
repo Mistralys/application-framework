@@ -1,4 +1,9 @@
-### v2.4.5 - QoL improvements
+### v2.4.4 - Local file uploads, QoL improvements
+- Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
+- Media: Added `createImageFromFile()` to add an image document from a local file path.
+- AppFactory: Added the new centralized collection factory helper class `AppFactory`.
+- AppFactory: Replaced factory method calls for all framework-internal calls.
+- WhatsNew: Fixed the sorting of the languages not putting the DEV language at the end.
 - PropertiesGrid: Merged property grids now use the `ifEmpty()` text when available.
 - PropertiesGrid: Added `addMarkdown()` to add markdown-styled multiline text.
 - PropertiesGrid: Added message styling methods usable without `getMessage()`.
@@ -6,13 +11,6 @@
 - Forms: Fixed issue with setting min/max element values ([#47](https://github.com/Mistralys/application-framework/issues/47)).
 - DeployCallback: Added HTTP status codes for success and error ([#52](https://github.com/Mistralys/application-framework/issues/52)).
 - AppSettings: Fixed the filters not searching in key names ([#51](https://github.com/Mistralys/application-framework/issues/51)).
-
-### v2.4.4 - Local file uploads
-- Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
-- Media: Added `createImageFromFile()` to add an image document from a local file path.
-- AppFactory: Added the new centralized collection factory helper class `AppFactory`.
-- AppFactory: Replaced factory method calls for all framework-internal calls.
-- WhatsNew: Fixed the sorting of the languages not putting the DEV language at the end.
 
 #### Deprecated methods:
 
