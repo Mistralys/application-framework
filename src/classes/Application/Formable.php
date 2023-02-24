@@ -1117,11 +1117,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * value to the specified range.
     *  
     * @param HTML_QuickForm2_Node $el
-    * @param number $min
-    * @param number $max
+    * @param int|NULL $min
+    * @param int|NULL $max
     * @return Application_Formable
     */
-    public function makeMinMax(HTML_QuickForm2_Node $el, $min=null, $max=null)
+    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null)
     {
         $this->requireFormableInitialized();
         

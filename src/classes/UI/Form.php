@@ -1342,15 +1342,27 @@ class UI_Form extends UI_Renderable
         
         return $el;
     }
-    
-    public function makeMinMax(HTML_QuickForm2_Node $el, int $min=0, int $max=0)
+
+    /**
+     * @param HTML_QuickForm2_Node $el
+     * @param int|null $min
+     * @param int|null $max
+     * @return HTML_QuickForm2_Node
+     * @throws Application_Exception
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     * @throws HTML_QuickForm2_NotFoundException
+     */
+    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null) : HTML_QuickForm2_Node
     {
-        if($min <= 0 && $max <= 0)
+        $minEmpty = $min === null || $min <= 0;
+        $maxEmpty = $max === null || $max <= 0;
+
+        if($minEmpty && $maxEmpty)
         {
             return $el;
         }
         
-        if($min > $max) 
+        if(!$minEmpty && !$maxEmpty && $min > $max)
         {
             throw new Application_Exception(
                 'Invalid length',
@@ -1380,22 +1392,20 @@ class UI_Form extends UI_Renderable
         return $el;
     }
     
-    public function handle_validateMinMax($value, int $min, int $max)
+    public function handle_validateMinMax($value, ?int $min, ?int $max) : bool
     {
         if(!is_numeric($value)) {
             return false;
         }
+
+        $value = (int)$value;
         
-        if($min !== null) {
-            if($value < $min) {
-                return false;
-            }
+        if($min !== null && $value < $min) {
+            return false;
         }
         
-        if($max !== null) {
-            if($value > $max) {
-                return false;
-            }
+        if($max !== null && $value > $max) {
+            return false;
         }
         
         return true;
