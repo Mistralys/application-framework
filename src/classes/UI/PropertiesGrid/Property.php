@@ -60,7 +60,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
             return $this->filterValue($this->text);
         }
         
-        return sb()->add($this->emptyText);
+        return sb()->muted($this->emptyText);
     }
     
     public function render() : string
