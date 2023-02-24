@@ -5,6 +5,7 @@
 - Interfaces: Added an interface and trait for objects that implement UI message styling.
 - Forms: Fixed issue with setting min/max element values ([#47](https://github.com/Mistralys/application-framework/issues/47)).
 - DeployCallback: Added HTTP status codes for success and error ([#52](https://github.com/Mistralys/application-framework/issues/52)).
+- AppSettings: Fixed the filters not searching in key names ([#51](https://github.com/Mistralys/application-framework/issues/51)).
 
 ### v2.4.4 - Local file uploads
 - Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
