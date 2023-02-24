@@ -14,6 +14,7 @@ use Application\AppFactory;
 use Application\DeploymentRegistry;
 use Application_Bootstrap_Screen;
 use DBHelper;
+use Throwable;
 
 /**
  * Deployment callback bootstrapper: Creates an instance of
@@ -22,11 +23,12 @@ use DBHelper;
  *
  * @package Application
  * @subpackage Bootstrap
- * @author Sebastian Mordziol <s.mordziol@mistralys,eu>
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class DeployCallbackBootstrap extends Application_Bootstrap_Screen
 {
     public const DISPATCHER_NAME = 'deploy-callback.php';
+    public const REQUEST_PARAM_ENABLE_OUTPUT = 'enable-output';
 
     public function getDispatcher() : string
     {
@@ -35,21 +37,34 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
 
     protected function _boot() : void
     {
-        $this->enableScriptMode();
-        $this->disableAuthentication();
-        $this->createEnvironment();
+        try
+        {
+            $this->enableScriptMode();
+            $this->disableAuthentication();
+            $this->createEnvironment();
 
-        DBHelper::startTransaction();
+            $output = AppFactory::createRequest()->getBool(self::REQUEST_PARAM_ENABLE_OUTPUT);
 
-        header('Content-Type: text/plain; charset=UTF-8');
+            DBHelper::startTransaction();
 
-        AppFactory::createLogger()->logModeEcho();
+            if ($output)
+            {
+                header('Content-Type: text/plain; charset=UTF-8');
+                AppFactory::createLogger()->logModeEcho();
+            }
 
-        $registry = AppFactory::createDeploymentRegistry();
-        $registry->registerDeployment();
+            $registry = AppFactory::createDeploymentRegistry();
+            $registry->registerDeployment();
 
-        AppFactory::createLogger()->logModeNone();
+            AppFactory::createLogger()->logModeNone();
 
-        DBHelper::commitTransaction();
+            DBHelper::commitTransaction();
+
+            http_response_code(200);
+        }
+        catch (Throwable $e)
+        {
+            http_response_code(500);
+        }
     }
 }
