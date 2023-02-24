@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merged
-{
-    /**
-     * @var UI_Message
-     */
-    private $message;
+use UI\Interfaces\MessageWrapperInterface;
+use UI\Traits\MessageWrapperTrait;
 
-    /**
-     * @var string[]
-     */
-    protected $classes = array('prop-message');
+class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merged
+    implements MessageWrapperInterface
+{
+    use MessageWrapperTrait;
+
+    private UI_Message $message;
 
     protected function init() : void
     {
+        $this->addClass('prop-message');
+
         $this->message = $this->grid->getUI()->createMessage('')
             ->makeNotDismissable()
             ->makeInfo();
@@ -26,16 +26,10 @@ class UI_PropertiesGrid_Property_Message extends UI_PropertiesGrid_Property_Merg
         return $this->message;
     }
 
-    public function render() : string
-    {
-        $this->message->setMessage($this->label);
-        $this->label = $this->message->render();
-
-        return parent::render();
-    }
-
     protected function filterValue($value) : UI_StringBuilder
     {
-        return sb();
+        $this->message->setMessage($this->text);
+
+        return sb()->add((string)$this->message);
     }
 }
