@@ -1,24 +1,27 @@
 <?php
 
-class UI_Message extends UI_Renderable implements UI_Renderable_Interface
+use UI\Interfaces\MessageLayoutInterface;
+
+class UI_Message extends UI_Renderable implements MessageLayoutInterface
 {
     public const ERROR_INVALID_LAYOUT = 35901;
-    
-    const LAYOUT_DEFAULT = 'default';
-    const LAYOUT_SLIM = 'slim';
-    const LAYOUT_LARGE = 'large';
+
+    public const LAYOUT_DEFAULT = 'default';
+    public const LAYOUT_SLIM = 'slim';
+    public const LAYOUT_LARGE = 'large';
     
    /**
     * @var array<string,mixed>
     */
-    protected $properties;
-    
-   /**
-    * @param UI $ui
-    * @param string|number|UI_Renderable_Interface $message
-    * @param string $type
-    * @param array<string,mixed> $options
-    */
+    protected array $properties;
+
+    /**
+     * @param UI $ui
+     * @param string|number|UI_Renderable_Interface $message
+     * @param string $type
+     * @param array<string,mixed> $options
+     * @throws Exception
+     */
     public function __construct(UI $ui, $message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array())
     {
         parent::__construct($ui->getPage());
@@ -39,18 +42,24 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
         $this->setMessage($message);
     }
 
-   /**
-    * Sets the message text.
-    * 
-    * @param string|number|UI_Renderable_Interface $message
-    * @return UI_Message
-    */
-    public function setMessage($message) : UI_Message
+    /**
+     * Sets the message text.
+     *
+     * @param string|number|UI_Renderable_Interface $message
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setMessage($message) : self
     {
         return $this->setProperty('message', trim(toString($message)));
     }
-    
-    protected function setProperty($name, $value) : UI_Message
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    protected function setProperty(string $name, $value) : self
     {
         $this->properties[$name] = $value;
         return $this;
@@ -60,15 +69,20 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
     * Enables the icon, and sets to use the specified icon.
     * 
     * @param UI_Icon $icon
-    * @return UI_Message
+    * @return $this
     * @see UI_Message::enableIcon()
     */
-    public function setCustomIcon(UI_Icon $icon)
+    public function setCustomIcon(UI_Icon $icon) : self
     {
         return $this->setIcon($icon);
     }
-    
-    public function setLayout(string $layout) : UI_Message
+
+    /**
+     * @param string $layout
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setLayout(string $layout) : self
     {
         $validLayouts = array(
             self::LAYOUT_DEFAULT, 
@@ -78,7 +92,7 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
         
         if(!in_array($layout, $validLayouts)) 
         {
-            throw new Application_Exception(
+            throw new UI_Exception(
                 'Invalid message layout',
                 sprintf(
                     'The layout [%s] is not a valid layout. Available layouts are [%s].',
@@ -91,33 +105,52 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
         
         return $this->setProperty('layout', $layout);
     }
-    
-    public function makeDismissable()
+
+    /**
+     * @return $this
+     */
+    public function makeDismissable() : self
     {
-        return $this->setDismissable(true);
+        return $this->setDismissable();
     }
-    
-    public function makeInfo()
+
+    /**
+     * @return $this
+     */
+    public function makeInfo() : self
     {
         return $this->setType(UI::MESSAGE_TYPE_INFO);
     }
 
-    public function makeWarning()
+    /**
+     * @return $this
+     */
+    public function makeWarning() : self
     {
         return $this->setType(UI::MESSAGE_TYPE_WARNING);
     }
-    
-    public function makeError()
+
+    /**
+     * @return $this
+     */
+    public function makeError() : self
     {
         return $this->setType(UI::MESSAGE_TYPE_ERROR);
     }
-    
-    public function makeSuccess()
+
+    /**
+     * @return $this
+     */
+    public function makeSuccess() : self
     {
         return $this->setType(UI::MESSAGE_TYPE_SUCCESS);
     }
-    
-    public function setType($type)
+
+    /**
+     * @param string $type
+     * @return $this
+     */
+    public function setType(string $type) : self
     {
         return $this->setProperty('type', $type);
     }
@@ -126,22 +159,34 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
     * Makes the whole message box inline, so it can be integrated into text.
     * @return UI_Message
     */
-    public function makeInline()
+    public function makeInline() : self
     {
         return $this->addClass('alert-inline');
     }
-    
-    public function makeSlimLayout()
+
+    /**
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function makeSlimLayout() : self
     {
         return $this->setLayout(self::LAYOUT_SLIM);
     }
 
-    public function makeLargeLayout()
+    /**
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function makeLargeLayout() : self
     {
         return $this->setLayout(self::LAYOUT_LARGE);
     }
-    
-    public function makeDefaultLayout()
+
+    /**
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function makeDefaultLayout() : self
     {
         return $this->setLayout(self::LAYOUT_DEFAULT);
     }
@@ -151,47 +196,58 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
      * the message type, i.e. an information icon for an
      * information message for example.
      *
-     * @return UI_Message
+     * @return $this
      * @see UI_Message::disableIcon()
      */
-    public function enableIcon()
+    public function enableIcon() : self
     {
         return $this->setIcon(true);
     }
-    
-    public function makeNotDismissable()
+
+    /**
+     * @return $this
+     */
+    public function makeNotDismissable() : self
     {
         return $this->setDismissable(false);
     }
-    
-    public function setDismissable($dismissable=true)
+
+    /**
+     * @param bool $dismissable
+     * @return $this
+     */
+    public function setDismissable(bool $dismissable=true) : self
     {
         return $this->setProperty('dismissable', $dismissable);
     }
     
    /**
     * Disables the automatic icon, if it was enabled.
-    * @return UI_Message
+    * @return $this
     * @see UI_Message::enableIcon()
     * @see UI_Message::setCustomIcon()
     */
-    public function disableIcon()
+    public function disableIcon() : self
     {
         return $this->setIcon(false);
     }
-    
-    protected function setIcon($icon)
+
+    /**
+     * @param UI_Icon|bool $icon
+     * @return $this
+     */
+    protected function setIcon($icon) : self
     {
         return $this->setProperty('icon', $icon);
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $vars = $this->properties;
         
         if($this->getProperty('add-dot') === true) 
         {
-            $message = strval($vars['message']);
+            $message = (string)$vars['message'];
             
             // add the missing dot if need be
             $lastChar = mb_substr($message, -1);
@@ -212,32 +268,32 @@ class UI_Message extends UI_Renderable implements UI_Renderable_Interface
         return $tpl->render();
     }
 
-    public function isSlimLayout()
+    public function isSlimLayout() : bool
     {
         return $this->isLayout(self::LAYOUT_SLIM);
     }
     
-    public function isDefaultLayout()
+    public function isDefaultLayout() : bool
     {
         return $this->isLayout(self::LAYOUT_DEFAULT);
     }
     
-    public function isLayout($layout)
+    public function isLayout(string $layout) : bool
     {
-        return $this->getProperty('layout') == $layout;
+        return $this->getProperty('layout') === $layout;
     }
     
-    public function addClass($className)
+    public function addClass(string $className) : self
     {
         $classes = $this->getProperty('classes');
-        if(!in_array($className, $classes)) {
+        if(!in_array($className, $classes, true)) {
             $classes[] = $className;
         }
         
         return $this->setProperty('classes', $classes);
     }
     
-    protected function getProperty($name, $default=null)
+    protected function getProperty(string $name, $default=null)
     {
         if(isset($this->properties[$name])) {
             return $this->properties[$name];
