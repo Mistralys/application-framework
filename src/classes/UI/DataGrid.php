@@ -8,6 +8,7 @@
  */
 
 use Application\Driver\DriverException;
+use AppUtils\Interface_Stringable;
 use function AppLocalize\tex;
 
 /**
@@ -251,7 +252,7 @@ class UI_DataGrid
 
     /**
      * @param string $name
-     * @param string|int|float $value
+     * @param string|int|float|Interface_Stringable|NULL $value
      * @return $this
      */
     public function addHiddenVar(string $name, $value) : self
