@@ -1,3 +1,7 @@
+### v2.4.5 
+- DBHelper: Fixed a bug in `addWhereColumnISNULL()` when `$null` is set to `true`.
+- Admin Screens: Added hidden vars to the collection list trait via `getPersistVars()`.
+
 ### v2.4.4 - Local file uploads, QoL improvements
 - Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
 - Media: Added `createImageFromFile()` to add an image document from a local file path.
