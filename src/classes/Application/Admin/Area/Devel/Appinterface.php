@@ -98,6 +98,13 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'footer-buttons' => t('Footer with buttons')
                 )
             ),
+            'form-elements' => array(
+                'label' => t('Form elements'),
+                'examples' => array(
+                    'visual-select' => t('Visual select'),
+                    'visual-select-with-image-sets' => sb()->t('Visual select')->add('-')->t('With image sets'),
+                )
+            ),
             'errors' => array(
                 'label' => t('Error handling'),
                 'examples' => array(
