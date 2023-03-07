@@ -1,4 +1,4 @@
-### v2.4.5 - Visual select update
+### v2.4.6 - Visual select update
 - Forms: Added `addVisualSelect()` to `UI_Form` (previously only found in the formable).
 - UI: Added visual select examples in the interface references.
 - Visual Select: The search field in the visual select no longer submits the form on pressing enter.
@@ -8,12 +8,23 @@
 - Visual Select: Added tests for most of the basic functionality.
 - Visual Select: Converted clientside pseudo classes to actual JavaScript classes.
 
-### v2.4.4 - Local file uploads
+### v2.4.5 
+- DBHelper: Fixed a bug in `addWhereColumnISNULL()` when `$null` is set to `true`.
+- Admin Screens: Added hidden vars to the collection list trait via `getPersistVars()`.
+
+### v2.4.4 - Local file uploads, QoL improvements
 - Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
 - Media: Added `createImageFromFile()` to add an image document from a local file path.
 - AppFactory: Added the new centralized collection factory helper class `AppFactory`.
 - AppFactory: Replaced factory method calls for all framework-internal calls.
 - WhatsNew: Fixed the sorting of the languages not putting the DEV language at the end.
+- PropertiesGrid: Merged property grids now use the `ifEmpty()` text when available.
+- PropertiesGrid: Added `addMarkdown()` to add markdown-styled multiline text.
+- PropertiesGrid: Added message styling methods usable without `getMessage()`.
+- Interfaces: Added an interface and trait for objects that implement UI message styling.
+- Forms: Fixed issue with setting min/max element values ([#47](https://github.com/Mistralys/application-framework/issues/47)).
+- DeployCallback: Added HTTP status codes for success and error ([#52](https://github.com/Mistralys/application-framework/issues/52)).
+- AppSettings: Fixed the filters not searching in key names ([#51](https://github.com/Mistralys/application-framework/issues/51)).
 
 #### Deprecated methods:
 

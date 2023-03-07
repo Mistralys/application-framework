@@ -17,28 +17,16 @@
  */
 class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_Database
 {
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterCriteria::getSelect()
-     */
-    protected function getSelect()
+    protected function getSelect() : string
     {
         return '*';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterCriteria::getSearchFields()
-     */
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
-        return array('data_value');
+        return array('data_key', 'data_value');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see Application_FilterCriteria::getQuery()
-     */
     protected function getQuery()
     {
         return 'SELECT {WHAT} FROM `app_settings` {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
@@ -81,11 +69,9 @@ class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_
 
     protected function _registerJoins() : void
     {
-        // TODO: Implement _registerJoins() method.
     }
 
     protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
     {
-        // TODO: Implement _registerStatementValues() method.
     }
 }

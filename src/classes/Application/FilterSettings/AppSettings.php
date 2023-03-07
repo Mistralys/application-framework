@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @property Application_FilterCriteria_AppSettings $filters
+ */
 class Application_FilterSettings_AppSettings extends Application_FilterSettings
 {
     protected function registerSettings() : void
@@ -9,7 +12,7 @@ class Application_FilterSettings_AppSettings extends Application_FilterSettings
 
     protected function injectElements(HTML_QuickForm2_Container $container) : void
     {
-        $this->addElementSearch(array('data_key', 'data_value'), $container);
+        $this->addElementSearch(array(t('Data key'), t('Value')), $container);
     }
 
     protected function _configureFilters() : void

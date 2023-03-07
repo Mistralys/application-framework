@@ -522,7 +522,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public function addWhereColumnISNULL($column, bool $null=true)
     {
         $token = '';
-        if($null===true) {
+        if($null===false) {
             $token = 'NOT ';
         }
 

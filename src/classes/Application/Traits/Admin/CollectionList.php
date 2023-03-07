@@ -25,6 +25,8 @@ use Application\Interfaces\Admin\CollectionListInterface;
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see CollectionListInterface
  */
 trait Application_Traits_Admin_CollectionList
 {
@@ -173,6 +175,18 @@ trait Application_Traits_Admin_CollectionList
         $this->configureColumns();
         $this->configureActions();
         $this->configureFilters();
+
+        $vars = $this->getPersistVars();
+
+        foreach($vars as $name => $value) {
+            $this->grid->addHiddenVar($name, $value);
+            $this->filterSettings->addHiddenVar($name, $value);
+        }
+    }
+
+    public function getPersistVars() : array
+    {
+        return array();
     }
     
     protected function _handleSidebar() : void

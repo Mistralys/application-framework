@@ -461,11 +461,11 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * value to the specified range.
      *
      * @param HTML_QuickForm2_Node $el
-     * @param number $min
-     * @param number $max
+     * @param int|NULL $min
+     * @param int|NULL $max
      * @return Application_Formable
      */
-    public function makeMinMax(HTML_QuickForm2_Node $el, $min = null, $max = null);
+    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min = null, ?int $max = null);
 
     /**
      * Adds a string to prepend to an element. For example

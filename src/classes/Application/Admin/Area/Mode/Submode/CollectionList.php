@@ -1,6 +1,10 @@
 <?php
 
-abstract class Application_Admin_Area_Mode_Submode_CollectionList extends Application_Admin_Area_Mode_Submode
+use Application\Interfaces\Admin\CollectionListInterface;
+
+abstract class Application_Admin_Area_Mode_Submode_CollectionList
+    extends Application_Admin_Area_Mode_Submode
+    implements CollectionListInterface
 {
     use Application_Traits_Admin_CollectionList;
     

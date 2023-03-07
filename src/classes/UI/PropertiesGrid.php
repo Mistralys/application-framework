@@ -8,6 +8,7 @@ use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits_Optionable;
 use AppUtils\Interface_Optionable;
+use UI\PropertiesGrid\Property\MarkdownGridProperty;
 
 class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, UI_Interfaces_Conditional
 {
@@ -85,7 +86,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
      */
     public function addMerged($content) : UI_PropertiesGrid_Property_Merged
     {
-        $prop =  new UI_PropertiesGrid_Property_Merged($this, toString($content));
+        $prop =  new UI_PropertiesGrid_Property_Merged($this, '', $content);
         $this->addProperty($prop);
         return $prop;
     }
@@ -97,7 +98,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
      */
     public function addMessage($message) : UI_PropertiesGrid_Property_Message
     {
-        $prop = new UI_PropertiesGrid_Property_Message($this, toString($message));
+        $prop = new UI_PropertiesGrid_Property_Message($this, '', toString($message));
         $this->addProperty($prop);
         return $prop;
     }
@@ -140,6 +141,20 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
 
         $this->addProperty($prop);
 
+        return $prop;
+    }
+
+    /**
+     * Adds a text that will be rendered as markdown formatted text.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $markdownText
+     * @return MarkdownGridProperty
+     * @throws UI_Exception
+     */
+    public function addMarkdown($markdownText) : MarkdownGridProperty
+    {
+        $prop = new MarkdownGridProperty($this, '', toString($markdownText));
+        $this->addProperty($prop);
         return $prop;
     }
 
