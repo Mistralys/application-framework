@@ -1,3 +1,13 @@
+### v2.4.5 - Visual select update
+- Forms: Added `addVisualSelect()` to `UI_Form` (previously only found in the formable).
+- UI: Added visual select examples in the interface references.
+- Visual Select: The search field in the visual select no longer submits the form on pressing enter.
+- Visual Select: Improvements overall, options are now `VisualSelectOption` instances.
+- Visual Select: Added support for switching between image sets.
+- Visual Select: Added a jump navigation for groups in the grouped view.
+- Visual Select: Added tests for most of the basic functionality.
+- Visual Select: Converted clientside pseudo classes to actual JavaScript classes.
+
 ### v2.4.4 - Local file uploads
 - Uploads: Added the `LocalFileUpload` class, which creates uploads from local file paths.
 - Media: Added `createImageFromFile()` to add an image document from a local file path.
