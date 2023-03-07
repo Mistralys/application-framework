@@ -400,7 +400,7 @@ class UI_Button
     /**
     * Sets the tooltip text, to enable the button tooltip.
     *
-    * @deprecated
+    * @deprecated Use {@see self::setTooltip()} instead.
     * @param string|number|UI_Renderable_Interface $text
     * @return $this
     */
