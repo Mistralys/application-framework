@@ -240,6 +240,14 @@ class UI_Form extends UI_Renderable
         );
     }
 
+    public function addVisualSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_VisualSelect::class,
+            $this->addElement('visualselect', $name, $container)
+        );
+    }
+
     /**
      * @param string $type
      * @param string $name
