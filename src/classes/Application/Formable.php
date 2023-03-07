@@ -7,6 +7,7 @@
  */
 
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\RegexHelper;
@@ -506,13 +507,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     */
     public function addElementVisualSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
     {
-        $el = $this->addElement('visualselect', $name, $container);
+        $el = $this->getFormInstance()->addVisualSelect($name, $container);
         $el->setLabel($label);
         
-        return ensureType(
-            HTML_QuickForm2_Element_VisualSelect::class,
-            $el
-        );
+        return $el;
     }
     
    /**
