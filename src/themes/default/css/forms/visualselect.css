@@ -128,3 +128,12 @@ background:#b4ffd0;
 .visel-item.no-icon.selected:before{
 color:#26abca;
 }
+
+.visel-filter-widget{
+margin-bottom: 13px;
+}
+
+.visel-groups-menu,
+.visel-groups-menu > LI{
+    display: inline-block;
+}
