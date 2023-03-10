@@ -8,6 +8,7 @@
 
 use Application\AppFactory;
 use Application\DeploymentRegistry;
+use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -76,14 +77,12 @@ class Application
     private static int $counter = 0;
     private bool $started = false;
     private Application_Bootstrap_Screen $bootScreen;
-    private static ?Application_Logger $logger = null;
     private ?UI_Page $page = null;
     private static bool $simulation = false;
     private static ?bool $develEnvironment = null;
     private static string $storageFolder = '';
     private static array $knownStorageFolders = array();
     private static ?Application_Messaging $messaging = null;
-    private static ?Application_LookupItems $lookupItems = null;
     private int $id;
     private static bool $exitEnabled = true;
 
@@ -127,56 +126,6 @@ class Application
     }
 
     /**
-     * @param string $className
-     * @return void
-     *
-     * @throws ClassHelper\ClassNotExistsException
-     *
-     * @deprecated Use {@see ClassHelper::requireClassExists()} instead.
-     */
-    public static function requireClassExists(string $className) : void
-    {
-        ClassHelper::requireClassExists($className);
-    }
-
-    /**
-     * Requires the target class name to exist, and extend
-     * or implement the specified class/interface. If it does
-     * not, an exception is thrown.
-     *
-     * @param class-string $targetClass
-     * @param class-string $extendsClass
-     * @return void
-     *
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @deprecated Use {@see ClassHelper::requireClassInstanceOf()} instead.
-     */
-    public static function requireClassExtends(string $targetClass, string $extendsClass) : void
-    {
-        ClassHelper::requireClassInstanceOf($targetClass, $extendsClass);
-    }
-
-    /**
-     * If the target object is not an instance of the target class
-     * or interface, throws an exception.
-     *
-     * @template ClassInstanceType
-     * @param class-string<ClassInstanceType> $class
-     * @param object $object
-     * @return ClassInstanceType
-     *
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     *
-     * @deprecated Use {@see ClassHelper::requireObjectInstanceOf()} instead.
-     */
-    public static function requireInstanceOf(string $class, object $object)
-    {
-        return ClassHelper::requireObjectInstanceOf($class, $object);
-    }
-
-    /**
      * @return Application_Bootstrap_Screen
      */
     public function getBootScreen() : Application_Bootstrap_Screen
@@ -210,6 +159,13 @@ class Application
      * rendering the output.
      *
      * @param Application_Driver $driver
+     * @return void
+     *
+     * @throws Application_EventHandler_Exception
+     * @throws Application_Exception
+     * @throws UI_Exception
+     * @throws DriverException
+     *
      * @event Application_Event ApplicationStarted
      */
     public function start(Application_Driver $driver) : void
@@ -477,127 +433,6 @@ class Application
             '',
             self::ERROR_APPLICATION_NOT_STARTED
         );
-    }
-
-    /**
-     * Determines the full path to the include file automatically,
-     * and requires it. Also checks that the class name exists after
-     * loading the file.
-     *
-     * @param string $className
-     * @param boolean $exception Whether to throw an exception if the class cannot be loaded. If disabled, this will return a boolean true on success or an error message otherwise.
-     * @param bool $checkSyntax
-     * @return true|string
-     * @throws Application_Exception
-     * @throws FileHelper_Exception
-     * @throws JsonException
-     * @deprecated Autoloading is used now
-     */
-    public static function requireClass(string $className, bool $exception = true, bool $checkSyntax = false)
-    {
-        if (class_exists($className))
-        {
-            return true;
-        }
-
-        $filename = str_replace('_', '/', $className) . '.php';
-
-        $filePath = stream_resolve_include_path($filename);
-
-        if (!$filePath)
-        {
-            $message = 'Class file not found';
-            if (!$exception)
-            {
-                return $message;
-            }
-
-            throw new Application_Exception(
-                $message,
-                sprintf(
-                    'Could not find class file for class [%s] in [%s].',
-                    $className,
-                    $filePath
-                ),
-                self::ERROR_CLASS_FILE_NOT_FOUND
-            );
-        }
-
-        if ($checkSyntax)
-        {
-            $checkResult = AppUtils\FileHelper::checkPHPFileSyntax($filePath);
-
-            if ($checkResult !== true)
-            {
-                $message = 'Syntax error in file';
-                if (!$exception)
-                {
-                    return $message;
-                }
-
-                throw new Application_Exception(
-                    $message,
-                    sprintf(
-                        'The file for class [%s] has syntax errors in [%s]. Validation messages: %s',
-                        $className,
-                        $filePath,
-                        json_encode($checkResult, JSON_THROW_ON_ERROR)
-                    ),
-                    self::ERROR_PHP_FILE_SYNTAX_ERRORS
-                );
-            }
-        }
-
-        require_once $filePath;
-
-        if (!class_exists($className))
-        {
-            $message = 'Class not found';
-            if (!$exception)
-            {
-                return $message;
-            }
-            throw new Application_Exception(
-                $message,
-                sprintf(
-                    'Class file loaded, but class [%s] not present in file [%s].',
-                    $className,
-                    $filePath
-                ),
-                self::ERROR_CLASS_NOT_FOUND
-            );
-        }
-
-        return true;
-    }
-
-    /**
-     * @param bool $html
-     * @return Application_Logger
-     * @deprecated Use the logger instead
-     */
-    public static function logModeEcho(bool $html = false) : Application_Logger
-    {
-        return AppFactory::createLogger()->enableHTML($html)->logModeEcho();
-    }
-
-    /**
-     * @param bool $html
-     * @return Application_Logger
-     * @deprecated Use the logger instead
-     */
-    public static function logModeFile(bool $html = false) : Application_Logger
-    {
-        return AppFactory::createLogger()->enableHTML($html)->logModeFile();
-    }
-
-    /**
-     * @return Application_Logger
-     * @deprecated Use the logger instead
-     */
-    public static function logModeNone() : Application_Logger
-    {
-        return AppFactory::createLogger()->logModeNone();
     }
 
     /**
