@@ -2,16 +2,22 @@
 
 declare(strict_types=1);
 
+use UI\ClientResourceCollection;
 use UI\Form\Element\VisualSelect\ImageSet;
 use UI\Form\Element\VisualSelect\VisualSelectOption;
 
 class template_default_ui_forms_elements_visual_select extends UI_Page_Template_Custom
 {
+    public static function injectJavascript(ClientResourceCollection $ui) : void
+    {
+        $ui->addJavascript('forms/visual-select/element.js');
+        $ui->addJavascript('forms/visual-select/item.js');
+        $ui->addStylesheet('forms/visualselect.css');
+    }
+
     protected function generateOutput(): void
     {
-        $this->ui->addJavascript('forms/visual-select/element.js');
-        $this->ui->addJavascript('forms/visual-select/item.js');
-        $this->ui->addStylesheet('forms/visualselect.css');
+        self::injectJavascript($this->getUI()->createResourceCollection());
 
         $this->element->addClass('select-visualselect');
         $this->element->addContainerClass('visel-images');

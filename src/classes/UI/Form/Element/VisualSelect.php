@@ -10,8 +10,11 @@
 declare(strict_types=1);
 
 use HTML\QuickForm2\Element\Select\SelectOption;
+use UI\ClientResourceCollection;
 use UI\Form\Element\VisualSelect\ImageSet;
 use UI\Form\Element\VisualSelect\VisualSelectOption;
+use UI\Traits\ScriptInjectableInterface;
+use UI\Traits\ScriptInjectableTrait;
 
 /**
  * Select element that lets the user choose an item from
@@ -26,9 +29,13 @@ use UI\Form\Element\VisualSelect\VisualSelectOption;
  * @method HTML_QuickForm2_Element_VisualSelect_Optgroup addOptgroup($label, $attributes = null)
  * @method VisualSelectOption addOption($text, $value, $attributes = null)
  * @method VisualSelectOption prependOption($text, $value, $attributes = null)
+ *
+ * @see template_default_ui_forms_elements_visual_select
  */
-class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select
+class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select implements ScriptInjectableInterface
 {
+    use ScriptInjectableTrait;
+
     public const ERROR_IMAGE_SET_ALREADY_EXISTS = 130901;
 
     public const PROPERTY_SORTING_ENABLED = 'sorting-enabled';
@@ -46,6 +53,11 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
 
         $this->optionContainer->setOptGroupClass(HTML_QuickForm2_Element_VisualSelect_Optgroup::class);
         $this->optionContainer->setOptionClass(VisualSelectOption::class);
+    }
+
+    protected function _injectUIScripts(ClientResourceCollection $collection) : void
+    {
+        template_default_ui_forms_elements_visual_select::injectJavascript($collection);
     }
 
     /**
@@ -68,7 +80,12 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
     {
         return $this->getRuntimeProperty(self::PROPERTY_PLEASE_SELECT_ENABLED) === true;
     }
-    
+
+    /**
+     * @return string
+     * @throws UI_Exception
+     * @see template_default_ui_forms_elements_visual_select
+     */
     public function __toString()
     {
         $this->addPleaseSelect();
