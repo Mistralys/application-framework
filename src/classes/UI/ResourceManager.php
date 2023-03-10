@@ -59,6 +59,11 @@ class UI_ResourceManager
     {
         $this->ui = $ui;
     }
+
+    public function getUI() : UI
+    {
+        return $this->ui;
+    }
     
     public function addJavascript(string $fileOrURL, int $priority = 0, bool $defer=false) : UI_ClientResource_Javascript
     {
