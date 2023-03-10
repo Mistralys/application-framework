@@ -12,7 +12,7 @@ use function AppUtils\parseURL;
 use AppUtils\FileHelper;
 
 /**
- * Abstract base class fdor clientside resource files.
+ * Abstract base class for clientside resource files.
  *
  * @package UserInterface
  * @subpackage ClientResources
