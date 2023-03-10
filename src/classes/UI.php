@@ -12,6 +12,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\OutputBuffering;
+use UI\ClientResourceCollection;
 use UI\TooltipInfo;
 use function AppUtils\parseVariable;
 
@@ -92,18 +93,6 @@ class UI
         $this->session = Application::getSession();
         $this->themes = new UI_Themes($this);
         $this->resourceManager = new UI_ResourceManager($this);
-    }
-    
-   /**
-    * Retrieves the resource manager instance, which is used
-    * to keep track of all clientside resources, like javascript
-    * and stylesheet includes. 
-    * 
-    * @return UI_ResourceManager
-    */
-    public function getResourceManager() : UI_ResourceManager
-    {
-        return $this->resourceManager;
     }
     
    /**
@@ -261,6 +250,45 @@ class UI
         return $this->app;
     }
 
+    // region: Client resource handling
+
+    public function createResourceCollection() : ClientResourceCollection
+    {
+        return new ClientResourceCollection($this);
+    }
+
+    /**
+     * Retrieves the resource manager instance, which is used
+     * to keep track of all clientside resources, like javascript
+     * and stylesheet includes.
+     *
+     * @return UI_ResourceManager
+     */
+    public function getResourceManager() : UI_ResourceManager
+    {
+        return $this->resourceManager;
+    }
+
+    public function addStylesheet(string $fileOrUrl, string $media = 'all', int $priority = 0) : UI_ClientResource_Stylesheet
+    {
+        return $this->resourceManager->addStylesheet($fileOrUrl, $media, $priority);
+    }
+
+    /**
+     * Adds a javascript or stylesheet to include clientside.
+     *
+     * @param string $fileOrURL
+     * @throws Application_Exception
+     * @return UI_ClientResource
+     *
+     * @see UI::addStylesheet()
+     * @see UI::addJavascript()
+     */
+    public function addResource(string $fileOrURL) : UI_ClientResource
+    {
+        return $this->resourceManager->addResource($fileOrURL);
+    }
+
     /**
      * Adds a javascript file to include. This can be either
      * the filename of a file from the js/ subfolder, or a
@@ -300,7 +328,8 @@ class UI
     {
         return $this->resourceManager->addVendorStylesheet($packageName, $file, $priority);
     }
-    
+
+    // endregion
     
    /**
     * Retrieves the build-specific load key that is appended
@@ -666,26 +695,6 @@ class UI
         }
 
         return $this->page;
-    }
-
-    public function addStylesheet(string $fileOrUrl, string $media = 'all', int $priority = 0) : UI_ClientResource_Stylesheet
-    {
-        return $this->resourceManager->addStylesheet($fileOrUrl, $media, $priority);
-    }
-    
-   /**
-    * Adds a javascript or stylesheet to include clientside.
-    * 
-    * @param string $fileOrURL
-    * @throws Application_Exception
-    * @return UI_ClientResource
-    * 
-    * @see UI::addStylesheet()
-    * @see UI::addJavascript()
-    */
-    public function addResource(string $fileOrURL) : UI_ClientResource
-    {
-        return $this->resourceManager->addResource($fileOrURL);
     }
 
     public function renderHeadIncludes() : string
