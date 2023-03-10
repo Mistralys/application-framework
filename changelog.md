@@ -1,3 +1,18 @@
+### v2.5.0 - Deprecation cleanup
+- VisualSelect: Added `injectJavascript()` to be able to call it separately.
+- UI: Added the `ClientResourceCollection` helper class to access an object's client resources list.
+- UI: Added `ScriptInjectableInterface` for all classes that inject scripts and styles.
+
+#### Removed deprecated methods:
+
+- `Application::requireClass()`
+- `Application::logModeEcho()`
+- `Application::logModeFile()`
+- `Application::logModeNone()`
+- `Application::requireClassExists()`
+- `Application::requireClassExtends()`
+- `Application::requireInstanceOf()`
+
 ### v2.4.6 - Visual select update
 - Forms: Added `addVisualSelect()` to `UI_Form` (previously only found in the formable).
 - UI: Added visual select examples in the interface references.
@@ -7,6 +22,7 @@
 - Visual Select: Added a jump navigation for groups in the grouped view.
 - Visual Select: Added tests for most of the basic functionality.
 - Visual Select: Converted clientside pseudo classes to actual JavaScript classes.
+- Visual Select: Now used a template class for the HTML rendering.
 
 ### v2.4.5 
 - DBHelper: Fixed a bug in `addWhereColumnISNULL()` when `$null` is set to `true`.
