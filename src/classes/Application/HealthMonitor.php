@@ -5,6 +5,7 @@
  * @subpackage HealthMonitor
  */
 
+use AppUtils\ClassHelper;
 use AppUtils\XMLHelper;
 
 /**
@@ -45,9 +46,9 @@ class Application_HealthMonitor
    /**
     * @var Application_HealthMonitor_Component[]
     */
-    protected $components = array();
+    protected array $components = array();
     
-    protected function loadComponents()
+    protected function loadComponents() : void
     {
         $paths = array(
             $this->driver->getClassesFolder().'/HealthMonitor' => APP_CLASS_NAME.'_HealthMonitor',
@@ -76,17 +77,18 @@ class Application_HealthMonitor
         return isset($this->components[$componentID]);
     }
     
-    protected function createComponent($componentID, $baseClassName)
+    protected function createComponent($componentID, $baseClassName) : Application_HealthMonitor_Component
     {
         if (isset($this->components[$componentID])) {
             return $this->components[$componentID];
         }
     
-        $className = $baseClassName.'_' . $componentID;
+        $className = ClassHelper::requireResolvedClass($baseClassName.'_' . $componentID);
 
-        Application::requireClassExists($className);
-    
-        $this->components[$componentID] = new $className();
+        $this->components[$componentID] = ClassHelper::requireObjectInstanceOf(
+            Application_HealthMonitor_Component::class,
+            new $className()
+        );
     
         return $this->components[$componentID];
     }

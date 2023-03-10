@@ -200,9 +200,7 @@ class Application_Media
             }
 
             $id = ConvertHelper::filenameRemoveExtension($info['basename']);
-            $class = Application_Media_Document::class.'_' . $id;
-
-            Application::requireClassExists($class);
+            $class = ClassHelper::requireResolvedClass(Application_Media_Document::class.'_' . $id);
 
             $extensions = call_user_func(array($class, 'getExtensions'));
             foreach ($extensions as $extension) {

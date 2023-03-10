@@ -1,5 +1,9 @@
 <?php
 
+use Application\Revisionable\RevisionableException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+
 abstract class Application_RevisionableCollection_DBRevisionable extends Application_Revisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
@@ -80,29 +84,32 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     
    /**
     * @see Application_RevisionStorage_CollectionDB
+    * @throws RevisionableException
     */
     protected function createRevisionStorage() : Application_RevisionStorage_CollectionDB
     {
-        $className = $this->collection->getRevisionsStorageClass();
-        
-        Application::requireClassExists($className);
-        
-        $storage = new $className($this);
-        
-        if($storage instanceof Application_RevisionStorage_CollectionDB)
+        try
         {
-            return $storage;
-        }
+            $className = $this->collection->getRevisionsStorageClass();
 
-        throw new Application_Exception(
-            'Invalid revision storage',
-            sprintf(
-                'The revision storage for [%s] must extend the base [%s] class.',
-                get_class($this),
-                'Application_RevisionStorage_CollectionDB'
-            ),
-            self::ERROR_INVALID_REVISION_STORAGE
-        );
+            return ClassHelper::requireObjectInstanceOf(
+                Application_RevisionStorage_CollectionDB::class,
+                new $className($this)
+            );
+        }
+        catch (BaseClassHelperException $e)
+        {
+            throw new RevisionableException(
+                'Invalid revision storage',
+                sprintf(
+                    'The revision storage for [%s] must extend the base [%s] class.',
+                    get_class($this),
+                    'Application_RevisionStorage_CollectionDB'
+                ),
+                self::ERROR_INVALID_REVISION_STORAGE,
+                $e
+            );
+        }
     }
     
     public function getID() : int
