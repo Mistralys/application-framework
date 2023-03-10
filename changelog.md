@@ -2,7 +2,12 @@
 - VisualSelect: Added `injectJavascript()` to be able to call it separately.
 - UI: Added the `ClientResourceCollection` helper class to access an object's client resources list.
 - UI: Added `ScriptInjectableInterface` for all classes that inject scripts and styles.
+- Forms: Updated the QuickForm library to [v2.1.8](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.1.8).
 
+> NOTE: Any custom quick form elements in an application must be reviewed
+  regarding type changes. For example, the `$attributes` property is now
+  declared as `array`. 
+ 
 #### Removed deprecated methods:
 
 - `Application::requireClass()`
