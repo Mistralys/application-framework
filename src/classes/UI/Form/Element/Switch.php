@@ -21,7 +21,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     /**
      * @var array<string,string>
      */
-    protected $attributes = array(
+    protected array $attributes = array(
         'type' => 'checkbox'
     );
 

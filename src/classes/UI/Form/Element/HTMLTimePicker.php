@@ -17,13 +17,9 @@
  */
 class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element
 {
-    /**
-     * 'type' attribute should not be changeable
-     * @var array
-     */
-    protected $watchedAttributes = array('id', 'name', 'type');
+    protected array $watchedAttributes = array('id', 'name', 'type');
 
-    protected function onAttributeChange($name, $value = null)
+    protected function onAttributeChange(string $name, $value = null) : void
     {
         if ('type' === $name)
         {

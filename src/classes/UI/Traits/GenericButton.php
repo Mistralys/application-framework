@@ -150,7 +150,7 @@ trait UI_Traits_GenericButton
      * @param string $name
      * @return bool
      */
-    public function hasClass($name)
+    public function hasClass(string $name) : bool
     {
         return $this->getButtonInstance()->hasClass($name);
     }

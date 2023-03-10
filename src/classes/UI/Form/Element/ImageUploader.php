@@ -28,7 +28,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
 
     protected $persistent = true;
 
-    protected $attributes = array('type' => 'image');
+    protected array $attributes = array('type' => 'image');
 
     protected static $supportedExtensions = array(
         'jpg',

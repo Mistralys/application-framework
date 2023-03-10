@@ -17,20 +17,16 @@
  */
 class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element
 {
-    /**
-     * 'type' attribute should not be changeable
-     * @var array
-     */
-    protected $watchedAttributes = array('id', 'name', 'type');
+    protected array $watchedAttributes = array('id', 'name', 'type');
 
     public function __construct($name = null, $attributes = null, array $data = array())
     {
         parent::__construct($name, $attributes, $data);
     }
 
-    protected function onAttributeChange($name, $value = null)
+    protected function onAttributeChange(string $name, $value = null) : void
     {
-        if ('type' == $name)
+        if ('type' === $name)
         {
             throw new HTML_QuickForm2_InvalidArgumentException(
                 "Attribute 'type' is read-only"
