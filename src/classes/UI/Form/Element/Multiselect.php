@@ -112,11 +112,6 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
         }
     }
     
-    public function makeMultiple()
-    {
-        $this->setAttribute('multiple', 'multiple');
-    }
-
     protected $multiOptions = array();
 
     protected $filterPlaceholder;
