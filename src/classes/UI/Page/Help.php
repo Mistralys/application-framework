@@ -9,6 +9,11 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\Interface_Stringable;
+use UI\Page\Help\Item\UnorderedListItem;
+
 /**
  * Handles the inline page help interface, which is used to
  * add documentation relevant to the current page. It is accessed
@@ -23,55 +28,69 @@ declare(strict_types=1);
  */
 class UI_Page_Help extends UI_Renderable
 {
-   /**
+    public const ERROR_CANNOT_FIND_HELPER_CLASS = 132701;
+    public const ERROR_INVALID_HELPER_INSTANCE_CREATED = 132702;
+
+    /**
     * @var string
     */
-    protected $summary = '';
+    protected string $summary = '';
     
    /**
     * @var string
     */
-    protected $template = 'frame.page-help';
+    protected string $template = 'frame.page-help';
     
    /**
     * @var UI_Page_Help_Item[]
     */
-    protected $items = array();
-    
-   /**
-    * Adds a paragraph of text.
-    * 
-    * @param string|number|UI_Renderable_Interface $text
-    * @return UI_Page_Help_Item_Para
-    */
+    protected array $items = array();
+
+    /**
+     * Adds a paragraph of text.
+     *
+     * @param string|number|UI_Renderable_Interface $text
+     * @return UI_Page_Help_Item_Para
+     * @throws UI_Exception
+     */
     public function addPara($text) : UI_Page_Help_Item_Para
     {
-        $item = $this->createItem('Para', array('text' => toString($text)));
+        $item = $this->createItemByClass(UI_Page_Help_Item_Para::class, array('text' => toString($text)));
         
         $this->items[] = $item;
         
-        return ensureType(
-            UI_Page_Help_Item_Para::class,
-            $item
-        ); 
+        return $item;
     }
-    
-   /**
-    * Adds a subheader in the help screen.
-    * 
-    * @param string|number|UI_Renderable_Interface $text
-    * @return UI_Page_Help_Item_Header
-    */
+
+    /**
+     * Adds a subheader in the help screen.
+     *
+     * @param string|number|UI_Renderable_Interface $text
+     * @return UI_Page_Help_Item_Header
+     * @throws UI_Exception
+     */
     public function addHeader($text) : UI_Page_Help_Item_Header
     {
-        $item = $this->createItem('Header', array('text' => toString($text)));
+        $item = $this->createItemByClass(UI_Page_Help_Item_Header::class, array('text' => toString($text)));
         
         $this->items[] = $item;
         
-        return ensureType(
-            UI_Page_Help_Item_Header::class,
-            $item
-        ); 
+        return $item;
+    }
+
+    /**
+     * @param array<int,string|int|float|Interface_Stringable|NULL>|string|int|float|Interface_Stringable|NULL ...$items
+     * @return UnorderedListItem
+     * @throws UI_Exception
+     */
+    public function addUnorderedList(...$items) : UnorderedListItem
+    {
+        $item = $this->createItemByClass(UnorderedListItem::class);
+        $item->addItems(...$items);
+
+        $this->items[] = $item;
+
+        return $item;
     }
     
    /**
@@ -90,9 +109,45 @@ class UI_Page_Help extends UI_Renderable
     
     protected function createItem(string $type, array $options=array()) : UI_Page_Help_Item
     {
-        $class = 'UI_Page_Help_Item_'.$type;
-        
-        return new $class($this, $options);
+        try
+        {
+            $class = ClassHelper::requireResolvedClass(UI_Page_Help_Item::class . '_' . $type);
+
+            return $this->createItemByClass($class, $options);
+        }
+        catch (BaseClassHelperException $e)
+        {
+            throw new UI_Exception(
+                'Cannot find help item class.',
+                '',
+                self::ERROR_CANNOT_FIND_HELPER_CLASS
+            );
+        }
+    }
+
+    /**
+     * @template ClassInstanceType
+     * @param class-string<ClassInstanceType> $class
+     * @param array<string,mixed> $options
+     * @return ClassInstanceType
+     */
+    protected function createItemByClass(string $class, array $options=array())
+    {
+        try
+        {
+            return ClassHelper::requireObjectInstanceOf(
+                UI_Page_Help_Item::class,
+                new $class($this, $options)
+            );
+        }
+        catch (BaseClassHelperException $e)
+        {
+            throw new UI_Exception(
+                'Invalid help item instance created.',
+                '',
+                self::ERROR_INVALID_HELPER_INSTANCE_CREATED
+            );
+        }
     }
     
     public function hasItems() : bool
@@ -103,7 +158,7 @@ class UI_Page_Help extends UI_Renderable
    /**
     * @return UI_Page_Help_Item[]
     */
-    public function getItems()
+    public function getItems() : array
     {
         return $this->items;
     }
