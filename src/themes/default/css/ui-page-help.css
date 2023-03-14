@@ -1,6 +1,10 @@
 #page-help{
 }
 
+#page-help .help-header{
+font-size: 1.2em;
+}
+
 #page-help .help-contents{
 display:none;
 clear:both;
