@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc8134d12204688d825417bcdb708363",
+    "content-hash": "53e668798b4a785c5f492fef6ec7e826",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/mousetrap.git",
-                "reference": "2355f325d0365fa1823e5dac8b433c4138d69b94"
+                "reference": "9ccc2de2732f5babdfef7268e98a926f4743de65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/mousetrap/zipball/2355f325d0365fa1823e5dac8b433c4138d69b94",
-                "reference": "2355f325d0365fa1823e5dac8b433c4138d69b94",
+                "url": "https://api.github.com/repos/Mistralys/mousetrap/zipball/9ccc2de2732f5babdfef7268e98a926f4743de65",
+                "reference": "9ccc2de2732f5babdfef7268e98a926f4743de65",
                 "shasum": ""
             },
             "default-branch": true,
@@ -25,11 +25,25 @@
             "license": [
                 "Apache-2.0"
             ],
-            "description": "Mousetrap - Keyboard shortcuts in JavaScript",
+            "authors": [
+                {
+                    "name": "Craig Campbell",
+                    "homepage": "https://craig.is",
+                    "role": "Lead"
+                }
+            ],
+            "description": "Simple library for handling keyboard shortcuts in Javascript",
+            "homepage": "https://craig.is/killing/mice",
+            "keywords": [
+                "javascript",
+                "keyboard",
+                "keyboard-shortcuts",
+                "mousetrap"
+            ],
             "support": {
                 "source": "https://github.com/Mistralys/mousetrap/tree/master"
             },
-            "time": "2018-10-08T08:28:17+00:00"
+            "time": "2023-03-15T18:11:39+00:00"
         },
         {
             "name": "components/jquery",
@@ -810,13 +824,44 @@
         },
         {
             "name": "lipis/flag-icons",
-            "version": "6.6.5",
+            "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "https://github.com/lipis/flag-icons.git",
-                "reference": "main"
+                "url": "https://github.com/Mistralys/flag-icons.git",
+                "reference": "2034c29537c7194978cd56c0976c387d1ab8d520"
             },
-            "type": "library"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mistralys/flag-icons/zipball/2034c29537c7194978cd56c0976c387d1ab8d520",
+                "reference": "2034c29537c7194978cd56c0976c387d1ab8d520",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Panayiotis Lipiridis",
+                    "email": "lipiridis@gmail.com",
+                    "role": "Lead"
+                }
+            ],
+            "description": "A curated collection of all country flags in SVG — plus the CSS for easier integration.",
+            "homepage": "https://flagicons.lipis.dev",
+            "keywords": [
+                "country",
+                "country-flags",
+                "css",
+                "icon-css",
+                "svg"
+            ],
+            "support": {
+                "issues": "https://github.com/lipis/flag-icons/issues",
+                "source": "https://github.com/Mistralys/flag-icons/tree/main"
+            },
+            "time": "2023-03-15T17:55:51+00:00"
         },
         {
             "name": "marcj/css-element-queries",
@@ -4226,7 +4271,8 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "shark/simple_html_dom": 20,
-        "ccampbell/mousetrap": 20
+        "ccampbell/mousetrap": 20,
+        "lipis/flag-icons": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

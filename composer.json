@@ -29,17 +29,8 @@
       "url": "https://github.com/Mistralys/mousetrap.git"
     },
     {
-      "type": "package",
-      "package": {
-        "name": "lipis/flag-icons",
-        "version": "6.6.5",
-        "type": "library",
-        "source": {
-          "url": "https://github.com/lipis/flag-icons.git",
-          "type": "git",
-          "reference": "main"
-        }
-      }
+      "type": "vcs",
+      "url": "https://github.com/Mistralys/flag-icons.git"
     },
     {
       "type": "vcs",
@@ -78,7 +69,7 @@
     "ccampbell/mousetrap": "dev-master",
     "medialize/uri.js": "^1.19.11",
     "ulrichsg/getopt-php": "^4.0.2",
-    "lipis/flag-icons": "^6.6",
+    "lipis/flag-icons": "dev-main",
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
     "hybridauth/hybridauth": "^3.8.2",
