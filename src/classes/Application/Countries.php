@@ -22,17 +22,18 @@ use function AppUtils\parseVariable;
  * @method Application_Countries_Country getByID(int $country_id)
  * @method Application_Countries_FilterCriteria getFilterCriteria()
  * @method Application_Countries_Country|NULL getByRequest()
+ * @method Application_Countries_Country createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  */
 class Application_Countries extends DBHelper_BaseCollection
 {
     public const ERROR_UNKNOWN_ISO_CODE = 21901;
     public const ERROR_INVALID_COUNTRY_ID = 21902;
     public const ERROR_INVALID_ISO_CODE = 21903;
+    public const ERROR_ISO_ALREADY_EXISTS = 21904;
 
     public const PRIMARY_NAME = 'country_id';
     public const TABLE_NAME = 'countries';
     public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
-
     protected static ?Application_Countries $instance = null;
 
     public function getRecordDefaultSortKey() : string
@@ -455,17 +456,18 @@ class Application_Countries extends DBHelper_BaseCollection
 
     public function createNewCountry(string $iso, string $label) : Application_Countries_Country
     {
-        $record = $this->createNewRecord(array(
-            Application_Countries_Country::COL_ISO => $this->convertISO($iso),
-            Application_Countries_Country::COL_LABEL => $iso
-        ));
-
-        if($record instanceof Application_Countries_Country)
-        {
-            return $record;
+        if($this->isoExists($iso)) {
+            throw new Application_Countries_Exception(
+                sprintf('Cannot add country [%s], it already exists.', $iso),
+                '',
+                self::ERROR_ISO_ALREADY_EXISTS
+            );
         }
 
-        throw new UnexpectedInstanceException(Application_Countries_Country::class, $record);
+        return $this->createNewRecord(array(
+            Application_Countries_Country::COL_ISO => $this->convertISO($iso),
+            Application_Countries_Country::COL_LABEL => $label
+        ));
     }
 
     protected function _registerKeys() : void
