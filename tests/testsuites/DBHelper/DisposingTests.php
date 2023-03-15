@@ -2,15 +2,17 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
 final class DBHelper_DisposingTests extends DBHelperTestCase
 {
     public function test_resetCollection() : void
     {
-        $collection = new Application_Countries();
-        $collection->createNewCountry('uk', 'United Kingdom');
-        $collection->createNewCountry('de', 'Germany');
+        $collection = AppFactory::createCountries();
+
+        $this->createTestCountry('uk', 'United Kingdom');
+        $this->createTestCountry('de', 'Germany');
 
         $records = $collection->getAll();
 

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+
 class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 {
     public const URL_NAME = 'wizard';
@@ -18,15 +20,36 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 
     protected function _initSteps() : void
     {
-        $countries = new Application_Countries();
-        $countries->createNewCountry('uk', 'United Kingdom');
-        $countries->createNewCountry('de', 'Germany');
-        $countries->createNewCountry('mx', 'Mexico');
+        $this->createCountries();
+
         $this->changeCountry('DE');
 
         $this->addStep('Countries');
         $this->addStep('Ticket');
         $this->addStep('Summary');
+    }
+
+    private array $requiredCountries = array(
+        'uk' => 'United Kingdom',
+        'de' => 'Germany',
+        'mx' => 'Mexico'
+    );
+
+    private function createCountries() : void
+    {
+        $countries = AppFactory::createCountries();
+
+        foreach($this->requiredCountries as $iso => $label)
+        {
+            if($countries->isoExists($iso)) {
+                continue;
+            }
+
+            $countries->createNewCountry(
+                $iso,
+                $label
+            );
+        }
     }
 
     public function handle_stepUpdated(Application_Admin_Wizard_Step $updatedStep) : void
