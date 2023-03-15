@@ -29,8 +29,17 @@
       "url": "https://github.com/Mistralys/mousetrap.git"
     },
     {
-      "type": "vcs",
-      "url": "https://github.com/lipis/flag-icon-css.git"
+      "type": "package",
+      "package": {
+        "name": "lipis/flag-icons",
+        "version": "6.6.5",
+        "type": "library",
+        "source": {
+          "url": "https://github.com/lipis/flag-icons.git",
+          "type": "git",
+          "reference": "main"
+        }
+      }
     },
     {
       "type": "vcs",
@@ -50,17 +59,8 @@
       }
     },
     {
-      "type": "package",
-      "package": {
-        "name": "zenorocha/clipboardjs",
-        "version": "2.0.8",
-        "type": "library",
-        "source": {
-          "url": "https://github.com/zenorocha/clipboard.js.git",
-          "type": "git",
-          "reference": "master"
-        }
-      }
+      "type": "vcs",
+      "url": "https://github.com/zenorocha/clipboard.js.git"
     }
   ],
   "minimum-stability": "dev",
@@ -78,13 +78,13 @@
     "ccampbell/mousetrap": "dev-master",
     "medialize/uri.js": "^1.19.11",
     "ulrichsg/getopt-php": "^4.0.2",
-    "components/flag-icon-css": "^3.5.0",
+    "lipis/flag-icons": "^6.6",
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
     "hybridauth/hybridauth": "^3.8.2",
     "erusev\/parsedown": "^1.7.4",
     "twbs/bootstrap": "^v4.6.2",
-    "zenorocha/clipboardjs": "v2.0.8",
+    "zenorocha/clipboardjs": "^v2.0",
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",

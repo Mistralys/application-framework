@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b0fccc65939149b3adc57656388de3f6",
+    "content-hash": "fc8134d12204688d825417bcdb708363",
     "packages": [
         {
             "name": "ccampbell/mousetrap",
@@ -30,47 +30,6 @@
                 "source": "https://github.com/Mistralys/mousetrap/tree/master"
             },
             "time": "2018-10-08T08:28:17+00:00"
-        },
-        {
-            "name": "components/flag-icon-css",
-            "version": "3.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lipis/flag-icons.git",
-                "reference": "5141384c57972b0b08fc3bb67bea297321fbd799"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lipis/flag-icons/zipball/5141384c57972b0b08fc3bb67bea297321fbd799",
-                "reference": "5141384c57972b0b08fc3bb67bea297321fbd799",
-                "shasum": ""
-            },
-            "type": "component",
-            "extra": {
-                "component": {
-                    "name": "flag-icon-css",
-                    "files": [
-                        "less/**",
-                        "css/**",
-                        "flags/**"
-                    ]
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Panayiotis Lipiridis (Lipis)",
-                    "email": "lipiridis@gmail.com"
-                }
-            ],
-            "description": "CSS for vector based country flags",
-            "support": {
-                "source": "https://github.com/lipis/flag-icons/tree/3.5.0",
-                "issues": "https://github.com/lipis/flag-icons/issues"
-            },
-            "time": "2020-06-10T11:53:19+00:00"
         },
         {
             "name": "components/jquery",
@@ -120,6 +79,151 @@
                 "wiki": "http://docs.jquery.com/"
             },
             "time": "2021-03-20T19:13:42+00:00"
+        },
+        {
+            "name": "composer/installers",
+            "version": "v2.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/composer/installers.git",
+                "reference": "c29dc4b93137acb82734f672c37e029dfbd95b35"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/composer/installers/zipball/c29dc4b93137acb82734f672c37e029dfbd95b35",
+                "reference": "c29dc4b93137acb82734f672c37e029dfbd95b35",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": "^7.2 || ^8.0"
+            },
+            "require-dev": {
+                "composer/composer": "1.6.* || ^2.0",
+                "composer/semver": "^1 || ^3",
+                "phpstan/phpstan": "^0.12.55",
+                "phpstan/phpstan-phpunit": "^0.12.16",
+                "symfony/phpunit-bridge": "^5.3",
+                "symfony/process": "^5"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Composer\\Installers\\Plugin",
+                "branch-alias": {
+                    "dev-main": "2.x-dev"
+                },
+                "plugin-modifies-install-path": true
+            },
+            "autoload": {
+                "psr-4": {
+                    "Composer\\Installers\\": "src/Composer/Installers"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Robinson Young",
+                    "email": "kyle@dontkry.com",
+                    "homepage": "https://github.com/shama"
+                }
+            ],
+            "description": "A multi-framework Composer library installer",
+            "homepage": "https://composer.github.io/installers/",
+            "keywords": [
+                "Dolibarr",
+                "Eliasis",
+                "Hurad",
+                "ImageCMS",
+                "Kanboard",
+                "Lan Management System",
+                "MODX Evo",
+                "MantisBT",
+                "Mautic",
+                "Maya",
+                "OXID",
+                "Plentymarkets",
+                "Porto",
+                "RadPHP",
+                "SMF",
+                "Starbug",
+                "Thelia",
+                "Whmcs",
+                "WolfCMS",
+                "agl",
+                "annotatecms",
+                "attogram",
+                "bitrix",
+                "cakephp",
+                "chef",
+                "cockpit",
+                "codeigniter",
+                "concrete5",
+                "croogo",
+                "dokuwiki",
+                "drupal",
+                "eZ Platform",
+                "elgg",
+                "expressionengine",
+                "fuelphp",
+                "grav",
+                "installer",
+                "itop",
+                "known",
+                "kohana",
+                "laravel",
+                "lavalite",
+                "lithium",
+                "magento",
+                "majima",
+                "mako",
+                "matomo",
+                "mediawiki",
+                "miaoxing",
+                "modulework",
+                "modx",
+                "moodle",
+                "osclass",
+                "pantheon",
+                "phpbb",
+                "piwik",
+                "ppi",
+                "processwire",
+                "puppet",
+                "pxcms",
+                "reindex",
+                "roundcube",
+                "shopware",
+                "silverstripe",
+                "sydes",
+                "sylius",
+                "tastyigniter",
+                "wordpress",
+                "yawik",
+                "zend",
+                "zikula"
+            ],
+            "support": {
+                "issues": "https://github.com/composer/installers/issues",
+                "source": "https://github.com/composer/installers/tree/v2.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-08-20T06:45:11+00:00"
         },
         {
             "name": "desandro/masonry",
@@ -644,16 +748,16 @@
         },
         {
             "name": "hybridauth/hybridauth",
-            "version": "v3.8.2",
+            "version": "v3.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hybridauth/hybridauth.git",
-                "reference": "0d6e31482c544e5ed2bdc83bd3c033054129c482"
+                "reference": "a950212d2f52df5b0662cd520b0043c4ee6d0f1b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/0d6e31482c544e5ed2bdc83bd3c033054129c482",
-                "reference": "0d6e31482c544e5ed2bdc83bd3c033054129c482",
+                "url": "https://api.github.com/repos/hybridauth/hybridauth/zipball/a950212d2f52df5b0662cd520b0043c4ee6d0f1b",
+                "reference": "a950212d2f52df5b0662cd520b0043c4ee6d0f1b",
                 "shasum": ""
             },
             "require": {
@@ -700,9 +804,19 @@
             "support": {
                 "gitter": "https://gitter.im/hybridauth/hybridauth",
                 "issues": "https://github.com/hybridauth/hybridauth/issues",
-                "source": "https://github.com/hybridauth/hybridauth/tree/v3.8.2"
+                "source": "https://github.com/hybridauth/hybridauth/tree/v3.9.0"
             },
-            "time": "2022-08-18T19:48:17+00:00"
+            "time": "2023-03-12T09:30:26+00:00"
+        },
+        {
+            "name": "lipis/flag-icons",
+            "version": "6.6.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lipis/flag-icons.git",
+                "reference": "main"
+            },
+            "type": "library"
         },
         {
             "name": "marcj/css-element-queries",
@@ -1205,6 +1319,63 @@
                 "source": "https://github.com/neitanod/forceutf8/tree/master"
             },
             "time": "2019-12-10T14:09:14+00:00"
+        },
+        {
+            "name": "oomphinc/composer-installers-extender",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/oomphinc/composer-installers-extender.git",
+                "reference": "cbf4b6f9a24153b785d09eee755b995ba87bd5f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/oomphinc/composer-installers-extender/zipball/cbf4b6f9a24153b785d09eee755b995ba87bd5f9",
+                "reference": "cbf4b6f9a24153b785d09eee755b995ba87bd5f9",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.1 || ^2.0",
+                "composer/installers": "^1.0 || ^2.0",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "composer/composer": "^2.0",
+                "phpunit/phpunit": "^7.2",
+                "squizlabs/php_codesniffer": "^3.3"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "OomphInc\\ComposerInstallersExtender\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "OomphInc\\ComposerInstallersExtender\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Stephen Beemsterboer",
+                    "email": "stephen@oomphinc.com",
+                    "homepage": "https://github.com/balbuf"
+                },
+                {
+                    "name": "Nathan Dentzau",
+                    "email": "nate@oomphinc.com",
+                    "homepage": "http://oomph.is/ndentzau"
+                }
+            ],
+            "description": "Extend the composer/installers plugin to accept any arbitrary package type.",
+            "homepage": "http://www.oomphinc.com/",
+            "support": {
+                "issues": "https://github.com/oomphinc/composer-installers-extender/issues",
+                "source": "https://github.com/oomphinc/composer-installers-extender/tree/2.0.1"
+            },
+            "time": "2021-12-15T12:32:42+00:00"
         },
         {
             "name": "parsecsv/php-parsecsv",
@@ -2219,13 +2390,45 @@
         },
         {
             "name": "zenorocha/clipboardjs",
-            "version": "2.0.8",
+            "version": "v2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zenorocha/clipboard.js.git",
-                "reference": "master"
+                "reference": "2b2f9eef6fd1cf951612740e16e422db2848c00a"
             },
-            "type": "library"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zenorocha/clipboard.js/zipball/2b2f9eef6fd1cf951612740e16e422db2848c00a",
+                "reference": "2b2f9eef6fd1cf951612740e16e422db2848c00a",
+                "shasum": ""
+            },
+            "require": {
+                "oomphinc/composer-installers-extender": "*"
+            },
+            "type": "component",
+            "extra": {
+                "component": {
+                    "scripts": [
+                        "dist/clipboard.js"
+                    ],
+                    "files": [
+                        "dist/clipboard.min.js"
+                    ]
+                }
+            },
+            "authors": [
+                {
+                    "name": "Zeno Rocha",
+                    "homepage": "http://zenorocha.com/"
+                }
+            ],
+            "description": "Modern copy to clipboard. No Flash. Just 3kb gzipped https://clipboardjs.com",
+            "homepage": "https://clipboardjs.com/",
+            "support": {
+                "source": "https://github.com/zenorocha/clipboard.js/tree/v2.0.11",
+                "issues": "https://github.com/zenorocha/clipboard.js/issues"
+            },
+            "time": "2022-05-04T17:51:40+00:00"
         }
     ],
     "packages-dev": [
@@ -4037,5 +4240,5 @@
     "platform-dev": {
         "ext-curl": "*"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.0.0"
 }
