@@ -6,6 +6,7 @@ namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use Application;
 use Application\AppFactory;
+use Application_Countries_Country;
 use Application_Formable_Generic;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
@@ -144,6 +145,23 @@ abstract class ApplicationTestCase extends TestCase
             array_values($replaces),
             $html
         ));
+    }
+
+    protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
+    {
+        $countries = AppFactory::createCountries();
+
+        if($countries->isoExists($iso))
+        {
+            return $countries->getByISO($iso);
+        }
+
+        if(empty($label))
+        {
+            $label = 'Test country '.$this->getTestCounter();
+        }
+
+        return $countries->createNewCountry($iso, $label);
     }
 
     protected function setUp(): void

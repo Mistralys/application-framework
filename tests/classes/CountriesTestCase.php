@@ -55,19 +55,4 @@ abstract class CountriesTestCase extends ApplicationTestCase
 
         return $country;
     }
-
-    protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
-    {
-        if($this->countries->isoExists($iso))
-        {
-            $this->fail(sprintf('The country [%s] already exists.', $iso));
-        }
-
-        if(empty($label))
-        {
-            $label = 'Test country '.$this->getTestCounter();
-        }
-
-        return $this->countries->createNewCountry($iso, $label);
-    }
 }
