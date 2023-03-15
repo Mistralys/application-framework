@@ -87,6 +87,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                 'examples' => array(
                     'buttons-styles' => t('Button styles'),
                     'pretty-bool' => t('Pretty booleans'),
+                    'copy-text-codeblock' => t('Copy text code block'),
+                    'country-flags' => t('Country flag icons')
                 )
             ),
             'forms' => array(
