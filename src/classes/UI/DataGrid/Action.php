@@ -336,6 +336,8 @@ abstract class UI_DataGrid_Action
             if($this->grid->isAjax()) {
                 $json = Application_AjaxMethod::formatJSONException($e);
                 Application_Request::sendJSON($json);
+            } else {
+                throw $e;
             }
         }
 
