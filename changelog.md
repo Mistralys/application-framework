@@ -1,6 +1,7 @@
 ### v2.5.1 - Minor features
 - UI: Added `addUnorderedList()` to the `UI_Help` class.
 - UI: Fixed the size of headings in the page help.
+- DataGrids: Fixed grid actions ignoring exceptions.
 
 ### v2.5.0 - Deprecation cleanup
 - VisualSelect: Added `injectJavascript()` to be able to call it separately.
