@@ -1,3 +1,7 @@
+### v2.5.2 - Minor tweaks
+- Core: Fixed the framework reporting the wrong version
+- Core: Updated the version string in `VERSION`.
+
 ### v2.5.1 - Minor features
 - UI: Added `addUnorderedList()` to the `UI_Help` class.
 - UI: Fixed the size of headings in the page help.
