@@ -1,3 +1,6 @@
+### v2.5.3 - Sidebar dev panel fix
+- Sidebar: Fixed the `getButton()` method ignoring the `$name` parameter.
+
 ### v2.5.2 - Minor tweaks
 - Core: Fixed the framework reporting the wrong version
 - Core: Updated the version string in `VERSION`.
