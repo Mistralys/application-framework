@@ -170,7 +170,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     {
         foreach ($this->items as $item)
         {
-            if($item instanceof UI_Page_Sidebar_Item_Button)
+            if($item instanceof UI_Page_Sidebar_Item_Button && $item->getName() === $name)
             {
                 return $item;
             }
