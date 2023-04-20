@@ -37,6 +37,10 @@
       "url": "https://github.com/medialize/URI.js.git"
     },
     {
+      "type": "vcs",
+      "url": "https://github.com/Mistralys/deepl-api-connector.git"
+    },
+    {
       "type": "package",
       "package": {
         "name": "marcj/css-element-queries",
@@ -72,7 +76,7 @@
     "mistralys/subsetsum": "^1.0.2",
     "mistralys/markdown-viewer": "^1.1.0",
     "mistralys/html_quickform2": "^2.1.8",
-    "mistralys/version-parser": "^1.0.0",
+    "mistralys/version-parser": "^2.0.0",
     "pear/http_request2": "^v2.5.1",
     "shark/simple_html_dom": "dev-master",
     "ccampbell/mousetrap": "dev-master",
