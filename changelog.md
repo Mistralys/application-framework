@@ -1,3 +1,7 @@
+### v2.5.4 - Dependency update
+- Dependencies: Updated the minimum version parser release to [v2.0.0](https://github.com/Mistralys/version-parser/releases/tag/2.0.0).
+- VisualSelect: Fixed missing image selection ([#53](https://github.com/Mistralys/application-framework/issues/53)).
+
 ### v2.5.3 - Sidebar dev panel fix
 - Sidebar: Fixed the `getButton()` method ignoring the `$name` parameter.
 
