@@ -181,20 +181,20 @@ class VisualSelectElement
 		this.formEl.find('OPTION[data-image-set="'+setID+'"]').prop('hidden', false);
 
 		// Mark the set button as active
-		$('.visel-btn-switch-set').removeClass('active');
-		$('.visel-btn-switch-set[data-image-set="'+setID+'"]').addClass('active');
+		$('#'+this.elementID+' .visel-btn-switch-set').removeClass('active');
+		$('#'+this.elementID+' .visel-btn-switch-set[data-image-set="'+setID+'"]').addClass('active');
 
 		// Filter the images by set
-		$('.visel-item').hide();
-		$('.visel-item[data-image-set="'+setID+'"]').show();
+		$('#'+this.elementID+' .visel-item').hide();
+		$('#'+this.elementID+' .visel-item[data-image-set="'+setID+'"]').show();
 
 		// Filter the groups by set
-		$('.visel-group').hide();
-		$('.visel-group[data-image-set="'+setID+'"]').show();
+		$('#'+this.elementID+' .visel-group').hide();
+		$('#'+this.elementID+' .visel-group[data-image-set="'+setID+'"]').show();
 
 		// Filter the groups menu by set
-		$('.visel-groups-menu LI').hide();
-		$('.visel-groups-menu LI[data-image-set="'+setID+'"]').show();
+		$('#'+this.elementID+' .visel-groups-menu LI').hide();
+		$('#'+this.elementID+' .visel-groups-menu LI[data-image-set="'+setID+'"]').show();
 
 		this.Filter();
 	}
