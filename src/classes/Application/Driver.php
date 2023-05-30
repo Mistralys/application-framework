@@ -1090,6 +1090,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     protected function configureScripts() : void
     {
+        $this->ui->addJavascriptHeadHeading('Application setup');
+
         $this->ui->addJavascriptHeadVariable('FormHelper.ID_PREFIX', UI_Form::ID_PREFIX);
         $this->ui->addJavascriptHeadVariable('UI.BOOTSTRAP_VERSION', UI::getBoostrapVersion());
         $this->ui->addJavascriptHeadVariable('Driver.version', $this->getVersion());
