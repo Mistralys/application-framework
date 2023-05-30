@@ -11,6 +11,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
+use AppUtils\Interface_Stringable;
 use AppUtils\OutputBuffering;
 use UI\ClientResourceCollection;
 use UI\TooltipInfo;
@@ -359,16 +360,19 @@ class UI
      *
      * @param string $statement
      * @param boolean $avoidDuplicates Whether to ignore identical statements that have already been added
+     * @return $this
      */
-    public function addJavascriptOnload(string $statement, bool $avoidDuplicates=false) : void
+    public function addJavascriptOnload(string $statement, bool $avoidDuplicates=false) : self
     {
         $statement = rtrim($statement, ';') . ';';
         
         if($avoidDuplicates && in_array($statement, $this->onloadJS, true)) {
-            return;
+            return $this;
         }
 
         $this->onloadJS[] = $statement;
+
+        return $this;
     }
 
     /**
@@ -382,14 +386,39 @@ class UI
      *
      * @param string $statement
      * @param bool $addSemicolon
+     * @return $this
      */
-    public function addJavascriptHead(string $statement, bool $addSemicolon=true) : void
+    public function addJavascriptHead(string $statement, bool $addSemicolon=true) : self
     {
         if($addSemicolon) {
         	$statement = rtrim($statement, ';') . ';';
         }
         
-        $this->headJS[] = $statement; 
+        $this->headJS[] = $statement;
+
+        return $this;
+    }
+
+    /**
+     * @param string|number|Interface_Stringable|NULL $comment
+     * @return $this
+     */
+    public function addJavascriptHeadComment($comment=null) : self
+    {
+        return $this->addJavascriptHead('// '.$comment, false);
+    }
+
+    /**
+     * @param string|number|Interface_Stringable|NULL $heading
+     * @return $this
+     */
+    public function addJavascriptHeadHeading($heading) : self
+    {
+        $this->addJavascriptHeadComment(str_repeat('-', 65));
+        $this->addJavascriptHeadComment($heading);
+        $this->addJavascriptHeadComment(str_repeat('-', 65));
+
+        return $this;
     }
 
     /**
@@ -398,10 +427,12 @@ class UI
      *
      * @param string $varName
      * @param mixed $varValue
+     * @return $this
      */
-    public function addJavascriptHeadVariable(string $varName, $varValue) : void
+    public function addJavascriptHeadVariable(string $varName, $varValue) : self
     {
         $this->headJS[] = JSHelper::buildVariable($varName, $varValue);
+        return $this;
     }
 
     /**
@@ -419,11 +450,13 @@ class UI
      * // add an alert('Alert text'); statement
      * addJavascriptHeadStatement('alert', 'Alert text');
      */
-    public function addJavascriptHeadStatement() : void
+    public function addJavascriptHeadStatement() : self
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
         $this->headJS[] = $statement;
+
+        return $this;
     }
 
    /**
@@ -432,11 +465,13 @@ class UI
     * 
     * @see addJavascriptHeadStatement()
     */
-    public function addJavascriptOnloadStatement() : void
+    public function addJavascriptOnloadStatement() : self
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
         $this->addJavascriptOnload($statement);
+
+        return $this;
     }
 
     /**
