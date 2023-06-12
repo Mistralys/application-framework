@@ -816,8 +816,6 @@ trait Application_Traits_Admin_Screen
 
     protected function createSubscreenInstance(string $screenID, bool $adminMode) : Application_Admin_ScreenInterface
     {
-        $this->log(sprintf('Creating child screen with class ID [%s].', $screenID));
-
         $class = ClassHelper::requireResolvedClass(sprintf(
             '%s_%s',
             get_class($this),
@@ -833,6 +831,12 @@ trait Application_Traits_Admin_Screen
         $instance = ClassHelper::requireObjectInstanceOf(
             Application_Admin_ScreenInterface::class,
             new $class($this->driver, $this)
+        );
+
+        $this->log(
+            'Created child screen with class ID [%s] and URL name [%s].',
+            $screenID,
+            $instance->getURLName()
         );
 
         $this->adminMode = $previousMode;
