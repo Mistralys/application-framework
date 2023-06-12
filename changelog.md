@@ -1,3 +1,8 @@
+### v2.5.6 - Minor enhancements
+- DataGrids: Added `configureFilterSettings()` in the `CollectionList` trait. 
+- Forms: Added `UI_Form::FORM_PREFIX` to easily access it globally.
+- DBHelper: Added `requireParentRecord()` in the collection class.
+
 ### v2.5.5 - UI update
 - UI: `addJavascriptXXX()` methods are now chainable.
 - UI: Added `addJavascriptHeadComment()` method and variants thereof.
