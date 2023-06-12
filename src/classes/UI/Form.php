@@ -49,6 +49,7 @@ class UI_Form extends UI_Renderable
 
     public const REL_BUTTON = 'Button';
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
+    public const FORM_PREFIX = 'form-';
 
     protected string $id;
     protected HTML_QuickForm2 $form;
@@ -82,7 +83,7 @@ class UI_Form extends UI_Renderable
         
         $this->id = $formID;
         $this->defaultDataSource = new HTML_QuickForm2_DataSource_Array($defaultData);
-        $this->form = new HTML_QuickForm2('form-' . $formID, $method);
+        $this->form = new HTML_QuickForm2(self::FORM_PREFIX . $formID, $method);
         $this->form->addDataSource($this->defaultDataSource);
         $this->form->setAttribute('data-jsid', $formID);
         
@@ -2340,7 +2341,7 @@ class UI_Form extends UI_Renderable
             $name = $this->form->getId();
         }
         
-        return str_replace('form-', '', $name);
+        return str_replace(self::FORM_PREFIX, '', $name);
     }
     
    /**

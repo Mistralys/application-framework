@@ -93,7 +93,7 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             'element' => '89'
         ));
 
-        $this->assertEquals('form-'.$formName, $form->getForm()->getId());
+        $this->assertEquals(UI_Form::FORM_PREFIX.$formName, $form->getForm()->getId());
 
         $el = $form->addPercent('element', 'Label');
 
@@ -124,7 +124,7 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             'element' => '89'
         ));
 
-        $this->assertEquals('form-'.$formName, $form->getForm()->getId());
+        $this->assertEquals(UI_Form::FORM_PREFIX.$formName, $form->getForm()->getId());
 
         $el = $form->addPercent('element', 'Label');
 
