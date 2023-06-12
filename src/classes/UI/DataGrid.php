@@ -39,16 +39,6 @@ class UI_DataGrid
     protected $ui;
 
     /**
-     * @var UI_DataGrid_Column[]
-     */
-    protected $columns = array();
-
-    /**
-     * @var int
-     */
-    protected $columnCount = 0;
-
-    /**
      * @var bool
      */
     protected $oddRow = false;
@@ -181,10 +171,279 @@ class UI_DataGrid
         return $this->ui;
     }
 
+    // region: Handling columns
+
+    /**
+     * @var UI_DataGrid_Column[]
+     */
+    protected array $columns = array();
+
+    /**
+     * @var array<string,bool>
+     */
+    protected array $columnsEnabled = array();
+
     /**
      * @var int
      */
-    protected $columnCounter = 0;
+    protected int $columnCount = 0;
+
+    /**
+     * @var int
+     */
+    protected int $columnCounter = 0;
+
+    protected bool $columnControls = false;
+
+    protected int $maxColumnsShown = 0;
+
+    protected ?UI_DataGrid_Column $orderColumn = null;
+
+    /**
+     * Retrieves the currently selected sorting column.
+     *
+     * @return UI_DataGrid_Column|NULL
+     */
+    public function getOrderColumn() : ?UI_DataGrid_Column
+    {
+        if(isset($this->orderColumn)) {
+            return $this->orderColumn;
+        }
+
+        $found = false;
+
+        // let's see if we can use a previously set column
+        $columnName = $this->getSetting('datagrid_orderby');
+        if(!empty($columnName)) {
+            $column = $this->getColumnByOrderKey($columnName);
+            if($column) {
+                $found = $column;
+            }
+        }
+
+        // otherwise, use the one that was set as default
+        if(!$found && isset($this->defaultSortColumn)) {
+            $found = $this->defaultSortColumn;
+        }
+
+        // or as a last recourse, use the first sortable column we find
+        if(!$found) {
+            foreach ($this->columns as $column) {
+                if(!$column->isValid()) {
+                    continue;
+                }
+                if($column->isSortable()) {
+                    $found = $column;
+                    break;
+                }
+            }
+        }
+
+        if(!$found) {
+            return null;
+        }
+
+        // store the choice for later
+        $this->setCookie('datagrid_orderby', $found->getOrderKey());
+
+        $this->orderColumn = $found;
+
+        return $found;
+    }
+
+    /**
+     * Enables clientside controls to adjust the amount of columns that get
+     * displayed, and to navigate between them.
+     *
+     * @param int $maxColumns The maximum amount of columns to display; Any above will be hidden.
+     * @return $this
+     */
+    public function enableColumnControls(int $maxColumns=5) : self
+    {
+        $this->columnControls = true;
+        $this->maxColumnsShown = $maxColumns;
+        return $this;
+    }
+
+    /**
+     * Retrieves a column by its data key name.
+     * @param string $dataKeyName
+     * @return UI_DataGrid_Column|NULL
+     */
+    public function getColumnByName(string $dataKeyName) : ?UI_DataGrid_Column
+    {
+        foreach ($this->columns as $column) {
+            if($column->getDataKey() === $dataKeyName) {
+                return $column;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves a column by its order key name.
+     * @param string $orderKeyName
+     * @return UI_DataGrid_Column|NULL
+     */
+    public function getColumnByOrderKey(string $orderKeyName) : ?UI_DataGrid_Column
+    {
+        foreach ($this->columns as $column) {
+            if($column->getOrderKey() === $orderKeyName) {
+                return $column;
+            }
+        }
+
+        return null;
+    }
+
+    protected function addColumnObject(UI_DataGrid_Column $column) : void
+    {
+        $this->columns[] = $column;
+        $this->columnCount++;
+    }
+
+    protected function prependColumnObject(UI_DataGrid_Column $column) : void
+    {
+        array_unshift($this->columns, $column);
+        $this->columnCount++;
+    }
+
+    /**
+     * Distributes widths evenly over all columns in the grid.
+     * The optional parameter can force all existing with settings
+     * of individual columns to be overwritten. Default is to
+     * retain any existing width settings.
+     *
+     * Note: any columns that have a pixel width set will be
+     * reset and given an automatic percentual width, since the
+     * two do not mix well.
+     *
+     * @param bool $overwriteExisting
+     */
+    public function makeEvenColumnWidths(bool $overwriteExisting = false)
+    {
+        $leftover = 100;
+        $distributeColumns = $this->columnCount;
+        if (!$overwriteExisting) {
+            for ($i = 0; $i < $this->columnCount; $i++) {
+                $column = $this->columns[$i];
+                if (!$column->hasWidth() || !$column->isValid()) {
+                    continue;
+                }
+
+                // this only works with percentage widths, so
+                // if a column has a pixel width set, we reset
+                // its width so it can be set automatically.
+                if ($column->getWidthType() != 'percent') {
+                    $column->resetWidth();
+                    continue;
+                }
+
+                // remove the width from the available percentage
+                $leftover = $leftover - $column->getWidth();
+                $distributeColumns--;
+            }
+        } else {
+            for ($i = 0; $i < $this->columnCount; $i++) {
+                $column = $this->columns[$i];
+                if ($column->hasWidth() && $column->isValid()) {
+                    $column->resetWidth();
+                }
+            }
+        }
+
+        if ($leftover < 0) {
+            $leftover = 100;
+        }
+
+        $width = intval(floor($leftover / $distributeColumns));
+
+        for ($i = 0; $i < $this->columnCount; $i++) {
+            $column = $this->columns[$i];
+            if ($column->hasWidth() || !$column->isValid()) {
+                continue;
+            }
+
+            $this->columns[$i]->setWidthPercent($width);
+        }
+    }
+
+    /**
+     * Moves the specified column to the desired position, starting at
+     * 1 for the first column in the grid.
+     *
+     * @since 3.3.7
+     * @param UI_DataGrid_Column $column
+     * @param int $position
+     * @return boolean Wether the column was moved
+     */
+    public function moveColumn(UI_DataGrid_Column $column, $position)
+    {
+        $moved = false;
+        $total = count($this->columns);
+        $shuffled = array();
+        for ($i = 1; $i <= $total; $i++) {
+            if ($position == $i) {
+                $shuffled[] = $column;
+                $moved = true;
+            }
+
+            if ($this->columns[($i - 1)] === $column) {
+                continue;
+            }
+
+            $shuffled[] = $this->columns[($i - 1)];
+        }
+
+        $this->columns = $shuffled;
+
+        return $moved;
+    }
+
+    public function resetColumnWidths()
+    {
+        $total = count($this->columns);
+        for ($i = 0; $i < $total; $i++) {
+            $this->columns[$i]->resetWidth();
+        }
+    }
+
+    /**
+     * Retrieves the column by its column number (starting at 1).
+     * @param integer $number
+     * @return UI_DataGrid_Column|NULL
+     */
+    public function getColumn(int $number) : ?UI_DataGrid_Column
+    {
+        $idx = $number - 1;
+        if (isset($this->columns[$idx])) {
+            return $this->columns[$idx];
+        }
+
+        return null;
+    }
+
+    public function getLastColumn() : ?UI_DataGrid_Column
+    {
+        return $this->getColumn($this->countColumns());
+    }
+
+    /**
+     * Counts all columns, excluding hidden columns.
+     * @return int
+     */
+    public function countColumns() : int
+    {
+        $count = 0;
+        foreach ($this->columns as $column) {
+            if ($column->isValid() && !$column->isHidden()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
 
     /**
      * @param string $dataKey
@@ -219,6 +478,12 @@ class UI_DataGrid
         return $column;
     }
 
+    public function setColumnEnabled(string $keyName, bool $enabled) : self
+    {
+        $this->columnsEnabled[$keyName] = $enabled;
+        return $this;
+    }
+
     /**
      * @param string $keyName
      * @return false|UI_DataGrid_Column
@@ -233,6 +498,8 @@ class UI_DataGrid
 
         return false;
     }
+
+    // endregion
 
     /**
      * Adds a row with sums of values in columns.
@@ -289,18 +556,6 @@ class UI_DataGrid
             ->getActiveScreen()
             ->getPageParams()
         );
-    }
-
-    protected function addColumnObject(UI_DataGrid_Column $column) : void
-    {
-        $this->columns[] = $column;
-        $this->columnCount++;
-    }
-
-    protected function prependColumnObject(UI_DataGrid_Column $column) : void
-    {
-        array_unshift($this->columns, $column);
-        $this->columnCount++;
     }
 
    /**
@@ -515,23 +770,6 @@ class UI_DataGrid
             "%s.ToggleSelection()",
             $this->getClientObjectName()
         );
-    }
-
-    /**
-     * Counts all columns, excluding hidden columns.
-     * @return int
-     */
-    public function countColumns() : int
-    {
-        $count = 0;
-        $total = count($this->columns);
-        for ($i = 0; $i < $total; $i++) {
-            if ($this->columns[$i]->isValid() && !$this->columns[$i]->isHidden()) {
-                $count++;
-            }
-        }
-
-        return $count;
     }
 
    /**
@@ -2192,125 +2430,7 @@ class UI_DataGrid
         return false;
     }
 
-    /**
-     * Distributes widths evenly over all columns in the grid.
-     * The optional parameter can force all existing with settings
-     * of individual columns to be overwitten. Default is to
-     * retain any existing width settings.
-     *
-     * Note: any columns that have a pixel width set will be
-     * reset and given an automatic percentual width, since the
-     * two do not mix well.
-     *
-     * @param bool $overwriteExisting
-     */
-    public function makeEvenColumnWidths(bool $overwriteExisting = false)
-    {
-        $leftover = 100;
-        $distributeColumns = $this->columnCount;
-        if (!$overwriteExisting) {
-            for ($i = 0; $i < $this->columnCount; $i++) {
-                $column = $this->columns[$i];
-                if (!$column->hasWidth() || !$column->isValid()) {
-                    continue;
-                }
 
-                // this only works with percentage widths, so
-                // if a column has a pixel width set, we reset
-                // its width so it can be set automatically.
-                if ($column->getWidthType() != 'percent') {
-                    $column->resetWidth();
-                    continue;
-                }
-
-                // remove the width from the available percentage
-                $leftover = $leftover - $column->getWidth();
-                $distributeColumns--;
-            }
-        } else {
-            for ($i = 0; $i < $this->columnCount; $i++) {
-                $column = $this->columns[$i];
-                if ($column->hasWidth() && $column->isValid()) {
-                    $column->resetWidth();
-                }
-            }
-        }
-
-        if ($leftover < 0) {
-            $leftover = 100;
-        }
-
-        $width = intval(floor($leftover / $distributeColumns));
-
-        for ($i = 0; $i < $this->columnCount; $i++) {
-            $column = $this->columns[$i];
-            if ($column->hasWidth() || !$column->isValid()) {
-                continue;
-            }
-
-            $this->columns[$i]->setWidthPercent($width);
-        }
-    }
-
-    /**
-     * Moves the specified column to the desired position, starting at
-     * 1 for the first column in the grid.
-     *
-     * @since 3.3.7
-     * @param UI_DataGrid_Column $column
-     * @param int $position
-     * @return boolean Wether the column was moved
-     */
-    public function moveColumn(UI_DataGrid_Column $column, $position)
-    {
-        $moved = false;
-        $total = count($this->columns);
-        $shuffled = array();
-        for ($i = 1; $i <= $total; $i++) {
-            if ($position == $i) {
-                $shuffled[] = $column;
-                $moved = true;
-            }
-
-            if ($this->columns[($i - 1)] === $column) {
-                continue;
-            }
-
-            $shuffled[] = $this->columns[($i - 1)];
-        }
-
-        $this->columns = $shuffled;
-
-        return $moved;
-    }
-
-    public function resetColumnWidths()
-    {
-        $total = count($this->columns);
-        for ($i = 0; $i < $total; $i++) {
-            $this->columns[$i]->resetWidth();
-        }
-    }
-
-    /**
-     * Retrieves the column by its column number (starting at 1).
-     * @param integer $number
-     * @return UI_DataGrid_Column|NULL
-     */
-    public function getColumn(int $number) : ?UI_DataGrid_Column
-    {
-        $idx = $number - 1;
-        if (isset($this->columns[$idx])) {
-            return $this->columns[$idx];
-        }
-
-        return null;
-    }
-
-    public function getLastColumn() : ?UI_DataGrid_Column
-    {
-        return $this->getColumn($this->countColumns());
-    }
 
     protected ?string $title = null;
 
@@ -2347,24 +2467,6 @@ class UI_DataGrid
         '<div class="datagrid-title" id="datagrid-' . $this->getID() . '-title">' .
             $this->title .
         '</div>';
-    }
-
-    protected $columnControls = false;
-
-    protected $maxColumnsShown = 0;
-
-   /**
-    * Enables clientside controls to adjust the amount of columns that get
-    * displayed, and to navigate between them.
-    *
-    * @param int $maxColumns The maximum amount of columns to display; Any above will be hidden.
-    * @return UI_DataGrid
-    */
-    public function enableColumnControls($maxColumns=5)
-    {
-    	$this->columnControls = true;
-    	$this->maxColumnsShown = $maxColumns;
-    	return $this;
     }
 
     protected $fullViewTitle = '';
@@ -2454,62 +2556,6 @@ class UI_DataGrid
         return $this->entriesSortable;
     }
 
-    protected $orderColumn;
-
-   /**
-    * Retrieves the currently selected sorting column.
-    *
-    * @return UI_DataGrid_Column|NULL
-    */
-    public function getOrderColumn()
-    {
-        if(isset($this->orderColumn)) {
-            return $this->orderColumn;
-        }
-
-        $found = false;
-
-        // let's see if we can use a previously set column
-        $columnName = $this->getSetting('datagrid_orderby');
-        if(!empty($columnName)) {
-            $column = $this->getColumnByOrderKey($columnName);
-            if($column) {
-                $found = $column;
-            }
-        }
-
-        // otherwise, use the one that was set as default
-        if(!$found && isset($this->defaultSortColumn)) {
-            $found = $this->defaultSortColumn;
-        }
-
-        // or as a last recourse, use the first sortable column we find
-        if(!$found) {
-            $total = count($this->columns);
-            for($i=0; $i<$total; $i++) {
-                $column = $this->columns[$i];
-                if(!$column->isValid()) {
-                    continue;
-                }
-                if($column->isSortable()) {
-                    $found = $column;
-                    break;
-                }
-            }
-        }
-
-        if(!$found) {
-            return null;
-        }
-
-        // store the choice for later
-        $this->setCookie('datagrid_orderby', $found->getOrderKey());
-
-        $this->orderColumn = $found;
-
-        return $found;
-    }
-
    /**
     * @return string|NULL
     */
@@ -2547,42 +2593,6 @@ class UI_DataGrid
         $this->setCookie('datagrid_orderdir', $found);
 
         return $found;
-    }
-
-   /**
-    * Retrieves a column by its data key name.
-    * @param string $dataKeyName
-    * @return UI_DataGrid_Column|NULL
-    */
-    public function getColumnByName($dataKeyName)
-    {
-        $total = count($this->columns);
-        for($i=0; $i<$total; $i++) {
-            $column = $this->columns[$i];
-            if($column->getDataKey() == $dataKeyName) {
-                return $column;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Retrieves a column by its order key name.
-     * @param string $orderKeyName
-     * @return UI_DataGrid_Column|NULL
-     */
-    public function getColumnByOrderKey($orderKeyName)
-    {
-        $total = count($this->columns);
-        for($i=0; $i<$total; $i++) {
-            $column = $this->columns[$i];
-            if($column->getOrderKey() == $orderKeyName) {
-                return $column;
-            }
-        }
-
-        return null;
     }
 
     public function setDefaultOrderDir($dir)
