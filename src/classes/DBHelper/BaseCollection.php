@@ -14,7 +14,6 @@ use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
-use function AppUtils\parseVariable;
 
 /**
  * Base management class for a collection of database records
@@ -61,15 +60,27 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     protected string $recordClassName;
     protected string $recordSortKey;
     protected string $recordSortDir;
+    protected string $recordPrimaryName;
+    protected string $recordTable;
     protected ?DBHelper_BaseRecord $dummyRecord = null;
     protected string $recordFiltersClassName;
     protected string $recordFilterSettingsClassName;
     protected string $instanceID;
     protected bool $requiresParent = false;
+    protected bool $started = false;
     protected DBHelper_BaseCollection_Keys $keys;
     protected static int $instanceCounter = 0;
-    
-   /**
+    /**
+     * @var array<string,string>
+     */
+    protected array $foreignKeys = array();
+
+    /**
+     * @var DBHelper_BaseRecord[]
+     */
+    protected array $records = array();
+
+    /**
     * NOTE: classes extending this class may not create
     * constructors with parameters. The interface must
     * stay parameter-less to stay compatible with the
@@ -102,10 +113,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->_registerKeys();
     }
 
-   /**
-    * @var DBHelper_BaseRecord|NULL
-    */
-    protected $parentRecord = null;
+    protected ?DBHelper_BaseRecord $parentRecord = null;
     
     public function bindParentRecord(DBHelper_BaseRecord $record) : void
     {
@@ -300,8 +308,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return !empty($parentClass);
     }
 
-    protected $started = false;
-    
    /**
     * Called by the DBHelper once the collection configuration 
     * has been completed.
@@ -336,16 +342,32 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         return $this->parentRecord;
     }
+
+    /**
+     * Ensures a return value by throwing an exception if the collection
+     * has no parent record. Check beforehand with {@see self::hasParentCollection()}.
+     *
+     * @return DBHelper_BaseRecord
+     * @throws DBHelper_Exception {@see self::ERROR_COLLECTION_HAS_NO_PARENT}
+     */
+    public function requireParentRecord() : DBHelper_BaseRecord
+    {
+        $record = $this->getParentRecord();
+        if($record !== null) {
+            return $record;
+        }
+
+        throw new DBHelper_Exception(
+            'No parent record available.',
+            'The collection has no parent record.',
+            self::ERROR_COLLECTION_HAS_NO_PARENT
+        );
+    }
     
     public function getInstanceID() : string
     {
         return $this->instanceID;
     }
-    
-   /**
-    * @var array<string,string>
-    */
-    protected $foreignKeys = array();
     
    /**
     * Sets a foreign key/column that should be included in all queries.
@@ -355,7 +377,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     * @param string $value
     * @return $this
     */
-    protected function setForeignKey(string $name, string $value)
+    protected function setForeignKey(string $name, string $value) : self
     {
         $this->foreignKeys[$name] = $value;
         return $this;
@@ -412,11 +434,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         return $this->getRecordTypeName().'-datagrid';
     }
-
-   /**
-    * @var DBHelper_BaseRecord[]
-    */
-    protected $records = array();
 
     /**
      * Retrieves a record by its ID.
@@ -592,9 +609,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * Checks whether a record with the specified ID exists in the database.
      *
-     * @param integer $record_id
+     * @param integer|string|NULL $record_id
      * @return boolean
      * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     * @throws JsonException
      */
     public function idExists($record_id) : bool
     {
@@ -631,16 +650,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
-     * @var string
-     */
-    protected $recordPrimaryName;
-
-    /**
-     * @var string
-     */
-    protected $recordTable;
-
-    /**
      * Creates a dummy record of this collection, which can
      * be used to access the API that may not be available
      * statically.
@@ -656,7 +665,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::DUMMY_ID);
         
-        if(isset($this->recordIDTable) && $this->recordIDTable == $this->recordTable) {
+        if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
             throw new Application_Exception(
                 'Duplicate DB collection tables',
                 sprintf(
@@ -1183,8 +1192,12 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         $record->onDeleted($context);
     }
-    
-    public function describe()
+
+    /**
+     * @return array<string,string|null|number|array>
+     * @throws Application_Exception_DisposableDisposed
+     */
+    public function describe() : array
     {
         $this->requireNotDisposed('Describe the collection.');
 
