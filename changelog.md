@@ -1,3 +1,14 @@
+### v2.5.7
+- Logger: Made the `logSF()` parameter default values more lenient.
+- Countries: Added `setURLDispatcher()` to the navigator class.
+- Updaters: Added the `DISPATCHER_NAME` constant to the boot class.
+- Updaters: Added the `REQUEST_VAR_UPDATER_ID` constant.
+- Updaters: Improved the URL generation to use the request class.
+- Forms: Added `UI_Form::addTextarea()`.
+- Forms: Added code regions to the `UI_Form` class.
+- Forms: `UI_Form::addHTML()` now accepts stringable values.
+- Application: Removed `setTimeLimit()` exception.
+
 ### v2.5.6 - Minor enhancements
 - DataGrids: Added `configureFilterSettings()` in the `CollectionList` trait. 
 - Forms: Added `UI_Form::FORM_PREFIX` to easily access it globally.
