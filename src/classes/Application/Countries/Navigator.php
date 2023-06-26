@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interface_Stringable;
+
 /**
  * Utility class used to render a country navigation element,
  * using a button bar to easily select a language.
@@ -66,6 +68,8 @@ class Application_Countries_Navigator extends UI_Renderable
      */
     private $storageName;
 
+    private string $dispatcher = '';
+
     public function __construct(Application_Countries $collection)
     {
         parent::__construct();
@@ -109,8 +113,22 @@ class Application_Countries_Navigator extends UI_Renderable
     }
 
     /**
+     * Allows overriding the dispatcher file used in the generated
+     * URL. By default, this is empty to serve everything via the
+     * current executing script (typically `index.php`).
+     *
+     * @param string $dispatcher
+     * @return $this
+     */
+    public function setURLDispatcher(string $dispatcher) : self
+    {
+        $this->dispatcher = $dispatcher;
+        return $this;
+    }
+
+    /**
      * @param string $name
-     * @param string|number|NULL $value
+     * @param string|int|float|bool|Interface_Stringable|NULL $value
      * @return $this
      */
     public function setURLParam(string $name, $value) : Application_Countries_Navigator
@@ -156,7 +174,7 @@ class Application_Countries_Navigator extends UI_Renderable
     }
 
     /**
-     * @param array<string,string|number|NULL> $params
+     * @param array<string,string|int|float|bool|Interface_Stringable|NULL> $params
      * @return $this
      */
     public function setURLParams(array $params)  : Application_Countries_Navigator
@@ -258,7 +276,7 @@ class Application_Countries_Navigator extends UI_Renderable
             $params[self::REQUEST_PARAM_COUNTRY_ID] = $id;
             
             $btn = UI::button(strtoupper($country->getISO()))
-            ->link($request->buildURL($params));
+            ->link($request->buildURL($params, $this->dispatcher));
             
             if($id === $activeID) {
                 $btn->makePrimary();
