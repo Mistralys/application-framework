@@ -153,7 +153,13 @@ class Application_Logger
         return $this->addLogMessage((string)$message, $category, true);
     }
 
-    public function logSF(string $message, string $category=self::CATEGORY_GENERAL, ...$args) : Application_Logger
+    /**
+     * @param string $message
+     * @param string|null $category
+     * @param mixed ...$args
+     * @return $this
+     */
+    public function logSF(string $message, ?string $category=self::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
         return $this->addLogMessage($message, $category, true, ...$args);
     }
@@ -280,13 +286,21 @@ class Application_Logger
 
     /**
      * @param string $message
-     * @param string $category
-     * @param bool $withTime
+     * @param string|NULL $category
+     * @param bool|NULL $withTime
      * @param mixed ...$args
      * @return $this
      */
-    private function addLogMessage(string $message, string $category, bool $withTime, ...$args) : Application_Logger
+    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : Application_Logger
     {
+        if (empty($category)) {
+            $category = self::CATEGORY_GENERAL;
+        }
+
+        if($withTime === null) {
+            $withTime = true;
+        }
+
         if(!$this->isLoggingEnabled($category))
         {
             return $this;
