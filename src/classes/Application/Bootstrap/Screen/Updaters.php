@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Updaters extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public const DISPATCHER_NAME = 'upgrade.php';
+
+    public function getDispatcher() : string
     {
-        return 'upgrade.php';
+        return self::DISPATCHER_NAME;
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->createEnvironment();
         
