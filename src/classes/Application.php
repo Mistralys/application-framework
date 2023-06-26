@@ -260,7 +260,7 @@ class Application
         return AppFactory::createLogger()->log($message, $header);
     }
 
-    public static function logSF(string $message, string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
+    public static function logSF(string $message, ?string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
         return AppFactory::createLogger()->logSF($message, $category, ...$args);
     }
@@ -756,28 +756,17 @@ class Application
      *
      * @param integer $seconds The limit to set. Use 0 for no limit.
      * @param string $operation Human-readable label of the operation that needs the time limit, shown in the exception.
-     * @throws Application_Exception
      */
     public static function setTimeLimit(int $seconds, string $operation) : void
     {
-        if (
-            set_time_limit($seconds) === true
-            ||
-            (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
-        )
-        {
-            return;
-        }
-
-        throw new Application_Exception(
-            'Cannot change the execution time.',
-            sprintf(
-                'Tried changing the execution time to [%s] seconds for operation [%s].',
-                $seconds,
-                $operation
-            ),
-            self::ERROR_CANNOT_SET_EXECUTION_TIME
+        self::logSF(
+            'ExecutionTime | Setting to [%s] seconds for operation [%s].',
+            null,
+            $seconds,
+            $operation
         );
+
+        set_time_limit($seconds);
     }
 
     /**
