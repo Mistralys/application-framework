@@ -4,3 +4,13 @@ parameters:
     bootstrapFiles:
         - ./constants.php
         - ../../tests/bootstrap.php
+    ignoreErrors:
+        -
+            message: '#is not nullable.#'
+            path: ../../src*
+        -
+            message: '#is unused.#'
+            path: ../../src*
+        -
+            message: '#never read, only written.#'
+            path: ../../src*
