@@ -8,4 +8,12 @@ class driver_template_default_frame_footer extends template_default_frame_footer
     {
         $this->addItemHTML(t('This is an application used to showcase and test framework features.'));
     }
+
+    protected function registerAppItems(): void
+    {
+        $this->addItemURL(
+            t('Documentation'),
+            $this->request->buildURL(array(), Application_Bootstrap_Screen_Documentation::DISPATCHER_NAME)
+        );
+    }
 }
