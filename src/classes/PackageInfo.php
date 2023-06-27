@@ -8,7 +8,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\FileHelper;
+use AppUtils\ArrayDataCollection;
+use AppUtils\FileHelper\JSONFile;
 
 /**
  * Utility class to retrieve information on the application
@@ -19,13 +20,15 @@ use AppUtils\FileHelper;
  */
 final class PackageInfo
 {
+    public const PROJECT_SLUG = 'mistralys/application_framework';
     public const GITHUB_URL = 'https://github.com/Mistralys/application-framework';
-    public const PROJECT_TITLE = 'Application admin UI framework';
+    public const PROJECT_NAME = 'Application Admin UI Framework';
+    public const PROJECT_NAME_SHORT = 'AppFramework';
 
     /**
-     * @var array<string,mixed>|NULL
+     * @var ArrayDataCollection|NULL
      */
-    private static ?array $composerConfig = null;
+    private static ?ArrayDataCollection $composerConfig = null;
 
     /**
      * Gets the ID/name of the framework composer package,
@@ -35,8 +38,22 @@ final class PackageInfo
      */
     public static function getComposerID() : string
     {
-        $info = self::getComposerConfig();
-        return $info['name'];
+        return self::PROJECT_SLUG;
+    }
+
+    public static function getGithubURL() : string
+    {
+        return self::GITHUB_URL;
+    }
+
+    public static function getName() : string
+    {
+        return self::PROJECT_NAME;
+    }
+
+    public static function getNameShort() : string
+    {
+        return self::PROJECT_NAME_SHORT;
     }
 
     /**
@@ -45,22 +62,31 @@ final class PackageInfo
      *
      * @return string
      */
-    public static function getProjectLabel() : string
+    public static function getDescription() : string
     {
-        $info = self::getComposerConfig();
-        return $info['description'];
+        return self::getComposerConfig()->getString('description');
     }
 
-    public static function getComposerConfig() : array
+    public static function getComposerFile() : JSONFile
+    {
+        return JSONFile::factory(__DIR__.'/../../composer.json');
+    }
+
+    public static function getComposerConfig() : ArrayDataCollection
     {
         if(self::$composerConfig !== null)
         {
             return self::$composerConfig;
         }
 
-        $config = FileHelper::parseJSONFile(__DIR__.'/../../composer.json');
-        self::$composerConfig = $config;
+        $file = self::getComposerFile();
+        self::$composerConfig = ArrayDataCollection::create();
 
-        return $config;
+        if($file->exists())
+        {
+            self::$composerConfig->setKeys($file->parse());
+        }
+
+        return self::$composerConfig;
     }
 }
