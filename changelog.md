@@ -1,3 +1,11 @@
+### v2.5.8
+- Core: Fixed `PackageInfo::getComposerID()` failing when no `composer.json` is present.
+- Core: Added utility methods in `PackageInfo`.
+- TestApplication: Added the documentation link in the footer.
+- Documentation: Added compatibility for the test application paths.
+- Documentation: Added categories in the file dropdown.
+- Documentation: Split the main `documentation.md` into separate files.
+
 ### v2.5.7
 - Logger: Made the `logSF()` parameter default values more lenient.
 - Countries: Added `setURLDispatcher()` to the navigator class.
