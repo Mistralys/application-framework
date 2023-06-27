@@ -23,11 +23,13 @@ use Mistralys\MarkdownViewer\DocsViewer;
  */
 class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_Screen
 {
+    public const DISPATCHER_NAME = 'documentation/index.php';
+
     private DocsManager $manager;
 
     public function getDispatcher() : string
     {
-        return 'documentation/index.php';
+        return self::DISPATCHER_NAME;
     }
 
     protected function _boot() : void
@@ -37,27 +39,43 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
 
         $this->manager = new DocsManager();
 
-        $this->addFilesFromFolder(APP_ROOT.'/documentation');
+        $this->addFilesFromFolder(APP_ROOT.'/documentation', Application_Driver::getInstance()->getAppNameShort());
 
-        $frameworkFolder = sprintf(
-            '%s/%s/docs',
-            $this->app->getVendorFolder(),
-            PackageInfo::getComposerID()
-        );
-
-        $this->addFilesFromFolder($frameworkFolder);
+        $this->addFilesFromFolder($this->resolveFrameworkFolder(), PackageInfo::getNameShort());
 
         // The viewer needs to know the URL to the vendor/ folder, relative
         // to the script. This is needed to load the clientside dependencies,
         // like jQuery and Bootstrap.
-        (new DocsViewer($this->manager, '../vendor'))
+        (new DocsViewer($this->manager, $this->resolveVendorURL()))
             ->setTitle(sprintf('%1$s Documentation', $this->driver->getAppNameShort()))
             ->display();
 
         Application::exit('Documentation displayed');
     }
 
-    private function addFilesFromFolder(string $targetPath) : void
+    private function resolveFrameworkFolder() : string
+    {
+        if(defined('APP_BUNDLED_DOCUMENTATION') && APP_BUNDLED_DOCUMENTATION === true) {
+            return __DIR__.'/../../../../../docs/documentation';
+        }
+
+        return sprintf(
+            '%s/%s/docs/documentation',
+            $this->app->getVendorFolder(),
+            PackageInfo::getComposerID()
+        );
+    }
+
+    private function resolveVendorURL() : string
+    {
+        if(defined('APP_BUNDLED_DOCUMENTATION') && APP_BUNDLED_DOCUMENTATION === true) {
+            return '../../../vendor';
+        }
+
+        return '../vendor';
+    }
+
+    private function addFilesFromFolder(string $targetPath, string $category) : void
     {
         if(!is_dir($targetPath))
         {
@@ -68,7 +86,7 @@ class Application_Bootstrap_Screen_Documentation extends Application_Bootstrap_S
 
         foreach ($files as $file)
         {
-            $this->manager->addFile(FileHelper::removeExtension($file), $file);
+            $this->manager->addFile($category.' - '.basename($file), $file);
         }
     }
 
