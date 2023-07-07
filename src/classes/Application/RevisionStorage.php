@@ -709,22 +709,41 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
         return false;
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param string $offset
+     * @return bool
+     */
+    public function offsetExists($offset) : bool
     {
         return $this->hasKey($offset);
     }
 
+    /**
+     * @param string $offset
+     * @return mixed|null
+     */
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->getKey($offset);
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param string $offset
+     * @param mixed $value
+     * @return void
+     * @throws Application_Exception
+     */
+    public function offsetSet($offset, $value) : void
     {
         $this->setKey($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param string $offset
+     * @return void
+     */
+    public function offsetUnset($offset) : void
     {
         $revision = $this->getRevision();
         unset($this->data[$revision][$offset]);
