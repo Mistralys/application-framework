@@ -53,12 +53,6 @@ use UI\Page\Navigation\QuickNavigation;
  * @see Application_Admin_ScreenInterface
  * 
  * @property Application_Driver $driver
- * @property UI_Page_Navigation $subnav
- * @property UI_Page_Help $help
- * @property UI_Page_Sidebar $sidebar
- * @property UI_Bootstrap_Tabs $tabs
- * @property Application_Request $request
- * @property Application_Admin_ScreenInterface|NULL $parentScreen
  */
 trait Application_Traits_Admin_Screen
 {
@@ -198,12 +192,11 @@ trait Application_Traits_Admin_Screen
     * without a parameter. Automatically checks if the user is
     * allowed to do so, and recurses into subscreens if available.
     * 
-    * @param string $name
+    * @param string $publicMethod
     * @return bool
     */
-    protected function _handleUIMethod(string $name) : bool
+    protected function _handleUIMethod(string $publicMethod) : bool
     {
-        $publicMethod = 'handle'.$name;
         $protectedMethod = '_'.$publicMethod;
         
         if(!$this->isUserAllowed()) 
@@ -231,19 +224,15 @@ trait Application_Traits_Admin_Screen
     * parameter that will be stored in an internal property and passed
     * on to any subscreens.
     * 
-    * @param string $name The name of the method to call. e.g. "Subnavigation".
-    * @param string $property The name of the property to store the object in.
+    * @param string $publicMethod The name of the method to call. e.g. "Subnavigation".
     * @param object $subject The object to store and pass on.
     * @return bool
     */
-    protected function _handleUIMethodObject(string $name, string $property, object $subject) : bool
+    protected function _handleUIMethodObject(string $publicMethod, object $subject) : bool
     {
-        $publicMethod = 'handle'.$name;
         $protectedMethod = '_'.$publicMethod;
 
-        $this->$property = $subject;
-        
-        $this->logUI('Handling '.$name);
+        $this->logUI('Handling '.$publicMethod);
         
         if(!$this->isUserAllowed()) 
         {
@@ -279,7 +268,7 @@ trait Application_Traits_Admin_Screen
     */
     public function handleBreadcrumb() : void
     {
-        $this->_handleUIMethod('Breadcrumb');
+        $this->_handleUIMethod(array($this, 'handleBreadcrumb')[1]);
     }
 
     /**
@@ -297,7 +286,9 @@ trait Application_Traits_Admin_Screen
      */
     public function handleSidebar(UI_Page_Sidebar $sidebar) : void
     {
-        $this->_handleUIMethodObject('Sidebar', 'sidebar', $sidebar);
+        $this->sidebar = $sidebar;
+
+        $this->_handleUIMethodObject(array($this, 'handleSidebar')[1], $sidebar);
     }
 
     protected function _handleSidebar() : void
@@ -311,7 +302,9 @@ trait Application_Traits_Admin_Screen
      */
     public function handleSubnavigation(UI_Page_Navigation $subnav) : void
     {
-        $this->_handleUIMethodObject('Subnavigation', 'subnav', $subnav);
+        $this->subnav = $subnav;
+
+        $this->_handleUIMethodObject(array($this, 'handleSubnavigation')[1], $subnav);
     }
 
     protected function _handleSubnavigation() : void
@@ -326,7 +319,9 @@ trait Application_Traits_Admin_Screen
      */
     public function handleContextMenu(UI_Bootstrap_DropdownMenu $menu) : void
     {
-        $this->_handleUIMethodObject('ContextMenu', 'contextmenu', $menu);
+        $this->contextmenu = $menu;
+
+        $this->_handleUIMethodObject(array($this, 'handleContextMenu')[1], $menu);
     }
 
     protected function _handleContextMenu() : void
@@ -341,7 +336,9 @@ trait Application_Traits_Admin_Screen
      */
     public function handleTabs(UI_Bootstrap_Tabs $tabs) : void
     {
-        $this->_handleUIMethodObject('Tabs', 'tabs', $tabs);
+        $this->tabs = $tabs;
+
+        $this->_handleUIMethodObject(array($this, 'handleTabs')[1], $tabs);
     }
 
     protected function _handleTabs() : void
@@ -358,7 +355,9 @@ trait Application_Traits_Admin_Screen
     {
         $navigation->setWorkScreen($this);
 
-        $this->_handleUIMethodObject('QuickNavigation', 'quickNav', $navigation);
+        $this->quickNav = $navigation;
+
+        $this->_handleUIMethodObject(array($this, 'handleQuickNavigation')[1], $navigation);
     }
 
     protected function _handleQuickNavigation() : void
@@ -373,7 +372,9 @@ trait Application_Traits_Admin_Screen
      */
     public function handleHelp(UI_Page_Help $help) : void
     {
-        $this->_handleUIMethodObject('Help', 'help', $help);
+        $this->help = $help;
+
+        $this->_handleUIMethodObject(array($this, 'handleHelp')[1], $help);
     }
 
     protected function _handleHelp() : void
