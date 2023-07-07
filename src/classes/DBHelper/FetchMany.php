@@ -63,7 +63,7 @@ class DBHelper_FetchMany extends DBHelper_FetchOne
             
             if(isset($item[$column]))
             {
-                $value = $item[$column];
+                $value = (string)$item[$column];
             }
             
             $result[] = $value;
