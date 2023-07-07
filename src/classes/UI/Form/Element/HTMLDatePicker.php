@@ -35,12 +35,12 @@ class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element
         parent::onAttributeChange($name, $value);
     }
 
-    public function getType()
+    public function getType() : string
     {
         return 'datetime-local';
     }
 
-    public function setValue($value)
+    public function setValue($value) : self
     {
         $this->setAttribute('value', (string)$value);
         return $this;
