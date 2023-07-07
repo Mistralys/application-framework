@@ -5,6 +5,8 @@
 - Documentation: Added compatibility for the test application paths.
 - Documentation: Added categories in the file dropdown.
 - Documentation: Split the main `documentation.md` into separate files.
+- Core: Made some PHP8 compatibility changes; removed deprecated notices.
+- Forms: Fixed the Switch element not updating its value correctly.
 
 ### v2.5.7
 - Logger: Made the `logSF()` parameter default values more lenient.
