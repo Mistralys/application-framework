@@ -243,11 +243,20 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
 
     // region: Array access interface
 
-    public function offsetExists($offset)
+    /**
+     * @param string $offset
+     * @return bool
+     */
+    public function offsetExists($offset) : bool
     {
         return isset($this->data[$offset]);
     }
 
+    /**
+     * @param string $offset
+     * @return mixed|null
+     */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if(isset($this->data[$offset])) {
@@ -257,12 +266,21 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
         return null;
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param string $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value) : void
     {
         $this->data[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param string $offset
+     * @return void
+     */
+    public function offsetUnset($offset) : void
     {
         if(array_key_exists($offset, $this->data)) {
             unset($this->data[$offset]);
