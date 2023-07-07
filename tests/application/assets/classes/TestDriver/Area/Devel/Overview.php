@@ -6,6 +6,8 @@
  * @see TestDriver_Area_Devel_Overview
  */
 
+declare(strict_types=1);
+
 /**
  * The overview of all available developer tools.
  *
