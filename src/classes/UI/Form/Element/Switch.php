@@ -229,7 +229,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
             UI::icon()->no()->makeDangerous() . ' ' . $this->offLabel;
     }
 
-    protected function updateValue() : self
+    protected function updateValue() : void
     {
         $name = $this->getName();
 
@@ -239,11 +239,12 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
             if ($value !== null || $ds instanceof HTML_QuickForm2_DataSource_Submit)
             {
-                return $this->setValue($value);
+                $this->setValue($value);
+                return;
             }
         }
 
-        return $this->setValue($this->offValue);
+        $this->setValue($this->offValue);
     }
 
     public function setValue($value) : self
