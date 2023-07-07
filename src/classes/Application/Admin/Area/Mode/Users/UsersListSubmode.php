@@ -30,6 +30,8 @@ use DBHelper_BaseRecord;
  * @package Application
  * @subpackage Administration
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @property Application_Admin_Area_Mode_Users $mode
  */
 abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_CollectionList
 {
@@ -39,11 +41,6 @@ abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_Coll
     public const COL_LAST_NAME = 'lastname';
     public const COL_EMAIL = 'email';
     public const COL_ID = 'id';
-
-    /**
-     * @var Application_Admin_Area_Mode_Users
-     */
-    protected $mode;
 
     public function getNavigationTitle() : string
     {
