@@ -1,10 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * @property Application_Admin_Area_Devel $area
+ */
 class Application_Admin_Area_Devel_Overview extends Application_Admin_Area_Mode
 {
+    public const URL_NAME = 'overview';
+
     public function getURLName() : string
     {
-        return 'overview';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string
@@ -32,11 +39,6 @@ class Application_Admin_Area_Devel_Overview extends Application_Admin_Area_Mode
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
-    
-    /**
-     * @var Application_Admin_Area_Devel
-     */
-    protected $area;
     
     protected function _renderContent()
     {
