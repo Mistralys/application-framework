@@ -9,6 +9,7 @@
 
 use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
+use AppUtils\OutputBuffering;
 use function AppUtils\parseNumber;
 use AppUtils\ImageHelper_Size;
 use AppUtils\NumberInfo;
@@ -23,14 +24,14 @@ use AppUtils\NumberInfo;
  */
 class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input
 {
-    const THUMBNAIL_WIDTH = 75;
-    const THUMBNAIL_HEIGHT = 75;
+    public const THUMBNAIL_WIDTH = 75;
+    public const THUMBNAIL_HEIGHT = 75;
 
-    protected $persistent = true;
+    protected bool $persistent = true;
 
     protected array $attributes = array('type' => 'image');
 
-    protected static $supportedExtensions = array(
+    protected static array $supportedExtensions = array(
         'jpg',
         'jpeg',
         'png',
@@ -54,7 +55,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     */
     protected $height;
 
-    protected function initNode()
+    protected function initNode() : void
     {
         $this->setRuntimeProperty('comments-callback', array($this, 'getAutoComments'));
     }
@@ -84,7 +85,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
      *
      * @see HTML_QuickForm2_Element_Input::setValue()
      */
-    public function setValue($value)
+    public function setValue($value) : self
     {
         if (!is_array($value)) {
             throw new Application_Exception(
@@ -92,7 +93,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
             );
         }
 
-        if (!isset($value['name']) || !isset($value['state']) || !isset($value['id'])) {
+        if (!isset($value['name'], $value['state'], $value['id'])) {
             throw new Application_Exception(
                 'Key missing'
             );
@@ -160,46 +161,59 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
             
             return $html;
         }
-        
-        $html = sprintf(
-            '<div class="imageuploader_container" id="%1$s">' .
-                '<table style="width:100%">' .
-                    '<tbody>' .
-                        '<tr>' .
-                            '<td class="imageuploader_preview_container">' .
-                                '<div class="imageuploader_preview">' .
-                                   '<span class="imageuploader_badge_filetype" id="%1$s_filetype" style="display:'.$fileTypeDisplay.'">'.$fileType.'</span>'.
-                                   '<img id="%1$s_thumbnail" src="' . $preview . '" alt="" class="' . $thumbClass . '"/>' .
-                                '</div>' .
-                            '</td>' .
-                            '<td>' .
-                                '<div class="imageuploader_button">' .
-                                    '<div class="input-prepend input-append">' .
-                                        '<button id="%1$s_browse" class="btn" type="button" title="' . t('Browse your computer to select an image to upload.') . '">' .
-                                            UI::icon()->upload() . ' ' .
-                                        '</button>' .
-                                        '<input id="%1$s_name" type="text" name="%2$s[name]" value="' . $name . '" class="imageuploader_name"/>' .
-                                        '<button id="%1$s_delete" class="btn btn-danger" type="button" title="' . t('Reset this image: clear the uploaded file and name.') . '">' .
-                                            UI::icon()->delete() . ' ' .
-                                        '</button>' .
-                                    '</div>' .
-                                '</div>' .
-                                '<input type="hidden" id="f_%2$s" value="yes" data-element-type="ImageUploader" data-id="%1$s"/>' .
-                                '<input id="%1$s_state" type="hidden" name="%2$s[state]" value="' . $state . '"/>' .
-                                '<input id="%1$s_id" type="hidden" name="%2$s[id]" value="' . $id . '"/>' .
-                                '<div id="%1$s_file" class="imageuploader_filename"></div>' .
-                                '<div id="%1$s_progress" class="imageuploader_progressbar"></div>' .
-                                '<div id="%1$s_statusbar" class="imageuploader_statusbar">' .
-                                    UI::icon()->information()->makeInformation() . ' ' .
-                                    '<span class="muted">' . t('%1$sSelect an image%2$s to upload.', '<a href="javascript:void(0);" id="%1$s_browse2">', '</a>') . '</span>' .
-                                '</div>' .
-                            '</td>' .
-                        '</tr>' .
-                    '</tbody>' .
-                '</table>' .
-            '</div>',
-            $baseID,
-            $inputName
+
+        OutputBuffering::start();
+
+        ?>
+<div class="imageuploader_container" id="{BASE_ID}">
+    <table style="width:100%%">
+        <tbody>
+            <tr>
+                <td class="imageuploader_preview_container">
+                    <div class="imageuploader_preview">
+                        <span class="imageuploader_badge_filetype" id="{BASE_ID}_filetype" style="display:<?php echo $fileTypeDisplay ?>"><?php echo $fileType ?></span>
+                        <img id="{BASE_ID}_thumbnail" src="<?php echo $preview ?>" alt="" class="<?php echo $thumbClass ?>"/>
+                    </div>
+                </td>
+                <td>
+                    <div class="imageuploader_button">
+                        <div class="input-prepend input-append">
+                            <button id="{BASE_ID}_browse" class="btn" type="button" title="<?php pt('Browse your computer to select an image to upload.') ?>">
+                                <?php echo UI::icon()->upload() ?>
+                            </button>
+                            <input id="{BASE_ID}_name" type="text" name="{ELEMENT_NAME}[name]" value="<?php echo $name ?>" class="imageuploader_name"/>
+                            <button id="{BASE_ID}_delete" class="btn btn-danger" type="button" title="<?php pt('Reset this image: clear the uploaded file and name.') ?>">
+                                <?php echo UI::icon()->delete() ?>
+                            </button>
+                        </div>
+                    </div>
+                    <input type="hidden" id="f_{ELEMENT_NAME}" value="yes" data-element-type="ImageUploader" data-id="{BASE_ID}"/>
+                    <input id="{BASE_ID}_state" type="hidden" name="{ELEMENT_NAME}[state]" value="<?php echo $state ?>"/>
+                    <input id="{BASE_ID}_id" type="hidden" name="{ELEMENT_NAME}[id]" value="<?php echo $id ?>"/>
+                    <div id="{BASE_ID}_file" class="imageuploader_filename"></div>
+                    <div id="{BASE_ID}_progress" class="imageuploader_progressbar"></div>
+                    <div id="{BASE_ID}_statusbar" class="imageuploader_statusbar">
+                        <?php echo UI::icon()->information()->makeInformation() ?>
+                        <span class="muted">
+                            <?php pt('%1$sSelect an image%2$s to upload.', '<a href="javascript:void(0);" id="{BASE_ID}_browse2">', '</a>') ?>
+                        </span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<?php
+
+        $vars = array(
+            '{BASE_ID}' => $baseID,
+            '{ELEMENT_NAME}' => $inputName
+        );
+
+        $html = (string)str_replace(
+            array_keys($vars),
+            array_values($vars),
+            OutputBuffering::get()
         );
         
         self::initJavascript();
@@ -251,23 +265,23 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     
    /**
     * Retrieves the media document for the specified uploader value.
-    * @param array $value
+    * @param array|NULL $value
     * @return Application_Media_DocumentInterface|NULL
     */
-    public static function getMediaByValue($value)
+    public static function getMediaByValue(?array $value) : ?Application_Media_DocumentInterface
     {
+        if(!is_array($value)) {
+            return null;
+        }
+
         switch ($value['state']) {
             case 'new':
                 $uploads = Application_Uploads::getInstance();
-                $upload = $uploads->getByID($value['id']);
-        
-                return $upload;
-        
+                return $uploads->getByID($value['id']);
+
             case 'media':
                 $media = Application_Media::getInstance();
-                $document = $media->getByID($value['id']);
-                
-                return $document;
+                return $media->getByID($value['id']);
         }
         
         return null;
@@ -279,12 +293,13 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
         return !is_null($media);
     }
 
-    protected function validate()
+    protected function validate() : bool
     {
         parent::validate();
         
         $value = $this->getValue();
-        if($value['state']=='empty') {
+
+        if($value['state'] === 'empty') {
             foreach($this->rules as $def) {
                 if($def[0] instanceof HTML_QuickForm2_Rule_Required) {
                     $this->error = $def[0]->getMessage();
@@ -292,7 +307,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
             }
         }
         
-        return !strlen($this->error);
+        return !isset($this->error);
     }
 
     /**
@@ -462,7 +477,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     
     protected function getPathByValue($value)
     {
-        $media = $this->getMediaByValue($value);
+        $media = self::getMediaByValue($value);
         if($media !== null) {
             return $media->getPath();
         }
