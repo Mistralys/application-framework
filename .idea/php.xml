@@ -54,7 +54,6 @@
       <path value="$PROJECT_DIR$/vendor/marcj/css-element-queries" />
       <path value="$PROJECT_DIR$/vendor/zenorocha/clipboardjs" />
       <path value="$PROJECT_DIR$/vendor/php-http/discovery" />
-      <path value="$PROJECT_DIR$/vendor/php-http/message-factory" />
       <path value="$PROJECT_DIR$/vendor/php-http/multipart-stream-builder" />
       <path value="$PROJECT_DIR$/vendor/sebastian/code-unit" />
       <path value="$PROJECT_DIR$/vendor/sebastian/complexity" />

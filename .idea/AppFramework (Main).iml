@@ -51,7 +51,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/zenorocha/clipboardjs" />
       <excludeFolder url="file://$MODULE_DIR$/tests/application/storage" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/discovery" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/message-factory" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/php-http/multipart-stream-builder" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/code-unit" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/sebastian/complexity" />
