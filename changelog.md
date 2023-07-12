@@ -1,12 +1,18 @@
-### v2.5.8
+### v2.6.0 - PHP8 compatibility update
+- Core: Made some PHP8 compatibility changes; removed deprecated notices.
 - Core: Fixed `PackageInfo::getComposerID()` failing when no `composer.json` is present.
 - Core: Added utility methods in `PackageInfo`.
 - TestApplication: Added the documentation link in the footer.
 - Documentation: Added compatibility for the test application paths.
 - Documentation: Added categories in the file dropdown.
 - Documentation: Split the main `documentation.md` into separate files.
-- Core: Made some PHP8 compatibility changes; removed deprecated notices.
 - Forms: Fixed the Switch element not updating its value correctly.
+- Dependencies: Updated Markdown Viewer to minimum [v1.3.1](https://github.com/Mistralys/markdown-viewer/releases/tag/1.3.1).
+- Dependencies: Updated QuickForm2 to minimum [v2.2.1](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.2.1).
+- Dependencies: Updated AppUtils to minimum [v2.4.1](https://github.com/Mistralys/application-utils/releases/tag/2.4.1).
+- Dependencies: Removed the explicit Bootstrap dependency.
+
+> NOTE: Fully PHP7 backwards compatible.
 
 ### v2.5.7
 - Logger: Made the `logSF()` parameter default values more lenient.
