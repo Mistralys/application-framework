@@ -1,18 +1,23 @@
-[![Build Status](https://app.travis-ci.com/Mistralys/application-framework.svg?branch=main)](https://app.travis-ci.com/Mistralys/application-framework)
+# Application Admin UI Framework
 
-# Application admin UI framework
+The app framework is a PHP-based UI framework for building frontends for web 
+and intranet tools. 
 
-The app framework is a PHP-based framework for building frontends for web and intranet tools.
+## Installation
 
-## Deployment
-
-Automatic handling of local development instances is done with the
-[Framework Manager][]. See the documentation there on how to set it up.
+Automatic handling of local development instances can be automated with the
+[Framework Manager][], which is currently still a private project. Setup 
+documentation is not available yet.
 
 ## Documentation
 
-[Main framework documentation](https://github.com/Mistralys/application-framework/blob/main/docs/Documentation.md)
+The framework's documentation is available in the `docs` folder, and online at
+[Main framework documentation][]. 
 
-Also see the `docs` subfolder.
+> It is ideally viewed through the framework's documentation screen, as there
+> are some features that are only available there (like code samples that are
+> included dynamically).
+
 
 [Framework Manager]: https://github.com/Mistralys/appframework-manager
+[Main Framework Documentation]: https://github.com/Mistralys/application-framework/tree/main/docs/documentation
