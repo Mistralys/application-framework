@@ -1,3 +1,8 @@
+### v2.6.1 - Minor changes
+- Exceptions: The exception page now converts newlines in messages to `br` tags in HTML view.
+- Readme: Fixed the documentation link.
+- Version: Fixed the version number in `VERSION`.
+
 ### v2.6.0 - PHP8 compatibility update
 - Core: Made some PHP8 compatibility changes; removed deprecated notices.
 - Core: Fixed `PackageInfo::getComposerID()` failing when no `composer.json` is present.
