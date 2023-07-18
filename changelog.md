@@ -1,3 +1,8 @@
+### v2.6.2 - PHP7 bug fix
+- UI: Fixed the `UIButton` trait causing a fatal error on PHP7, because the QuickForm
+  buttons now also have `makeSubmit()`. Moving the method from the trait to the `UIButton`
+  class fixes the issue temporarily.
+
 ### v2.6.1 - Minor changes
 - Exceptions: The exception page now converts newlines in messages to `br` tags in HTML view.
 - Readme: Fixed the documentation link.
