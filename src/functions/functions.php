@@ -381,7 +381,9 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
 		{
 		    if(!$html) {
 		        $info = strip_tags($info);
-		    }
+		    } else {
+                $info = nl2br($info);
+            }
 		    
     		$lines[] = '<h4 class="errorpage-header">Developer info</h4>';
     		$lines[] = $info;
