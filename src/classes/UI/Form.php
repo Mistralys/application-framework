@@ -154,13 +154,13 @@ class UI_Form extends UI_Renderable
             }
             
             $names = FileHelper::createFileFinder($folder)
-            ->getPHPClassNames();
+                ->getPHPClassNames();
             
             foreach($names as $name) 
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form element [%s].', $id));
-                $this->registerCustomElement($id, $name, $folder.'/'.$name.'.php');
+                $this->registerCustomElement($id, $name);
             }
         }
     }
@@ -194,7 +194,7 @@ class UI_Form extends UI_Renderable
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form rule [%s].', $id));
-                $this->registerCustomRule($id, $name, $folder.'/'.$name.'.php');
+                $this->registerCustomRule($id, $name);
             }
         }
     }
@@ -225,16 +225,18 @@ class UI_Form extends UI_Renderable
      * @param string $alias
      * @param string $ruleName
      */
-    public function registerCustomRule($alias, $ruleName, $filePath)
+    public function registerCustomRule(string $alias, string $ruleName) : void
     {
         HTML_QuickForm2_Factory::registerRule(
             $alias,
-            'HTML_QuickForm2_Rule_' . $ruleName,
-            $filePath
+            HTML_QuickForm2_Rule::class . '_'.$ruleName
         );
     }
 
-    protected $customElements = array();
+    /**
+     * @var array<string,array{alias:string,name:string}>
+     */
+    protected array $customElements = array();
     
     /**
      * Registers a custom form Element class.
@@ -250,18 +252,16 @@ class UI_Form extends UI_Renderable
      * @param string $alias
      * @param string $elementName
      */
-    public function registerCustomElement($alias, $elementName, $includeFile=null)
+    public function registerCustomElement(string $alias, string $elementName) : void
     {
         $this->customElements[$alias] = array(
             'alias' => $alias,
-            'name' => $elementName,
-            'file' => $includeFile
+            'name' => $elementName
         );
         
         HTML_QuickForm2_Factory::registerElement(
             $alias,
-            'HTML_QuickForm2_Element_' . $elementName,
-            $includeFile
+            HTML_QuickForm2_Element::class . '_' . $elementName
         );
     }
     
@@ -269,7 +269,7 @@ class UI_Form extends UI_Renderable
     * Retrieves a list of all registered custom elements.
     * @return array Indexed array with these keys in each entry: "alias", "name" and "file"
     */
-    public function getCustomElements()
+    public function getCustomElements() : array
     {
         return array_values($this->customElements);
     }
@@ -280,7 +280,7 @@ class UI_Form extends UI_Renderable
      *
      * @return HTML_QuickForm2_DataSource_Array
      */
-    public function getDefaultDataSource()
+    public function getDefaultDataSource() : HTML_QuickForm2_DataSource_Array
     {
         return $this->defaultDataSource;
     }
