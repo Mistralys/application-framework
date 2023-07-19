@@ -71,6 +71,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/version-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/polyfill-php80" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/html_quickform2" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/apereo/phpcas" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/psr/log" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
