@@ -1,3 +1,7 @@
+### v2.6.3 - CAS Fix
+- Session: Fixed the CAS package not being included in the Composer config.
+- Session: Locked the CAS package at version 1.3.9 until the method signature changes are implemented.
+
 ### v2.6.2 - PHP7 bug fix
 - UI: Fixed the `UIButton` trait causing a fatal error on PHP7, because the QuickForm
   buttons now also have `makeSubmit()`. Moving the method from the trait to the `UIButton`
