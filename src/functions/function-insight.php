@@ -68,4 +68,10 @@
 	define('PROMS_USERNAME', null);
 	define('PROMS_PASSWORD', null);
 
+    const APP_CAS_HOST = 'login.cas-host.example';
+    const APP_CAS_PORT = 443;
+    const APP_CAS_SERVER = 'servername';
+    const APP_CAS_LOGOUT_URL = 'https://login.cas-host.example/servername/logout';
+    const APP_CAS_NAME = 'Login Service';
+
     die('The function insight file may not be included anywhere.');
