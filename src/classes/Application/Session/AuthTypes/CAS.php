@@ -81,9 +81,9 @@ trait Application_Session_AuthTypes_CAS
 
         return $this->registerUser(
             $email,
-            strval(phpCAS::getAttribute($this->getFirstnameField())),
-            strval(phpCAS::getAttribute($this->getLastnameField())),
-            strval(phpCAS::getAttribute($this->getForeignIDField()))
+            (string)phpCAS::getAttribute($this->getFirstnameField()),
+            (string)phpCAS::getAttribute($this->getLastnameField()),
+            (string)phpCAS::getAttribute($this->getForeignIDField())
         );
     }
 }
