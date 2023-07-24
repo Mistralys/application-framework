@@ -16,6 +16,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
 use UI\Page\Navigation\NavConfigurator;
 
@@ -1713,5 +1714,37 @@ abstract class Application_Driver implements Application_Driver_Interface
     {
         return $this->getRequest()
             ->buildURL($params, Application_Bootstrap_Screen_Changelog::DISPATCHER);
+    }
+
+    public function setGlobalDevelMode(bool $enabled) : self
+    {
+        $develmodeFile = self::getGlobalDevelModeFile();
+
+        if($enabled)
+        {
+            $develmodeFile->putContents('true');
+        }
+        else
+        {
+            $develmodeFile->delete();
+        }
+
+        return $this;
+    }
+
+    private static ?FileInfo $globalDevelModeFile = null;
+
+    public static function getGlobalDevelModeFile() : FileInfo
+    {
+        if(!isset(self::$globalDevelModeFile)) {
+            self::$globalDevelModeFile = FileInfo::factory(Application::getStorageFolder() . '/.develmode');
+        }
+
+        return self::$globalDevelModeFile;
+    }
+
+    public static function isGlobalDevelModeEnabled() : bool
+    {
+        return self::getGlobalDevelModeFile()->exists();
     }
 }
