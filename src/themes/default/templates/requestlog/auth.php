@@ -25,12 +25,23 @@ class template_default_requestlog_auth extends UI_Page_Template_Custom
     protected function generateOutput() : void
     {
         OutputBuffering::start();
-        echo $this->renderTemplate('requestlog/header');
+        echo $this->renderTemplate('requestlog/header', array('authenticated' => false));
         ?>
         <?php echo sb()
             ->para(sb()
                 ->t('The request log is only available for developers.')
-            )
+            );
+
+            if(defined('TESTS_SESSION_TYPE'))
+            {
+                $this->ui->createMessage(sb()
+                    ->note()
+                    ->t('Auth key is %1$s for the test application.', '<strong>'.APP_REQUEST_LOG_PASSWORD.'</strong>')
+                )
+                    ->makeInfo()
+                    ->makeNotDismissable()
+                    ->display();
+            }
         ?>
         <?php echo $this->form->renderFormable() ?>
         <?php

@@ -40,7 +40,7 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     /**
      * @var Application_RequestLog_EnabledStatus|NULL
      */
-    private $status;
+    private ?Application_RequestLog_EnabledStatus $status = null;
 
     public function __construct()
     {
@@ -81,6 +81,13 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     public function getAdminLogOutURL(array $params=array()) : string
     {
         $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_LOG_OUT] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_SETTINGS] = 'yes';
 
         return $this->getAdminURL($params);
     }

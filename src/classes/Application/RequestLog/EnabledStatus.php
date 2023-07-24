@@ -49,10 +49,10 @@ class Application_RequestLog_EnabledStatus
     {
         if($this->isEnabled())
         {
-            return t('Enabled');
+            return (string)sb()->danger(t('Enabled'));
         }
 
-        return t('Disabled');
+        return (string)sb()->muted(t('Disabled'));
     }
 
     public function isEnabled() : bool

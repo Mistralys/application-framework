@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use AppUtils\FileHelper;
 
 /**
  * @see Application_RequestLog
@@ -15,6 +16,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public const REQUEST_PARAM_HOUR = 'hour';
     public const REQUEST_PARAM_ID = 'requestID';
     public const REQUEST_PARAM_LOG_OUT = 'log_out';
+    public const REQUEST_PARAM_SETTINGS = 'settings';
     public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
 
     public const DISPATCHER = 'requestlog.php';
@@ -57,14 +59,19 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
             $this->handleLogOut();
         }
 
+        if(!$this->isAuthenticated())
+        {
+            $this->handleAuthentication();
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_SETTINGS))
+        {
+            displayHTML($this->renderSettings());
+        }
+
         if($this->request->hasParam(self::REQUEST_PARAM_TOGGLE_STATUS))
         {
             $this->handleStatusChange($this->request->getBool(self::REQUEST_PARAM_TOGGLE_STATUS));
-        }
-
-        if($this->session->getValue(self::SESSION_AUTH_PARAM) !== 'yes')
-        {
-            $this->handleAuthentication();
         }
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_YEAR))
@@ -115,6 +122,11 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         displayHTML($this->renderFileDetailView($file));
 
         Application::exit();
+    }
+
+    public function isAuthenticated() : bool
+    {
+        return $this->session->getValue(self::SESSION_AUTH_PARAM) === 'yes';
     }
 
     private function handleLogOut() : void
@@ -216,6 +228,64 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         return $this->page->renderTemplate(
             'requestlog/year-selection'
         );
+    }
+
+    /**
+     * @return string
+     * @throws UI_Themes_Exception
+     */
+    private function renderSettings() : string
+    {
+        $form = $this->createSettingsForm();
+
+        if($form->isFormValid())
+        {
+            $this->applySettings($form->getFormValues());
+
+            UI::getInstance()->addSuccessMessage(t('The settings have been applied.'));
+            Application::redirect($this->log->getAdminURL());
+        }
+
+        return $this->page->renderTemplate(
+            'requestlog/settings',
+            array(
+                'form' => $form
+            )
+        );
+    }
+
+    private function applySettings(array $settings) : void
+    {
+        $this->driver->setGlobalDevelMode(($settings['develmode'] === 'true'));
+    }
+
+    private function createSettingsForm() : Application_Formable_Generic
+    {
+        $form = new Application_Formable_Generic();
+        $form->createFormableForm(
+            'requestlog-settings',
+            array(
+                'develmode' => bool2string(Application_Driver::isGlobalDevelModeEnabled())
+            )
+        );
+
+        $form->addHiddenVar('settings', 'yes');
+
+        $form->addElementSwitch('develmode', t('Developer mode'))
+            ->setComment(t('If enabled, the developer mode will be enabled for all requests, regardless of user rights.'));
+
+        $form->getFormInstance()->addPrimarySubmit((string)sb()
+            ->icon(UI::icon()->ok())
+            ->t('Apply settings')
+        );
+
+        $form->getFormInstance()->addButton('cancel')
+            ->setLabel('Cancel')
+            ->link($this->log->getAdminURL());
+
+        $form->setDefaultElement('develmode');
+
+        return $form;
     }
 
     /**
