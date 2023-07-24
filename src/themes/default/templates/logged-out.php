@@ -34,7 +34,7 @@ class template_default_logged_out extends UI_Page_Template_Custom
 <br/>
 <br/>
 <div class="hero-unit">
-    <img src="<?php echo $this->getImageURL('logo_big.png') ?>" class="pull-left" style="margin-right:30px;"/>
+    <img src="<?php echo $this->getImageURL('logo_big.png') ?>" class="pull-left" style="margin-right:30px;max-width:90px;max-height:90px"/>
     <h1><?php echo $this->driver->getAppName() ?></h1>
     <p><span class="text-info"><?php
         echo UI::icon()->information()->makeInformation().' ';
