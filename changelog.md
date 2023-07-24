@@ -1,3 +1,22 @@
+### v2.7.0 - CAS Update
+- Session: Updated the CAS package to [v1.6.1](https://github.com/apereo/phpCAS/blob/master/docs/ChangeLog).
+- Session: Added logging to the CAS authentication process.
+- Application: Added `setStorageFolder()` to change the folder globally.
+- Bootstrap: Added `setSessionClass()` to the bootstrap screen to switch session classes.
+- RequestLog: Removed logging toggle when not authenticated.
+- RequestLog: Added password hint when running in the test application.
+- RequestLog: Added enabling or disabling the global developer mode in the settings.
+- Driver: Added a global developer mode override.
+- TestApplication: Added possibility to enable CAS sessions to test the CAS auth.
+- Themes: Added maximum logo size in the logged out screen.
+- DBHelper: Added `getRecordData()` to DB records to fetch the raw data set.
+- Core: Added a first draft of a logo for the framework.
+
+#### Test application changes
+- Renamed `tests/application/config/ui.dist.php` to `test-ui.dist.php`.
+- Added CAS-specific test constants to `test-ui.dist.php`.
+- The session auth type can now be selected with `TESTS_SESSION_TYPE`.
+
 ### v2.6.3 - CAS Fix
 - Session: Fixed the CAS package not being included in the Composer config.
 - Session: Locked the CAS package at version 1.3.9 until the method signature changes are implemented.
