@@ -122,11 +122,15 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     public function isDeveloperModeEnabled() : bool
     {
         return
-        isset($this->user)
-        &&
-        $this->user->isDeveloper()
-        &&
-        $this->user->isDeveloperModeEnabled();
+        Application_Driver::isGlobalDevelModeEnabled()
+        ||
+        (
+            isset($this->user)
+            &&
+            $this->user->isDeveloper()
+            &&
+            $this->user->isDeveloperModeEnabled()
+        );
     }
 
     private function initDeveloperMode() : void
@@ -164,9 +168,20 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         );
     }
 
+    private static ?string $sessionClass = null;
+
+    /**
+     * @param class-string|null $class
+     * @return void
+     */
+    public static function setSessionClass(?string $class) : void
+    {
+        self::$sessionClass = $class;
+    }
+
     protected function initSession() : void
     {
-        $class = ClassHelper::requireResolvedClass(APP_CLASS_NAME.'_Session');
+        $class = self::$sessionClass ?? ClassHelper::requireResolvedClass(APP_CLASS_NAME . '_Session');
 
         $this->session = ClassHelper::requireObjectInstanceOf(
             Application_Session::class,
