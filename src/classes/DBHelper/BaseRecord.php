@@ -101,6 +101,14 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->init();
     }
 
+    /**
+     * @return array<string,mixed>
+     */
+    public function getRecordData(): array
+    {
+        return (array)$this->recordData;
+    }
+
     private function constructDummy() : void
     {
         $this->isDummy = true;
