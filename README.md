@@ -1,4 +1,4 @@
-<img src="src/themes/default/img/app-framework-logo.png" width="90" style="float:right">
+<img src="src/themes/default/img/app-framework-logo.png" width="110" align="right">
 
 # Application Admin UI Framework
 
