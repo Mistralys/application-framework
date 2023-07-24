@@ -545,6 +545,19 @@ class Application
     }
 
     /**
+     * Sets the base storage folder path used for all permanent
+     * storage operations. Folders accessed via {@see self::getStorageSubfolderPath()}
+     * will use this as parent path.
+     *
+     * @param string $path
+     * @return void
+     */
+    public static function setStoragePath(string $path) : void
+    {
+        self::$storageFolder = $path;
+    }
+
+    /**
      * Retrieves the absolute path to a storage subfolder. Attempts
      * to create the folder if it does not exist.
      *
