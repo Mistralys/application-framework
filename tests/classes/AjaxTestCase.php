@@ -14,7 +14,7 @@ abstract class AjaxTestCase extends ApplicationTestCase
             return self::$ajaxURL;
         }
 
-        $config = __DIR__.'/../application/config/ui.php';
+        $config = __DIR__ . '/../application/config/test-ui.php';
 
         if(!file_exists($config)) {
             $this->fail('Test application configuration missing.');
