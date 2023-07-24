@@ -1,8 +1,8 @@
 <img src="src/themes/default/img/app-framework-logo.png" width="110" align="right">
 
-# Application Admin UI Framework
+# AppFramework - Admin UI
 
-The app framework is a PHP-based UI framework for building frontends for web 
+The Application Framework is a PHP-based UI framework for building frontends for web 
 and intranet tools. 
 
 ## Installation
