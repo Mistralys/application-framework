@@ -30,10 +30,6 @@
     },
     {
       "type": "vcs",
-      "url": "https://github.com/lipis/flag-icon-css.git"
-    },
-    {
-      "type": "vcs",
       "url": "https://github.com/medialize/URI.js.git"
     },
     {
@@ -82,7 +78,7 @@
     "ccampbell/mousetrap": "dev-master",
     "medialize/uri.js": "^1.19.11",
     "ulrichsg/getopt-php": "^4.0.2",
-    "components/flag-icon-css": "^3.5.0",
+    "lipis/flag-icons": "^6.8",
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
     "hybridauth/hybridauth": "^3.8.2",

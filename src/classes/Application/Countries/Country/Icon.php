@@ -27,9 +27,9 @@ class Application_Countries_Country_Icon extends UI_Renderable
         }
         
         if(!self::$cssLoaded[$this->uiKey]) {
-            $this->ui->addVendorStylesheet('components/flag-icon-css', 'css/flag-icon.css');
+            $this->ui->addVendorStylesheet('lipis/flag-icons', 'css/flag-icons.min.css');
         }
         
-        return '<span class="flag-icon flag-icon-'.$this->country->getAlpha2().'"></span>';
+        return '<span class="fi fi-'.$this->country->getAlpha2().'"></span>';
     }
 }
