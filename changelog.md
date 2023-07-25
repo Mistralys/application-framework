@@ -11,6 +11,8 @@
 - Themes: Added maximum logo size in the logged out screen.
 - DBHelper: Added `getRecordData()` to DB records to fetch the raw data set.
 - Core: Added a first draft of a logo for the framework.
+- Countries: Updated country flag icons package, now Composerized \o/.
+- Documentation: Added a country flags example page in the interface references.
 
 #### Test application changes
 - Renamed `tests/application/config/ui.dist.php` to `test-ui.dist.php`.
