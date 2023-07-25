@@ -41,7 +41,6 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/object-enumerator" />
       <path value="$PROJECT_DIR$/vendor/sebastian/recursion-context" />
       <path value="$PROJECT_DIR$/vendor/sebastian/version" />
-      <path value="$PROJECT_DIR$/vendor/components/flag-icon-css" />
       <path value="$PROJECT_DIR$/vendor/hybridauth/hybridauth" />
       <path value="$PROJECT_DIR$/vendor/erusev/parsedown" />
       <path value="$PROJECT_DIR$/vendor/mistralys/jtokenizer" />
@@ -83,6 +82,7 @@
       <path value="$PROJECT_DIR$/vendor/mistralys/html_quickform2" />
       <path value="$PROJECT_DIR$/vendor/apereo/phpcas" />
       <path value="$PROJECT_DIR$/vendor/psr/log" />
+      <path value="$PROJECT_DIR$/vendor/lipis/flag-icons" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
