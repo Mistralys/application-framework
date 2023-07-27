@@ -66,6 +66,7 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
+    "mistralys/appframework-ckeditor5": "^1.0.0",
     "mistralys/application-utils": "^2.4.1",
     "mistralys/application-localization": "^1.4.1",
     "mistralys/deepl-xml-translator": "^2.0.2",
