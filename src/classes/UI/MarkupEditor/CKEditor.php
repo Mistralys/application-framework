@@ -21,47 +21,49 @@ use AppLocalize\Localization;
  */
 class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
 {
+    public const BUTTON_BOLD = 'bold';
+    public const BUTTON_ITALIC = 'italic';
+    public const BUTTON_SUPERSCRIPT = 'superscript';
+    public const BUTTON_LINK = 'link';
+    public const BUTTON_BULLETED_LIST = 'bulletedList';
+    public const BUTTON_NUMBERED_LIST = 'numberedList';
+    public const BUTTON_REMOVE_FORMAT = 'removeFormat';
+    public const BUTTON_UNDO = 'undo';
+    public const BUTTON_REDO = 'redo';
+    public const BUTTON_PASTE_AS_PLAIN_TEXT = 'pasteAsPlainText';
+    public const BUTTON_STRIKETHROUGH = 'strikethrough';
+
     public static function getLabel() : string
     {
         return t('CKEditor5');
     }
-    
-    protected $buttons = array(
+
+    protected array $buttons = array(
         '|',
-        'bold',
-        'italic',
-        'superscript',
+        self::BUTTON_BOLD,
+        self::BUTTON_ITALIC,
+        self::BUTTON_STRIKETHROUGH,
+        self::BUTTON_SUPERSCRIPT,
         '|',
-        'link',
+        self::BUTTON_LINK,
         '|',
-        'bulletedList',
-        'numberedList',
+        self::BUTTON_BULLETED_LIST,
+        self::BUTTON_NUMBERED_LIST,
         '|',
-        'pastePlainText',
-        'removeFormat',
+        self::BUTTON_REMOVE_FORMAT,
+        self::BUTTON_PASTE_AS_PLAIN_TEXT,
         '|',
-        'undo',
-        'redo'
+        self::BUTTON_UNDO,
+        self::BUTTON_REDO
     );
     
-    protected $plugins = array(
-        'Bold',
-        'Essentials',
-        'Italic',
-        'List',
-        'Paragraph',
-        'RemoveFormat',
-        'PastePlainText',
-        'Superscript',
-        'TextTransformation',
-        'Link'
-    );
+    protected array $plugins = array();
     
     public function getDefaultOptions() : array
     {
         return array();
     }
-    
+
     public function insertButtonAfter(string $buttonName, string $afterName) : UI_MarkupEditor_CKEditor
     {
         $keep = array();
@@ -100,23 +102,23 @@ class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
         return $this;
     }
     
-    protected function injectJS()
+    protected function injectJS() : void
     {
         $prio = 6900;
         
-        $this->ui->addJavascript('markup-editor/ckeditor/build/ckeditor.js', $prio--);
+        $this->ui->addVendorJavascript('mistralys/appframework-ckeditor5', 'build/ckeditor.js', $prio--);
         $this->ui->addStylesheet('markup-editor/ckeditor/styles.css');
     }
-    
-    protected function _start()
+
+    protected function _start() : self
     {
         $js = $this->ui->createTemplate('ui/markup-editor/ckeditor/command')
-        ->setVar('selector', $this->selector)
-        ->setVar('buttons', $this->buttons)
-        ->setVar('language-ui', Localization::getAppLocale()->getLanguageCode())
-        ->setVar('language-content', $this->country->getLanguageCode())
-        ->setVar('plugin-names', $this->plugins)
-        ->render();
+            ->setVar('selector', $this->selector)
+            ->setVar('buttons', $this->buttons)
+            ->setVar('language-ui', Localization::getAppLocale()->getLanguageCode())
+            ->setVar('language-content', $this->country->getLanguageCode())
+            ->setVar('plugin-names', $this->plugins)
+            ->render();
         
         $this->ui->addJavascriptOnload($js);
         
