@@ -32,6 +32,10 @@ class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
     public const BUTTON_REDO = 'redo';
     public const BUTTON_PASTE_AS_PLAIN_TEXT = 'pasteAsPlainText';
     public const BUTTON_STRIKETHROUGH = 'strikethrough';
+    public const BUTTON_ALIGN_LEFT = 'alignment:left';
+    public const BUTTON_ALIGN_CENTER = 'alignment:center';
+    public const BUTTON_ALIGN_RIGHT = 'alignment:right';
+    public const BUTTON_ALIGN = 'alignment';
 
     public static function getLabel() : string
     {
