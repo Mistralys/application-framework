@@ -1,4 +1,5 @@
 ### v2.7.1 - CKEditor update
+- MarkupEditor: Updated the CKEditor implementation to the current v38.
 - MarkupEditor: Moved the [CKEditor build](https://github.com/Mistralys/appframework-ckeditor5) to its own project.
 - MarkupEditor: Added examples in the interface references.
 - Core: Removed the obsolete C# toolset project.
