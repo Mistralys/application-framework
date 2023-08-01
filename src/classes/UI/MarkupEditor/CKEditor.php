@@ -36,6 +36,7 @@ class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
     public const BUTTON_ALIGN_CENTER = 'alignment:center';
     public const BUTTON_ALIGN_RIGHT = 'alignment:right';
     public const BUTTON_ALIGN = 'alignment';
+    private bool $useCustomJSBuild = false;
 
     public static function getLabel() : string
     {
@@ -105,12 +106,29 @@ class UI_MarkupEditor_CKEditor extends UI_MarkupEditor
         
         return $this;
     }
-    
+
+    /**
+     * Toggles loading the default CKEditor build. If turned off,
+     * it is possible to load a custom build instead (must load the
+     * javascript file manually using the UI methods).
+     *
+     * @param bool $useCustom
+     * @return $this
+     */
+    public function setUseCustomJSBuild(bool $useCustom=true) : self
+    {
+        $this->useCustomJSBuild = $useCustom;
+        return $this;
+    }
+
     protected function injectJS() : void
     {
         $prio = 6900;
-        
-        $this->ui->addVendorJavascript('mistralys/appframework-ckeditor5', 'build/ckeditor.js', $prio--);
+
+        if(!$this->useCustomJSBuild) {
+            $this->ui->addVendorJavascript('mistralys/appframework-ckeditor5', 'build/ckeditor.js', $prio--);
+        }
+
         $this->ui->addStylesheet('markup-editor/ckeditor/styles.css');
     }
 
