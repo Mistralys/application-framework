@@ -1,3 +1,6 @@
+### v2.7.2 - CKEditor extension
+- MarkupEditor: Added possibility to turn off loading of the bundled CKEditor build.
+
 ### v2.7.1 - CKEditor update
 - MarkupEditor: Updated the CKEditor implementation to the current v38.
 - MarkupEditor: Moved the [CKEditor build](https://github.com/Mistralys/appframework-ckeditor5) to its own project.
