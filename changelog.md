@@ -1,3 +1,6 @@
+### v2.7.3 - Logging Tweaks
+- Loggable: Added category and label parameters to `logData()`.
+
 ### v2.7.2 - CKEditor extension
 - MarkupEditor: Added possibility to turn off loading of the bundled CKEditor build.
 
