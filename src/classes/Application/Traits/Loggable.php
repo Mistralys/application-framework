@@ -148,9 +148,9 @@ trait Application_Traits_Loggable
         AppFactory::createLogger()->logUI($message, $args);
     }
 
-    protected function logData(array $data) : void
+    protected function logData(array $data, ?string $label=null, ?string $category=null) : void
     {
-        AppFactory::createLogger()->logData($data);
+        AppFactory::createLogger()->logData($data, $category, $label);
     }
     
     protected function logError(string $message, ...$args) : void

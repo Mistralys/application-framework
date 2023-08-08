@@ -253,17 +253,26 @@ class Application_Logger
     /**
      * Logs a data array.
      *
-     * @param array $data
-     * @param string $category
+     * @param array<mixed> $data
+     * @param string|NULL $category
+     * @param string|NULL $label Label to display above the data dump.
      * @return Application_Logger
      * @throws JsonException
      */
-    public function logData(array $data, string $category=self::CATEGORY_GENERAL) : Application_Logger
+    public function logData(array $data, ?string $category=null, ?string $label=null) : Application_Logger
     {
+        if(empty($category)) {
+            $category = self::CATEGORY_GENERAL;
+        }
+
+        if(empty($label)) {
+            $label = 'Data dump:';
+        }
+
         $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $json = str_replace('\/', '/', $json);
 
-        $this->addLogMessage('Data dump:', $category, true);
+        $this->addLogMessage($label, $category, true);
         $this->addLogMessage($json, '', false);
         
         return $this;
