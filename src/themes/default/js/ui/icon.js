@@ -319,7 +319,7 @@ var UI_Icon =
 	
 	Spinner:function() 
 	{
-		this.SetType('SPINNER');
+		this.SetType('spinner');
 		this.MakeSpinner();
 		return this;
 	},
@@ -423,7 +423,7 @@ var UI_Icon =
 	},
 	
    /**
-    * Makes the icon spin (roate).
+    * Makes the icon spin (rotate).
     * 
     * @returns {UI_Icon}
     */

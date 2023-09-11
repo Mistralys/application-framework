@@ -888,7 +888,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 
     public function spinner() : self
     {
-        $this->setType('SPINNER');
+        $this->setType('spinner');
         $this->makeSpinner();
         return $this;
     }
