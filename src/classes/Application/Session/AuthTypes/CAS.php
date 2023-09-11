@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Logger\PSRLogger;
 use function AppUtils\parseURL;
 
 /**
@@ -16,9 +17,9 @@ use function AppUtils\parseURL;
  *
  * Usage:
  *
- * 1) Use this trait in your application session class
- * 2) Implement the matching interface
- * 3) Add the required configuration settings:
+ * 1. Use this trait in your application session class
+ * 2. Implement the matching interface
+ * 3. Add the required configuration settings:
  *    - <code>APP_CAS_HOST</code> The CAS server host name, e.g. <code>cas.example.com</code>
  *    - <code>APP_CAS_PORT</code> The CAS server port. Default is <code>443</code>.
  *    - <code>APP_CAS_SERVER</code> URL to reach the service, e.g. <code>https://cas.example.com:443/login</code>
@@ -42,7 +43,7 @@ trait Application_Session_AuthTypes_CAS
      * session: redirects to the intranet login page and also processes
      * the response from the login page.
      *
-     * Can throw an exception if one the required queries fail.
+     * Can throw an exception if one of the required queries fails.
      *
      * @throws Application_Exception
      */
@@ -65,6 +66,8 @@ trait Application_Session_AuthTypes_CAS
         // even has the gall to call that graceful?!
         CAS_GracefullTerminationException::throwInsteadOfExiting();
 
+        phpCAS::setLogger(new PSRLogger('CAS Auth'));
+
         try
         {
             phpCAS::client(
@@ -72,7 +75,8 @@ trait Application_Session_AuthTypes_CAS
                 APP_CAS_HOST,
                 APP_CAS_PORT,
                 APP_CAS_SERVER,
-                $baseURL
+                $baseURL,
+                false
             );
         }
         catch (Throwable $e)
@@ -95,17 +99,18 @@ trait Application_Session_AuthTypes_CAS
 
         phpCAS::SetNoCasServerValidation();
 
-        if (!phpCAS::isAuthenticated())
+        $this->log('Starting CAS authentication.');
+
+        try
         {
-            $this->log('User not authenticated, redirecting to CAS login page.');
-
-            $loginURL = phpCAS::getServerLoginURL();
-
-            $this->log('Target URL: '.$loginURL);
-
-            header("Location: " . $loginURL);
+            phpCAS::renewAuthentication();
+        }
+        catch (CAS_GracefullTerminationException $e)
+        {
             Application::exit('Redirecting to CAS login page.');
         }
+
+        $this->log('User is authenticated.');
 
         $email = phpCAS::getAttribute($this->getEmailField());
 
