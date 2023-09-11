@@ -757,7 +757,7 @@ var application =
             label = '';
         }
 
-        return UI.Icon().Spinner() + ' ' + label;
+        return '<span class="spin-icon">'+UI.Icon().Spinner() + '</span> ' + label;
     },
 
     /**
