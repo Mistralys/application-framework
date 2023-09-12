@@ -2,8 +2,6 @@
 
 use AppUtils\Request\RequestParam;
 
-require_once 'Application/CORS.php';
-
 abstract class Application_API_Method
 {
     /**
