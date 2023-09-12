@@ -38,17 +38,15 @@ trait Application_Session_AuthTypes_CAS
     abstract public function getLastnameField() : string;
     abstract public function getForeignIDField() : string;
 
-    /**
-     * Handles a user's login when no user is present in the editor's
-     * session: redirects to the intranet login page and also processes
-     * the response from the login page.
-     *
-     * Can throw an exception if one of the required queries fails.
-     *
-     * @throws Application_Exception
-     */
-    protected function handleLogin() : Application_Users_User
+    private ?CAS_Client $client = null;
+
+    public function getClient() : CAS_Client
     {
+        if(isset($this->client))
+        {
+            return $this->client;
+        }
+
         $this->log('Initializing CAS client.');
 
         // Build the base URL dynamically, because it must only
@@ -67,6 +65,7 @@ trait Application_Session_AuthTypes_CAS
         CAS_GracefullTerminationException::throwInsteadOfExiting();
 
         phpCAS::setLogger(new PSRLogger('CAS Auth'));
+        phpCAS::SetNoCasServerValidation();
 
         try
         {
@@ -94,12 +93,27 @@ trait Application_Session_AuthTypes_CAS
 
         $this->log('CAS client initialized.');
 
-        $client = phpCAS::getCasClient();
-        $client->setBaseURL(rtrim(APP_CAS_SERVER, '/').'/');
+        $this->client = phpCAS::getCasClient();
+        $this->client->setBaseURL(rtrim(APP_CAS_SERVER, '/').'/');
 
-        phpCAS::SetNoCasServerValidation();
+        return $this->client;
+    }
+
+    /**
+     * Handles a user's login when no user is present in the editor's
+     * session: redirects to the intranet login page and also processes
+     * the response from the login page.
+     *
+     * Can throw an exception if one of the required queries fails.
+     *
+     * @throws Application_Exception
+     */
+    protected function handleLogin() : Application_Users_User
+    {
+        $client = $this->getClient();
 
         $this->log('Starting CAS authentication.');
+        $this->log('CAS server version: [%s]', $client->getServerVersion());
 
         try
         {
