@@ -189,6 +189,18 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
             t('The ID of the markup editor to use.')
         );
 
+        $this->registerSetting(
+            Application_Driver::APP_SETTING_KEEP_ALIVE_INTERVAL,
+            'string',
+            (string)sb()
+                ->t('The interval in which the authentication keep-alive process is run.')
+                ->t(
+                    'Accepts a duration parseable by PHP\'s %1$s function, e.g. %2$s.',
+                    sb()->link('strtotime', 'https://www.php.net/manual/en/function.strtotime.php', true),
+                    sb()->code('20 seconds')
+                )
+        );
+
         $this->_registerSettings();
     }
 
