@@ -343,7 +343,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @return never
      * @throws DriverException
      */
-    public function redirectTo($paramsOrURL = null) : void
+    public function redirectTo($paramsOrURL = null)
     {
         if (is_array($paramsOrURL))
         {
@@ -625,7 +625,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws DriverException
      * @throws UI_Exception
      */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null) : void
+    public function redirectWithInfoMessage($message, $paramsOrURL = null)
     {
         $this->getUI()->addInfoMessage($message);
 
@@ -643,7 +643,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws UI_Exception
      * @throws DriverException
      */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null) : void
+    public function redirectWithErrorMessage($message, $paramsOrURL = null)
     {
         $this->ui->addErrorMessage($message);
         $this->redirectTo($paramsOrURL);
@@ -660,7 +660,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws UI_Exception
      * @throws DriverException
      */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null) : void
+    public function redirectWithSuccessMessage($message, $paramsOrURL = null)
     {
         $this->ui->addSuccessMessage($message);
         $this->redirectTo($paramsOrURL);

@@ -186,7 +186,7 @@ abstract class Application_AjaxMethod
      * @param array<string|int,mixed>|string|NULL $data
      * @return never
      */
-    protected function sendResponse($data = null) : void
+    protected function sendResponse($data = null)
     {
         if(DBHelper::isTransactionStarted()) {
             $this->endTransaction();
@@ -219,7 +219,7 @@ abstract class Application_AjaxMethod
      * @param string $html
      * @return never
      */
-    protected function sendHTMLResponse(string $html) : void
+    protected function sendHTMLResponse(string $html)
     {
         Application_Request::sendHTML($html);
         Application::exit();
@@ -297,7 +297,7 @@ abstract class Application_AjaxMethod
      * @param int|NULL $code
      * @return never
      */
-    protected function sendError(string $message, ?array $data=null, ?int $code=null) : void
+    protected function sendError(string $message, ?array $data=null, ?int $code=null)
     {
         // fallback to avoid deadlocks calling the same method 
         if(empty($this->format)) {
@@ -328,7 +328,7 @@ abstract class Application_AjaxMethod
     * @param int|NULL $code
     * @return never
     */
-    protected function sendErrorUnknownElement(string $elementLabel, ?array $data=null, ?int $code=null) : void
+    protected function sendErrorUnknownElement(string $elementLabel, ?array $data=null, ?int $code=null)
     {
         $this->sendError(t('Unknown %1$s specified.', $elementLabel), $data, $code);
     }
@@ -353,7 +353,7 @@ abstract class Application_AjaxMethod
      * @param string $json
      * @return never
      */
-    protected function sendJSON(string $json) : void
+    protected function sendJSON(string $json)
     {
         if($this->isSimulationEnabled()) {
             Application::log('Response', true);

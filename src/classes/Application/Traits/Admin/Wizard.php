@@ -142,7 +142,7 @@ trait Application_Traits_Admin_Wizard
      * @return never
      * @throws Application_Exception
      */
-    private function createSession() : void
+    private function createSession()
     {
         $this->sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $this->user->getID());
 

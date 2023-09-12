@@ -86,7 +86,7 @@ class Application_Admin_Area_Devel_Dbdump extends Application_Admin_Area_Mode
      * @throws Request_Exception
      * @return never
      */
-    protected function downloadDump() : void
+    protected function downloadDump()
     {
         $id = $this->request->registerParam('dump_id')->setInteger()->setCallback(array($this->dumps, 'dumpExists'))->get();
         if(empty($id)) {

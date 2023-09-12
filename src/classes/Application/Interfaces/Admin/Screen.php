@@ -287,7 +287,7 @@ interface Application_Admin_ScreenInterface
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithErrorMessage($message, $paramsOrURL) : void;
+    public function redirectWithErrorMessage($message, $paramsOrURL);
 
    /**
     * Adds an error message, and redirects to the target URL.
@@ -296,7 +296,7 @@ interface Application_Admin_ScreenInterface
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithSuccessMessage($message, $paramsOrURL) : void;
+    public function redirectWithSuccessMessage($message, $paramsOrURL);
     
    /**
     * Adds an informational message, and redirects to the target URL.
@@ -305,13 +305,13 @@ interface Application_Admin_ScreenInterface
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithInfoMessage($message, $paramsOrURL) : void;
+    public function redirectWithInfoMessage($message, $paramsOrURL);
 
     /**
      * @param string|array<string,string|int|float> $paramsOrURL
      * @return never
      */
-    public function redirectTo($paramsOrURL) : void;
+    public function redirectTo($paramsOrURL);
 
     /**
      * Retrieves all app internal parameters for the screen (page, mode, submode, action).

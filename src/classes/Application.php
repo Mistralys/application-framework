@@ -858,7 +858,7 @@ class Application
      * @return never
      * @todo Handle shutdown tasks here.
      */
-    public static function exit(string $reason = '') : void
+    public static function exit(string $reason = '')
     {
         self::$exited = true;
 
@@ -982,7 +982,7 @@ class Application
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect(string $url) : void
+    public static function redirect(string $url)
     {
         try
         {

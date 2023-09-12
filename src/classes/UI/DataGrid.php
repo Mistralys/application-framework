@@ -2343,7 +2343,7 @@ class UI_DataGrid
      * @throws UI_Exception
      * @throws UI_Themes_Exception
      */
-    protected function processAllSelected(UI_DataGrid_Action $action) : void
+    protected function processAllSelected(UI_DataGrid_Action $action)
     {
         if(!isset($this->filterCriteria)) {
             throw new UI_Exception(

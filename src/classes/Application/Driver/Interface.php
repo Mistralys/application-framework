@@ -109,7 +109,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @param string|array<string,string|number>|NULL $paramsOrURL
      * @return never
      */
-    public function redirectTo($paramsOrURL = null) : void;
+    public function redirectTo($paramsOrURL = null);
 
     /**
      * Adds an informational message and redirects to the target URL.
@@ -119,7 +119,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null) : void;
+    public function redirectWithInfoMessage($message, $paramsOrURL = null);
 
     /**
      * Adds an error message and redirects to the target URL.
@@ -129,7 +129,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null) : void;
+    public function redirectWithErrorMessage($message, $paramsOrURL = null);
 
     /**
      * Adds a success message and redirects to the target URL.
@@ -139,7 +139,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @param string|array $paramsOrURL Target URL or parameters for an internal page
      * @return never
      */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null) : void;
+    public function redirectWithSuccessMessage($message, $paramsOrURL = null);
 
     public function resolveURLParam(Application_Admin_ScreenInterface $screen) : string;
 }
