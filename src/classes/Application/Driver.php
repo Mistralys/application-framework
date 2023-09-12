@@ -1098,7 +1098,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('Driver.version', $this->getVersion());
 
         $this->ui->addJavascriptHead('application.setUp()');
-        $this->ui->addJavascriptOnload('application.start()');
         $this->ui->addJavascriptHeadVariable('application.locale', Localization::getAppLocale()->getName());
         $this->ui->addJavascriptHeadVariable('application.url', APP_URL);
         $this->ui->addJavascriptHeadVariable('application.host', parse_url(APP_URL, PHP_URL_HOST));
@@ -1108,6 +1107,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('application.environment', boot_constant('APP_ENVIRONMENT'));
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
+        $this->ui->addJavascriptHeadStatement('application.keepAlive.SetInterval', $this->getKeepAliveInterval());
         $this->ui->addJavascriptHead('application.handle_JavaScriptError()');
 
         if (isset($this->activeArea))
@@ -1146,6 +1146,11 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
         $this->ui->addJavascriptHeadVariable('User.last_used_version', $lastVersion);
+
+        // ----------------------------------------------
+        // ON PAGE LOAD
+        // ----------------------------------------------
+        $this->ui->addJavascriptOnload('application.start()');
     }
 
     /**
@@ -1177,6 +1182,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         'class.js',
         'global_functions.js',
+        'application/keep_alive.js',
         'application.js',
         'application/exception.js',
         'application/base_renderable.js',
@@ -1746,5 +1752,25 @@ abstract class Application_Driver implements Application_Driver_Interface
     public static function isGlobalDevelModeEnabled() : bool
     {
         return self::getGlobalDevelModeFile()->exists();
+    }
+
+    public const APP_SETTING_KEEP_ALIVE_INTERVAL = 'KeepAliveInterval';
+    public const DEFAULT_KEEP_ALIVE_INTERVAL = 120;
+
+    /**
+     * @return int The interval in seconds.
+     */
+    private function getKeepAliveInterval() : int
+    {
+        $setting = (string)$this->getSettings()->get(self::APP_SETTING_KEEP_ALIVE_INTERVAL, '2 minutes');
+        $base = time();
+        $duration = strtotime($setting, $base);
+
+        if($duration !== false)
+        {
+            return $duration - $base;
+        }
+
+        return self::DEFAULT_KEEP_ALIVE_INTERVAL;
     }
 }
