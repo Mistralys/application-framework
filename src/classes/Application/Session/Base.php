@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use function AppUtils\parseURL;
 
 /**
  * Base session class: defines the core mechanisms of the
@@ -38,6 +39,7 @@ abstract class Application_Session_Base implements Application_Session
     public const KEY_NAME_USER_RIGHTS = 'user_rights';
     public const KEY_NAME_SIMULATED_ID = 'simulate_user_id';
     public const KEY_NAME_RIGHTS_PRESET = 'simulate_rights_preset';
+    public const KEY_NAME_AUTH_RETURN_URL = 'auth_return_url';
 
     public const ADMIN_PRESET_ID = 'Admin';
 
@@ -143,6 +145,8 @@ abstract class Application_Session_Base implements Application_Session
     {
         $this->log('No user ID found in the session, initiating login sequence.');
 
+        $this->setValue(self::KEY_NAME_AUTH_RETURN_URL, $_SERVER['REQUEST_URI']);
+
         $user = $this->handleLogin();
 
         if($user !== null)
@@ -236,7 +240,7 @@ abstract class Application_Session_Base implements Application_Session
      * Initializes the session when in simulation mode. Has no
      * effect if simulation mode is disabled.
      *
-     * @param int $userID The currently logged in user ID
+     * @param int $userID The currently authenticated user's ID
      * @throws Application_Exception
      */
     protected function initSimulatedSession(int $userID) : void
@@ -300,9 +304,35 @@ abstract class Application_Session_Base implements Application_Session
         return explode(',', $rights);
     }
 
+    /**
+     * Determines which URL to redirect to after authentication.
+     *
+     * The session automatically stores the URL accessed originally
+     * before the authentication was triggered, and redirects to
+     * that URL after authentication.
+     *
+     * @return string
+     * @see self::storeUser()
+     */
     protected function unpackTargetURL() : string
     {
-        return APP_URL;
+        $url = $this->getValue(self::KEY_NAME_AUTH_RETURN_URL);
+        $target = APP_URL;
+
+        if(is_string($url) && !empty($url))
+        {
+            $appURL = parseURL(APP_URL);
+            $returnURL = parseURL($url);
+
+            // Ensure that the target URL has the same host as the app URL.
+            if($appURL->getHost() === $returnURL->getHost()) {
+                $target = $appURL;
+            }
+
+            $this->unsetValue(self::KEY_NAME_AUTH_RETURN_URL);
+        }
+
+        return $target;
     }
 
     /**
