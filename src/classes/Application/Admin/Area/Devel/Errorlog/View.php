@@ -35,10 +35,7 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
     */
     protected $log;
     
-   /**
-    * @var Application_ErrorLog_Log_Entry
-    */
-    protected $entry;
+    protected ?Application_ErrorLog_Log_Entry $entry = null;
     
     protected function _handleActions() : bool
     {
@@ -82,7 +79,7 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
     {
         if(isset($this->entry)) 
         {
-            return $this->renderEntry();
+            return $this->renderEntry($this->entry);
         }
         
         $items = $this->log->getEntries();
@@ -133,39 +130,39 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
         return UI::icon()->ok()->makeSuccess();
     }
     
-    protected function renderEntry()
+    protected function renderEntry(Application_ErrorLog_Log_Entry $entry) : string
     {
         $grid = $this->ui->createPropertiesGrid();
         
         $grid->addHeader(t('Basic error details'));
-        $grid->add(t('Date'), $this->entry->getTime()->format('Y-m-d H:i:s'));
-        $grid->add(t('User'), $this->entry->getUserName());
-        $grid->add(t('Type'), $this->entry->getTypeLabel());
-        $grid->add(t('Code'), $this->entry->getCode());
-        $grid->add(t('Message'), $this->entry->getMessage());
-        $grid->add(t('Referer'), $this->entry->getReferer());
+        $grid->add(t('Date'), $entry->getTime()->format('Y-m-d H:i:s'));
+        $grid->add(t('User'), $entry->getUserName());
+        $grid->add(t('Type'), $entry->getTypeLabel());
+        $grid->add(t('Code'), $entry->getCode());
+        $grid->add(t('Message'), $entry->getMessage());
+        $grid->add(t('Referer'), $entry->getReferer());
         
-        $grid->addHeader(t('%1$s details', $this->entry->getTypeLabel()));
-        $this->entry->addProperties($grid);
+        $grid->addHeader(t('%1$s details', $entry->getTypeLabel()));
+        $entry->addProperties($grid);
         
         $content = $grid->render();
         
-        if($this->entry->hasTrace())
+        if($entry->hasTrace())
         {
             $content .= $this->createSection()
             ->setTitle(t('Stack trace'))
             ->makeCollapsible(true)
-            ->setContent('<pre>'.$this->entry->getTrace()->toString().'</pre>');
+            ->setContent('<pre>'.$entry->getTrace()->toString().'</pre>');
         }
         
-        if($this->entry->hasApplog())
+        if($entry->hasApplog())
         {
             $content .= $this->createSection()
             ->setTitle(t('Application log'))
             ->makeCollapsible(true)
             ->setContent(
                 '<pre style="background:#fff;font-family:monospace;font-size:14px;color:#444;padding:16px;border:solid 1px #999;border-radius:4px;">'.
-                    print_r($this->entry->getApplog(), true).
+                    print_r($entry->getApplog(), true).
                 '</pre>'
             );
         }
@@ -173,8 +170,8 @@ class Application_Admin_Area_Devel_Errorlog_View extends Application_Admin_Area_
         return $this->renderer
         ->setTitle(t(
             '%1$s log entry registered %2$s',
-            $this->entry->getTypeLabel(),
-            $this->entry->getTimePretty()
+            $entry->getTypeLabel(),
+            $entry->getTimePretty()
         ))
         ->appendContent($content)
         ->render();
