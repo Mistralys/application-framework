@@ -113,20 +113,19 @@ trait Application_Session_AuthTypes_CAS
         $client = $this->getClient();
 
         $this->log('Starting CAS authentication.');
-        $this->log('CAS server version: [%s]', $client->getServerVersion());
 
         try
         {
-            phpCAS::renewAuthentication();
+            $client->renewAuthentication();
         }
         catch (CAS_GracefullTerminationException $e)
         {
-            Application::exit('Redirecting to CAS login page.');
+            Application::exit('CAS authentication redirect (graceful termination).');
         }
 
         $this->log('User is authenticated.');
 
-        $email = phpCAS::getAttribute($this->getEmailField());
+        $email = $client->getAttribute($this->getEmailField());
 
         if (empty($email))
         {
@@ -147,9 +146,9 @@ trait Application_Session_AuthTypes_CAS
 
         return $this->registerUser(
             $email,
-            (string)phpCAS::getAttribute($this->getFirstnameField()),
-            (string)phpCAS::getAttribute($this->getLastnameField()),
-            (string)phpCAS::getAttribute($this->getForeignIDField())
+            (string)$client->getAttribute($this->getFirstnameField()),
+            (string)$client->getAttribute($this->getLastnameField()),
+            (string)$client->getAttribute($this->getForeignIDField())
         );
     }
 }
