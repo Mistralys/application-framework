@@ -1,8 +1,10 @@
-### v2.7.4 - Logging enhancements
+### v2.7.4 - Authentication and KeepAlive
 - Logger: Added the PSR-3 `PSRLogger` to redirect log messages to the application logger.
 - CAS Authentication: Tweaked the authentication logic.
 - CAS Authentication: Fixed the error log spamming by CAS graceful termination exceptions.
+- CAS Authentication: Added `getClient()` to fetch the CAS client instance.
 - UI: Fixed the spinner loading icon not being displayed ([#54](https://github.com/Mistralys/application-framework/issues/54)).
+- UI: Added a full-fledged Keep Alive mechanism to check the user's session clientside.
 
 ### v2.7.3 - Logging Tweaks
 - Loggable: Added category and label parameters to `logData()`.
