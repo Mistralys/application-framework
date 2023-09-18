@@ -1,3 +1,7 @@
+### v2.7.5 - Documentation moved
+- Documentation: Moved to the separate Git project [application-framework-docs](https://github.com/Mistralys/application-framework-docs).
+- Documentation: The integrated UI is now handled via the doc's composer package.
+
 ### v2.7.4 - Authentication and KeepAlive
 - Logger: Added the PSR-3 `PSRLogger` to redirect log messages to the application logger.
 - Sessions: The return URL after authentication is now handled automatically via the session.

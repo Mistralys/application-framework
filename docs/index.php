@@ -1,18 +1,27 @@
 <?php
+/**
+ * Displays the framework's documentation UI.
+ *
+ * NOTE: This is only as recent as the last Composer update.
+ * For a more recent version, run `composer update` first,
+ * or read the documentation online at {@link https://github.com/Mistralys/application-framework-docs}.
+ *
+ * @package Application
+ * @subpackage Documentation
+ * @see DocumentationHub
+ */
 
-    use Mistralys\MarkdownViewer\DocsManager;
-    use Mistralys\MarkdownViewer\DocsViewer;
+declare(strict_types=1);
 
-    if(!file_exists('../vendor/autoload.php')) {
-        die('Please run composer install first.');
-    }
+use Mistralys\AppFrameworkDocs\DocumentationHub;
 
-    require_once '../vendor/autoload.php';
+if(!file_exists('../vendor/autoload.php')) {
+    die('Please run composer install first.');
+}
 
-    $manager = (new DocsManager())
-        ->addFile('Main docs', 'Documentation.md');
+require_once '../vendor/autoload.php';
 
-    (new DocsViewer($manager, '../vendor'))
-        ->setTitle('Application Framework')
-        ->display();
-
+DocumentationHub::create(
+    __DIR__.'/../vendor',
+    './../vendor'
+)->display();

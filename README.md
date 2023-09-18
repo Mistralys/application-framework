@@ -13,8 +13,9 @@ documentation is not available yet.
 
 ## Documentation
 
-The framework's documentation is available in the `docs` folder, and online at
-[Main framework documentation][]. 
+The framework's documentation is available locally by pointing a browser in 
+the `docs` folder, and online in the separate [Framework Documentation][]
+package. 
 
 > It is ideally viewed through the framework's documentation screen, as there
 > are some features that are only available there (like code samples that are
@@ -22,4 +23,4 @@ The framework's documentation is available in the `docs` folder, and online at
 
 
 [Framework Manager]: https://github.com/Mistralys/appframework-manager
-[Main Framework Documentation]: https://github.com/Mistralys/application-framework/tree/main/docs/documentation
+[Framework Documentation]: https://github.com/Mistralys/application-framework-docs
