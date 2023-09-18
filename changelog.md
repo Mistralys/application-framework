@@ -2,6 +2,7 @@
 - Logger: Added the PSR-3 `PSRLogger` to redirect log messages to the application logger.
 - Sessions: The return URL after authentication is now handled automatically via the session.
 - CAS Authentication: Tweaked the authentication logic.
+- CAS Authentication: CAS log messages are now included in the application log.
 - CAS Authentication: Fixed the error log spamming by CAS graceful termination exceptions.
 - CAS Authentication: Added `getClient()` to fetch the CAS client instance.
 - UI: Fixed the spinner loading icon not being displayed ([#54](https://github.com/Mistralys/application-framework/issues/54)).
