@@ -84,6 +84,7 @@
       <path value="$PROJECT_DIR$/vendor/mistralys/appframework-ckeditor5" />
       <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
       <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/vendor/mistralys/application-framework-docs" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
