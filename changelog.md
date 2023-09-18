@@ -6,6 +6,7 @@
 - CAS Authentication: Added `getClient()` to fetch the CAS client instance.
 - UI: Fixed the spinner loading icon not being displayed ([#54](https://github.com/Mistralys/application-framework/issues/54)).
 - UI: Added a full-fledged Keep Alive mechanism to check the user's session clientside.
+- UI: The new authentication lost dialog informs the user when their session has expired.
 
 ### v2.7.3 - Logging Tweaks
 - Loggable: Added category and label parameters to `logData()`.
