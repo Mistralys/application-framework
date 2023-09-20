@@ -29,3 +29,4 @@ tests/application/themes/default/js/localization/locale-de.js
 *.tmp
 tests/application/storage/request-logging.txt
 tests/application/config/test-ui.php
+tests/application/config/test-ui-config.php
