@@ -7,6 +7,7 @@
  */
 
 use Application\AppFactory;
+use Application\ConfigSettings\BaseConfigSettings;
 use Application\Driver\DriverException;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
@@ -804,7 +805,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      * are available at this time.
      *
      * NOTE: This is called even if the UI layer is
-     * turned off with the APP_RUN_MODE.
+     * turned off with the <code>APP_RUN_MODE</code>
+     * setting.
      */
     protected function _start() : void
     {
@@ -1104,7 +1106,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('application.className', APP_CLASS_NAME);
         $this->ui->addJavascriptHeadVariable('application.deletionDelay', ConvertHelper::time2string(APP_AUTOMATIC_DELETION_DELAY));
         $this->ui->addJavascriptHeadVariable('application.appNameShort', $this->getAppNameShort());
-        $this->ui->addJavascriptHeadVariable('application.environment', boot_constant('APP_ENVIRONMENT'));
+        $this->ui->addJavascriptHeadVariable('application.environment', boot_constant(BaseConfigSettings::ENVIRONMENT));
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
         $this->ui->addJavascriptHeadStatement('application.keepAlive.SetInterval', $this->getKeepAliveInterval());

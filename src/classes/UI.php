@@ -5,6 +5,7 @@
  * @see UI
  */
 
+use Application\ConfigSettings\BaseConfigSettings;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -1327,7 +1328,7 @@ class UI
     
     public static function isJavascriptMinified() : bool
     {
-        return boot_constant('APP_JAVASCRIPT_MINIFIED') === true;
+        return boot_constant(BaseConfigSettings::JAVASCRIPT_MINIFIED) === true;
     }
 
     /**

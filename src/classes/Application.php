@@ -7,6 +7,8 @@
  */
 
 use Application\AppFactory;
+use Application\ConfigSettings\BaseConfigSettings;
+use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
@@ -172,7 +174,7 @@ class Application
     {
         self::log('Starting application.');
 
-        $runMode = boot_constant('APP_RUN_MODE');
+        $runMode = self::getRunMode();
 
         $this->started = true;
         $this->driver = $driver;
@@ -452,7 +454,7 @@ class Application
 
         self::$develEnvironment = false;
 
-        $env = Application_Environments::getInstance()->getDetected();
+        $env = Environments::getInstance()->getDetected();
 
         if($env !== null && $env->isDev())
         {
@@ -914,7 +916,7 @@ class Application
 
     public static function getRunMode() : string
     {
-        return (string)boot_constant('APP_RUN_MODE');
+        return (string)boot_constant(BaseConfigSettings::RUN_MODE);
     }
 
     public static function isUIEnabled() : bool
@@ -924,17 +926,17 @@ class Application
 
     public static function isAuthenticationEnabled() : bool
     {
-        return boot_constant('APP_NO_AUTHENTICATION') !== true;
+        return boot_constant(BaseConfigSettings::NO_AUTHENTICATION) !== true;
     }
 
     public static function isSessionSimulated() : bool
     {
-        return boot_constant('APP_SIMULATE_SESSION') === true;
+        return boot_constant(BaseConfigSettings::SIMULATE_SESSION) === true;
     }
 
     public static function isDemoMode() : bool
     {
-        return boot_constant('APP_DEMO_MODE') === true;
+        return boot_constant(BaseConfigSettings::DEMO_MODE) === true;
     }
 
     /**
@@ -945,7 +947,7 @@ class Application
      */
     public static function isDatabaseEnabled() : bool
     {
-        return boot_constant('APP_DB_ENABLED') === true;
+        return boot_constant(BaseConfigSettings::DB_ENABLED) === true;
     }
 
     public static function createLDAP() : Application_LDAP
