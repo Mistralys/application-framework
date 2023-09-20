@@ -2,11 +2,19 @@
 
 declare(strict_types=1);
 
+use Application\Bootstrap\BootException;
+use Application\ConfigSettings\BaseConfigSettings;
 use AppUtils\BaseException;
 use Composer\Autoload\ClassLoader;
 
 const APP_DEVEL_SQL_MODE = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION';
 const APP_FRAMEWORK_DOCUMENTATION_URL = 'https://github.com/Mistralys/application-framework/blob/main/docs/Documentation.md';
+
+/**
+ * Must be loaded manually, because autoloading is not ready
+ * yet when constant names are accessed.
+ */
+require_once __DIR__ . '/ConfigSettings/BaseConfigSettings.php';
 
 class Application_Bootstrap
 {
@@ -15,26 +23,22 @@ class Application_Bootstrap
     public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
     public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
     
-    /**
-     * @var ClassLoader
-     */
-    private static $autoLoader;
+    private static ClassLoader $autoLoader;
+    private static bool $initialized = false;
 
     /**
-     * @var bool
+     * @var class-string
      */
-    private static $initialized = false;
+    private static string $bootClass = '';
 
     /**
-     * @var string
+     * Boots from a standard application screen.
+     *
+     * @param string $screenID
+     * @param array<int,mixed> $params
+     * @param bool $displayException
+     * @throws Application_Exception
      */
-    private static $bootClass = '';
-
-    /**
-    * Boots from a standard application screen.
-    * @param string $screenID
-    * @param array $params
-    */
     public static function boot(string $screenID, array $params=array(), bool $displayException=true) : void
     {
         $class = Application_Bootstrap_Screen::class.'_'.$screenID;
@@ -60,11 +64,13 @@ class Application_Bootstrap
         return self::$autoLoader;
     }
 
-   /**
-    * Boots from a custom driver screen.
-    * @param string $screenID
-    * @param array $params
-    */
+    /**
+     * Boots from a custom driver screen.
+     * @param string $screenID
+     * @param array<int,mixed> $params
+     * @param bool $displayException
+     * @throws Application_Exception
+     */
     public static function bootCustom(string $screenID, array $params=array(), bool $displayException=true) : void
     {
         $class = APP_CLASS_NAME.'_Bootstrap_'.$screenID;
@@ -89,7 +95,7 @@ class Application_Bootstrap
             
             if(!$screen instanceof Application_Bootstrap_Screen)
             {
-                throw new Application_Exception(
+                throw new BootException(
                     'Invalid bootstrap screen',
                     sprintf(
                         'The screen [%s] is not an instance of [%s].',
@@ -111,7 +117,7 @@ class Application_Bootstrap
         {
             // Fetch the content generated up to this point,
             // so we can use it and avoid text output outside 
-            // of the error page.
+            // the error page.
             $output = ob_get_clean();
 
             // Convert non-framework exceptions, so they can
@@ -128,10 +134,18 @@ class Application_Bootstrap
             }
         }
     }
-    
-    protected static $knownSettings = array();
-    
-    public static function registerOptionalSetting($name, $defaultValue=null)
+
+    /**
+     * @var array<string,array{required:bool,defaultValue:string|int|float|bool|array|NULL}>
+     */
+    protected static array $knownSettings = array();
+
+    /**
+     * @param string $name
+     * @param string|int|float|bool|array|NULL $defaultValue
+     * @return void
+     */
+    public static function registerOptionalSetting(string $name, $defaultValue=null) : void
     {
         if(!isset(self::$knownSettings[$name])) {
             self::$knownSettings[$name] = array(
@@ -143,11 +157,11 @@ class Application_Bootstrap
         self::$knownSettings[$name]['defaultValue'] = $defaultValue;
     }
     
-    public static function registerRequiredSetting($name)
+    public static function registerRequiredSetting(string $name) : void
     {
         if(!isset(self::$knownSettings[$name])) {
             self::$knownSettings[$name] = array(
-                'required' => false,
+                'required' => true,
                 'defaultValue' => null
             );
         }
@@ -183,26 +197,25 @@ class Application_Bootstrap
     */
     protected static function registerConfigSettings() : void
     {
-        self::registerRequiredSetting('APP_CLASS_NAME');
-        self::registerRequiredSetting('APP_INSTANCE_ID');
-        self::registerRequiredSetting('APP_CONTENT_LOCALES');
-        self::registerRequiredSetting('APP_URL');
-        self::registerRequiredSetting('APP_REQUEST_LOG_PASSWORD');
+        self::registerRequiredSetting(BaseConfigSettings::CLASS_NAME);
+        self::registerRequiredSetting(BaseConfigSettings::INSTANCE_ID);
+        self::registerRequiredSetting(BaseConfigSettings::CONTENT_LOCALES);
+        self::registerRequiredSetting(BaseConfigSettings::URL);
+        self::registerRequiredSetting(BaseConfigSettings::REQUEST_LOG_PASSWORD);
         
-        self::registerOptionalSetting('APP_DB_ENABLED', true);
-        
-        self::registerOptionalSetting('APP_DEMO_MODE', false);
-        self::registerOptionalSetting('APP_LOGGING_ENABLED', false);
-        self::registerOptionalSetting('APP_SHOW_QUERIES', false);
-        self::registerOptionalSetting('APP_JAVASCRIPT_MINIFIED', true);
-        self::registerOptionalSetting('APP_AUTOMATIC_DELETION_DELAY', 60*60*24*5);
-        self::registerOptionalSetting('APP_SIMULATE_SESSION', false);
-        self::registerOptionalSetting('APP_OPTIMIZE_IMAGES', false);
+        self::registerOptionalSetting(BaseConfigSettings::DB_ENABLED, true);
+
+        self::registerOptionalSetting(BaseConfigSettings::DEMO_MODE, false);
+        self::registerOptionalSetting(BaseConfigSettings::LOGGING_ENABLED, false);
+        self::registerOptionalSetting(BaseConfigSettings::SHOW_QUERIES, false);
+        self::registerOptionalSetting(BaseConfigSettings::JAVASCRIPT_MINIFIED, true);
+        self::registerOptionalSetting(BaseConfigSettings::AUTOMATIC_DELETION_DELAY, 60*60*24*5);
+        self::registerOptionalSetting(BaseConfigSettings::SIMULATE_SESSION, false);
     }
     
    /**
     * Initializes the application's boot process: sets up
-    * configuration settings and loads configuration files,
+    * configuration settings and includes configuration files,
     * starts the autoloader and include paths.
     *  
     * @throws Exception
@@ -216,9 +229,9 @@ class Application_Bootstrap
 
         self::$initialized = true;
 
-        self::registerConfigSettings();
         self::initAutoLoader();
         self::initIncludePath();
+        self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
     }
@@ -236,7 +249,7 @@ class Application_Bootstrap
                 case DBHelper::ERROR_PREPARING_QUERY:
                 case DBHelper::ERROR_EXECUTING_QUERY:
                     try {
-                        DBHelper::fetchTableNames();
+                        DBHelper::getTablesList();
                     } catch (Exception $f) {
                         die(sprintf(
                             '<pre><b style="color:#cc0000">Error:</b> There are no tables in the configured database %1$s. Please import the tables structure first.</pre>',
@@ -295,8 +308,12 @@ class Application_Bootstrap
 
         if ($autoloadFile === false)
         {
-            throw new Exception(
-                sprintf('Autoload file not found in [%s]', $autoloadPath),
+            throw new BootException(
+                'Composer autoload file not found',
+                sprintf(
+                    'Autoloader not found in path [%s].',
+                    $autoloadPath
+                ),
                 self::ERROR_AUTOLOAD_FILE_NOT_FOUND
             );
         }
@@ -308,7 +325,8 @@ class Application_Bootstrap
 
         if (!$loader instanceof ClassLoader)
         {
-            throw new Exception(
+            throw new BootException(
+                'Missing autoloader instance',
                 'Autoloader error: no autoloader instance returned on require.',
                 self::ERROR_AUTOLOADER_NOT_STARTED
             );
@@ -319,10 +337,10 @@ class Application_Bootstrap
 
     private static function initIncludePath() : void
     {
-        // Set the include paths after the autoloader: this
+        // Set include paths after the autoloader: this
         // enables the possibility to have classes from the
         // vendor folder be overridden by those in the application
-        // like for example the HTML_Quickform classes.
+        // like HTML_QuickForm2 classes, for example.
         $includePaths = array(
             APP_INSTALL_FOLDER . '/classes',
             APP_ROOT . '/assets',
@@ -333,32 +351,42 @@ class Application_Bootstrap
         ini_set('include_path', implode(PATH_SEPARATOR, $includePaths));
     }
 
+    private const CONFIG_MISSING_MESSAGE = <<<'EOT'
+The configuration file %1$s was not found.
+
+Please create this file first. There is usually a %2$s file
+that you can use as template. Adjust the relevant configuration 
+settings, then reload this page.
+EOT;
+
     private static function initConfiguration() : void
     {
-        $localConfig = APP_ROOT . '/config/config-local.php';
+        $configs = array(
+            APP_ROOT . '/config/app-config.php', // First, contains only static settings
+            APP_ROOT . '/config/config-local.php' // Second, contains dynamic settings
+        );
 
-        if (!file_exists($localConfig))
+        foreach ($configs as $configFile)
         {
+            if (file_exists($configFile)) {
+                require_once $configFile;
+                continue;
+            }
+
             header('Content-Type:text/plain; charset=UTF-8');
-            echo 'Local configuration file not found. ' . PHP_EOL;
-            echo 'Rename the bundled file config-local.dist.php to config-local.php and adjust the relevant configuration settings in that file, then reload this page.' . PHP_EOL;
+
+            echo sprintf(
+                self::CONFIG_MISSING_MESSAGE,
+                basename($configFile),
+                str_replace('.php', '.dist.php', basename($configFile))
+            );
             exit;
         }
-
-        /**
-         * The local configuration settings
-         */
-        require $localConfig;
-
-        /**
-         * The main app configuration file
-         */
-        require_once APP_ROOT . '/config/app-config.php';
     }
 
     private static function validateConfigSettings() : void
     {
-// set default configuration values
+        // set default configuration values
         foreach (self::$knownSettings as $name => $def)
         {
             if (isset($def['defaultValue']) && !defined($name))
@@ -367,18 +395,13 @@ class Application_Bootstrap
             }
         }
 
-        if (boot_constant('APP_OPTIMIZE_IMAGES') === true)
-        {
-            self::registerRequiredSetting('APP_OPTIPNG_BINARY');
-        }
-
         // ensure that the DB configuration is required when enabled
         if (Application::isDatabaseEnabled())
         {
-            self::registerRequiredSetting('APP_DB_HOST');
-            self::registerRequiredSetting('APP_DB_NAME');
-            self::registerRequiredSetting('APP_DB_USER');
-            self::registerRequiredSetting('APP_DB_PASSWORD');
+            self::registerRequiredSetting(BaseConfigSettings::DB_HOST);
+            self::registerRequiredSetting(BaseConfigSettings::DB_NAME);
+            self::registerRequiredSetting(BaseConfigSettings::DB_USER);
+            self::registerRequiredSetting(BaseConfigSettings::DB_PASSWORD);
         }
 
         // check required configuration values
@@ -401,7 +424,7 @@ class Application_Bootstrap
             }
         }
 
-        // automatic install URL detection: use the relative
+        // Automated install URL detection: use the relative
         // path after the APP_ROOT setting.
         if (!defined('APP_INSTALL_URL'))
         {
@@ -413,26 +436,14 @@ class Application_Bootstrap
 
 /**
  * Used to add a configuration setting at app
- * boot time (in the app-config.php or config-local.php).
+ * boot time (in the <code>app-config.php</code> or <code>config-local.php</code>).
  * 
  * @param string $name
- * @param string|number|bool|NULL $value
+ * @param string|int|float|bool|array|NULL $value
  */
 function boot_define(string $name, $value)
 {
     Application_Bootstrap::registerOptionalSetting($name, $value);
-}
-
-/**
- * Adds a configuration setting to the list of
- * required settings that are checked after boot
- * has completed.
- * 
- * @param string $name
- */
-function boot_require(string $name)
-{
-    Application_Bootstrap::registerRequiredSetting($name);
 }
 
 /**
@@ -459,4 +470,16 @@ function boot_defined(string $name) : bool
 {
     $value = boot_constant($name);
     return $value !== null;
+}
+
+/**
+ * Adds a setting to the list of required settings that must be
+ * defined during the boot process.
+ *
+ * @param string $name
+ * @return void
+ */
+function boot_require(string $name) : void
+{
+    Application_Bootstrap::registerRequiredSetting($name);
 }

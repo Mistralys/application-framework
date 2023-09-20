@@ -5,6 +5,8 @@
  */
 
 use Application\AppFactory;
+use Application\Bootstrap\BootException;
+use Application\ConfigSettings\BaseConfigSettings;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper_Exception;
 
@@ -309,7 +311,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Disabling authentication.');
 
-        $this->setDefine('APP_NO_AUTHENTICATION', true);
+        $this->setDefine(BaseConfigSettings::NO_AUTHENTICATION, true);
     }
     
     private $disallowDBWriteOperations = false;
@@ -339,7 +341,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
             return;
         }
         
-        throw new Application_Exception(
+        throw new BootException(
             'Database write operation detected.',
             sprintf(
                 'Database write operations have been disallowed. Statement: %s',
@@ -366,7 +368,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Switching to script mode.');
 
-        $this->setDefine('APP_RUN_MODE', 'script');
+        $this->setDefine(BaseConfigSettings::RUN_MODE, Application::RUN_MODE_SCRIPT);
     }
     
    /**
@@ -386,7 +388,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
                 return;
             }
             
-            throw new Application_Exception(
+            throw new BootException(
                 'Cannot overwrite a configuration setting',
                 sprintf(
                     'Cannot set [%s] to [%s], it has already been set to [%s].',
