@@ -1,6 +1,17 @@
-### v2.7.5 - Documentation moved
+### v2.8.0 - Environment handling update (breaking)
+- Environments: Added the `ConfigSettings` class that registers all available settings.
+- Environments: Added the `AppSettings` class to access setting values.
+- Environments: Added a full class structure to facilitate configuration.
+- Environments: Every environment now has its own configuration class.
+- Environments: Configuration settings are now set only on activation.
+- Bootstrap: Autoloading has been moved up to enable autoloading during environment detection.
 - Documentation: Moved to the separate Git project [application-framework-docs](https://github.com/Mistralys/application-framework-docs).
 - Documentation: The integrated UI is now handled via the doc's composer package.
+
+#### Breaking changes
+
+- Namespaced and renamed `Application_Environments_Environment`.
+- Namespaced and renamed `Application_Environments`.
 
 ### v2.7.4 - Authentication and KeepAlive
 - Logger: Added the PSR-3 `PSRLogger` to redirect log messages to the application logger.
@@ -539,7 +550,7 @@ updated already.
 
 ### v1.21.1 - Maintenance release
 - Environments: `Application::isDevelEnvironment()` now uses the environment classes.
-- Environments: Added `Application_Environments::getDetected()`.
+- Environments: Added `Application\Application_Environments::getDetected()`.
 - DBHelper: Fixed detection of complex queries in custom columns.
 - Wizards: Fixed a bug when trying to use step data in the cancel URL.
 - FilterSettings: Fixed the UI bug that made the add filter button not clickable.
