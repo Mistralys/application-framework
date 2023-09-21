@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use DeeplHelper\DeeplHelperException;
 use DeeplXML\Translator;
 
@@ -48,7 +48,7 @@ class DeeplHelper
 
     public function getAPIKey() : ?string
     {
-        $key = boot_constant(BaseConfigSettings::DEEPL_API_KEY);
+        $key = boot_constant(BaseConfigRegistry::DEEPL_API_KEY);
 
         if(!empty($key) && is_string($key)) {
             return $key;
@@ -74,7 +74,7 @@ class DeeplHelper
             'Missing DeepL API key',
             sprintf(
                 'The configuration setting [%s] is not defined.',
-                BaseConfigSettings::DEEPL_API_KEY
+                BaseConfigRegistry::DEEPL_API_KEY
             ),
             self::ERROR_DEEPL_API_KEY_NOT_SET
         );
@@ -82,12 +82,12 @@ class DeeplHelper
 
     public function isProxyEnabled() : bool
     {
-        return boot_constant(BaseConfigSettings::DEEPL_PROXY_ENABLED) === true;
+        return boot_constant(BaseConfigRegistry::DEEPL_PROXY_ENABLED) === true;
     }
 
     public function getProxyURL() : ?string
     {
-        $url = boot_constant(BaseConfigSettings::DEEPL_PROXY_URL);
+        $url = boot_constant(BaseConfigRegistry::DEEPL_PROXY_URL);
 
         if(!empty($url) && is_string($url)) {
             return $url;

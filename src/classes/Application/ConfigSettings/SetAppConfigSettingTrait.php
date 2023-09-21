@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Application\ConfigSettings;
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 
 /**
  * Trait with setter methods for all application configuration settings.
@@ -30,7 +30,7 @@ trait SetAppConfigSettingTrait
      */
     public function setSimulateSession(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::SIMULATE_SESSION, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::SIMULATE_SESSION, $enabled);
     }
 
     /**
@@ -39,7 +39,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDemoMode(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DEMO_MODE, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::DEMO_MODE, $enabled);
     }
 
     /**
@@ -52,7 +52,7 @@ trait SetAppConfigSettingTrait
      */
     public function setLoggingEnabled(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LOGGING_ENABLED, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::LOGGING_ENABLED, $enabled);
     }
 
     /**
@@ -61,7 +61,7 @@ trait SetAppConfigSettingTrait
      */
     public function setInstanceID(string $instanceID) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::INSTANCE_ID, $instanceID);
+        return $this->setBootDefine(BaseConfigRegistry::INSTANCE_ID, $instanceID);
     }
 
     /**
@@ -79,7 +79,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBEnabled(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_ENABLED, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::DB_ENABLED, $enabled);
     }
 
     /**
@@ -88,7 +88,7 @@ trait SetAppConfigSettingTrait
      */
     public function setTheme(string $theme) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::THEME, $theme);
+        return $this->setBootDefine(BaseConfigRegistry::THEME, $theme);
     }
 
     /**
@@ -100,7 +100,7 @@ trait SetAppConfigSettingTrait
      */
     public function setShowQueries(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::SHOW_QUERIES, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::SHOW_QUERIES, $enabled);
     }
 
     /**
@@ -112,7 +112,7 @@ trait SetAppConfigSettingTrait
      */
     public function setTrackQueries(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::TRACK_QUERIES, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::TRACK_QUERIES, $enabled);
     }
 
     /**
@@ -124,7 +124,7 @@ trait SetAppConfigSettingTrait
      */
     public function setAuthSalt(string $salt) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::AUTH_SALT, $salt);
+        return $this->setBootDefine(BaseConfigRegistry::AUTH_SALT, $salt);
     }
 
     /**
@@ -138,7 +138,7 @@ trait SetAppConfigSettingTrait
      */
     public function setRunMode(string $runMode) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::RUN_MODE, $runMode);
+        return $this->setBootDefine(BaseConfigRegistry::RUN_MODE, $runMode);
     }
 
     /**
@@ -156,7 +156,7 @@ trait SetAppConfigSettingTrait
      */
     public function setNoAuthentication(bool $noAuthentication) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::NO_AUTHENTICATION, $noAuthentication);
+        return $this->setBootDefine(BaseConfigRegistry::NO_AUTHENTICATION, $noAuthentication);
     }
 
     /**
@@ -168,7 +168,7 @@ trait SetAppConfigSettingTrait
      */
     public function setAutomaticDeletionDelay(int $delay) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::AUTOMATIC_DELETION_DELAY, $delay);
+        return $this->setBootDefine(BaseConfigRegistry::AUTOMATIC_DELETION_DELAY, $delay);
     }
 
     /**
@@ -177,7 +177,7 @@ trait SetAppConfigSettingTrait
      */
     public function setAppSet(string $appSetID) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::APPSET, $appSetID);
+        return $this->setBootDefine(BaseConfigRegistry::APPSET, $appSetID);
     }
 
     /**
@@ -186,7 +186,7 @@ trait SetAppConfigSettingTrait
      */
     public function setJavascriptMinified(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::JAVASCRIPT_MINIFIED, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::JAVASCRIPT_MINIFIED, $enabled);
     }
 
     /**
@@ -195,7 +195,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBName(string $name) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_NAME, $name);
+        return $this->setBootDefine(BaseConfigRegistry::DB_NAME, $name);
     }
 
     /**
@@ -204,7 +204,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBHost(string $host) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_HOST, $host);
+        return $this->setBootDefine(BaseConfigRegistry::DB_HOST, $host);
     }
 
     /**
@@ -213,7 +213,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBPort(int $port) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_PORT, $port);
+        return $this->setBootDefine(BaseConfigRegistry::DB_PORT, $port);
     }
 
     /**
@@ -222,7 +222,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBUser(string $user) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_USER, $user);
+        return $this->setBootDefine(BaseConfigRegistry::DB_USER, $user);
     }
 
     /**
@@ -231,7 +231,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBPassword(string $password) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_PASSWORD, $password);
+        return $this->setBootDefine(BaseConfigRegistry::DB_PASSWORD, $password);
     }
 
     /**
@@ -240,7 +240,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBTestsName(string $name) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_TESTS_NAME, $name);
+        return $this->setBootDefine(BaseConfigRegistry::DB_TESTS_NAME, $name);
     }
 
     /**
@@ -249,7 +249,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBTestsHost(string $host) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_TESTS_HOST, $host);
+        return $this->setBootDefine(BaseConfigRegistry::DB_TESTS_HOST, $host);
     }
 
     /**
@@ -258,7 +258,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBTestsPort(int $port) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_TESTS_PORT, $port);
+        return $this->setBootDefine(BaseConfigRegistry::DB_TESTS_PORT, $port);
     }
 
     /**
@@ -267,7 +267,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBTestsUser(string $user) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_TESTS_USER, $user);
+        return $this->setBootDefine(BaseConfigRegistry::DB_TESTS_USER, $user);
     }
 
     /**
@@ -276,7 +276,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDBTestsPassword(string $password) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DB_TESTS_PASSWORD, $password);
+        return $this->setBootDefine(BaseConfigRegistry::DB_TESTS_PASSWORD, $password);
     }
 
     /**
@@ -285,32 +285,32 @@ trait SetAppConfigSettingTrait
      */
     public function setClassName(string $className) : self
     {
-        return $this->setConstant(BaseConfigSettings::CLASS_NAME, $className);
+        return $this->setConstant(BaseConfigRegistry::CLASS_NAME, $className);
     }
 
     public function setCompanyName(string $companyName) : self
     {
-        return $this->setConstant(BaseConfigSettings::COMPANY_NAME, $companyName);
+        return $this->setConstant(BaseConfigRegistry::COMPANY_NAME, $companyName);
     }
 
     public function setCompanyHomepage(string $companyHomepage) : self
     {
-        return $this->setConstant(BaseConfigSettings::COMPANY_HOMEPAGE, $companyHomepage);
+        return $this->setConstant(BaseConfigRegistry::COMPANY_HOMEPAGE, $companyHomepage);
     }
 
     public function setDummyEmail(string $dummyEmail) : self
     {
-        return $this->setConstant(BaseConfigSettings::DUMMY_EMAIL, $dummyEmail);
+        return $this->setConstant(BaseConfigRegistry::DUMMY_EMAIL, $dummyEmail);
     }
 
     public function setSystemEmail(string $systemEmail) : self
     {
-        return $this->setConstant(BaseConfigSettings::SYSTEM_EMAIL, $systemEmail);
+        return $this->setConstant(BaseConfigRegistry::SYSTEM_EMAIL, $systemEmail);
     }
 
     public function setSystemName(string $systemName) : self
     {
-        return $this->setConstant(BaseConfigSettings::SYSTEM_NAME, $systemName);
+        return $this->setConstant(BaseConfigRegistry::SYSTEM_NAME, $systemName);
     }
 
     /**
@@ -319,12 +319,12 @@ trait SetAppConfigSettingTrait
      */
     public function setURL(string $url) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::URL, $url);
     }
 
     /**
      * The URL to the Composer <code>vendor</code> folder. This is determined
-     * automatically from the {@see BaseConfigSettings::URL} setting, but can be
+     * automatically from the {@see BaseConfigRegistry::URL} setting, but can be
      * overridden here if the application setup is different.
      *
      * @param string $url
@@ -332,7 +332,7 @@ trait SetAppConfigSettingTrait
      */
     public function setVendorURL(string $url) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::VENDOR_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::VENDOR_URL, $url);
     }
 
     /**
@@ -341,7 +341,7 @@ trait SetAppConfigSettingTrait
      */
     public function setContentLocales(array $locales) : self
     {
-        return $this->setConstant(BaseConfigSettings::CONTENT_LOCALES, implode(',', $locales));
+        return $this->setConstant(BaseConfigRegistry::CONTENT_LOCALES, implode(',', $locales));
     }
 
     /**
@@ -350,7 +350,7 @@ trait SetAppConfigSettingTrait
      */
     public function setUILocales(array $locales) : self
     {
-        return $this->setConstant(BaseConfigSettings::UI_LOCALES, implode(',', $locales));
+        return $this->setConstant(BaseConfigRegistry::UI_LOCALES, implode(',', $locales));
     }
 
     /**
@@ -359,7 +359,7 @@ trait SetAppConfigSettingTrait
      */
     public function setRequestLogPassword(string $password) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::REQUEST_LOG_PASSWORD, $password);
+        return $this->setBootDefine(BaseConfigRegistry::REQUEST_LOG_PASSWORD, $password);
     }
 
     /**
@@ -368,7 +368,7 @@ trait SetAppConfigSettingTrait
      */
     public function setInstallURL(string $url) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::INSTALL_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::INSTALL_URL, $url);
     }
 
     /**
@@ -377,7 +377,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDeeplAPIKey(string $key) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DEEPL_API_KEY, $key);
+        return $this->setBootDefine(BaseConfigRegistry::DEEPL_API_KEY, $key);
     }
 
     /**
@@ -386,7 +386,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDeeplProxyURL(string $url) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DEEPL_PROXY_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::DEEPL_PROXY_URL, $url);
     }
 
     /**
@@ -395,7 +395,7 @@ trait SetAppConfigSettingTrait
      */
     public function setDeeplProxyEnabled(bool $enabled) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::DEEPL_PROXY_ENABLED, $enabled);
+        return $this->setBootDefine(BaseConfigRegistry::DEEPL_PROXY_ENABLED, $enabled);
     }
 
     /**
@@ -404,7 +404,7 @@ trait SetAppConfigSettingTrait
      */
     public function setCASHost(string $host) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::CAS_HOST, $host);
+        return $this->setBootDefine(BaseConfigRegistry::CAS_HOST, $host);
     }
 
     /**
@@ -413,7 +413,7 @@ trait SetAppConfigSettingTrait
      */
     public function setCASPort(int $port) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::CAS_PORT, $port);
+        return $this->setBootDefine(BaseConfigRegistry::CAS_PORT, $port);
     }
 
     /**
@@ -422,7 +422,7 @@ trait SetAppConfigSettingTrait
      */
     public function setCASServerURI(string $uri) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::CAS_SERVER_URI, $uri);
+        return $this->setBootDefine(BaseConfigRegistry::CAS_SERVER_URI, $uri);
     }
 
     /**
@@ -431,7 +431,7 @@ trait SetAppConfigSettingTrait
      */
     public function setCASLogoutURL(string $url) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::CAS_LOGOUT_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::CAS_LOGOUT_URL, $url);
     }
 
     /**
@@ -440,36 +440,36 @@ trait SetAppConfigSettingTrait
      */
     public function setCASName(string $name) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::CAS_NAME, $name);
+        return $this->setBootDefine(BaseConfigRegistry::CAS_NAME, $name);
     }
 
     public function setLDAPHost(string $host) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_HOST, $host);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_HOST, $host);
     }
 
     public function setLDAPPort(int $port) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_PORT, $port);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_PORT, $port);
     }
 
     public function setLDAPUsername(string $username) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_USERNAME, $username);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_USERNAME, $username);
     }
 
     public function setLDAPDN(string $dn) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_DN, $dn);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_DN, $dn);
     }
 
     public function setLDAPPassword(string $password) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_PASSWORD, $password);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_PASSWORD, $password);
     }
 
     public function setLDAPMemberSuffix(string $memberSuffix) : self
     {
-        return $this->setBootDefine(BaseConfigSettings::LDAP_MEMBER_SUFFIX, $memberSuffix);
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_MEMBER_SUFFIX, $memberSuffix);
     }
 }

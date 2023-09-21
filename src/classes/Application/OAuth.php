@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper;
 
 class Application_OAuth
@@ -51,13 +51,13 @@ class Application_OAuth
         $this->loadStrategies();
         $this->loadAppStrategies();
 
-        if(!boot_defined(BaseConfigSettings::AUTH_SALT))
+        if(!boot_defined(BaseConfigRegistry::AUTH_SALT))
         {
             throw new OAuth_Exception(
                 'The auth salt setting has not been set',
                 sprintf(
                     'The config setting [%s] must be present.',
-                    BaseConfigSettings::AUTH_SALT
+                    BaseConfigRegistry::AUTH_SALT
                 ),
                 self::ERROR_AUTH_SALT_NOT_SET
             );

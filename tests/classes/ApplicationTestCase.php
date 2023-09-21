@@ -6,7 +6,7 @@ namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use Application;
 use Application\AppFactory;
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
@@ -93,7 +93,7 @@ abstract class ApplicationTestCase extends TestCase
 
     protected function isRunViaApplication(): bool
     {
-        return boot_defined(BaseConfigSettings::FRAMEWORK_TESTS) !== true;
+        return boot_defined(BaseConfigRegistry::FRAMEWORK_TESTS) !== true;
     }
 
     protected function skipIfRunViaApplication(): bool

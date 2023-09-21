@@ -7,7 +7,8 @@
  */
 
 use Application\AppFactory;
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\AppConfig;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
@@ -916,7 +917,7 @@ class Application
 
     public static function getRunMode() : string
     {
-        return (string)boot_constant(BaseConfigSettings::RUN_MODE);
+        return (string)boot_constant(BaseConfigRegistry::RUN_MODE);
     }
 
     public static function isUIEnabled() : bool
@@ -926,17 +927,17 @@ class Application
 
     public static function isAuthenticationEnabled() : bool
     {
-        return boot_constant(BaseConfigSettings::NO_AUTHENTICATION) !== true;
+        return boot_constant(BaseConfigRegistry::NO_AUTHENTICATION) !== true;
     }
 
     public static function isSessionSimulated() : bool
     {
-        return boot_constant(BaseConfigSettings::SIMULATE_SESSION) === true;
+        return boot_constant(BaseConfigRegistry::SIMULATE_SESSION) === true;
     }
 
     public static function isDemoMode() : bool
     {
-        return boot_constant(BaseConfigSettings::DEMO_MODE) === true;
+        return AppConfig::isDemoMode();
     }
 
     /**
@@ -947,7 +948,7 @@ class Application
      */
     public static function isDatabaseEnabled() : bool
     {
-        return boot_constant(BaseConfigSettings::DB_ENABLED) === true;
+        return boot_constant(BaseConfigRegistry::DB_ENABLED) === true;
     }
 
     public static function createLDAP() : Application_LDAP

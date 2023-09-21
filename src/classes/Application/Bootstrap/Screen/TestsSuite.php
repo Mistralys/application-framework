@@ -1,6 +1,6 @@
 <?php
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper;
 
 class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Screen
@@ -54,7 +54,7 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
     {
         $testsRoot = APP_ROOT . '/tests';
 
-        if (boot_constant(BaseConfigSettings::FRAMEWORK_TESTS) === true)
+        if (boot_constant(BaseConfigRegistry::FRAMEWORK_TESTS) === true)
         {
             $testsRoot = APP_ROOT;
         }

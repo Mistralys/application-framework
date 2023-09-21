@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Application;
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\Events\EnvironmentDetected;
 use Application_EventHandler_EventableListener;
 use Application_Exception;
@@ -112,7 +112,7 @@ class Environments implements Application_Interfaces_Eventable
 
         $this->detected = $this->_detect($defaultID);
 
-        boot_define(BaseConfigSettings::ENVIRONMENT, $this->detected->getID());
+        boot_define(BaseConfigRegistry::ENVIRONMENT, $this->detected->getID());
 
         $this->triggerEvent(
             self::EVENT_ENVIRONMENT_DETECTED,

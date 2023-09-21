@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Application\Bootstrap\BootException;
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
 use Composer\Autoload\ClassLoader;
 
@@ -14,7 +14,7 @@ const APP_FRAMEWORK_DOCUMENTATION_URL = 'https://github.com/Mistralys/applicatio
  * Must be loaded manually, because autoloading is not ready
  * yet when constant names are accessed.
  */
-require_once __DIR__ . '/ConfigSettings/BaseConfigSettings.php';
+require_once __DIR__ . '/ConfigSettings/BaseConfigRegistry.php';
 
 class Application_Bootstrap
 {
@@ -197,20 +197,20 @@ class Application_Bootstrap
     */
     protected static function registerConfigSettings() : void
     {
-        self::registerRequiredSetting(BaseConfigSettings::CLASS_NAME);
-        self::registerRequiredSetting(BaseConfigSettings::INSTANCE_ID);
-        self::registerRequiredSetting(BaseConfigSettings::CONTENT_LOCALES);
-        self::registerRequiredSetting(BaseConfigSettings::URL);
-        self::registerRequiredSetting(BaseConfigSettings::REQUEST_LOG_PASSWORD);
+        self::registerRequiredSetting(BaseConfigRegistry::CLASS_NAME);
+        self::registerRequiredSetting(BaseConfigRegistry::INSTANCE_ID);
+        self::registerRequiredSetting(BaseConfigRegistry::CONTENT_LOCALES);
+        self::registerRequiredSetting(BaseConfigRegistry::URL);
+        self::registerRequiredSetting(BaseConfigRegistry::REQUEST_LOG_PASSWORD);
         
-        self::registerOptionalSetting(BaseConfigSettings::DB_ENABLED, true);
+        self::registerOptionalSetting(BaseConfigRegistry::DB_ENABLED, true);
 
-        self::registerOptionalSetting(BaseConfigSettings::DEMO_MODE, false);
-        self::registerOptionalSetting(BaseConfigSettings::LOGGING_ENABLED, false);
-        self::registerOptionalSetting(BaseConfigSettings::SHOW_QUERIES, false);
-        self::registerOptionalSetting(BaseConfigSettings::JAVASCRIPT_MINIFIED, true);
-        self::registerOptionalSetting(BaseConfigSettings::AUTOMATIC_DELETION_DELAY, 60*60*24*5);
-        self::registerOptionalSetting(BaseConfigSettings::SIMULATE_SESSION, false);
+        self::registerOptionalSetting(BaseConfigRegistry::DEMO_MODE, false);
+        self::registerOptionalSetting(BaseConfigRegistry::LOGGING_ENABLED, false);
+        self::registerOptionalSetting(BaseConfigRegistry::SHOW_QUERIES, false);
+        self::registerOptionalSetting(BaseConfigRegistry::JAVASCRIPT_MINIFIED, true);
+        self::registerOptionalSetting(BaseConfigRegistry::AUTOMATIC_DELETION_DELAY, 60*60*24*5);
+        self::registerOptionalSetting(BaseConfigRegistry::SIMULATE_SESSION, false);
     }
     
    /**
@@ -398,10 +398,10 @@ EOT;
         // ensure that the DB configuration is required when enabled
         if (Application::isDatabaseEnabled())
         {
-            self::registerRequiredSetting(BaseConfigSettings::DB_HOST);
-            self::registerRequiredSetting(BaseConfigSettings::DB_NAME);
-            self::registerRequiredSetting(BaseConfigSettings::DB_USER);
-            self::registerRequiredSetting(BaseConfigSettings::DB_PASSWORD);
+            self::registerRequiredSetting(BaseConfigRegistry::DB_HOST);
+            self::registerRequiredSetting(BaseConfigRegistry::DB_NAME);
+            self::registerRequiredSetting(BaseConfigRegistry::DB_USER);
+            self::registerRequiredSetting(BaseConfigRegistry::DB_PASSWORD);
         }
 
         // check required configuration values

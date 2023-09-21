@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver;
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\BaseEnvironmentsConfig;
 use Application\Environments\Environment;
 use TestDriver\Environments\LocalEnvironment;
@@ -52,9 +52,9 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
         );
     }
 
-    protected function createCustomSettings(): BaseConfigSettings
+    protected function createCustomSettings(): BaseConfigRegistry
     {
-        return new CustomConfigSettings();
+        return new CustomConfigRegistry();
     }
 
     protected function configureDefaultSettings(Environment $environment): void
@@ -95,5 +95,10 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
         return array(
             LocalEnvironment::class
         );
+    }
+
+    protected function getRequiredSettingNames(): array
+    {
+        return array();
     }
 }

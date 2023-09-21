@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -66,7 +66,7 @@ class Application_Logger
     public function isLoggingEnabled(string $category='') : bool
     {
         return
-            boot_constant(BaseConfigSettings::LOGGING_ENABLED) === true
+            boot_constant(BaseConfigRegistry::LOGGING_ENABLED) === true
             &&
             $this->isCategoryEnabled($category);
     }

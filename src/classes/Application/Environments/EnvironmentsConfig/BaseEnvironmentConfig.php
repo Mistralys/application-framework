@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Environments\EnvironmentSetup;
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments;
 use Application\Environments\Environment;
 use AppUtils\FileHelper\FolderInfo;
@@ -12,7 +12,7 @@ use AppUtils\FileHelper\FolderInfo;
 abstract class BaseEnvironmentConfig
 {
     protected FolderInfo $configFolder;
-    protected BaseConfigSettings $config;
+    protected BaseConfigRegistry $config;
     protected Environment $environment;
 
     abstract public function getID() : string;
@@ -26,7 +26,7 @@ abstract class BaseEnvironmentConfig
     abstract protected function configureCustomSettings() : void;
     abstract protected function setUpEnvironment() : void;
 
-    public function __construct(BaseConfigSettings $config, FolderInfo $configFolder)
+    public function __construct(BaseConfigRegistry $config, FolderInfo $configFolder)
     {
         $environments = Environments::getInstance();
 
@@ -42,5 +42,30 @@ abstract class BaseEnvironmentConfig
         );
 
         $this->setUpEnvironment();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDevHosts(): array
+    {
+        $hostsFile = $this->configFolder . '/dev-hosts.txt';
+
+        if (!file_exists($hostsFile)) {
+            return array();
+        }
+
+        $hosts = explode("\n", file_get_contents($hostsFile));
+        $hosts = array_map('trim', $hosts);
+
+        $result = array();
+
+        foreach ($hosts as $host) {
+            if (!empty($host)) {
+                $result[] = $host;
+            }
+        }
+
+        return $result;
     }
 }

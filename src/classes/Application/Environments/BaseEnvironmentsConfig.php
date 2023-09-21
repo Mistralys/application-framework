@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Application\Environments;
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\EnvironmentSetup\BaseEnvironmentConfig;
 use Application\Environments\Events\IncludesLoaded;
 use Application\Environments;
@@ -36,13 +36,17 @@ use AppUtils\FileHelper\FolderInfo;
  * to the environment that should be considered as local development
  * hosts.
  *
- * The method {@see self::getDevHosts()} facilitates this, as shown
- * in the following example:
+ * The method {@see BaseEnvironmentConfig::getDevHosts()} facilitates
+ * this when used from within the {@see BaseEnvironmentConfig::setUpEnvironment()},
+ * as shown in the following example:
  *
  * <pre>
- * $localHosts = $this->getDevHosts();
- * foreach ($localHosts as $host) {
- *     $environment->or()->requireHostNameContains($host);
+ * protected function setUpEnvironment(): void
+ * {
+ *     $localHosts = $this->getDevHosts();
+ *     foreach ($localHosts as $host) {
+ *         $this->environment->or()->requireHostNameContains($host);
+ *     }
  * }
  * </pre>
  *
@@ -54,7 +58,7 @@ abstract class BaseEnvironmentsConfig
 {
     protected FolderInfo $configFolder;
     protected Environments $environments;
-    protected BaseConfigSettings $config;
+    protected BaseConfigRegistry $config;
     protected FolderInfo $environmentsFolder;
 
     public function __construct(FolderInfo $configFolder)
@@ -64,6 +68,7 @@ abstract class BaseEnvironmentsConfig
         $this->config = $this->createCustomSettings();
 
         $this->configureCoreSettings();
+        $this->configureRequiredSettings();
         $this->registerEnvironments();
 
         $environments = $this->environments->getAll();
@@ -78,7 +83,7 @@ abstract class BaseEnvironmentsConfig
         }
     }
 
-    public function getConfig() : BaseConfigSettings
+    public function getConfig() : BaseConfigRegistry
     {
         return $this->config;
     }
@@ -98,17 +103,46 @@ abstract class BaseEnvironmentsConfig
      * @return string[]
      */
     abstract protected function getUILocales() : array;
-    abstract protected function createCustomSettings() : BaseConfigSettings;
 
+    /**
+     * The driver must implement a class that holds any custom
+     * settings the application may have - even if it has none.
+     *
+     * @return BaseConfigRegistry
+     */
+    abstract protected function createCustomSettings() : BaseConfigRegistry;
+
+    /**
+     * Configure default setting values, as well as settings common
+     * to all environments. Use the {@see self::$config} property
+     * to access the settings.
+     *
+     * @param \Application\Environments\Environment $environment
+     * @return void
+     */
     abstract protected function configureDefaultSettings(Environment $environment) : void;
+
+    /**
+     * Return a list of all configuration settings that are required:
+     * If any of these are missing at the end of the boot process, an
+     * exception will be thrown.
+     *
+     * @return string[]
+     */
+    abstract protected function getRequiredSettingNames() : array;
+
     abstract public function getDefaultEnvironmentID() : string;
 
     /**
+     * Returns a list of environment classes that should be
+     * used to detect the application's environment. These
+     * must extend the {@see BaseEnvironmentConfig} class.
+     *
      * @return class-string[]
      */
     abstract protected function getEnvironmentClasses() : array;
 
-    protected function registerEnvironments() : void
+    private function registerEnvironments() : void
     {
         $classes = $this->getEnvironmentClasses();
 
@@ -152,28 +186,12 @@ abstract class BaseEnvironmentsConfig
         return $this->environments->detect($this->getDefaultEnvironmentID());
     }
 
-    /**
-     * @return string[]
-     */
-    public function getDevHosts(): array
+    private function configureRequiredSettings() : void
     {
-        $hostsFile = $this->configFolder . '/dev-hosts.txt';
+        $names = $this->getRequiredSettingNames();
 
-        if (!file_exists($hostsFile)) {
-            return array();
+        foreach($names as $name) {
+            boot_require($name);
         }
-
-        $hosts = explode("\n", file_get_contents($hostsFile));
-        $hosts = array_map('trim', $hosts);
-
-        $result = array();
-
-        foreach ($hosts as $host) {
-            if (!empty($host)) {
-                $result[] = $host;
-            }
-        }
-
-        return $result;
     }
 }

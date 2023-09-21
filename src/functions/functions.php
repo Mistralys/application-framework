@@ -5,7 +5,7 @@
  * @subpackage Core
  */
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -1078,11 +1078,11 @@ function ensureType(string $className, object $object, int $code=0)
  */
 function isDevelMode() : bool
 {
-    if(boot_constant(BaseConfigSettings::TESTS_RUNNING) === true) {
+    if(boot_constant(BaseConfigRegistry::TESTS_RUNNING) === true) {
         return true;
     }
 
-    return boot_constant(BaseConfigSettings::DEVELOPER_MODE) === true;
+    return boot_constant(BaseConfigRegistry::DEVELOPER_MODE) === true;
 }
 
 /**

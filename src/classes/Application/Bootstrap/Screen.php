@@ -6,7 +6,7 @@
 
 use Application\AppFactory;
 use Application\Bootstrap\BootException;
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper_Exception;
 
@@ -311,7 +311,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Disabling authentication.');
 
-        $this->setDefine(BaseConfigSettings::NO_AUTHENTICATION, true);
+        $this->setDefine(BaseConfigRegistry::NO_AUTHENTICATION, true);
     }
     
     private $disallowDBWriteOperations = false;
@@ -368,7 +368,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Switching to script mode.');
 
-        $this->setDefine(BaseConfigSettings::RUN_MODE, Application::RUN_MODE_SCRIPT);
+        $this->setDefine(BaseConfigRegistry::RUN_MODE, Application::RUN_MODE_SCRIPT);
     }
     
    /**

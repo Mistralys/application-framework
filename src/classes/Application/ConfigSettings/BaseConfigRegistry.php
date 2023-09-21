@@ -2,7 +2,7 @@
 /**
  * @package Application
  * @subpackage Environments
- * @see \Application\ConfigSettings\BaseConfigSettings
+ * @see \Application\ConfigSettings\BaseConfigRegistry
  */
 
 declare(strict_types=1);
@@ -27,7 +27,7 @@ require_once __DIR__.'/SetAppConfigSettingTrait.php';
  * @see SetAppConfigSettingTrait Setter methods for all settings.
  * @see BaseEnvironmentsConfig Settings are configured via this class in the concrete application.
  */
-abstract class BaseConfigSettings implements SetConfigSettingInterface
+abstract class BaseConfigRegistry implements SetConfigSettingInterface
 {
     use SetAppConfigSettingTrait;
 

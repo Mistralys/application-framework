@@ -6,7 +6,7 @@
  * @see DBHelper
  */
 
-use Application\ConfigSettings\BaseConfigSettings;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
@@ -89,7 +89,7 @@ class DBHelper
     
     public static function isQueryTrackingEnabled() : bool
     {
-        return boot_constant(BaseConfigSettings::TRACK_QUERIES) === true;
+        return boot_constant(BaseConfigRegistry::TRACK_QUERIES) === true;
     }
 
     /**
