@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Application;
 
-use Application\ConfigSettings\BaseConfigRegistry;
+use Application;use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\Events\EnvironmentDetected;
 use Application_EventHandler_EventableListener;
 use Application_Exception;
@@ -19,6 +19,7 @@ use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 use Application\Environments\Environment;
+use Throwable;
 
 /**
  * Application\Environments\Environment manager: handles detecting the environment
@@ -151,7 +152,6 @@ class Environments implements Application_Interfaces_Eventable
             );
         }
 
-        /* @var Environment $environment */
         foreach ($this->environments as $environment) {
             if ($environment->isMatch()) {
                 $this->log(sprintf('Current environment matches [%s].', $environment->getID()));
@@ -197,5 +197,47 @@ class Environments implements Application_Interfaces_Eventable
     public function getAll(): array
     {
         return array_values($this->environments);
+    }
+
+    /**
+     * @param Throwable $e
+     * @return never
+     */
+    public static function displayException(Throwable $e)
+    {
+        header('Content-Type: text/html; charset=utf-8');
+
+        ?><!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <title>Environment configuration failure</title>
+                <style>
+                    BODY{
+                        font-family: monospace;
+                    }
+                </style>
+            </head>
+            <body>
+                <p>
+                    An exception occurred while trying to configure the application environment.
+                </p>
+                <p>
+                    Message: <?php echo $e->getMessage() ?><br>
+                    Code: <?php echo $e->getCode() ?><br>
+                    Details: <?php echo $e->getDetails() ?><br>
+                </p>
+                <p>
+                    Trace:
+                </p>
+                <pre><?php echo $e->getTraceAsString() ?></pre>
+                <p>
+                    App log:
+                </p>
+                <pre><?php echo implode(PHP_EOL, AppFactory::createLogger()->getLog()) ?></pre>
+            </body>
+        </html>
+        <?php
+
+        Application::exit('Environment configuration failure.');
     }
 }
