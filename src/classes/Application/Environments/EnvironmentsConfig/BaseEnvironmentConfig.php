@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Environments
+ * @see \Application\Environments\EnvironmentSetup\BaseEnvironmentConfig
+ */
 
 declare(strict_types=1);
 
@@ -9,6 +14,13 @@ use Application\Environments;
 use Application\Environments\Environment;
 use AppUtils\FileHelper\FolderInfo;
 
+/**
+ * Base class for individual environment configuration classes.
+ *
+ * @package Application
+ * @subpackage Environments
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
 abstract class BaseEnvironmentConfig
 {
     protected FolderInfo $configFolder;
