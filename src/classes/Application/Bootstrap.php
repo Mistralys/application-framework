@@ -22,7 +22,8 @@ class Application_Bootstrap
     public const ERROR_AUTOLOADER_NOT_STARTED = 28102; 
     public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
     public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
-    
+    public const ERROR_MISSING_CONFIG_SETTING = 28105;
+
     private static ClassLoader $autoLoader;
     private static bool $initialized = false;
 
@@ -280,7 +281,7 @@ class Application_Bootstrap
         // Convert non-framework exceptions, so we can log them
         // as well - otherwise, they will not be viewable in the
         // error log.
-        return new Application_Exception(
+        return new BootException(
             'Non-framework exception: ' . $e->getMessage(),
             sprintf(
                 'Encountered an exception of type [%s].',
@@ -404,13 +405,14 @@ EOT;
 
             if (!defined($name))
             {
-                header('Content-Type:text/plain; charset=UTF-8');
-
-                die(sprintf(
-                    'The %1$s configuration setting is missing. ' .
-                    'Please edit the relevant configuration file to add it.',
-                    $name
-                ));
+                throw new BootException(
+                    'Missing configuration setting',
+                    sprintf(
+                        'The configuration setting [%s] is missing.',
+                        $name
+                    ),
+                    self::ERROR_MISSING_CONFIG_SETTING
+                );
             }
         }
 
