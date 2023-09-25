@@ -1207,3 +1207,27 @@ function statementValues() : DBHelper_StatementBuilder_ValuesContainer
 {
     return new DBHelper_StatementBuilder_ValuesContainer();
 }
+
+/**
+ * Fetches the home folder of the current user.
+ *
+ * NOTE: Meant to be used when working locally
+ * on a project. Supports Windows, Linux and
+ * MacOS.
+ *
+ * @return string
+ */
+function getHomeFolder() : string
+{
+    $result = $_SERVER['HOME'] ?? getenv('HOME');
+
+    if(empty($result) && function_exists('exec')) {
+        if(PHP_OS_FAMILY === 'Windows') {
+            $result = exec("echo %userprofile%");
+        } else {
+            $result = exec("echo ~");
+        }
+    }
+
+    return $result;
+}
