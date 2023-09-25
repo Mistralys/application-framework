@@ -1,6 +1,8 @@
 <?php
 
 use Application\AppFactory;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 
 abstract class Application_RevisionableCollection implements Application_CollectionInterface
 {
@@ -145,23 +147,24 @@ abstract class Application_RevisionableCollection implements Application_Collect
         $this->initCustomArguments($customArguments);
         $this->init();
     }
-    
-   /**
-    * Creates a new collection instance. Can be given arbitrary
-    * arguments that are passed on to the constructor, and can
-    * be used in the collection implementation's {@link init()} method.
-    *
-    * @return Application_RevisionableCollection
-    * @param array<int,mixed> ...$args
-    */
-    public static function create(...$args)
+
+    /**
+     * Creates a new collection instance. Can be given arbitrary
+     * arguments that are passed on to the constructor, and can
+     * be used in the collection implementation's {@link init()} method.
+     *
+     * @param array<int,mixed> ...$args
+     * @return Application_RevisionableCollection
+     * @throws BaseClassHelperException
+     */
+    public static function create(...$args) : Application_RevisionableCollection
     {
-        $className = get_called_class();
+        $className = static::class;
         
-        /**
-         * @phpstan-ignore-next-line
-         */
-        return new $className($args);
+        return ClassHelper::requireObjectInstanceOf(
+            Application_RevisionableCollection::class,
+            new $className($args)
+        );
     }
     
    /**

@@ -326,10 +326,7 @@ class Application_Logger
             $message = $this->getTime().' | '.$message;
         }
 
-        if(!empty($category))
-        {
-            $message = $category . ' | ' . $message;
-        }
+        $message = $category . ' | ' . $message;
 
         $this->log[] = $message;
 

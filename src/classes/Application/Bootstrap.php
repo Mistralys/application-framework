@@ -27,9 +27,9 @@ class Application_Bootstrap
     private static bool $initialized = false;
 
     /**
-     * @var class-string
+     * @var class-string|NULL
      */
-    private static string $bootClass = '';
+    private static ?string $bootClass = null;
 
     /**
      * Boots from a standard application screen.
@@ -50,9 +50,9 @@ class Application_Bootstrap
      * to boot the application. Can be used to identify which
      * screen was used.
      *
-     * @return string
+     * @return class-string|NULL
      */
-    public static function getBootClass() : string
+    public static function getBootClass() : ?string
     {
         return self::$bootClass;
     }

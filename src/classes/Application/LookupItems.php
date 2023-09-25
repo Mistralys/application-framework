@@ -12,20 +12,13 @@ class Application_LookupItems implements Application_Interfaces_Loggable
     public const ERROR_INVALID_LOOKUP_ITEM_CLASS = 25101;
     public const ERROR_ITEM_NOT_FOUND = 25102;
 
-    /**
-     * @var string
-     */
-    protected $driverID;
+    protected string $driverID;
+    protected string $folder;
 
     /**
-     * @var string
+     * @var Application_LookupItems_Item[]|NULL
      */
-    protected $folder;
-
-    /**
-     * @var Application_LookupItems_Item[]
-     */
-    protected $items;
+    protected ?array $items = null;
 
     public function __construct(Application_Driver $driver)
     {

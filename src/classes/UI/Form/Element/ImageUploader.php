@@ -68,9 +68,9 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     * - state
     * - id
     *
-    * @return array[string]string
+    * @return array{name:string,state:string,id:string}
     */
-    public static function getDefaultData()
+    public static function getDefaultData() : array
     {
         return array(
             'name' => '',
@@ -82,6 +82,9 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     /**
      * Overridden to allow storing the image upload field's
      * array value from the three input elements it is made of.
+     *
+     * @return $this
+     * @throws Application_Exception
      *
      * @see HTML_QuickForm2_Element_Input::setValue()
      */
@@ -103,7 +106,9 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
         
         $this->uploadData = $value;
 
-        return parent::setValue($value['name']);
+        parent::setValue($value['name']);
+
+        return $this;
     }
 
     /**

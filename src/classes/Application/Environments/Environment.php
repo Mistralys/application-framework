@@ -76,7 +76,7 @@ class Environment implements Application_Interfaces_Eventable
     protected int $requirementSetCounter = 0;
 
     /**
-     * @var array<int,Application_Environments_Environment_Requirement>
+     * @var array<int,array<int,Application_Environments_Environment_Requirement>>
      */
     protected array $requirements = array();
 
@@ -338,10 +338,12 @@ class Environment implements Application_Interfaces_Eventable
         // go through all requirement sets: if any
         // of the sets is valid, the environment is
         // a match.
-        foreach ($this->requirements as $setID => $set) {
+        foreach ($this->requirements as $setID => $set)
+        {
             $setValid = true;
 
-            foreach ($set as $requirement) {
+            foreach ($set as $requirement)
+            {
                 if (!$requirement->isValid()) {
                     $this->log(sprintf(
                         'Set [%s] | Requirement [%s] | Failed.',
