@@ -81,7 +81,7 @@ class Environment implements Application_Interfaces_Eventable
     protected array $requirements = array();
 
     /**
-     * @var string[]
+     * @var array<string,array{path:string,optional:bool}>
      */
     protected array $includeFiles = array();
 
@@ -237,18 +237,6 @@ class Environment implements Application_Interfaces_Eventable
      */
     public function includeFile(string $path, bool $optional = false): self
     {
-        if (!$optional && !file_exists($path)) {
-            throw new EnvironmentException(
-                'Application\Environments\Environment include file does not exist.',
-                sprintf(
-                    'The include file [%s] for environment [%s] could not be found on disk.',
-                    $path,
-                    $this->getID()
-                ),
-                self::ERROR_INCLUDE_FILE_NOT_FOUND
-            );
-        }
-
         if (FileHelper::getExtension($path) !== 'php') {
             throw new EnvironmentException(
                 'Environments can only include PHP files.',
@@ -261,7 +249,10 @@ class Environment implements Application_Interfaces_Eventable
             );
         }
 
-        $this->includeFiles[] = $path;
+        $this->includeFiles[] = array(
+            'path' => $path,
+            'optional' => $optional
+        );
 
         return $this;
     }
@@ -309,10 +300,23 @@ class Environment implements Application_Interfaces_Eventable
 
         $this->log('Include files | Found [%s] files.', count($this->includeFiles));
 
-        foreach ($this->includeFiles as $file) {
-            if (file_exists($file)) {
-                $this->log('Include files | Including [%s] | Path [%s]', basename($file), $file);
-                require_once $file;
+        foreach ($this->includeFiles as $fileDef)
+        {
+            if (!$fileDef['optional'] && !file_exists($fileDef['path'])) {
+                throw new EnvironmentException(
+                    'Environment include file does not exist.',
+                    sprintf(
+                        'The include file [%s] for environment [%s] could not be found on disk.',
+                        $fileDef['path'],
+                        $this->getID()
+                    ),
+                    self::ERROR_INCLUDE_FILE_NOT_FOUND
+                );
+            }
+
+            if (file_exists($fileDef['path'])) {
+                $this->log('Include files | Including [%s] | Path [%s]', basename($fileDef['path']), $fileDef['path']);
+                require_once $fileDef['path'];
             }
         }
 
