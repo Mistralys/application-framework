@@ -15,6 +15,27 @@
 - Namespaced and renamed `Application_Environments_Environment`.
 - Namespaced and renamed `Application_Environments`.
 
+#### Upgrade guide
+
+To use the new environment handling, follow these steps to upgrade an existing installation:
+
+1. Create a `EnvironmentsConfig` class that extends `BaseEnvironmentsConfig`.
+2. Create environment classes for all target environments, extending `BaseEnvironmentConfig`.
+3. Return these classes in the config class' `getEnvironmentClasses()` method.
+4. Move default and common settings to the config class' `configureDefaultSettings()` method.
+5. Move environment-specific settings to the environment classes' `configureCustomSettings()` method.
+6. In the `app-config.php`, use the new config class (see code sample below).
+7. Remove the `config-local.php` file.
+8. If needed, add a local developer config file, loaded via the local environment class.
+
+```php
+use AppUtils\FileHelper\FolderInfo;
+use DriverClassName\EnvironmentsConfig;
+
+(new EnvironmentsConfig(FolderInfo::factory(__DIR__)))
+        ->detect();
+```
+
 ### v2.7.4 - Authentication and KeepAlive
 - Logger: Added the PSR-3 `PSRLogger` to redirect log messages to the application logger.
 - Sessions: The return URL after authentication is now handled automatically via the session.
