@@ -1,14 +1,16 @@
-### v2.8.0 - Environment handling update (breaking)
+### v2.8.0 - Environment handling update (breaking-xs)
 - Environments: Added the `ConfigSettings` class that registers all available settings.
 - Environments: Added the `AppSettings` class to access setting values.
 - Environments: Added a full class structure to facilitate configuration.
 - Environments: Every environment now has its own configuration class.
 - Environments: Configuration settings are now set only on activation.
+- Environments: The `config-local.php` is now optional (environments can be loaded in `app-config.php`).
 - Bootstrap: Autoloading has been moved up to enable autoloading during environment detection.
 - Documentation: Moved to the separate Git project [application-framework-docs](https://github.com/Mistralys/application-framework-docs).
 - Documentation: The integrated UI is now handled via the doc's composer package.
+- Global Functions: Added `getHomeFolder()` utility function.
 
-#### Breaking changes
+#### Breaking changes (XS)
 
 - Namespaced and renamed `Application_Environments_Environment`.
 - Namespaced and renamed `Application_Environments`.
