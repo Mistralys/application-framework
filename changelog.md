@@ -1,3 +1,8 @@
+### v2.8.1 - Minor enhancements
+- Bootstrap: Replaced a `die()` with an exception.
+- Environments: Added specialized `Environments::displayException()` method to display errors.
+- TestApplication: Converted to use the new environment handling.
+
 ### v2.8.0 - Environment handling update (breaking-xs)
 - Environments: Added the `ConfigSettings` class that registers all available settings.
 - Environments: Added the `AppSettings` class to access setting values.
@@ -32,8 +37,15 @@ To use the new environment handling, follow these steps to upgrade an existing i
 use AppUtils\FileHelper\FolderInfo;
 use DriverClassName\EnvironmentsConfig;
 
-(new EnvironmentsConfig(FolderInfo::factory(__DIR__)))
+try
+{
+    (new EnvironmentsConfig(FolderInfo::factory(__DIR__)))
         ->detect();
+}
+catch (Throwable $e)
+{
+    Environments::displayException($e);
+}
 ```
 
 ### v2.7.4 - Authentication and KeepAlive
