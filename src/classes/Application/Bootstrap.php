@@ -370,17 +370,7 @@ EOT;
         {
             if (file_exists($configFile)) {
                 require_once $configFile;
-                continue;
             }
-
-            header('Content-Type:text/plain; charset=UTF-8');
-
-            echo sprintf(
-                self::CONFIG_MISSING_MESSAGE,
-                basename($configFile),
-                str_replace('.php', '.dist.php', basename($configFile))
-            );
-            exit;
         }
     }
 
