@@ -1,3 +1,6 @@
+### v2.8.2 - Bugfix
+- Connectors: Fixed the connector exception printing debug information.
+
 ### v2.8.1 - Minor enhancements
 - Bootstrap: Replaced a `die()` with an exception.
 - Environments: Added specialized `Environments::displayException()` method to display errors.
