@@ -13,7 +13,6 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\EnvironmentSetup\BaseEnvironmentConfig;
 use Application\Environments\Events\IncludesLoaded;
 use Application\Environments;
-use Application\Environments\Environment;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FolderInfo;
 
@@ -59,10 +58,13 @@ abstract class BaseEnvironmentsConfig
     protected FolderInfo $configFolder;
     protected Environments $environments;
     protected BaseConfigRegistry $config;
-    protected FolderInfo $environmentsFolder;
 
     public function __construct(FolderInfo $configFolder)
     {
+        // Enable the logging per default to ensure that
+        // environment log messages are kept.
+        boot_define(BaseConfigRegistry::LOGGING_ENABLED, true);
+
         $this->configFolder = $configFolder;
         $this->environments = Environments::getInstance();
         $this->config = $this->createCustomSettings();
@@ -117,7 +119,7 @@ abstract class BaseEnvironmentsConfig
      * to all environments. Use the {@see self::$config} property
      * to access the settings.
      *
-     * @param \Application\Environments\Environment $environment
+     * @param Environment $environment
      * @return void
      */
     abstract protected function configureDefaultSettings(Environment $environment) : void;
