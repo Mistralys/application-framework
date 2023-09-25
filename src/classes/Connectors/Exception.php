@@ -192,6 +192,6 @@ class Connectors_Exception extends Application_Exception
             return $text;
         }
         
-        return ConvertHelper::print_r($text);
+        return ConvertHelper::print_r($text, true);
     }
 }
