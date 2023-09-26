@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Application\ConfigSettings;
 
-use Application\ConfigSettings\BaseConfigRegistry;
-
 /**
  * Trait with setter methods for all application configuration settings.
  * Meant to be used in tandem with the {@see SetConfigSettingInterface}
@@ -288,26 +286,46 @@ trait SetAppConfigSettingTrait
         return $this->setConstant(BaseConfigRegistry::CLASS_NAME, $className);
     }
 
+    /**
+     * @param string $companyName
+     * @return $this
+     */
     public function setCompanyName(string $companyName) : self
     {
         return $this->setConstant(BaseConfigRegistry::COMPANY_NAME, $companyName);
     }
 
+    /**
+     * @param string $companyHomepage
+     * @return $this
+     */
     public function setCompanyHomepage(string $companyHomepage) : self
     {
         return $this->setConstant(BaseConfigRegistry::COMPANY_HOMEPAGE, $companyHomepage);
     }
 
+    /**
+     * @param string $dummyEmail
+     * @return $this
+     */
     public function setDummyEmail(string $dummyEmail) : self
     {
         return $this->setConstant(BaseConfigRegistry::DUMMY_EMAIL, $dummyEmail);
     }
 
+    /**
+     * @param string $systemEmail
+     * @return $this
+     */
     public function setSystemEmail(string $systemEmail) : self
     {
         return $this->setConstant(BaseConfigRegistry::SYSTEM_EMAIL, $systemEmail);
     }
 
+    /**
+     * @param string $systemName
+     * @return $this
+     */
     public function setSystemName(string $systemName) : self
     {
         return $this->setConstant(BaseConfigRegistry::SYSTEM_NAME, $systemName);
@@ -443,31 +461,55 @@ trait SetAppConfigSettingTrait
         return $this->setBootDefine(BaseConfigRegistry::CAS_NAME, $name);
     }
 
+    /**
+     * @param string $host
+     * @return $this
+     */
     public function setLDAPHost(string $host) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_HOST, $host);
     }
 
+    /**
+     * @param int $port
+     * @return $this
+     */
     public function setLDAPPort(int $port) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_PORT, $port);
     }
 
+    /**
+     * @param string $username
+     * @return $this
+     */
     public function setLDAPUsername(string $username) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_USERNAME, $username);
     }
 
+    /**
+     * @param string $dn
+     * @return $this
+     */
     public function setLDAPDN(string $dn) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_DN, $dn);
     }
 
+    /**
+     * @param string $password
+     * @return $this
+     */
     public function setLDAPPassword(string $password) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_PASSWORD, $password);
     }
 
+    /**
+     * @param string $memberSuffix
+     * @return $this
+     */
     public function setLDAPMemberSuffix(string $memberSuffix) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_MEMBER_SUFFIX, $memberSuffix);
