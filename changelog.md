@@ -1,5 +1,6 @@
 ### v2.8.2 - Bugfix
 - Connectors: Fixed the connector exception printing debug information.
+- Environments: Added missing phpDocs for chaining config setter methods.
 
 ### v2.8.1 - Minor enhancements
 - Bootstrap: Replaced a `die()` with an exception.
