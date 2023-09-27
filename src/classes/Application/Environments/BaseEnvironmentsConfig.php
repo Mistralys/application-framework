@@ -25,7 +25,7 @@ use AppUtils\FileHelper\FolderInfo;
  *
  * 1. Create a class that extends this class.
  * 2. Implement all abstract methods.
- * 3. Create an instance of the class in the `config-local.php` file.
+ * 3. Create an instance of the class in the `app-config.php` file.
  * 4. Call the {@see self::detect()} method to detect the environment.
  *
  * Local development:
@@ -36,7 +36,7 @@ use AppUtils\FileHelper\FolderInfo;
  * hosts.
  *
  * The method {@see BaseEnvironmentConfig::getDevHosts()} facilitates
- * this when used from within the {@see BaseEnvironmentConfig::setUpEnvironment()},
+ * this when used from within {@see BaseEnvironmentConfig::setUpEnvironment()},
  * as shown in the following example:
  *
  * <pre>
