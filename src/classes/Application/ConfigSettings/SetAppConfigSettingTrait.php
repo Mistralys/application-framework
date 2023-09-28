@@ -435,6 +435,7 @@ trait SetAppConfigSettingTrait
     }
 
     /**
+     * Sets the absolute URI to access the server.
      * @param string $uri
      * @return $this
      */
