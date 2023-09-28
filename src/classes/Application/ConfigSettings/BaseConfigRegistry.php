@@ -255,9 +255,9 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
     public const CAS_PORT = 'APP_CAS_PORT';
 
     /**
-     * @see APP_CAS_SERVER_URI
+     * @see APP_CAS_SERVER
      */
-    public const CAS_SERVER_URI = 'APP_CAS_SERVER_URI';
+    public const CAS_SERVER_URI = 'APP_CAS_SERVER';
 
     /**
      * @see APP_CAS_LOGOUT_URL
