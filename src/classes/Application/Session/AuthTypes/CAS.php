@@ -65,7 +65,6 @@ trait Application_Session_AuthTypes_CAS
         CAS_GracefullTerminationException::throwInsteadOfExiting();
 
         phpCAS::setLogger(new PSRLogger('CAS Auth'));
-        phpCAS::SetNoCasServerValidation();
 
         try
         {
@@ -77,6 +76,15 @@ trait Application_Session_AuthTypes_CAS
                 $baseURL,
                 false
             );
+
+            phpCAS::SetNoCasServerValidation();
+
+            $this->log('CAS client initialized.');
+
+            $this->client = phpCAS::getCasClient();
+            $this->client->setBaseURL(rtrim(APP_CAS_SERVER, '/').'/');
+
+            return $this->client;
         }
         catch (Throwable $e)
         {
@@ -90,13 +98,6 @@ trait Application_Session_AuthTypes_CAS
                 $e
             );
         }
-
-        $this->log('CAS client initialized.');
-
-        $this->client = phpCAS::getCasClient();
-        $this->client->setBaseURL(rtrim(APP_CAS_SERVER, '/').'/');
-
-        return $this->client;
     }
 
     /**
