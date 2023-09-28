@@ -1,3 +1,6 @@
+### v2.8.3 - Bugfixes
+- CAS: Fixed `setCASServerURI()` using the wrong setting constant name.
+
 ### v2.8.2 - Bugfixes
 - Connectors: Fixed the connector exception printing debug information.
 - Environments: Added missing phpDocs for chaining config setter methods.
