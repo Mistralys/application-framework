@@ -1,3 +1,6 @@
+### v2.8.3 - Bugfix
+- CAS: Fixed client setup method order causing an exception.
+
 ### v2.8.2 - Bugfix
 - Connectors: Fixed the connector exception printing debug information.
 - Environments: Added missing phpDocs for chaining config setter methods.
