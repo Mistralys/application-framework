@@ -58,9 +58,8 @@ const APP_DB_TESTS_PORT = 3306;
 	
 const APP_CAS_HOST = 'login.cas-host.example';
 const APP_CAS_PORT = 443;
-const APP_CAS_SERVER = 'servername';
-const APP_CAS_SERVER_URI = 'https://login.cas-host.example:443/servername';
-const APP_CAS_LOGOUT_URL = 'https://login.cas-host.example/servername/logout';
+const APP_CAS_SERVER = 'https://'.APP_CAS_HOST.':'.APP_CAS_PORT.'/servername';
+const APP_CAS_LOGOUT_URL = APP_CAS_SERVER.'/logout';
 const APP_CAS_NAME = 'Login Service';
 
 const APP_DEEPL_API_KEY = 'apikey';
