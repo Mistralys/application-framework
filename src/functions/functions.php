@@ -282,10 +282,6 @@ function displayError(Throwable $e, string $output='') : void
         $develinfo = true;
     }
 
-    if(Application::isDevelEnvironment()) {
-        $develinfo = true;
-    }
-
     $contentType = 'html';
     if(!isContentTypeHTML())
     {
@@ -1077,6 +1073,10 @@ function ensureType(string $className, object $object, int $code=0)
 
 /**
  * Whether developer mode is enabled.
+ *
+ * NOTE: It is automatically enabled when unit tests are
+ * running, or if the application runs in a development
+ * environment.
  * 
  * @return bool
  */
@@ -1086,7 +1086,11 @@ function isDevelMode() : bool
         return true;
     }
 
-    return boot_constant(BaseConfigRegistry::DEVELOPER_MODE) === true;
+    if(boot_constant(BaseConfigRegistry::DEVELOPER_MODE) === true) {
+        return true;
+    }
+
+    return Application::isDevelEnvironment();
 }
 
 /**
