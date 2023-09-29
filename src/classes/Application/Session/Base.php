@@ -147,7 +147,11 @@ abstract class Application_Session_Base implements Application_Session
      */
     private function unpackUser() : Application_User
     {
-        $user = Application::createUser($this->getUserID());
+        $userID = $this->getUserID();
+
+        $this->log('User [%s] | Unpacking the user and their rights.', $userID);
+
+        $user = Application::createUser($userID);
         $user->setRights($this->unpackRights());
 
         return $user;
@@ -181,6 +185,13 @@ abstract class Application_Session_Base implements Application_Session
         $this->setValue(self::KEY_NAME_USER_RIGHTS, implode(',', $rights));
 
         $this->log(sprintf('User [%s] | Stored in the session.', $userID));
+
+        // Unpack the user, as processes after this may need to access
+        // the instance. The redirect, for example, needs to know whether
+        // the user is a developer.
+        $this->unpackUser();
+
+        $this->log('User [%s] | Redirecting to the initially requested URL.');
 
         Application::redirect($this->unpackTargetURL());
     }
