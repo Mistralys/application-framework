@@ -32,18 +32,11 @@ class UserMenu
         $this->menu = $dropdown->getMenu();
     }
 
-    public function isNameEnabled() : bool
-    {
-        return Application_Driver::createSettings()
-            ->getBool(UI_Themes::OPTION_SHOW_USER_NAME);
-    }
-
     public function configure() : void
     {
-        if($this->isNameEnabled())
-        {
-            $this->dropdown->setLabel($this->user->getName());
-        }
+        // Add the user's name as tooltip and header
+        $this->dropdown->setTooltip(UI::tooltip(t('Logged in as %1$s.', $this->user->getName()))->makeLeft());
+        $this->dropdown->addHeader($this->user->getName());
 
         $this->addQuickstart();
         $this->addNotepad();
