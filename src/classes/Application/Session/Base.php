@@ -21,6 +21,8 @@ use function AppUtils\parseURL;
  * @package Application
  * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Bootstrap_Screen::initSession()
  */
 abstract class Application_Session_Base implements Application_Session
 {
@@ -76,50 +78,14 @@ abstract class Application_Session_Base implements Application_Session
      */
     abstract protected function handleLogin() : ?Application_Users_User;
 
+    /**
+     * @see Application_Bootstrap_Screen::initSession()
+     */
     public function __construct()
     {
-        $this->init();
-    }
-
-    final protected function init() : void
-    {
         $this->log('Starting the session.');
-
         $this->start();
-
         $this->log('Session started with ID [%s].', $this->getID());
-
-        $this->initRightPresets();
-
-        if (!Application::isAuthenticationEnabled())
-        {
-            $this->log('Authentication is disabled, using the system user.');
-            $this->user = Application::createSystemUser();
-            return;
-        }
-
-        if (isset($_REQUEST['logout']) && $_REQUEST['logout'] === 'yes')
-        {
-            $this->logOut();
-        }
-
-        $userID = $this->getUserID();
-
-        $this->initSimulatedSession($userID);
-
-        // Starts the authentication process. This ends either by
-        // storing the user ID in the session via `storeUser()`,
-        // or via a redirect to an error page.
-        if ($userID === 0)
-        {
-            $this->log('No user ID stored, starting authentication.');
-
-            $this->initAuthentication();
-        }
-        
-        $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
-
-        $this->user = $this->unpackUser();
     }
 
     public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
@@ -141,7 +107,7 @@ abstract class Application_Session_Base implements Application_Session
         Application::redirect(APP_URL.'/registration-disabled.php');
     }
 
-    protected function initAuthentication() : void
+    private function initAuthentication() : void
     {
         $this->log('No user ID found in the session, initiating login sequence.');
 
@@ -179,7 +145,7 @@ abstract class Application_Session_Base implements Application_Session
      * @return Application_User
      * @throws Application_Exception
      */
-    protected function unpackUser() : Application_User
+    private function unpackUser() : Application_User
     {
         $user = Application::createUser($this->getUserID());
         $user->setRights($this->unpackRights());
@@ -188,12 +154,12 @@ abstract class Application_Session_Base implements Application_Session
     }
 
     /**
-     * Stores the specified user in the session as the logged in user
-     * after authentication.
+     * Stores the specified user in the session as the authenticated user
+     * after the authentication process has completed successfully.
      *
      * @param Application_Users_User $user
      */
-    protected function storeUser(Application_Users_User $user) : void
+    private function storeUser(Application_Users_User $user) : void
     {
         $userID = $user->getID();
 
@@ -219,7 +185,7 @@ abstract class Application_Session_Base implements Application_Session
         Application::redirect($this->unpackTargetURL());
     }
 
-    protected function initRightPresets() : void
+    private function initRightPresets() : void
     {
         $user = Application::createSystemUser();
 
@@ -243,7 +209,7 @@ abstract class Application_Session_Base implements Application_Session
      * @param int $userID The currently authenticated user's ID
      * @throws Application_Exception
      */
-    protected function initSimulatedSession(int $userID) : void
+    private function initSimulatedSession(int $userID) : void
     {
         // Ignore this if we are not in simulation mode.
         if (!Application::isSessionSimulated()) {
@@ -292,7 +258,7 @@ abstract class Application_Session_Base implements Application_Session
         return $simulateID;
     }
 
-    protected function unpackRights() : array
+    private function unpackRights() : array
     {
         $rights = (string)$this->getValue(self::KEY_NAME_USER_RIGHTS);
 
@@ -471,6 +437,47 @@ abstract class Application_Session_Base implements Application_Session
         return $this->user;
     }
 
+    final public function authenticate() : Application_User
+    {
+        if(isset($this->user)) {
+            return $this->user;
+        }
+
+        $this->initRightPresets();
+
+        if (!Application::isAuthenticationEnabled())
+        {
+            $this->log('Authentication is disabled, using the system user.');
+            $this->user = Application::createSystemUser();
+            return $this->user;
+        }
+
+        if (isset($_REQUEST['logout']) && string2bool($_REQUEST['logout']) === true)
+        {
+            $this->logOut();
+        }
+
+        $userID = $this->getUserID();
+
+        $this->initSimulatedSession($userID);
+
+        // Starts the authentication process. This ends either by
+        // storing the user ID in the session via `storeUser()`,
+        // or via a redirect to an error page.
+        if ($userID === 0)
+        {
+            $this->log('No user ID stored, starting authentication.');
+
+            $this->initAuthentication();
+        }
+
+        $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
+
+        $this->user = $this->unpackUser();
+
+        return $this->user;
+    }
+
     /**
      * @return Application_User
      * @throws Application_Session_Exception
@@ -522,7 +529,7 @@ abstract class Application_Session_Base implements Application_Session
             return $this->updateUser($user, $firstname, $lastname, $foreignID);
         }
 
-        // User not found in DB, and registration is disabled: redirect
+        // User isn't found in DB, and registration is disabled: redirect
         // to the registration disabled screen.
         if(!$this->isRegistrationEnabled())
         {
@@ -550,7 +557,7 @@ abstract class Application_Session_Base implements Application_Session
         return $user;
     }
 
-    protected function updateUser(Application_Users_User $user, string $firstname, string $lastname, string $foreignID) : Application_Users_User
+    private function updateUser(Application_Users_User $user, string $firstname, string $lastname, string $foreignID) : Application_Users_User
     {
         $user->setFirstName($firstname);
         $user->setLastName($lastname);
