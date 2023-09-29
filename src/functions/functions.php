@@ -282,6 +282,10 @@ function displayError(Throwable $e, string $output='') : void
         $develinfo = true;
     }
 
+    if(Application::isDevelEnvironment()) {
+        $develinfo = true;
+    }
+
     $contentType = 'html';
     if(!isContentTypeHTML())
     {
