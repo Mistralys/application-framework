@@ -5,7 +5,9 @@
 - Loggable: Fixed the `logUI()` method incorrectly passing on arguments.
 - Sessions: Fixed boot process to split session start and user authentication ([#55](https://github.com/Mistralys/application-framework/issues/55)).
 - Sessions: Introduced the `authenticate()` method in the interface.
+- Sessions: `storeUser()` now also unpacks the user instance.
 - Exceptions: Developer info is now automatically enabled in DEV environments.
+- Application: `isUserDev()` now works even if no user is available yet.
 
 #### Breaking changes
 
