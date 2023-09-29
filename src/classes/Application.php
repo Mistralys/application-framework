@@ -367,7 +367,7 @@ class Application
      */
     public static function getUser() : Application_User
     {
-        return self::getSession()->getUser();
+        return self::getSession()->requireUser();
     }
 
     /**
