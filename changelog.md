@@ -1,3 +1,9 @@
+### v2.8.4
+- UI: Removed the `show_user_name` theme option.
+- UI: The user menu now has the user's name as tooltip and header.
+- UI: Added tooltips to dropdown menu links and buttons.
+- Loggable: Fixed the `logUI()` method incorrectly passing on arguments.
+
 ### v2.8.3 - Bugfixes
 - CAS: Fixed `setCASServerURI()` using the wrong setting constant name.
 
