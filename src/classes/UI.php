@@ -1346,8 +1346,8 @@ class UI
     }
 
     /**
-     * Creates a tooltip info instance, used to hold information
-     * for a tooltip, and configure it.
+     * Creates a tooltip instance used to hold information
+     * for a tooltip, to allow configuring it further.
      *
      * Usage:
      *
@@ -1359,7 +1359,7 @@ class UI
      *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
      *    is called, or if {@see TooltipInfo::injectJS()} is called.
      *
-     * @param $content
+     * @param string|int|float|Interface_Stringable|NULL $content
      * @return TooltipInfo
      */
     public static function tooltip($content) : TooltipInfo
