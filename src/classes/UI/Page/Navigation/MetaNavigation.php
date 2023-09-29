@@ -14,6 +14,9 @@ use UI_Page_Navigation;
 use UI_Renderable_Interface;
 use UI_Traits_RenderableGeneric;
 
+/**
+ * @see template_default_navigation_metanav
+ */
 class MetaNavigation implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
