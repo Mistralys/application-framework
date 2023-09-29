@@ -1,8 +1,17 @@
-### v2.8.4
+### v2.9.0 - Sessions update (breaking-xs)
 - UI: Removed the `show_user_name` theme option.
 - UI: The user menu now has the user's name as tooltip and header.
 - UI: Added tooltips to dropdown menu links and buttons.
 - Loggable: Fixed the `logUI()` method incorrectly passing on arguments.
+- Sessions: Fixed boot process to split session start and user authentication ([#55](https://github.com/Mistralys/application-framework/issues/55)).
+- Sessions: Introduced the `authenticate()` method in the interface.
+
+#### Breaking changes
+
+Any custom session classes must now implement the `authenticate()` 
+method. This is called after the session has been started, specifically
+to check the user's authentication and handle the login process as
+needed.
 
 ### v2.8.3 - Bugfixes
 - CAS: Fixed `setCASServerURI()` using the wrong setting constant name.
