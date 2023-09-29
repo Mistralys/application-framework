@@ -689,12 +689,15 @@ class Application
 
     public static function isUserDev() : bool
     {
-        if (!isset(self::$isDevUser))
-        {
-            self::$isDevUser = self::getUser()->isDeveloper();
+        // Use the session to get the user, as the application's
+        // getUser() method triggers authentication.
+        $user = self::getSession()->getUser();
+
+        if($user !== null) {
+            return $user->isDeveloper();
         }
 
-        return self::$isDevUser;
+        return false;
     }
 
     /**
