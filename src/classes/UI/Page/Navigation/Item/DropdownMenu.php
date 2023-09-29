@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interface_Stringable;
 use AppUtils\OutputBuffering;
 use function AppUtils\parseURL;
 
@@ -151,19 +152,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
     private function renderDefault() : string
     {
-        OutputBuffering::start();
-
-        ?>
-        <li class="<?php echo implode(' ', $this->classes) ?>">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <?php echo $this->renderLabel() ?>
-                <?php if($this->caret) { ?><b class="caret"></b><?php } ?>
-            </a>
-            <?php echo $this->menu->render() ?>
-        </li>
-        <?php
-
-        return OutputBuffering::get();
+        return UI::getInstance()->createButtonDropdown()
+            ->setLabel($this->label)
+            ->setIcon($this->getIcon())
+            ->setTooltip($this->tooltipInfo)
+            ->setCaretEnabled($this->caret)
+            ->makeNavItem()
+            ->addClasses($this->classes)
+            ->setMenu($this->menu)
+            ->render();
     }
 
     private function renderSplit() : string
@@ -204,21 +201,6 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         return $attributes;
     }
 
-    private function renderLabel() : string
-    {
-        $label = sb();
-
-        $icon = $this->getIcon();
-        if($icon !== null)
-        {
-            $label->icon($icon);
-        }
-
-        $label->add($this->label);
-
-        return (string)$label;
-    }
-    
     /**
      * Adds a menu item that links to a regular URL.
      *
@@ -259,6 +241,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     public function addSeparator() : UI_Bootstrap_DropdownMenu
     {
         return $this->menu->addSeparator();
+    }
+
+    /**
+     * @param string|int|float|Interface_Stringable|NULL $label
+     * @return UI_Bootstrap_DropdownHeader
+     */
+    public function addHeader($label) : UI_Bootstrap_DropdownHeader
+    {
+        return $this->menu->addHeader($label);
     }
 
     public function isActive() : bool
