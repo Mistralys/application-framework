@@ -1,27 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\Interface_Stringable;
+use UI\Interfaces\TooltipableInterface;
+use UI\Traits\TooltipableTrait;
+
 abstract class UI_Bootstrap_BaseDropdown
     extends UI_Bootstrap
-    implements UI_Interfaces_Bootstrap_DropdownItem
+    implements UI_Interfaces_Bootstrap_DropdownItem,
+    TooltipableInterface
 {
     use Application_Traits_Iconizable;
+    use TooltipableTrait;
     
-    /**
-     * @var UI_Bootstrap_DropdownMenu
-     */
-    protected $menu;
-    
-    protected $label;
-    
-    protected $caret = true;
+    protected UI_Bootstrap_DropdownMenu $menu;
+    protected string $label;
+    protected bool $caret = true;
+    protected bool $isLink = false;
+    protected bool $inNavigation = false;
 
-    protected $isLink = false;
-    
-    protected $inNavigation = false;
-    
     public function __construct($ui)
     {
         parent::__construct($ui);
+
         $this->menu = $this->ui->createDropdownMenu();
         $this->init();
     }
@@ -37,100 +39,129 @@ abstract class UI_Bootstrap_BaseDropdown
     * @param UI_Bootstrap_DropdownMenu $menu
     * @return UI_Bootstrap_BaseDropdown
     */
-    public function setMenu(UI_Bootstrap_DropdownMenu $menu)
+    public function setMenu(UI_Bootstrap_DropdownMenu $menu) : self
     {
         $this->menu = $menu;
         return $this;
     }
     
-    public function makeNavItem()
+    public function makeNavItem() : self
     {
         $this->inNavigation = true;
         return $this;
     }
 
     /**
-     * @param string $label
+     * @param string|int|float|Interface_Stringable|NULL $label
      * @return $this
+     * @throws UI_Exception
      */
-    public function setLabel(string $label) : self
+    public function setLabel($label) : self
     {
-        $this->label = $label;
+        $this->label = toString($label);
         return $this;
     }
-    
+
    /**
     * @return UI_Bootstrap_DropdownMenu
     */
-    public function getMenu()
+    public function getMenu() : UI_Bootstrap_DropdownMenu
     {
         return $this->menu;
     }
-    
-   /**
-    * Creates and adds a new anchor menu item.
-    * @param string $label
-    * @param string $url
-    * @return UI_Bootstrap_DropdownAnchor
-    */
-    public function addLink($label, $url)
+
+    /**
+     * Creates and adds a new anchor menu item.
+     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string $url
+     * @return UI_Bootstrap_DropdownAnchor
+     *
+     * @throws UI_Exception
+     */
+    public function addLink($label, string $url) : UI_Bootstrap_DropdownAnchor
     {
         return $this->menu->addLink($label, $url);
     }
-    
-   /**
-    * Creates and adds a new anchor menu item that is
-    * linked to the specified javascript statement.
-    * 
-    * @param string $label
-    * @param string $statement
-    * @return UI_Bootstrap_DropdownAnchor
-    */
-    public function addClickable($label, $statement)
+
+    /**
+     * Creates and adds a new anchor menu item that is
+     * linked to the specified javascript statement.
+     *
+     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string $statement
+     * @return UI_Bootstrap_DropdownAnchor
+     *
+     * @throws UI_Exception
+     */
+    public function addClickable($label, string $statement) : UI_Bootstrap_DropdownAnchor
     {
         return $this->menu->addClickable($label, $statement);
     }
     
    /**
     * Adds a header to the dropdown, to group items.
-    * @param string $label
+    * @param string|int|float|Interface_Stringable|NULL $label
     * @return UI_Bootstrap_DropdownHeader
     */
-    public function addHeader($label)
+    public function addHeader($label) : UI_Bootstrap_DropdownHeader
     {
         return $this->menu->addHeader($label);
     }
     
-    public function addSeparator()
+    public function addSeparator() : self
     {
-        return $this->menu->addSeparator();
+        $this->menu->addSeparator();
+        return $this;
     }
-    
-    public function addStatic($content)
+
+    /**
+     * @param string|int|float|Interface_Stringable|NULL $content
+     * @return UI_Bootstrap_DropdownStatic
+     * @throws UI_Exception
+     */
+    public function addStatic($content) : UI_Bootstrap_DropdownStatic
     {
         return $this->menu->addStatic($content);
     }
-    
-    public function noCaret()
+
+    public function setCaretEnabled(bool $enabled) : self
     {
-        $this->caret = false;
+        $this->caret = $enabled;
         return $this;
     }
+
+    /**
+     * @return $this
+     */
+    public function noCaret() : self
+    {
+        return $this->setCaretEnabled(false);
+    }
     
-    protected $layout = 'default';
-    
-    public function setType($type)
+    protected string $layout = 'default';
+
+    /**
+     * @param string $type
+     * @return $this
+     */
+    public function setType(string $type) : self
     {
         $this->layout = $type;
         return $this;
     }
-    
-    public function makeSuccess()
+
+    /**
+     * @return $this
+     */
+    public function makeSuccess() : self
     {
         return $this->setType('success');
     }
-    
-    public function makeInfo()
+
+    /**
+     * @return $this
+     */
+    public function makeInfo() : self
     {
         return $this->setType('info');
     }
@@ -143,8 +174,13 @@ abstract class UI_Bootstrap_BaseDropdown
         
         return $this->_render();
     }
-    
-    public function moveAfter($whichItem, $afterItem)
+
+    /**
+     * @param string $whichItem The name of the item to move
+     * @param string $afterItem The name of the item to move it after
+     * @return $this
+     */
+    public function moveAfter(string $whichItem, string $afterItem) : self
     {
         $this->menu->moveAfter($whichItem, $afterItem);
         return $this;
