@@ -3,7 +3,14 @@
 class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
 {
     protected $size;
-    
+
+    protected function init(): void
+    {
+        parent::init();
+
+        $this->setID(nextJSID());
+    }
+
     public function makeMini()
     {
         $this->size = 'btn-mini';
@@ -72,6 +79,12 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
             if($this->isLink) {
                 $this->addLinkClass('btn-link');
             }
+        }
+
+        if(isset($this->tooltipInfo))
+        {
+            $this->tooltipInfo->attachToID($this->getID())->injectJS();
+            $this->setAttribute('title', $this->tooltipInfo->getContent());
         }
     
         $this->setLinkAttribute('data-toggle', 'dropdown');
