@@ -1,3 +1,9 @@
 BODY.clean-frame{
 background:#fff;
 }
+
+#clean-footer > .container{
+    border-top: solid 1px #ccc;
+    padding-top: 0.6rem;
+    color:#777;
+}
