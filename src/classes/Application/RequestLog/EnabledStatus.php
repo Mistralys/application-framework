@@ -7,20 +7,14 @@ use AppUtils\FileHelper;
 
 class Application_RequestLog_EnabledStatus
 {
-    /**
-     * @var Application_RequestLog
-     */
-    private $log;
+    private Application_RequestLog $log;
 
-    /**
-     * @var string
-     */
-    private $storageFile;
+    private string $storageFile;
 
     public function __construct(Application_RequestLog $log)
     {
         $this->log = $log;
-        $this->storageFile = Application::getStorageFolder().'/request-logging.txt';
+        $this->storageFile = Application::getStorageSubfolderPath('logs').'/request-logging.txt';
     }
 
     public function getAdminToggleURL(array $params=array()) : string
