@@ -16,28 +16,20 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public const REQUEST_PARAM_HOUR = 'hour';
     public const REQUEST_PARAM_ID = 'requestID';
     public const REQUEST_PARAM_LOG_OUT = 'log_out';
+    public const REQUEST_PARAM_DELETE_ALL = 'delete_all';
     public const REQUEST_PARAM_SETTINGS = 'settings';
     public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
 
     public const DISPATCHER = 'requestlog.php';
     public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
 
-    /**
-     * @var Application_RequestLog
-     */
-    private $log;
+    private Application_RequestLog $log;
 
-    /**
-     * @var UI_Page
-     */
-    private $page;
+    private UI_Page $page;
 
-    /**
-     * @var Application_Request
-     */
-    private $request;
+    private Application_Request $request;
 
-    private $persistVars = array();
+    private array $persistVars = array();
 
     public function getDispatcher()
     {
@@ -62,6 +54,11 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         if(!$this->isAuthenticated())
         {
             $this->handleAuthentication();
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DELETE_ALL))
+        {
+            $this->handleDeleteAll();
         }
 
         if($this->request->getBool(self::REQUEST_PARAM_SETTINGS))
@@ -152,6 +149,15 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         UI::getInstance()->addSuccessMessage($message);
+
+        Application::redirect($this->log->getAdminURL());
+    }
+
+    private function handleDeleteAll() : void
+    {
+        $this->log->clearAllLogs();
+
+        UI::getInstance()->addSuccessMessage(t('All stored request logs have been successfully deleted.'));
 
         Application::redirect($this->log->getAdminURL());
     }
