@@ -66,7 +66,7 @@ abstract class Application_Session_Base implements Application_Session
     protected ?Application_User $user = null;
 
     abstract protected function start() : void;
-    abstract protected function handleLogout() : void;
+    abstract protected function handleLogout(array $clearKeys=array()) : void;
 
     /**
      * Handles the logic to log in the user. This must
@@ -92,7 +92,13 @@ abstract class Application_Session_Base implements Application_Session
     {
         $this->log('Logout requested, logging the user out.');
 
-        $this->handleLogout();
+        $this->handleLogout(array(
+            self::KEY_NAME_AUTH_RETURN_URL,
+            self::KEY_NAME_RIGHTS_PRESET,
+            self::KEY_NAME_USER_ID,
+            self::KEY_NAME_SIMULATED_ID,
+            self::KEY_NAME_USER_RIGHTS
+        ));
 
         self::redirectToLogout($reasonID);
     }

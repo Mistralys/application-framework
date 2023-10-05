@@ -101,10 +101,11 @@ abstract class Application_Session_Native extends Application_Session_Base
         return '';
     }
 
-    protected function handleLogout() : void
+    protected function handleLogout(array $clearKeys=array()) : void
     {
-        $_SESSION = array();
-        session_destroy();
+        foreach($clearKeys as $name) {
+            $this->unsetValue($name);
+        }
     }
 
     public function getValue(string $name, $default = null)
