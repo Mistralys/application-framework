@@ -6,8 +6,14 @@
 - Sessions: Fixed boot process to split session start and user authentication ([#55](https://github.com/Mistralys/application-framework/issues/55)).
 - Sessions: Introduced the `authenticate()` method in the interface.
 - Sessions: `storeUser()` now also unpacks the user instance.
+- Sessions: Logging out now only clears the user, not the session.
+- Sessions: Fixed the logout also clearing the request log authentication.
 - Exceptions: Developer info is now automatically enabled in DEV environments.
 - Application: `isUserDev()` now works even if no user is available yet.
+- RequestLog: Added a button to delete all stored logs.
+- RequestLog: Moved the status file from `storage` to `storage/logs`.
+- RequestLog: Added a footer in the UI with version information.
+- Dependencies: Updated AppUtils to [v2.5.0](https://github.com/Mistralys/application-utils/releases/tag/2.5.0).
 
 #### Breaking changes
 
