@@ -92,6 +92,18 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
         return $this->getAdminURL($params);
     }
 
+    public function getAdminDeleteAllURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DELETE_ALL] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function hasLogs() : bool
+    {
+        return !empty($this->getYears());
+    }
+
     protected function isValidFolder(string $folder) : bool
     {
         return is_numeric($folder) && strlen($folder) === 4;
