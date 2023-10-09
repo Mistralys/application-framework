@@ -42,6 +42,11 @@ class template_default_requestlog_file_detail extends UI_Page_Template_Custom
 
         echo $this->createSection()
             ->collapse()
+            ->setTitle(t('Session variables'))
+            ->setContent('<pre>'.print_r($this->info->getSessionVars(), true).'</pre>');
+
+        echo $this->createSection()
+            ->collapse()
             ->setTitle(t('Application log'))
             ->setContent('<pre>'.$this->info->getLog().'</pre>');
 
