@@ -13,9 +13,14 @@
 - RequestLog: Added a button to delete all stored logs.
 - RequestLog: Moved the status file from `storage` to `storage/logs`.
 - RequestLog: Added a footer in the UI with version information.
+- RequestLog: Added logging of session variables.
+- RequestLog: Fixed no log being written before the session is started.
+- RequestLog: Added an "Overview" breadcrumb item to go back to the overview.
+- Bootstrap: Logging is now enabled by default until configuration settings are loaded.
+- Driver: Added `isInitialized()` to check if the driver instance is set.
 - Dependencies: Updated AppUtils to [v2.5.0](https://github.com/Mistralys/application-utils/releases/tag/2.5.0).
 
-#### Breaking changes
+#### Breaking changes (XS)
 
 Any custom session classes must now implement the `authenticate()` 
 method. This is called after the session has been started, specifically
