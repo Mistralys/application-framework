@@ -19,7 +19,7 @@ use Application_Interfaces_Eventable;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 use Application\Environments\Environment;
-use Throwable;
+use AppUtils\BaseException;use Throwable;
 
 /**
  * Application\Environments\Environment manager: handles detecting the environment
@@ -224,7 +224,13 @@ class Environments implements Application_Interfaces_Eventable
                 <p>
                     Message: <?php echo $e->getMessage() ?><br>
                     Code: <?php echo $e->getCode() ?><br>
-                    Details: <?php echo $e->getDetails() ?><br>
+                    <?php
+                    if ($e instanceof BaseException) {
+                        ?>
+                        Details: <?php echo $e->getDetails() ?><br>
+                        <?php
+                    }
+                    ?>
                 </p>
                 <p>
                     Trace:

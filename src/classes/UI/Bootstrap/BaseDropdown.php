@@ -124,6 +124,10 @@ abstract class UI_Bootstrap_BaseDropdown
         return $this->menu->addStatic($content);
     }
 
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
     public function setCaretEnabled(bool $enabled) : self
     {
         $this->caret = $enabled;
