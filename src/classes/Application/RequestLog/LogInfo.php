@@ -232,14 +232,28 @@ class Application_RequestLog_LogInfo
         return !$this->isSimulatedSession() && !$this->isNoSession();
     }
 
+    /**
+     * @return array<string,mixed>
+     */
     public function getRequestVars() : array
     {
         return $this->getDataArray(Application_RequestLog_LogWriter::KEY_REQUEST_VARS);
     }
 
+    /**
+     * @return array<string,string|number|NULL>
+     */
     public function getServerVars() : array
     {
         return $this->getDataArray(Application_RequestLog_LogWriter::KEY_SERVER_VARS);
+    }
+
+    /**
+     * @return array<string,mixed>
+     */
+    public function getSessionVars() : array
+    {
+        return $this->getDataArray(Application_RequestLog_LogWriter::KEY_SESSION_VARS);
     }
 
     public function getLog() : string
