@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
@@ -31,6 +32,7 @@ class Application_Bootstrap
      * @var class-string|NULL
      */
     private static ?string $bootClass = null;
+    private static bool $initializing = false;
 
     /**
      * Boots from a standard application screen.
@@ -88,6 +90,8 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        self::init();
+
         self::$bootClass = $class;
 
         try
@@ -198,6 +202,8 @@ class Application_Bootstrap
     */
     protected static function registerConfigSettings() : void
     {
+        Application::log('Bootstrap | Registering configuration settings.');
+
         self::registerRequiredSetting(BaseConfigRegistry::CLASS_NAME);
         self::registerRequiredSetting(BaseConfigRegistry::INSTANCE_ID);
         self::registerRequiredSetting(BaseConfigRegistry::CONTENT_LOCALES);
@@ -223,20 +229,41 @@ class Application_Bootstrap
     */
     public static function init() : void
     {
-        if(self::$initialized)
+        if(self::$initialized || self::$initializing)
         {
             return;
         }
 
-        self::$initialized = true;
+        self::$initializing = true;
+
+        if(!defined('APP_TIME_START'))
+        {
+            define('APP_TIME_START', microtime(true));
+        }
 
         self::initAutoLoader();
         self::initIncludePath();
+        self::initShutdownHandler();
         self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
+
+        self::$initializing = false;
+        self::$initialized = true;
     }
-    
+
+    public static function isInitialized() : bool
+    {
+        return self::$initialized;
+    }
+
+    private static function initShutdownHandler() : void
+    {
+        Application::log('Bootstrap | Registering shutdown handler.');
+
+        register_shutdown_function(array(self::class, 'handleShutDown'));
+    }
+
     public static function convertException(Exception $e) : Application_Exception
     {
         // Handle the case where the DB is not installed
@@ -352,16 +379,10 @@ class Application_Bootstrap
         ini_set('include_path', implode(PATH_SEPARATOR, $includePaths));
     }
 
-    private const CONFIG_MISSING_MESSAGE = <<<'EOT'
-The configuration file %1$s was not found.
-
-Please create this file first. There is usually a %2$s file
-that you can use as template. Adjust the relevant configuration 
-settings, then reload this page.
-EOT;
-
     private static function initConfiguration() : void
     {
+        Application::log('Bootstrap | Loading configuration files.');
+
         $configs = array(
             APP_ROOT . '/config/app-config.php', // First, contains only static settings
             APP_ROOT . '/config/config-local.php' // Second, contains dynamic settings
@@ -377,6 +398,8 @@ EOT;
 
     private static function validateConfigSettings() : void
     {
+        Application::log('Bootstrap | Validating configuration settings.');
+
         // set default configuration values
         foreach (self::$knownSettings as $name => $def)
         {
@@ -423,6 +446,22 @@ EOT;
             $relative = ltrim(str_replace(APP_ROOT, '', APP_INSTALL_FOLDER), '/');
             define('APP_INSTALL_URL', APP_URL . '/' . $relative);
         }
+    }
+
+    public static function handleShutDown() : void
+    {
+        Application::log('Bootstrap | The system is shutting down.');
+
+        if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN) && Application_Driver::isInitialized())
+        {
+            Application_EventHandler::trigger(
+                Application::EVENT_SYSTEM_SHUTDOWN,
+                array(Application_Driver::getInstance()),
+                Application_EventHandler_Event_SystemShutDown::class
+            );
+        }
+
+        Application_RequestLog::autoWriteLog();
     }
 }
 

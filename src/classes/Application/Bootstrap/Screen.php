@@ -19,7 +19,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     public const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
 
     public const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
-    const REQUEST_PARAM_DEVELMODE_ENABLE = 'develmode_enable';
+    public const REQUEST_PARAM_DEVELMODE_ENABLE = 'develmode_enable';
 
     protected array $params = array();
     protected Application $app;
@@ -35,13 +35,8 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     
     public function boot() : void
     {
-        register_shutdown_function(array($this, 'shutDown'));
+        $this->log('Booting the screen.');
 
-        if(!defined('APP_TIME_START'))
-        {
-            define('APP_TIME_START', microtime(true));
-        }
-        
         $this->_boot();
     }
     
@@ -350,25 +345,6 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         define($name, $value);
     }
     
-    public function shutDown() : void
-    {
-        Application::log('Bootstrap | The system is shutting down.');
-
-        if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN))
-        {
-            Application_EventHandler::trigger(
-                Application::EVENT_SYSTEM_SHUTDOWN,
-                array($this->driver),
-                Application_EventHandler_Event_SystemShutDown::class
-            );
-        }
-               
-        if(AppFactory::createRequestLog()->getStatus()->isEnabled() === true)
-        {
-            AppFactory::createLogger()->write();
-        }
-    }
-
     protected function createPage() : UI_Page
     {
         return $this->driver->getUI()->createPage(get_class($this));
