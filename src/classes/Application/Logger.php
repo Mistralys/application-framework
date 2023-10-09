@@ -66,9 +66,13 @@ class Application_Logger
     public function isLoggingEnabled(string $category='') : bool
     {
         return
-            boot_constant(BaseConfigRegistry::LOGGING_ENABLED) === true
-            &&
-            $this->isCategoryEnabled($category);
+            !Application_Bootstrap::isInitialized()
+            ||
+            (
+                boot_constant(BaseConfigRegistry::LOGGING_ENABLED) === true
+                &&
+               $this->isCategoryEnabled($category)
+            );
     }
 
     public function setCategoryEnabled(string $category, bool $enabled) : self
