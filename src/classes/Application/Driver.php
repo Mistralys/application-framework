@@ -241,6 +241,11 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
     }
 
+    public static function isInitialized() : bool
+    {
+        return isset(self::$instance);
+    }
+
     /**
      * Retrieves the application object used by the driver.
      * @return Application
