@@ -46,6 +46,9 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         $this->request = AppFactory::createRequest();
         $breadcrumb = $this->page->getBreadcrumb();
 
+        $breadcrumb->appendItem(t('Overview'))
+            ->makeLinked($this->log->getAdminURL());
+
         if($this->request->getBool(self::REQUEST_PARAM_LOG_OUT))
         {
             $this->handleLogOut();
