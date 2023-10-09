@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
@@ -59,6 +60,11 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
                 self::ERROR_MISSING_AUTH_CONFIGURATION
             );
         }
+    }
+
+    public function isLoggingEnabled(): bool
+    {
+        return $this->getStatus()->isEnabled();
     }
 
     public function clearAllLogs() : Application_RequestLog
@@ -150,13 +156,26 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     /**
      * Writes the current application log to disk.
      *
-     * @param Application_Logger $logger
+     * @param Application_Logger|NULL $logger
      * @return Application_RequestLog_LogWriter
      * @throws FileHelper_Exception
      */
-    public function writeLog(Application_Logger $logger) : Application_RequestLog_LogWriter
+    public function writeLog(?Application_Logger $logger=null) : Application_RequestLog_LogWriter
     {
+        if($logger === null) {
+            $logger = AppFactory::createLogger();
+        }
+
         return (new Application_RequestLog_LogWriter($logger))->write();
+    }
+
+    public static function autoWriteLog() : void
+    {
+        $log = AppFactory::createRequestLog();
+
+        if($log->isLoggingEnabled()) {
+            $log->writeLog();
+        }
     }
 
     public function getLogIdentifier() : string
