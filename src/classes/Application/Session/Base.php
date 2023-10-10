@@ -116,6 +116,7 @@ abstract class Application_Session_Base implements Application_Session
     private function initAuthentication() : void
     {
         $this->log('No user ID found in the session, initiating login sequence.');
+        $this->log('Return URL is [%s].', $_SERVER['REQUEST_URI']);
 
         $this->setValue(self::KEY_NAME_AUTH_RETURN_URL, $_SERVER['REQUEST_URI']);
 
@@ -197,7 +198,7 @@ abstract class Application_Session_Base implements Application_Session
         // the user is a developer.
         $this->unpackUser();
 
-        $this->log('User [%s] | Redirecting to the initially requested URL.');
+        $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
 
         Application::redirect($this->unpackTargetURL());
     }
@@ -293,23 +294,22 @@ abstract class Application_Session_Base implements Application_Session
      */
     protected function unpackTargetURL() : string
     {
-        $url = $this->getValue(self::KEY_NAME_AUTH_RETURN_URL);
-        $target = APP_URL;
+        $returnURL = $this->getValue(self::KEY_NAME_AUTH_RETURN_URL);
+        $targetURL = $_SERVER['REQUEST_URI'];
+        $appHost = parseURL(APP_URL)->getHost();
 
-        if(is_string($url) && !empty($url))
+        if(is_string($returnURL) && !empty($returnURL))
         {
-            $appURL = parseURL(APP_URL);
-            $returnURL = parseURL($url);
-
-            // Ensure that the target URL has the same host as the app URL.
-            if($appURL->getHost() === $returnURL->getHost()) {
-                $target = $appURL;
-            }
-
             $this->unsetValue(self::KEY_NAME_AUTH_RETURN_URL);
+            $targetURL = $returnURL;
         }
 
-        return $target;
+        // Ensure that the target URL has the same host as the app URL.
+        if(parseURL($targetURL)->getHost() !== $appHost) {
+            $targetURL = APP_URL;
+        }
+
+        return $targetURL;
     }
 
     /**
