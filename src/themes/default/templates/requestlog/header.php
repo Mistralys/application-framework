@@ -33,12 +33,33 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
                 if($this->isAuthenticated())
                 {
                     ?>
+                    <?php
+                    echo sb()->link(
+                        (string)sb()->icon(UI::icon()->home())->t('Overview'),
+                        $this->log->getAdminURL()
+                    );
+                    ?>
+                    |
                     <a href="<?php echo $this->log->getAdminSettingsURL() ?>">
                         <?php echo sb()
                             ->icon(UI::icon()->settings())
                             ->t('Settings')
                         ?>
                     </a>
+                    |
+                    <?php
+                        echo sb()->link(
+                            (string)sb()->icon(UI::icon()->list())->t('Dump info'),
+                            $this->log->getAdminDumpInfoURL()
+                        );
+                    ?>
+                    |
+                    <?php
+                    echo sb()->link(
+                        (string)sb()->icon(UI::icon()->deleteSign())->t('Destroy session'),
+                        $this->log->getAdminDestroySessionURL()
+                    );
+                    ?>
                     |
                     <a href="<?php echo $this->log->getAdminLogOutURL() ?>">
                         <?php echo sb()
@@ -83,7 +104,7 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
                 ?>
             </p>
         </div>
-        <h1><?php pt('Request log'); ?></h1>
+        <h1 style="clear: both"><?php pt('Request log'); ?></h1>
         <span style="clear: both"></span>
         <?php
         echo $this->page->renderMessages();
