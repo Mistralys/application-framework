@@ -877,6 +877,8 @@ class Application
 
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
+        Application_Bootstrap::handleShutDown();
+
         exit;
     }
 

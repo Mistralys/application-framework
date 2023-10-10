@@ -458,9 +458,20 @@ class Application_Bootstrap
         }
     }
 
+    private static bool $shutdownHandled = false;
+
     public static function handleShutDown() : void
     {
+        if(self::$shutdownHandled === true)
+        {
+            return;
+        }
+
+        self::$shutdownHandled = true;
+
         Application::log('Bootstrap | The system is shutting down.');
+
+        Application_RequestLog::autoWriteLog();
 
         if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN) && Application_Driver::isInitialized())
         {
@@ -470,8 +481,6 @@ class Application_Bootstrap
                 Application_EventHandler_Event_SystemShutDown::class
             );
         }
-
-        Application_RequestLog::autoWriteLog();
     }
 }
 
