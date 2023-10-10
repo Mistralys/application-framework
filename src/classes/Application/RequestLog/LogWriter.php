@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
@@ -174,9 +175,13 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
 
         if(Application::isSessionReady())
         {
-            $user = Application::getUser();
-            $userID = $user->getID();
-            $userName = $user->getName();
+            $session = AppFactory::createSession();
+            $user = $session->getUser();
+
+            if($user !== null) {
+                $userID = $user->getID();
+                $userName = $user->getName();
+            }
         }
 
         return array(
