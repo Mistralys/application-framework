@@ -25,10 +25,12 @@ abstract class Application_Session_Native extends Application_Session_Base
     /**
      * @var array<string,string>
      */
-    private static $options = array();
+    private static array $options = array();
 
     protected function start(): void
     {
+        $this->log('Starting session.');
+
         // Temporarily set an error handler to catch session
         // initialization errors, so they can be converted
         // to an exception.
@@ -108,8 +110,17 @@ abstract class Application_Session_Native extends Application_Session_Base
         }
     }
 
+    abstract public function getPrefix() : string;
+
+    public function getNameWithPrefix(string $name) : string
+    {
+        return $this->getPrefix().$name;
+    }
+
     public function getValue(string $name, $default = null)
     {
+        $name = $this->getNameWithPrefix($name);
+
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
         }
@@ -119,16 +130,22 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     public function setValue(string $name, $value) : void
     {
+        $name = $this->getNameWithPrefix($name);
+
         $_SESSION[$name] = $value;
     }
 
     public function valueExists(string $name) : bool
     {
+        $name = $this->getNameWithPrefix($name);
+
         return isset($_SESSION[$name]);
     }
 
     public function unsetValue(string $name) : void
     {
+        $name = $this->getNameWithPrefix($name);
+
         if ($this->valueExists($name)) {
             unset($_SESSION[$name]);
         }

@@ -23,6 +23,16 @@ interface Application_Session extends Application_Interfaces_Loggable
     public function getID() : string;
 
     /**
+     * Prefix used to store session values.
+     *
+     * It is prefixed to session variable names to avoid
+     * conflicts with other session variables.
+     *
+     * @return string
+     */
+    public function getPrefix() : string;
+
+    /**
      * Fetches the currently authenticated user. If this is empty,
      * the authentication has not been performed yet.
      *

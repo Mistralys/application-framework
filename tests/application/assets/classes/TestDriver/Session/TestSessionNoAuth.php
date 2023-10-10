@@ -21,4 +21,9 @@ use Application_Session_Native;
 class TestSessionNoAuth extends Application_Session_Native
 {
     use Application_Session_AuthTypes_None;
+
+    public function getPrefix(): string
+    {
+        return 'appframework_test_';
+    }
 }

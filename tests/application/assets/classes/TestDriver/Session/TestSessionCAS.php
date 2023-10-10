@@ -43,6 +43,11 @@ class TestSessionCAS extends NativeCASSession
      */
     protected int $defaultSimulatedUser = 2;
 
+    public function getPrefix(): string
+    {
+        return 'appframework_test_';
+    }
+
     public function getEmailField(): string
     {
         return TESTS_CAS_FIELD_EMAIL;

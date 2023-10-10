@@ -258,13 +258,7 @@ abstract class Application_Session_Base implements Application_Session
 
     private function getSimulatedUserID() : int
     {
-        $simulateID = $this->defaultSimulatedUser;
-
-        // Is a user already simulated in the session?
-        if(isset($_SESSION[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_SESSION[self::KEY_NAME_SIMULATED_ID]]))
-        {
-            $simulateID = (int)$_SESSION[self::KEY_NAME_SIMULATED_ID];
-        }
+        $simulateID = (int)$this->getValue(self::KEY_NAME_SIMULATED_ID, $this->defaultSimulatedUser);
 
         // A user has been selected in the request.
         if(isset($_REQUEST[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_REQUEST[self::KEY_NAME_SIMULATED_ID]]))
@@ -371,9 +365,11 @@ abstract class Application_Session_Base implements Application_Session
 
     public function getPresetBySession() : string
     {
-        if(isset($_SESSION[self::KEY_NAME_RIGHTS_PRESET]) && $this->presetExists($_SESSION[self::KEY_NAME_RIGHTS_PRESET]))
+        $preset = $this->getValue(self::KEY_NAME_RIGHTS_PRESET);
+
+        if(!empty($preset) && $this->presetExists($preset))
         {
-            return $_SESSION[self::KEY_NAME_RIGHTS_PRESET];
+            return $preset;
         }
 
         return '';
