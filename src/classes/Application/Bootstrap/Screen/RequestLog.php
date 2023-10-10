@@ -10,6 +10,8 @@ use AppUtils\FileHelper;
  */
 class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Screen
 {
+    public const ERROR_MISSING_AUTH_CONFIGURATION = 100901;
+
     public const REQUEST_PARAM_YEAR = 'year';
     public const REQUEST_PARAM_MONTH = 'month';
     public const REQUEST_PARAM_DAY = 'day';
@@ -42,6 +44,15 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     {
         $this->disableAuthentication();
         $this->createEnvironment();
+
+        if(!defined('APP_REQUEST_LOG_PASSWORD'))
+        {
+            throw new Application_RequestLog_Exception(
+                'No authentication configured.',
+                'The request log password has not been set in the configuration.',
+                self::ERROR_MISSING_AUTH_CONFIGURATION
+            );
+        }
 
         $this->log = AppFactory::createRequestLog();
         $this->page = $this->driver->getUI()->createPage('request-log');

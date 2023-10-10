@@ -33,8 +33,6 @@ use AppUtils\Microtime;
  */
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
 {
-    public const ERROR_MISSING_AUTH_CONFIGURATION = 100901;
-
     public const SESSION_ID_NONE = 'none';
     public const SESSION_ID_SIMULATED = 'simulated';
 
@@ -51,15 +49,6 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
             Application::getStorageSubfolderPath('logs/request'),
             $this
         );
-
-        if(!defined('APP_REQUEST_LOG_PASSWORD'))
-        {
-            throw new Application_RequestLog_Exception(
-                'No authentication configured.',
-                'The request log password has not been set in the configuration.',
-                self::ERROR_MISSING_AUTH_CONFIGURATION
-            );
-        }
     }
 
     public function isLoggingEnabled(): bool
