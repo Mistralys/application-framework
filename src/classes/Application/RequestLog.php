@@ -84,6 +84,20 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
             );
     }
 
+    public function getAdminDumpInfoURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DUMP_INFO] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminDestroySessionURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DESTROY_SESSION] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
     public function getAdminLogOutURL(array $params=array()) : string
     {
         $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_LOG_OUT] = 'yes';
