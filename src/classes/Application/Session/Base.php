@@ -41,7 +41,7 @@ abstract class Application_Session_Base implements Application_Session
     public const KEY_NAME_USER_RIGHTS = 'user_rights';
     public const KEY_NAME_SIMULATED_ID = 'simulate_user_id';
     public const KEY_NAME_RIGHTS_PRESET = 'simulate_rights_preset';
-    public const KEY_NAME_AUTH_RETURN_URL = 'auth_return_url';
+    public const KEY_NAME_AUTH_RETURN_URI = 'auth_return_url';
 
     public const ADMIN_PRESET_ID = 'Admin';
 
@@ -93,7 +93,7 @@ abstract class Application_Session_Base implements Application_Session
         $this->log('Logout requested, logging the user out.');
 
         $this->handleLogout(array(
-            self::KEY_NAME_AUTH_RETURN_URL,
+            self::KEY_NAME_AUTH_RETURN_URI,
             self::KEY_NAME_RIGHTS_PRESET,
             self::KEY_NAME_USER_ID,
             self::KEY_NAME_SIMULATED_ID,
@@ -116,9 +116,9 @@ abstract class Application_Session_Base implements Application_Session
     private function initAuthentication() : void
     {
         $this->log('No user ID found in the session, initiating login sequence.');
-        $this->log('Return URL is [%s].', $_SERVER['REQUEST_URI']);
+        $this->log('Return URI is [%s].', $_SERVER['REQUEST_URI']);
 
-        $this->setValue(self::KEY_NAME_AUTH_RETURN_URL, $_SERVER['REQUEST_URI']);
+        $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $_SERVER['REQUEST_URI']);
 
         $user = $this->handleLogin();
 
@@ -294,22 +294,27 @@ abstract class Application_Session_Base implements Application_Session
      */
     protected function unpackTargetURL() : string
     {
-        $returnURL = $this->getValue(self::KEY_NAME_AUTH_RETURN_URL);
-        $targetURL = $_SERVER['REQUEST_URI'];
-        $appHost = parseURL(APP_URL)->getHost();
+        // The return URI is the value of $_SERVER['REQUEST_URI'].
+        // Example: "/?foo=bar"
+        $returnURI = $this->getValue(self::KEY_NAME_AUTH_RETURN_URI);
+        $targetURI = '';
 
-        if(is_string($returnURL) && !empty($returnURL))
+        $appURL = parseURL(APP_URL);
+
+        if(is_string($returnURI) && !empty($returnURI))
         {
-            $this->unsetValue(self::KEY_NAME_AUTH_RETURN_URL);
-            $targetURL = $returnURL;
+            $this->unsetValue(self::KEY_NAME_AUTH_RETURN_URI);
+            $targetURI = $returnURI;
         }
 
-        // Ensure that the target URL has the same host as the app URL.
-        if(parseURL($targetURL)->getHost() !== $appHost) {
-            $targetURL = APP_URL;
-        }
-
-        return $targetURL;
+        // The URL is built dynamically using the application's
+        // base URL, and the target request URI (if any).
+        return sprintf(
+            '%s://%s/%s',
+            $appURL->getScheme(),
+            $appURL->getHost(),
+            ltrim($targetURI, '/')
+        );
     }
 
     /**
