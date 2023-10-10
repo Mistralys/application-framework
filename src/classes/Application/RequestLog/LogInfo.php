@@ -145,7 +145,7 @@ class Application_RequestLog_LogInfo
     /**
      * @var string|NULL
      */
-    private $screenPath;
+    private ?string $screenPath;
 
     public function getScreenPath() : string
     {
@@ -237,7 +237,11 @@ class Application_RequestLog_LogInfo
      */
     public function getRequestVars() : array
     {
-        return $this->getDataArray(Application_RequestLog_LogWriter::KEY_REQUEST_VARS);
+        $vars = $this->getDataArray(Application_RequestLog_LogWriter::KEY_REQUEST_VARS);
+
+        ksort($vars);
+
+        return $vars;
     }
 
     /**
@@ -245,7 +249,11 @@ class Application_RequestLog_LogInfo
      */
     public function getServerVars() : array
     {
-        return $this->getDataArray(Application_RequestLog_LogWriter::KEY_SERVER_VARS);
+        $vars = $this->getDataArray(Application_RequestLog_LogWriter::KEY_SERVER_VARS);
+
+        ksort($vars);
+
+        return $vars;
     }
 
     /**
@@ -253,7 +261,11 @@ class Application_RequestLog_LogInfo
      */
     public function getSessionVars() : array
     {
-        return $this->getDataArray(Application_RequestLog_LogWriter::KEY_SESSION_VARS);
+        $vars = $this->getDataArray(Application_RequestLog_LogWriter::KEY_SESSION_VARS);
+
+        ksort($vars);
+
+        return $vars;
     }
 
     public function getLog() : string
