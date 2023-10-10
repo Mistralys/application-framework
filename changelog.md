@@ -1,8 +1,9 @@
-### v2.9.0 - Sessions update (breaking-xs)
+### v2.9.0 - Sessions update (breaking-s)
 - UI: Removed the `show_user_name` theme option.
 - UI: The user menu now has the user's name as tooltip and header.
 - UI: Added tooltips to dropdown menu links and buttons.
 - Loggable: Fixed the `logUI()` method incorrectly passing on arguments.
+- Sessions: Added a prefix for all session variables.
 - Sessions: Fixed boot process to split session start and user authentication ([#55](https://github.com/Mistralys/application-framework/issues/55)).
 - Sessions: Introduced the `authenticate()` method in the interface.
 - Sessions: `storeUser()` now also unpacks the user instance.
@@ -16,16 +17,21 @@
 - RequestLog: Added logging of session variables.
 - RequestLog: Fixed no log being written before the session is started.
 - RequestLog: Added an "Overview" breadcrumb item to go back to the overview.
+- RequestLog: Added live info dump and possibility to destroy the current session.
 - Bootstrap: Logging is now enabled by default until configuration settings are loaded.
+- Bootstrap: Added `getKnownSettings()`.
 - Driver: Added `isInitialized()` to check if the driver instance is set.
 - Dependencies: Updated AppUtils to [v2.5.0](https://github.com/Mistralys/application-utils/releases/tag/2.5.0).
 
-#### Breaking changes (XS)
+#### Breaking changes (S)
 
-Any custom session classes must now implement the `authenticate()` 
-method. This is called after the session has been started, specifically
-to check the user's authentication and handle the login process as
-needed.
+1. Session classes now require the `getPrefix()` method to be implemented.
+   This is used to keep the application's session variables separate from
+   any other processes running on the same server.
+2. Any custom session classes must now implement the `authenticate()` 
+   method. This is called after the session has been started, specifically
+   to check the user's authentication and handle the login process as
+   needed.
 
 ### v2.8.3 - Bugfixes
 - CAS: Fixed `setCASServerURI()` using the wrong setting constant name.
