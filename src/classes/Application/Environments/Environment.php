@@ -304,7 +304,10 @@ class Environment implements Application_Interfaces_Eventable
         {
             if (!$fileDef['optional'] && !file_exists($fileDef['path'])) {
                 throw new EnvironmentException(
-                    'Environment include file does not exist.',
+                    sprintf(
+                        'Environment include file %s does not exist.',
+                        basename($fileDef['path'])
+                    ),
                     sprintf(
                         'The include file [%s] for environment [%s] could not be found on disk.',
                         $fileDef['path'],
