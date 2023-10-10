@@ -161,6 +161,16 @@ class Application_Bootstrap
         
         self::$knownSettings[$name]['defaultValue'] = $defaultValue;
     }
+
+    /**
+     * @return array<string,array{required:bool,defaultValue:string|int|float|bool|array|NULL}>
+     */
+    public static function getKnownSettings() : array
+    {
+        ksort(self::$knownSettings);
+
+        return self::$knownSettings;
+    }
     
     public static function registerRequiredSetting(string $name) : void
     {
