@@ -19,6 +19,8 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public const REQUEST_PARAM_DELETE_ALL = 'delete_all';
     public const REQUEST_PARAM_SETTINGS = 'settings';
     public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
+    public const REQUEST_PARAM_DUMP_INFO = 'dump_info';
+    public const REQUEST_PARAM_DESTROY_SESSION = 'destroy_session';
 
     public const DISPATCHER = 'requestlog.php';
     public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
@@ -67,6 +69,16 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         if($this->request->getBool(self::REQUEST_PARAM_SETTINGS))
         {
             displayHTML($this->renderSettings());
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DUMP_INFO)) {
+            displayHTML($this->renderInfoDump());
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DESTROY_SESSION)) {
+            session_destroy();
+            header('Location: '.$this->log->getAdminURL());
+            Application::exit('After session destroyed');
         }
 
         if($this->request->hasParam(self::REQUEST_PARAM_TOGGLE_STATUS))
@@ -362,6 +374,12 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         );
     }
 
+    /**
+     * @param Application_RequestLog_LogFile $file
+     * @return string
+     * @throws UI_Themes_Exception
+     * @see template_default_requestlog_file_detail
+     */
     private function renderFileDetailView(Application_RequestLog_LogFile $file) : string
     {
         return $this->page->renderTemplate(
@@ -375,5 +393,17 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public function getPersistVars() : array
     {
         return $this->persistVars;
+    }
+
+    /**
+     * @return string
+     * @throws UI_Themes_Exception
+     * @see template_default_requestlog_info_dump
+     */
+    private function renderInfoDump() : string
+    {
+        return $this->page->renderTemplate(
+            'requestlog/info-dump'
+        );
     }
 }
