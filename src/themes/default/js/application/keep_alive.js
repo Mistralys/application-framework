@@ -15,6 +15,7 @@
  * application.keepAlive.SetInterval(20).SetTarget('redirect');
  * </pre>
  *
+ * @class KeepAlive
  * @package Application
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
@@ -114,6 +115,7 @@ class KeepAlive
             .Success(function (data) {
                 handler.OnSuccess(data);
             })
+            .SetReportFailure(false)
             .Failure(function (errorText)
             {
                 handler.OnFailure();
