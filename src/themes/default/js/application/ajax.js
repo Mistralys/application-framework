@@ -9,9 +9,9 @@
  * application.createAJAX('MethodName');
  * </pre>
  * 
- * @class
+ * @class Application_AJAX
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @see application.createAJAX
+ * @see application.createAJAX()
  */
 var Application_AJAX =
 {
@@ -29,7 +29,11 @@ var Application_AJAX =
 	'logging':null,
 	'customURL':null,
 	'dataType':null,
-		
+
+	/**
+	 * @constructor
+	 * @param {String} methodName
+	 */
 	init:function(methodName)
 	{
 		this.methodName = methodName;
@@ -40,6 +44,7 @@ var Application_AJAX =
 		this.completed = false;
 		this.simulate = false;
 		this.dataType = 'json';
+		this.reportFailures = true;
 		this.options = {
 			'autoHideLoader':true,
 			'async':true
@@ -541,7 +546,19 @@ var Application_AJAX =
 	{
 		return this.dataType == 'html';
 	},
-	
+
+	/**
+	 * Disables or enables the reporting of failures to the server.
+	 *
+	 * @param {Boolean} state
+	 * @return {Application_AJAX}
+	 */
+	SetReportFailure:function(state)
+	{
+		this.reportFailures = state;
+		return this;
+	},
+
    /**
     * @protected
     * @param {Object} jqXHR
@@ -560,13 +577,13 @@ var Application_AJAX =
         var code = application.ERROR_UNHANDLED_AJAX_ERROR;
         var details = t('An unhandled error occurred.');
         
-    	if(jqXHR.status == 404) {
+    	if(jqXHR.status === 404) {
     		details = t('HTTP Status code %1$s - %2$s', 404, t('The target resource does not exist.'));
     		code = application.ERROR_AJAX_RESOURCE_DOES_NOT_EXIST;
     	}
         
     	// ensure that the data object has the same keys
-    	// as the regular error response so it is consistent.
+    	// as the regular error response, so it is consistent.
         var error = this.TriggerError(
 			message,
 			code,
@@ -580,11 +597,7 @@ var Application_AJAX =
 	
 	HasEventHandler:function(eventName)
 	{
-		if(typeof(this.eventHandlers[eventName]) != 'undefined') {
-			return true;
-		}
-		
-		return false;
+		return typeof (this.eventHandlers[eventName]) !== 'undefined';
 	},
 	
    /**
@@ -672,16 +685,15 @@ var Application_AJAX =
 	
 	TriggerError:function(message, code, details, trace, data)
 	{
-		var error = new Application_AJAX_Error(
+		return new Application_AJAX_Error(
 			this,
 			message,
 			code,
 			details,
 			trace,
-			data
+			data,
+			this.reportFailures
 		);
-		
-		return error;
 	},
 	
 	FilterData:function(data)
@@ -770,117 +782,3 @@ var Application_AJAX =
 };
 
 Application_AJAX = Class.extend(Application_AJAX);
-
-var Application_AJAX_Error = 
-{
-	'message':null,
-	'code':null,
-	'details':null,
-	'trace':null,
-	'data':null,
-	'ajax':null,
-	'logWritten':null,
-		
-	init:function(ajax, message, code, details, trace, data)
-	{
-		this.message = message;
-		this.code = code;
-		this.details = details;
-		this.trace = trace;
-		this.data = data;
-		this.ajax = ajax;
-		this.logWritten = false;
-		
-		this.WriteLog();
-	},
-	
-	GetAJAX:function()
-	{
-		return this.ajax;
-	},
-	
-	GetCode:function()
-	{
-		return this.code;
-	},
-	
-	GetMessage:function()
-	{
-		return this.message;
-	},
-	
-	GetDetails:function()
-	{
-		return this.details;
-	},
-	
-	GetData:function()
-	{
-		return this.data;
-	},
-	
-	GetMethodName:function()
-	{
-		return this.ajax.GetMethodName();
-	},
-	
-	GetPayload:function()
-	{
-		return this.ajax.GetPayload();
-	},
-	
-	IsServerException:function()
-	{
-		return !isEmpty(this.data) && typeof this.data.isExceptionData != 'undefined';
-	},
-	
-   /**
-    * Logs any ajax requests that fail, by inserting an image
-    * in the document which calls the ajax error script with
-    * the relevant error information.
-    * 
-    * @protected
-    */
-    WriteLog:function() 
-    {
-    	if(this.logWritten) {
-    		return;
-    	}
-
-    	// no logging required if this is an exception that
-    	// occurred on the server initially.
-    	if(this.IsServerException()) {
-    		this.log('No need to log the error on the server: the error originated on the server.');
-    		return;
-    	}
-    	
-    	this.log('Logging the error on the server.');
-    	
-    	this.logWritten = true;
-    	
-    	application.log(this, 'event');
-    	
-    	var url = URI(application.getBaseURL() + '/ajax/error.php')
-    	.addSearch('url', window.location.href)
-    	.addSearch('method', this.GetMethodName())
-    	.addSearch('message', this.GetMessage())
-    	.addSearch('code', this.GetCode())
-    	.addSearch('details', this.GetDetails())
-    	.addSearch('payload', JSON.stringify(this.GetPayload()))
-    	.addSearch('data', JSON.stringify(this.GetData()));
-    	
-    	$('body').append('<img src="'+url+'" style="display:none">');
-    },
-    
-    toString:function()
-    {
-    	return 'AJAX Error | ['+this.GetMethodName()+'] | [#'+this.GetCode()+'] | '+this.GetMessage();
-    },
-    
-    log:function(message, category)
-    {
-    	application.log('AJAX Error ['+this.GetCode()+']', message, category);
-    }
-};
-
-Application_AJAX_Error = Class.extend(Application_AJAX_Error);
