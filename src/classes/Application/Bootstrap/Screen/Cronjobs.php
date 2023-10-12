@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
 
 use Application\AppFactory;
 
 class Application_Bootstrap_Screen_Cronjobs extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public const DISPATCHER = 'cronjobs.php';
+
+    public function getDispatcher() : string
     {
-        return 'cronjobs.php';
+        return self::DISPATCHER;
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->enableScriptMode();
         
@@ -35,12 +38,8 @@ class Application_Bootstrap_Screen_Cronjobs extends Application_Bootstrap_Screen
      * Checks whether debug mode is active.
      * @return boolean
      */
-    protected function isDebug()
+    protected function isDebug() : bool
     {
-        if(isset($_REQUEST['debug']) && $_REQUEST['debug']=='yes') {
-            return true;
-        }
-        
-        return false;
+        return isset($_REQUEST['debug']) && $_REQUEST['debug'] === 'yes';
     }
 }

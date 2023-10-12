@@ -1,19 +1,17 @@
 <?php
 
-/**
- * The health monitor class used to retrieve the system health data.
- * @see Application_HealthMonitor
- */
-require_once 'Application/HealthMonitor.php';
+declare(strict_types=1);
 
 class Application_Bootstrap_Screen_HealthMonitor extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public const DISPATCHER = 'xml/monitor/';
+
+    public function getDispatcher() : string
     {
-        return 'xml/monitor/';
+        return self::DISPATCHER;
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->disableAuthentication();
         
