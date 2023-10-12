@@ -1194,6 +1194,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         'application/exception.js',
         'application/base_renderable.js',
         'application/ajax.js',
+        'application/ajax-error.js',
         'sidebar.js',
         'user.js',
         'driver.js',
