@@ -8,7 +8,7 @@
  * requests.
  *
  * @package Application
- * @class
+ * @class application
  * @static
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
@@ -675,7 +675,7 @@ var application =
           'error': function (jqXHR, textStatus, errorThrown) 
           {
               var message = application.getAJAXError(errorThrown);
-              if(jqXHR.status == 404) {
+              if(jqXHR.status === 404) {
             	  message = t('The resource could not be found.');
               }
               
