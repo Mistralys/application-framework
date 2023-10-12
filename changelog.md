@@ -1,3 +1,12 @@
+### v2.9.2 - Minor enhancements
+- KeepAlive: Avoid sending failed request error report.
+- AJAX: Added `SetReportFailure()` to disable error reporting.
+
+### v2.9.1 - Fixes and enhancements
+- What's New: Fixed a JavaScript error when no dev changes are present.
+- Themes: Added the request log link for developers in the footer.
+- Bootstrap: Added some missing screen `DISPATCHER` constants. 
+
 ### v2.9.0 - Sessions update (breaking-s)
 - UI: Removed the `show_user_name` theme option.
 - UI: The user menu now has the user's name as tooltip and header.
