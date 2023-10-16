@@ -10,8 +10,7 @@ declare(strict_types=1);
 namespace Connectors\Response;
 
 use AppUtils\ConvertHelper_Exception;
-use AppUtils\ConvertHelper_ThrowableInfo;
-use Connectors_Response;
+use AppUtils\ThrowableInfo;
 
 /**
  * Information on an error that occurred in a response.
@@ -25,10 +24,10 @@ class ResponseError
     private string $message;
     private string $details;
     private int $code;
-    private ?ConvertHelper_ThrowableInfo $exception;
+    private ?ThrowableInfo $exception;
     private array $data;
 
-    public function __construct(string $message, string $details, int $code, array $data=array(), ?ConvertHelper_ThrowableInfo $exception=null)
+    public function __construct(string $message, string $details, int $code, array $data=array(), ?ThrowableInfo $exception=null)
     {
         $this->message = $message;
         $this->details = $details;
@@ -60,7 +59,7 @@ class ResponseError
         return $this->details;
     }
 
-    public function getException() : ?ConvertHelper_ThrowableInfo
+    public function getException() : ?ThrowableInfo
     {
         return $this->exception;
     }
@@ -105,12 +104,12 @@ class ResponseError
     }
 
     /**
-     * @param ConvertHelper_ThrowableInfo $info
+     * @param ThrowableInfo $info
      * @param string[] $result
      * @return string[]
      * @throws ConvertHelper_Exception
      */
-    protected function getExceptionCodesRecursive(ConvertHelper_ThrowableInfo $info, array &$result=null) : array
+    protected function getExceptionCodesRecursive(ThrowableInfo $info, array &$result=null) : array
     {
         $result[] = (string)$info->getCode();
 

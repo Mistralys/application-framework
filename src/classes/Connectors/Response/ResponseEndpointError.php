@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Connectors\Response;
 
-use AppUtils\ConvertHelper_ThrowableInfo;
+use AppUtils\ThrowableInfo;
 use Connectors_Response;
 
 class ResponseEndpointError extends ResponseError
 {
     private ResponseError $endpointError;
 
-    public function __construct(string $message, string $details, int $code, array $data, ?ConvertHelper_ThrowableInfo $exception=null)
+    public function __construct(string $message, string $details, int $code, array $data, ?ThrowableInfo $exception=null)
     {
         parent::__construct(
             t('The server returned an error.'),

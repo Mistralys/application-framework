@@ -3,9 +3,8 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use AppUtils\ConvertHelper_ThrowableInfo;
-use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
+use AppUtils\ThrowableInfo;
 
 abstract class Application_ErrorLog_Log_Entry
 {
@@ -214,11 +213,11 @@ abstract class Application_ErrorLog_Log_Entry
         return file_exists($this->getTracePath());
     }
     
-    public function getTrace() : ConvertHelper_ThrowableInfo
+    public function getTrace() : ThrowableInfo
     {
         $data = FileHelper::parseJSONFile($this->getTracePath());
         
-        return ConvertHelper_ThrowableInfo::fromSerialized($data);
+        return ThrowableInfo::fromSerialized($data);
     }
     
     protected function getJSONToken(int $index) : array
