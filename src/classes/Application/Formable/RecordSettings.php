@@ -157,6 +157,12 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     /**
     * Called to register all settings (form elements) that are
     * present in the form.
+     *
+     * Usage:
+     *
+     * Use the {@see self::addGroup()} method to add groups
+     * of settings, in which the individual settings can
+     * be added.
     */
     abstract protected function registerSettings() : void;
     
