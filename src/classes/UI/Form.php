@@ -52,6 +52,7 @@ class UI_Form extends UI_Renderable
     public const REL_BUTTON = 'Button';
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
     public const FORM_PREFIX = 'form-';
+    public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
 
     protected string $id;
     protected HTML_QuickForm2 $form;
@@ -1648,31 +1649,22 @@ class UI_Form extends UI_Renderable
      * @param string $name
      * @param string $label
      * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Datepicker
+     * @return HTML_QuickForm2_Element_HTMLDateTimePicker
      *
      * @throws Application_Formable_Exception
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      */
-    public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Datepicker
+    public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_HTMLDateTimePicker
     {
-        $this->registerCustomElement('datepicker', 'BootstrapDatepicker');
+        $this->registerCustomElement(self::ELEMENT_TYPE_DATE_PICKER, ClassHelper::getClassTypeName(HTML_QuickForm2_Element_HTMLDateTimePicker::class));
         
         $element = ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_Datepicker::class,
-            $this->addElement('datepicker', $name, $container)
+            HTML_QuickForm2_Element_HTMLDateTimePicker::class,
+            $this->addElement(self::ELEMENT_TYPE_DATE_PICKER, $name, $container)
         );
         
         $element->setLabel($label);
-
-        $this->addRuleRegex(
-            $element,
-            $element->getRegex(),
-            t(
-                'Please enter a valid date, in the format %1$s.',
-                $element->getPlaceholder()
-            )
-        );
 
         return $element;
     }

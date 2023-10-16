@@ -984,7 +984,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
     
     /**
-     * Creates an form element to enter a date with time.
+     * Creates a form element to enter a date without time.
      *
      * @param string $name
      * @param string $label
@@ -996,6 +996,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->requireFormableInitialized();
         
         return $this->formableForm->addISODate($name, $label, $container);
+    }
+
+    public function addElementDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_HTMLDateTimePicker
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->addDatepicker($name, $label, $container);
     }
 
    /**

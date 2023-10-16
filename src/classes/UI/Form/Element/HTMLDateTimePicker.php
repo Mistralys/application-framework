@@ -16,15 +16,9 @@
  */
 class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Element
 {
-    /**
-     * @var HTML_QuickForm2_Element_HTMLDatePicker
-     */
-    private $htmlDatePicker;
+    private HTML_QuickForm2_Element_HTMLDatePicker $htmlDatePicker;
 
-    /**
-     * @var HTML_QuickForm2_Element_HTMLTimePicker
-     */
-    private $htmlTimePicker;
+    private HTML_QuickForm2_Element_HTMLTimePicker $htmlTimePicker;
 
     protected array $watchedAttributes = array('id', 'name', 'type');
 
@@ -69,5 +63,3 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Element
         return $dateTimeHTML;
     }
 }
-
-?>
