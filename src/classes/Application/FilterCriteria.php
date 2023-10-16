@@ -159,12 +159,13 @@ abstract class Application_FilterCriteria
     /**
      * Sets the search terms string.
      *
-     * @param string $search
+     * @param string|NULL $search
      * @return $this
      */
-    public function setSearch(string $search)
+    public function setSearch(?string $search) : self
     {
-        $search = trim($search);
+        $search = trim((string)$search);
+
         if(!empty($search) && $this->search !== $search)
         {
             $this->search = $search;
