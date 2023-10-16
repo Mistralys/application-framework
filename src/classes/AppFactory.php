@@ -58,6 +58,11 @@ class AppFactory
         return Application_Uploads::getInstance();
     }
 
+    public static function createNews() : Application\NewsCentral\NewsCollection
+    {
+        return self::createClassInstance(Application\NewsCentral\NewsCollection::class);
+    }
+
     public static function createMedia() : Application_Media
     {
         return Application_Media::getInstance();

@@ -528,6 +528,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function news() : self { return $this->setType('newspaper', 'far'); }
+    /**
+     * @return $this
+     */
     public function next() : self { return $this->setType('chevron-right'); }
     /**
      * @return $this

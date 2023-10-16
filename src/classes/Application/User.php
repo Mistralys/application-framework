@@ -36,14 +36,23 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public const ERROR_INVALID_RECENT_ITEMS_CLASS = 20007;
     public const ERROR_CANNOT_DECODE_ARRAY_VALUE = 20008;
 
-    const STORAGE_TYPE_DB = 'DB';
-    const STORAGE_TYPE_FILE = 'File';
+    public const STORAGE_TYPE_DB = 'DB';
+    public const STORAGE_TYPE_FILE = 'File';
 
-    const RIGHTS_CORE = 'system_core';
+    /**
+     * @see Application_User_Extended::registerRights_system_core()
+     */
+    public const RIGHTS_CORE = 'system_core';
 
-    const RIGHT_LOGIN = 'Login';
-    const RIGHT_TRANSLATE_UI = 'TranslateUI';
-    const RIGHT_DEVELOPER = 'Developer';
+    public const RIGHT_LOGIN = 'Login';
+    public const RIGHT_TRANSLATE_UI = 'TranslateUI';
+    public const RIGHT_DEVELOPER = 'Developer';
+    public const RIGHT_CREATE_NEWS = 'CreateNews';
+    public const RIGHT_CREATE_NEWS_ALERTS = 'CreateAlerts';
+    public const RIGHT_EDIT_NEWS = 'EditNews';
+    public const RIGHT_DELETE_NEWS = 'DeleteNews';
+    public const RIGHT_VIEW_NEWS = 'ViewNews';
+
     public const SETTING_DEVELOPER_MODE = 'developer_mode';
 
     /**
@@ -450,9 +459,9 @@ abstract class Application_User implements Application_User_Interface, Applicati
      * @var array|NULL
      * @see initRoles()
      */
-    protected static $roles;
+    protected static ?array $roles = null;
     
-    protected function initRoles()
+    protected function initRoles() : void
     {
         if (isset(self::$roles)) {
             return;
@@ -776,6 +785,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
 
     public function canTranslateUI() : bool { return $this->can(self::RIGHT_TRANSLATE_UI); }
     public function canLogin() : bool { return $this->can(self::RIGHT_LOGIN); }
+    public function canViewNews() : bool { return $this->can(self::RIGHT_VIEW_NEWS); }
+    public function canCreateNews() : bool { return $this->can(self::RIGHT_CREATE_NEWS); }
+    public function canCreateNewsAlerts() : bool { return $this->can(self::RIGHT_CREATE_NEWS_ALERTS); }
+    public function canEditNews() : bool { return $this->can(self::RIGHT_EDIT_NEWS); }
+    public function canDeleteNews() : bool { return $this->can(self::RIGHT_DELETE_NEWS); }
 
     public function isSystemUser() : bool
     {

@@ -467,9 +467,13 @@ trait Application_Traits_Admin_CollectionSettings
         $this->record->save();
     }
 
-    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data)
+    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data) : DBHelper_BaseRecord
     {
         $this->log('Creating a new record.');
+
+        if($this->settingsManager instanceof Application_Formable_RecordSettings_Extended) {
+            return $this->settingsManager->createRecordFromValues($data->getValues());
+        }
 
         return $this->collection->createNewRecord($data->getValues());
     }

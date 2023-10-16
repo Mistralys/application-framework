@@ -223,6 +223,7 @@ var UI_Icon =
     MoveLeftRight:function() { return this.SetType('arrows-alt-h', 'fas'); },
     MoveTo:function() { return this.SetType('sign-out-alt', 'fas'); },
     MoveUpDown:function() { return this.SetType('arrows-alt-v', 'fas'); },
+    News:function() { return this.SetType('newspaper', 'far'); },
     Next:function() { return this.SetType('chevron-right'); },
     No:function() { return this.SetType('times'); },
     NotAvailable:function() { return this.SetType('ban'); },
