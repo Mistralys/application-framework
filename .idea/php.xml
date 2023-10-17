@@ -85,6 +85,8 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/resource-operations" />
       <path value="$PROJECT_DIR$/vendor/doctrine/instantiator" />
       <path value="$PROJECT_DIR$/vendor/mistralys/application-framework-docs" />
+      <path value="$PROJECT_DIR$/vendor/mistralys/application-utils-core" />
+      <path value="$PROJECT_DIR$/vendor/mistralys/application-utils-collections" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
