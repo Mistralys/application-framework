@@ -19,8 +19,6 @@ class NewsCollection extends DBHelper_BaseCollection
 {
     public const PRIMARY = 'news_id';
     public const TABLE_NAME = 'app_news';
-    public const NEWS_TYPE_ARTICLE = 'article';
-    public const NEWS_TYPE_ALERT = 'alert';
 
     public const COL_LABEL = 'label';
     public const COL_ARTICLE = 'article';
@@ -59,6 +57,7 @@ class NewsCollection extends DBHelper_BaseCollection
     {
         return array(
             self::COL_LABEL => t('Title'),
+            self::COL_SYNOPSIS => t('Synopsis'),
             self::COL_ARTICLE => t('Article text')
         );
     }

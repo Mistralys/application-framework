@@ -59,9 +59,9 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         if(!$this->isAlert) {
             $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = 'no';
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsCollection::NEWS_TYPE_ARTICLE;
+            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ARTICLE;
         } else {
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsCollection::NEWS_TYPE_ALERT;
+            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ALERT;
         }
 
         $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = bool2string($formValues[NewsCollection::COL_REQUIRES_RECEIPT], true);

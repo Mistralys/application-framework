@@ -10,10 +10,13 @@ use Application\NewsCentral\NewsEntry;
 use Application_Admin_Area_Mode_Submode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
+use Closure;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
 use DBHelper_BaseRecord;
 use UI;
+use UI_DataGrid_Action;
 
 /**
  * @property NewsCollection $collection
@@ -21,6 +24,11 @@ use UI;
 abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_CollectionList
 {
     public const URL_NAME = self::URL_NAME_DEFAULT;
+    public const COLUMN_ID = 'id';
+    public const COLUMN_LABEL = 'label';
+    public const COLUMN_TYPE = 'type';
+    public const COLUMN_AUTHOR = 'author';
+    public const COLUMN_MODIFIED = 'modified';
 
     public function getURLName(): string
     {
@@ -44,24 +52,59 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_Co
     {
         $newsEntry = ClassHelper::requireObjectInstanceOf(NewsEntry::class, $record);
 
-        return [
-            'label' => $newsEntry->getLabel(),
-            'author' => $newsEntry->getAuthor()->getName(),
-            'synopsis' => $newsEntry->getSynopsis(),
-            'criticality' => $newsEntry->getCriticalityID(),
-            'visible_from_date' => $newsEntry->getScheduledFromDate(),
-            'visible_to_date' => $newsEntry->getScheduledToDate(),
-            'dismissable' => $newsEntry->isReceiptRequired(),
-        ];
+        return array(
+            self::COLUMN_ID => $newsEntry->getID(),
+            self::COLUMN_LABEL => $newsEntry->getLabelLinked(),
+            self::COLUMN_TYPE => $newsEntry->getType()->getIcon(),
+            self::COLUMN_AUTHOR => $newsEntry->getAuthor()->getName(),
+            self::COLUMN_MODIFIED => ConvertHelper::date2listLabel($newsEntry->getDateModified(), true, true),
+        );
     }
 
     protected function configureColumns(): void
     {
-        $this->grid->addColumn('label', t('Title'));
+        $this->grid->addColumn(self::COLUMN_TYPE, t('Type'))
+            ->setCompact()
+            ->setSortable(false, NewsCollection::COL_NEWS_TYPE);
+
+        $this->grid->addColumn(self::COLUMN_LABEL, t('Title'))
+            ->setSortable(false, NewsCollection::COL_LABEL);
+
+        $this->grid->addColumn(self::COLUMN_AUTHOR, t('Author'));
+
+        $this->grid->addColumn(self::COLUMN_MODIFIED, t('Last modified'))
+            ->setSortable(true, NewsCollection::COL_DATE_MODIFIED);
     }
 
     protected function configureActions(): void
     {
+        $this->grid->enableLimitOptionsDefault();
+        $this->grid->enableMultiSelect(self::COLUMN_ID);
+
+        $this->grid->addAction('delete-news', t('Delete...'))
+            ->setIcon(UI::icon()->delete())
+            ->makeDangerous()
+            ->makeConfirm(sb()
+                ->para(sb()
+                    ->t('This will delete the selected news entries.')
+                )
+                ->para(sb()
+                    ->cannotBeUndone()
+                )
+            )
+            ->setCallback(Closure::fromCallable(array($this, 'handleMultiDelete')));
+    }
+
+    private function handleMultiDelete(UI_DataGrid_Action $action) : void
+    {
+        $collection = $this->createCollection();
+
+        $action->createRedirectMessage($collection->getAdminListURL())
+            ->single(t('The news entry %1$s has been deleted successfully at %2$s.', '$label', '$time'))
+            ->multiple(t('%1$s news entries have been deleted successfully at %2$s.', '$amount', '$time'))
+            ->none(t('No news entries selected that could be deleted.'))
+            ->processDeleteDBRecords($collection)
+            ->redirect();
     }
 
     protected function _handleSidebar(): void
