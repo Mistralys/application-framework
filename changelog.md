@@ -1,15 +1,7 @@
-### v2.10.0 - News feature release
+### v2.10.0 - Dependency release
 - Dependencies: Relaxed some version constraints for more flexibility.
-- News: Added the news article and alerts management.
 - Forms: `addDatepicker()` now uses the HTMLDateTimePicker element.
 - FilterCriteria: `setSearch()` now accepts null values.
-
-### Upgrade guide
-
-To use the news feature, the database must be updated. The necessary
-changes to upgrade an existing installation are available in the SQL 
-script `docs/sql/2023-10-16-news.sql`. The fresh install file can be
-used to set up a new database as usual (`docs/sql/pristine.sql`).
 
 ### v2.9.2 - Minor enhancements
 - KeepAlive: Avoid sending failed request error report.
