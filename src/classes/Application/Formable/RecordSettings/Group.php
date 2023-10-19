@@ -235,7 +235,7 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
             $el = $this->manager->$method();
         }
         
-        if(!$el instanceof HTML_QuickForm2_Element)
+        if(!$el instanceof HTML_QuickForm2_Node)
         {
             throw new Application_Exception(
                 'Invalid setting method return value.',
