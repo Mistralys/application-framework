@@ -20,11 +20,23 @@ use Application\UI\Form\Element\DateTimePicker\BasicTime;
 class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input
 {
     public const REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
-    public const ERROR_INVALID_TIME = 145901;
+
+    protected array $attributes = array(
+        'type' => 'time'
+    );
 
     public function getType() : string
     {
         return 'time';
+    }
+
+    protected function initNode(): void
+    {
+        parent::initNode();
+
+        UI::getInstance()->addStylesheet(HTML_QuickForm2_Element_HTMLDateTimePicker::CSS_FILE_NAME);
+
+        $this->addClass('time-picker');
     }
 
     public function getTime() : ?BasicTime

@@ -20,6 +20,19 @@ class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element_Inp
     public const REGEX_GROUP_DATE = '([0-9]{4}-[0-9]{2}-[0-9]{2})';
     public const ERROR_INVALID_DATE_VALUE = 145801;
 
+    protected array $attributes = array(
+        'type' => 'date'
+    );
+
+    protected function initNode(): void
+    {
+        parent::initNode();
+
+        UI::getInstance()->addStylesheet(HTML_QuickForm2_Element_HTMLDateTimePicker::CSS_FILE_NAME);
+
+        $this->addClass('date-picker');
+    }
+
     public function getType() : string
     {
         return 'date';
