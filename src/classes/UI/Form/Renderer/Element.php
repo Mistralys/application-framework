@@ -49,8 +49,9 @@ class UI_Form_Renderer_Element extends UI_Renderable
     * @var UI_Form_Renderer_RenderType_Default
     */
     private $renderType;
-    
-   /**
+    private ?string $elementHTML = null;
+
+    /**
     * @param UI_Form_Renderer_RenderType_Default $renderType
     */
     public function __construct(UI_Form_Renderer_RenderType_Default $renderType)
@@ -112,7 +113,17 @@ class UI_Form_Renderer_Element extends UI_Renderable
     
     public function getElementHTML() : string
     {
-        return $this->renderDef->getElementHTML();
+        return $this->elementHTML ?? $this->renderDef->getElementHTML();
+    }
+
+    /**
+     * @param string $html
+     * @return $this
+     */
+    public function setElementHTML(string $html) : self
+    {
+        $this->elementHTML = $html;
+        return $this;
     }
     
     public function getDataType() : string
