@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\NewsCentral;
 
 use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
+use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleSettingsScreen;
 use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
 use Application_Admin_ScreenInterface;
@@ -12,17 +13,97 @@ use Application_User;
 use Application_Users_User;
 use DateTime;
 use DBHelper_BaseRecord;
+use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
-use TestDriver\Area\Devel\NewsScreen\ViewArticleScreen;
-use function AppUtils\restoreThrowable;
 
 /**
  * @property NewsCollection $collection
  */
 class NewsEntry extends DBHelper_BaseRecord
 {
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    public function publish() : self
     {
+        $this->setStatus(NewsEntryStatuses::getInstance()->getPublished());
+        $this->save();
+
+        return $this;
+    }
+
+    public function setStatus(NewsEntryStatus $status) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_STATUS, $status->getID());
+    }
+
+    public function getStatusID() : string
+    {
+        return $this->getRecordStringKey(NewsCollection::COL_STATUS);
+    }
+
+    public function getStatus() : NewsEntryStatus
+    {
+        return NewsEntryStatuses::getInstance()->getByID($this->getStatusID());
+    }
+
+    public function isPublished() : bool
+    {
+        return $this->getStatus()->isPublished();
+    }
+
+    /**
+     * @var string[]
+     */
+    private array $dateUpdateKeys = array(
+        NewsCollection::COL_SYNOPSIS,
+        NewsCollection::COL_LABEL,
+        NewsCollection::COL_ARTICLE,
+        NewsCollection::COL_STATUS
+    );
+
+    public function isAlert() : bool
+    {
+        return $this->getTypeID() === NewsEntryTypes::NEWS_TYPE_ALERT;
+    }
+
+    public function setRequiresReceipt(bool $required) : bool
+    {
+        return $this->setRecordBooleanKey(NewsCollection::COL_REQUIRES_RECEIPT, $required);
+    }
+
+    public function setLabel(string $label) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_LABEL, $label);
+    }
+
+    public function setSynopsis(string $synopsis) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_SYNOPSIS, $synopsis);
+    }
+
+    public function setArticle(string $article) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_ARTICLE, $article);
+    }
+
+    public function setCriticality(NewsEntryCriticality $criticality) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_CRITICALITY, $criticality->getID());
+    }
+
+    protected function init() : void
+    {
+        foreach($this->dateUpdateKeys as $key) {
+            $this->registerRecordKey($key, '', true);
+        }
+    }
+
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : bool
+    {
+        // Update the date modified on change
+        if(in_array($name, $this->dateUpdateKeys, true)) {
+            $this->setRecordDateKey(NewsCollection::COL_DATE_MODIFIED, new DateTime());
+        }
+
+        return true;
     }
 
     public function getLabel(): string
@@ -50,6 +131,20 @@ class NewsEntry extends DBHelper_BaseRecord
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION] = BaseArticleStatusScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
+    }
+
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION] = BaseArticleSettingsScreen::URL_NAME;
+
+        return $this->getAdminViewURL($params);
+    }
+
+    public function getAdminPublishURL(array $params=array()) : string
+    {
+        $params[BaseArticleStatusScreen::REQUEST_PARAM_PUBLISH] = 'yes';
+
+        return $this->getAdminStatusURL($params);
     }
 
     public function getAdminURL(array $params=array()) : string

@@ -6,6 +6,7 @@ namespace Application\NewsCentral;
 
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
+use Application_Formable_RecordSettings_ValueSet;
 use AppUtils\Microtime;
 use AppUtils\NamedClosure;
 use Closure;
@@ -23,19 +24,17 @@ use UI;
  */
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_TITLE = 'label';
-    public const SETTING_SYNOPSIS = 'synopsis';
-    public const SETTING_ARTICLE = 'article';
-    public const SETTING_FROM_DATE = 'from_date';
-    public const SETTING_TO_DATE = 'to_date';
-    public const SETTING_CRITICALITY = 'criticality';
-    public const SETTING_REQUIRES_RECEIPT = 'requires_receipt';
-
     private bool $isAlert = false;
 
     public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
         parent::__construct($formable, $collection, $record);
+
+        if(isset($this->record) && $this->record->isAlert()) {
+            $this->makeAlert();
+        }
+
+        $this->setDefaultsUseStorageNames(true);
     }
 
     public function makeAlert() : self
@@ -44,35 +43,48 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         return $this;
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, array $formValues): void
+    // region: Data handling
+
+    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $valueSet): void
     {
 
     }
 
-    protected function getCreateData(array $formValues): array
+    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $valueSet): void
     {
-         $now = Microtime::createNow()->getMySQLDate();
+        $now = Microtime::createNow()->getMySQLDate();
 
-        $formValues[NewsCollection::COL_AUTHOR] = $this->getUser()->getID();
-        $formValues[NewsCollection::COL_DATE_CREATED] = $now;
-        $formValues[NewsCollection::COL_DATE_MODIFIED] = $now;
+        $valueSet->setKey(NewsCollection::COL_AUTHOR, $this->getUser()->getID());
+        $valueSet->setKey(NewsCollection::COL_DATE_CREATED, $now);
+        $valueSet->setKey(NewsCollection::COL_DATE_MODIFIED, $now);
 
-        if(!$this->isAlert) {
-            $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = 'no';
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ARTICLE;
-        } else {
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ALERT;
+        if(!$this->isAlert)
+        {
+            $valueSet->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ARTICLE);
+            $valueSet->setKey(NewsCollection::COL_REQUIRES_RECEIPT, 'no');
+            $valueSet->setKey(NewsCollection::COL_CRITICALITY, NewsEntryCriticalities::DEFAULT_CRITICALITY);
+        } else
+        {
+            $valueSet->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ALERT);
         }
-
-        $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = bool2string($formValues[NewsCollection::COL_REQUIRES_RECEIPT], true);
-
-        return $formValues;
     }
 
-    protected function updateRecord(array $values): void
+    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $valueSet): void
     {
-        // TODO: Implement updateRecord() method.
+
     }
+
+    // endregion
+
+    // region: Settings
+
+    public const SETTING_TITLE = 'label';
+    public const SETTING_SYNOPSIS = 'synopsis';
+    public const SETTING_ARTICLE = 'article';
+    public const SETTING_FROM_DATE = 'from_date';
+    public const SETTING_TO_DATE = 'to_date';
+    public const SETTING_CRITICALITY = 'criticality';
+    public const SETTING_REQUIRES_RECEIPT = 'receipt';
 
     protected function registerSettings(): void
     {
@@ -88,12 +100,14 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         $group->registerSetting(self::SETTING_TITLE)
             ->makeRequired()
+            ->setStorageName(NewsCollection::COL_LABEL)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectTitle')),
                 array($this, 'injectTitle')
             ));
 
         $synopsis = $group->registerSetting(self::SETTING_SYNOPSIS)
+            ->setStorageName(NewsCollection::COL_SYNOPSIS)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectSynopsis')),
                 array($this, 'injectSynopsis')
@@ -113,14 +127,22 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->setCallback(Closure::fromCallable(array($this, 'injectCriticality')));
 
         $group->registerSetting(self::SETTING_REQUIRES_RECEIPT)
-            ->setDefaultValue('no')
+            ->setDefaultValue('false')
+            ->setImportFilter(static function($value) : string {
+                return bool2string($value);
+            })
             ->setStorageName(NewsCollection::COL_REQUIRES_RECEIPT)
+            ->setStorageFilter(static function ($value) : string {
+                return bool2string($value, true);
+            })
             ->setCallback(Closure::fromCallable(array($this, 'injectRequiresReceipt')));
     }
 
     private function registerArticleText() : void
     {
-        if($this->isAlert) {
+        if($this->isAlert)
+        {
+
             return;
         }
 
@@ -129,6 +151,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         $group->registerSetting(self::SETTING_ARTICLE)
             ->makeRequired()
+            ->setStorageName(NewsCollection::COL_ARTICLE)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectArticle')),
                 array($this, 'injectArticle')
@@ -257,6 +280,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     {
         return self::SETTING_TITLE;
     }
+
+    // endregion
 
     public function isUserAllowedEditing(): bool
     {

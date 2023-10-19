@@ -14,10 +14,12 @@ class NewsFilterSettings extends DBHelper_BaseFilterSettings
 {
     public const SETTING_SEARCH = 'search';
     public const SETTING_TYPE = 'type';
+    public const SETTING_STATUS = 'status';
 
     protected function registerSettings(): void
     {
         $this->registerSetting(self::SETTING_TYPE, t('Type'));
+        $this->registerSetting(self::SETTING_STATUS, t('Status'));
         $this->registerSetting(self::SETTING_SEARCH, t('Search'));
     }
 
@@ -26,10 +28,22 @@ class NewsFilterSettings extends DBHelper_BaseFilterSettings
         $el = $this->addElementSelect(self::SETTING_TYPE);
         $el->addOption(t('Any'), '');
 
-        $types = NewsEntryTypes::getInstance()->getAll();
-        foreach($types as $type)
+        $items = NewsEntryTypes::getInstance()->getAll();
+        foreach($items as $item)
         {
-            $el->addOption($type->getLabel(), $type->getID());
+            $el->addOption($item->getLabel(), $item->getID());
+        }
+    }
+
+    protected function inject_status() : void
+    {
+        $el = $this->addElementSelect(self::SETTING_STATUS);
+        $el->addOption(t('Any'), '');
+
+        $items = NewsEntryStatuses::getInstance()->getAll();
+        foreach($items as $item)
+        {
+            $el->addOption($item->getLabel(), $item->getID());
         }
     }
 
@@ -38,6 +52,7 @@ class NewsFilterSettings extends DBHelper_BaseFilterSettings
         $this->filters->setSearch($this->getSetting(self::SETTING_SEARCH));
 
         $this->configureType();
+        $this->configureStatus();
     }
 
     /**
@@ -47,10 +62,20 @@ class NewsFilterSettings extends DBHelper_BaseFilterSettings
     private function configureType(): void
     {
         $collection = NewsEntryTypes::getInstance();
-        $type = $this->getSetting(self::SETTING_TYPE);
+        $id = $this->getSetting(self::SETTING_TYPE);
 
-        if (!empty($type) && $collection->idExists($type)) {
-            $this->filters->selectType($collection->getByID($type));
+        if (!empty($id) && $collection->idExists($id)) {
+            $this->filters->selectType($collection->getByID($id));
+        }
+    }
+
+    private function configureStatus() : void
+    {
+        $collection = NewsEntryStatuses::getInstance();
+        $id = $this->getSetting(self::SETTING_STATUS);
+
+        if (!empty($id) && $collection->idExists($id)) {
+            $this->filters->selectStatus($collection->getByID($id));
         }
     }
 }
