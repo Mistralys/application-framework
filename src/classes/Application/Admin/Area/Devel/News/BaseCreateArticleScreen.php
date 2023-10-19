@@ -10,7 +10,7 @@ use Application\NewsCentral\NewsSettingsManager;
 use Application_Admin_Area_Mode_Submode_CollectionCreate;
 use DBHelper_BaseRecord;
 
-class BaseCreateArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionCreate
+abstract class BaseCreateArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionCreate
 {
     public const URL_NAME = 'create-article';
 

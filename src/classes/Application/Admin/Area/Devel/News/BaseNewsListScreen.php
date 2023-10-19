@@ -29,6 +29,7 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_Co
     public const COLUMN_TYPE = 'type';
     public const COLUMN_AUTHOR = 'author';
     public const COLUMN_MODIFIED = 'modified';
+    public const COLUMN_STATUS = 'status';
 
     public function getURLName(): string
     {
@@ -54,8 +55,9 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_Co
 
         return array(
             self::COLUMN_ID => $newsEntry->getID(),
-            self::COLUMN_LABEL => $newsEntry->getLabelLinked(),
             self::COLUMN_TYPE => $newsEntry->getType()->getIcon(),
+            self::COLUMN_LABEL => $newsEntry->getLabelLinked(),
+            self::COLUMN_STATUS => $newsEntry->getStatus()->getIconLabel(),
             self::COLUMN_AUTHOR => $newsEntry->getAuthor()->getName(),
             self::COLUMN_MODIFIED => ConvertHelper::date2listLabel($newsEntry->getDateModified(), true, true),
         );
@@ -69,6 +71,9 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_Co
 
         $this->grid->addColumn(self::COLUMN_LABEL, t('Title'))
             ->setSortable(false, NewsCollection::COL_LABEL);
+
+        $this->grid->addColumn(self::COLUMN_STATUS, t('Status'))
+            ->setSortable(false, NewsCollection::COL_STATUS);
 
         $this->grid->addColumn(self::COLUMN_AUTHOR, t('Author'));
 

@@ -10,7 +10,7 @@ use Application\NewsCentral\NewsSettingsManager;
 use Application_Admin_Area_Mode_Submode_CollectionCreate;
 use DBHelper_BaseRecord;
 
-class BaseCreateAlertScreen extends BaseCreateArticleScreen
+abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 {
     public const URL_NAME = 'create-alert';
 

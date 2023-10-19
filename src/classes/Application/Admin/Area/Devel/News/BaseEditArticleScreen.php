@@ -10,7 +10,7 @@ use Application\NewsCentral\NewsSettingsManager;
 use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use DBHelper_BaseRecord;
 
-class BaseEditArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+abstract class BaseEditArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
 {
     public const URL_NAME = 'edit';
 

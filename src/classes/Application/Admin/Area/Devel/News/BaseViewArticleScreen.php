@@ -14,7 +14,7 @@ use UI;
 /**
  * @property NewsEntry $record
  */
-class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
 {
     public const URL_NAME = 'view';
 
@@ -51,7 +51,8 @@ class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode_Collecti
             ->getTitle()
             ->setText($this->record->getLabel())
             ->setIcon($type->getIcon())
-            ->setSubline($type->getLabel());
+            ->setSubline($type->getLabel())
+            ->addBadge($this->record->getStatus()->getBadge());
     }
 
     protected function _handleBreadcrumb(): void
@@ -69,6 +70,12 @@ class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode_Collecti
             $this->record->getAdminStatusURL(),
         )
             ->setIcon(UI::icon()->status());
+
+        $this->subnav->addURL(
+            t('Settings'),
+            $this->record->getAdminSettingsURL(),
+        )
+            ->setIcon(UI::icon()->settings());
     }
 
     public function getNewsEntry() : NewsEntry
