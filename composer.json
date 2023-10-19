@@ -15,12 +15,16 @@
     "classmap": [
       "src/classes/",
       "src/themes/default/templates",
-      "tests/classes",
       "tests/application/assets/classes",
       "tests/application/themes"
     ],
     "files": [
       "src/functions/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "classmap": [
+      "tests/AppFrameworkTestClasses"
     ]
   },
   "repositories": [
