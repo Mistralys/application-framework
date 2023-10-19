@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+
 class UI_Form_Renderer_ElementFilter_RenderDef
 {
     /**
@@ -258,8 +260,8 @@ class UI_Form_Renderer_ElementFilter_RenderDef
         }
         
         $typeClass = $this->getTypeClass();
-        
-        $this->typeRenderer = ensureType(
+
+        $this->typeRenderer = ClassHelper::requireObjectInstanceOf(
             UI_Form_Renderer_RenderType::class,
             new $typeClass($this, $this->section)
         );
