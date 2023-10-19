@@ -437,7 +437,12 @@ trait Application_Traits_Admin_CollectionSettings
         foreach($data as $name => $value)
         {
             if($media->isMediaFormValue($value)) {
-                $value = $media->getByFormValue($value)->getID();
+                $document = $media->getByFormValue($value);
+                $value = null;
+
+                if($document !== null) {
+                    $value = $document->getID();
+                }
             }
             
             $result[$name] = $value;
@@ -457,13 +462,19 @@ trait Application_Traits_Admin_CollectionSettings
     {
         $this->log('Updating the record.');
 
+        if($this->settingsManager instanceof Application_Formable_RecordSettings_Extended)
+        {
+            $this->settingsManager->saveRecord();
+            return;
+        }
+
         $values = $data->getValues();
 
         foreach($values as $name => $value)
         {
             $this->record->setRecordKey($name, $value);
         }
-        
+
         $this->record->save();
     }
 
@@ -472,7 +483,7 @@ trait Application_Traits_Admin_CollectionSettings
         $this->log('Creating a new record.');
 
         if($this->settingsManager instanceof Application_Formable_RecordSettings_Extended) {
-            return $this->settingsManager->createRecordFromValues($data->getValues());
+            return $this->settingsManager->createRecord();
         }
 
         return $this->collection->createNewRecord($data->getValues());
@@ -564,18 +575,20 @@ trait Application_Traits_Admin_CollectionSettings
         {
             $title = $this->record->getLabel();
         }
-        
-        if($this->collection->hasParentCollection())
+
+        $parent = $this->collection->getParentRecord();
+
+        if($parent !== null)
         {
             if(empty($title))
             {
-                $title = $this->collection->getParentRecord()->getLabel();
+                $title = $parent->getLabel();
             }
             else
             {
                 $title = t(
                     '%1$s: %2$s',
-                    $this->collection->getParentRecord()->getLabel(),
+                    $parent->getLabel(),
                     $title
                 );
             }
@@ -584,7 +597,7 @@ trait Application_Traits_Admin_CollectionSettings
         return $title;
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $title = $this->resolveTitle();
 
@@ -605,7 +618,7 @@ trait Application_Traits_Admin_CollectionSettings
             'Required method not implemented',
             sprintf(
                 'The method %1$s must be implemented when not using a settings manager instance. '.
-                'Either that, or implemement the getSettingsManager method instead.',
+                'Either that, or implement the getSettingsManager method instead.',
                 $methodName
             ),
             Application_Interfaces_Admin_CollectionSettings::ERROR_MISSING_REQUIRED_METHOD
