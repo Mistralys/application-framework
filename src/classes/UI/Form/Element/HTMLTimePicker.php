@@ -7,6 +7,8 @@
  * @see HTML_QuickForm2_Element_HTMLTimePicker
  */
 
+use Application\UI\Form\Element\DateTimePicker\BasicTime;
+
 /**
  * Element that is used to handle generate HTML input with type time.
  * All browsers(except IE) will open time selection menu as input
@@ -15,39 +17,114 @@
  * @subpackage Form Elements
  * @author Emre Celebi <emre.celebi@ionos.com>
  */
-class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element
+class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input
 {
-    protected array $watchedAttributes = array('id', 'name', 'type');
-
-    protected function onAttributeChange(string $name, $value = null) : void
-    {
-        if ('type' === $name)
-        {
-            throw new HTML_QuickForm2_InvalidArgumentException(
-                "Attribute 'type' is read-only"
-            );
-        }
-        parent::onAttributeChange($name, $value);
-    }
+    public const REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
+    public const ERROR_INVALID_TIME = 145901;
 
     public function getType() : string
     {
-        return 'datetime-local';
+        return 'time';
     }
 
+    public function getTime() : ?BasicTime
+    {
+        $parsed = self::parseTimeString($this->getValue());
+
+        if($parsed !== null) {
+            return new BasicTime($parsed['hour'], $parsed['time']);
+        }
+
+        return null;
+    }
+
+    public function getHour() : ?int
+    {
+        $time = $this->getTime();
+        if($time !== null) {
+            return $time->getHour();
+        }
+
+        return null;
+    }
+
+    public function getMinutes() : ?int
+    {
+        $time = $this->getTime();
+        if($time !== null) {
+            return $time->getMinutes();
+        }
+
+        return null;
+    }
+
+    public static function parseTimeString(string $string) : ?array
+    {
+        $string = trim($string);
+
+        preg_match('/'.self::REGEX_GROUP_TIME.'/', $string, $matches);
+
+        if(empty($matches)) {
+            return null;
+        }
+
+        return array(
+            'hour' => (int)$matches[1],
+            'time' => (int)$matches[2],
+        );
+    }
+
+    public function getValue() : string
+    {
+        return (string)parent::getValue();
+    }
+
+    protected function validate(): bool
+    {
+        $value = $this->getValue();
+
+        if(empty($value)) {
+            return parent::validate();
+        }
+
+        $time = self::parseTimeString($value);
+        if($time === null) {
+            $this->setError((string)sb()
+                ->t('Not a valid time.')
+                ->t('Expected the format %1$s.', t('HH:MM'))
+            );
+            return false;
+        }
+
+        try
+        {
+            new BasicTime($time['hour'], $time['time']);
+            return true;
+        }
+        catch (UI_Exception $e)
+        {
+            $this->setError(t('The time format is correct, but the time does not exist.'));
+            return false;
+        }
+    }
+
+    /**
+     * @param string|DateTime|BasicTime|NULL $value
+     * @return $this
+     */
     public function setValue($value) : self
     {
-        $this->setAttribute('value', (string)$value);
+        if($value instanceof BasicTime)
+        {
+            $value = $value->getAsString();
+        }
+        else if($value instanceof DateTime)
+        {
+            $value = $value->format('H:i');
+        }
+
+        parent::setValue($value);
+
         return $this;
-    }
-
-    public function getRawValue()
-    {
-        return $this->getAttribute('disabled') ? null : $this->getAttribute('value');
-    }
-
-    public function __toString()
-    {
-        return '<input type="time"' . $this->getAttributes(true) . ' />';
     }
 }
