@@ -1,8 +1,27 @@
-### v2.11.0 - News feature release
+### v2.11.0 - News feature release (breaking-m)
 - News: Added the news feature for news articles and alerts.
 - News: An example is available in the test application.
+- Forms: Revamped the DateTimePicker element to work as intended.
+- Forms: Extended RecordSettings now correctly handle key naming throughout.
+- Forms: CollectionSettings now makes better use of the setting manager.
+- Forms: Added `setImportFilter()` in the setting manager's settings. 
 
-#### Upgrade guide
+#### Breaking changes (M)
+
+- Arguments for the following methods have changed:
+  - `Application_Formable_RecordSettings_Extended::getCreateData()`
+  - `Application_Formable_RecordSettings_Extended::processPostCreateSettings()`
+  - `Application_Formable_RecordSettings_Extended::createRecordFromValues()`
+  - `Application_Formable_RecordSettings_Extended::updateRecord()`
+- Review any wizard steps that use 
+  `Application_Traits_Admin_Wizard_CreateDBRecordStep`
+  to ensure the data is processed correctly.
+- Review any admin screens that use
+  `Application_Traits_Admin_CollectionSettings`
+  in combination with a settings manager, to ensure data
+  is processed correctly.
+
+#### News Upgrade Guide
 
 To use the news feature, the database must be updated. The necessary
 changes to upgrade an existing installation are available in the SQL
