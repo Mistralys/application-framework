@@ -318,21 +318,19 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      */
     private function importRecordValues(array $values) : array
     {
-        if(!$this->defaultsUseStorage) {
-            return $values;
-        }
-
         $result = array();
         $settings = $this->getSettings();
 
+        $valueSet = new Application_Formable_RecordSettings_ValueSet($values);
+
         foreach ($settings as $setting)
         {
-            $storageName = $setting->getStorageName();
-
-            if(array_key_exists($storageName, $values))
-            {
-                $result[$setting->getName()] = $values[$storageName];
+            $name = $setting->getName();
+            if($this->defaultsUseStorage) {
+                $name = $setting->getStorageName();
             }
+
+            $result[$setting->getName()] = $setting->filterForImport($valueSet->getKey($name), $valueSet);
         }
 
         return $result;
@@ -413,7 +411,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      * @throws Application_Exception
      * @return Application_Formable_RecordSettings_ValueSet A copy of the specified data, with the filtered values.
      */
-    public final function filterForStorage(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
+    final public function filterForStorage(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
     {
         $settings = $this->getSettings();
         $result = new Application_Formable_RecordSettings_ValueSet(array());
@@ -441,7 +439,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         return $result;
     }
 
-    public final function afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
+    final public function afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $this->logEvent('AfterSave', sprintf('The record [%s] has been saved.', $record->getID()));
 
@@ -454,7 +452,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      *
      * @return array<string,mixed>
      */
-    public final function getVirtualValues() : array
+    final public function getVirtualValues() : array
     {
         $result = array();
 
