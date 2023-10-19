@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="RecordTests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
     <CommandLine workingDirectory="$PROJECT_DIR$" />
-    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="testsuites\DBHelper\RecordTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/testsuites/DBHelper/RecordTests.php" scope="Class" use_alternative_bootstrap_file="true" />
+    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="testsuites\DBHelper\RecordTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/AppFrameworkTests/DBHelper/RecordTests.php" scope="Class" use_alternative_bootstrap_file="true" />
     <method v="2" />
   </configuration>
 </component>

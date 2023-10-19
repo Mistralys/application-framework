@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="EventHandling_OfflineEventTests" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
     <CommandLine workingDirectory="$PROJECT_DIR$" />
-    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="EventHandling_OfflineEventTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/testsuites/EventHandling/OfflineEventTests.php" scope="Class" use_alternative_bootstrap_file="true" />
+    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="EventHandling_OfflineEventTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/AppFrameworkTests/EventHandling/OfflineEventTests.php" scope="Class" use_alternative_bootstrap_file="true" />
     <method v="2" />
   </configuration>
 </component>
