@@ -7,6 +7,7 @@
 - Forms: Added `setImportFilter()` in the setting manager's settings. 
 - Forms: Fixed the Switch element's label not being clickable.
 - Forms: Added possibility to specify a separate label ID.
+- QuickStart: Removed the automatic refresh.
 
 #### Breaking changes (M)
 
