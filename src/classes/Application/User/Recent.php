@@ -28,18 +28,14 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
     public const ERROR_CATEGORY_ALIAS_NOT_FOUND = 72701;
     public const ERROR_CATEGORY_ALIAS_EXISTS = 72702;
-    const SETTING_PINNED_NOTES = 'notepad-pinned-notes';
-    const SETTING_AUTO_REFRESH_ENABLED = 'recent-auto-refresh-enabled';
+    public const SETTING_PINNED_NOTES = 'notepad-pinned-notes';
 
-    /**
-     * @var Application_User
-     */
-    private $user;
+    private Application_User $user;
 
     /**
      * @var Application_User_Recent_Category[]
      */
-    private $categories = array();
+    private array $categories = array();
 
     public function __construct(Application_User $user)
     {
@@ -268,16 +264,5 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         }
 
         return $categories;
-    }
-
-    public function isAutoRefreshEnabled() : bool
-    {
-        return $this->user->getBoolSetting(self::SETTING_AUTO_REFRESH_ENABLED, true);
-    }
-
-    public function setAutoRefreshEnabled(bool $enabled)
-    {
-        $this->user->setBoolSetting(self::SETTING_AUTO_REFRESH_ENABLED, $enabled);
-        $this->user->saveSettings();
     }
 }
