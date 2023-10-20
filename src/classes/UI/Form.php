@@ -1723,7 +1723,7 @@ class UI_Form extends UI_Renderable
      * is always the value to validate, and the last is the
      * rule object instance, even if custom arguments are specified.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param callable $callback
      * @param string $errorMessage
      * @param array $arguments Arguments for the callback, as indexed array of parameters.
@@ -1734,7 +1734,7 @@ class UI_Form extends UI_Renderable
      * @throws HTML_QuickForm2_InvalidArgumentException
      * @throws HTML_QuickForm2_NotFoundException
      */
-    public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
         $rule = ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Rule_Callback::class,
