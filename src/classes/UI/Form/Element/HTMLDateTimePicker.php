@@ -41,6 +41,8 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
             HTML_QuickForm2_Element_HTMLTimePicker::class,
             $this->addElement('HTMLTimePicker', self::ELEMENT_NAME_TIME)
         );
+
+        UI_Form::setElementLabelID($this, $this->datePicker->getId());
     }
 
     public function getType() : string
@@ -229,7 +231,7 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
         $date = $this->datePicker->getDate();
         $time = $this->timePicker->getTime();
 
-        if($date === null || $time === null)
+        if(($date !== null || $time !== null) && ($date === null || $time === null))
         {
             $this->setError(t('Please enter a date and a time.'));
             return false;

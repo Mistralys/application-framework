@@ -92,6 +92,8 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
         $id = $this->resolveID();
 
+        UI_Form::setElementLabelID($this, $id.'-on');
+
         $this->injectJS($id);
 
         $btnON = UI::button($this->onLabel)
