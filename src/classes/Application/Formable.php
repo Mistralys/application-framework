@@ -774,13 +774,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * is always the value to validate, and the last is the
     * rule object instance, even if custom arguments are specified.
     * 
-    * @param HTML_QuickForm2_Element $element
+    * @param HTML_QuickForm2_Node $element
     * @param callable $callback
     * @param string $errorMessage
     * @param mixed[] $arguments Indexed list of arguments for the callback
     * @return HTML_QuickForm2_Rule_Callback
     */
-    public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
         $this->requireFormableInitialized();
         
