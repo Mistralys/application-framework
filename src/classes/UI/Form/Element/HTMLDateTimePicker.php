@@ -209,6 +209,32 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
      */
     public function __toString()
     {
-        return $this->datePicker.'&nbsp'.$this->timePicker;
+        return sprintf(
+            '%s %s %s',
+            $this->datePicker,
+            $this->timePicker,
+            UI::button('')
+                ->setIcon(UI::icon()->deleteSign())
+                ->setTooltip(t('Clear the date'))
+                ->click(sprintf(
+                    "$('#%s').val('');$('#%s').val('');",
+                    $this->datePicker->getId(),
+                    $this->timePicker->getId()
+                ))
+        );
+    }
+
+    protected function validate(): bool
+    {
+        $date = $this->datePicker->getDate();
+        $time = $this->timePicker->getTime();
+
+        if($date === null || $time === null)
+        {
+            $this->setError(t('Please enter a date and a time.'));
+            return false;
+        }
+
+        return parent::validate();
     }
 }
