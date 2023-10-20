@@ -93,6 +93,11 @@ class UI_Form_Renderer_Element extends UI_Renderable
     {
         return $this->renderDef->getElementID();
     }
+
+    public function getLabelID() : string
+    {
+        return $this->renderDef->getLabelID();
+    }
     
     public function getLabel() : string
     {
@@ -183,7 +188,7 @@ class UI_Form_Renderer_Element extends UI_Renderable
         
         return
         '<a id="'.$this->getID().'-anchor"></a>'.
-        '<label class="control-label" for="' . $this->getID() . '">' .
+        '<label class="control-label" for="' . $this->getLabelID() . '">' .
             '<span class="control-label-text">'.$this->getLabelForHTML() .'</span> ' .
             $this->renderIcons() .
         '</label>'.

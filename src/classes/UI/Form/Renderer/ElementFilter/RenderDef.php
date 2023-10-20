@@ -173,6 +173,17 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     {
         return $this->node->getId();
     }
+
+    public function getLabelID() : string
+    {
+        $specific = $this->node->getAttribute(UI_Form::ATTRIBUTE_LABEL_ID);
+
+        if(!empty($specific)) {
+            return $specific;
+        }
+
+        return $this->getElementID();
+    }
     
     public function getElementHTML() : string
     {

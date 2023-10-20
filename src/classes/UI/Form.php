@@ -49,6 +49,7 @@ class UI_Form extends UI_Renderable
      */
     public const ID_PREFIX = 'f-';
 
+    public const ATTRIBUTE_LABEL_ID = 'data-label-id';
     public const REL_BUTTON = 'Button';
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
     public const FORM_PREFIX = 'form-';
@@ -105,7 +106,24 @@ class UI_Form extends UI_Renderable
     {
         return $this->form->getId();
     }
-    
+
+    /**
+     * Sets the ID to use for the form element's <code>&lt;label&gt;</code>
+     * tag. This is used by the {@see UI_Form_Renderer} to adjust the label's
+     * target (instead of using the element's own ID).
+     *
+     * Use cases are when an element has sub-elements (like groups), to be
+     * able to specify what the target should be.
+     *
+     * @param HTML_QuickForm2_Node $node
+     * @param string $id
+     * @return void
+     */
+    public static function setElementLabelID(HTML_QuickForm2_Node $node, string $id) : void
+    {
+        $node->setAttribute(self::ATTRIBUTE_LABEL_ID, $id);
+    }
+
     public function getJSID() : string
     {
         return $this->form->getAttribute('data-jsid');

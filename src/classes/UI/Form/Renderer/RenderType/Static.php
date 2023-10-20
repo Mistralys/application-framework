@@ -33,7 +33,7 @@ class UI_Form_Renderer_RenderType_Static extends UI_Form_Renderer_RenderType
         return sprintf(
             $this->template,
             implode(' ', $classes),
-            $this->renderDef->getElementID(),
+            $this->renderDef->getLabelID(),
             $this->renderDef->getElementLabel(),
             $this->renderDef->getAttribute('static_content'),
             $this->renderMarkupComments()
