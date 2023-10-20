@@ -25,6 +25,8 @@ use UI;
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
     private bool $isAlert = false;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
 
     public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
@@ -208,6 +210,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->t('If a date and time is selected, the article will become visible at that time - if it has been published.')
         );
 
+        $this->elFromDate = $el;
+
         return $el;
     }
 
@@ -218,7 +222,28 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->t('If a date and time is selected, the article will automatically be hidden from that point onwards.')
         );
 
+        $this->elToDate = $el;
+
+        $this->addRuleCallback(
+            $el,
+            Closure::fromCallable(array($this, 'validateScheduleDates')),
+            t('The "To date" must be after the "From date".')
+        );
+
         return $el;
+    }
+
+    private function validateScheduleDates() : bool
+    {
+        $fromDate = $this->elFromDate->getValue();
+        $toDate = $this->elToDate->getValue();
+
+        if(empty($fromDate) || empty($toDate))
+        {
+            return true;
+        }
+
+        return $fromDate < $toDate;
     }
 
     /**
