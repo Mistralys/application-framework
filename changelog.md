@@ -5,6 +5,8 @@
 - Forms: Extended RecordSettings now correctly handle key naming throughout.
 - Forms: CollectionSettings now makes better use of the setting manager.
 - Forms: Added `setImportFilter()` in the setting manager's settings. 
+- Forms: Fixed the Switch element's label not being clickable.
+- Forms: Added possibility to specify a separate label ID.
 
 #### Breaking changes (M)
 
