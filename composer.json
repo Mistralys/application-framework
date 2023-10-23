@@ -16,15 +16,11 @@
       "src/classes/",
       "src/themes/default/templates",
       "tests/application/assets/classes",
-      "tests/application/themes"
+      "tests/application/themes",
+      "tests/AppFrameworkTestClasses"
     ],
     "files": [
       "src/functions/functions.php"
-    ]
-  },
-  "autoload-dev": {
-    "classmap": [
-      "tests/AppFrameworkTestClasses"
     ]
   },
   "repositories": [
@@ -73,13 +69,13 @@
     "psr/log": ">=1.1.0",
     "mistralys/application-framework-docs": "dev-main",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
-    "mistralys/application-utils": ">=2.5.0",
+    "mistralys/application-utils": ">=3.0.0",
     "mistralys/application-utils-collections": ">=1.0.1",
     "mistralys/application-localization": ">=1.4.1",
     "mistralys/deepl-xml-translator": ">=2.0.2",
     "mistralys/subsetsum": ">=1.0.2",
     "mistralys/markdown-viewer": ">=1.3.1",
-    "mistralys/html_quickform2": ">=2.2.1",
+    "mistralys/html_quickform2": ">=2.3.2",
     "mistralys/version-parser": ">=2.0.0",
     "pear/http_request2": "^v2.5.1",
     "shark/simple_html_dom": "dev-master",
