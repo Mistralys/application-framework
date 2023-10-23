@@ -184,7 +184,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     * 
     * @throws Application_Exception
     */
-    public final function inject() : Application_Formable_RecordSettings
+    final public function inject() : Application_Formable_RecordSettings
     {
         $this->initSettingsForm();
         
