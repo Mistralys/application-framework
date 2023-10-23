@@ -1178,10 +1178,42 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         return $this->formableForm->getValues();
     }
+
+    /**
+     * @return HTML_QuickForm2_Node[]
+     * @throws Application_Formable_Exception
+     */
+    public function getErroneousElements() : array
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->getErroneousElements();
+    }
+
+    public function renderErrorMessages() : string
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->renderErrorMessages();
+    }
     
     public function isFormSubmitted() : bool
     {
+        $this->requireFormableInitialized();
+
         return $this->formableForm->isSubmitted();
+    }
+
+    /**
+     * @param array<string,mixed> $formValues
+     * @return void
+     * @throws Application_Formable_Exception
+     */
+    public function makeSubmitted(array $formValues=array()) : void
+    {
+        $this->requireFormableInitialized();
+
+        $this->formableForm->makeSubmitted($formValues);
     }
     
    /**

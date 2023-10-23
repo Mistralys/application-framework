@@ -14,6 +14,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\FileHelper;
 use AppUtils\Interface_Stringable;
 use AppUtils\RegexHelper;
+use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
 use function AppUtils\parseVariable;
 
 /**
@@ -42,6 +43,7 @@ class UI_Form extends UI_Renderable
     public const ERROR_INVALID_FORM_RENDERER = 45524014;
     public const ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
     public const ERROR_CANNOT_CREATE_ELEMENT = 45524016;
+    public const ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
 
     /**
      * Stores the string that form element IDs get prefixed with.
@@ -54,6 +56,7 @@ class UI_Form extends UI_Renderable
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
     public const FORM_PREFIX = 'form-';
     public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
+
 
     protected string $id;
     protected HTML_QuickForm2 $form;
@@ -357,7 +360,63 @@ class UI_Form extends UI_Renderable
         return $this;
     }
 
-   /**
+    /**
+     * @return HTML_QuickForm2_Node[]
+     */
+    public function getErroneousElements(array $result=array()) : array
+    {
+        $elements = $this->form->getElements();
+
+        foreach($elements as $element)
+        {
+            if($element->hasErrors()) {
+                $result[] = $element;
+            }
+
+            if($element instanceof HTML_QuickForm2_Container) {
+                $result = $this->getErroneousElements($element->getElements());
+            }
+        }
+
+        return $result;
+    }
+
+    public function renderErrorMessages() : string
+    {
+        $elements = $this->getErroneousElements();
+
+        $result = array();
+        foreach($elements as $element)
+        {
+            $result[] = $element->getName().': '.$element->getError();
+        }
+
+        return '<ul>'.implode('</li><li>', $result).'</ul>';
+    }
+
+    /**
+     * Manually submits the form given the specified data.
+     *
+     * @param array<string,mixed> $formValues
+     * @return $this
+     * @throws Application_Formable_Exception
+     */
+    public function makeSubmitted(array $formValues=array()) : self
+    {
+        $this->form->submitManually(new ManualSubmitDataSource($formValues));
+
+        if(!$this->isSubmitted()) {
+            throw new Application_Formable_Exception(
+                'Form could not be submitted',
+                'Setting the tracking var had no effect.',
+                self::ERROR_COULD_NOT_SUBMIT_FORM
+            );
+        }
+
+        return $this;
+    }
+
+    /**
     * Adds a class to the form tag itself.
     * 
     * @param string $className
