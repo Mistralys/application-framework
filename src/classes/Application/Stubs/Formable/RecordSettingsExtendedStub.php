@@ -40,15 +40,15 @@ class Application_Stubs_Formable_RecordSettingsExtendedStub extends Application_
         return Application::getUser()->isDeveloper();
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $valueSet) : void
+    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData) : void
     {
     }
 
-    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $valueSet) : void
+    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $recordData) : void
     {
     }
 
-    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $valueSet) : void
+    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData) : void
     {
     }
 }

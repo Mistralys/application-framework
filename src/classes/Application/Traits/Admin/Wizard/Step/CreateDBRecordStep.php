@@ -141,6 +141,8 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     {
         $this->log(sprintf('Creating the %s record.', $this->createCollection()->getRecordTypeName()));
 
+        $this->settingsManager->makeSubmitted($this->getSettingValues());
+
         $record = $this->settingsManager->createRecord();
 
         $this->log(sprintf('Created record with ID [%s].', $record->getID()));

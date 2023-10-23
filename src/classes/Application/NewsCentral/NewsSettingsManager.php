@@ -8,6 +8,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use AppUtils\Microtime;
+use AppUtils\Microtime_Exception;
 use AppUtils\NamedClosure;
 use Closure;
 use DBHelper_BaseRecord;
@@ -47,31 +48,31 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     // region: Data handling
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $valueSet): void
+    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
 
     }
 
-    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $valueSet): void
+    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
         $now = Microtime::createNow()->getMySQLDate();
 
-        $valueSet->setKey(NewsCollection::COL_AUTHOR, $this->getUser()->getID());
-        $valueSet->setKey(NewsCollection::COL_DATE_CREATED, $now);
-        $valueSet->setKey(NewsCollection::COL_DATE_MODIFIED, $now);
+        $recordData->setKey(NewsCollection::COL_AUTHOR, $this->getUser()->getID());
+        $recordData->setKey(NewsCollection::COL_DATE_CREATED, $now);
+        $recordData->setKey(NewsCollection::COL_DATE_MODIFIED, $now);
 
         if(!$this->isAlert)
         {
-            $valueSet->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ARTICLE);
-            $valueSet->setKey(NewsCollection::COL_REQUIRES_RECEIPT, 'no');
-            $valueSet->setKey(NewsCollection::COL_CRITICALITY, NewsEntryCriticalities::DEFAULT_CRITICALITY);
+            $recordData->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ARTICLE);
+            $recordData->setKey(NewsCollection::COL_REQUIRES_RECEIPT, 'no');
+            $recordData->setKey(NewsCollection::COL_CRITICALITY, NewsEntryCriticalities::DEFAULT_CRITICALITY);
         } else
         {
-            $valueSet->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ALERT);
+            $recordData->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ALERT);
         }
     }
 
-    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $valueSet): void
+    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
 
     }
@@ -249,6 +250,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     /**
      * @param string|NULL $value
      * @return string|NULL
+     * @throws Microtime_Exception
      */
     private function filterDate(?string $value) : ?string
     {
