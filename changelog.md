@@ -1,4 +1,4 @@
-### v2.11.0 - News feature release (breaking-m)
+### v3.0.0 - News feature release (breaking-m)
 - News: Added the news feature for news articles and alerts.
 - News: An example is available in the test application.
 - Forms: Revamped the DateTimePicker element to work as intended.
@@ -7,7 +7,15 @@
 - Forms: Added `setImportFilter()` in the setting manager's settings. 
 - Forms: Fixed the Switch element's label not being clickable.
 - Forms: Added possibility to specify a separate label ID.
+- Forms: Fixed empty select values being ignored when a default value is present.
+- Forms: Added `makeSubmitted()` to manually submit forms and formables.
+- RecordSettings: Record data and internal values are now separate.
+- RecordSettings: `updateRecord()` is called after creation.
+- RecordSettings: `getCreateData()` only has to handle internal values now.
 - QuickStart: Removed the automatic refresh.
+- Forms: Added `$includeValue` to the Switch element's `makeYesNo()` method.
+- Dependencies: Updated QuickForm to [v2.3.2](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.2).
+- Dependencies: Updated AppUtils to [v3.0.0](https://github.com/Mistralys/application-utils/releases/tag/3.0.0).
 
 #### Breaking changes (M)
 
@@ -23,6 +31,20 @@
   `Application_Traits_Admin_CollectionSettings`
   in combination with a settings manager, to ensure data
   is processed correctly.
+
+#### RecordSettings changes
+
+When using `setDefaultsUseStorageNames()`, the setting of values in
+the record has been streamlined. This expects `setStorageName()` to
+be used for all keys whose value can be set directly. The filter methods
+`(setImportFilter()` and `setStorageFilter()` can help with this. 
+
+Given these prerequisites, the data handling methods mentioned above
+only have to handle the internal values, as these can only be set
+manually. All others are set automatically in the record instance.
+
+The `updateRecord()` method is now called after the record has been
+created, to avoid code duplication with the creation methods.
 
 #### News Upgrade Guide
 
