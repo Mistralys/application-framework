@@ -32,8 +32,9 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     public const ERROR_CREATE_IN_EDIT_MODE = 59002;
     public const ERROR_CANNOT_SAVE_IN_CREATE_MODE = 59003;
     public const ERROR_EDIT_FORM_INVALID = 59004;
-    
-   /**
+    public const ERROR_FORM_NOT_SUBMITTED = 59005;
+
+    /**
     * When in create mode, and provided the form has been
     * submitted and is valid, will create the record from
     * the form data and return it.
@@ -44,18 +45,26 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     public function createRecord() : DBHelper_BaseRecord
     {
         $this->initSettingsForm();
-        
-        if(!$this->isFormValid())
-        {
+
+        if(!$this->isFormSubmitted()) {
+            throw new Application_Formable_Exception(
+                'Form has not been submitted',
+                '',
+                self::ERROR_FORM_NOT_SUBMITTED
+            );
+        }
+
+        if(!$this->isFormValid()) {
             throw new Application_Exception(
                 'Form is invalid',
-                '',
+                $this->renderErrorMessages(),
                 self::ERROR_CREATE_FORM_INVALID
             );
         }
         
         return $this->createRecordFromValues(
-            $this->filterForStorage(new Application_Formable_RecordSettings_ValueSet($this->getFormValues()))
+            $this->filterForStorage(new Application_Formable_RecordSettings_ValueSet($this->getFormValues())),
+            $this->filterInternals(new Application_Formable_RecordSettings_ValueSet($this->getFormValues()))
         );
     }
 
@@ -66,7 +75,8 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      * Usage example: A wizard where the form values are stored
      * in one of the steps, and used later to create the record.
      *
-     * @param Application_Formable_RecordSettings_ValueSet $valueSet
+     * @param Application_Formable_RecordSettings_ValueSet $recordData
+     * @param Application_Formable_RecordSettings_ValueSet $internalValues
      * @return DBHelper_BaseRecord
      *
      * @throws Application_Exception
@@ -74,7 +84,7 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
-    protected function createRecordFromValues(Application_Formable_RecordSettings_ValueSet $valueSet) : DBHelper_BaseRecord
+    protected function createRecordFromValues(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : DBHelper_BaseRecord
     {
         if($this->isEditMode())
         {
@@ -87,11 +97,15 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
 
         DBHelper::requireTransaction(sprintf('Create a new %s', $this->collection->getRecordTypeName()));
 
-        $this->getCreateData($valueSet);
+        $this->getCreateData($recordData, $internalValues);
 
-        $record = $this->collection->createNewRecord($valueSet->getValues());
+        $record = $this->collection->createNewRecord($recordData->getValues());
 
-        $this->processPostCreateSettings($record, $valueSet);
+        $this->record = $record;
+        $this->updateRecord($recordData, $internalValues);
+        $this->record = null;
+
+        $this->processPostCreateSettings($record, $recordData, $internalValues);
 
         $record->save();
 
@@ -103,27 +117,33 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      * additional configuration from the form values that was
      * not possible during creation, like options and the like.
      *
+     * NOTE: {@see self::updateRecord()} is called before this.
+     * Only things unique to do after creating a record need
+     * to be done here.
+     *
      * The record is saved again after this.
      *
      * @param DBHelper_BaseRecord $record
-     * @param Application_Formable_RecordSettings_ValueSet $valueSet
+     * @param Application_Formable_RecordSettings_ValueSet $recordData
+     * @param Application_Formable_RecordSettings_ValueSet $internalValues
      */
-    abstract protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $valueSet) : void;
+    abstract protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void;
 
-   /**
-    * Retrieves the data array to use to create the new record
-    * using the collection's createNewRecord method.
-    *
-    * NOTE: If the settings have been given a storage name using
-    * {@see Application_Formable_RecordSettings_Setting::setStorageName()},
-    * the value will be stored in the data array under that name.
-    *
-    * TIP: When working with storage names, only the values that
-    * have no default value must be added to the resulting array.
-    *
-    * @param Application_Formable_RecordSettings_ValueSet $valueSet
-    */
-    abstract protected function getCreateData(Application_Formable_RecordSettings_ValueSet $valueSet) : void;
+    /**
+     * Retrieves the data array to use to create the new record
+     * using the collection's createNewRecord method.
+     *
+     * NOTE: If the settings have been given a storage name using
+     * {@see Application_Formable_RecordSettings_Setting::setStorageName()},
+     * the value will be stored in the data array under that name.
+     *
+     * TIP: When working with storage names, only the values that
+     * have no default value must be added to the resulting array.
+     *
+     * @param Application_Formable_RecordSettings_ValueSet $recordData
+     * @param Application_Formable_RecordSettings_ValueSet $internalValues
+     */
+    abstract protected function getCreateData(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void;
     
    /**
     * When in edit mode, and provided the form has been 
@@ -167,17 +187,64 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
             $this->record->setRecordKey($name, $value);
         }
 
-        $this->updateRecord($valueSet);
+        $this->updateRecord($valueSet, $this->filterInternals(new Application_Formable_RecordSettings_ValueSet($this->getFormValues())));
         
         return $this->record->save();
     }
-    
-   /**
-    * Called when the record should be saved when in edit mode.
-    * Simply use the provided form data to update additional
-    * record properties that cannot be modified automatically.
-    * 
-    * @param Application_Formable_RecordSettings_ValueSet $valueSet
-    */
-    abstract protected function updateRecord(Application_Formable_RecordSettings_ValueSet $valueSet) : void;
+
+    private function filterInternals(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
+    {
+        $settings = $this->getSettings();
+        $result = new Application_Formable_RecordSettings_ValueSet(array());
+
+        foreach ($settings as $setting)
+        {
+            if(!$setting->isStatic() && !$setting->isInternal()) {
+                continue;
+            }
+
+            $name = $setting->getName();
+
+            if($data->keyExists($name))
+            {
+                $value = $data->getKey($name);
+            }
+            else
+            {
+                $value = $setting->getDefaultValue();
+            }
+
+            $result->setKey($name, $setting->filterForStorage($value, $data));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Called when the record should be saved when in edit mode.
+     * Simply use the provided form data to update additional
+     * record properties that cannot be modified automatically.
+     *
+     * @param Application_Formable_RecordSettings_ValueSet $recordData
+     * @param Application_Formable_RecordSettings_ValueSet $internalValues
+     */
+    abstract protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void;
+
+    /**
+     * Imports raw form values into the settings form.
+     *
+     * Used for example in wizards with a setting screen:
+     * The valid form data is stored, and later used to
+     * create the record.
+     *
+     * @param array<string,mixed> $formValues
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function makeSubmitted(array $formValues = array()): void
+    {
+        $this->inject();
+
+        parent::makeSubmitted($formValues);
+    }
 }
