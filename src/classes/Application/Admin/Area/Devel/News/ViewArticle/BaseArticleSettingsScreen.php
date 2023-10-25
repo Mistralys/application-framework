@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Devel\News\ViewArticle;
 
 use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
+use Application\Admin\Area\Mode\Submode\Action\BaseCollectionEditExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsSettingsManager;
-use Application_Admin_Area_Mode_Submode_Action_CollectionEdit;
 use DBHelper_BaseRecord;
 
 /**
@@ -17,7 +17,7 @@ use DBHelper_BaseRecord;
  * @property NewsEntry $record
  * @property NewsCollection $collection
  */
-class BaseArticleSettingsScreen extends Application_Admin_Area_Mode_Submode_Action_CollectionEdit
+class BaseArticleSettingsScreen extends BaseCollectionEditExtended
 {
     public const URL_NAME = 'settings';
 

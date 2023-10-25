@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Devel\News;
 
+use Application\Admin\Area\Mode\Submode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsSettingsManager;
-use Application_Admin_Area_Mode_Submode_CollectionCreate;
 use DBHelper_BaseRecord;
 
-abstract class BaseCreateArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionCreate
+abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 {
     public const URL_NAME = 'create-article';
 
