@@ -18,6 +18,8 @@
 - Changelog: Moved older versions to the `docs/changelog-history` folder.
 - Dependencies: Updated QuickForm to [v2.3.2](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.2).
 - Dependencies: Updated AppUtils to [v3.0.0](https://github.com/Mistralys/application-utils/releases/tag/3.0.0).
+- ErrorLog: Added display of the current PHP error settings.
+- ErrorLog: Added possibility to trigger PHP errors.
 
 #### Breaking changes (M)
 
