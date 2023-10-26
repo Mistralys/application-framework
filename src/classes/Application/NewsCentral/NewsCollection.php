@@ -8,6 +8,7 @@ use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Area\News\BaseCreateAlertScreen;
 use Application\Admin\Area\News\BaseCreateArticleScreen;
 use Application\Admin\Area\News\BaseNewsListScreen;
+use Application\Admin\Area\News\BaseReadNewsScreen;
 use Application\AppFactory;
 use Application_Admin_Area_Devel;
 use Application_Admin_ScreenInterface;
@@ -152,6 +153,13 @@ class NewsCollection extends DBHelper_BaseCollection
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
 
         return AppFactory::createRequest()->buildURL($params);
+    }
+
+    public function getAdminReadURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
+
+        return $this->getAdminURL($params);
     }
 
     // endregion
