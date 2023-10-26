@@ -256,6 +256,20 @@ class Application_ErrorLog
         
         return $this->getAdminListURL($params);
     }
+
+    public function getAdminTriggerWarningURL(array $params=array()) : string
+    {
+        $params['trigger_warning'] = 'yes';
+
+        return $this->getAdminListURL($params);
+    }
+
+    public function getAdminTriggerErrorURL(array $params=array()) : string
+    {
+        $params['trigger_error'] = 'yes';
+
+        return $this->getAdminListURL($params);
+    }
     
     public function getAdminURL(array $params=array()) : string
     {
