@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News\ViewArticle;
+namespace Application\Admin\Area\News\ViewArticle;
 
-use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
-use Application\Admin\Area\Mode\Submode\Action\BaseCollectionEditExtended;
+use Application\Admin\Area\Mode\Submode\BaseCollectionEditExtended;
+use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
@@ -13,7 +13,7 @@ use Application\NewsCentral\NewsSettingsManager;
 use DBHelper_BaseRecord;
 
 /**
- * @property BaseViewArticleScreen $submode
+ * @property BaseViewArticleScreen $mode
  * @property NewsEntry $record
  * @property NewsCollection $collection
  */

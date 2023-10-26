@@ -2,31 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News;
+namespace Application\Admin\Area\News;
 
+use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsSettingsManager;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use DBHelper_BaseRecord;
 
-abstract class BaseEditArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 {
-    public const URL_NAME = 'edit';
+    public const URL_NAME = 'create-article';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
     }
 
-    public function isUserAllowedEditing(): bool
+    public function isUserAllowed(): bool
     {
-        return $this->user->canEditNews();
-    }
-
-    public function isEditable(): bool
-    {
-        return true;
+        return $this->user->canCreateNews();
     }
 
     public function getSettingsManager() : NewsSettingsManager
@@ -58,5 +53,13 @@ abstract class BaseEditArticleScreen extends Application_Admin_Area_Mode_Submode
     public function getTitle(): string
     {
         return t('Create a news article');
+    }
+
+    public function getAbstract(): string
+    {
+        return (string)sb()
+            ->t('This lets you compose a news article.')
+            ->note()
+            ->t('It will not be published right away after saving, it will be added as a draft.');
     }
 }

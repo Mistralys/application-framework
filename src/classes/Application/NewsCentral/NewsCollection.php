@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
-use Application\Admin\Area\Devel\BaseNewsScreen;
-use Application\Admin\Area\Devel\News\BaseCreateAlertScreen;
-use Application\Admin\Area\Devel\News\BaseCreateArticleScreen;
-use Application\Admin\Area\Devel\News\BaseNewsListScreen;
+use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Area\News\BaseCreateAlertScreen;
+use Application\Admin\Area\News\BaseCreateArticleScreen;
+use Application\Admin\Area\News\BaseNewsListScreen;
 use Application\AppFactory;
 use Application_Admin_Area_Devel;
 use Application_Admin_ScreenInterface;
@@ -128,29 +128,28 @@ class NewsCollection extends DBHelper_BaseCollection
 
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseNewsListScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseNewsListScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateArticleURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseCreateArticleScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateArticleScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateAlertURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseCreateAlertScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateAlertScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseNewsScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
 
         return AppFactory::createRequest()->buildURL($params);
     }

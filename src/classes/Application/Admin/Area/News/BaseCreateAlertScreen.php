@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News;
+namespace Application\Admin\Area\News;
 
-use Application\Admin\Area\Mode\Submode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsSettingsManager;
 use DBHelper_BaseRecord;
 
-abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
+abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 {
-    public const URL_NAME = 'create-article';
+    public const URL_NAME = 'create-alert';
 
     public function getURLName(): string
     {
@@ -21,12 +20,12 @@ abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 
     public function isUserAllowed(): bool
     {
-        return $this->user->canCreateNews();
+        return $this->user->canCreateNewsAlerts();
     }
 
     public function getSettingsManager() : NewsSettingsManager
     {
-        return $this->createCollection()->createSettingsManager($this, $this->record);
+        return parent::getSettingsManager()->makeAlert();
     }
 
     /**
@@ -40,7 +39,7 @@ abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
     public function getSuccessMessage(DBHelper_BaseRecord $record): string
     {
         return t(
-            'The news article has been created successfully at %1$s.',
+            'The news alert has been created successfully at %1$s.',
             sb()->time()
         );
     }
@@ -52,13 +51,13 @@ abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 
     public function getTitle(): string
     {
-        return t('Create a news article');
+        return t('Create a news alert');
     }
 
     public function getAbstract(): string
     {
         return (string)sb()
-            ->t('This lets you compose a news article.')
+            ->t('This lets you add a news alert, which will be shown prominently in the user interface.')
             ->note()
             ->t('It will not be published right away after saving, it will be added as a draft.');
     }

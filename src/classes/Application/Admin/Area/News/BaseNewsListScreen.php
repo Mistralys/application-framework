@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News;
+namespace Application\Admin\Area\News;
 
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
-use Application_Admin_Area_Mode_Submode_CollectionList;
+use Application_Admin_Area_Mode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -21,7 +21,7 @@ use UI_DataGrid_Action;
 /**
  * @property NewsCollection $collection
  */
-abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_CollectionList
+abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_CollectionList
 {
     public const URL_NAME = self::URL_NAME_DEFAULT;
     public const COLUMN_ID = 'id';
@@ -135,7 +135,7 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Submode_Co
 
     public function getNavigationTitle(): string
     {
-        return t('Articles');
+        return t('Overview');
     }
 
     public function getTitle(): string

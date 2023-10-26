@@ -15,6 +15,5 @@ class TestDriver_Area_Devel extends Application_Admin_Area_Devel
         $this->registerRightsOverview();
         $this->registerUsers();
         $this->registerDeploymentRegistry();
-        $this->registerNewsCentral();
     }
 }

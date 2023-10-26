@@ -2,25 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News;
+namespace Application\Admin\Area\News;
 
-use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleStatusScreen;
+use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use Application_Admin_Area_Mode_CollectionRecord;
 use UI;
 
 /**
  * @property NewsEntry $record
  */
-abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_CollectionRecord
 {
     public const URL_NAME = 'view';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function isUserAllowed(): bool
+    {
+        return $this->user->canViewNews();
+    }
+
+    public function getDefaultSubmode(): string
+    {
+        return BaseArticleStatusScreen::URL_NAME;
     }
 
     protected function createCollection() : NewsCollection
@@ -81,10 +91,5 @@ abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Submode
     public function getNewsEntry() : NewsEntry
     {
         return $this->record;
-    }
-
-    public function getDefaultAction(): string
-    {
-        return BaseArticleStatusScreen::URL_NAME;
     }
 }

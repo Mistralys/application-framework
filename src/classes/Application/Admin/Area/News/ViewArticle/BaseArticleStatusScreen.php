@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Application\Admin\Area\Devel\News\ViewArticle;
+namespace Application\Admin\Area\News\ViewArticle;
 
-use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
-use Application_Admin_Area_Mode_Submode_Action;
+use Application\Admin\Area\News\BaseViewArticleScreen;
+use Application_Admin_Area_Mode_Submode;
 use UI;
 
 /**
- * @property BaseViewArticleScreen $submode
+ * @property BaseViewArticleScreen $mode
  */
-class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode_Action
+abstract class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode
 {
     public const URL_NAME = 'status';
     public const REQUEST_PARAM_PUBLISH = 'publish';
@@ -19,6 +19,11 @@ class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode_Action
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getDefaultAction(): string
+    {
+        return '';
     }
 
     public function getNavigationTitle(): string
@@ -43,12 +48,12 @@ class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode_Action
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle())
-            ->makeLinked($this->submode->getNewsEntry()->getAdminStatusURL());
+            ->makeLinked($this->mode->getNewsEntry()->getAdminStatusURL());
     }
 
     protected function _handleSidebar(): void
     {
-        $entry = $this->submode->getNewsEntry();
+        $entry = $this->mode->getNewsEntry();
 
         $this->sidebar->addButton('publish-news', t('Publish'))
             ->setIcon(UI::icon()->publish())
@@ -66,7 +71,7 @@ class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode_Action
 
     private function renderPropertiesGrid() : string
     {
-        $entry = $this->submode->getNewsEntry();
+        $entry = $this->mode->getNewsEntry();
 
         $grid = $this->ui->createPropertiesGrid();
 
@@ -79,7 +84,7 @@ class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode_Action
 
     private function handlePublishEntry() : void
     {
-        $entry = $this->submode->getNewsEntry();
+        $entry = $this->mode->getNewsEntry();
 
         $this->startTransaction();
         $entry->publish();

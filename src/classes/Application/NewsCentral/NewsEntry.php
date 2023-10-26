@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
-use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
-use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleSettingsScreen;
-use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleStatusScreen;
+use Application\Admin\Area\News\BaseViewArticleScreen;
+use Application\Admin\Area\News\ViewArticle\BaseArticleSettingsScreen;
+use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
 use Application_Admin_ScreenInterface;
 use Application_User;
@@ -128,14 +128,14 @@ class NewsEntry extends DBHelper_BaseRecord
 
     public function getAdminStatusURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION] = BaseArticleStatusScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleStatusScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION] = BaseArticleSettingsScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleSettingsScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
@@ -150,7 +150,7 @@ class NewsEntry extends DBHelper_BaseRecord
     public function getAdminURL(array $params=array()) : string
     {
         $params[NewsCollection::PRIMARY] = $this->getID();
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseViewArticleScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewArticleScreen::URL_NAME;
 
         return $this->collection->getAdminURL($params);
     }
