@@ -11,8 +11,11 @@ use Application\AppFactory;
 use Application_Admin_ScreenInterface;
 use Application_User;
 use Application_Users_User;
+use AppLocalize\Localization;
+use AppLocalize\Localization_Locale;
 use DateTime;
 use DBHelper_BaseRecord;
+use League\CommonMark\CommonMarkConverter;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 
@@ -64,29 +67,24 @@ class NewsEntry extends DBHelper_BaseRecord
         return $this->getTypeID() === NewsEntryTypes::NEWS_TYPE_ALERT;
     }
 
-    public function setRequiresReceipt(bool $required) : bool
-    {
-        return $this->setRecordBooleanKey(NewsCollection::COL_REQUIRES_RECEIPT, $required);
-    }
-
     public function setLabel(string $label) : bool
     {
         return $this->setRecordKey(NewsCollection::COL_LABEL, $label);
     }
 
-    public function setSynopsis(string $synopsis) : bool
+    public function getViews() : int
     {
-        return $this->setRecordKey(NewsCollection::COL_SYNOPSIS, $synopsis);
+        return $this->getRecordIntKey(NewsCollection::COL_VIEWS);
     }
 
-    public function setArticle(string $article) : bool
+    public function getLocaleID() : string
     {
-        return $this->setRecordKey(NewsCollection::COL_ARTICLE, $article);
+        return $this->getRecordStringKey(NewsCollection::COL_LOCALE);
     }
 
-    public function setCriticality(NewsEntryCriticality $criticality) : bool
+    public function getLocale() : Localization_Locale
     {
-        return $this->setRecordKey(NewsCollection::COL_CRITICALITY, $criticality->getID());
+        return Localization::getContentLocaleByName($this->getLocaleID());
     }
 
     protected function init() : void
@@ -175,20 +173,6 @@ class NewsEntry extends DBHelper_BaseRecord
         return NewsEntryTypes::getInstance()->getByID($this->getTypeID());
     }
 
-    public function getSynopsis(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_SYNOPSIS);
-    }
-
-    public function getArticle(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_ARTICLE);
-    }
-
-    public function getCriticalityID(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_CRITICALITY);
-    }
 
     public function getScheduledFromDate(): ?DateTime
     {
@@ -200,10 +184,6 @@ class NewsEntry extends DBHelper_BaseRecord
         return $this->getRecordDateKey(NewsCollection::COL_SCHEDULED_TO_DATE);
     }
 
-    public function isReceiptRequired() : bool
-    {
-        return $this->getRecordBooleanKey(NewsCollection::COL_REQUIRES_RECEIPT);
-    }
 
     public function getDateCreated(): DateTime
     {
