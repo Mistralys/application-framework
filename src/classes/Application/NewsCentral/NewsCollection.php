@@ -1,21 +1,47 @@
 <?php
+/**
+ * @package Application
+ * @subpackage News
+ * @see \Application\NewsCentral\NewsCollection
+ */
 
 declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
+use Application;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Area\News\BaseCreateAlertScreen;
 use Application\Admin\Area\News\BaseCreateArticleScreen;
 use Application\Admin\Area\News\BaseNewsListScreen;
 use Application\Admin\Area\News\BaseReadNewsScreen;
 use Application\AppFactory;
-use Application_Admin_Area_Devel;
+use Application\NewsCentral\Categories\CategoriesCollection;
 use Application_Admin_ScreenInterface;
 use Application_Formable;
+use Application_User;
+use AppUtils\BaseException;
 use AppUtils\Microtime;
+use DBHelper;
 use DBHelper_BaseCollection;
+use DBHelper_StatementBuilder;
+use DBHelper_StatementBuilder_ValuesContainer;
+use NewsCentral\Entries\NewsAlert;
+use NewsCentral\Entries\NewsArticle;
 
+/**
+ * NOTE: Article classes are determined via {@see self::resolveRecordClass()}.
+ *
+ * @package Application
+ * @subpackage News
+ *
+ * @method array<int,NewsArticle|NewsAlert>[] getAll()
+ * @method NewsFilterCriteria getFilterCriteria()
+ * @method NewsFilterSettings getFilterSettings()
+ * @method NewsArticle|NewsAlert getByID(int $record_id)
+ * @method NewsArticle|NewsAlert|NULL getByRequest()
+ * @method NewsArticle|NewsAlert createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ */
 class NewsCollection extends DBHelper_BaseCollection
 {
     public const PRIMARY = 'news_id';
@@ -25,6 +51,8 @@ class NewsCollection extends DBHelper_BaseCollection
     public const COL_ARTICLE = 'article';
     public const COL_STATUS = 'status';
     public const COL_AUTHOR = 'author';
+    public const COL_LOCALE = 'locale';
+    public const COL_VIEWS = 'views';
     public const COL_DATE_CREATED = 'date_created';
     public const COL_DATE_MODIFIED = 'date_modified';
     public const COL_SYNOPSIS = 'synopsis';
@@ -93,6 +121,102 @@ class NewsCollection extends DBHelper_BaseCollection
         return array();
     }
 
+    private ?CategoriesCollection $categoriesCollection = null;
+
+    public function createCategories() : CategoriesCollection
+    {
+        if(!isset($this->categoriesCollection)) {
+            $this->categoriesCollection = new CategoriesCollection();
+        }
+
+        return $this->categoriesCollection;
+    }
+
+    protected function resolveRecordClass(int $record_id): string
+    {
+        $query = <<<'EOT'
+SELECT
+    {news_type}
+FROM 
+    {table_news}
+WHERE
+    {news_primary}=:primary
+EOT;
+
+        $type = DBHelper::fetchKey(
+            self::COL_NEWS_TYPE,
+            self::statementBuilder($query),
+            array(
+                'primary' => $record_id
+            )
+        );
+
+        if($type === NewsEntryTypes::NEWS_TYPE_ALERT) {
+            return NewsAlert::class;
+        }
+
+        return NewsArticle::class;
+    }
+
+    public static function statementBuilder(string $template) : DBHelper_StatementBuilder
+    {
+        return statementBuilder($template, self::statementValues());
+    }
+
+    public static function statementValues() : DBHelper_StatementBuilder_ValuesContainer
+    {
+        return statementValues()
+            ->table('{table_news}', self::TABLE_NAME)
+            ->field('{news_primary}', self::PRIMARY)
+            ->field('{news_type}', self::COL_NEWS_TYPE);
+    }
+
+    /**
+     * Creates a new article as a draft.
+     *
+     * @param string $label
+     * @param string $locale
+     * @param string $synopsis
+     * @param string $article
+     * @param Application_User|null $user
+     * @return NewsArticle
+     * @throws BaseException
+     */
+    public function createNewArticle(string $label, string $locale, string $synopsis, string $article, ?Application_User $user=null) : NewsArticle
+    {
+        if($user === null) {
+            $user = Application::getUser();
+        }
+
+        return $this->createNewRecord(array(
+            self::COL_NEWS_TYPE => NewsEntryTypes::NEWS_TYPE_ARTICLE,
+            self::COL_LABEL => $label,
+            self::COL_AUTHOR => $user->getID(),
+            self::COL_LOCALE => $locale,
+            self::COL_SYNOPSIS => $synopsis,
+            self::COL_ARTICLE => $article,
+            self::COL_STATUS => NewsEntryStatuses::STATUS_DRAFT
+        ));
+    }
+
+    public function createNewAlert(string $label, string $locale, string $message, NewsEntryCriticality $criticality, bool $requiresReceipt, ?Application_User $user=null) : NewsAlert
+    {
+        if($user === null) {
+            $user = Application::getUser();
+        }
+
+        return $this->createNewRecord(array(
+            self::COL_NEWS_TYPE => NewsEntryTypes::NEWS_TYPE_ALERT,
+            self::COL_LABEL => $label,
+            self::COL_AUTHOR => $user->getID(),
+            self::COL_LOCALE => $locale,
+            self::COL_SYNOPSIS => $message,
+            self::COL_STATUS => NewsEntryStatuses::STATUS_DRAFT,
+            self::COL_CRITICALITY => $criticality->getID(),
+            self::COL_REQUIRES_RECEIPT => bool2string($requiresReceipt, true)
+        ));
+    }
+
     protected function _registerKeys(): void
     {
         $this->keys->register(self::COL_LABEL)->makeRequired();
@@ -100,13 +224,17 @@ class NewsCollection extends DBHelper_BaseCollection
         $this->keys->register(self::COL_ARTICLE)->setDefault('');
         $this->keys->register(self::COL_AUTHOR)->makeRequired();
         $this->keys->register(self::COL_NEWS_TYPE)->makeRequired();
+        $this->keys->register(self::COL_LOCALE)->makeRequired();
 
         $this->keys->register(self::COL_STATUS)
             ->setDefault(NewsEntryStatuses::DEFAULT_STATUS)
             ->makeRequired();
 
         $this->keys->register(self::COL_DATE_CREATED)
-            ->makeRequired();
+            ->makeRequired()
+            ->setGenerator(function () : string {
+                return Microtime::createNow()->getMySQLDate();
+            });
 
         $this->keys->register(self::COL_DATE_MODIFIED)
             ->makeRequired()
@@ -117,6 +245,7 @@ class NewsCollection extends DBHelper_BaseCollection
         $this->keys->register(self::COL_CRITICALITY);
 
         $this->keys->register(self::COL_REQUIRES_RECEIPT)
+            ->setDefault('no')
             ->makeRequired();
     }
 
