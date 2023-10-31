@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace NewsCentral\Entries;
 
+use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Area\News\BaseReadNewsScreen;
+use Application\Admin\Area\News\ReadNews\BaseReadArticleScreen;
+use Application\AppFactory;
+use Application\MarkdownRenderer;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application_Admin_ScreenInterface;
 use League\CommonMark\CommonMarkConverter;
 
 class NewsArticle extends NewsEntry
@@ -32,11 +38,22 @@ class NewsArticle extends NewsEntry
 
     public function renderArticle() : string
     {
-        $parser = new CommonMarkConverter(array(
-            'html_input' => 'strip',
-            'allow_unsafe_links' => false
-        ));
+        return MarkdownRenderer::create()->render($this->getArticle());
+    }
 
-        return (string)$parser->convert($this->getArticle());
+    public function renderSynopsis() : string
+    {
+        return MarkdownRenderer::create()->render($this->getSynopsis());
+    }
+
+    public function getLiveURLRead(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseReadArticleScreen::URL_NAME;
+        $params[BaseReadArticleScreen::REQUEST_PARAM_ARTICLE] = $this->getID();
+
+        return AppFactory::createRequest()
+            ->buildURL($params);
     }
 }
