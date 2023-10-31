@@ -65,16 +65,17 @@ abstract class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submo
     protected function _renderContent()
     {
         return $this->renderer
-            ->appendContent($this->renderPropertiesGrid())
+            ->appendContent($this->renderPropertyGrid())
             ->makeWithSidebar();
     }
 
-    private function renderPropertiesGrid() : string
+    private function renderPropertyGrid() : string
     {
         $entry = $this->mode->getNewsEntry();
 
         $grid = $this->ui->createPropertiesGrid();
 
+        $grid->add(t('Language'), $entry->getLocale()->getLabel());
         $grid->addDate(t('Created on'), $entry->getDateCreated())->withTime()->withDiff();
         $grid->addDate(t('Last modified'), $entry->getDateModified())->withTime()->withDiff();
         $grid->add(t('Author'), $entry->getAuthor()->getName());
