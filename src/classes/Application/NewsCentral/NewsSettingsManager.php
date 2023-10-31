@@ -7,6 +7,8 @@ namespace Application\NewsCentral;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
+use AppLocalize\Localization;
+use AppLocalize\Localization_Country;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
 use AppUtils\NamedClosure;
@@ -25,6 +27,7 @@ use UI;
  */
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
+    public const SETTING_LOCALE = 'locale';
     private bool $isAlert = false;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
@@ -100,6 +103,11 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     {
         $group = $this->addGroup(t('Settings'))
             ->setIcon(UI::icon()->settings());
+
+        $group->registerSetting(self::SETTING_LOCALE)
+            ->makeRequired()
+            ->setStorageName(NewsCollection::COL_LOCALE)
+            ->setCallback(Closure::fromCallable(array($this, 'injectLocale')));
 
         $group->registerSetting(self::SETTING_TITLE)
             ->makeRequired()
@@ -277,6 +285,23 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         $this->makeLengthLimited($el, 10, 150000);
         $this->makeStandalone($el);
+
+        return $el;
+    }
+
+    private function injectLocale() : HTML_QuickForm2_Element_Select
+    {
+        $el = $this->addElementSelect(self::SETTING_LOCALE, t('Locale'));
+        $el->setComment(sb()
+            ->t('Selects the language in which the article is written.')
+        );
+
+        $locales = Localization::getContentLocales();
+
+        foreach ($locales as $locale)
+        {
+            $el->addOption($locale->getLabel(), $locale->getLanguageCode());
+        }
 
         return $el;
     }
