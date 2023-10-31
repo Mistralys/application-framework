@@ -38,6 +38,21 @@ class NewsEntryCriticalities extends BaseStringPrimaryCollection implements Appl
         return $instance;
     }
 
+    public function getWarning() : NewsEntryCriticality
+    {
+        return $this->getByID(self::CRITICALITY_WARNING);
+    }
+
+    public function getInfo() : NewsEntryCriticality
+    {
+        return $this->getByID(self::CRITICALITY_INFO);
+    }
+
+    public function getCritical() : NewsEntryCriticality
+    {
+        return $this->getByID(self::CRITICALITY_CRITICAL);
+    }
+
     protected function registerItems(): void
     {
         $this->registerItem(new NewsEntryCriticality(
