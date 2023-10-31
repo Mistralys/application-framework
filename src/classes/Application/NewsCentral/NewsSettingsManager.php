@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
+use Application\NewsCentral\Categories\CategorySelector;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Country;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
 use AppUtils\NamedClosure;
 use Closure;
 use DBHelper_BaseRecord;
+use HTML_QuickForm2_Element;
 use HTML_QuickForm2_Element_HTMLDateTimePicker;
 use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Select;
@@ -28,6 +29,7 @@ use UI;
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
     public const SETTING_LOCALE = 'locale';
+    public const SETTING_CATEGORIES = 'categories';
     private bool $isAlert = false;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
@@ -77,7 +79,11 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
-
+        $this->record
+            ->getCategoriesManager()
+            ->setCategoryIDs(
+                (array)$internalValues->getKey(self::SETTING_CATEGORIES)
+            );
     }
 
     // endregion
@@ -124,6 +130,10 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
                 array($this, 'injectSynopsis')
             ));
 
+        $group->registerSetting(self::SETTING_CATEGORIES)
+            ->makeInternal()
+            ->setCallback(Closure::fromCallable(array($this, 'injectCategories')));
+
         if(!$this->isAlert)
         {
             return;
@@ -147,6 +157,17 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
                 return bool2string($value, true);
             })
             ->setCallback(Closure::fromCallable(array($this, 'injectRequiresReceipt')));
+    }
+
+    public function getDefaultValues(): array
+    {
+        $values = parent::getDefaultValues();
+
+        if(isset($this->record)) {
+            $values[self::SETTING_CATEGORIES] = $this->record->getCategoriesManager()->getCategoryIDs();
+        }
+
+        return $values;
     }
 
     private function registerArticleText() : void
@@ -289,6 +310,19 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         return $el;
     }
 
+    private function injectCategories() : HTML_QuickForm2_Element
+    {
+        return (new CategorySelector($this))
+            ->setName(self::SETTING_CATEGORIES)
+            ->setComment(sb()
+                ->t('Use this to select in which categories this news entry should be included.')
+                ->nl()
+                ->hint()
+                ->t('News can be filtered by category, so select all matching topics for the entry to be found.')
+            )
+            ->inject();
+    }
+
     private function injectLocale() : HTML_QuickForm2_Element_Select
     {
         $el = $this->addElementSelect(self::SETTING_LOCALE, t('Locale'));
@@ -300,7 +334,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         foreach ($locales as $locale)
         {
-            $el->addOption($locale->getLabel(), $locale->getLanguageCode());
+            $el->addOption($locale->getLabel(), $locale->getName());
         }
 
         return $el;
