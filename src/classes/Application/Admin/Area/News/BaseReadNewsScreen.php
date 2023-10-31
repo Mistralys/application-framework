@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News;
 
+use Application\Admin\Area\News\ReadNews\BaseReadArticlesScreen;
 use Application\AppFactory;
-use Application\NewsCentral\NewsEntry;
 use Application_Admin_Area_Mode;
-use Application_Driver;
-use UI;
 
 abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
 {
@@ -21,7 +19,7 @@ abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
 
     public function getDefaultSubmode(): string
     {
-        return '';
+        return BaseReadArticlesScreen::URL_NAME;
     }
 
     public function isUserAllowed(): bool
@@ -39,50 +37,16 @@ abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
         return t('%1$s news', $this->driver->getAppNameShort());
     }
 
-    protected function _handleHelp(): void
+    protected function _handleBreadcrumb(): void
     {
-        $this->renderer
-            ->getTitle()
-            ->setText($this->getTitle())
-            ->setIcon(UI::icon()->news());
+        $this->breadcrumb->clearItems();
 
-        $this->renderer
-            ->setAbstract(t('Read the latest %1$s news.', $this->driver->getAppNameShort()));
+        $this->breadcrumb->appendItem($this->getNavigationTitle())
+            ->makeLinked(AppFactory::createNews()->getLiveReadURL());
     }
 
-    private int $itemsPerPage = 10;
-
-    protected function _renderContent()
+    protected function _handleSubnavigation(): void
     {
-        $offset = ($this->getActivePage() - 1) * $this->itemsPerPage;
-
-        $items = AppFactory::createNews()->getFilterCriteria()
-            ->selectArticles()
-            ->selectPublished()
-            ->setLimit($this->itemsPerPage, $offset)
-            ->getItemsObjects();
-
-        foreach($items as $item) {
-            $this->renderer->appendContent($this->renderItem($item));
-        }
-
-        // Be able to specify an icon or poster image?
-        // Use pagination helper
-        // Add categories for posts?
-
-        return $this->renderer
-            ->makeWithoutSidebar();
-    }
-
-    protected function getActivePage(): int
-    {
-        return 1;
-    }
-
-    private function renderItem(NewsEntry $entry) : string
-    {
-        return $this->ui->createTemplate('news/entry-article')
-            ->setVar('article', $entry)
-            ->render();
+        $this->subnav->clearItems();
     }
 }
