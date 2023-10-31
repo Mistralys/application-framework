@@ -14,6 +14,7 @@
 - RecordSettings: `updateRecord()` is called after creation.
 - RecordSettings: `getCreateData()` only has to handle internal values now.
 - RecordSettings: Added create and edit screen variations using extended settings.
+- Markdown: Added the `MarkdownRenderer` helper class.
 - QuickStart: Removed the automatic refresh.
 - Breadcrumb: Added `clearItems()` to remove all items.
 - Changelog: Moved older versions to the `docs/changelog-history` folder.
