@@ -42,6 +42,11 @@ class Category extends DBHelper_BaseRecord
         return $this->getAdminURL($params);
     }
 
+    public function getLiveURL(array $params=array()) : string
+    {
+        return '';
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
