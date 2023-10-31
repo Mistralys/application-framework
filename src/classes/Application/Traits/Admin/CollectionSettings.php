@@ -390,7 +390,7 @@ trait Application_Traits_Admin_CollectionSettings
                 // All values must be present, except static settings, which
                 // do not necessarily have a value (they are cosmetic only,
                 // like static form elements for displaying information)
-                if ($setting->isStatic())
+                if ($setting->isStatic() || $setting->isInternal())
                 {
                     continue;
                 }
