@@ -15,6 +15,7 @@
 - RecordSettings: `getCreateData()` only has to handle internal values now.
 - RecordSettings: Added create and edit screen variations using extended settings.
 - QuickStart: Removed the automatic refresh.
+- Breadcrumb: Added `clearItems()` to remove all items.
 - Changelog: Moved older versions to the `docs/changelog-history` folder.
 - Dependencies: Updated QuickForm to [v2.3.2](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.2).
 - Dependencies: Updated AppUtils to [v3.0.0](https://github.com/Mistralys/application-utils/releases/tag/3.0.0).
