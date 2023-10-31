@@ -57,13 +57,25 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     public const VALUE_UNDEFINED = '__undefined';
 
     protected string $recordIDTable;
+
+    /**
+     * @var class-string
+     */
     protected string $recordClassName;
     protected string $recordSortKey;
     protected string $recordSortDir;
     protected string $recordPrimaryName;
     protected string $recordTable;
     protected ?DBHelper_BaseRecord $dummyRecord = null;
+
+    /**
+     * @var class-string
+     */
     protected string $recordFiltersClassName;
+
+    /**
+     * @var class-string
+     */
     protected string $recordFilterSettingsClassName;
     protected string $instanceID;
     protected bool $requiresParent = false;
@@ -237,6 +249,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * </pre>
      *
      * @return array<int,array<string,string>>
+     * @deprecated Not used anymore.
      */
     abstract public function getRecordProperties() : array;
 
@@ -453,10 +466,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         $this->checkParentRecord();
 
-        $record = new $this->recordClassName($record_id, $this);
+        $class = $this->resolveRecordClass($record_id);
+        $record = new $class($record_id, $this);
         $this->records[$record_id] = $record;
         
         return $record;
+    }
+
+    /**
+     * @param int $record_id
+     * @return class-string
+     */
+    protected function resolveRecordClass(int $record_id) : string
+    {
+        return $this->recordClassName;
     }
 
     /**
@@ -903,7 +926,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
         foreach($keys as $key)
         {
-            $value = $data[$key->getName()];
+            $value = $data[$key->getName()] ?? null;
 
             $key->validate($value, $data);
         }
