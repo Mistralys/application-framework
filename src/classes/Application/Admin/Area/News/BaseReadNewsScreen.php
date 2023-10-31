@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News;
 
+use Application\AppFactory;
+use Application\NewsCentral\NewsEntry;
 use Application_Admin_Area_Mode;
 use Application_Driver;
 use UI;
@@ -48,9 +50,39 @@ abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
             ->setAbstract(t('Read the latest %1$s news.', $this->driver->getAppNameShort()));
     }
 
+    private int $itemsPerPage = 10;
+
     protected function _renderContent()
     {
+        $offset = ($this->getActivePage() - 1) * $this->itemsPerPage;
+
+        $items = AppFactory::createNews()->getFilterCriteria()
+            ->selectArticles()
+            ->selectPublished()
+            ->setLimit($this->itemsPerPage, $offset)
+            ->getItemsObjects();
+
+        foreach($items as $item) {
+            $this->renderer->appendContent($this->renderItem($item));
+        }
+
+        // Be able to specify an icon or poster image?
+        // Use pagination helper
+        // Add categories for posts?
+
         return $this->renderer
             ->makeWithoutSidebar();
+    }
+
+    protected function getActivePage(): int
+    {
+        return 1;
+    }
+
+    private function renderItem(NewsEntry $entry) : string
+    {
+        return $this->ui->createTemplate('news/entry-article')
+            ->setVar('article', $entry)
+            ->render();
     }
 }
