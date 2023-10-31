@@ -9,6 +9,9 @@ use DBHelper_StatementBuilder_ValuesContainer;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 
+/**
+ * @method NewsEntry[] getItemsObjects()
+ */
 class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     public const FILTER_TYPES = 'types';
@@ -30,6 +33,21 @@ class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
     public function selectStatus(NewsEntryStatus $status) : self
     {
         return $this->selectCriteriaValue(self::FILTER_STATUSES, $status->getID());
+    }
+
+    public function selectArticles() : self
+    {
+        return $this->selectType(NewsEntryTypes::getInstance()->getTypeArticle());
+    }
+
+    public function selectAlerts() : self
+    {
+        return $this->selectType(NewsEntryTypes::getInstance()->getTypeAlert());
+    }
+
+    public function selectPublished() : self
+    {
+        return $this->selectStatus(NewsEntryStatuses::getInstance()->getPublished());
     }
 
     protected function prepareQuery(): void
