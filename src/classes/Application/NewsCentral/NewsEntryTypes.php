@@ -30,6 +30,16 @@ class NewsEntryTypes extends BaseStringPrimaryCollection
         return self::$instance;
     }
 
+    public function getTypeArticle() : NewsEntryType
+    {
+        return $this->getByID(self::NEWS_TYPE_ARTICLE);
+    }
+
+    public function getTypeAlert() : NewsEntryType
+    {
+        return $this->getByID(self::NEWS_TYPE_ALERT);
+    }
+
     public function getDefaultID(): string
     {
         return self::DEFAULT_TYPE;
