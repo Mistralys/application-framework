@@ -57,12 +57,12 @@ abstract class BaseNewsScreen extends Application_Admin_Area
 
     public function getNavigationTitle(): string
     {
-        return t('News');
+        return t('News central');
     }
 
     public function getTitle(): string
     {
-        return t('Application news');
+        return t('Application news central');
     }
 
     protected function _handleHelp(): void
@@ -75,5 +75,14 @@ abstract class BaseNewsScreen extends Application_Admin_Area
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle())
             ->makeLinked(AppFactory::createNews()->getAdminURL());
+    }
+
+    protected function _handleSubnavigation(): void
+    {
+        $this->subnav->addURL(t('News entries'), AppFactory::createNews()->getAdminListURL())
+            ->setIcon(UI::icon()->news());
+
+        $this->subnav->addURL(t('News categories'), AppFactory::createNews()->createCategories()->getAdminListURL())
+            ->setIcon(UI::icon()->category());
     }
 }
