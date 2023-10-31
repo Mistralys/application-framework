@@ -44,8 +44,9 @@ use NewsCentral\Entries\NewsArticle;
  */
 class NewsCollection extends DBHelper_BaseCollection
 {
-    public const PRIMARY = 'news_id';
+    public const PRIMARY_NAME = 'news_id';
     public const TABLE_NAME = 'app_news';
+    public const TABLE_NAME_ENTRY_CATEGORIES = 'app_news_entry_categories';
 
     public const COL_LABEL = 'label';
     public const COL_ARTICLE = 'article';
@@ -61,6 +62,7 @@ class NewsCollection extends DBHelper_BaseCollection
     public const COL_SCHEDULED_TO_DATE = 'scheduled_to_date';
     public const COL_REQUIRES_RECEIPT = 'requires_receipt';
     public const COL_NEWS_TYPE = 'news_type';
+
 
     public function getRecordClassName(): string
     {
@@ -98,7 +100,7 @@ class NewsCollection extends DBHelper_BaseCollection
 
     public function getRecordPrimaryName(): string
     {
-        return self::PRIMARY;
+        return self::PRIMARY_NAME;
     }
 
     public function getRecordTypeName(): string
@@ -167,8 +169,11 @@ EOT;
     {
         return statementValues()
             ->table('{table_news}', self::TABLE_NAME)
-            ->field('{news_primary}', self::PRIMARY)
-            ->field('{news_type}', self::COL_NEWS_TYPE);
+            ->table('{table_entry_categories}', self::TABLE_NAME_ENTRY_CATEGORIES)
+
+            ->field('{news_primary}', self::PRIMARY_NAME)
+            ->field('{news_type}', self::COL_NEWS_TYPE)
+            ->field('{categories_primary}', CategoriesCollection::PRIMARY_NAME);
     }
 
     /**
@@ -284,7 +289,7 @@ EOT;
         return AppFactory::createRequest()->buildURL($params);
     }
 
-    public function getAdminReadURL(array $params=array()) : string
+    public function getLiveReadURL(array $params=array()) : string
     {
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
 
