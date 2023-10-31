@@ -8,16 +8,21 @@ use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\Admin\Area\News\ViewArticle\BaseArticleSettingsScreen;
 use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
+use Application\NewsCentral\Categories\CategoriesCollection;
+use Application\NewsCentral\Categories\Category;
 use Application_Admin_ScreenInterface;
 use Application_User;
 use Application_Users_User;
 use AppLocalize\Localization;
 use AppLocalize\Localization_Locale;
 use DateTime;
+use DBHelper;
 use DBHelper_BaseRecord;
 use League\CommonMark\CommonMarkConverter;
+use NewsCentral\Entries\EntryCategoriesManager;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
+use function AppUtils\valBoolTrue;
 
 /**
  * @property NewsCollection $collection
@@ -87,6 +92,17 @@ class NewsEntry extends DBHelper_BaseRecord
         return Localization::getContentLocaleByName($this->getLocaleID());
     }
 
+    private ?EntryCategoriesManager $categoriesManager = null;
+
+    public function getCategoriesManager() : EntryCategoriesManager
+    {
+        if(!isset($this->categoriesManager)) {
+            $this->categoriesManager = new EntryCategoriesManager($this);
+        }
+
+        return $this->categoriesManager;
+    }
+
     protected function init() : void
     {
         foreach($this->dateUpdateKeys as $key) {
@@ -147,7 +163,7 @@ class NewsEntry extends DBHelper_BaseRecord
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[NewsCollection::PRIMARY] = $this->getID();
+        $params[NewsCollection::PRIMARY_NAME] = $this->getID();
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewArticleScreen::URL_NAME;
 
         return $this->collection->getAdminURL($params);
