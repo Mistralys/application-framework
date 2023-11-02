@@ -11,6 +11,7 @@ node_modules/
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
+tests/application/storage/media/
 tests/.buildpath
 tests/.project
 tests/.settings/org.eclipse.php.core.prefs
