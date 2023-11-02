@@ -22,6 +22,9 @@
 - Dependencies: Updated AppUtils to [v3.0.0](https://github.com/Mistralys/application-utils/releases/tag/3.0.0).
 - ErrorLog: Added display of the current PHP error settings.
 - ErrorLog: Added possibility to trigger PHP errors.
+- Media: Fixed thumbnails not being updated if the original image is changed.
+- Media: Added a basic media management area.
+- Media: Added a file size database column.
 
 #### Breaking changes (M)
 
