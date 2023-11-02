@@ -1,6 +1,15 @@
 -- --------------------------------------------------------
 
 --
+-- Media table adjustments
+--
+
+ALTER TABLE `media`
+    ADD `file_size` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `media_extension`,
+    ADD INDEX (`file_size`);
+
+
+--
 -- Table structure for table `app_news`
 --
 
