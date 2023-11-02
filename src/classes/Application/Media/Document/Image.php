@@ -1,5 +1,6 @@
 <?php
 
+use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper_Size;
 use AppUtils\ImageHelper;
 
@@ -7,12 +8,17 @@ class Application_Media_Document_Image extends Application_Media_Document
 {
     public const ERROR_FILE_NOT_FOUND = 384970001;
 
-    public static function getLabel()
+    public static function getLabel() : string
     {
         return t('Image');
     }
 
-    public static function getExtensions()
+    public static function getIcon(): UI_Icon
+    {
+        return UI::icon()->image();
+    }
+
+    public static function getExtensions() : array
     {
         return array(
             'jpg',
@@ -117,11 +123,12 @@ class Application_Media_Document_Image extends Application_Media_Document
      *
      * Returns the path to the thumbnail file when successful.
      *
-     * @see Application_Media_Document::createThumbnail()
-     * @throws Application_Exception
+     * @param int|null $width
+     * @param int|null $height
      * @return string
+     * @throws ImageHelper_Exception
      */
-    public function createThumbnail($width = null, $height = null)
+    public function createThumbnail(?int $width = null, ?int $height = null) : string
     {
         if($this->isTypeSVG()) {
             return $this->getPath();
@@ -131,7 +138,7 @@ class Application_Media_Document_Image extends Application_Media_Document
         
         $targetFile = $this->getThumbnailPath($width, $height);
 
-        if (!file_exists($targetFile)) {
+        if (!file_exists($targetFile) || filemtime($targetFile) < filemtime($this->getPath())) {
             $helper = $this->getImageHelper();
             $helper->resample($width, $height);
             $helper->save($targetFile);
