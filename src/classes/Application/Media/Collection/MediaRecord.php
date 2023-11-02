@@ -8,8 +8,10 @@ use Application;
 use Application\Admin\Area\Media\BaseViewMediaScreen;
 use Application\Admin\Area\Media\View\BaseMediaSettingsScreen;
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
+use Application\AppFactory;
 use Application_Admin_ScreenInterface;
 use Application_Exception_DisposableDisposed;
+use Application_Media_Document;
 use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
@@ -113,6 +115,11 @@ class MediaRecord extends DBHelper_BaseRecord
     public function sendFile(bool $forceDownload=false)
     {
         $this->getMediaDocument()->sendFile($forceDownload);
+    }
+
+    public function getMediaDocument() : Application_Media_Document
+    {
+        return AppFactory::createMedia()->getByID($this->getID());
     }
 
     public function refreshFileSize() : self
