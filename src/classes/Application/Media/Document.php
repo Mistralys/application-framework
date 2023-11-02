@@ -3,6 +3,7 @@
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -326,30 +327,24 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     }
 
     /**
-     * Human readable label for this media type, e.g. "Image".
+     * Human-readable label for this media type, e.g. "Image".
      * Must be implemented by the media type class.
      *
      * @throws Application_Exception
      */
-    public static function getLabel()
-    {
-        throw new Application_Exception(
-            'Has to be implemented in child class'
-        );
-    }
+    abstract public static function getLabel() : string;
+
+    abstract public static function getIcon() : UI_Icon;
+
 
     /**
      * List of supported file extensions for this media file type.
      * Must be implemented by the media type class.
      *
      * @throws Application_Exception
+     * @return string[]
      */
-    public static function getExtensions()
-    {
-        throw new Application_Exception(
-            'Has to be implemented in child class'
-        );
-    }
+    abstract public static function getExtensions() : array;
 
     /**
      * Retrieves the full URL to the media script to display a thumbnail
@@ -387,7 +382,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      *
      * @return string
      */
-    public function getIdentification()
+    public function getIdentification() : string
     {
         return sprintf(
             'Media document [%1$s "%2$s"]',
@@ -403,21 +398,23 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      *
      * Returns the path to the thumbnail file when successful.
      *
-     * @return string
+     * @param int|null $width
+     * @param int|null $height
+     * @return string The path to the generated file.
      * @throws Application_Exception
      */
-    abstract public function createThumbnail($width = null, $height = null);
+    abstract public function createThumbnail(?int $width = null, ?int $height = null) : string;
 
-    protected $cachedTypeID;
+    protected ?string $cachedTypeID = null;
     
    /**
     * Retrieves the ID of the document type, e.g. <code>Image</code>.
     * @return string
     */
-    public function getTypeID()
+    public function getTypeID() : string
     {
         if(!isset($this->cachedTypeID)) {
-            $this->cachedTypeID = str_replace('Application_Media_Document_', '', get_class($this));
+            $this->cachedTypeID = ClassHelper::getClassTypeName($this);
         }
         
         return $this->cachedTypeID;
@@ -452,7 +449,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     * Checks whether a media configuration has been set for the document.
     * @return boolean
     */
-    public function hasConfiguration()
+    public function hasConfiguration() : bool
     {
         return isset($this->config);
     }
@@ -596,5 +593,28 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public function getFileInfo() : FileInfo
     {
         return FileInfo::factory($this->getPath());
+    }
+
+    public function getTypeIcon() : UI_Icon
+    {
+        return static::getIcon()->setTooltip($this->getTypeLabel());
+    }
+
+    public function getTypeLabel() : string
+    {
+        return static::getLabel();
+    }
+
+    /**
+     * @param bool $forceDownload
+     * @return never
+     */
+    public function sendFile(bool $forceDownload=false)
+    {
+        FileHelper::sendFile(
+            $this->getPath(),
+            ConvertHelper::transliterate($this->getName()).'.'.$this->getExtension(),
+            $forceDownload
+        );
     }
 }
