@@ -13,6 +13,8 @@ use Application;
 use Application\AppFactory\AppFactoryException;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
+use Application\Media\Collection\MediaCollection;
+use Application\NewsCentral\NewsCollection;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -58,14 +60,19 @@ class AppFactory
         return Application_Uploads::getInstance();
     }
 
-    public static function createNews() : Application\NewsCentral\NewsCollection
+    public static function createNews() : NewsCollection
     {
-        return self::createClassInstance(Application\NewsCentral\NewsCollection::class);
+        return self::createClassInstance(NewsCollection::class);
     }
 
     public static function createMedia() : Application_Media
     {
         return Application_Media::getInstance();
+    }
+
+    public static function createMediaCollection() : MediaCollection
+    {
+        return self::createClassInstance(MediaCollection::class);
     }
 
     public static function createLogger() : Application_Logger
