@@ -29,6 +29,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
     public const COL_DATE_ADDED = 'date_added';
     public const COL_ADDED_BY = 'added_by';
     public const COL_EXTENSION = 'extension';
+    public const COL_ID = 'id';
 
     public function getURLName(): string
     {
@@ -54,7 +55,8 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
             self::COL_SIZE => ConvertHelper::bytes2readable($media->getFileSize()),
             self::COL_ADDED_BY => $media->getAuthor()->getName(),
             self::COL_EXTENSION => $document->getExtension(),
-            self::COL_DATE_ADDED => ConvertHelper::date2listLabel($media->getDateAdded(), true, true)
+            self::COL_DATE_ADDED => ConvertHelper::date2listLabel($media->getDateAdded(), true, true),
+            self::COL_ID => $media->getID()
         );
     }
 
@@ -103,6 +105,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
 
     protected function configureColumns(): void
     {
+        $this->grid->addColumn(self::COL_ID, t('ID'))->setCompact()->alignRight();
         $this->grid->addColumn(self::COL_TYPE, t('Type'))->setCompact();
         $this->grid->addColumn(self::COL_LABEL, t('Name'))->setSortable(true, MediaCollection::COL_NAME);
         $this->grid->addColumn(self::COL_EXTENSION, t('Extension'))->setSortable(false, MediaCollection::COL_EXTENSION);

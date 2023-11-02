@@ -73,6 +73,7 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 
         $document = $this->record->getMediaDocument();
 
+        $grid->add(t('ID'), sb()->codeCopy($this->record->getID()));
         $grid->add(t('Type'), sb()->icon($document->getTypeIcon())->add($document->getTypeLabel()));
         $grid->add(t('Label'), $this->record->getLabel());
         $grid->add(t('Added by'), $this->record->getAuthor()->getName());
