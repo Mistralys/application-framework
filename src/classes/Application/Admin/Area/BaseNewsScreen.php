@@ -13,6 +13,7 @@ use Application\Admin\Area\News\BaseNewsListScreen;
 use Application\AppFactory;
 use Application_Admin_Area;
 use UI;
+use UI_Icon;
 
 /**
  * Base class for the news area, where the news
@@ -33,6 +34,11 @@ abstract class BaseNewsScreen extends Application_Admin_Area
     public function isUserAllowed(): bool
     {
         return $this->user->canViewNews();
+    }
+
+    public function getNavigationIcon(): UI_Icon
+    {
+        return UI::icon()->news();
     }
 
     public function getDefaultMode(): string
