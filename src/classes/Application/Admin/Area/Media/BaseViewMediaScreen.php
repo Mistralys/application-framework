@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Application\Admin\Area\Media;
+
+use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
+use Application\AppFactory;
+use Application\Media\Collection\MediaCollection;
+use Application\Media\Collection\MediaRecord;
+use Application_Admin_Area_Mode_CollectionRecord;
+use UI;
+
+/**
+ * @property MediaRecord $record
+ */
+abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_CollectionRecord
+{
+    public const URL_NAME = 'view';
+
+    public function getURLName(): string
+    {
+        return self::URL_NAME;
+    }
+
+    protected function createCollection() : MediaCollection
+    {
+        return AppFactory::createMediaCollection();
+    }
+
+    protected function getRecordMissingURL(): string
+    {
+        return $this->createCollection()->getAdminListURL();
+    }
+
+    public function getDefaultSubmode(): string
+    {
+        return BaseMediaStatusScreen::URL_NAME;
+    }
+
+    public function isUserAllowed(): bool
+    {
+        return $this->user->canViewMedia();
+    }
+
+    public function getNavigationTitle(): string
+    {
+        return t('Media file');
+    }
+
+    public function getTitle(): string
+    {
+        return t('Media file');
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendItem($this->record->getLabel())
+            ->makeLinked($this->record->getAdminViewURL());
+    }
+
+    protected function _handleSubnavigation(): void
+    {
+        $this->subnav->addURL(
+            t('Status'),
+            $this->record->getAdminStatusURL()
+        )
+            ->setIcon(UI::icon()->status());
+
+        $this->subnav->addURL(
+            t('Settings'),
+            $this->record->getAdminSettingsURL()
+        )
+            ->setIcon(UI::icon()->settings());
+    }
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer
+            ->getTitle()
+            ->setText($this->record->getLabel())
+            ->setIcon($this->record->getMediaDocument()->getTypeIcon());
+    }
+}

@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\TranslationsScreen;
@@ -32,7 +33,8 @@ class TestDriver extends Application_Driver
             Application_Admin_TranslationsArea::URL_NAME => getClassTypeName(TranslationsScreen::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
             QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class),
-            NewsScreen::URL_NAME => getClassTypeName(NewsScreen::class)
+            NewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
+            MediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class)
         );
     }
 
