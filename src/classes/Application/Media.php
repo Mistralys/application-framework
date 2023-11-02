@@ -215,6 +215,19 @@ class Application_Media
     }
 
     /**
+     * Retrieves a list of all supported media file extensions.
+     * @return string[]
+     */
+    public function getExtensions() : array
+    {
+        $this->loadTypes();
+        $result = array_keys($this->extensions);
+        sort($result);
+
+        return $result;
+    }
+
+    /**
      * Creates a media configuration instance. These are document
      * type specific, and are used to store configurations for
      * media pre-processing using the media processor class. For
