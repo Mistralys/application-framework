@@ -7,6 +7,9 @@ namespace Application\Media\Collection;
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
 
+/**
+ * @method MediaRecord[] getItemsObjects()
+ */
 class MediaFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     public const FILTER_EXTENSIONS = 'extensions';

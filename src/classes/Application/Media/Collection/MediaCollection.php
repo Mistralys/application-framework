@@ -7,6 +7,7 @@ namespace Application\Media\Collection;
 use Application;
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\Media\BaseCreateMediaScreen;
+use Application\Admin\Area\Media\BaseImageGalleryScreen;
 use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
 use Application_Admin_ScreenInterface;
@@ -17,6 +18,8 @@ use DBHelper_BaseCollection;
 
 /**
  * @method MediaRecord getByID(int $id)
+ * @method MediaFilterCriteria getFilterCriteria()
+ * @method MediaFilterSettings getFilterSettings()
  */
 class MediaCollection extends DBHelper_BaseCollection
 {
@@ -112,6 +115,13 @@ class MediaCollection extends DBHelper_BaseCollection
     public function getAdminListURL(array $params=array()) : string
     {
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseMediaListScreen::URL_NAME;
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminImageGalleryURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseImageGalleryScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
