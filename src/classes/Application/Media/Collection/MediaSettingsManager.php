@@ -17,6 +17,7 @@ use Closure;
 use DBHelper_BaseRecord;
 use HTML_QuickForm2_Element_InputFile;
 use HTML_QuickForm2_Element_InputText;
+use HTML_QuickForm2_Element_Textarea;
 use HTML_QuickForm2_Rule_Callback;
 use UI;
 
@@ -26,6 +27,8 @@ class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
 
     public const SETTING_NAME = 'name';
     public const SETTING_FILE = 'file';
+    public const SETTING_DESCRIPTION = 'description';
+    public const SETTING_KEYWORDS = 'keywords';
 
     private HTML_QuickForm2_Element_InputFile $fileElement;
 
@@ -90,6 +93,55 @@ class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
         if(!$this->isEditMode()) {
             $file->makeRequired();
         }
+
+        if(!MediaCollection::hasSizeColumn()) {
+            return;
+        }
+
+        $group = $this->addGroup(t('Description'))
+            ->setIcon(UI::icon()->text());
+
+        $group->registerSetting(self::SETTING_DESCRIPTION)
+            ->setStorageName(MediaCollection::COL_DESCRIPTION)
+            ->setCallback(Closure::fromCallable(array($this, 'injectDescription')));
+
+        $group->registerSetting(self::SETTING_KEYWORDS)
+            ->setStorageName(MediaCollection::COL_KEYWORDS)
+            ->setCallback(Closure::fromCallable(array($this, 'injectKeywords')));
+    }
+
+    private function injectDescription() : HTML_QuickForm2_Element_Textarea
+    {
+        $el = $this->addElementTextarea(self::SETTING_DESCRIPTION, t('Description'));
+        $el->addFilterTrim();
+        $el->setComment(sb()
+            ->t('Optional description with any relevant information pertaining to the image.')
+            ->t('This can include copyright information, sources and the like.')
+            ->nl()
+            ->t(
+                'You may use %1$s syntax for formatting, links and more.',
+                sb()->link('Markdown', 'https://commonmark.org/help/', true)
+            )
+        );
+
+        $this->addRuleNoHTML($el);
+        $this->makeLengthLimited($el, 0, 1200);
+
+        return $el;
+    }
+
+    private function injectKeywords() : HTML_QuickForm2_Element_Textarea
+    {
+        $el = $this->addElementTextarea(self::SETTING_KEYWORDS, t('Keywords'));
+        $el->addFilterTrim();
+        $el->setComment(sb()
+            ->t('Optional keywords to help with searching for the image.')
+        );
+
+        $this->addRuleNoHTML($el);
+        $this->makeLengthLimited($el, 0, 500);
+
+        return $el;
     }
 
     private function injectName() : HTML_QuickForm2_Element_InputText

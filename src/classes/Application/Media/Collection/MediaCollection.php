@@ -30,6 +30,8 @@ class MediaCollection extends DBHelper_BaseCollection
     public const COL_NAME = 'media_name';
     public const COL_EXTENSION = 'media_extension';
     public const COL_SIZE = 'file_size';
+    public const COL_KEYWORDS = 'keywords';
+    public const COL_DESCRIPTION = 'description';
 
     private static ?bool $hasSizeColumn = null;
 
@@ -65,9 +67,16 @@ class MediaCollection extends DBHelper_BaseCollection
 
     public function getRecordSearchableColumns(): array
     {
-        return array(
+        $columns = array(
             self::COL_NAME => t('File name')
         );
+
+        if(self::hasSizeColumn()) {
+            $columns[self::COL_KEYWORDS] = t('Keywords');
+            $columns[self::COL_DESCRIPTION] = t('Description');
+        }
+
+        return $columns;
     }
 
     public function getRecordTableName(): string

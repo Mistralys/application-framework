@@ -6,8 +6,9 @@
 
 ALTER TABLE `media`
     ADD `file_size` INT(11) UNSIGNED NOT NULL DEFAULT '0' AFTER `media_extension`,
+    ADD `keywords` VARCHAR(500) NOT NULL DEFAULT '' AFTER `file_size`,
+    ADD `description` VARCHAR(1200) NOT NULL DEFAULT '' AFTER `keywords`,
     ADD INDEX (`file_size`);
-
 
 --
 -- Table structure for table `app_news`

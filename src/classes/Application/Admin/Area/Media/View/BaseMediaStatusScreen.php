@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Media\View;
 
 use Application\AppFactory;
+use Application\MarkdownRenderer;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
@@ -88,8 +89,8 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 
         $this->document->injectMetadata($grid);
 
+        $this->injectDescription($grid);
         $this->injectPreview($grid);
-
 
         if($this->user->isDeveloper()) {
             $grid->addHeader(t('Developer info'));
@@ -101,14 +102,23 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
             ->appendContent($grid);
     }
 
+    private function injectDescription(UI_PropertiesGrid $grid) : void
+    {
+        $descr = $this->record->getDescription();
+
+        if(empty($descr)) {
+            return;
+        }
+
+        $grid->add(t('Description'), MarkdownRenderer::create()->render($descr));
+    }
+
     private function injectPreview(UI_PropertiesGrid $grid) : void
     {
         $this->record->renderThumbnail(self::TUMBNAIL_SIZE);
 
         // Get a thumbnail size adapted to the document type.
         $imageSize = $this->document->getThumbnailDefaultSize(self::TUMBNAIL_SIZE);
-
-
 
         $grid->addHeader(t('Preview'));
         $grid->addMerged(

@@ -83,6 +83,16 @@ class MediaRecord extends DBHelper_BaseRecord
         return $this->getRecordIntKey(MediaCollection::COL_USER_ID);
     }
 
+    public function getDescription() : string
+    {
+        return $this->getRecordStringKey(MediaCollection::COL_DESCRIPTION);
+    }
+
+    public function getKeywords() : string
+    {
+        return $this->getRecordStringKey(MediaCollection::COL_KEYWORDS);
+    }
+
     public function isEditable() : bool
     {
         return true;
