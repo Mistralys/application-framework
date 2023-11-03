@@ -25,6 +25,9 @@
 - Media: Fixed thumbnails not being updated if the original image is changed.
 - Media: Added a basic media management area.
 - Media: Added a file size database column.
+- Media: Unified uploads and documents, merged functionality for maintainability.
+- Media: Improved document interfaces.
+- Media: Added support for uploading PDF documents.
 
 #### Breaking changes (M)
 
