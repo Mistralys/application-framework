@@ -131,6 +131,11 @@ class MediaRecord extends DBHelper_BaseRecord
         return $this;
     }
 
+    public function renderThumbnail(?int $preferredSize=null) : string
+    {
+        return $this->getMediaDocument()->renderThumbnail($preferredSize);
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }

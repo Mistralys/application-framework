@@ -8,8 +8,10 @@ use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use Application_Media_Document;
 use AppUtils\FileHelper;
 use UI;
+use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
 /**
@@ -19,6 +21,8 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 {
     public const URL_NAME = 'status';
     public const REQUEST_PARAM_DOWNLOAD = 'download';
+    public const TUMBNAIL_SIZE = 460;
+    private Application_Media_Document $document;
 
     public function getURLName(): string
     {
@@ -52,6 +56,8 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 
     protected function _handleActions(): bool
     {
+        $this->document = $this->record->getMediaDocument();
+
         if($this->request->getBool(self::REQUEST_PARAM_DOWNLOAD)) {
             $this->record->sendFile(true);
         }
@@ -71,32 +77,45 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
     {
         $grid = $this->ui->createPropertiesGrid();
 
-        $document = $this->record->getMediaDocument();
-
         $grid->add(t('ID'), sb()->codeCopy($this->record->getID()));
-        $grid->add(t('Type'), sb()->icon($document->getTypeIcon())->add($document->getTypeLabel()));
+        $grid->add(t('Type'), sb()->icon($this->document->getTypeIcon())->add($this->document->getTypeLabel()));
         $grid->add(t('Label'), $this->record->getLabel());
         $grid->add(t('Added by'), $this->record->getAuthor()->getName());
         $grid->addDate(t('Date added'), $this->record->getDateAdded())
             ->withTime()
             ->withDiff();
-        $grid->addByteSize(t('File size'), $document->getFilesize());
+        $grid->addByteSize(t('File size'), $this->document->getFilesize());
 
-        $grid->addHeader(t('Preview'));
-        $grid->addMerged(
-            sb()->link(
-                '<img src="'.$document->getThumbnailURL(460).'">',
-                $document->getThumbnailURL()
-            )
-        );
+        $this->document->injectMetadata($grid);
+
+        $this->injectPreview($grid);
+
 
         if($this->user->isDeveloper()) {
             $grid->addHeader(t('Developer info'));
-            $grid->add(t('Path on disk'), sb()->code(FileHelper::relativizePath($document->getPath(), APP_ROOT)));
+            $grid->add(t('Path on disk'), sb()->code(FileHelper::relativizePath($this->document->getPath(), APP_ROOT)));
         }
 
         return $this->renderer
             ->makeWithSidebar()
             ->appendContent($grid);
+    }
+
+    private function injectPreview(UI_PropertiesGrid $grid) : void
+    {
+        $this->record->renderThumbnail(self::TUMBNAIL_SIZE);
+
+        // Get a thumbnail size adapted to the document type.
+        $imageSize = $this->document->getThumbnailDefaultSize(self::TUMBNAIL_SIZE);
+
+
+
+        $grid->addHeader(t('Preview'));
+        $grid->addMerged(
+            sb()->link(
+                '<img src="'.$this->document->getThumbnailURL($imageSize).'" width="'.$imageSize.'" alt="">',
+                $this->document->getThumbnailURL()
+            )
+        );
     }
 }

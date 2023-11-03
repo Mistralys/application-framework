@@ -1,12 +1,25 @@
 <?php
 
-use AppUtils\ImageHelper_Exception;
+declare(strict_types=1);
+
+use Application\Media\Collection\MediaCollection;
+use Application\Media\ImageDocumentInterface;
+use Application\Media\ImageDocumentTrait;
 use AppUtils\ImageHelper_Size;
 use AppUtils\ImageHelper;
 
 class Application_Media_Document_Image extends Application_Media_Document
+    implements ImageDocumentInterface
 {
-    public const ERROR_FILE_NOT_FOUND = 384970001;
+    use ImageDocumentTrait;
+
+    public const IMAGE_EXTENSIONS = array(
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+        'svg'
+    );
 
     public static function getLabel() : string
     {
@@ -20,133 +33,9 @@ class Application_Media_Document_Image extends Application_Media_Document
 
     public static function getExtensions() : array
     {
-        return array(
-            'jpg',
-            'jpeg',
-            'png',
-            'gif',
-            'svg'
-        );
+        return self::IMAGE_EXTENSIONS;
     }
 
-    public function getThumbnailPath($width = null, $height = null)
-    {
-        if($this->isTypeSVG()) {
-            return $this->getPath();
-        }
-        
-        if (empty($width) && empty($height)) {
-            return $this->getPath();
-        }
-
-        if ($width == $this->getWidth() && $height == $this->getHeight()) {
-            return $this->getPath();
-        }
-        
-        $folder = dirname($this->getPath());
-
-        if (empty($width)) {
-            return sprintf(
-                '%s/%s_h%s.%s',
-                $folder,
-                $this->id,
-                $height,
-                $this->getExtension()
-            );
-        }
-
-        if (empty($height)) {
-            return sprintf(
-                '%s/%s_w%s.%s',
-                $folder,
-                $this->id,
-                $width,
-                $this->getExtension()
-            );
-        }
-
-        return sprintf(
-            '%s/%s_w%s_h%s.%s',
-            $folder,
-            $this->id,
-            $width,
-            $height,
-            $this->getExtension()
-        );
-    }
-
-    public function thumbnailExists($width = null, $height = null) 
-    {
-        try {
-            $path = $this->getThumbnailPath($width, $height);
-        } catch (Application_Exception $e) {
-            if ($e->getCode() == self::ERROR_FILE_NOT_FOUND) {
-                $e->disableLogging();
-
-                return false;
-            }
-
-            throw $e;
-        }
-
-        return file_exists($path);
-    }
-
-    public function serveFromRequest(Application_Media_Delivery $delivery, Application_Request $request)
-    {
-        $width = $request->getParam('width', null);
-        $height = $request->getParam('height', null);
-
-        $this->log(sprintf(
-            'Serving image [%s] in dimensions [%sx%s]', 
-            $this->getFilename(),
-            $width,
-            $height
-        ));
-
-        $this->log(sprintf(
-            'Source file is located at [%s].',
-            $this->getPath()
-        ));
-        
-        $targetFile = $this->createThumbnail($width, $height);
-
-        ImageHelper::displayImage($targetFile);
-        
-        Application::exit($this->getLogIdentifier().' | Sent image contents to stdout.');
-    }
-
-    /**
-     * Creates a thumbnail of the image for the specified dimensions.
-     * Width and height can be omitted as needed to constrain resampling
-     * to one or none of the sides.
-     *
-     * Returns the path to the thumbnail file when successful.
-     *
-     * @param int|null $width
-     * @param int|null $height
-     * @return string
-     * @throws ImageHelper_Exception
-     */
-    public function createThumbnail(?int $width = null, ?int $height = null) : string
-    {
-        if($this->isTypeSVG()) {
-            return $this->getPath();
-        }
-        
-        $this->log(sprintf('Creating thumbnail for size [%sx%s].', $width, $height));
-        
-        $targetFile = $this->getThumbnailPath($width, $height);
-
-        if (!file_exists($targetFile) || filemtime($targetFile) < filemtime($this->getPath())) {
-            $helper = $this->getImageHelper();
-            $helper->resample($width, $height);
-            $helper->save($targetFile);
-        }
-
-        return $targetFile;
-    }
-    
    /**
     * Retrieves an instance of the image helper for this image
     * that can be used to do any number of operations on the
@@ -154,9 +43,9 @@ class Application_Media_Document_Image extends Application_Media_Document
     * 
     * @return ImageHelper
     */
-    public function getImageHelper()
+    public function getImageHelper() : ImageHelper
     {
-        return ImageHelper::createFromFile($this->getPath());
+        return $this->getThumbnailSourceImage();
     }
     
    /**
@@ -168,32 +57,41 @@ class Application_Media_Document_Image extends Application_Media_Document
     */
     public function getSizeByWidth(int $width) : ImageHelper_Size
     {
-        $helper = $this->getImageHelper();
-        return $helper->getSizeByWidth($width);
+        return $this->getImageHelper()->getSizeByWidth($width);
     }
 
-    public function exists()
+    public function exists() : bool
     {
         return file_exists($this->getPath());
     }
-    
-    public function getWidth()
+
+    public function getMediaSourceID(): string
+    {
+        return MediaCollection::MEDIA_TYPE;
+    }
+
+    public function getMediaPrimaryName(): string
+    {
+        return MediaCollection::PRIMARY_NAME;
+    }
+
+    public function getWidth() : int
     {
         $dimensions = $this->getDimensions();
 
         return $dimensions[0];
     }
 
-    public function getHeight()
+    public function getHeight() : int
     {
         $dimensions = $this->getDimensions();
 
         return $dimensions[1];
     }
 
-    protected $dimensions;
+    protected ?ImageHelper_Size $dimensions = null;
 
-    public function getDimensions()
+    public function getDimensions() : ImageHelper_Size
     {
         if (isset($this->dimensions)) {
             return $this->dimensions;
@@ -215,5 +113,12 @@ class Application_Media_Document_Image extends Application_Media_Document
         $this->dimensions = ImageHelper::getImageSize($path);
         
         return $this->dimensions;
+    }
+
+    public function injectMetadata(UI_PropertiesGrid $grid) : void
+    {
+        $dimensions = $this->getDimensions();
+
+        $grid->add(t('Image size'), $dimensions->toReadableString());
     }
 }

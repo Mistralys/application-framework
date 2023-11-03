@@ -22,6 +22,7 @@ class MediaCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
+    public const MEDIA_TYPE = 'media';
 
     public const COL_USER_ID = 'user_id';
     public const COL_DATE_ADDED = 'media_date_added';

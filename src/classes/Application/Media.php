@@ -1,7 +1,7 @@
 <?php
 
+use Application\Media\Collection\MediaCollection;
 use Application\Media\MediaException;
-use Application\Uploads\LocalFileUpload;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -129,8 +129,12 @@ class Application_Media
         
         return null;
     }
-    
-    public function isMediaFormValue($value)
+
+    /**
+     * @param mixed $value
+     * @return bool
+     */
+    public function isMediaFormValue($value) : bool
     {
         if(!is_array($value)) {
             return false;
@@ -140,7 +144,7 @@ class Application_Media
             return false;
         }
         
-        if(!in_array($value['state'], array('media', 'upload'))) {
+        if(!in_array($value['state'], array(MediaCollection::MEDIA_TYPE, Application_Uploads::MEDIA_TYPE), true)) {
             return false;
         }
         

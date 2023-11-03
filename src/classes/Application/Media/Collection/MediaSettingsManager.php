@@ -121,11 +121,15 @@ class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
         $el = $this->addElementFile(self::SETTING_FILE, t('File'));
         $el->setComment(sb()
             ->t('Choose a media file to upload.')
+            ->nl()
+            ->t('Accepted file extensions:')
+            ->mono(implode(' ', AppFactory::createMedia()->getExtensions()))
         );
 
         if($this->isEditMode())
         {
             $el->appendComment(sb()
+                ->nl()
                 ->t('Leave empty if you do not want to change the file.')
             );
 
