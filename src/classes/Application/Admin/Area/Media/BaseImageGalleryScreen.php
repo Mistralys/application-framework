@@ -20,6 +20,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     private MediaCollection $media;
     private MediaFilterCriteria $criteria;
     private MediaFilterSettings $filterSettings;
+    private bool $hasItems;
 
     public function getDefaultSubmode(): string
     {
@@ -50,9 +51,8 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     {
         $this->media = AppFactory::createMediaCollection();
         $this->criteria = $this->media->getFilterCriteria();
-        $this->filterSettings = $this->media->getFilterSettings();
-
-        $this->criteria->selectExtensions(Application_Media_Document_Image::getExtensions());
+        $this->filterSettings = $this->media->getFilterSettings()->configureForImageGallery();
+        $this->hasItems = $this->criteria->countItems() > 0;
 
         return true;
     }
@@ -64,6 +64,13 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
             ->setIcon(UI::icon()->image());
     }
 
+    protected function _handleSidebar(): void
+    {
+        if($this->hasItems) {
+            $this->sidebar->addFilterSettings($this->filterSettings);
+        }
+    }
+
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle())
@@ -73,6 +80,8 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     protected function _renderContent()
     {
         $this->ui->addStylesheet('media-image-gallery.css');
+
+        $this->filterSettings->configureFilters($this->criteria);
 
         $items = $this->criteria->getItemsObjects();
 
@@ -87,7 +96,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
         $this->renderer->appendContent('</div>');
 
         return $this->renderer
-            ->makeWithoutSidebar();
+            ->setWithSidebar($this->hasItems);
     }
 
     private function renderImageThumbnail(MediaRecord $item) : string

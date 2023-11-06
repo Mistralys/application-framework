@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Media\Collection;
 
 use Application\AppFactory;
+use Application_Media_Document_Image;
 use DBHelper_BaseFilterSettings;
 
 /**
@@ -14,6 +15,14 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
 {
     public const SETTING_SEARCH = 'search';
     public const SETTING_EXTENSIONS = 'extensions';
+    private bool $isImageGallery = false;
+
+    public function configureForImageGallery() : self
+    {
+        $this->isImageGallery = true;
+        $this->setID('media-image-gallery');
+        return $this;
+    }
 
     protected function registerSettings(): void
     {
@@ -29,9 +38,16 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
         $el->enableSelectAll();
         $el->makeBlock();
 
-        $extensions = AppFactory::createMedia()->getExtensions();
-        foreach($extensions as $extension)
+        if($this->isImageGallery)
         {
+            $extensions = Application_Media_Document_Image::IMAGE_EXTENSIONS;
+        }
+        else
+        {
+            $extensions = AppFactory::createMedia()->getExtensions();
+        }
+
+        foreach ($extensions as $extension) {
             $el->addOption($extension, $extension);
         }
     }
@@ -40,6 +56,12 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
     {
         $this->filters->setSearch($this->getSetting(self::SETTING_SEARCH));
 
-        $this->filters->selectExtensions((array)$this->getSetting(self::SETTING_EXTENSIONS));
+        $extensions = (array)$this->getSetting(self::SETTING_EXTENSIONS);
+        if(empty($extensions) && $this->isImageGallery)
+        {
+            $extensions = Application_Media_Document_Image::IMAGE_EXTENSIONS;
+        }
+
+        $this->filters->selectExtensions($extensions);
     }
 }

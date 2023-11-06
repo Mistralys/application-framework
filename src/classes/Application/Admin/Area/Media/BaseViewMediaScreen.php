@@ -61,6 +61,8 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
 
     protected function _handleSubnavigation(): void
     {
+        $this->subnav->clearItems();
+
         $this->subnav->addURL(
             t('Status'),
             $this->record->getAdminStatusURL()
