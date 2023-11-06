@@ -29,6 +29,7 @@
 - Media: Unified uploads and documents, merged functionality for maintainability.
 - Media: Improved document interfaces.
 - Media: Added support for uploading PDF documents.
+- CAS: Switched `renewAuthentication()` to `forceAuthentication()`.
 
 #### Breaking changes (M)
 
