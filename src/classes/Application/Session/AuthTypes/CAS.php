@@ -117,7 +117,7 @@ trait Application_Session_AuthTypes_CAS
 
         try
         {
-            $client->renewAuthentication();
+            $client->forceAuthentication();
         }
         catch (CAS_GracefullTerminationException $e)
         {
