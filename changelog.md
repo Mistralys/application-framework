@@ -30,6 +30,8 @@
 - Media: Improved document interfaces.
 - Media: Added support for uploading PDF documents.
 - CAS: Switched `renewAuthentication()` to `forceAuthentication()`.
+- Code: Moved the PHPStan files to `tests/phpstan`.
+- Code: PHPStan analysis clean @ level 5 with some leftover suppressed warnings.
 
 #### Breaking changes (M)
 
