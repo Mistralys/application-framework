@@ -217,7 +217,7 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
         }
         else
         {
-            $method = 'inject_'.$setting->getName();
+            $method = 'inject_'.str_replace('-', '_', $setting->getName());
             
             if(!method_exists($this->manager, $method))
             {
