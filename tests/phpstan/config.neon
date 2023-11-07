@@ -1,10 +1,18 @@
 parameters:
-    tmpDir:
-        ./
     bootstrapFiles:
         - ./constants.php
-        - ../../tests/bootstrap.php
+        - ../bootstrap.php
+    paths:
+        - ../../src
+        - ../AppFrameworkTestClasses
+        - ../AppFrameworkTests
+    dynamicConstantNames:
+        - APP_TESTS_RUNNING
+        - APP_FRAMEWORK_TESTS
     ignoreErrors:
+        -
+            message: '#this might not be defined.#'
+            path: ../../src/themes/default*
         -
             message: '#is not nullable.#'
             path: ../../src*

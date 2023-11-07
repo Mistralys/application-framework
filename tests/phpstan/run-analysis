@@ -2,18 +2,16 @@
 #
 # PHPStan / Analyze application and framework classes (Linux)
 #
-# @template-version 1.2
-#
 
 MemoryLimit=900M
 AnalysisLevel=5
-OutputFile=docs/phpstan/result.txt
-ConfigFile=docs/phpstan/config.neon
-BinFolder=vendor/bin
+OutputFile=./result.txt
+ConfigFile=./config.neon
+BinFolder=./../../vendor/bin
 
 echo "-------------------------------------------------------"
 echo "RUNNING PHPSTAN @ LEVEL $AnalysisLevel"
 echo "-------------------------------------------------------"
 echo ""
 
-$BinFolder/phpstan analyse -l $AnalysisLevel -c $ConfigFile --memory-limit=$MemoryLimit src/classes > $OutputFile
+$BinFolder/phpstan analyse -l $AnalysisLevel -c $ConfigFile --memory-limit=$MemoryLimit > $OutputFile

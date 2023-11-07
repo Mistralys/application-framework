@@ -1,9 +1,9 @@
 @echo off
-
+set MemoryLimit=900M
 set AnalysisLevel=5
-set OutputFile=docs\phpstan\result.txt
-set ConfigFile=docs\phpstan\config.neon
-set BinFolder=vendor\bin
+set OutputFile=result.txt
+set ConfigFile=config.neon
+set BinFolder=.\..\..\vendor\bin
 
 cls
 
@@ -12,6 +12,6 @@ echo RUNNING PHPSTAN @ LEVEL %AnalysisLevel%
 echo -------------------------------------------------------
 echo.
 
-call %BinFolder%\phpstan analyse -l %AnalysisLevel% -c %ConfigFile% --memory-limit=900M src\classes > %OutputFile%
+call %BinFolder%\phpstan analyse -l %AnalysisLevel% -c %ConfigFile% --memory-limit=%MemoryLimit% > %OutputFile%
 
 start "" "%OutputFile%"

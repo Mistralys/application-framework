@@ -18,8 +18,9 @@ tests/.buildpath
 tests/.project
 tests/.settings/org.eclipse.php.core.prefs
 src/dbhelper-upgrade.txt
-docs/phpstan/resultCache.php
-docs/phpstan/result.txt
+tests/phpstan/cache
+tests/phpstan/resultCache.php
+tests/phpstan/result.txt
 localization/storage.json
 errors.txt
 tests/files/TypeHinter/TypeHinterTestClass.php.output
