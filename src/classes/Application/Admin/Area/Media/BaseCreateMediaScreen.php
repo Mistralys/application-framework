@@ -7,9 +7,14 @@ namespace Application\Admin\Area\Media;
 use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
+use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
 use DBHelper_BaseRecord;
 
+/**
+ * @property MediaRecord|NULL $record
+ * @property MediaCollection $collection
+ */
 abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
 {
     public const URL_NAME = 'create';

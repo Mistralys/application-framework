@@ -11,6 +11,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
@@ -378,17 +379,14 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
 		    $info = 'No developer-specific information available.';
 		}
 		
-		if($info) 
-		{
-		    if(!$html) {
-		        $info = strip_tags($info);
-		    } else {
-                $info = nl2br($info);
-            }
-		    
-    		$lines[] = '<h4 class="errorpage-header">Developer info</h4>';
-    		$lines[] = $info;
-		}		
+        if(!$html) {
+            $info = strip_tags($info);
+        } else {
+            $info = nl2br($info);
+        }
+
+        $lines[] = '<h4 class="errorpage-header">Developer info</h4>';
+        $lines[] = $info;
 	}
 	
 	$code = implode($nl, $lines);
@@ -862,18 +860,19 @@ function displayCSV($csv, $filename='download.csv', $debug=false)
 
 /**
  * Sends the specified CSV string to the browser with
- * the correct headers to triggr a download of the CSV
+ * the correct headers to trigger a download of the CSV
  * to a local file and terminates the request.
  *
  * @param string $csv
  * @param string $filename
+ * @return never
  */
-function downloadCSV($csv, $filename='download.csv')
+function downloadCSV(string $csv, string $filename='download.csv')
 {
     header('Content-type:text/csv; charset=UTF-8');
 	header('Content-Disposition: attachment; filename="'.$filename.'"');
 	
-	$boms = AppUtils\FileHelper::getUTFBOMs();
+	$boms = FileHelper::createUnicodeHandling()->getUTFBOMs();
 	
 	echo 
 	$boms['UTF8'].

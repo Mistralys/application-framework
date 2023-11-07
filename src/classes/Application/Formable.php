@@ -239,7 +239,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * a data attrribute to the form that can be used clientside
     * to determine the default element.
     * 
-    * @param string|HTML_QuickForm2_Element $elementNameOrObject
+    * @param string|HTML_QuickForm2_Node $elementNameOrObject
     * @return Application_Formable
     */
     public function setDefaultElement($elementNameOrObject)
@@ -248,7 +248,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         $element = $elementNameOrObject;
         
-        if(!$element instanceof HTML_QuickForm2_Element) 
+        if(!$element instanceof HTML_QuickForm2_Node)
         {
             $element = $this->formableForm->getElementByName($elementNameOrObject);
         }

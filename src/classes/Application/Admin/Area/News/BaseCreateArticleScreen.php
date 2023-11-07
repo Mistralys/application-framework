@@ -7,9 +7,14 @@ namespace Application\Admin\Area\News;
 use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
+use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsSettingsManager;
 use DBHelper_BaseRecord;
 
+/**
+ * @property NewsEntry|NULL $record
+ * @property NewsCollection $collection
+ */
 abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 {
     public const URL_NAME = 'create-article';

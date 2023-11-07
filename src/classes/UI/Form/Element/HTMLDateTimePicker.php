@@ -60,7 +60,8 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
     {
         if(is_array($value))
         {
-            return parent::setValue($value);
+            parent::setValue($value);
+            return $this;
         }
 
         $date = array(
@@ -82,10 +83,12 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
             }
         }
 
-        return parent::setValue(array(
+        parent::setValue(array(
             self::ELEMENT_NAME_DATE => $date['date'],
             self::ELEMENT_NAME_TIME => $date['time']
         ));
+
+        return $this;
     }
 
     protected function updateValue(): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 /**
  * @method TestDriver_TestDBCollection_TestDBRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ * @method TestDriver_TestDBCollection_TestDBRecord getByID(int $record_id)
  */
 class TestDriver_TestDBCollection extends DBHelper_BaseCollection
 {

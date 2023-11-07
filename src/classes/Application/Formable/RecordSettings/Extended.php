@@ -233,12 +233,12 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     /**
      * Imports raw form values into the settings form.
      *
-     * Used for example in wizards with a setting screen:
+     * Used in wizards with a setting screen, for example.
      * The valid form data is stored, and later used to
      * create the record.
      *
      * @param array<string,mixed> $formValues
-     * @return $this
+     * @return void
      * @throws Application_Exception
      */
     public function makeSubmitted(array $formValues = array()): void

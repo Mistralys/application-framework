@@ -36,9 +36,9 @@ class Application_Formable_RecordSettings_Setting
     protected bool $required = false;
     
    /**
-    * @var callable|NULL
+    * @var array{arguments:array<mixed>,callback:callable}|NULL
     */
-    protected $callback = null;
+    protected ?array $callback = null;
 
     /**
      * @var string|array|bool|int|float

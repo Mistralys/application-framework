@@ -297,25 +297,8 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 
     // region: Support methods
 
-    /**
-     * @var Application_Feedback_Report
-     */
-    private static $systemFeedback;
-
-    /**
-     * @var Application_Feedback_Report
-     */
-    private static $dummyFeedback;
-
-    /**
-     * @var Application_User
-     */
-    private static $systemUser;
-
-    /**
-     * @var Application_User
-     */
-    private static $dummyUser;
+    private static ?Application_Feedback_Report $systemFeedback = null;
+    private static Application_User $systemUser;
 
     private function createTestRecords() : void
     {
@@ -327,7 +310,6 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
         DBHelper::deleteRecords(Application_Feedback::TABLE_NAME);
 
         self::$systemUser = Application::createSystemUser();
-        self::$dummyUser = Application::createDummyUser();
 
         $feedback = Application::createFeedback();
 
@@ -336,13 +318,6 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
             'Needs some improvement',
             '',
             self::$systemUser
-        );
-
-        self::$dummyFeedback = $feedback->addBug(
-            Application_Feedback::SCOPE_PAGE,
-            'Does not work!',
-            '',
-            self::$dummyUser
         );
     }
 

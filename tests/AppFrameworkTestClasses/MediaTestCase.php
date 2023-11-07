@@ -10,6 +10,7 @@ use Application\AppFactory;
 use Application_Media;
 use Application_Media_Document;
 use Application_Media_Document_Image;
+use Application_Uploads;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 
@@ -17,6 +18,7 @@ abstract class MediaTestCase extends ApplicationTestCase
 {
     protected Application_Media $media;
     protected string $storageFolder;
+    protected Application_Uploads $uploads;
 
     protected function setUp(): void
     {

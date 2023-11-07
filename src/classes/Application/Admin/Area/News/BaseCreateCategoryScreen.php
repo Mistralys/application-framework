@@ -7,9 +7,14 @@ namespace Application\Admin\Area\News;
 use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
+use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
 use DBHelper_BaseRecord;
 
+/**
+ * @property Category|NULL $record
+ * @property CategoriesCollection $collection
+ */
 abstract class BaseCreateCategoryScreen extends BaseCollectionCreateExtended
 {
     public const URL_NAME = 'create-category';

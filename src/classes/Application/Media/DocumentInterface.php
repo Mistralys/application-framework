@@ -174,5 +174,9 @@ interface Application_Media_DocumentInterface extends Application_Interfaces_Log
     */
     public function delete() : void;
 
-    public function sendFile(bool $forceDownload=false) : void;
+    /**
+     * @param bool $forceDownload
+     * @return never
+     */
+    public function sendFile(bool $forceDownload=false);
 }

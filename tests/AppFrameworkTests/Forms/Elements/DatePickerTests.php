@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Forms\Elements;
 
-use _PHPStan_adbc35a1c\Nette\Utils\DateTime;
 use AppFrameworkTestClasses\FormTestCase;
+use DateTime;
 use HTML_QuickForm2;
 use HTML_QuickForm2_Element_HTMLDatePicker;
 

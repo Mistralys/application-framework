@@ -334,6 +334,10 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
         }
     }
 
+    /**
+     * @param BaseException $e
+     * @return never
+     */
     private function failException(BaseException $e)
     {
         $this->fail(sprintf(

@@ -21,6 +21,9 @@ use HTML_QuickForm2_Element_Textarea;
 use HTML_QuickForm2_Rule_Callback;
 use UI;
 
+/**
+ * @property MediaRecord|null $record
+ */
 class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
 {
     public const ERROR_NO_DOCUMENT_IN_CREATE_MODE = 146101;

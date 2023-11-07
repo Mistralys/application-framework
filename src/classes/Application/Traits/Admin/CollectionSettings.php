@@ -561,10 +561,10 @@ trait Application_Traits_Admin_CollectionSettings
     
     public function getDeleteConfirmMessage() : string
     {
-        return sb()
-        ->bold(t('This will delete the item.'))
-        ->para()
-        ->danger(sb()->bold(t('Are you sure? This cannot be undone.')));
+        return (string)sb()
+            ->bold(t('This will delete the item.'))
+            ->para()
+            ->danger(sb()->bold(t('Are you sure? This cannot be undone.')));
     }
 
     protected function resolveTitle() : string

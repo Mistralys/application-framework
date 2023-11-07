@@ -8,6 +8,7 @@ use Application;
 use Application\AppFactory;
 use Application_Exception;
 use Application_Media_Delivery;
+use Application_Media_Document;
 use Application_Media_DocumentInterface;
 use Application_Request;
 use Application_User;
@@ -37,7 +38,7 @@ trait DocumentTrait
         }
         catch (Application_Exception $e)
         {
-            if ($e->getCode() === self::ERROR_FILE_NOT_FOUND) {
+            if ($e->getCode() === Application_Media_Document::ERROR_FILE_NOT_FOUND) {
                 $e->disableLogging();
                 return false;
             }
@@ -60,7 +61,7 @@ trait DocumentTrait
         if($width <= 0) {$width = null;}
         if($height <= 0) {$height = null;}
 
-        if ($width === 0 && $height === null) {
+        if ($width === null && $height === null) {
             return $sourcePath;
         }
 
@@ -137,13 +138,15 @@ trait DocumentTrait
      * @param bool $forceDownload
      * @return never
      */
-    public function sendFile(bool $forceDownload=false) : void
+    public function sendFile(bool $forceDownload=false)
     {
         FileHelper::sendFile(
             $this->getPath(),
             $this->getFilename(),
             $forceDownload
         );
+
+        Application::exit('Send file to browser.');
     }
 
     /**

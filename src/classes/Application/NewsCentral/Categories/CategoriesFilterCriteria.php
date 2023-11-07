@@ -7,6 +7,9 @@ namespace Application\NewsCentral\Categories;
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
 
+/**
+ * @method Category[] getItemsObjects()
+ */
 class CategoriesFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     public const FILTER_CATEGORY_IDS = 'category_ids';

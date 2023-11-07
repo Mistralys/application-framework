@@ -10,6 +10,7 @@ namespace testsuites\DBHelper;
 
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 use TestDriver_TestDBCollection;
+use TestDriver_TestDBCollection_TestDBRecord;
 
 /**
  * @package Application
@@ -29,7 +30,9 @@ class RecordTests extends DBHelperTestCase
         $collection->resetCollection();
 
         $freshRecord = $collection->getByID($record->getID());
+
         $this->assertNotSame($freshRecord, $record);
+        $this->assertInstanceOf(TestDriver_TestDBCollection_TestDBRecord::class, $freshRecord);
         $this->assertSame('New label', $freshRecord->getLabel());
         $this->assertSame('new-alias', $freshRecord->getAlias());
     }

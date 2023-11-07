@@ -12,6 +12,7 @@ namespace testsuites\Application;
 use Application\AppFactory;
 use Application\Logger\PSRLogger;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application_Logger;
 use phpCAS;
 
 /**
@@ -45,6 +46,8 @@ class CASLoggingTests extends ApplicationTestCase
     // endregion
 
     // region: Support methods
+
+    protected Application_Logger $logger;
 
     protected function setUp(): void
     {
