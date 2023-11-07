@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace testsuites\DBHelper;
 
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
-use TestDriver_TestDBCollection;
-use TestDriver_TestDBCollection_TestDBRecord;
+use TestDriver\TestDBCollection;
+use TestDriver\TestDBCollection\TestDBRecord;
 
 /**
  * @package Application
@@ -20,7 +20,7 @@ class RecordTests extends DBHelperTestCase
 {
     public function test_persistChanges() : void
     {
-        $collection = new TestDriver_TestDBCollection();
+        $collection = new TestDBCollection();
         $record = $collection->createTestRecord('My label', 'my-alias');
 
         $record->setLabel('New label');
@@ -32,7 +32,7 @@ class RecordTests extends DBHelperTestCase
         $freshRecord = $collection->getByID($record->getID());
 
         $this->assertNotSame($freshRecord, $record);
-        $this->assertInstanceOf(TestDriver_TestDBCollection_TestDBRecord::class, $freshRecord);
+        $this->assertInstanceOf(TestDBRecord::class, $freshRecord);
         $this->assertSame('New label', $freshRecord->getLabel());
         $this->assertSame('new-alias', $freshRecord->getAlias());
     }
@@ -48,7 +48,7 @@ class RecordTests extends DBHelperTestCase
      */
     public function test_saveModified() : void
     {
-        $collection = new TestDriver_TestDBCollection();
+        $collection = new TestDBCollection();
         $record = $collection->createTestRecord('My label', 'my-alias');
 
         $this->assertFalse($record->isModified());
