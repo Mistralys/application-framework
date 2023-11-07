@@ -19,10 +19,12 @@ declare(strict_types=1);
  * @subpackage Forms
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Formable_RecordSettings::filterForStorage()
+ * @see Application_Formable_RecordSettings::collectStorageValues()
  */
 class Application_Formable_RecordSettings_ValueSet
 {
+    public const ERROR_EMPTY_KEY_VALUE = 146601;
+
     /**
      * @var array<string,mixed>
      */
@@ -41,7 +43,7 @@ class Application_Formable_RecordSettings_ValueSet
      * @param mixed $value
      * @return $this
      */
-    public function setKey(string $name, $value) : Application_Formable_RecordSettings_ValueSet
+    public function setKey(string $name, $value) : self
     {
         $this->values[$name] = $value;
         return $this;
@@ -90,5 +92,33 @@ class Application_Formable_RecordSettings_ValueSet
     public function getValues() : array
     {
         return $this->values;
+    }
+
+    public function setKeys(array $keyValues) : self
+    {
+        foreach($keyValues as $name => $value)
+        {
+            $this->setKey($name, $value);
+        }
+
+        return $this;
+    }
+
+    public function requireNotEmpty(string $name) : self
+    {
+        $value = $this->getKey($name);
+        if($value !== null && $value !== '') {
+            return $this;
+        }
+
+        throw new Application_Exception(
+            'Empty key value',
+            sprintf(
+                'Required key is [%s]. Values provided: %s',
+                $name,
+                '<pre>'.print_r($this->getValues(), true).'</pre>'
+            ),
+            self::ERROR_EMPTY_KEY_VALUE
+        );
     }
 }

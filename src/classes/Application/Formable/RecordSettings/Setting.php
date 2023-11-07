@@ -117,6 +117,8 @@ class Application_Formable_RecordSettings_Setting
      * be used within the settings form. Its value will not be
      * used when saving the record data.
      *
+     * VALUES: Internal values are NOT passed on to the collection.
+     *
      * Use case 1:
      *
      * Fields that are interpreted to adjust the record's data set.
@@ -150,7 +152,9 @@ class Application_Formable_RecordSettings_Setting
      * to have a value in the form. It can be used for visual only
      * elements, like static content to display information.
      *
-     * NOTE: It does not exclude the setting from having a value.
+     * VALUES: Static values are NOT passed on to the collection.
+     *
+     * NOTE: Static settings can have a value.
      *
      * @return $this
      */
@@ -169,7 +173,10 @@ class Application_Formable_RecordSettings_Setting
     /**
      * Turns the setting into a virtual element that does
      * not have any matching form element. Use this for
-     * setting fixed data keys to pass through.
+     * setting fixed data keys to pass through, which are
+     * considered to be part of the record's data set.
+     *
+     * VALUES: Virtual values ARE passed on to the collection.
      *
      * @param mixed $value
      * @return $this

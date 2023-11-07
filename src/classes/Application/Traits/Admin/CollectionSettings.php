@@ -297,6 +297,12 @@ trait Application_Traits_Admin_CollectionSettings
             $this->saveRecord($filtered);
         }
 
+        // Overwrite any modified filtered keys in the
+        // data set, so the after save method gets the
+        // final versions of the data including the raw
+        // internal field values.
+        $data->setKeys($filtered->getValues());
+
         $this->handleAfterSave($record, $data);
 
         $this->endTransaction();
@@ -383,19 +389,6 @@ trait Application_Traits_Admin_CollectionSettings
         $result = array();
         foreach($keys as $keyName) 
         {
-            if(isset($this->settingsManager))
-            {
-                $setting = $this->settingsManager->getSettingByName($keyName);
-
-                // All values must be present, except static settings, which
-                // do not necessarily have a value (they are cosmetic only,
-                // like static form elements for displaying information)
-                if ($setting->isStatic() || $setting->isInternal())
-                {
-                    continue;
-                }
-            }
-
             if(!array_key_exists($keyName, $values)) {
                 throw new Application_Exception(
                     'Unknown setting key',
@@ -450,7 +443,7 @@ trait Application_Traits_Admin_CollectionSettings
 
         if(isset($this->settingsManager))
         {
-            return $this->settingsManager->filterForStorage(
+            return $this->settingsManager->collectStorageValues(
                 new Application_Formable_RecordSettings_ValueSet($result)
             );
         }

@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\BaseException;
+
 /**
  * Used to make handling record setting forms easier:
  * Allows registering the settings that are used in
@@ -408,10 +410,10 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
     /**
      * @param Application_Formable_RecordSettings_ValueSet $data
-     * @throws Application_Exception
      * @return Application_Formable_RecordSettings_ValueSet A copy of the specified data, with the filtered values.
+     * @throws BaseException
      */
-    final public function filterForStorage(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
+    final public function collectStorageValues(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
     {
         $settings = $this->getSettings();
         $result = new Application_Formable_RecordSettings_ValueSet(array());

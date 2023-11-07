@@ -61,10 +61,12 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
                 self::ERROR_CREATE_FORM_INVALID
             );
         }
-        
+
+        $values = $this->getFormValues();
+
         return $this->createRecordFromValues(
-            $this->filterForStorage(new Application_Formable_RecordSettings_ValueSet($this->getFormValues())),
-            $this->filterInternals(new Application_Formable_RecordSettings_ValueSet($this->getFormValues()))
+            $this->collectStorageValues(new Application_Formable_RecordSettings_ValueSet($values)),
+            $this->collectInternalValues(new Application_Formable_RecordSettings_ValueSet($values))
         );
     }
 
@@ -177,29 +179,29 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
         
         DBHelper::requireTransaction('Save a record from a form');
         
-        $valueSet = $this->filterForStorage(
+        $storageValues = $this->collectStorageValues(
             new Application_Formable_RecordSettings_ValueSet($this->getFormValues())
         );
 
-        $values = $valueSet->getValues();
+        $values = $storageValues->getValues();
         foreach($values as $name => $value)
         {
             $this->record->setRecordKey($name, $value);
         }
 
-        $this->updateRecord($valueSet, $this->filterInternals(new Application_Formable_RecordSettings_ValueSet($this->getFormValues())));
+        $this->updateRecord($storageValues, $this->collectInternalValues(new Application_Formable_RecordSettings_ValueSet($this->getFormValues())));
         
         return $this->record->save();
     }
 
-    private function filterInternals(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
+    private function collectInternalValues(Application_Formable_RecordSettings_ValueSet $data) : Application_Formable_RecordSettings_ValueSet
     {
         $settings = $this->getSettings();
         $result = new Application_Formable_RecordSettings_ValueSet(array());
 
         foreach ($settings as $setting)
         {
-            if(!$setting->isStatic() && !$setting->isInternal()) {
+            if(!$setting->isStatic() && !$setting->isInternal() && !$setting->isVirtual()) {
                 continue;
             }
 
@@ -214,7 +216,7 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
                 $value = $setting->getDefaultValue();
             }
 
-            $result->setKey($name, $setting->filterForStorage($value, $data));
+            $result->setKey($name, $value);
         }
 
         return $result;
