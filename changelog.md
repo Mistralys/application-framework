@@ -1,5 +1,5 @@
 ### v3.0.0 - News and forms release (breaking-m)
-- News: Added the news feature for news articles and alerts.
+- News: Added the experimental news feature for news articles and alerts.
 - News: An example is available in the test application.
 - Forms: Revamped the DateTimePicker element to work as intended.
 - Forms: Extended RecordSettings now correctly handle key naming throughout.
@@ -68,11 +68,13 @@ created, to avoid code duplication with the creation methods.
 
 #### News Upgrade Guide
 
-To use the news feature, the database must be updated. The necessary
-changes to upgrade an existing installation are available in the SQL
-script `docs/sql/2023-10-16-news.sql`. The fresh installation file can be
-used to set up a new database as usual (`docs/sql/pristine.sql`).
+To use the experimental news feature, the database must be updated. 
+The necessary changes to upgrade an existing installation are available 
+in the SQL script `docs/sql/2023-10-16-news.sql`. The fresh installation 
+file can be used to set up a new database as usual (`docs/sql/pristine.sql`).
 
+NOTE: The news feature is still experimental, and not entirely finished.
+It has been released as is pending further development.
 
 ---
 Older changelog entries can be found in the `docs/changelog-history` folder.
