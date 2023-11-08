@@ -462,7 +462,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         foreach ($settings as $setting)
         {
-            if($setting->isVirtual())
+            if($setting->isVirtual() || $setting->isStatic())
             {
                 $result[$setting->getName()] = $setting->getDefaultValue();
             }
