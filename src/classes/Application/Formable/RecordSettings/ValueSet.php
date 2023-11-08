@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use function AppUtils\parseVariable;
+
 /**
  * Stores form values for the record settings, used when
  * filtering the values for storage. The settings can use
@@ -24,6 +26,7 @@ declare(strict_types=1);
 class Application_Formable_RecordSettings_ValueSet
 {
     public const ERROR_EMPTY_KEY_VALUE = 146601;
+    public const ERROR_KEY_VALUE_MISMATCH = 146602;
 
     /**
      * @var array<string,mixed>
@@ -119,6 +122,24 @@ class Application_Formable_RecordSettings_ValueSet
                 '<pre>'.print_r($this->getValues(), true).'</pre>'
             ),
             self::ERROR_EMPTY_KEY_VALUE
+        );
+    }
+
+    public function requireSame(string $name, $value) : self
+    {
+        if($this->getKey($name) === $value) {
+            return $this;
+        }
+
+        throw new Application_Exception(
+            'Key value mismatch',
+            sprintf(
+                'Required key is [%s], value must be [%s]. Given: [%s]',
+                $name,
+                parseVariable($value)->enableType(),
+                parseVariable($this->getKey($name))->enableType()
+            ),
+            self::ERROR_KEY_VALUE_MISMATCH
         );
     }
 }
