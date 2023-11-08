@@ -134,7 +134,7 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
         $data->requireNotEmpty(TestDBRecord::COL_ALIAS);
 
         $this->redirectWithSuccessMessage(
-            'The data has been processed successfully.',
+            sprintf('The data has been processed successfully at %1$s.', sb()->time()),
             $this->getURL()
         );
     }

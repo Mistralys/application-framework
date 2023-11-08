@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace TestDriver\Area\TestingScreen;
 
 use Application_Admin_Area_Mode_CollectionCreate;
-use Application_Exception;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
-use TestDriver\TestDBCollection\TestDBRecord;
 use TestDriver\TestDBCollection\TestSettingsManagerLegacy;
 use TestDriver\TestDBCollection;
 
+/**
+ * @see TestSettingsManagerLegacy
+ */
 class CollectionCreateManagerLegacyScreen extends Application_Admin_Area_Mode_CollectionCreate
 {
     public const URL_NAME = 'collection-create-legacy';
-    public const ERROR_INVALID_VALUES = 146701;
 
     public function getURLName() : string
     {
@@ -60,41 +60,25 @@ class CollectionCreateManagerLegacyScreen extends Application_Admin_Area_Mode_Co
 
     public static function getTestLabel() : string
     {
-        return t('Create record - with settings manager');
+        return 'Create record - with settings manager';
     }
 
     public function getAbstract(): string
     {
         return (string)sb()
-            ->t('This tests a legacy settings manager setup.')
+            ->add('This tests a legacy settings manager setup.')
             ->nl()
-            ->t('Submit the form, and if everything works as expected, a success message will be shown.')
-            ->t('Otherwise, and exception is thrown.');
+            ->add('Submit the form, and if everything works as expected, a success message will be shown.')
+            ->add('Otherwise, and exception is thrown.');
     }
 
     protected function _handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
-        $data->requireNotEmpty(TestSettingsManagerLegacy::SETTING_GENERATE_ALIAS);
+        TestSettingsManagerLegacy::verifyDataSet($data);
 
-        $expected = TestSettingsManagerLegacy::PREFIX_GENERATED_ALIAS.$data->getKey(TestSettingsManagerLegacy::SETTING_GENERATE_ALIAS);
-        $actual = $data->getKey(TestDBRecord::COL_ALIAS);
-
-        if($actual === $expected) {
-            $this->redirectWithSuccessMessage(
-                'The data has been processed successfully.',
-                $this->getURL()
-            );
-        }
-
-        throw new Application_Exception(
-            'Invalid values submitted.',
-            sprintf(
-                'Expected field [%s] to equal [%s], but got [%s].',
-                TestDBRecord::COL_ALIAS,
-                $expected,
-                $actual
-            ),
-            self::ERROR_INVALID_VALUES
+        $this->redirectWithSuccessMessage(
+            sprintf('The data has been processed successfully at %1$s.', sb()->time()),
+            $this->getURL()
         );
     }
 }

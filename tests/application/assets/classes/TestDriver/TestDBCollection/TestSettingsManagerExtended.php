@@ -13,12 +13,21 @@ use HTML_QuickForm2_Node;
 use TestDriver\ClassFactory;
 use UI;
 
+/**
+ * The form field values are different from the database
+ * column names. The method {@see \Application_Formable_RecordSettings_Setting::setStorageName()}
+ * guarantees that the values are passed with the correct
+ * column names.
+ */
 class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LABEL = 'custom-label';
-    public const SETTING_ALIAS = 'custom-alias';
-    public const SETTING_GENERATE_ALIAS = 'generate-alias';
-    public const PREFIX_GENERATED_ALIAS = 'generate-';
+    public const SETTING_LABEL = 'local-label';
+    public const SETTING_ALIAS = 'local-alias';
+    public const SETTING_GENERATE_ALIAS = 'local-generate-alias';
+    public const SETTING_STATIC = 'local-static';
+
+    public const VALUE_PREFIX_ALIAS = 'generate-';
+    public const VALUE_STATIC = 'static-value';
 
     public function __construct(Application_Formable $formable, ?TestDBRecord $record = null)
     {
@@ -32,6 +41,8 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
         $group = $this->addGroup(t('Settings'))
             ->setIcon(UI::icon()->settings());
 
+        // Simple text field whose value is passed on
+        // directly to the collection.
         $group->registerSetting(self::SETTING_LABEL)
             ->makeRequired()
             ->setStorageName(TestDBRecord::COL_LABEL)
@@ -51,8 +62,23 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
             ->setStorageFilter(function ($value, Application_Formable_RecordSettings_ValueSet $valueSet)
             {
                 $valueSet->requireNotEmpty(self::SETTING_GENERATE_ALIAS);
-                return self::PREFIX_GENERATED_ALIAS .$valueSet->getKey(self::SETTING_GENERATE_ALIAS);
+                return self::VALUE_PREFIX_ALIAS .$valueSet->getKey(self::SETTING_GENERATE_ALIAS);
             });
+
+        $group->registerSetting(self::SETTING_STATIC)
+            ->makeStatic()
+            ->setDefaultValue(self::VALUE_STATIC)
+            ->setCallback(Closure::fromCallable(array($this, 'injectStatic')));
+    }
+
+    private function injectStatic() : HTML_QuickForm2_Node
+    {
+        $el = $this->addElementStatic('Static','Static value.');
+        $el->setComment(sb()
+            ->add('This is used only for display purposes, and no value is submitted in the form.')
+        );
+
+        return $el;
     }
 
     private function injectLabel() : HTML_QuickForm2_Node
@@ -103,5 +129,18 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
 
     protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
+    }
+
+    protected function _afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    {
+        self::verifyValueSet($data);
+    }
+
+    public static function verifyValueSet(Application_Formable_RecordSettings_ValueSet $data) : void
+    {
+        $data->requireNotEmpty(self::SETTING_GENERATE_ALIAS);
+        $data->requireNotEmpty(TestDBRecord::COL_LABEL);
+        $data->requireSame(self::SETTING_STATIC, self::VALUE_STATIC);
+        $data->requireSame(TestDBRecord::COL_ALIAS, self::VALUE_PREFIX_ALIAS.$data->getKey(self::SETTING_GENERATE_ALIAS));
     }
 }
