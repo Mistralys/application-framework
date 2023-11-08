@@ -750,9 +750,11 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     * with {@link registerRecordKey()} has been modified. Use this to handle
     * these changes automatically as needed, for example to add changelog
     * entries.
+    *
+    * NOTE: This is not related to the collection's registered keys.
     *  
     * @param string $name Name of the data key
-    * @param string $label Human readable label of the key
+    * @param string $label Human-readable label of the key
     * @param boolean $isStructural Whether changing this key means it's a structural (critical) change
     * @param string $oldValue The previous value
     * @param string $newValue The new value

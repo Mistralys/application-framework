@@ -9,65 +9,8 @@
          stopOnFailure="false"
          bootstrap="./tests/bootstrap.php">
     <testsuites>
-        <testsuite name="Application">
-            <directory suffix=".php">./tests/testsuites/Application</directory>
-        </testsuite>
-        <testsuite name="Collection">
-            <directory suffix=".php">./tests/testsuites/Collection</directory>
-        </testsuite>
-        <testsuite name="Connectors">
-            <directory suffix=".php">./tests/testsuites/Connectors</directory>
-        </testsuite>
-        <testsuite name="Countries">
-            <directory suffix=".php">./tests/testsuites/Countries</directory>
-        </testsuite>
-        <testsuite name="DataGrids">
-            <directory suffix=".php">./tests/testsuites/DataGrids</directory>
-        </testsuite>
-        <testsuite name="DBHelper">
-            <directory suffix=".php">./tests/testsuites/DBHelper</directory>
-        </testsuite>
-        <testsuite name="Disposables">
-            <directory suffix=".php">./tests/testsuites/Disposables</directory>
-        </testsuite>
-        <testsuite name="Eventables">
-            <directory suffix=".php">./tests/testsuites/Eventables</directory>
-        </testsuite>
-        <testsuite name="EventHandling">
-            <directory suffix=".php">./tests/testsuites/EventHandling</directory>
-        </testsuite>
-        <testsuite name="Forms">
-            <directory suffix=".php">./tests/testsuites/Forms</directory>
-        </testsuite>
-        <testsuite name="Functions">
-            <directory suffix=".php">./tests/testsuites/Functions</directory>
-        </testsuite>
-        <testsuite name="Global">
-            <directory suffix=".php">./tests/testsuites/Global</directory>
-        </testsuite>
-        <testsuite name="Installer">
-            <directory suffix=".php">./tests/testsuites/Installer</directory>
-        </testsuite>
-        <testsuite name="OAuth">
-            <directory suffix=".php">./tests/testsuites/OAuth</directory>
-        </testsuite>
-        <testsuite name="Ratings">
-            <directory suffix=".php">./tests/testsuites/Ratings</directory>
-        </testsuite>
-        <testsuite name="RequestLog">
-            <directory suffix=".php">./tests/testsuites/RequestLogTests</directory>
-        </testsuite>
-        <testsuite name="Revisionables">
-            <directory suffix=".php">./tests/testsuites/Revisionables</directory>
-        </testsuite>
-        <testsuite name="TypeHinter">
-            <directory suffix=".php">./tests/testsuites/TypeHinter</directory>
-        </testsuite>
-        <testsuite name="UI">
-            <directory suffix=".php">./tests/testsuites/UI</directory>
-        </testsuite>
-        <testsuite name="User">
-            <directory suffix=".php">./tests/testsuites/User</directory>
+        <testsuite name="Framework Tests">
+            <directory suffix=".php">./tests/AppFrameworkTests</directory>
         </testsuite>
     </testsuites>
 </phpunit>

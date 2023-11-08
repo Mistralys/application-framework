@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 class Application_User_Recent_NoteCategory extends Application_User_Recent_Category
 {
-    const REQUEST_PARAM_UNPIN_NOTE = 'unpin-note';
-    /**
-     * @var Application_User_Notepad_Note
-     */
-    private $note;
+    public const REQUEST_PARAM_UNPIN_NOTE = 'unpin-note';
+
+    private Application_User_Notepad_Note $note;
 
     public function __construct(Application_User_Recent $recent, Application_User_Notepad_Note $note)
     {

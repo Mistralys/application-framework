@@ -129,4 +129,10 @@ class UI_Page_Breadcrumb implements UI_Renderable_Interface
     {
         return array_value_get_last($this->items);
     }
+
+    public function clearItems() : self
+    {
+        $this->items = array();
+        return $this;
+    }
 }

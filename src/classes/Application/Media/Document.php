@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Media\DocumentTrait;
+use Application\Media\MediaException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -11,19 +16,16 @@ use AppUtils\FileHelper_Exception;
 abstract class Application_Media_Document implements Application_Media_DocumentInterface
 {
     use Application_Traits_Loggable;
+    use DocumentTrait;
 
     public const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
     public const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
     public const ERROR_NO_TRANSACTION_STARTED = 650003;
-    
-    protected $data;
+    public const ERROR_FILE_NOT_FOUND = 650004;
 
-    /**
-     * @var Application_Media
-     */
-    protected $media;
-
-    protected $id;
+    protected array $data;
+    protected Application_Media $media;
+    protected int $id;
 
     protected function __construct($media_id)
     {
@@ -44,7 +46,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $this->media = Application_Media::getInstance();
     }
 
-    public function getID()
+    public function getID() : int
     {
         return $this->id;
     }
@@ -94,9 +96,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         return self::create($media_id);
     }
 
-    protected $path;
+    protected ?string $path = null;
 
-    public function getPath()
+    public function getPath() : string
     {
         if (!isset($this->path)) {
             $date = $this->getDateAdded();
@@ -136,66 +138,19 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * Retrieves the document's extension. e.g. "jpg".
      * @return string
      */
-    public function getExtension()
+    public function getExtension() : string
     {
-        return $this->data['media_extension'];
+        return (string)$this->data['media_extension'];
     }
 
-    /**
-     * Retrieves the size of the media file on disk, in bytes.
-     * @return number
-     */
-    public function getFilesize()
+    public function getName() : string
     {
-        $size = filesize($this->getPath());
-        if($size !== false) {
-            return $size;
-        }
-
-        return 0;
+        return (string)$this->data['media_name'];
     }
 
-    /**
-     * Retrieves the size of the media file in a human redable format,
-     * e.g. 15 Kb.
-     *
-     * @return string
-     */
-    public function getFilesizeReadable()
+    public function getUserID() : int
     {
-        return AppUtils\ConvertHelper::bytes2readable($this->getFilesize());
-    }
-
-    public function getName()
-    {
-        return $this->data['media_name'];
-    }
-
-    /**
-     * Retrieves the media document's file name, e.g.:
-     *
-     * media_name.jpg
-     *
-     * Note that this is NOT the filename on disk, but the
-     * filename as defined by the user that should be used
-     * when the media file is downloaded or used in the exports.
-     *
-     * @return string
-     */
-    public function getFilename()
-    {
-        return $this->getName() . '.' . $this->getExtension();
-    }
-
-    /**
-     * Retrieves the user object of the user that created this
-     * media document.
-     *
-     * @return Application_User
-     */
-    public function getUser()
-    {
-        return Application_User::createByID($this->data['user_id']);
+        return (int)$this->data['user_id'];
     }
 
     public static function createNewFromFile(string $name, FileInfo $file, ?Application_User $user=null, ?DateTime $dateAdded=null) : Application_Media_Document
@@ -217,8 +172,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      *
      * @param Application_Uploads_Upload $upload
      * @return Application_Media_Document
+     *
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     * @throws FileHelper_Exception
      */
-    public static function createNewFromUpload(Application_Uploads_Upload $upload)
+    public static function createNewFromUpload(Application_Uploads_Upload $upload) : Application_Media_Document
     {
         // avoid doing this again if the document has already
         // been added, which can happen in some edge cases.
@@ -326,68 +285,35 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     }
 
     /**
-     * Human readable label for this media type, e.g. "Image".
+     * Human-readable label for this media type, e.g. "Image".
      * Must be implemented by the media type class.
      *
      * @throws Application_Exception
      */
-    public static function getLabel()
-    {
-        throw new Application_Exception(
-            'Has to be implemented in child class'
-        );
-    }
+    abstract public static function getLabel() : string;
+
+    abstract public static function getIcon() : UI_Icon;
+
 
     /**
      * List of supported file extensions for this media file type.
      * Must be implemented by the media type class.
      *
      * @throws Application_Exception
+     * @return string[]
      */
-    public static function getExtensions()
-    {
-        throw new Application_Exception(
-            'Has to be implemented in child class'
-        );
-    }
+    abstract public static function getExtensions() : array;
 
-    /**
-     * Retrieves the full URL to the media script to display a thumbnail
-     * of the media file. The width and height parameters can be set as
-     * needed to resample the thumbnail to the target size.
-     *
-     * @param integer|NULL $width
-     * @param integer|NULL $height
-     * @return string
-     */
-    public function getThumbnailURL(?int $width = null, ?int $height = null) : string
-    {
-        return APP_URL . '/media.php?' . http_build_query(array(
-            'source' => 'media',
-            'media_id' => $this->id,
-            'width' => $width,
-            'height' => $height
-        ));
-    }
-
-    /**
-     * Checks whether the cached thumbnail file for the specified
-     * size exists on disk.
-     *
-     * @param string $width
-     * @param string $height
-     * @return boolean
-     */
-    abstract public function thumbnailExists($width = null, $height = null);
+    abstract public function getMaxThumbnailSize() : int;
 
     /**
      * Retrieves an identification string for the media document that
      * is mainly used for logging purposes. Contains the document's ID
-     * and file name.
+     * and filename.
      *
      * @return string
      */
-    public function getIdentification()
+    public function getIdentification() : string
     {
         return sprintf(
             'Media document [%1$s "%2$s"]',
@@ -396,28 +322,16 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         );
     }
 
-    /**
-     * Creates a thumbnail of the image for the specified dimensions.
-     * Width and height can be omitted as needed to constrain resampling
-     * to one or none of the sides.
-     *
-     * Returns the path to the thumbnail file when successful.
-     *
-     * @return string
-     * @throws Application_Exception
-     */
-    abstract public function createThumbnail($width = null, $height = null);
-
-    protected $cachedTypeID;
+    protected ?string $cachedTypeID = null;
     
    /**
     * Retrieves the ID of the document type, e.g. <code>Image</code>.
     * @return string
     */
-    public function getTypeID()
+    public function getTypeID() : string
     {
         if(!isset($this->cachedTypeID)) {
-            $this->cachedTypeID = str_replace('Application_Media_Document_', '', get_class($this));
+            $this->cachedTypeID = ClassHelper::getClassTypeName($this);
         }
         
         return $this->cachedTypeID;
@@ -426,7 +340,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     protected ?Application_Media_Configuration $config = null;
     
    /**
-    * Sets the configuration to use for this media document,
+    * Sets the configuration for this media document,
     * when it is being pre-processed using the media processor.
     * 
     * @param Application_Media_Configuration $config
@@ -452,7 +366,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     * Checks whether a media configuration has been set for the document.
     * @return boolean
     */
-    public function hasConfiguration()
+    public function hasConfiguration() : bool
     {
         return isset($this->config);
     }
@@ -492,46 +406,57 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         );
     }
     
-    public function isUpload()
+    public function isUpload() : bool
     {
         return false;
     }
     
-    public function upgrade()
+    public function upgrade() : Application_Media_Document
     {
         return $this;
     }
     
    /**
-    * Retrieves the form value to use for the document with the
-    * @return array
+    * Retrieves the form value to use for the document.
+    * @return array{name:string,state:string,id:int}
     */
-    public function toFormValue()
+    public function toFormValue() : array
     {
         return array(
             'name' => $this->getName(),
-            'state' => 'media',
+            'state' => $this->getMediaSourceID(),
             'id' => $this->getID()
         );
     }
-    
-   /**
-    * Encodes the image's binary data to base64.
-    * @return string|NULL
-    */
-    public function toBase64()
+
+    /**
+     * Encodes the image's binary data to base64.
+     * @return string|NULL
+     *
+     * @throws MediaException {@see self::ERROR_FILE_NOT_FOUND}
+     */
+    public function toBase64() : ?string
     {
         $path = $this->getPath();
+
         if(file_exists($path)) {
             return base64_encode(file_get_contents($path));
         }
         
-        return null;
+        throw new MediaException(
+            'Media file not found',
+            sprintf(
+                'The media file [#%s] could not be found in target path [%s].',
+                $this->getID(),
+                $path
+            ),
+            self::ERROR_FILE_NOT_FOUND
+        );
     }
     
-    public function delete()
+    public function delete() : void
     {
-        $this->log('Requested to delete. Simulation: '.AppUtils\ConvertHelper::bool2string(Application::isSimulation(), true));
+        $this->log('Requested to delete. Simulation: '.ConvertHelper::bool2string(Application::isSimulation(), true));
 
         if(!DBHelper::isTransactionStarted()) {
             throw new Application_Exception(
@@ -542,10 +467,8 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         }
         
         $path = $this->getPath();
-        if(file_exists($path) && !Application::isSimulation()) {
-            if(!unlink($path)) {
-                $this->log('Could not delete the file on disk.');
-            }
+        if(file_exists($path) && !Application::isSimulation() && !unlink($path)) {
+            $this->log('Could not delete the file on disk.');
         }
         
         DBHelper::delete(
@@ -561,16 +484,6 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $this->log('Deletion complete.');
     }
     
-    public function isTypeSVG() : bool
-    {
-        return strtolower($this->getExtension()) === 'svg';
-    }
-    
-    public function isVector() : bool
-    {
-        return $this->isTypeSVG();
-    }
-
     public function getLogIdentifier() : string
     {
         return sprintf(
@@ -597,4 +510,16 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     {
         return FileInfo::factory($this->getPath());
     }
+
+    public function getTypeIcon() : UI_Icon
+    {
+        return static::getIcon()->setTooltip($this->getTypeLabel());
+    }
+
+    public function getTypeLabel() : string
+    {
+        return static::getLabel();
+    }
+
+    abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
 }

@@ -1,0 +1,69 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Application\Admin\Area\News;
+
+use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
+use Application\AppFactory;
+use Application\NewsCentral\Categories\CategoriesCollection;
+use Application\NewsCentral\Categories\Category;
+use Application\NewsCentral\Categories\CategorySettingsManager;
+use DBHelper_BaseRecord;
+
+/**
+ * @property Category|NULL $record
+ * @property CategoriesCollection $collection
+ */
+abstract class BaseCreateCategoryScreen extends BaseCollectionCreateExtended
+{
+    public const URL_NAME = 'create-category';
+
+    public function getURLName(): string
+    {
+        return self::URL_NAME;
+    }
+
+    public function isUserAllowed(): bool
+    {
+        return $this->user->canCreateNews();
+    }
+
+    public function getSettingsManager() : CategorySettingsManager
+    {
+        return $this->createCollection()->createSettingsManager($this, $this->record);
+    }
+
+    /**
+     * @return CategoriesCollection
+     */
+    public function createCollection() : CategoriesCollection
+    {
+        return AppFactory::createNews()->createCategories();
+    }
+
+    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    {
+        return t(
+            'The news category %1$s has been created successfully at %2$s.',
+            $record->getLabel(),
+            sb()->time()
+        );
+    }
+
+    public function getBackOrCancelURL(): string
+    {
+        return $this->createCollection()->getAdminListURL();
+    }
+
+    public function getTitle(): string
+    {
+        return t('Create a news category');
+    }
+
+    public function getAbstract(): string
+    {
+        return (string)sb()
+            ->t('This lets you add a news category, which can be used to categorize news articles and alerts.');
+    }
+}

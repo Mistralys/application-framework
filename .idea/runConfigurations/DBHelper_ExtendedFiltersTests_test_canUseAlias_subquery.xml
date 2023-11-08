@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="DBHelper_ExtendedFiltersTests.test_canUseAlias_subquery" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
     <CommandLine workingDirectory="$PROJECT_DIR$" />
-    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="DBHelper_ExtendedFiltersTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/testsuites/DBHelper/ExtendedFiltersTests.php" method="test_canUseAlias_subquery" scope="Method" use_alternative_bootstrap_file="true" />
+    <TestRunner bootstrap_file="$PROJECT_DIR$/tests/bootstrap.php" class="DBHelper_ExtendedFiltersTests" configuration_file="$PROJECT_DIR$/phpunit.xml" file="$PROJECT_DIR$/tests/AppFrameworkTests/DBHelper/ExtendedFiltersTests.php" method="test_canUseAlias_subquery" scope="Method" use_alternative_bootstrap_file="true" />
     <method v="2" />
   </configuration>
 </component>

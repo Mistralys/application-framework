@@ -6,8 +6,11 @@ node_modules/
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 .phpunit.result.cache
+.idea/dataSources.xml
+.idea/dataSources/
 /docs/phpstan/cache
-/tests/application/storage/logs
+/tests/application/storage/media/
+/tests/application/storage/logs/
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
@@ -15,8 +18,9 @@ tests/.buildpath
 tests/.project
 tests/.settings/org.eclipse.php.core.prefs
 src/dbhelper-upgrade.txt
-docs/phpstan/resultCache.php
-docs/phpstan/result.txt
+tests/phpstan/cache
+tests/phpstan/resultCache.php
+tests/phpstan/result.txt
 localization/storage.json
 errors.txt
 tests/files/TypeHinter/TypeHinterTestClass.php.output

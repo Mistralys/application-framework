@@ -52,8 +52,13 @@ class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType im
             '<div class="control-group form-container %s" id="%s_form_container">%s</div>',
             $this->classesToString(),
             $this->renderDef->getElementID(),
-            $renderer->render()
+            $this->renderElement($renderer)
         );
+    }
+
+    protected function renderElement(UI_Form_Renderer_Element $renderer) : string
+    {
+        return $renderer->render();
     }
     
     private function initClasses() : void

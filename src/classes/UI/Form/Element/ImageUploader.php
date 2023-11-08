@@ -7,6 +7,7 @@
  * @see HTML_QuickForm2_Element_ImageUploader
  */
 
+use Application\Media\Collection\MediaCollection;
 use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
 use AppUtils\OutputBuffering;
@@ -284,7 +285,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
                 $uploads = Application_Uploads::getInstance();
                 return $uploads->getByID($value['id']);
 
-            case 'media':
+            case MediaCollection::MEDIA_TYPE:
                 $media = Application_Media::getInstance();
                 return $media->getByID($value['id']);
         }
@@ -343,7 +344,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
     * 
     * @see UI_Form::postValidation()
     */
-    public function upgradeMedia()
+    public function upgradeMedia() : void
     {
         $media = $this->getMedia();
         if(!$media) {
@@ -351,7 +352,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
         }
         
         $document = $media->upgrade();
-        $this->uploadData['state'] = 'media';
+        $this->uploadData['state'] = MediaCollection::MEDIA_TYPE;
         $this->uploadData['id'] = $document->getID();
     }
     

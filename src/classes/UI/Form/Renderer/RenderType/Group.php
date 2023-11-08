@@ -23,7 +23,7 @@ class UI_Form_Renderer_RenderType_Group extends UI_Form_Renderer_RenderType
     {
         return sprintf(
             $this->template,
-            $this->renderDef->getElementID(),
+            $this->renderDef->getLabelID(),
             $this->renderDef->getElementLabel(),
             $this->renderSubElements(),
             $this->renderMarkupError()

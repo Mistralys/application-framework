@@ -773,12 +773,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
                 return 1;
             }
 
-            if(!$bJoins && !$aJoins)
-            {
-                return strnatcasecmp($a->getID(), $b->getID());
-            }
-
-            return 0;
+            return strnatcasecmp($a->getID(), $b->getID());
         });
 
         return $joins;

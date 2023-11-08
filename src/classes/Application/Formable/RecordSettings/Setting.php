@@ -9,6 +9,9 @@
 
 declare(strict_types=1);
 
+use AppUtils\BaseException;
+use function AppUtils\parseVariable;
+
 /**
  * Handles individual record settings and their configuration.
  * Used to track for example if the element is required and that
@@ -24,60 +27,41 @@ class Application_Formable_RecordSettings_Setting
     public const ERROR_NO_CALLBACK_EXECUTABLE = 45302;
     public const ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
     
-   /**
-    * @var Application_Formable_RecordSettings
-    */
-    protected $settings;
+    protected Application_Formable_RecordSettings $settings;
+    
+    protected string $name;
+    
+    protected bool $default = false;
+    
+    protected bool $required = false;
     
    /**
-    * @var string
+    * @var array{arguments:array<mixed>,callback:callable}|NULL
     */
-    protected $name;
-    
-   /**
-    * @var bool
-    */
-    protected $default = false;
-    
-   /**
-    * @var bool
-    */
-    protected $required = false;
-    
-   /**
-    * @var array|NULL
-    */
-    protected $callback = null;
+    protected ?array $callback = null;
 
     /**
      * @var string|array|bool|int|float
      */
     protected $defaultValue = '';
 
-    /**
-     * @var bool
-     */
-    protected $internal = false;
+    protected bool $internal = false;
 
     /**
      * @var callable|NULL
      */
     protected $storageFilter;
 
-    /**
-     * @var bool
-     */
-    protected $virtual = false;
+    protected bool $virtual = false;
+
+    protected string $storageName = '';
+
+    private bool $static = false;
 
     /**
-     * @var string
+     * @var callable|NULL
      */
-    protected $storageName = '';
-
-    /**
-     * @var bool
-     */
-    private $static = false;
+    private $importFilter = null;
 
     public function __construct(Application_Formable_RecordSettings $settings, string $name)
     {
@@ -133,6 +117,8 @@ class Application_Formable_RecordSettings_Setting
      * be used within the settings form. Its value will not be
      * used when saving the record data.
      *
+     * VALUES: Internal values are NOT passed on to the collection.
+     *
      * Use case 1:
      *
      * Fields that are interpreted to adjust the record's data set.
@@ -166,7 +152,9 @@ class Application_Formable_RecordSettings_Setting
      * to have a value in the form. It can be used for visual only
      * elements, like static content to display information.
      *
-     * NOTE: It does not exclude the setting from having a value.
+     * VALUES: Static values are NOT passed on to the collection.
+     *
+     * NOTE: Static settings can have a value.
      *
      * @return $this
      */
@@ -185,7 +173,10 @@ class Application_Formable_RecordSettings_Setting
     /**
      * Turns the setting into a virtual element that does
      * not have any matching form element. Use this for
-     * setting fixed data keys to pass through.
+     * setting fixed data keys to pass through, which are
+     * considered to be part of the record's data set.
+     *
+     * VALUES: Virtual values ARE passed on to the collection.
      *
      * @param mixed $value
      * @return $this
@@ -210,24 +201,21 @@ class Application_Formable_RecordSettings_Setting
      * Example: Selecting a save option from a list, which modifies
      * the data set accordingly.
      *
-     * The callback method gets the following parameters:
+     * The callback method prototype:
      *
-     * - The value of the setting
-     * - The data set instance (Application_Formable_RecordSettings_ValueSet)
-     * - This setting instance
+     * <pre>
+     * function(mixed $value, Application_Formable_RecordSettings_ValueSet $values, Application_Formable_RecordSettings_Setting $setting) : mixed
+     * </pre>
      *
-     * @param callable $filter
+     * @param callable|NULL $filter
      * @return $this
      * @throws Application_Exception
      *
      * @see Application_Formable_RecordSettings_ValueSet
      */
-    public function setStorageFilter($filter) : Application_Formable_RecordSettings_Setting
+    public function setStorageFilter(?callable $filter) : Application_Formable_RecordSettings_Setting
     {
-        Application::requireCallableValid($filter);
-
         $this->storageFilter = $filter;
-
         return $this;
     }
 
@@ -266,9 +254,9 @@ class Application_Formable_RecordSettings_Setting
     * Configures the form element that was created for the
     * setting with the specified configuration.
     * 
-    * @param HTML_QuickForm2_Element $el
+    * @param HTML_QuickForm2_Node $el
     */
-    public function configureElement(HTML_QuickForm2_Element $el) : void
+    public function configureElement(HTML_QuickForm2_Node $el) : void
     {
         if($this->isDefault())
         {
@@ -288,7 +276,7 @@ class Application_Formable_RecordSettings_Setting
     * @param array $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
     * @return Application_Formable_RecordSettings_Setting
     */
-    public function setCallback($callback, array $arguments=array()) : Application_Formable_RecordSettings_Setting
+    public function setCallback(callable $callback, array $arguments=array()) : Application_Formable_RecordSettings_Setting
     {
         Application::requireCallableValid($callback, self::ERROR_INVALID_CALLBACK);
         
@@ -305,7 +293,7 @@ class Application_Formable_RecordSettings_Setting
         return isset($this->callback);
     }
     
-    public function executeCallback() : HTML_QuickForm2_Element
+    public function executeCallback() : HTML_QuickForm2_Node
     {
         if($this->callback === null) 
         {
@@ -325,7 +313,7 @@ class Application_Formable_RecordSettings_Setting
         
         $result = call_user_func_array($this->callback['callback'], $args);
         
-        if($result instanceof HTML_QuickForm2_Element)
+        if($result instanceof HTML_QuickForm2_Node)
         {
             return $result;
         }
@@ -333,9 +321,10 @@ class Application_Formable_RecordSettings_Setting
         throw new Application_Exception(
             'Invalid callback return value',
             sprintf(
-                'The callback of setting [%s] did not return a [HTML_QuickForm2_Element] instance. Returned: [%s].',
+                'The callback of setting [%s] did not return a [%s] instance. Returned: [%s].',
                 $this->getName(),
-                \AppUtils\parseVariable($result)->enableType()->toString()
+                HTML_QuickForm2_Node::class,
+                parseVariable($result)->enableType()->toString()
             ),
             self::ERROR_NO_CALLBACK_EXECUTABLE
         );
@@ -348,6 +337,7 @@ class Application_Formable_RecordSettings_Setting
      * @param mixed $value
      * @param Application_Formable_RecordSettings_ValueSet $values
      * @return mixed
+     * @throws BaseException
      */
     public function filterForStorage($value, Application_Formable_RecordSettings_ValueSet $values)
     {
@@ -365,9 +355,47 @@ class Application_Formable_RecordSettings_Setting
             'Failed to call the storage filter.',
             sprintf(
                 'The user function storage callback [%s] returned a boolean false.',
-                \AppUtils\parseVariable($this->storageFilter)->enableType()->toString()
+                parseVariable($this->storageFilter)->enableType()->toString()
             ),
             self::ERROR_STORAGE_FILTER_CALLBACK_FAILED
         );
+    }
+
+    /**
+     * Sets a callback that will be used to filter the
+     * setting's value when importing it from the form's
+     * default values.
+     *
+     * Example use: Converting yes/no values to boolean
+     * strings for switch elements when getting the values
+     * from a DB record.
+     *
+     * Prototype for the callback:
+     *
+     * <pre>
+     * function(mixed $value, Application_Formable_RecordSettings_ValueSet $values, Application_Formable_RecordSettings_Setting $setting) : mixed
+     * </pre>
+     *
+     * @param callable|NULL $callable
+     * @return $this
+     */
+    public function setImportFilter(?callable $callable) : self
+    {
+        $this->importFilter = $callable;
+        return $this;
+    }
+
+    /**
+     * @param mixed $value
+     * @param Application_Formable_RecordSettings_ValueSet $values
+     * @return mixed
+     */
+    public function filterForImport($value, Application_Formable_RecordSettings_ValueSet $values)
+    {
+        if(!isset($this->importFilter)) {
+            return $value;
+        }
+
+        return call_user_func($this->importFilter, $value, $values, $this);
     }
 }

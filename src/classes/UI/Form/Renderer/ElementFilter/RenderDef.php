@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+
 class UI_Form_Renderer_ElementFilter_RenderDef
 {
     /**
@@ -171,6 +173,17 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     {
         return $this->node->getId();
     }
+
+    public function getLabelID() : string
+    {
+        $specific = $this->node->getAttribute(UI_Form::ATTRIBUTE_LABEL_ID);
+
+        if(!empty($specific)) {
+            return $specific;
+        }
+
+        return $this->getElementID();
+    }
     
     public function getElementHTML() : string
     {
@@ -258,8 +271,8 @@ class UI_Form_Renderer_ElementFilter_RenderDef
         }
         
         $typeClass = $this->getTypeClass();
-        
-        $this->typeRenderer = ensureType(
+
+        $this->typeRenderer = ClassHelper::requireObjectInstanceOf(
             UI_Form_Renderer_RenderType::class,
             new $typeClass($this, $this->section)
         );

@@ -75,6 +75,42 @@ abstract class Application_User_Extended extends Application_User
         $group->registerRight(self::RIGHT_TRANSLATE_UI, t('Translate UI'))
             ->setDescription(t('Handle translations of the user interface.'));
 
+        $this->registerNews($group);
+        $this->registerMedia($group);
+
+        // Give the developer all rights.
+        $dev = $group->registerRight(self::RIGHT_DEVELOPER, t('Developer mode'))
+            ->setDescription(t('Allows enabling the developer mode for developer-specific functionality'));
+
+        $coreRights = array(
+            self::RIGHT_LOGIN,
+            self::RIGHT_TRANSLATE_UI,
+            self::RIGHT_CREATE_NEWS,
+            self::RIGHT_EDIT_NEWS,
+            self::RIGHT_DELETE_NEWS,
+            self::RIGHT_VIEW_NEWS,
+            self::RIGHT_CREATE_NEWS_ALERTS,
+            self::RIGHT_CREATE_MEDIA,
+            self::RIGHT_EDIT_MEDIA,
+            self::RIGHT_DELETE_MEDIA,
+            self::RIGHT_VIEW_MEDIA,
+        );
+
+        foreach($coreRights as $coreRight)
+        {
+            $dev->grantRight($coreRight);
+        }
+
+        $groupIDs = array_keys($this->getRightGroups());
+
+        foreach($groupIDs as $id)
+        {
+            $dev->grantGroupAll($id);
+        }
+    }
+
+    protected function registerNews(Application_User_Rights_Group $group) : void
+    {
         $group->registerRight(self::RIGHT_CREATE_NEWS, t('Create news'))
             ->setDescription(t('Create news entries.'));
 
@@ -89,25 +125,20 @@ abstract class Application_User_Extended extends Application_User
 
         $group->registerRight(self::RIGHT_CREATE_NEWS_ALERTS, t('Create alerts'))
             ->setDescription(t('Create and modify news alerts.'));
+    }
 
+    protected function registerMedia(Application_User_Rights_Group $group) : void
+    {
+        $group->registerRight(self::RIGHT_CREATE_MEDIA, t('Add media'))
+            ->setDescription(t('Add media files.'));
 
-        // Give the developer all rights.
-        $dev = $group->registerRight(self::RIGHT_DEVELOPER, t('Developer mode'))
-            ->setDescription(t('Allows enabling the developer mode for developer-specific functionality'));
+        $group->registerRight(self::RIGHT_EDIT_MEDIA, t('Edit media'))
+            ->setDescription(t('Modify media files.'));
 
-        $dev->grantRight(self::RIGHT_LOGIN);
-        $dev->grantRight(self::RIGHT_TRANSLATE_UI);
-        $dev->grantRight(self::RIGHT_CREATE_NEWS);
-        $dev->grantRight(self::RIGHT_EDIT_NEWS);
-        $dev->grantRight(self::RIGHT_DELETE_NEWS);
-        $dev->grantRight(self::RIGHT_VIEW_NEWS);
-        $dev->grantRight(self::RIGHT_CREATE_NEWS_ALERTS);
+        $group->registerRight(self::RIGHT_DELETE_MEDIA, t('Delete media'))
+            ->setDescription(t('Delete media files.'));
 
-        $groupIDs = array_keys($this->getRightGroups());
-
-        foreach($groupIDs as $id)
-        {
-            $dev->grantGroupAll($id);
-        }
+        $group->registerRight(self::RIGHT_VIEW_MEDIA, t('View media'))
+            ->setDescription(t('View media files.'));
     }
 }

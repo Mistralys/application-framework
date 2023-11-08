@@ -9,15 +9,12 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
     public const URL_NAME_SETTINGS = 'settings';
     public const FORM_NAME = 'welcome_settings';
 
-    /**
-     * @var Application_User_Recent
-     */
-    private $recent;
+    private Application_User_Recent $recent;
 
     /**
      * @var Application_User_Recent_Category[]
      */
-    private $categories;
+    private array $categories;
 
     public function getDefaultSubmode() : string
     {
@@ -90,9 +87,7 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
 
     private function getDefaultFormValues() : array
     {
-        $result = array(
-            'auto_refresh' => ConvertHelper::boolStrict2string($this->recent->isAutoRefreshEnabled())
-        );
+        $result = array();
 
         foreach($this->categories as $category)
         {
@@ -105,18 +100,6 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
     private function createSettingsForm() : void
     {
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormValues());
-
-        $this->addElementHeaderII(t('Options'))
-            ->setIcon(UI::icon()->options());
-
-        $el = $this->addElementSwitch('auto_refresh', t('Automatic refresh?'));
-        $el->setComment((string)sb()
-            ->t(
-                'By default, the overview will automatically refresh itself every %1$s.',
-                ConvertHelper::time2string(Application_Admin_Area_Welcome_Overview::AUTO_REFRESH_DELAY)
-            )
-            ->t('If you prefer, you can disable this feature, and refresh it manually as needed.')
-        );
 
         $this->addElementHeaderII(t('Elements per category'))
             ->setIcon(UI::icon()->list())
@@ -150,12 +133,10 @@ class Application_Admin_Area_Welcome_Settings extends Application_Admin_Area_Mod
     {
         $this->startTransaction();
 
-        $this->recent->setAutoRefreshEnabled(ConvertHelper::string2bool($formValues['auto_refresh']));
-
         foreach($this->categories as $category)
         {
             $name = $this->getCategoryElementName($category);
-            $value = intval($formValues[$name]);
+            $value = (int)$formValues[$name];
 
             $category->setMaxItems($value);
         }

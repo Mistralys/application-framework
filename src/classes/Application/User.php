@@ -47,11 +47,6 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public const RIGHT_LOGIN = 'Login';
     public const RIGHT_TRANSLATE_UI = 'TranslateUI';
     public const RIGHT_DEVELOPER = 'Developer';
-    public const RIGHT_CREATE_NEWS = 'CreateNews';
-    public const RIGHT_CREATE_NEWS_ALERTS = 'CreateAlerts';
-    public const RIGHT_EDIT_NEWS = 'EditNews';
-    public const RIGHT_DELETE_NEWS = 'DeleteNews';
-    public const RIGHT_VIEW_NEWS = 'ViewNews';
 
     public const SETTING_DEVELOPER_MODE = 'developer_mode';
 
@@ -785,11 +780,37 @@ abstract class Application_User implements Application_User_Interface, Applicati
 
     public function canTranslateUI() : bool { return $this->can(self::RIGHT_TRANSLATE_UI); }
     public function canLogin() : bool { return $this->can(self::RIGHT_LOGIN); }
+
+
+    // region: News management
+
+    public const RIGHT_CREATE_NEWS = 'CreateNews';
+    public const RIGHT_CREATE_NEWS_ALERTS = 'CreateAlerts';
+    public const RIGHT_EDIT_NEWS = 'EditNews';
+    public const RIGHT_DELETE_NEWS = 'DeleteNews';
+    public const RIGHT_VIEW_NEWS = 'ViewNews';
+
     public function canViewNews() : bool { return $this->can(self::RIGHT_VIEW_NEWS); }
     public function canCreateNews() : bool { return $this->can(self::RIGHT_CREATE_NEWS); }
     public function canCreateNewsAlerts() : bool { return $this->can(self::RIGHT_CREATE_NEWS_ALERTS); }
     public function canEditNews() : bool { return $this->can(self::RIGHT_EDIT_NEWS); }
     public function canDeleteNews() : bool { return $this->can(self::RIGHT_DELETE_NEWS); }
+
+    // endregion
+    
+    // region: Media management
+
+    public const RIGHT_CREATE_MEDIA = 'CreateMedia';
+    public const RIGHT_EDIT_MEDIA = 'EditMedia';
+    public const RIGHT_DELETE_MEDIA = 'DeleteMedia';
+    public const RIGHT_VIEW_MEDIA = 'ViewMedia';
+
+    public function canViewMedia() : bool { return $this->can(self::RIGHT_VIEW_MEDIA); }
+    public function canCreateMedia() : bool { return $this->can(self::RIGHT_CREATE_MEDIA); }
+    public function canEditMedia() : bool { return $this->can(self::RIGHT_EDIT_MEDIA); }
+    public function canDeleteMedia() : bool { return $this->can(self::RIGHT_DELETE_MEDIA); }
+    
+    // endregion
 
     public function isSystemUser() : bool
     {

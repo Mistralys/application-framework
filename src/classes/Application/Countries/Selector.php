@@ -19,19 +19,12 @@ use Application\Countries\CountriesCollection;
  *
  * @method Application_Countries_Selector setName($name)
  * @method Application_Countries_FilterCriteria getFilters()
+ * @property Application_Countries $collection
+ * @property Application_Countries_FilterCriteria $filters
+ *
  */
 class Application_Countries_Selector extends Application_Formable_RecordSelector
 {
-   /**
-    * @var Application_Countries
-    */
-    protected $collection;
-    
-   /**
-    * @var Application_Countries_FilterCriteria
-    */
-    protected $filters;
-    
    /**
     * @var bool
     */

@@ -1,0 +1,32 @@
+.news-article{
+    margin-bottom: 2.4rem;
+}
+
+.news-article-title{
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.news-article-meta{
+    margin-bottom: 1rem;
+}
+
+.news-article-meta > UL{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.news-article-meta > UL > LI{
+    padding: 0 0.5rem 0 0;
+    margin: 0 0.5rem 0 0;
+    border-right: 1px solid #ccc;
+    display: inline-block;
+    font-size: 0.7rem;
+    line-height: 0.7rem;
+}
+
+.news-article-meta > UL > LI:last-child{
+    border-right:0;
+}

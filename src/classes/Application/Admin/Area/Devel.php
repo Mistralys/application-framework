@@ -1,7 +1,7 @@
 <?php
 
+use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
-use Application\Admin\Area\Devel\BaseNewsScreen;
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
 {
@@ -123,20 +123,6 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         );
     }
 
-    protected function registerNewsCentral(?string $category=null) : void
-    {
-        if(!Application::isDatabaseEnabled()) {
-            return;
-        }
-
-        $this->registerCoreItem(
-            BaseNewsScreen::URL_NAME,
-            t('Application news'),
-            t('Tools'),
-            $category
-        );
-    }
-    
     protected function registerAppLogs(?string $category=null) : void
     {
         if(Application::isDatabaseEnabled()) {

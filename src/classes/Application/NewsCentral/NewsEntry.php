@@ -4,25 +4,120 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
-use Application\Admin\Area\Devel\News\BaseViewArticleScreen;
-use Application\Admin\Area\Devel\News\ViewArticle\BaseArticleStatusScreen;
+use Application\Admin\Area\News\BaseViewArticleScreen;
+use Application\Admin\Area\News\ViewArticle\BaseArticleSettingsScreen;
+use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
+use Application\NewsCentral\Categories\CategoriesCollection;
+use Application\NewsCentral\Categories\Category;
 use Application_Admin_ScreenInterface;
 use Application_User;
 use Application_Users_User;
+use AppLocalize\Localization;
+use AppLocalize\Localization_Locale;
 use DateTime;
+use DBHelper;
 use DBHelper_BaseRecord;
+use League\CommonMark\CommonMarkConverter;
+use NewsCentral\Entries\EntryCategoriesManager;
+use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
-use TestDriver\Area\Devel\NewsScreen\ViewArticleScreen;
-use function AppUtils\restoreThrowable;
+use function AppUtils\valBoolTrue;
 
 /**
  * @property NewsCollection $collection
  */
 class NewsEntry extends DBHelper_BaseRecord
 {
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    public function publish() : self
     {
+        $this->setStatus(NewsEntryStatuses::getInstance()->getPublished());
+        $this->save();
+
+        return $this;
+    }
+
+    public function setStatus(NewsEntryStatus $status) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_STATUS, $status->getID());
+    }
+
+    public function getStatusID() : string
+    {
+        return $this->getRecordStringKey(NewsCollection::COL_STATUS);
+    }
+
+    public function getStatus() : NewsEntryStatus
+    {
+        return NewsEntryStatuses::getInstance()->getByID($this->getStatusID());
+    }
+
+    public function isPublished() : bool
+    {
+        return $this->getStatus()->isPublished();
+    }
+
+    /**
+     * @var string[]
+     */
+    private array $dateUpdateKeys = array(
+        NewsCollection::COL_SYNOPSIS,
+        NewsCollection::COL_LABEL,
+        NewsCollection::COL_ARTICLE,
+        NewsCollection::COL_STATUS
+    );
+
+    public function isAlert() : bool
+    {
+        return $this->getTypeID() === NewsEntryTypes::NEWS_TYPE_ALERT;
+    }
+
+    public function setLabel(string $label) : bool
+    {
+        return $this->setRecordKey(NewsCollection::COL_LABEL, $label);
+    }
+
+    public function getViews() : int
+    {
+        return $this->getRecordIntKey(NewsCollection::COL_VIEWS);
+    }
+
+    public function getLocaleID() : string
+    {
+        return $this->getRecordStringKey(NewsCollection::COL_LOCALE);
+    }
+
+    public function getLocale() : Localization_Locale
+    {
+        return Localization::getContentLocaleByName($this->getLocaleID());
+    }
+
+    private ?EntryCategoriesManager $categoriesManager = null;
+
+    public function getCategoriesManager() : EntryCategoriesManager
+    {
+        if(!isset($this->categoriesManager)) {
+            $this->categoriesManager = new EntryCategoriesManager($this);
+        }
+
+        return $this->categoriesManager;
+    }
+
+    protected function init() : void
+    {
+        foreach($this->dateUpdateKeys as $key) {
+            $this->registerRecordKey($key, '', true);
+        }
+    }
+
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : bool
+    {
+        // Update the date modified on change
+        if(in_array($name, $this->dateUpdateKeys, true)) {
+            $this->setRecordDateKey(NewsCollection::COL_DATE_MODIFIED, new DateTime());
+        }
+
+        return true;
     }
 
     public function getLabel(): string
@@ -47,15 +142,29 @@ class NewsEntry extends DBHelper_BaseRecord
 
     public function getAdminStatusURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION] = BaseArticleStatusScreen::URL_NAME;
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleStatusScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
 
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleSettingsScreen::URL_NAME;
+
+        return $this->getAdminViewURL($params);
+    }
+
+    public function getAdminPublishURL(array $params=array()) : string
+    {
+        $params[BaseArticleStatusScreen::REQUEST_PARAM_PUBLISH] = 'yes';
+
+        return $this->getAdminStatusURL($params);
+    }
+
     public function getAdminURL(array $params=array()) : string
     {
-        $params[NewsCollection::PRIMARY] = $this->getID();
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseViewArticleScreen::URL_NAME;
+        $params[NewsCollection::PRIMARY_NAME] = $this->getID();
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewArticleScreen::URL_NAME;
 
         return $this->collection->getAdminURL($params);
     }
@@ -80,20 +189,6 @@ class NewsEntry extends DBHelper_BaseRecord
         return NewsEntryTypes::getInstance()->getByID($this->getTypeID());
     }
 
-    public function getSynopsis(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_SYNOPSIS);
-    }
-
-    public function getArticle(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_ARTICLE);
-    }
-
-    public function getCriticalityID(): string
-    {
-        return $this->getRecordStringKey(NewsCollection::COL_CRITICALITY);
-    }
 
     public function getScheduledFromDate(): ?DateTime
     {
@@ -105,10 +200,6 @@ class NewsEntry extends DBHelper_BaseRecord
         return $this->getRecordDateKey(NewsCollection::COL_SCHEDULED_TO_DATE);
     }
 
-    public function isReceiptRequired() : bool
-    {
-        return $this->getRecordBooleanKey(NewsCollection::COL_REQUIRES_RECEIPT);
-    }
 
     public function getDateCreated(): DateTime
     {

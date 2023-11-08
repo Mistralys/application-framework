@@ -13,7 +13,10 @@ use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
 use Application_Admin_Area_Welcome;
 use Application_Admin_TranslationsArea;
+use TestDriver\Area\MediaLibraryScreen;
+use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
+use TestDriver\Area\TestingScreen;
 use TestDriver_Area_WizardTest;
 use UI\Page\Navigation\NavConfigurator;
 use UI\Page\Navigation\NavConfigurator\MenuConfigurator;
@@ -37,7 +40,11 @@ class MainNavConfigurator extends NavConfigurator
         $menu
             ->addAreaChained(Application_Admin_Area_Settings::URL_NAME)
             ->addSeparator()
+            ->addAreaChained(NewsScreen::URL_NAME)
+            ->addAreaChained(MediaLibraryScreen::URL_NAME)
+            ->addSeparator()
             ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)
+            ->addAreaChained(TestingScreen::URL_NAME)
             ->addAreaChained(Application_Admin_TranslationsArea::URL_NAME);
     }
 

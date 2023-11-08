@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Application\NewsCentral;
 
+use Application\NewsCentral\Categories\CategorySelector;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
+use Application_Formable_RecordSettings_ValueSet;
+use AppLocalize\Localization;
 use AppUtils\Microtime;
+use AppUtils\Microtime_Exception;
 use AppUtils\NamedClosure;
 use Closure;
 use DBHelper_BaseRecord;
+use HTML_QuickForm2_Element;
 use HTML_QuickForm2_Element_HTMLDateTimePicker;
 use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Select;
@@ -23,19 +28,21 @@ use UI;
  */
 class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_TITLE = 'label';
-    public const SETTING_SYNOPSIS = 'synopsis';
-    public const SETTING_ARTICLE = 'article';
-    public const SETTING_FROM_DATE = 'from_date';
-    public const SETTING_TO_DATE = 'to_date';
-    public const SETTING_CRITICALITY = 'criticality';
-    public const SETTING_REQUIRES_RECEIPT = 'requires_receipt';
-
+    public const SETTING_LOCALE = 'locale';
+    public const SETTING_CATEGORIES = 'categories';
     private bool $isAlert = false;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
 
     public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
         parent::__construct($formable, $collection, $record);
+
+        if(isset($this->record) && $this->record->isAlert()) {
+            $this->makeAlert();
+        }
+
+        $this->setDefaultsUseStorageNames(true);
     }
 
     public function makeAlert() : self
@@ -44,35 +51,52 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         return $this;
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, array $formValues): void
+    // region: Data handling
+
+    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
 
     }
 
-    protected function getCreateData(array $formValues): array
+    protected function getCreateData(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
-         $now = Microtime::createNow()->getMySQLDate();
+        $now = Microtime::createNow()->getMySQLDate();
 
-        $formValues[NewsCollection::COL_AUTHOR] = $this->getUser()->getID();
-        $formValues[NewsCollection::COL_DATE_CREATED] = $now;
-        $formValues[NewsCollection::COL_DATE_MODIFIED] = $now;
+        $recordData->setKey(NewsCollection::COL_AUTHOR, $this->getUser()->getID());
+        $recordData->setKey(NewsCollection::COL_DATE_CREATED, $now);
+        $recordData->setKey(NewsCollection::COL_DATE_MODIFIED, $now);
 
-        if(!$this->isAlert) {
-            $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = 'no';
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ARTICLE;
-        } else {
-            $formValues[NewsCollection::COL_NEWS_TYPE] = NewsEntryTypes::NEWS_TYPE_ALERT;
+        if(!$this->isAlert)
+        {
+            $recordData->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ARTICLE);
+            $recordData->setKey(NewsCollection::COL_REQUIRES_RECEIPT, 'no');
+            $recordData->setKey(NewsCollection::COL_CRITICALITY, NewsEntryCriticalities::DEFAULT_CRITICALITY);
+        } else
+        {
+            $recordData->setKey(NewsCollection::COL_NEWS_TYPE, NewsEntryTypes::NEWS_TYPE_ALERT);
         }
-
-        $formValues[NewsCollection::COL_REQUIRES_RECEIPT] = bool2string($formValues[NewsCollection::COL_REQUIRES_RECEIPT], true);
-
-        return $formValues;
     }
 
-    protected function updateRecord(array $values): void
+    protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
-        // TODO: Implement updateRecord() method.
+        $this->record
+            ->getCategoriesManager()
+            ->setCategoryIDs(
+                (array)$internalValues->getKey(self::SETTING_CATEGORIES)
+            );
     }
+
+    // endregion
+
+    // region: Settings
+
+    public const SETTING_TITLE = 'label';
+    public const SETTING_SYNOPSIS = 'synopsis';
+    public const SETTING_ARTICLE = 'article';
+    public const SETTING_FROM_DATE = 'from_date';
+    public const SETTING_TO_DATE = 'to_date';
+    public const SETTING_CRITICALITY = 'criticality';
+    public const SETTING_REQUIRES_RECEIPT = 'receipt';
 
     protected function registerSettings(): void
     {
@@ -86,18 +110,29 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         $group = $this->addGroup(t('Settings'))
             ->setIcon(UI::icon()->settings());
 
+        $group->registerSetting(self::SETTING_LOCALE)
+            ->makeRequired()
+            ->setStorageName(NewsCollection::COL_LOCALE)
+            ->setCallback(Closure::fromCallable(array($this, 'injectLocale')));
+
         $group->registerSetting(self::SETTING_TITLE)
             ->makeRequired()
+            ->setStorageName(NewsCollection::COL_LABEL)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectTitle')),
                 array($this, 'injectTitle')
             ));
 
         $synopsis = $group->registerSetting(self::SETTING_SYNOPSIS)
+            ->setStorageName(NewsCollection::COL_SYNOPSIS)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectSynopsis')),
                 array($this, 'injectSynopsis')
             ));
+
+        $group->registerSetting(self::SETTING_CATEGORIES)
+            ->makeInternal()
+            ->setCallback(Closure::fromCallable(array($this, 'injectCategories')));
 
         if(!$this->isAlert)
         {
@@ -113,14 +148,33 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->setCallback(Closure::fromCallable(array($this, 'injectCriticality')));
 
         $group->registerSetting(self::SETTING_REQUIRES_RECEIPT)
-            ->setDefaultValue('no')
+            ->setDefaultValue('false')
+            ->setImportFilter(static function($value) : string {
+                return bool2string($value);
+            })
             ->setStorageName(NewsCollection::COL_REQUIRES_RECEIPT)
+            ->setStorageFilter(static function ($value) : string {
+                return bool2string($value, true);
+            })
             ->setCallback(Closure::fromCallable(array($this, 'injectRequiresReceipt')));
+    }
+
+    public function getDefaultValues(): array
+    {
+        $values = parent::getDefaultValues();
+
+        if(isset($this->record)) {
+            $values[self::SETTING_CATEGORIES] = $this->record->getCategoriesManager()->getCategoryIDs();
+        }
+
+        return $values;
     }
 
     private function registerArticleText() : void
     {
-        if($this->isAlert) {
+        if($this->isAlert)
+        {
+
             return;
         }
 
@@ -129,6 +183,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
         $group->registerSetting(self::SETTING_ARTICLE)
             ->makeRequired()
+            ->setStorageName(NewsCollection::COL_ARTICLE)
             ->setCallback(NamedClosure::fromClosure(
                 Closure::fromCallable(array($this, 'injectArticle')),
                 array($this, 'injectArticle')
@@ -185,6 +240,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->t('If a date and time is selected, the article will become visible at that time - if it has been published.')
         );
 
+        $this->elFromDate = $el;
+
         return $el;
     }
 
@@ -195,12 +252,34 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->t('If a date and time is selected, the article will automatically be hidden from that point onwards.')
         );
 
+        $this->elToDate = $el;
+
+        $this->addRuleCallback(
+            $el,
+            Closure::fromCallable(array($this, 'validateScheduleDates')),
+            t('The "To date" must be after the "From date".')
+        );
+
         return $el;
+    }
+
+    private function validateScheduleDates() : bool
+    {
+        $fromDate = $this->elFromDate->getValue();
+        $toDate = $this->elToDate->getValue();
+
+        if(empty($fromDate) || empty($toDate))
+        {
+            return true;
+        }
+
+        return $fromDate < $toDate;
     }
 
     /**
      * @param string|NULL $value
      * @return string|NULL
+     * @throws Microtime_Exception
      */
     private function filterDate(?string $value) : ?string
     {
@@ -231,6 +310,36 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         return $el;
     }
 
+    private function injectCategories() : HTML_QuickForm2_Element
+    {
+        return (new CategorySelector($this))
+            ->setName(self::SETTING_CATEGORIES)
+            ->setComment(sb()
+                ->t('Use this to select in which categories this news entry should be included.')
+                ->nl()
+                ->hint()
+                ->t('News can be filtered by category, so select all matching topics for the entry to be found.')
+            )
+            ->inject();
+    }
+
+    private function injectLocale() : HTML_QuickForm2_Element_Select
+    {
+        $el = $this->addElementSelect(self::SETTING_LOCALE, t('Locale'));
+        $el->setComment(sb()
+            ->t('Selects the language in which the article is written.')
+        );
+
+        $locales = Localization::getContentLocales();
+
+        foreach ($locales as $locale)
+        {
+            $el->addOption($locale->getLabel(), $locale->getName());
+        }
+
+        return $el;
+    }
+
     private function injectTitle() : HTML_QuickForm2_Element_InputText
     {
         $el = $this->addElementText(self::SETTING_TITLE, t('Title'));
@@ -257,6 +366,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     {
         return self::SETTING_TITLE;
     }
+
+    // endregion
 
     public function isUserAllowedEditing(): bool
     {

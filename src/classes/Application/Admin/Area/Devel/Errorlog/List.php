@@ -41,6 +41,14 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         if($this->request->getBool('trigger_exception')) {
             $this->handle_triggerException();
         }
+
+        if($this->request->getBool('trigger_warning')) {
+            $this->handle_triggerWarning();
+        }
+
+        if($this->request->getBool('trigger_error')) {
+            $this->handle_triggerError();
+        }
         
         $this->createDatagrid();
 
@@ -80,10 +88,10 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
     protected function _handleSidebar() : void
     {
         $this->sidebar->addButton('clear_all', t('Delete all'))
-        ->makeDangerous()
-        ->makeConfirm(t('This will delete all logfiles for %1$s.', $this->errorlog->getYear()))
-        ->setTooltip(t('This will delete all logfiles for %1$s.', $this->errorlog->getYear()))
-        ->makeLinked($this->errorlog->getAdminDeleteAllURL());
+            ->makeDangerous()
+            ->makeConfirm(t('This will delete all logfiles for %1$s.', $this->errorlog->getYear()))
+            ->setTooltip(t('This will delete all logfiles for %1$s.', $this->errorlog->getYear()))
+            ->makeLinked($this->errorlog->getAdminDeleteAllURL());
         
         $this->sidebar->addSeparator();
         
@@ -97,6 +105,16 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         $panel->addButton(
             UI::button(t('%1$s exception', 'PHP').' (incl. previous)')
             ->link($this->errorlog->getAdminTriggerExceptionURL(array('prev' => 'yes')))
+        );
+
+        $panel->addButton(
+            UI::button(t('%1$s warning', 'PHP'))
+                ->link($this->errorlog->getAdminTriggerWarningURL())
+        );
+
+        $panel->addButton(
+            UI::button(t('%1$s error', 'PHP'))
+                ->link($this->errorlog->getAdminTriggerErrorURL())
         );
 
         $panel->addButton(
@@ -122,6 +140,26 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         $panel->addButton(
             UI::button(t('%1$s exception', 'AJAX'))
             ->click('application.createAJAX(\'ThrowError\').Send()')
+        );
+
+        $panel->addSeparator();
+
+        $reporting = (int)ini_get('error_reporting');
+
+        $panel->addHTML(sb()
+            ->para(sb()->bold(t('PHP error reporting')))
+            ->ul(array(
+                'Display errors: '.bool2string(ini_get('display_errors')),
+                'Error reporting: '.$reporting,
+                'E_ALL: '.bool2string(($reporting & E_ALL) > 0),
+                'E_ERROR: '.bool2string(($reporting & E_ERROR) > 0),
+                'E_WARNING: '.bool2string(($reporting & E_WARNING) > 0),
+                'E_NOTICE: '.bool2string(($reporting & E_NOTICE) > 0),
+                'E_PARSE: '.bool2string(($reporting & E_PARSE) > 0),
+                'E_USER_ERROR: '.bool2string(($reporting & E_USER_ERROR) > 0),
+                'E_USER_WARNING: '.bool2string(($reporting & E_USER_WARNING) > 0),
+                'E_USER_NOTICE: '.bool2string(($reporting & E_USER_NOTICE) > 0)
+            ))
         );
     }
 
@@ -239,5 +277,15 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
             t('Exception triggered successfully at %1$s.', date('H:i:s')),
             $this->errorlog->getAdminListURL()
         );
+    }
+
+    private function handle_triggerWarning() : void
+    {
+        trigger_error('This is a test warning triggered on purpose in the errorlogs admin.', E_USER_WARNING);
+    }
+
+    private function handle_triggerError() : void
+    {
+        trigger_error('This is a test error triggered on purpose in the errorlogs admin.', E_USER_ERROR);
     }
 }

@@ -239,7 +239,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * a data attrribute to the form that can be used clientside
     * to determine the default element.
     * 
-    * @param string|HTML_QuickForm2_Element $elementNameOrObject
+    * @param string|HTML_QuickForm2_Node $elementNameOrObject
     * @return Application_Formable
     */
     public function setDefaultElement($elementNameOrObject)
@@ -248,7 +248,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         $element = $elementNameOrObject;
         
-        if(!$element instanceof HTML_QuickForm2_Element) 
+        if(!$element instanceof HTML_QuickForm2_Node)
         {
             $element = $this->formableForm->getElementByName($elementNameOrObject);
         }
@@ -774,13 +774,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * is always the value to validate, and the last is the
     * rule object instance, even if custom arguments are specified.
     * 
-    * @param HTML_QuickForm2_Element $element
+    * @param HTML_QuickForm2_Node $element
     * @param callable $callback
     * @param string $errorMessage
     * @param mixed[] $arguments Indexed list of arguments for the callback
     * @return HTML_QuickForm2_Rule_Callback
     */
-    public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
         $this->requireFormableInitialized();
         
@@ -1178,10 +1178,42 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         
         return $this->formableForm->getValues();
     }
+
+    /**
+     * @return HTML_QuickForm2_Node[]
+     * @throws Application_Formable_Exception
+     */
+    public function getErroneousElements() : array
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->getErroneousElements();
+    }
+
+    public function renderErrorMessages() : string
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->renderErrorMessages();
+    }
     
     public function isFormSubmitted() : bool
     {
+        $this->requireFormableInitialized();
+
         return $this->formableForm->isSubmitted();
+    }
+
+    /**
+     * @param array<string,mixed> $formValues
+     * @return void
+     * @throws Application_Formable_Exception
+     */
+    public function makeSubmitted(array $formValues=array()) : void
+    {
+        $this->requireFormableInitialized();
+
+        $this->formableForm->makeSubmitted($formValues);
     }
     
    /**

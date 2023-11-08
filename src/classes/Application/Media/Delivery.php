@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Media\Collection\MediaCollection;
+
 class Application_Media_Delivery implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
@@ -52,8 +54,8 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
         {
             switch($request->getParam('source')) 
             {
-                case 'media': $this->serveMedia(); break;
-                case 'upload': $this->serveUpload(); break;
+                case MediaCollection::MEDIA_TYPE: $this->serveMedia(); break;
+                case Application_Uploads::MEDIA_TYPE: $this->serveUpload(); break;
             }
         } 
         catch(Exception $e) 
@@ -73,7 +75,7 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
     
     private function serveMedia() : void
     {
-        $media_id = $this->request->getParam('media_id');
+        $media_id = $this->request->getParam(MediaCollection::PRIMARY_NAME);
         
         $media = Application_Media::getInstance();
         
@@ -89,7 +91,7 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
     
     private function serveUpload() : void
     {
-        $upload_id = $this->request->getParam('upload_id');
+        $upload_id = $this->request->getParam(Application_Uploads::PRIMARY_NAME);
         
         $uploads = Application_Uploads::getInstance();
         
