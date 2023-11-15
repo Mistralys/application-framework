@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Application\Media\Collection\MediaCollection;
 use Application\Media\ImageDocumentInterface;
 use Application\Media\ImageDocumentTrait;
+use Application\Media\MediaException;
+use AppUtils\BaseException;
 use AppUtils\ImageHelper_Size;
 use AppUtils\ImageHelper;
 
@@ -75,6 +77,11 @@ class Application_Media_Document_Image extends Application_Media_Document
         return MediaCollection::PRIMARY_NAME;
     }
 
+    /**
+     * @return int
+     * @throws BaseException
+     * @throws MediaException
+     */
     public function getWidth() : int
     {
         $dimensions = $this->getDimensions();
@@ -82,6 +89,11 @@ class Application_Media_Document_Image extends Application_Media_Document
         return $dimensions[0];
     }
 
+    /**
+     * @return int
+     * @throws BaseException
+     * @throws MediaException
+     */
     public function getHeight() : int
     {
         $dimensions = $this->getDimensions();
@@ -91,6 +103,11 @@ class Application_Media_Document_Image extends Application_Media_Document
 
     protected ?ImageHelper_Size $dimensions = null;
 
+    /**
+     * @return ImageHelper_Size
+     * @throws MediaException
+     * @throws BaseException
+     */
     public function getDimensions() : ImageHelper_Size
     {
         if (isset($this->dimensions)) {
@@ -99,7 +116,7 @@ class Application_Media_Document_Image extends Application_Media_Document
 
         $path = $this->getPath();
         if (!file_exists($path)) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'Image file does not exist',
                 sprintf(
                     'Retrieving size of image [%1$s] from document [%2$s] failed, file not found.',

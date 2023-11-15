@@ -12,6 +12,8 @@ use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Microtime;
+use AppUtils\Microtime_Exception;
 
 abstract class Application_Media_Document implements Application_Media_DocumentInterface
 {
@@ -22,11 +24,18 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
     public const ERROR_NO_TRANSACTION_STARTED = 650003;
     public const ERROR_FILE_NOT_FOUND = 650004;
+    public const ERROR_DATA_NOT_FOUND = 650005;
 
     protected array $data;
     protected Application_Media $media;
     protected int $id;
 
+    /**
+     * @param string|int $media_id
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     * @throws MediaException
+     */
     protected function __construct($media_id)
     {
         $data = DBHelper::fetch(
@@ -41,7 +50,18 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             )
         );
 
-        $this->id = $media_id;
+        if($data === null) {
+            throw new MediaException(
+                'Cannot load media document data.',
+                sprintf(
+                    'No media document found in the database with ID [%s].',
+                    $media_id
+                ),
+                self::ERROR_DATA_NOT_FOUND
+            );
+        }
+
+        $this->id = (int)$media_id;
         $this->data = $data;
         $this->media = Application_Media::getInstance();
     }
@@ -98,6 +118,10 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
 
     protected ?string $path = null;
 
+    /**
+     * @return string
+     * @throws Microtime_Exception
+     */
     public function getPath() : string
     {
         if (!isset($this->path)) {
@@ -124,11 +148,12 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     /**
      * Retrieves the date that this document was added.
      * @return DateTime
+     * @throws Microtime_Exception
      */
     public function getDateAdded() : DateTime
     {
         if (!isset($this->dateAdded)) {
-            $this->dateAdded = new DateTime($this->data['media_date_added']);
+            $this->dateAdded = Microtime::createFromString($this->data['media_date_added']);
         }
 
         return $this->dateAdded;
@@ -205,7 +230,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         $targetFile = $document->getPath();
 
         if (!file_exists($sourceFile)) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'Uploaded file missing',
                 sprintf(
                     'Tried finding the uploaded file [%1$s], but it seems to be missing.',
@@ -218,7 +243,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         FileHelper::createFolder($targetFolder);
 
         if (file_exists($targetFile) && !@unlink($targetFile)) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'Could not clean up existing files',
                 sprintf(
                     'The target file [%1$s] already existed on disk, but could not be deleted to make room for the new file.',
@@ -246,7 +271,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * @param int $media_id
      * @return Application_Media_Document
      *
-     * @throws Application_Exception
+     * @throws MediaException
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      * @throws ConvertHelper_Exception
@@ -267,12 +292,13 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
         );
 
         if (!is_array($data) || !isset($data['media_type'])) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'Unknown media file',
                 sprintf(
                     'No record found in the database for the media file with ID [%1$s].',
                     $media_id
-                )
+                ),
+                self::ERROR_DATA_NOT_FOUND
             );
         }
 
@@ -287,8 +313,6 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     /**
      * Human-readable label for this media type, e.g. "Image".
      * Must be implemented by the media type class.
-     *
-     * @throws Application_Exception
      */
     abstract public static function getLabel() : string;
 
@@ -299,7 +323,6 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
      * List of supported file extensions for this media file type.
      * Must be implemented by the media type class.
      *
-     * @throws Application_Exception
      * @return string[]
      */
     abstract public static function getExtensions() : array;
@@ -338,17 +361,18 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     }
     
     protected ?Application_Media_Configuration $config = null;
-    
-   /**
-    * Sets the configuration for this media document,
-    * when it is being pre-processed using the media processor.
-    * 
-    * @param Application_Media_Configuration $config
-    */
+
+    /**
+     * Sets the configuration for this media document,
+     * when it is being pre-processed using the media processor.
+     *
+     * @param Application_Media_Configuration $config
+     * @throws MediaException
+     */
     public function setConfiguration(Application_Media_Configuration $config) : void
     {
         if($config->getTypeID() !== $this->getTypeID()) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'Media configuration error',
                 sprintf(
                     'Cannot set a media configuration type [%s] for a media document of type [%s], the types have to match.',
@@ -386,7 +410,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
    /**
     * Checks whether this media document has to be pre-processed.
     * 
-    * @throws Application_Exception
+    * @throws MediaException
     * @return boolean
     */
     public function isProcessRequired() : bool
@@ -395,7 +419,7 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             return $this->config->isProcessRequired($this);
         }
 
-        throw new Application_Exception(
+        throw new MediaException(
             'Media configuration missing',
             sprintf(
                 'Cannot check if the media document [%s] of type [%s] requires processing, no media configuration has been set.',
@@ -453,13 +477,20 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             self::ERROR_FILE_NOT_FOUND
         );
     }
-    
+
+    /**
+     * @return void
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     * @throws MediaException
+     */
     public function delete() : void
     {
         $this->log('Requested to delete. Simulation: '.ConvertHelper::bool2string(Application::isSimulation(), true));
 
         if(!DBHelper::isTransactionStarted()) {
-            throw new Application_Exception(
+            throw new MediaException(
                 'No transaction started',
                 'A database transaction needs to be present to delete a media document.',
                 self::ERROR_NO_TRANSACTION_STARTED    
