@@ -1,3 +1,10 @@
+### v3.0.1 - Media Gallery update
+- MediaGallery: Added the missing pagination in the image gallery.
+- UI: Added the `PaginationRenderer` helper class.
+- FilterCriteria: Renamed inverted `$limit` and `$offset` parameters in `setLimit()`.
+- Theme: Added `getEmptyImageURL()` and `getEmptyImagePath()`.
+- Dependencies: Updated AppUtils to [v3.0.3](https://github.com/Mistralys/application-utils/releases/tag/3.0.3).
+
 ### v3.0.0 - News and forms release (breaking-m)
 - News: Added the experimental news feature for news articles and alerts.
 - News: An example is available in the test application.
