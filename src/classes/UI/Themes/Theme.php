@@ -197,6 +197,11 @@ abstract class UI_Themes_Theme
     {
         return $this->getImageURL(self::IMAGE_FILE_EMPTY_IMAGE);
     }
+
+    public function getEmptyImagePath() : string
+    {
+        return $this->getImagePath(self::IMAGE_FILE_EMPTY_IMAGE);
+    }
     
     public function getImagePath($fileName)
     {
