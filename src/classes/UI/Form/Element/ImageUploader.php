@@ -247,26 +247,26 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
         $ui->addJavascriptHeadVariable('ImageUploader.thumbnailWidth', self::THUMBNAIL_WIDTH);
         $ui->addJavascriptHeadVariable('ImageUploader.thumbnailHeight', self::THUMBNAIL_HEIGHT);
         $ui->addJavascriptHeadVariable('ImageUploader.imageExtensions', self::$supportedExtensions);
-        $ui->addJavascriptHeadVariable('ImageUploader.emptyImageURL', $ui->getTheme()->getImageURL('empty-image.png'));
+        $ui->addJavascriptHeadVariable('ImageUploader.emptyImageURL', $ui->getTheme()->getEmptyImageURL());
     }
 
-    protected function getThumbnailURL($value)
+    protected function getThumbnailURL($value) : string
     {
-        $media = $this->getMediaByValue($value);
+        $media = self::getMediaByValue($value);
         if($media !== null) {
             return $media->getThumbnailURL(self::THUMBNAIL_WIDTH, self::THUMBNAIL_HEIGHT);
         }
         
-        return UI::getInstance()->getTheme()->getImageURL('empty-image.png');
+        return UI::getInstance()->getTheme()->getEmptyImageURL();
     }
     
    /**
     * Retrieves the media instance for the current value of the uploader, if any.
     * @return Application_Media_DocumentInterface|NULL
     */
-    public function getMedia()
+    public function getMedia() : ?Application_Media_DocumentInterface
     {
-        return $this->getMediaByValue($this->getValue());
+        return self::getMediaByValue($this->getValue());
     }
     
    /**
@@ -282,12 +282,10 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
 
         switch ($value['state']) {
             case 'new':
-                $uploads = Application_Uploads::getInstance();
-                return $uploads->getByID($value['id']);
+                return Application_Uploads::getInstance()->getByID($value['id']);
 
             case MediaCollection::MEDIA_TYPE:
-                $media = Application_Media::getInstance();
-                return $media->getByID($value['id']);
+                return Application_Media::getInstance()->getByID($value['id']);
         }
         
         return null;
