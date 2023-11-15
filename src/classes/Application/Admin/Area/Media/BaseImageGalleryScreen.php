@@ -9,18 +9,29 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\Collection\MediaFilterSettings;
 use Application\Media\Collection\MediaRecord;
+use Application\Media\MediaException;
 use Application_Admin_Area_Mode;
 use Application_Media_Document_Image;
 use AppUtils\ClassHelper;
+use AppUtils\PaginationHelper;
 use UI;
+use UI\PaginationRenderer;
 
 class BaseImageGalleryScreen extends Application_Admin_Area_Mode
 {
     public const URL_NAME = 'image-gallery';
+    public const PREFERRED_THUMBNAIL_SIZE = 260;
+    public const REQUEST_PARAM_PAGE_NUMBER = 'page-number';
     private MediaCollection $media;
     private MediaFilterCriteria $criteria;
     private MediaFilterSettings $filterSettings;
     private bool $hasItems;
+    private PaginationRenderer $paginator;
+    private int $totalCount;
+    /**
+     * @var false|float
+     */
+    private int $maxPages;
 
     public function getDefaultSubmode(): string
     {
@@ -52,7 +63,16 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
         $this->media = AppFactory::createMediaCollection();
         $this->criteria = $this->media->getFilterCriteria();
         $this->filterSettings = $this->media->getFilterSettings()->configureForImageGallery();
-        $this->hasItems = $this->criteria->countItems() > 0;
+        $this->totalCount = $this->criteria->countItems();
+        $this->maxPages = (int)ceil($this->totalCount / self::IMAGES_PER_PAGE);
+        $this->hasItems = $this->totalCount > 0;
+
+        $this->paginator = $this->ui->createPagination(
+            new PaginationHelper($this->totalCount, self::IMAGES_PER_PAGE, $this->getCurrentPage()),
+            self::REQUEST_PARAM_PAGE_NUMBER,
+            $this->getURL()
+        )
+            ->setAdjacentPages(5);
 
         return true;
     }
@@ -77,14 +97,34 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
             ->makeLinked($this->media->getAdminImageGalleryURL());
     }
 
+    public function getCurrentPage() : int
+    {
+        $page = (int)$this->request->getParam(self::REQUEST_PARAM_PAGE_NUMBER, 1);
+
+        if($page < 1) {
+            return 1;
+        }
+
+        if($page > $this->maxPages) {
+            return $this->maxPages;
+        }
+
+        return $page;
+    }
+
+    public const IMAGES_PER_PAGE = 20;
+
     protected function _renderContent()
     {
         $this->ui->addStylesheet('media-image-gallery.css');
 
         $this->filterSettings->configureFilters($this->criteria);
+        $this->paginator->configureFilters($this->criteria);
 
         $items = $this->criteria->getItemsObjects();
+        $pagination = '<div class="gallery-pagination">'.$this->paginator->render().'</div>';
 
+        $this->renderer->appendContent($pagination);
         $this->renderer->appendContent('<div class="image-gallery">');
 
         foreach($items as $item) {
@@ -94,6 +134,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
         }
 
         $this->renderer->appendContent('</div>');
+        $this->renderer->appendContent($pagination);
 
         return $this->renderer
             ->setWithSidebar($this->hasItems);
@@ -110,19 +151,34 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
 </div>
 HTML;
 
-        $document = ClassHelper::requireObjectInstanceOf(Application_Media_Document_Image::class, $item->getMediaDocument());
+        try {
+            $document = ClassHelper::requireObjectInstanceOf(Application_Media_Document_Image::class, $item->getMediaDocument());
 
-        return sprintf(
-            $template,
-            $item->renderThumbnail(260),
-            sb()
-                ->bold($item->getLabel())
-                ->nl()
-                ->add($document->getExtension())
-                ->add('|')
-                ->add($document->getDimensions()->toReadableString())
-                ->add('|')
-                ->add($document->getFilesizeReadable())
-        );
+            return sprintf(
+                $template,
+                $item->renderThumbnail(self::PREFERRED_THUMBNAIL_SIZE),
+                sb()
+                    ->bold($item->getLabel())
+                    ->nl()
+                    ->add($document->getExtension())
+                    ->add('|')
+                    ->add($document->getDimensions()->toReadableString())
+                    ->add('|')
+                    ->add($document->getFilesizeReadable())
+            );
+        }
+        catch (MediaException $e)
+        {
+            $e->disableLogging();
+
+            return sprintf(
+                $template,
+                '<img src="'.$this->ui->getTheme()->getEmptyImageURL().'" width="'.self::PREFERRED_THUMBNAIL_SIZE.'" alt=""/>',
+                sb()
+                    ->bold($item->getLabel())
+                    ->nl()
+                    ->warning(sb()->bold(t('Not found on disk.')))
+            );
+        }
     }
 }
