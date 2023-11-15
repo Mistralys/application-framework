@@ -178,14 +178,14 @@ abstract class Application_FilterCriteria
     /**
      * Sets the limit for the list.
      *
-     * @param int $offset
      * @param int $limit
+     * @param int $offset
      * @return $this
      */
-    public function setLimit(int $offset = 0, int $limit = 0)
+    public function setLimit(int $limit = 0, int $offset = 0) : self
     {
-        $this->offset = $offset;
-        $this->limit = $limit;
+        $this->offset = $limit;
+        $this->limit = $offset;
 
         return $this;
     }
