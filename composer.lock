@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7d917f3ccc7d1835857c12b4e6fc691",
+    "content-hash": "a314a64a4c6d893b4d94dd6499d82fe0",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1216,16 +1216,16 @@
         },
         {
             "name": "mistralys/application-utils",
-            "version": "3.0.2",
+            "version": "3.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils.git",
-                "reference": "76aca18147bffc6e7db9f2ffca134e94915d0cb7"
+                "reference": "16cbcc095f4dec2a55de306beedafb16e0fac4e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/76aca18147bffc6e7db9f2ffca134e94915d0cb7",
-                "reference": "76aca18147bffc6e7db9f2ffca134e94915d0cb7",
+                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/16cbcc095f4dec2a55de306beedafb16e0fac4e3",
+                "reference": "16cbcc095f4dec2a55de306beedafb16e0fac4e3",
                 "shasum": ""
             },
             "require": {
@@ -1272,9 +1272,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils/issues",
-                "source": "https://github.com/Mistralys/application-utils/tree/3.0.2"
+                "source": "https://github.com/Mistralys/application-utils/tree/3.0.3"
             },
-            "time": "2023-11-03T08:16:41+00:00"
+            "time": "2023-11-15T12:50:32+00:00"
         },
         {
             "name": "mistralys/application-utils-collections",
