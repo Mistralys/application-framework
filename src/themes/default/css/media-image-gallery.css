@@ -28,3 +28,8 @@
     padding-top:8px;
     font-size: 86%;
 }
+
+.gallery-pagination{
+    text-align: center;
+    margin: 1rem 0 1rem 0;
+}
