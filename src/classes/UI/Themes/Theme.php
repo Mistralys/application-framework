@@ -15,8 +15,9 @@ abstract class UI_Themes_Theme
     const FILE_TYPE_TEMPLATE = 'templates';
     
     const FILE_TYPE_GRAPHIC = 'img';
-    
-   /**
+    public const IMAGE_FILE_EMPTY_IMAGE = 'empty-image.png';
+
+    /**
     * @var string
     */
     protected $id;
@@ -35,13 +36,15 @@ abstract class UI_Themes_Theme
     * @var string[]
     */
     protected $urls;
-    
-    protected $requiredFiles = array(
+
+    /**
+     * @var string[]
+     */
+    protected array $requiredFiles = array(
         'img/ajax-error.png',
         'img/logo_big.png',
-        'img/empty-image.png',
+        'img/'.self::IMAGE_FILE_EMPTY_IMAGE,
         'img/avatar-dummyuser.png',
-        'img/empty-image.png',
         'img/logo-navigation-standalone.png', // if the appswitcher is disabled
         'img/logo-navigation.png', // if the appswitcher is enabled
         'img/logo-navigation-over.png' // if the appswitcher is enabled
@@ -188,6 +191,11 @@ abstract class UI_Themes_Theme
     public function getImageURL($fileName)
     {
         return $this->getResourceURL(self::FILE_TYPE_GRAPHIC, $fileName);
+    }
+
+    public function getEmptyImageURL() : string
+    {
+        return $this->getImageURL(self::IMAGE_FILE_EMPTY_IMAGE);
     }
     
     public function getImagePath($fileName)
