@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Utility class used to render a country navigation element,
@@ -128,7 +128,7 @@ class Application_Countries_Navigator extends UI_Renderable
 
     /**
      * @param string $name
-     * @param string|int|float|bool|Interface_Stringable|NULL $value
+     * @param string|int|float|bool|StringableInterface|NULL $value
      * @return $this
      */
     public function setURLParam(string $name, $value) : Application_Countries_Navigator
@@ -174,7 +174,7 @@ class Application_Countries_Navigator extends UI_Renderable
     }
 
     /**
-     * @param array<string,string|int|float|bool|Interface_Stringable|NULL> $params
+     * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
      * @return $this
      */
     public function setURLParams(array $params)  : Application_Countries_Navigator

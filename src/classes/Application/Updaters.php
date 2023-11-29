@@ -9,7 +9,7 @@
 declare(strict_types=1);
 
 use AppUtils\ClassHelper;
-use AppUtils\Interface_Stringable;use AppUtils\OutputBuffering;
+use AppUtils\Interfaces\StringableInterface;use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 
 /**
@@ -273,7 +273,7 @@ class Application_Updaters
 	}
 
     /**
-     * @param array<string,string|int|float|bool|Interface_Stringable|NULL> $params
+     * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
      * @return string
      */
     public function buildURL(array $params=array()) : string

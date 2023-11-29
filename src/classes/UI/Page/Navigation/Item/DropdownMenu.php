@@ -2,37 +2,17 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use function AppUtils\parseURL;
 
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 {
-   /**
-    * @var UI_Bootstrap_DropdownMenu
-    */
-    protected $menu;
-
-    /**
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * @var bool
-     */
-    protected $split = false;
-
-    /**
-     * @var string
-     */
-    protected $link = '';
-
-    /**
-     * @var string
-     */
-    protected $click = '';
-
+    protected UI_Bootstrap_DropdownMenu $menu;
+    protected string $label;
+    protected bool $split = false;
+    protected string $link = '';
+    protected string $click = '';
     private bool $autoActivate = true;
     private bool $caret = true;
 
@@ -207,6 +187,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * @param string $label
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
      */
     public function addLink(string $label, string $url) : UI_Bootstrap_DropdownAnchor
     {
@@ -244,7 +225,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     }
 
     /**
-     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @return UI_Bootstrap_DropdownHeader
      */
     public function addHeader($label) : UI_Bootstrap_DropdownHeader

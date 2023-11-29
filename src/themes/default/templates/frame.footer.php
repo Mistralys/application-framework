@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Bootstrap\DeployCallbackBootstrap;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use Mistralys\AppFramework\AppFramework;
 
@@ -137,7 +137,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
     }
 
     /**
-     * @param string|Interface_Stringable $label
+     * @param string|StringableInterface $label
      * @param string $url
      * @return $this
      */
@@ -156,7 +156,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
     }
 
     /**
-     * @param string|Interface_Stringable|NULL $html
+     * @param string|StringableInterface|NULL $html
      * @return $this
      */
     protected function addItemHTML($html) : self

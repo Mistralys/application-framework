@@ -8,13 +8,13 @@
  */
 
 use Application\Driver\DriverException;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use function AppLocalize\tex;
 
 /**
  * Handles displaying data in a tabular grid, with extended functionality
  * like applying custom actions to entries, allowing the user to reorder
- * list items and more.
+ * list items, and more.
  *
  * @package Application
  * @subpackage UserInterface
@@ -26,42 +26,19 @@ class UI_DataGrid
     public const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
     public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
     public const ERROR_DUPLICATE_DATAGRID_ID = 599905;
-    public const ERROR_NO_TOTAL_SET = 5999006;
+    public const ERROR_UNKNOWN_OPTION = 5999007;
 
-   /**
-    * @var string
-    */
-    protected $id;
-
-    /**
-     * @var UI
-     */
-    protected $ui;
-
-    /**
-     * @var bool
-     */
-    protected $oddRow = false;
-
-    /**
-     * @var bool
-     */
-    protected $multiSelect = false;
-
-    /**
-     * @var bool
-     */
-    protected $multiSelectForced = false;
-
-    /**
-     * @var string
-     */
-    protected $primaryKeyName = '';
+    protected string $id;
+    protected UI $ui;
+    protected bool $oddRow = false;
+    protected bool $multiSelect = false;
+    protected bool $multiSelectForced = false;
+    protected string $primaryKeyName = '';
 
     /**
      * @var string[]
      */
-    protected $persistRequestVars = array(
+    protected array $persistRequestVars = array(
         'page',
         'mode',
         'datagrid_perpage',
@@ -70,15 +47,12 @@ class UI_DataGrid
         'datagrid_orderdir'
     );
 
-    /**
-     * @var Application_Request
-     */
-    protected $request;
+    protected Application_Request $request;
 
     /**
      * @var array<string,string|bool>
      */
-    protected $options = array(
+    protected array $options = array(
         'table-class' => 'table',
         'disable-header' => false,
         'disable-footer' => false,
@@ -121,7 +95,7 @@ class UI_DataGrid
     {
         $id = strtolower(str_replace(array(' ', '.', '-'), '_', (string)$id));
 
-    	if(in_array($id, self::$ids) && !$allowDuplicateID) {
+    	if(!$allowDuplicateID && in_array($id, self::$ids, true)) {
     		throw new Application_Exception(
     			'Duplicate datagrid ID',
     			sprintf('A datagrid with the ID [%s] has already been added. Duplicates are not allowed (can be overridden).', $id),
@@ -158,7 +132,7 @@ class UI_DataGrid
     /**
      * @return string
      */
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
@@ -166,7 +140,7 @@ class UI_DataGrid
    /**
     * @return UI
     */
-    public function getUI()
+    public function getUI() : UI
     {
         return $this->ui;
     }
@@ -252,10 +226,10 @@ class UI_DataGrid
     }
 
     /**
-     * Enables clientside controls to adjust the amount of columns that get
+     * Enables clientside controls to adjust the number of columns that get
      * displayed, and to navigate between them.
      *
-     * @param int $maxColumns The maximum amount of columns to display; Any above will be hidden.
+     * @param int $maxColumns The maximum number of columns to display; Any above will be hidden.
      * @return $this
      */
     public function enableColumnControls(int $maxColumns=5) : self
@@ -320,8 +294,9 @@ class UI_DataGrid
      * two do not mix well.
      *
      * @param bool $overwriteExisting
+     * @return $this
      */
-    public function makeEvenColumnWidths(bool $overwriteExisting = false)
+    public function makeEvenColumnWidths(bool $overwriteExisting = false) : self
     {
         $leftover = 100;
         $distributeColumns = $this->columnCount;
@@ -334,14 +309,14 @@ class UI_DataGrid
 
                 // this only works with percentage widths, so
                 // if a column has a pixel width set, we reset
-                // its width so it can be set automatically.
-                if ($column->getWidthType() != 'percent') {
+                // its width, so it can be set automatically.
+                if ($column->getWidthType() !== 'percent') {
                     $column->resetWidth();
                     continue;
                 }
 
                 // remove the width from the available percentage
-                $leftover = $leftover - $column->getWidth();
+                $leftover -= $column->getWidth();
                 $distributeColumns--;
             }
         } else {
@@ -357,7 +332,7 @@ class UI_DataGrid
             $leftover = 100;
         }
 
-        $width = intval(floor($leftover / $distributeColumns));
+        $width = (int)floor($leftover / $distributeColumns);
 
         for ($i = 0; $i < $this->columnCount; $i++) {
             $column = $this->columns[$i];
@@ -367,24 +342,27 @@ class UI_DataGrid
 
             $this->columns[$i]->setWidthPercent($width);
         }
+
+        return $this;
     }
 
     /**
      * Moves the specified column to the desired position, starting at
      * 1 for the first column in the grid.
      *
-     * @since 3.3.7
      * @param UI_DataGrid_Column $column
-     * @param int $position
-     * @return boolean Wether the column was moved
+     * @param int|string $position
+     * @return boolean Whether the column was moved
      */
-    public function moveColumn(UI_DataGrid_Column $column, $position)
+    public function moveColumn(UI_DataGrid_Column $column, $position) : bool
     {
+        $position = (int)$position;
+
         $moved = false;
         $total = count($this->columns);
         $shuffled = array();
         for ($i = 1; $i <= $total; $i++) {
-            if ($position == $i) {
+            if ($position === $i) {
                 $shuffled[] = $column;
                 $moved = true;
             }
@@ -401,12 +379,13 @@ class UI_DataGrid
         return $moved;
     }
 
-    public function resetColumnWidths()
+    public function resetColumnWidths() : self
     {
-        $total = count($this->columns);
-        for ($i = 0; $i < $total; $i++) {
-            $this->columns[$i]->resetWidth();
+        foreach ($this->columns as $column) {
+            $column->resetWidth();
         }
+
+        return $this;
     }
 
     /**
@@ -451,7 +430,7 @@ class UI_DataGrid
      * @param array<string,mixed> $options
      * @return UI_DataGrid_Column
      */
-    protected function createColumn(string $dataKey, $title, array $options = array())
+    protected function createColumn(string $dataKey, $title, array $options = array()) : UI_DataGrid_Column
     {
     	$this->columnCounter++;
 
@@ -515,11 +494,11 @@ class UI_DataGrid
     /**
      * @var array<string,string>
      */
-    protected $hiddenVars = array();
+    protected array $hiddenVars = array();
 
     /**
      * @param string $name
-     * @param string|int|float|Interface_Stringable|NULL $value
+     * @param string|int|float|StringableInterface|NULL $value
      * @return $this
      */
     public function addHiddenVar(string $name, $value) : self
@@ -587,7 +566,7 @@ class UI_DataGrid
    /**
     * Makes the multiselect menu open towards the top of
     * the page instead of towards the bottom. Only used
-    * if the multiselect is enabled of course.
+    * if the multiselect is enabled.
     *
     * @return UI_DataGrid
     */
@@ -625,10 +604,14 @@ class UI_DataGrid
      * @return $this
      * @throws Exception
      */
-    public function setOption($name, $value) : UI_DataGrid
+    public function setOption(string $name, $value) : UI_DataGrid
     {
         if (!$this->optionExists($name)) {
-            throw new Exception('Unknown option.');
+            throw new UI_DataGrid_Exception(
+                'Unknown data grid option.',
+                sprintf('The option [%s] does not exist.', $name),
+                self::ERROR_UNKNOWN_OPTION
+            );
         }
 
         $this->options[$name] = $value;
@@ -639,21 +622,22 @@ class UI_DataGrid
     /**
      * @param string $name
      * @return mixed
-     * @throws Exception
+     * @throws UI_DataGrid_Exception
      */
     public function getOption(string $name)
     {
         if (!$this->optionExists($name)) {
-            throw new Exception('Unknown option.');
+            throw new UI_DataGrid_Exception(
+                'Unknown data grid option.',
+                sprintf('The option [%s] does not exist.', $name),
+                self::ERROR_UNKNOWN_OPTION
+            );
         }
 
         return $this->options[$name];
     }
 
-    /**
-     * @var bool
-     */
-    protected $initDone = false;
+    protected bool $initDone = false;
 
     protected function init() : void
     {
@@ -775,16 +759,16 @@ class UI_DataGrid
    /**
     * @var UI_DataGrid_Action[]
     */
-    protected $actions = array();
+    protected array $actions = array();
 
     /**
      * Adds an action to the grid that can be run for the selected
      * elements (works only if multi select is enabled).
      * @param string $name
-     * @param string $label
+     * @param string|number|UI_Renderable_Interface|NULL $label
      * @return UI_DataGrid_Action_Default
      */
-    public function addAction($name, $label) : UI_DataGrid_Action_Default
+    public function addAction(string $name, $label) : UI_DataGrid_Action_Default
     {
         $action = new UI_DataGrid_Action_Default($this, $name, $label);
         $this->actions[] = $action;
@@ -951,29 +935,20 @@ class UI_DataGrid
         return $this->setOption('hover', false);
     }
 
-    /**
-     * @var bool
-     */
-    protected $limitOptions = false;
+    protected bool $limitOptions = false;
 
     /**
      * @var int[]
      */
-    protected $limitChoices = array();
+    protected array $limitChoices = array();
 
-    /**
-     * @var int
-     */
-    protected $limitCurrent = 0;
+    protected int $limitCurrent = 0;
 
-    /**
-     * @var int[]
-     */
     public const DEFAULT_LIMIT_CHOICES = array(10, 20, 40, 60, 120);
 
     /**
      * Enables the multiple choice selector for choosing the
-     * amount of items to display per page. If no current
+     * number of items to display per page. If no current
      * choice is set, the first item in the selector is used.
      * The choices have to be an indexed array of numeric values.
      *
@@ -1018,7 +993,7 @@ class UI_DataGrid
         }
 
         $cookieName = $this->getCookieName($name);
-        return setcookie($cookieName, strval($value), time() + 60 * 60 * 24 * 360);
+        return setcookie($cookieName, (string)$value, time() + 60 * 60 * 24 * 360);
     }
 
     /**
@@ -1120,16 +1095,19 @@ class UI_DataGrid
         return !empty($this->primaryKeyName);
     }
 
-    protected $tableClasses = array();
+    /**
+     * @var string[]
+     */
+    protected array $tableClasses = array();
 
    /**
     * Adds a class name that will be added to the data grid's main table HTML element.
     * @param string $class
-    * @return UI_DataGrid
+    * @return $this
     */
-    public function addTableClass(string $class) : UI_DataGrid
+    public function addTableClass(string $class) : self
     {
-        if(!in_array($class, $this->tableClasses)) {
+        if(!in_array($class, $this->tableClasses, true)) {
             $this->tableClasses[] = $class;
         }
 
@@ -1357,15 +1335,13 @@ class UI_DataGrid
             $texts[] = $msg['message'];
         }
 
-        $html = $this->ui->getPage()->renderWarningMessage(
+        return $this->ui->getPage()->renderWarningMessage(
             UI::icon()->warning() . ' ' .
             '<b>'.t('Please review your filter settings:').'</b> '.
             '<ul>'.
                 '<li>'.implode('</li><li>', $texts).'</li>'.
             '</ul>'
         );
-
-        return $html;
     }
 
     protected function renderEmptyMessage() : string
@@ -1376,11 +1352,11 @@ class UI_DataGrid
 
         $total = $this->getTotal();
 
-        if(isset($this->totalUnfiltered) && $this->totalUnfiltered != $total && $this->filterHint)
+        if(isset($this->totalUnfiltered) && $this->totalUnfiltered !== $total && $this->filterHint)
         {
             $diff = $this->totalUnfiltered - $total;
 
-            if($diff==1) {
+            if($diff===1) {
                 $diffMessage = t('%1$s item is hidden by the current filter settings.', '<b>1</b>');
             } else {
                 $diffMessage = t(
@@ -1434,15 +1410,14 @@ class UI_DataGrid
     * all array data sets to entry objects. Entries that
     * are already entry objects are not modified.
     *
-    * @param array $entries
+    * @param array<int,array<string,mixed>|UI_DataGrid_Entry> $entries
     * @return UI_DataGrid_Entry[]
     */
     protected function parseEntries(array $entries) : array
     {
         $result = array();
-        $total = count($entries);
-        for($i=0; $i<$total; $i++) {
-            $entry = $entries[$i];
+
+        foreach ($entries as $entry) {
             if(!$entry instanceof UI_DataGrid_Entry) {
                 $entry = $this->createEntry($entry);
             }
@@ -1450,9 +1425,7 @@ class UI_DataGrid
             $result[] = $entry;
         }
 
-        $result = $this->sortEntries($result);
-
-        return $result;
+        return $this->sortEntries($result);
     }
 
    /**
@@ -1540,17 +1513,14 @@ class UI_DataGrid
         return false;
     }
 
-    /**
-     * @var int
-     */
-    protected $duplicateHeadersThreshold = 8;
+    protected int $duplicateHeadersThreshold = 8;
 
     /**
      * @return $this
      * @deprecated
      * @see UI_DataGrid::disableFooter()
      */
-    public function hideFooter() : UI_DataGrid
+    public function hideFooter() : self
     {
         return $this->disableFooter();
     }
@@ -1598,7 +1568,7 @@ class UI_DataGrid
             if(isset($this->sumsRow))
             {
                 // Not using $this->renderRow(), because we do not want to
-                // use the odd/even styling for the sums row.
+                // use the odd/even styling for the row containing the sums.
                 $html .= $this->renderCells($this->sumsRow->getEntry(), false);
             }
 
@@ -1752,7 +1722,7 @@ class UI_DataGrid
 
         if (!$this->limitOptions)
         {
-            if($total==1) {
+            if($total===1) {
                 $label = t('1 entry.');
             } else {
                 $label = t('%1$s entries total.', $total);
@@ -1769,7 +1739,7 @@ class UI_DataGrid
         $from = $this->getOffset();
         $to = $this->getOffset() + $this->countEntries();
 
-        if($from==0) {
+        if($from===0) {
             $from = 1;
         }
 
@@ -1786,7 +1756,7 @@ class UI_DataGrid
             '<select name="datagrid_perpage" id="'.UI_Form::ID_PREFIX.'datagrid_perpage" class="input-small noprint" onchange="'.$this->getClientObjectName().'.ChangePerPage()">';
                 foreach ($this->limitChoices as $choice) {
                     $selected = null;
-                    if ($choice == $this->limitCurrent) {
+                    if ($choice === $this->limitCurrent) {
                         $selected = ' selected="selected"';
                     }
 
@@ -1810,7 +1780,7 @@ class UI_DataGrid
         return $html;
     }
 
-    protected $amountAdjacents = 3;
+    protected int $amountAdjacents = 3;
 
     protected function renderPageSelector() : string
     {
@@ -1867,7 +1837,7 @@ class UI_DataGrid
 
                 for ($i = $start; $i <= $end; $i++) {
                     $active = '';
-                    if ($i == $currentPage) {
+                    if ($i === $currentPage) {
                         $active = ' class="active"';
                     }
 
@@ -1915,7 +1885,7 @@ class UI_DataGrid
             } else {
                 for ($i = 1; $i <= $totalPages; $i++) {
                     $active = '';
-                    if ($i == $currentPage) {
+                    if ($i === $currentPage) {
                         $active = ' class="active"';
                     }
 
@@ -2031,7 +2001,7 @@ class UI_DataGrid
             return 0;
         }
 
-        return intval(ceil($this->getTotal() / $this->limitCurrent));
+        return (int)ceil($this->getTotal() / $this->limitCurrent);
     }
 
     public function getPage() : int
@@ -2049,9 +2019,9 @@ class UI_DataGrid
         return $page;
     }
 
-    protected $total = 0;
+    protected int $total = 0;
 
-    protected $totalSet = false;
+    protected bool $totalSet = false;
 
     public function setTotal(int $total) : UI_DataGrid
     {
@@ -2060,13 +2030,10 @@ class UI_DataGrid
         return $this;
     }
 
-    /**
-     * @var int|NULL
-     */
-    protected $totalUnfiltered = null;
+    protected ?int $totalUnfiltered = null;
 
     /**
-     * Sets the total amount of records without any filtering.
+     * Sets the total number of records without any filtering.
      * If no set, assumes the total is the unfiltered total.
      * Otherwise, displays information about filtered item counts
      * as needed.
@@ -2149,11 +2116,10 @@ class UI_DataGrid
     {
         $html =
         '<tbody>';
-            $total = count($this->entries);
-                for ($i = 0; $i < $total; $i++) {
-                    $html .= $this->renderRow($this->entries[$i]);
-                }
-            $html .=
+            foreach ($this->entries as $entry) {
+                $html .= $this->renderRow($entry);
+            }
+        $html .=
         '</tbody>';
 
         return $html;
@@ -2203,11 +2169,11 @@ class UI_DataGrid
         return $html;
     }
 
-    protected $callbacksExecuted = false;
+    protected bool $callbacksExecuted = false;
 
     /**
-     * Executes the action callbacks if the datagrid has been
-     * submitted, an action has been selected and any action
+     * Executes the action callbacks if the data grid has been
+     * submitted, an action has been selected, and any action
      * callbacks have been defined. Use this to automate the
      * handling of actions.
      */
@@ -2268,8 +2234,8 @@ class UI_DataGrid
 
    /**
     * Checks whether the grid is currently in batch processing mode.
-    * This is different from the list simply being in AJAX mode: the
-    * list can be in batch processing mode but not in AJAX mode.
+    * This is different from the list being in AJAX mode:
+    * The list can be in batch processing mode but not in AJAX mode.
     *
     * @return boolean
     */
@@ -2285,18 +2251,17 @@ class UI_DataGrid
 
     public function isBatchComplete() : bool
     {
-        if($this->isBatchProcessing() && $this->request->hasParam('datagrid_batch_complete')) {
-            return true;
-        }
-
-        return false;
+        return
+            $this->isBatchProcessing()
+            &&
+            $this->request->hasParam('datagrid_batch_complete');
     }
 
    /**
     * Retrieves the currently selected action, if any.
     * @return UI_DataGrid_Action|NULL
     */
-    public function getActiveAction()
+    public function getActiveAction() : ?UI_DataGrid_Action
     {
         if(!$this->isSubmitted() && !$this->isBatchProcessing()) {
             return null;
@@ -2304,17 +2269,16 @@ class UI_DataGrid
 
         $total = count($this->actions);
 
-        if($total == 0) {
+        if($total === 0) {
             return null;
         }
 
         $actionName = $this->getAction();
-        for ($i = 0; $i < $total; $i++) {
-            $action = $this->actions[$i];
+        foreach ($this->actions as $action) {
             if($action=='__separator') {
                 continue;
             }
-            if ($action->getName() == $actionName) {
+            if ($action->getName() === $actionName) {
                 return $action;
             }
         }
@@ -2362,7 +2326,6 @@ class UI_DataGrid
             $ids[] = $entry[$primary];
         }
 
-        $driver = Application_Driver::getInstance();
         $page = $this->ui->getPage();
         $varName = 'gproc'.nextJSID();
         $total = $this->getTotal();
@@ -2387,7 +2350,7 @@ class UI_DataGrid
 
         $this->ui->addProgressBar();
 
-        $this->addClientSupport();
+        self::addClientSupport();
         $this->ui->addJavascript('ui/datagrid/batch-processor.js');
 
         $this->ui->addJavascriptHead(sprintf('var %s = new UI_DataGrid_BatchProcessor()', $varName));
@@ -2421,16 +2384,10 @@ class UI_DataGrid
     * Whether the grid is currently in AJAX mode.
     * @return boolean
     */
-    public function isAjax()
+    public function isAjax() : bool
     {
-        if($this->isSubmitted() && $this->request->getBool('datagrid_ajax')) {
-            return true;
-        }
-
-        return false;
+        return $this->isSubmitted() && $this->request->getBool('datagrid_ajax');
     }
-
-
 
     protected ?string $title = null;
 
@@ -2447,12 +2404,12 @@ class UI_DataGrid
     }
 
     /**
-     * Renders the HTML code for the datagrid's title, which is displayed
+     * Renders the HTML code for the data grid's title, which is displayed
      * above the grid and within the container.
      *
      * @return string
      */
-    protected function renderTitle()
+    protected function renderTitle() : string
     {
         if (!isset($this->title)) {
             return '';
@@ -2469,24 +2426,24 @@ class UI_DataGrid
         '</div>';
     }
 
-    protected $fullViewTitle = '';
+    protected string $fullViewTitle = '';
 
    /**
     * Sets the title of the table when it is shown in the full view mode
     * (which is only available when the column controls are enabled).
     *
-    * @param string $title
-    * @return UI_DataGrid
+    * @param string|number|StringableInterface|NULL $title
+    * @return $this
     */
-    public function setFullViewTitle($title)
+    public function setFullViewTitle($title) : self
     {
-        $this->fullViewTitle = $title;
+        $this->fullViewTitle = toString($title);
         return $this;
     }
 
-    protected $entriesSortable = false;
+    protected bool $entriesSortable = false;
 
-    protected $sortableHandler;
+    protected string $sortableHandler = '';
 
    /**
     * Sets that the visible entries in the grid can be sorted
@@ -2494,11 +2451,11 @@ class UI_DataGrid
     * that will handle the sorting events for the list, as well
     * as provide additional configuration options.
     *
-    * @param string $clientsideHandler The name of a clientside variable holding the sorting events handler object
-    * @param string $primaryKeyName The name of the primary key in the records. Optional only if set separately.
-    * @return UI_DataGrid
+    * @param string|StringableInterface $clientsideHandler The name of a clientside variable holding the sorting events handler object
+    * @param string|NULL $primaryKeyName The name of the primary key in the records. Optional only if set separately.
+    * @return $this
     */
-    public function makeEntriesSortable($clientsideHandler, $primaryKeyName=null)
+    public function makeEntriesSortable($clientsideHandler, ?string $primaryKeyName=null) : self
     {
         if (!empty($primaryKeyName)) {
             $this->setPrimaryName($primaryKeyName);
@@ -2512,23 +2469,22 @@ class UI_DataGrid
         $this->ui->addJavascript('ui/datagrid/sortable/configuration.js');
 
         $this->entriesSortable = true;
-        $this->sortableHandler = $clientsideHandler;
+        $this->sortableHandler = toString($clientsideHandler);
 
         return $this;
     }
 
-    protected $entriesDroppable = false;
-
-    protected $droppableHandler;
+    protected bool $entriesDroppable = false;
+    protected string $droppableHandler = '';
 
    /**
     * Sets that elements may be dragged into the list to add new
     * entries.
     *
-    * @param string $clientsideHandler The name of a clientside variable holding the droppable events handler object
-    * @return UI_DataGrid
+    * @param string|StringableInterface $clientsideHandler The name of a clientside variable holding the droppable events handler object
+    * @return $this
     */
-    public function makeEntriesDroppable($clientsideHandler, $primaryKeyName=null)
+    public function makeEntriesDroppable($clientsideHandler, $primaryKeyName=null) : self
     {
         if (!empty($primaryKeyName)) {
             $this->setPrimaryName($primaryKeyName);
@@ -2542,7 +2498,7 @@ class UI_DataGrid
         $this->ui->addJavascript('ui/datagrid/droppable/configuration.js');
 
         $this->entriesDroppable = true;
-        $this->droppableHandler = $clientsideHandler;
+        $this->droppableHandler = toString($clientsideHandler);
 
         return $this;
     }
@@ -2551,7 +2507,7 @@ class UI_DataGrid
     * Checks whether the sortable entries feature is enabled.
     * @return boolean
     */
-    public function isEntriesSortable()
+    public function isEntriesSortable() : bool
     {
         return $this->entriesSortable;
     }
@@ -2559,7 +2515,7 @@ class UI_DataGrid
    /**
     * @return string|NULL
     */
-    public function getOrderBy()
+    public function getOrderBy() : ?string
     {
         $col = $this->getOrderColumn();
         if($col) {
@@ -2567,10 +2523,9 @@ class UI_DataGrid
         }
 
         return null;
-
     }
 
-    protected $defaultOrderDir = 'asc';
+    protected string $defaultOrderDir = 'asc';
 
    /**
     * Retrieves the selected direction in which to sort the grid.
@@ -2595,20 +2550,24 @@ class UI_DataGrid
         return $found;
     }
 
-    public function setDefaultOrderDir($dir)
+    /**
+     * @param string $dir
+     * @return $this
+     */
+    public function setDefaultOrderDir(string $dir) : self
     {
         $this->defaultOrderDir = $dir;
         return $this;
     }
 
-    protected $defaultSortColumn;
+    protected ?UI_DataGrid_Column $defaultSortColumn = null;
 
    /**
     * Sets the column to use as default sorting column.
     * @param UI_DataGrid_Column $column
-    * @return UI_DataGrid
+    * @return $this
     */
-    public function setDefaultSortColumn(UI_DataGrid_Column $column, $dir='ASC')
+    public function setDefaultSortColumn(UI_DataGrid_Column $column, string $dir='ASC') : self
     {
         $this->defaultSortColumn = $column;
         $this->setDefaultOrderDir($dir);
@@ -2616,10 +2575,10 @@ class UI_DataGrid
     }
 
    /**
-    * Adds the javascripts and stylesheets required to use the
-    * datagrid support clientside to build grids with the API.
+    * Adds the java scripts and stylesheets required to use the
+    * data grid support clientside to build grids with the API.
     */
-    public static function addClientSupport()
+    public static function addClientSupport() : void
     {
         $ui = UI::getInstance();
 
@@ -2630,15 +2589,15 @@ class UI_DataGrid
     }
 
     /**
-     * Configures the datagrid for the administration screen,
+     * Configures the data grid for the administration screen,
      * by setting all required hidden variables to stay on the
      * current page when using the pager.
      *
      * @param Application_Admin_ScreenInterface $screen
-     * @return UI_DataGrid
+     * @return $this
      * @throws Application_Exception
      */
-    public function configureForScreen(Application_Admin_ScreenInterface $screen)
+    public function configureForScreen(Application_Admin_ScreenInterface $screen) : self
     {
         $page = Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE;
         $mode = Application_Admin_ScreenInterface::REQUEST_PARAM_MODE;

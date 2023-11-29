@@ -15,7 +15,7 @@ use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\FileHelper_Exception;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Base class for custom filter setting implementations. This can
@@ -290,7 +290,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      * Registers a setting that is handled by the settings.
      *
      * @param string $name
-     * @param string|number|Interface_Stringable|NULL $label
+     * @param string|number|StringableInterface|NULL $label
      * @param mixed $default
      */
     protected function registerSetting(string $name, $label, $default=null) : void
@@ -488,10 +488,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this->enabledStatus[$name] !== false;
     }
     
-    /**
-     * @var UI_Form
-     */
-    protected $form;
+    protected UI_Form $form;
     
     /**
      * Creates the filter form instance and configures it
@@ -655,7 +652,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     }
 
     /**
-     * @param array<string,string|number|Interface_Stringable|NULL> $vars
+     * @param array<string,string|number|StringableInterface|NULL> $vars
      * @return $this
      */
     public function addHiddenVars(array $vars) : self
@@ -670,7 +667,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     /**
      * Adds a hidden var to the filter form.
      * @param string $name
-     * @param string|number|Interface_Stringable|NULL $value
+     * @param string|number|StringableInterface|NULL $value
      * @return $this
      */
     public function addHiddenVar(string $name, $value) : self
@@ -998,7 +995,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      *
      * @return string
      */
-    public function getJSName()
+    public function getJSName() : string
     {
         return 'lf'.$this->jsID;
     }
@@ -1009,10 +1006,10 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      *
      * @return boolean
      */
-    public function isActive()
+    public function isActive() : bool
     {
         foreach($this->definitions as $name => $def) {
-            if($this->getSetting($name) != $def['default']) {
+            if($this->getSetting($name) !== $def['default']) {
                 return true;
             }
         }
@@ -1052,7 +1049,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         $countries = Application_Driver::createCountries();
         
-        $value = intval($this->getSetting($name));
+        $value = (int)$this->getSetting($name);
         
         if(!empty($value) && $countries->idExists($value)) {
             return $countries->getByID($value);
@@ -1061,23 +1058,31 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return null;
     }
     
-    public function getJSSubmitHandler()
+    public function getJSSubmitHandler() : string
     {
         return $this->getJSName().'.Submit()';
     }
     
-    protected $hasMore = false;
-    
-    protected function addMoreEnd()
+    protected bool $hasMore = false;
+
+    /**
+     * @return $this
+     * @throws BaseClassHelperException
+     * @throws FileHelper_Exception
+     * @throws UI_Themes_Exception
+     */
+    protected function addMoreEnd() : self
     {
         if(!$this->hasMore) {
-            return;
+            return $this;
         }
         
         $tpl = $this->ui->getPage()->createTemplate('filtersettings/more-end');
         $tpl->setVar('settings', $this);
         
         $this->form->addHTML($tpl->render());
+
+        return $this;
     }
 
     /**

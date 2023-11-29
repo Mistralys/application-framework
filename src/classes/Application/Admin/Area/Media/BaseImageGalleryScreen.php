@@ -28,9 +28,6 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     private bool $hasItems;
     private PaginationRenderer $paginator;
     private int $totalCount;
-    /**
-     * @var false|float
-     */
     private int $maxPages;
 
     public function getDefaultSubmode(): string

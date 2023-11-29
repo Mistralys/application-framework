@@ -6,7 +6,6 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
-use AppUtils\Interface_Stringable;
 use AppUtils\OutputBuffering;
 
 class UI_Bootstrap_DropdownMenu extends UI_Bootstrap

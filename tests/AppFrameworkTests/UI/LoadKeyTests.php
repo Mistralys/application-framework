@@ -1,44 +1,46 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+declare(strict_types=1);
 
-final class Application_LoadKeysTest extends TestCase
+namespace AppFrameworkTests\UI;
+
+use PHPUnit\Framework\TestCase;
+use UI;
+use UI_ResourceManager;
+
+final class LoadKeyTests extends TestCase
 {
-   /**
-    * @var UI
-    */
-    protected $ui;
-    
-    protected function setUp() : void
+    protected ?UI $ui = null;
+
+    protected function setUp(): void
     {
-        if(!isset($this->ui))
-        {
+        if (!isset($this->ui)) {
             $this->ui = UI::getInstance();
         }
-        
+
         $this->ui->getResourceManager()->clearLoadkeys();
     }
 
-    public function test_loadScript()
+    public function test_loadScript(): void
     {
         $this->assertEmpty($this->ui->getResourceManager()->getLoadedResourceKeys());
     }
 
-    public function test_notAvoidable()
+    public function test_notAvoidable(): void
     {
         $this->assertFalse($this->ui->addJavascript('application.js')->isAvoidable());
     }
-    
-    public function test_avoidable()
+
+    public function test_avoidable(): void
     {
         $resourceManager = $this->ui->getResourceManager();
-        
+
         $loadkey = $this->ui->addJavascript('application.js')->getKey();
-        
+
         $resourceManager->clearLoadkeys();
-        
+
         $_REQUEST[UI_ResourceManager::LOADKEYS_REQUEST_VARIABLE] = $loadkey;
-        
+
         $this->assertNotEmpty($resourceManager->getLoadedResourceKeys());
         $this->assertTrue($this->ui->addJavascript('application.js')->isAvoidable());
     }

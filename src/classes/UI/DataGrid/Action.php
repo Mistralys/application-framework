@@ -58,7 +58,7 @@ abstract class UI_DataGrid_Action
     /**
      * @param UI_DataGrid $grid
      * @param string $name
-     * @param string|number|UI_Renderable_Interface $label
+     * @param string|number|UI_Renderable_Interface|NULL $label
      * @throws UI_Exception
      */
     public function __construct(UI_DataGrid $grid, string $name, $label)

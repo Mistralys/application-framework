@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use UI\Page\Help\Item\UnorderedListItem;
 
 /**
@@ -79,7 +79,7 @@ class UI_Page_Help extends UI_Renderable
     }
 
     /**
-     * @param array<int,string|int|float|Interface_Stringable|NULL>|string|int|float|Interface_Stringable|NULL ...$items
+     * @param array<int,string|int|float|StringableInterface|NULL>|string|int|float|StringableInterface|NULL ...$items
      * @return UnorderedListItem
      * @throws UI_Exception
      */

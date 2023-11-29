@@ -12,7 +12,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
 use UI\ClientResourceCollection;
@@ -381,7 +381,7 @@ class UI
     }
 
     /**
-     * @param string|number|Interface_Stringable|NULL $comment
+     * @param string|number|StringableInterface|NULL $comment
      * @return $this
      */
     public function addJavascriptHeadComment($comment=null) : self
@@ -390,7 +390,7 @@ class UI
     }
 
     /**
-     * @param string|number|Interface_Stringable|NULL $heading
+     * @param string|number|StringableInterface|NULL $heading
      * @return $this
      */
     public function addJavascriptHeadHeading($heading) : self
@@ -1370,7 +1370,7 @@ class UI
      *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
      *    is called, or if {@see TooltipInfo::injectJS()} is called.
      *
-     * @param string|int|float|Interface_Stringable|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return TooltipInfo
      */
     public static function tooltip($content) : TooltipInfo

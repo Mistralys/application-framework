@@ -1,7 +1,7 @@
 <?php
 
 use Application\AppFactory;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering_Exception;
 
 abstract class Application_Updaters_Updater  implements Application_Updaters_Interface
@@ -79,7 +79,7 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
 	}
 
     /**
-     * @param array<string,string|int|float|bool|Interface_Stringable|NULL> $params
+     * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
      * @return string
      */
 	public function buildURL(array $params=array()) : string

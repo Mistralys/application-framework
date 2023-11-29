@@ -12,7 +12,7 @@ use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\FileHelper;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\RegexHelper;
 use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
 use function AppUtils\parseVariable;
@@ -1378,7 +1378,7 @@ class UI_Form extends UI_Renderable
 
     /**
      * Adds arbitrary HTML code to the form.
-     * @param string|int|float|bool|Interface_Stringable|NULL $html
+     * @param string|int|float|bool|StringableInterface|NULL $html
      * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_InputText
      */

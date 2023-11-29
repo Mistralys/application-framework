@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use UI\Interfaces\TooltipableInterface;
 use UI\Traits\TooltipableTrait;
 
@@ -52,7 +52,7 @@ abstract class UI_Bootstrap_BaseDropdown
     }
 
     /**
-     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @return $this
      * @throws UI_Exception
      */
@@ -72,7 +72,7 @@ abstract class UI_Bootstrap_BaseDropdown
 
     /**
      * Creates and adds a new anchor menu item.
-     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
      *
@@ -84,10 +84,10 @@ abstract class UI_Bootstrap_BaseDropdown
     }
 
     /**
-     * Creates and adds a new anchor menu item that is
+     * Creates and adds a new anchor menu item
      * linked to the specified javascript statement.
      *
-     * @param string|int|float|Interface_Stringable|NULL $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @param string $statement
      * @return UI_Bootstrap_DropdownAnchor
      *
@@ -100,7 +100,7 @@ abstract class UI_Bootstrap_BaseDropdown
     
    /**
     * Adds a header to the dropdown, to group items.
-    * @param string|int|float|Interface_Stringable|NULL $label
+    * @param string|int|float|StringableInterface|NULL $label
     * @return UI_Bootstrap_DropdownHeader
     */
     public function addHeader($label) : UI_Bootstrap_DropdownHeader
@@ -115,7 +115,7 @@ abstract class UI_Bootstrap_BaseDropdown
     }
 
     /**
-     * @param string|int|float|Interface_Stringable|NULL $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return UI_Bootstrap_DropdownStatic
      * @throws UI_Exception
      */
