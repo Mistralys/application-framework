@@ -2,6 +2,7 @@
 - Code: Replaced all uses of the obsolete `Interface_Stringable` interface.
 - Code: Replaced all uses of the obsolete `Interface_Classable` interface.
 - Code: Replaced all uses of the obsolete `Interface_Optionable` interface.
+- Code: Modernized some classes, added type hints.
 
 ### v3.0.1 - Media Gallery update
 - MediaGallery: Added the missing pagination in the image gallery.
