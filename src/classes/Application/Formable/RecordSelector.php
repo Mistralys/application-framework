@@ -9,9 +9,6 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
-
 /**
  * Base class for select elements that allow choosing
  * items of a DBHelper collection. Can inject the target

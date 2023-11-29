@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use AppUtils\FileHelper_Exception;
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
-class Application_User_Recent_Category implements Interface_Optionable, Application_Interfaces_Loggable, Application_Interfaces_Iconizable
+class Application_User_Recent_Category implements OptionableInterface, Application_Interfaces_Loggable, Application_Interfaces_Iconizable
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     use Application_Traits_Loggable;
     use Application_Traits_Iconizable;
 

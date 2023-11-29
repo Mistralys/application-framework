@@ -1,22 +1,22 @@
 <?php
 
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\NamedClosure;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
-use AppUtils\Traits_Classable;
+use AppUtils\Traits\ClassableTrait;
 
 abstract class UI_DataGrid_Action
     implements
     Application_Interfaces_Iconizable,
     UI_Interfaces_Conditional,
     UI_Renderable_Interface,
-    Interface_Classable
+    ClassableInterface
 {
     use Application_Traits_Iconizable;
     use UI_Traits_RenderableGeneric;
     use UI_Traits_Conditional;
-    use Traits_Classable;
+    use ClassableTrait;
     
     /**
      * @var string

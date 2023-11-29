@@ -1,13 +1,15 @@
 <?php
 
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
-class UI_Page_Title extends UI_Renderable implements Application_Interfaces_Iconizable, Interface_Classable
+class UI_Page_Title extends UI_Renderable
+    implements
+    Application_Interfaces_Iconizable,
+    ClassableInterface
 {
     use Application_Traits_Iconizable;
-    
-    use Traits_Classable;
+    use ClassableTrait;
     
    /**
     * @var string

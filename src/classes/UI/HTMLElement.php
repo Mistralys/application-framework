@@ -1,5 +1,4 @@
 <?php
-
 /**
  * File containing the {@link UI_HTMLElement} class.
  * 
@@ -8,8 +7,8 @@
  * @see UI_HTMLElement
  */
 
-use AppUtils\Interface_Classable;
-use AppUtils\Traits_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Base class for dynamically generated HTML UI elements. Offers
@@ -20,15 +19,17 @@ use AppUtils\Traits_Classable;
  * @subpackage UI
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class UI_HTMLElement extends UI_Renderable implements UI_Renderable_Interface, Interface_Classable
+abstract class UI_HTMLElement extends UI_Renderable
+    implements
+    ClassableInterface
 {
-    use Traits_Classable;
+    use ClassableTrait;
     
-    protected $attributes = array();
+    protected array $attributes = array();
     
-    protected $styles = array();
+    protected array $styles = array();
     
-    protected $tooltip = false;
+    protected bool $tooltip = false;
     
     protected function initRenderable() : void
     {

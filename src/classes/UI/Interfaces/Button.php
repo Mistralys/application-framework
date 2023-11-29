@@ -1,11 +1,11 @@
 <?php
 
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
 
 interface UI_Interfaces_Button
     extends
     Application_Interfaces_Iconizable,
-    Interface_Classable,
+    ClassableInterface,
     Application_LockableItem_Interface,
     UI_Interfaces_ClientConfirmable,
     UI_Interfaces_Conditional

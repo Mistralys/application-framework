@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Navigation handling class: used for the main navigation
@@ -20,9 +20,9 @@ use AppUtils\Interface_Classable;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
  */
-class UI_Page_Navigation extends UI_Renderable implements Interface_Classable
+class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
 {
-    use Traits_Classable;
+    use ClassableTrait;
 
     private string $id;
     private int $counter = 0;

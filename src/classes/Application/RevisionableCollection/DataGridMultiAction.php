@@ -1,42 +1,32 @@
-<?php 
+<?php
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+declare(strict_types=1);
 
-abstract class Application_RevisionableCollection_DataGridMultiAction implements Interface_Optionable, Application_Interfaces_Iconizable
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\StringableInterface;
+use AppUtils\Traits\OptionableTrait;
+
+abstract class Application_RevisionableCollection_DataGridMultiAction implements OptionableInterface, Application_Interfaces_Iconizable
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     
-   /**
-    * @var Application_Admin_Skeleton
-    */
-    protected $adminScreen;
-    
-   /**
-    * @var UI_DataGrid
-    */
-    protected $grid;
-    
-    protected $initDone = false;
-    
-    protected $redirectURL;
-    
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
+    protected Application_Admin_Skeleton $adminScreen;
+    protected UI_DataGrid $grid;
+    protected bool $initDone = false;
+    protected string $redirectURL;
+    protected Application_RevisionableCollection $collection;
+    protected UI_DataGrid_Action $action;
+    protected string $id;
 
-   /**
-    * @var UI_DataGrid_Action
-    */
-    protected $action;
-    
-   /**
-    * @var string
-    */
-    protected $id;
-    
-    public function __construct(Application_RevisionableCollection $collection, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, $label, $redirectURL)
+    /**
+     * @param Application_RevisionableCollection $collection
+     * @param Application_Admin_Skeleton $adminScreen
+     * @param UI_DataGrid $grid
+     * @param string|number|StringableInterface $label
+     * @param string $redirectURL
+     * @throws UI_Exception
+     */
+    public function __construct(Application_RevisionableCollection $collection, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, $label, string $redirectURL)
     {
         $this->collection = $collection;
         $this->adminScreen = $adminScreen;
@@ -64,7 +54,7 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
     * Retrieves the data grid action instance.
     * @return UI_DataGrid_Action
     */
-    public function getAction()
+    public function getAction(): UI_DataGrid_Action
     {
         return $this->action;
     }
@@ -82,7 +72,7 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
     
     abstract protected function processEntry(Application_RevisionableCollection_DBRevisionable $revisionable);
     
-    public function callback_process(UI_DataGrid_Action $action, $ids)
+    public function callback_process(UI_DataGrid_Action $action, $ids): void
     {
         $this->adminScreen->startTransaction();
         
@@ -105,7 +95,7 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
         
         $amount = count($processed);
 
-        if($amount == 0) {
+        if($amount === 0) {
             $this->adminScreen->redirectWithInfoMessage(
                 t(
                     'No %1$s were selected to which the action could be applied.',
@@ -115,7 +105,7 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
             );
         }
         
-        if($amount == 1) {
+        if($amount === 1) {
             $this->adminScreen->redirectWithSuccessMessage(
                 $this->getSingleMessage($processed[0]),
                 $this->redirectURL
@@ -127,8 +117,14 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
             $this->redirectURL
         );
     }
-    
-    public function setConfirmMessage($message, $withInput=false)
+
+    /**
+     * @param string|number|StringableInterface $message
+     * @param bool $withInput
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setConfirmMessage($message, bool $withInput=false) : self
     {
         $this->action->makeConfirm($message, $withInput);
         return $this;
@@ -153,20 +149,31 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
     {
         return $this->action->getIcon();
     }
-    
-    public function makeDangerous()
+
+    /**
+     * @return $this
+     */
+    public function makeDangerous() : self
     {
         $this->action->makeDangerous();
         return $this;
     }
-    
-    public function makeSuccess()
+
+    /**
+     * @return $this
+     */
+    public function makeSuccess() : self
     {
         $this->action->makeSuccess();
         return $this;
     }
-    
-    public function setTooltip($text)
+
+    /**
+     * @param string|number|StringableInterface|NULL $text
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTooltip($text) : self
     {
         $this->action->setTooltip($text);
         return $this;

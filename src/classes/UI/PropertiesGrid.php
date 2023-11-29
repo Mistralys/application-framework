@@ -1,33 +1,43 @@
 <?php
+/**
+ * @package UserInterface
+ * @subpackage Helpers
+ * @see UI_PropertiesGrid
+ */
 
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+use AppUtils\Traits\OptionableTrait;
 use UI\PropertiesGrid\Property\MarkdownGridProperty;
 
-class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, UI_Interfaces_Conditional
+/**
+ * Specialized table view used to display item
+ * properties, with the property names on the
+ * right side.
+ *
+ * @package UserInterface
+ * @subpackage Helpers
+ */
+class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI_Interfaces_Conditional
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     use UI_Traits_Conditional;
 
     public const ERROR_ONLY_NUMERIC_VALUES_ALLOWED = 599502;
-    const OPTION_LABEL_WIDTH = 'label-width-percent';
-    const DEFAULT_LABEL_WIDTH = 20; // percent
+    public const OPTION_LABEL_WIDTH = 'label-width-percent';
+    public const DEFAULT_LABEL_WIDTH = 20; // percent
 
-    /**
-    * @var string
-    */
-    protected $id;
+    protected string $id;
 
    /**
     * @var UI_PropertiesGrid_Property[]
     */
-    protected $properties = array();
+    protected array $properties = array();
 
     public function __construct(UI_Page $page, string $id = '')
     {
@@ -145,7 +155,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     }
 
     /**
-     * Adds a text that will be rendered as markdown formatted text.
+     * Adds a text that will be rendered as Markdown formatted text.
      *
      * @param string|number|UI_Renderable_Interface|NULL $markdownText
      * @return MarkdownGridProperty
@@ -159,7 +169,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     }
 
     /**
-     * Adds an amount of bytes, which are converted to a readable human format.
+     * Adds a number of bytes, which are converted to a readable human format.
      *
      * @param string|number|UI_Renderable_Interface $label
      * @param int $bytes
@@ -233,13 +243,14 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
      *
      * @param Application_Revisionable $revisionable
      * @param string|NULL $changelogURL Optional URL to the changelog; Adds a button to view the changelog.
-     * @return UI_PropertiesGrid
+     * @return $this
+     *
      * @throws Application_Exception
      * @throws DBHelper_Exception
      * @throws UI_Exception
      * @throws ConvertHelper_Exception
      */
-    public function injectRevisionDetails(Application_Revisionable $revisionable, $changelogURL = null)
+    public function injectRevisionDetails(Application_Revisionable $revisionable, ?string $changelogURL = null) : self
     {
         $user = Application::getUser();
 
@@ -316,7 +327,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
                 $this->add(t('Comments'), $revisionable->getRevisionComments())->ifEmpty('<span class="muted">' . t('No comments') . '</span>');
             }
 
-            // restore the revision so we do not inadvertently work with older revisions
+            // restore the revision, so we do not inadvertently work with older revisions
             $revisionable->selectLatestRevision();
         }
 
@@ -358,7 +369,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
      * @return string
      * @throws OutputBuffering_Exception
      */
-    protected function _render()
+    protected function _render() : string
     {
         if(!$this->isValid()) {
             return '';
@@ -405,7 +416,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
 
     /**
      * Retrieves the current value of the label width
-     * percentage, which is used for the labels column.
+     * percentage, which is used for the label column.
      *
      * @return int|float
      */
@@ -415,7 +426,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     }
 
     /**
-     * Sets the percentual width of the labels column.
+     * Sets the percentual width of the label column.
      *
      * @param int|float $percent
      * @throws Application_Exception
@@ -469,7 +480,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
     }
 
    /**
-    * If the properties grid has been set to render as
+    * If the property grid has been set to render as
     * a section using {@link makeSection()}, this returns
     * the section instance for further configuration.
     * 
@@ -485,10 +496,7 @@ class UI_PropertiesGrid extends UI_Renderable implements Interface_Optionable, U
         return $this->render();
     }
 
-    /**
-     * @var bool|NULL
-     */
-    protected $collapsed = null;
+    protected ?bool $collapsed = null;
     
    /**
     * Collapses or un-collapses the grid. Has no effect

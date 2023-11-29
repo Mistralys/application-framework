@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
-class Application_Driver_AdminInfo implements Interface_Optionable
+class Application_Driver_AdminInfo implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     
    /**
     * @var string

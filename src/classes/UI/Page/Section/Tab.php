@@ -1,30 +1,38 @@
 <?php
 
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Optionable;
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\StringableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 class UI_Page_Section_Tab
     extends UI_Renderable
     implements
-    Interface_Optionable,
+    OptionableInterface,
     Application_Interfaces_Iconizable
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     use Application_Traits_Iconizable;
     
-    protected $section;
-    
-    protected $name;
-    
-    protected $label;
-    
-    public function __construct(UI_Page_Section $section, $name, $label)
+    protected UI_Page_Section $section;
+    protected string $name;
+    protected string $label;
+
+    /**
+     * @param UI_Page_Section $section
+     * @param string $name
+     * @param string|number|StringableInterface $label
+     * @throws UI_Exception
+     */
+    public function __construct(UI_Page_Section $section, string $name, $label)
     {
         parent::__construct($section->getPage());
 
         $this->section = $section;
         $this->name = $name;
-        $this->label = $label;
+        $this->label = toString($label);
     }
 
     public function getDefaultOptions() : array
@@ -35,39 +43,36 @@ class UI_Page_Section_Tab
    /**
     * @return string
     */
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
     
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
     
-   /**
-    * @return UI_Page_Section
-    */
-    public function getSection()
+    public function getSection() : UI_Page_Section
     {
         return $this->section;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return '';
     }
 
-    const TARGET_LINK = 'link';
+    public const TARGET_LINK = 'link';
     
    /**
     * Specifies a URL to have the tab link to.
     * 
     * @param string $url
     * @param string|NULL $target The target window to load the URL in
-    * @return UI_Page_Section_Tab
+    * @return $this
     */
-    public function link($url, $target=null)
+    public function link(string $url, ?string $target=null) : self
     {
         return $this->setTarget(
             self::TARGET_LINK, 
@@ -77,10 +82,18 @@ class UI_Page_Section_Tab
             )
         );
     }
-        
-    protected $target;
-    
-    protected function setTarget($type, $config)
+
+    /**
+     * @var array{type:string,config:array<string,mixed>}|null
+     */
+    protected ?array $target = null;
+
+    /**
+     * @param string $type
+     * @param array<string,mixed> $config
+     * @return $this
+     */
+    protected function setTarget(string $type, array $config = array()) : self
     {
         $this->target = array(
             'type' => $type,
@@ -90,7 +103,7 @@ class UI_Page_Section_Tab
         return $this;
     }
     
-    public function isActive()
+    public function isActive() : bool
     {
         if(!isset($this->target)) {
             return false;
@@ -106,7 +119,7 @@ class UI_Page_Section_Tab
                     return false;
                 }
                 
-                $params = \AppUtils\ConvertHelper::parseQueryString($info['query']);
+                $params = ConvertHelper::parseQueryString($info['query']);
                 
                 $request = Application_Request::getInstance();
                 
@@ -127,7 +140,7 @@ class UI_Page_Section_Tab
     public function getURL() : string
     {
         if($this->isLink()) {
-            return strval($this->target['config']['url']);
+            return $this->target['config']['url'] ?? '';
         }
         
         return '';
@@ -136,7 +149,7 @@ class UI_Page_Section_Tab
     public function getURLTarget() : string
     {
         if($this->isLink()) {
-            return strval($this->target['config']['target']);
+            return $this->target['config']['target'] ?? '';
         }
 
         return '';
@@ -152,7 +165,7 @@ class UI_Page_Section_Tab
         return $this->isTargetType(self::TARGET_LINK);
     }
     
-    public function renderLabel()
+    public function renderLabel() : string
     {
         $label = $this->getLabel();
         

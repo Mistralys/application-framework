@@ -8,8 +8,8 @@
  */
 
 use AppUtils\ConvertHelper;
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Container for a single row in a data grid. Offers an API
@@ -21,9 +21,9 @@ use AppUtils\Interface_Classable;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @implements ArrayAccess<string,mixed>
  */
-class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
+class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
 {
-    use Traits_Classable;
+    use ClassableTrait;
 
     public const ERROR_MISSING_PRIMARY_VALUE = 536001;
     

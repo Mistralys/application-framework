@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * Base class for select elements that allow choosing
@@ -23,51 +23,36 @@ use AppUtils\Interface_Optionable;
  * @subpackage Formable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_Formable_Selector implements Interface_Optionable
+abstract class Application_Formable_Selector implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
 
-    const DEFAULT_CATEGORY_NAME = '__default';
-    const OPTION_MAX_SIZE = 'max-size';
-    const OPTION_MAX_HEIGHT = 'max-height';
-    const OPTION_IS_MULTISELECT = 'multiselect';
-    const OPTION_IS_SELECT_ALL_ENABLED = 'select-all';
-    const OPTION_IS_SORTING_ENABLED = 'sorting';
-    const OPTION_SORTING_CALLBACK = 'sorting-callback';
-    const OPTION_IS_PLEASE_SELECT_ENABLED = 'please-select';
-    const OPTION_PLEASE_SELECT_LABEL = 'please-select-label';
-    const OPTION_IS_REQUIRED = 'required';
-    const OPTION_IS_MULTIPLE = 'multiple';
-    const OPTION_EMPTY_MESSAGE = 'empty-message';
-    const OPTION_COMMENTS = 'comment';
-    const OPTION_LABEL = 'label';
-    const OPTION_NAME = 'name';
-    const OPTION_ENABLED_IF_EMPTY = 'enabled-if-empty';
+    public const DEFAULT_CATEGORY_NAME = '__default';
+    public const OPTION_MAX_SIZE = 'max-size';
+    public const OPTION_MAX_HEIGHT = 'max-height';
+    public const OPTION_IS_MULTISELECT = 'multiselect';
+    public const OPTION_IS_SELECT_ALL_ENABLED = 'select-all';
+    public const OPTION_IS_SORTING_ENABLED = 'sorting';
+    public const OPTION_SORTING_CALLBACK = 'sorting-callback';
+    public const OPTION_IS_PLEASE_SELECT_ENABLED = 'please-select';
+    public const OPTION_PLEASE_SELECT_LABEL = 'please-select-label';
+    public const OPTION_IS_REQUIRED = 'required';
+    public const OPTION_IS_MULTIPLE = 'multiple';
+    public const OPTION_EMPTY_MESSAGE = 'empty-message';
+    public const OPTION_COMMENTS = 'comment';
+    public const OPTION_LABEL = 'label';
+    public const OPTION_NAME = 'name';
+    public const OPTION_ENABLED_IF_EMPTY = 'enabled-if-empty';
 
-    /**
-     * @var Application_Interfaces_Formable
-     */
-    protected $formable;
-
-    /**
-     * @var UI
-     */
-    protected $ui;
-
-    /**
-     * @var HTML_QuickForm2_Element_Select
-     */
-    protected $element;
+    protected Application_Interfaces_Formable $formable;
+    protected UI $ui;
+    private bool $loaded = false;
+    protected HTML_QuickForm2_Element_Select $element;
 
     /**
      * @var Application_Formable_RecordSelector_Entry[]
      */
-    protected $entries = array();
-
-    /**
-     * @var bool
-     */
-    private $loaded = false;
+    protected array $entries = array();
 
     public function __construct(Application_Interfaces_Formable $formable)
     {
@@ -122,7 +107,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param string $name
      * @return $this
      */
-    public function setName(string $name)
+    public function setName(string $name) : self
     {
         $this->setOption(self::OPTION_NAME, $name);
         return $this;
@@ -136,7 +121,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param bool $enabled
      * @return $this
      */
-    public function enablePleaseSelect(bool $enabled=true)
+    public function enablePleaseSelect(bool $enabled=true) : self
     {
         $this->setOption(self::OPTION_IS_PLEASE_SELECT_ENABLED, $enabled);
         return $this;
@@ -148,7 +133,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param bool $enabled
      * @return $this
      */
-    public function enableSelectAll(bool $enabled=true)
+    public function enableSelectAll(bool $enabled=true) : self
     {
         $this->setOption(self::OPTION_IS_SELECT_ALL_ENABLED, $enabled);
         return $this;
@@ -160,7 +145,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param string $label
      * @return $this
      */
-    public function setPleaseSelectLabel(string $label)
+    public function setPleaseSelectLabel(string $label) : self
     {
         $this->setOption(self::OPTION_PLEASE_SELECT_LABEL, $label);
         return $this;
@@ -170,14 +155,13 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * Sets the maximum size of the select element
      * when it is in multiple mode.
      *
-     * NOTE: Only has an effect on the standard
-     * select element. The multiselect element does
-     * not use a size.
+     * NOTE: It only affects the standard select element.
+     * The multiselect element does not use a size.
      *
      * @param int $size
      * @return $this
      */
-    public function setMaxSize(int $size)
+    public function setMaxSize(int $size) : self
     {
         if($size >= 1)
         {
@@ -196,7 +180,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      *
      * @return $this
      */
-    public function makeMultiselect()
+    public function makeMultiselect() : self
     {
         $this->setOption(self::OPTION_IS_MULTISELECT, true);
         return $this;
@@ -207,7 +191,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      *
      * @return $this
      */
-    public function makeMultiple()
+    public function makeMultiple() : self
     {
         $this->setOption(self:: OPTION_IS_MULTIPLE, true);
         return $this;
@@ -217,7 +201,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param bool $required
      * @return $this
      */
-    public function makeRequired(bool $required=true)
+    public function makeRequired(bool $required=true) : self
     {
         $this->setOption(self::OPTION_IS_REQUIRED, $required);
         return $this;
@@ -227,7 +211,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param string $label
      * @return $this
      */
-    public function setLabel(string $label)
+    public function setLabel(string $label) : self
     {
         $this->setOption(self::OPTION_LABEL, $label);
         return $this;
@@ -262,7 +246,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @return $this
      * @throws UI_Exception
      */
-    public function setComment($comment)
+    public function setComment($comment) : self
     {
         $this->setOption(self::OPTION_COMMENTS, toString($comment));
         return $this;
@@ -275,13 +259,14 @@ abstract class Application_Formable_Selector implements Interface_Optionable
 
     /**
      * Whether to display the selector element even if there
-     * are no items to select. Automatically enables the please
-     * select item option.
+     * are no items to select.
+     *
+     * Note: This automatically enables the "Please select..." option.
      *
      * @param bool $enable
      * @return $this
      */
-    public function enableIfEmpty(bool $enable=true)
+    public function enableIfEmpty(bool $enable=true) : self
     {
         $this->enablePleaseSelect();
 
@@ -293,7 +278,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param string $message
      * @return $this
      */
-    public function setEmptyMessage(string $message)
+    public function setEmptyMessage(string $message) : self
     {
         $this->setOption(self::OPTION_EMPTY_MESSAGE, $message);
         return $this;
@@ -562,7 +547,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param bool $enable
      * @return $this
      */
-    public function enableSorting(bool $enable=true)
+    public function enableSorting(bool $enable=true) : self
     {
         $this->setOption(self::OPTION_IS_SORTING_ENABLED, $enable);
         return $this;
@@ -575,7 +560,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
      * @param callable $callback
      * @return $this
      */
-    public function setSortingCallback(callable $callback)
+    public function setSortingCallback(callable $callback) : self
     {
         $this->setOption(self::OPTION_SORTING_CALLBACK, $callback);
         return $this;
@@ -584,7 +569,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
     /**
      * @return callable
      */
-    protected function resolveSortingCallback()
+    protected function resolveSortingCallback() : callable
     {
         $callback = $this->getOption(self::OPTION_SORTING_CALLBACK);
 
@@ -593,7 +578,7 @@ abstract class Application_Formable_Selector implements Interface_Optionable
             return $callback;
         }
 
-        return function(Application_Formable_RecordSelector_Entry $a, Application_Formable_RecordSelector_Entry $b)
+        return static function(Application_Formable_RecordSelector_Entry $a, Application_Formable_RecordSelector_Entry $b) : int
         {
             return strnatcasecmp($a->getLabel(), $b->getLabel());
         };

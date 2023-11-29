@@ -10,8 +10,8 @@
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * A content renderer is automatically given to each UI_Page instance,
@@ -19,22 +19,22 @@ use AppUtils\Interface_Optionable;
  * page title, abstract, etc., as well as to hold the content that is
  * shown in the page.
  * 
- * NOTE: implements the renderable interface, but does not extend the 
- * renderable class because of timing issues.
+ * NOTE: implements the Renderable interface, but does not extend the
+ * Renderable class because of timing issues.
  * 
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Themes_Theme_ContentRenderer implements Interface_Optionable, UI_Renderable_Interface
+class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Renderable_Interface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     use UI_Traits_RenderableGeneric;
     
    /**
     * @var array<string,string>
     */
-    protected $templates = array(
+    protected array $templates = array(
         'false' => 'frame.content.without-sidebar',
         'true' => 'frame.content.with-sidebar'
     );
@@ -96,7 +96,7 @@ class UI_Themes_Theme_ContentRenderer implements Interface_Optionable, UI_Render
     
    /**
     * Sets the page title. This is used as the browser title
-    * as well, if the page has not been given a specific title.
+    * as well if the page has not been given a specific title.
     * 
     * @param string|number|UI_Renderable_Interface $title
     * @return UI_Themes_Theme_ContentRenderer
@@ -133,7 +133,7 @@ class UI_Themes_Theme_ContentRenderer implements Interface_Optionable, UI_Render
     }
     
    /**
-    * Sets a subtitle for the page, shown before the abstract and above the subnavigation.
+    * Sets a subtitle for the page, shown above the abstract and the subnavigation.
     * 
     * @param string|number|UI_Renderable_Interface $subtitle
     * @return UI_Themes_Theme_ContentRenderer

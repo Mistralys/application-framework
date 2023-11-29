@@ -8,8 +8,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * Abstract base class for contexts used when a
@@ -20,34 +20,15 @@ use AppUtils\Traits_Optionable;
  * @subpackage DBHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseCollection_OperationContext implements Interface_Optionable
+abstract class DBHelper_BaseCollection_OperationContext implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
 
-    /**
-     * @var string
-     */
-    protected $contextID;
-
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
-
-    /**
-     * @var DBHelper_BaseRecord
-     */
-    protected $record;
-
-    /**
-     * @var bool
-     */
-    protected $silent = false;
-
-    /**
-     * @var int 
-     */
-    protected static $contextIDCounter = 0;
+    protected string $contextID;
+    protected DBHelper_BaseCollection $collection;
+    protected DBHelper_BaseRecord $record;
+    protected bool $silent = false;
+    protected static int $contextIDCounter = 0;
 
     public function __construct(DBHelper_BaseRecord $record)
     {
