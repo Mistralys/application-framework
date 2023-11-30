@@ -29,6 +29,7 @@ class template_default_news_entry_article extends UI_Page_Template_Custom
                 <div class="news-article-meta">
                     <ul>
                         <li><?php pts('By %1$s', $this->article->getAuthor()->getName()); ?></li>
+                        <li><?php pts('Created on:'); echo ConvertHelper::date2listLabel($this->article->getDateCreated(), true, true) ?></li>
                         <li><?php pts('Last modified:'); echo ConvertHelper::date2listLabel($this->article->getDateModified(), true, true) ?></li>
                         <?php
                         if($manager->hasCategories()) {
