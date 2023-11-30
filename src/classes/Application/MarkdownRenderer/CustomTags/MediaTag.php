@@ -97,9 +97,12 @@ class MediaTag extends BaseCustomTag
 
         $tag = HTMLTag::create('img')
             ->setSelfClosing()
+            ->addClass('visual')
             ->attr('src', $document->getThumbnailURL($this->getWidth()))
-            ->attr('alt', '');
+            ->attr('alt', $document->getName());
 
-        return (string)$tag;
+        return (string)HTMLTag::create('a')
+            ->attr('href', $document->getThumbnailURL())
+            ->setContent($tag);
     }
 }
