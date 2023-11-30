@@ -41,7 +41,7 @@ class template_default_news_entry_article extends UI_Page_Template_Custom
                         ?>
                     </ul>
                 </div>
-                <div class="news-article-body">
+                <div class="news-article-body <?php echo implode(' ', $this->bodyClasses) ?>">
                     <?php echo $this->renderBody(); ?>
                 </div>
             </article>
@@ -55,6 +55,7 @@ class template_default_news_entry_article extends UI_Page_Template_Custom
 
     protected NewsArticle $article;
     protected bool $showTitle = true;
+    protected array $bodyClasses = array();
 
     protected function preRender(): void
     {
