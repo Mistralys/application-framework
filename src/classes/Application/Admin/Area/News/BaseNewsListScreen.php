@@ -7,6 +7,7 @@ namespace Application\Admin\Area\News;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application\NewsCentral\NewsFilterCriteria;
 use Application_Admin_Area_Mode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
@@ -20,6 +21,7 @@ use UI_DataGrid_Action;
 
 /**
  * @property NewsCollection $collection
+ * @property NewsFilterCriteria $filters
  */
 abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_CollectionList
 {
@@ -56,11 +58,16 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Collection
         return array(
             self::COLUMN_ID => $newsEntry->getID(),
             self::COLUMN_TYPE => $newsEntry->getType()->getIcon(),
-            self::COLUMN_LABEL => $newsEntry->getLabelLinked(),
+            self::COLUMN_LABEL => sb()->add($newsEntry->getLabelLinked())->add($newsEntry->getSchedulingBadge()),
             self::COLUMN_STATUS => $newsEntry->getStatus()->getIconLabel(),
             self::COLUMN_AUTHOR => $newsEntry->getAuthor()->getName(),
             self::COLUMN_MODIFIED => ConvertHelper::date2listLabel($newsEntry->getDateModified(), true, true),
         );
+    }
+
+    protected function configureFilters(): void
+    {
+        $this->filters->selectSchedulingEnabled(false);
     }
 
     protected function configureColumns(): void
