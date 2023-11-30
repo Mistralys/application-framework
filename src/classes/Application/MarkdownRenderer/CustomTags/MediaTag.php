@@ -14,8 +14,9 @@ use AppUtils\HTMLTag;
 /**
  * Detects media tags:
  *
- * <code>{media: 9}</code>
+ * <code>{media: 42}</code>
  * <code>{media: 42 width="400"}</code>
+ * <code>{media: 42 title="Optional image title attribute"}</code>
  */
 class MediaTag extends BaseCustomTag
 {
@@ -85,6 +86,16 @@ class MediaTag extends BaseCustomTag
         return null;
     }
 
+    public function getTitle() : ?string
+    {
+        $title = trim($this->getAttribute('title'));
+        if(!empty($title)) {
+            return $title;
+        }
+
+        return null;
+    }
+
     public function render(): string
     {
         $document = $this->getDocument();
@@ -99,7 +110,8 @@ class MediaTag extends BaseCustomTag
             ->setSelfClosing()
             ->addClass('visual')
             ->attr('src', $document->getThumbnailURL($this->getWidth()))
-            ->attr('alt', $document->getName());
+            ->attr('alt', $document->getName())
+            ->attr('title', $this->getTitle());
 
         return (string)HTMLTag::create('a')
             ->attr('href', $document->getThumbnailURL())
