@@ -173,7 +173,9 @@ EOT;
 
             ->field('{news_primary}', self::PRIMARY_NAME)
             ->field('{news_type}', self::COL_NEWS_TYPE)
-            ->field('{categories_primary}', CategoriesCollection::PRIMARY_NAME);
+            ->field('{categories_primary}', CategoriesCollection::PRIMARY_NAME)
+            ->field('{date_scheduled_from}', self::COL_SCHEDULED_FROM_DATE)
+            ->field('{date_scheduled_to}', self::COL_SCHEDULED_TO_DATE);
     }
 
     /**
