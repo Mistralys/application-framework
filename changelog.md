@@ -4,6 +4,8 @@
 - News: Enabled the scheduling feature.
 - News: Tweaked the news layout for readability.
 - News: Added a "Scheduling" badge when enabled.
+- News: Added basic image styling.
+- News: Adjusted heading sizes.
 
 ### v3.0.2 - Maintenance update
 - Code: Replaced all uses of the obsolete `Interface_Stringable` interface.
