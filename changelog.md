@@ -1,3 +1,10 @@
+### v3.0.3 - Bugfix release
+- MediaGallery: Fixed the image upload failing because of the missing file size.
+- News: Added modified and created date fields in the settings.
+- News: Enabled the scheduling feature.
+- News: Tweaked the news layout for readability.
+- News: Added a "Scheduling" badge when enabled.
+
 ### v3.0.2 - Maintenance update
 - Code: Replaced all uses of the obsolete `Interface_Stringable` interface.
 - Code: Replaced all uses of the obsolete `Interface_Classable` interface.
