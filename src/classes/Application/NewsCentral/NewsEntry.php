@@ -23,6 +23,7 @@ use NewsCentral\Entries\EntryCategoriesManager;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 use UI;
+use UI_Badge;
 use function AppUtils\valBoolTrue;
 
 /**
@@ -104,21 +105,61 @@ class NewsEntry extends DBHelper_BaseRecord
         return $this->categoriesManager;
     }
 
-    public function getSchedulingBadge() : ?\UI_Badge
+    public function getSchedulingBadge() : ?UI_Badge
     {
         if(!$this->hasScheduling()) {
             return null;
         }
 
-        return UI::label(t('Scheduled'))
-            ->setIcon(UI::icon()->time())
-            ->setTooltip(t('This news entry has scheduling enabled.'))
-            ->makeInactive();
+        $badge = UI::label(t('Scheduled'))
+            ->setIcon(UI::icon()->time());
+
+        if($this->isVisible()) {
+            $badge
+                ->makeSuccess()
+                ->setTooltip(sb()
+                    ->t('This news entry has scheduling enabled.')
+                    ->t('It is currently visible.')
+                );
+        } else {
+            $badge->makeInactive()
+                ->setTooltip(sb()
+                    ->t('This news entry has scheduling enabled.')
+                    ->t('It is currently not visible.')
+                );
+        }
+
+        return $badge;
     }
 
     public function hasScheduling() : bool
     {
         return $this->getScheduledFromDate() !== null || $this->getScheduledToDate() !== null;
+    }
+
+    /**
+     * Whether the entry is currently visible, according
+     * to its scheduling configuration.
+     *
+     * NOTE: This does not check the publication state.
+     *
+     * @return bool
+     */
+    public function isVisible() : bool
+    {
+        $now = new DateTime();
+
+        $dateFrom = $this->getScheduledFromDate();
+        if($dateFrom !== null && $dateFrom > $now) {
+            return false;
+        }
+
+        $dateTo = $this->getScheduledToDate();
+        if($dateTo !== null && $dateTo < $now) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function init() : void
