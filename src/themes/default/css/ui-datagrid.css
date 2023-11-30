@@ -1,5 +1,5 @@
 .datagrid-title{
-font-weight:bold;
+font-weight: var(--font-weight-bold);
 font-size:110%;
 margin-bottom:13px;
 }
@@ -22,7 +22,7 @@ padding: 0;
 margin-bottom: 15px;
 font-size: 16px;
 text-transform:uppercase;
-font-weight:normal;
+    font-weight: var(--font-weight-normal);
 }
 
 .dropdown-menu A.action-danger{
@@ -102,7 +102,7 @@ background:#faff7e !important;
 }
 
 .row-heading TD{
-font-weight:bold;
+    font-weight: var(--font-weight-bold);
 }
 
 
@@ -171,12 +171,11 @@ color:#fff;
 text-transform:uppercase;
 line-height: 18px;
 font-size: 14px;
-font-weight:bold;
+    font-weight: var(--font-weight-bold);
 padding:4px;
 text-align:center;
 border-radius:5px;
 letter-spacing: 3px;
-color:#fff;
 }
 
 .datagrid .dropper.is-drag-target{

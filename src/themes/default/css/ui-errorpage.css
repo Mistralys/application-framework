@@ -10,13 +10,13 @@ border-radius:5px;
 padding:20px;
 border:solid 2px #ce8e00;
 color:#555;
-font-family:Arial;
-font-size:13px;
+font-family:Arial, sans-serif;
+font-size:var(--font-size-s);
 }
 
 BODY.errorpage H1{
 line-height:36px;
-font-size:28px;
+font-size:var(--font-size-xl);
 }
 
 BODY.errorpage H1 .logo{
@@ -25,12 +25,12 @@ width:36px;
 }
 
 BODY.errorpage .abstract{
-font-size:120%;
+font-size:var(--font-size-l);
 margin-top:30px;
 }
 
 BODY.errorpage TD{
-font-size:13px;
+font-size:var(--font-size-s);
 color:#555;
 }
 
@@ -41,11 +41,11 @@ padding:20px;
 
 BODY.errorpage .errorpage-header{
 text-transform:uppercase;
-font-weight:normal;
+    font-weight: var(--font-weight-normal);
 margin-top:40px;
 margin-bottom:20px;
 line-height:40px;
-font-size:16px;
+font-size:var(--font-size-normal);
 background:#f0f0f0;
 padding:0 8px;
 }

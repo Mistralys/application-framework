@@ -23,7 +23,7 @@ top:0;
 left:0;
 z-index:900;
 font-weight:bold;
-font-size:16px;
+font-size: var(--font-size-l);
 color:#fff;
 text-shadow: 1px 1px 0 #116600;
 }

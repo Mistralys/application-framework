@@ -14,8 +14,8 @@ color:#999;
 }
 
 H1.page-title .revisionable-title-subline{
-font-size:70%;    
-font-weight:normal;
+font-size:var(--font-size-s);
+    font-weight: var(--font-weight-normal);
 }
 
 H1.page-title .revisionable-title-subline A:link,

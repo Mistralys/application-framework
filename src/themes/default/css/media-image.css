@@ -1,5 +1,5 @@
 .media_image_container{
-font-size:87%;
+font-size:var(--font-size-s);
 line-height:87%;
 width:100%;
 overflow:hidden;

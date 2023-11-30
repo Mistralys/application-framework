@@ -2,7 +2,7 @@
 }
 
 #page-help .help-header{
-font-size: 1.2em;
+font-size: var(--font-size-l);
 }
 
 #page-help .help-contents{
@@ -12,7 +12,7 @@ background:#fff;
 padding:20px 30px;
 margin-bottom:20px;
 border:solid 1px #e8e8e8;
-font-size:1.1em;
+font-size:var(--font-size-normal);
 }
 
 #page-help .help-opener{
@@ -30,8 +30,8 @@ background:#52c02c;
 #page-help .help-summary{
 font-style:italic;
 margin-bottom:20px;
-font-weight:600;
-font-size:1.2em;
+    font-weight: var(--font-weight-normal);
+font-size:var(--font-size-normal);
 }
 
 #page-help .help-para{

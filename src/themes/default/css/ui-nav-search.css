@@ -54,7 +54,7 @@ UL.nav FORM.nav-search .search-country-selection{
 .search-fullwidth-tabs .nav-tabs>li>a{
     line-height: 16px;
     padding: 3px 9px;
-    font-size:77%;
+    font-size:var(--font-size-s);
 }
 
 .search-fullwidth-tabs .nav-tabs>.active>a{

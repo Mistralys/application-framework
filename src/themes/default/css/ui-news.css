@@ -35,6 +35,10 @@
     padding-bottom: 0.8rem;
 }
 
+.news-article-body{
+    max-width: 800px;
+}
+
 .news-article-body.news-detail{
     margin-top: 2rem;
 }
@@ -43,14 +47,3 @@
     border:solid 1px #ccc;
 }
 
-.news-article-body H1{
-    font-size:121%;
-}
-
-.news-article-body H2{
-    font-size:103%;
-}
-
-.news-article-body H3{
-    font-size:92%;
-}
