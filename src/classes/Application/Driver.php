@@ -1170,6 +1170,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $counter = 6000;
 
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
+        $this->ui->addStylesheet('ui-fonts.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-colors.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
