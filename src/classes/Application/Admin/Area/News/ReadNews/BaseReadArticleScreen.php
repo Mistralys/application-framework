@@ -46,7 +46,9 @@ class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
         $this->renderer
             ->getTitle()
             ->setText($this->getTitle())
-            ->setIcon(UI::icon()->news());
+            ->setIcon(UI::icon()->news())
+            ->setSubline($this->article->getSynopsis())
+            ->addClass('news-title');
     }
 
     protected function _handleActions(): bool
