@@ -9,7 +9,7 @@
 }
 
 .news-article-meta{
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 .news-article-meta > UL{
@@ -29,4 +29,12 @@
 
 .news-article-meta > UL > LI:last-child{
     border-right:0;
+}
+
+.page-title.news-title{
+    padding-bottom: 0.8rem;
+}
+
+.news-article-body.news-detail{
+    margin-top: 2rem;
 }
