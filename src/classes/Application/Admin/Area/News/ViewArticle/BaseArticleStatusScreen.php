@@ -80,6 +80,31 @@ abstract class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submo
         $grid->addDate(t('Last modified'), $entry->getDateModified())->withTime()->withDiff();
         $grid->add(t('Author'), $entry->getAuthor()->getName());
 
+        $grid->addHeader(sb()->icon(UI::icon()->time())->t('Scheduling'));
+        $dateFrom = $entry->getScheduledFromDate();
+        $dateTo = $entry->getScheduledToDate();
+        if($dateFrom === null && $dateTo === null)
+        {
+            $grid->addMessage(t('No scheduling is enabled.'))
+                ->makeInfo();
+        }
+        else
+        {
+            if($dateFrom !== null) {
+                $grid->addDate(t('Publish from'), $dateFrom)
+                    ->setComment(t('The entry will become visible at this time.'))
+                    ->withTime()
+                    ->withDiff();
+            }
+
+            if($dateTo !== null) {
+                $grid->addDate(t('Publish to'), $dateTo)
+                    ->setComment(t('The entry will be hidden at this time.'))
+                    ->withTime()
+                    ->withDiff();
+            }
+        }
+
         return $grid->render();
     }
 
