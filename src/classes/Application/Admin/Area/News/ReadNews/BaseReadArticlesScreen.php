@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Application\Admin\Area\News\ReadNews;
 
 use Application\AppFactory;
+use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application_Admin_Area_Mode_Submode;
+use Application_FilterCriteria;
 use UI;
 
 class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
@@ -44,6 +46,7 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
             ->selectArticles()
             ->selectPublished()
             ->setLimit($this->itemsPerPage, $offset)
+            ->setOrderBy(NewsCollection::COL_DATE_CREATED, Application_FilterCriteria::ORDER_DIR_DESCENDING)
             ->getItemsObjects();
 
         foreach($items as $item) {

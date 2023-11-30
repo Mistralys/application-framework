@@ -32,6 +32,7 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Collection
     public const COLUMN_AUTHOR = 'author';
     public const COLUMN_MODIFIED = 'modified';
     public const COLUMN_STATUS = 'status';
+    public const COLUMN_CREATED = 'created';
 
     public function getURLName(): string
     {
@@ -61,6 +62,7 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Collection
             self::COLUMN_LABEL => sb()->add($newsEntry->getLabelLinked())->add($newsEntry->getSchedulingBadge()),
             self::COLUMN_STATUS => $newsEntry->getStatus()->getIconLabel(),
             self::COLUMN_AUTHOR => $newsEntry->getAuthor()->getName(),
+            self::COLUMN_CREATED => ConvertHelper::date2listLabel($newsEntry->getDateCreated(), true, true),
             self::COLUMN_MODIFIED => ConvertHelper::date2listLabel($newsEntry->getDateModified(), true, true),
         );
     }
@@ -85,7 +87,10 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Collection
         $this->grid->addColumn(self::COLUMN_AUTHOR, t('Author'));
 
         $this->grid->addColumn(self::COLUMN_MODIFIED, t('Last modified'))
-            ->setSortable(true, NewsCollection::COL_DATE_MODIFIED);
+            ->setSortable(false, NewsCollection::COL_DATE_MODIFIED);
+
+        $this->grid->addColumn(self::COLUMN_CREATED, t('Created'))
+            ->setSortable(true, NewsCollection::COL_DATE_CREATED);
     }
 
     protected function configureActions(): void
