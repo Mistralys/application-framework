@@ -17,7 +17,7 @@ use Application\AppFactory;if(!isset($error))
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 		<title><?php echo $error->getTitle() ?></title>
-		<?php 
+		<?php
 		    $favicon = $error->findFile('img/logo.png'); 
 		    if($favicon) { 
 		        ?><link rel="shortcut icon" href="<?php echo $favicon->getURL() ?>"/><?php 
@@ -25,6 +25,7 @@ use Application\AppFactory;if(!isset($error))
 	    ?>
 		<link rel="stylesheet" type="text/css" href="<?php echo $themeURL ?>/css/bootstrap.min.css" media="all"/>
 		<link rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" media="all"/>
+        <link rel="stylesheet" type="text/css" href="<?php echo $themeURL ?>/css/ui-fonts.css" media="screen"/>
 		<link rel="stylesheet" type="text/css" href="<?php echo $themeURL ?>/css/ui-errorpage.css" media="screen"/>
 	</head>
 	<body class="errorpage">
