@@ -33,6 +33,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     private bool $isAlert = false;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elToDate;
     private HTML_QuickForm2_Element_HTMLDateTimePicker $elFromDate;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateModified;
+    private HTML_QuickForm2_Element_HTMLDateTimePicker $elDateCreated;
 
     public function __construct(Application_Formable $formable, NewsCollection $collection, ?NewsEntry $record = null)
     {
@@ -97,6 +99,8 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     public const SETTING_TO_DATE = 'to_date';
     public const SETTING_CRITICALITY = 'criticality';
     public const SETTING_REQUIRES_RECEIPT = 'receipt';
+    public const SETTING_DATE_CREATED = 'date_created';
+    public const SETTING_DATE_MODIFIED = 'date_modified';
 
     protected function registerSettings(): void
     {
@@ -133,6 +137,17 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         $group->registerSetting(self::SETTING_CATEGORIES)
             ->makeInternal()
             ->setCallback(Closure::fromCallable(array($this, 'injectCategories')));
+
+        if($this->isEditMode())
+        {
+            $group->registerSetting(self::SETTING_DATE_CREATED)
+                ->makeRequired()
+                ->setCallback(Closure::fromCallable(array($this, 'injectDateCreated')));
+
+            $group->registerSetting(self::SETTING_DATE_MODIFIED)
+                ->makeRequired()
+                ->setCallback(Closure::fromCallable(array($this, 'injectDateModified')));
+        }
 
         if(!$this->isAlert)
         {
@@ -233,6 +248,40 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
         return $el;
     }
 
+    private function injectDateCreated() : HTML_QuickForm2_Element_HTMLDateTimePicker
+    {
+        $el = $this->addElementDatepicker(self::SETTING_DATE_CREATED, t('Date created'));
+
+        $this->elDateCreated = $el;
+
+        return $el;
+    }
+
+    private function injectDateModified() : HTML_QuickForm2_Element_HTMLDateTimePicker
+    {
+        $el = $this->addElementDatepicker(self::SETTING_DATE_MODIFIED, t('Date modified'));
+
+        $this->elDateModified = $el;
+
+        $this->addRuleCallback(
+            $el,
+            function () : bool
+            {
+                $dateModified = $this->elDateModified->getDate();
+                $dateCreated = $this->elDateCreated->getDate();
+
+                if($dateModified === null || $dateCreated === null) {
+                    return true;
+                }
+
+                return $dateModified >= $dateCreated;
+            },
+            t('The modified date cannot be before the created date.')
+        );
+
+        return $el;
+    }
+
     private function injectFromDate() : HTML_QuickForm2_Element_HTMLDateTimePicker
     {
         $el = $this->addElementDatepicker(self::SETTING_FROM_DATE, t('From date'));
@@ -302,6 +351,11 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
                 'You may use %1$s syntax for formatting, links and more.',
                 sb()->link('Markdown', 'https://commonmark.org/help/', true)
             )
+            ->nl()
+            ->t('In addition, the following specialized commands are available:')
+            ->ul(array(
+                sb()->code('{media: 42 width="300"}')->t('Embeds media with the given ID.')
+            ))
         );
 
         $this->makeLengthLimited($el, 10, 150000);
