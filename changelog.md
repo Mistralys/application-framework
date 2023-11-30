@@ -1,3 +1,15 @@
+### v3.0.4 - News and Markdown update
+- News: Fixed the jumbled order of articles in the news list.
+- News: Added the creation date to the admin news list.
+- News: Limited the width of the news entry detail view.
+- MarkdownRenderer: Added the `{TOC}` tag.
+- MarkdownRenderer: Added table support.
+- MarkdownRenderer: Added heading anchors and permalinks.
+- MarkdownRenderer: Added a dedicated style sheet.
+- MarkdownRenderer: Streamlined layout of the TOC and headings.
+- UserInterface: Fixed the UI font family not being applied.
+- UserInterface: Improved typography with unified line heights and font sizes.
+
 ### v3.0.3 - Bugfix release
 - MediaGallery: Fixed the image upload failing because of the missing file size.
 - News: Added modified and created date fields in the settings.
