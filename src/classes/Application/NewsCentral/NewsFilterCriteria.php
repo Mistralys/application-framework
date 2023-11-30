@@ -16,6 +16,13 @@ class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     public const FILTER_TYPES = 'types';
     public const FILTER_STATUSES = 'statuses';
+    private bool $schedulingEnabled = true;
+
+    public function selectSchedulingEnabled(bool $enabled = true) : self
+    {
+        $this->schedulingEnabled = $enabled;
+        return $this;
+    }
 
     /**
      * @param NewsEntryType $type
@@ -52,6 +59,17 @@ class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
 
     protected function prepareQuery(): void
     {
+        if($this->schedulingEnabled)
+        {
+            $this->addWhere(NewsCollection::statementBuilder(
+                "({date_scheduled_from} IS NULL OR {date_scheduled_from} <= NOW())"
+            ));
+
+            $this->addWhere(NewsCollection::statementBuilder(
+                "({date_scheduled_to} IS NULL OR {date_scheduled_to} >= NOW())"
+            ));
+        }
+
         $this->addWhereColumnIN(NewsCollection::COL_NEWS_TYPE, $this->getCriteriaValues(self::FILTER_TYPES));
         $this->addWhereColumnIN(NewsCollection::COL_STATUS, $this->getCriteriaValues(self::FILTER_STATUSES));
     }
