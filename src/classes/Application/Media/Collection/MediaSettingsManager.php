@@ -59,6 +59,7 @@ class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
 
         $recordData->setKey(MediaCollection::COL_EXTENSION, $extension);
         $recordData->setKey(MediaCollection::COL_TYPE, $type);
+        $recordData->setKey(MediaCollection::COL_SIZE, $upload->getSize());
     }
 
     protected function updateRecord(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
