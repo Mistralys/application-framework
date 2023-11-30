@@ -11,6 +11,13 @@ use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
 use League\CommonMark\CommonMarkConverter;
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
+use League\CommonMark\Extension\Table\TableExtension;
+use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
+use League\CommonMark\MarkdownConverter;
 
 class MarkdownRenderer implements OptionableInterface
 {
@@ -36,7 +43,12 @@ class MarkdownRenderer implements OptionableInterface
     {
         return array(
             self::OPTION_HTML_INPUT => self::HTML_MODE_STRIP,
-            self::OPTION_ALLOW_UNSAFE_LINKS => false
+            self::OPTION_ALLOW_UNSAFE_LINKS => false,
+            'table_of_contents' => array(
+                'position' => 'placeholder',
+                'placeholder' => '{TOC}',
+                'max_heading_level' => 4
+            )
         );
     }
 
@@ -47,15 +59,24 @@ class MarkdownRenderer implements OptionableInterface
 
     public function render(string $markdown) : string
     {
+        \UI::getInstance()->addStylesheet('ui-markdown.css');
+
         $this->tags = array();
 
         $markdown = $this->preParse($markdown);
 
-        $parser = new CommonMarkConverter($this->getOptions());
+        $markdownEnv = new Environment($this->getOptions());
+        $markdownEnv->addExtension(new CommonMarkCoreExtension());
+        $markdownEnv->addExtension(new GithubFlavoredMarkdownExtension());
+        $markdownEnv->addExtension(new HeadingPermalinkExtension());
+        $markdownEnv->addExtension(new TableExtension());
+        $markdownEnv->addExtension(new TableOfContentsExtension());
+
+        $parser = new MarkdownConverter($markdownEnv);
 
         $markdown = (string)$parser->convert($markdown);
 
-        return $this->postParse($markdown);
+        return '<div class="markdown">'.$this->postParse($markdown).'</div>';
     }
 
     private function preParse(string $markdown) : string
@@ -110,7 +131,7 @@ class MarkdownRenderer implements OptionableInterface
 
         $this->tags = array();
 
-        return $markdown;
+        return str_replace('<table>', '<table class="table table-condensed table-bordered table-hover markdown-table">', $markdown);
     }
 
     /**
