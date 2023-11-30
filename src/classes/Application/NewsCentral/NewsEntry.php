@@ -22,6 +22,7 @@ use League\CommonMark\CommonMarkConverter;
 use NewsCentral\Entries\EntryCategoriesManager;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
+use UI;
 use function AppUtils\valBoolTrue;
 
 /**
@@ -101,6 +102,23 @@ class NewsEntry extends DBHelper_BaseRecord
         }
 
         return $this->categoriesManager;
+    }
+
+    public function getSchedulingBadge() : ?\UI_Badge
+    {
+        if(!$this->hasScheduling()) {
+            return null;
+        }
+
+        return UI::label(t('Scheduled'))
+            ->setIcon(UI::icon()->time())
+            ->setTooltip(t('This news entry has scheduling enabled.'))
+            ->makeInactive();
+    }
+
+    public function hasScheduling() : bool
+    {
+        return $this->getScheduledFromDate() !== null || $this->getScheduledToDate() !== null;
     }
 
     protected function init() : void
