@@ -62,7 +62,8 @@ abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Collect
             ->setText($this->record->getLabel())
             ->setIcon($type->getIcon())
             ->setSubline($type->getLabel())
-            ->addBadge($this->record->getStatus()->getBadge());
+            ->addBadge($this->record->getStatus()->getBadge())
+            ->addBadge($this->record->getSchedulingBadge());
     }
 
     protected function _handleBreadcrumb(): void
