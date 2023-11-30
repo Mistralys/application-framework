@@ -341,10 +341,32 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     private function injectArticle() : HTML_QuickForm2_Element_Textarea
     {
+        $this->addElementHTML('<div class="markdown-editor">');
+
+        $toolbarID = nextJSID();
+        $this->addElementHTML('<div id="'.$toolbarID.'" class="markdown-toolbar"></div>');
+
         $el = $this->addElementTextarea(self::SETTING_ARTICLE, t('Article text'));
         $el->setRows(14);
         $el->addFilterTrim();
         $el->setStyle('width:96%');
+
+        $this->ui->addJavascript('markup-editor/tiny-mde/tiny-mde.min.js');
+        $this->ui->addStylesheet('markup-editor/tiny-mde/custom.css');
+        $this->ui->addStylesheet('markup-editor/tiny-mde/tiny-mde.min.css');
+
+        $jsName = 'MDE'.nextJSID();
+        $this->ui->addJavascriptOnload(sprintf(
+            "var %1\$s = new TinyMDE.Editor({element: '%2\$s'});",
+            $jsName,
+            $el->getId()
+        ));
+
+        $this->ui->addJavascriptOnload(sprintf(
+            "new TinyMDE.CommandBar({element: '%1\$s', editor: %2\$s});",
+            $toolbarID,
+            $jsName
+        ));
 
         $el->setComment(sb()
             ->t(
@@ -354,12 +376,15 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
             ->nl()
             ->t('In addition, the following specialized commands are available:')
             ->ul(array(
-                sb()->code('{media: 42 width="300"}')->t('Embeds media with the given ID.')
+                sb()->code('{media: 42 width="300"}')->t('Embeds media with the given ID.'),
+                sb()->code('{TOC}')->t('Inserts a table of contents.'),
             ))
         );
 
         $this->makeLengthLimited($el, 10, 150000);
         $this->makeStandalone($el);
+
+        $this->addElementHTML('</div>');
 
         return $el;
     }
@@ -398,6 +423,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
     {
         $el = $this->addElementText(self::SETTING_TITLE, t('Title'));
         $el->addFilterTrim();
+        $el->addClass('input-xxlarge');
 
         $this->addRuleNameOrTitle($el);
         $this->makeLengthLimited($el, 1, 120);
