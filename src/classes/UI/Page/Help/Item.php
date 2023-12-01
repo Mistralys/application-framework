@@ -1,19 +1,21 @@
 <?php
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+declare(strict_types=1);
 
-abstract class UI_Page_Help_Item extends UI_Renderable implements UI_Renderable_Interface, Interface_Optionable, Interface_Classable
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\ClassableTrait;
+use AppUtils\Traits\OptionableTrait;
+
+abstract class UI_Page_Help_Item extends UI_Renderable
+    implements
+    OptionableInterface,
+    ClassableInterface
 {
-    use Traits_Optionable;
-    use Traits_Classable;
+    use OptionableTrait;
+    use ClassableTrait;
     
-   /**
-    * @var UI_Page_Help
-    */
-    protected $help;
+    protected UI_Page_Help $help;
     
     public function __construct(UI_Page_Help $help, $options=array())
     {

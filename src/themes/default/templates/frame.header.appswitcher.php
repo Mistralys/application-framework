@@ -16,11 +16,9 @@
         return;
     }
     
-    $apps = null;
-
     require_once $configFile;
-    
-    if(empty($apps) || !is_array($apps)) {
+
+    if(!isset($apps) || !is_array($apps)) {
         echo $this->renderErrorMessage(t('No apps defined in the configuration file.'));
         return;
     }

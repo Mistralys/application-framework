@@ -32,10 +32,7 @@ abstract class Application_AjaxMethod_CustomProperties extends Application_AjaxM
         }
     }
     
-   /**
-    * @var Application_Interfaces_Propertizable
-    */
-    protected $owner;
+    protected ?Application_Interfaces_Propertizable $owner = null;
     
    /**
     * Requires that a valid owner be specified in the request
@@ -44,7 +41,7 @@ abstract class Application_AjaxMethod_CustomProperties extends Application_AjaxM
     * 
     * @return Application_Interfaces_Propertizable
     */
-    protected function requireOwner()
+    protected function requireOwner() : Application_Interfaces_Propertizable
     {
         if(isset($this->owner)) {
             return $this->owner;
@@ -66,11 +63,13 @@ abstract class Application_AjaxMethod_CustomProperties extends Application_AjaxM
             $this->sendErrorUnknownElement(t('property owner type'));
         }
         
-        $this->owner = Application_CustomProperties::resolveOwner($ownerType, $ownerKey);
-        if(!$this->owner) {
+        $owner = Application_CustomProperties::resolveOwner($ownerType, $ownerKey);
+        if($owner === null) {
             $this->sendErrorUnknownElement(t('custom property owner'));
         }
-        
+
+        $this->owner = $owner;
+
         return $this->owner;
     }
     

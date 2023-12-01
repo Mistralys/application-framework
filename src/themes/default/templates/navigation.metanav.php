@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use UI\Themes\BaseTemplates\NavigationTemplate;
 
+/**
+ * @see \UI\Page\Navigation\MetaNavigation
+ */
 class template_default_navigation_metanav extends NavigationTemplate
 {
     protected function initClasses() : void

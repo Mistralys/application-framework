@@ -51,19 +51,10 @@ BODY.with-quicknav{
     padding: 2px 8px;
     margin: 4px 0;
     line-height: normal;
-    font-size:80%;
-    font-weight: 400;
+    font-size:var(--font-size-xs);
 }
 
 /* endregion */
-
-BODY,
-INPUT,
-BUTTON,
-SELECT,
-TEXTAREA {
-    font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
 
 #useravatar {
     display: inline-block;
@@ -90,7 +81,7 @@ TEXTAREA {
 #footer {
     margin:40px 0 0 0;
     padding:0;
-    font-size: 91%;
+    font-size: var(--font-size-s);
 }
 
 #footer_frame {
@@ -109,10 +100,9 @@ TEXTAREA {
 }
 
 #footer_frame .footer-column-header {
-    font-weight: normal;
     text-transform: uppercase;
     color: #fff;
-    font-size: 16px;
+    font-size: var(--font-size-normal);
     line-height: 20px;
     padding: 0;
     margin: 0 0 20px 0;
@@ -216,7 +206,7 @@ DIV.log > CODE {
 .back_link {
     float: left;
     margin: 4px 26px 0 0;
-    font-size: 12px;
+    font-size: var(--font-size-s);
 }
 
 #auth {
@@ -224,9 +214,9 @@ DIV.log > CODE {
     background: #004192;
     margin-top: 7px;
     padding: 4px 17px;
-    -webkit-box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
-    box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
+    -moz-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
 }
@@ -236,7 +226,7 @@ DIV.log > CODE {
 }
 
 #auth .dropdown-toggle {
-    font-size: 11px;
+    font-size: var(--font-size-xs);
     color: #fff;
 }
 
@@ -253,7 +243,6 @@ DIV.log > CODE {
     border-radius: 4px;
     padding: 6px 20px;
     text-align: center;
-    font-weight: bold;
     background: url(../img/bg-button-developer.png);
     color: #b83d00;
     margin-bottom: 13px;
@@ -264,7 +253,6 @@ DIV.log > CODE {
     border-radius: 4px;
     padding: 6px 20px;
     text-align: center;
-    font-weight: bold;
     background: #00cc00;
     color: #fff;
     border: solid 1px #008800;
@@ -274,7 +262,6 @@ DIV.log > CODE {
 #maintenance_mode_hint {
     padding: 6px 20px;
     text-align: center;
-    font-weight: bold;
     background: #eac222;
     color: #fff;
 }
@@ -293,7 +280,7 @@ DIV.log > CODE {
 }
 
 .ui-widget {
-    font-size: 14px;
+    font-size: var(--font-size-s);
 }
 
 #printbutton {
@@ -530,7 +517,6 @@ TR.active:hover {
 .loader_text {
     text-align: center;
     font-size: 110%;
-    font-weight: bold;
 }
 
 .loader_spinner {
@@ -545,7 +531,6 @@ TR.active:hover {
 .keyboard-shortcut {
     display: inline-block;
     font-size: 80%;
-    font-weight: bold;
     color: #999;
     letter-spacing: -0.1em;
 }
@@ -714,7 +699,6 @@ TABLE.layout-only TD{
 .whatsnew-category {
     text-transform: uppercase;
     font-size: 13px !important;
-    font-weight: normal;
     color: #666;
 }
 
@@ -724,7 +708,6 @@ TABLE.layout-only TD{
 
 .whatsnew-version {
     font-size: 20px;
-    font-weight: bold;
 }
 
 .container {
@@ -793,7 +776,7 @@ BODY.fontsize-bigger.non-zoomable {
 .body-wrap {
     border: solid 1px #D5D6DE;
     background: #f8f8f8;
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.20);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.20);
     border-radius: 4px;
     padding: 18px;
 }
@@ -849,7 +832,6 @@ BODY.fontsize-bigger.non-zoomable {
 .noselect {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
-    -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
@@ -857,6 +839,23 @@ BODY.fontsize-bigger.non-zoomable {
 
 .dropdown-menu > LI.disabled A:hover {
     background: transparent;
+}
+
+LI{
+    padding-bottom: 0.2rem;
+}
+
+UL > LI:last-child{
+    padding-bottom: 0;
+}
+
+UL.nav > LI{
+    padding-bottom: 0;
+}
+
+UL.navbar-main > LI.dropdown.active > A > SPAN.caret{
+    border-top-color: #ddd !important;
+    border-bottom-color: #ddd !important;
 }
 
 UL .popover {
@@ -876,7 +875,6 @@ UL .popover {
 .properties-grid .prop-header TH {
     padding: 15px 8px 10px 8px;
     font-size: 110%;
-    font-weight: normal;
     text-transform: uppercase;
     border-left: 0;
     border-right: 0;
@@ -1021,7 +1019,6 @@ H2.page-subtitle {
     padding: 40px 0 26px 0;
     font-size: 150%;
     line-height: 95%;
-    font-weight: normal;
 }
 
 H1.page-title.with-subnav,
@@ -1062,13 +1059,11 @@ H3 {
 
 H2.page-subtitle {
     font-size: 1.3em;
-    font-weight: normal;
 }
 
 H3.page-abstract {
     font-style: italic;
     font-size: 16px;
-    font-weight: normal;
     line-height: normal;
     padding: 0;
     margin: 0 0 40px 0;
@@ -1077,7 +1072,6 @@ H3.page-abstract {
 .page-title .title-subline,
 .page-subtitle .title-subline {
     font-size: 70%;
-    font-weight: normal;
 }
 
 .page-title .title-subline A:link,
@@ -1093,7 +1087,7 @@ H3.page-abstract {
 .page-title .title-badges,
 .page-subtitle .title-badges {
     position: relative;
-    top: 0px;
+    top: 0;
     left: 9px;
     font-size: 80%;
 }

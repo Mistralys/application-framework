@@ -424,10 +424,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         // If this step has already been completed previously and
         // a data key is modified, an update of the wizard is required.
-        if($this->isComplete() && !$this->updateRequired && $old !== $value) {
-            if($this->isComplete()) {
-                $this->updateRequired = true;
-            }
+        if(!$this->updateRequired && $old !== $value && $this->isComplete()) {
+            $this->updateRequired = true;
         }
 
         $this->data[$name] = $value;

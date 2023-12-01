@@ -48,7 +48,7 @@ list-style:none;
 .locking-hint LI{
 display:inline-block;
 margin-right:13px;
-font-size:90%;
+font-size:var(--font-size-s);
 line-height:30px;
 }
 

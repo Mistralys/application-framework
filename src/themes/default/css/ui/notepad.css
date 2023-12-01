@@ -12,8 +12,8 @@ BODY.layout-maximized .app-notepad {
 }
 
 .notepad-header{
-    font-size: 150%;
-    font-weight: normal;
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-normal);
     line-height: 95%;
 }
 
@@ -35,7 +35,7 @@ BODY.layout-maximized .notepad-note{
 .notepad-note-title{
     padding: 4px 13px;
     border-bottom: solid 1px #ccc;
-    font-weight: bold;
+    font-weight: var(--font-weight-bold);
 }
 
 .note-editing .notepad-note-title{
@@ -95,7 +95,7 @@ BODY.layout-maximized .notepad-note-input-body{
 
 .notepad-note-hints{
     color:#a3a3a3;
-    font-size: 90%;
+    font-size: var(--font-size-normal);
 }
 
 .notepad-note-icons{

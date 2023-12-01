@@ -1,0 +1,12 @@
+.markdown-editor .control-group{
+    padding:0;
+}
+
+.markdown-editor .markdown-toolbar{
+    border:solid 1px #ccc;
+    border-bottom:none;
+}
+.markdown-editor .TinyMDE{
+    border:solid 1px #ccc;
+    padding:14px
+}

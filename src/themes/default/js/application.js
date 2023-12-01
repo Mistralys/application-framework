@@ -8,7 +8,7 @@
  * requests.
  *
  * @package Application
- * @class
+ * @class application
  * @static
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
@@ -60,6 +60,7 @@ var application =
     // categories for logging messages: this is used to determine
     // which kinds of messages to display in the console.
     'loggingCategories': {},
+    'keepAlive': new KeepAlive(),
 
     toggleRevisionsPanel: function (panelID, linkEl) {
         var panel = $('#' + panelID);
@@ -240,6 +241,8 @@ var application =
         $.ajaxSetup({cache: true});
         
         UI.Start();
+
+        this.keepAlive.Start();
     },
 
     refreshSelectables: function () {
@@ -460,6 +463,7 @@ var application =
      * @param {String} message The message to display. Can contain HTML.
      * @param {String} [title]
      * @param {Function} [closeHandler] Function that gets called when the dialog is closed.
+     * @return {Dialog_Generic}
      */
     dialogMessage: function (message, title, closeHandler) 
     {
@@ -671,7 +675,7 @@ var application =
           'error': function (jqXHR, textStatus, errorThrown) 
           {
               var message = application.getAJAXError(errorThrown);
-              if(jqXHR.status == 404) {
+              if(jqXHR.status === 404) {
             	  message = t('The resource could not be found.');
               }
               
@@ -757,7 +761,7 @@ var application =
             label = '';
         }
 
-        return UI.Icon().Spinner() + ' ' + label;
+        return '<span class="spin-icon">'+UI.Icon().Spinner() + '</span> ' + label;
     },
 
     /**
@@ -1821,7 +1825,7 @@ var application =
     * Creates a new AJAX helper class instance.
     * 
     * @param {String} methodName
-    * @returns {Application_AJAX}
+    * @return {Application_AJAX}
     */
     createAJAX:function(methodName)
     {
@@ -2051,20 +2055,7 @@ var application =
         return new Dialog_Generic(title, content);
     },
 
-    keepAliveInterval: null,
-
-    /**
-     * Sends AJAX requests regularly to keep the session alive.
-     * This can be useful when the user stays on a single page for a long time.
-     */
-    keepAlive: function () {
-        if (!this.keepAliveInterval) {
-            var interval = 1000 * 60 * 2; // every 2 minutes
-            this.keepAliveInterval = window.setInterval(application.handle_keepAlive, interval);
-        }
-    },
-
-    handle_JavaScriptError:function() 
+    handle_JavaScriptError:function()
     {
         window.onerror = function(errorMsg, url, lineNumber, column, errorObj) 
         {
@@ -2106,10 +2097,6 @@ var application =
         }
     },
 
-    handle_keepAlive: function () {
-        application.AJAX('KeepAlive', {});
-    },
-    
     dialogSaveComments:function(message, confirmHandler)
     {
     	var dialog = this.createDialogSaveComments(message, confirmHandler);

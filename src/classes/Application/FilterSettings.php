@@ -7,12 +7,15 @@
  * @see Application_FilterSettings
  */
 
+use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
-use AppUtils\Interface_Stringable;
+use AppUtils\FileHelper_Exception;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Base class for custom filter setting implementations. This can
@@ -60,7 +63,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     /**
      * @var array<string,mixed>
      */
-    protected $defaultSettings;
+    protected array $defaultSettings;
 
     /**
      * @var string[]
@@ -71,7 +74,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     * Available during the injectElements method.
     * @var HTML_QuickForm2_Container
     */
-    protected $container;
+    protected HTML_QuickForm2_Container $container;
     
     protected UI $ui;
     
@@ -160,31 +163,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     }
 
     /**
-     * @param array<string,string|number|Interface_Stringable|NULL> $vars
-     * @return $this
-     */
-    public function addHiddenVars(array $vars) : self
-    {
-        foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
-        }
-        
-        return $this;
-    }
-    
-    /**
-     * Adds a hidden var to the filter form.
-     * @param string $name
-     * @param string|number|Interface_Stringable|NULL $value
-     * @return $this
-     */
-    public function addHiddenVar(string $name, $value) : self
-    {
-        $this->hiddens[$name] = toString($value);
-        return $this;
-    }
-    
-    /**
      * Registers all settings handled by the class using
      * the {@link registerSetting()} method. At least one
      * setting must be registered.
@@ -231,7 +209,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         }
     }
     
-    protected function injectElementsContainer(HTML_QuickForm2_Container $container)
+    protected function injectElementsContainer(HTML_QuickForm2_Container $container): void
     {
         $this->loadSettings();
 
@@ -312,7 +290,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      * Registers a setting that is handled by the settings.
      *
      * @param string $name
-     * @param string|number|Interface_Stringable|NULL $label
+     * @param string|number|StringableInterface|NULL $label
      * @param mixed $default
      */
     protected function registerSetting(string $name, $label, $default=null) : void
@@ -510,10 +488,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this->enabledStatus[$name] !== false;
     }
     
-    /**
-     * @var UI_Form
-     */
-    protected $form;
+    protected UI_Form $form;
     
     /**
      * Creates the filter form instance and configures it
@@ -611,7 +586,223 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         echo $this->render();
     }
-    
+
+    // region: Form elements
+
+    /**
+     * Adds a "More settings..." button in the form, and hides all
+     * elements added after it.
+     *
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_InputText
+     * @throws Application_Exception
+     * @throws BaseClassHelperException
+     * @throws UI_Themes_Exception
+     * @throws FileHelper_Exception
+     */
+    public function addMore(HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        if($this->hasMore) {
+            throw new Application_Exception(
+                'Only one more element may be added.',
+                sprintf(
+                    'The filter settings [%s] can only accept one mor^e element.',
+                    get_class($this)
+                ),
+                self::ERROR_ONLY_ONE_MORE_ALLOWED
+            );
+        }
+
+        if($container === null) {
+            $container = $this->form->getForm();
+        }
+
+        $this->hasMore = true;
+
+        $tpl = $this->ui->getPage()->createTemplate('filtersettings/more-start.php');
+        $tpl->setVar('settings', $this);
+
+        return $this->form->addHTML($tpl->render(), $container);
+    }
+
+    /**
+     * Adds a multiselect element.
+     * @param string $setting
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_Multiselect
+     */
+    public function addMultiselect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Multiselect
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_Multiselect::class,
+            $this->addElement($setting, 'multiselect', $container)
+        );
+    }
+
+    /**
+     * Adds a regular select element.
+     * @param string $setting
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_Select
+     * @deprecated
+     */
+    public function addSelect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
+    {
+        return $this->addElementSelect($setting, $container);
+    }
+
+    /**
+     * @param array<string,string|number|StringableInterface|NULL> $vars
+     * @return $this
+     */
+    public function addHiddenVars(array $vars) : self
+    {
+        foreach($vars as $name => $value) {
+            $this->addHiddenVar($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a hidden var to the filter form.
+     * @param string $name
+     * @param string|number|StringableInterface|NULL $value
+     * @return $this
+     */
+    public function addHiddenVar(string $name, $value) : self
+    {
+        $this->hiddens[$name] = toString($value);
+        return $this;
+    }
+
+    /**
+     * Adds a generic search field to the filter settings,
+     * complete with information on the fields in which the
+     * search is made and more.
+     *
+     * @param string[] $searchFields Human-readable field labels.
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    protected function addElementSearch(array $searchFields, ?HTML_QuickForm2_Container $container=null, $options=array()) : HTML_QuickForm2_Element_InputText
+    {
+        $options = array_merge(
+            array(
+                'advanced-search' => true
+            ),
+            $options
+        );
+
+        $this->requireSetting('search');
+
+        $last = array_pop($searchFields);
+
+        $text = $this->addElementText('search', $container);
+        $text->addClass('input-block');
+
+        if(empty($searchFields)) {
+            $fieldsLabel = t(
+                'Searches in %1$s.',
+                $last
+            );
+        } else {
+            $fieldsLabel = t(
+                'Searches in %1$s and %2$s.',
+                implode(', ', $searchFields),
+                $last
+            );
+        }
+
+        $comment = $fieldsLabel .
+            ' ' .
+            t('The search is case insensitive.') . ' ' ;
+
+        if($options['advanced-search']) {
+            $comment .=
+                t(
+                    'You can use the keywords %1$s, %2$s and %3$s to refine your search %4$s.',
+                    '<code>'.t('AND').'</code>',
+                    '<code>'.t('OR').'</code>',
+                    '<code>'.t('NOT').'</code>',
+                    '(<a href="javascript:void(0);" onclick="'.$this->getJSName().'.DialogSearchExamples()">'.t('examples').'</a>)'
+                );
+        }
+
+        $text->setComment($comment);
+
+        return $text;
+    }
+
+    public function addElementDateSearch(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->addElementText($setting, $container);
+        $el->setLabel(t('Last modified').'<sup><b class="text-warning">BETA</b></sup>');
+        $el->addFilter('trim');
+        $el->addClass('input-block');
+        $el->setComment(
+            t(
+                'Specify a date in the form %1$s, or with time included: %2$s (24-hour format).',
+                '<code>'.mb_strtolower(t('yyyy-mm-dd')).'</code>',
+                '<code>'.mb_strtolower(t('yyyy-mm-dd hh:mm')).'</code>'
+            )
+            .' '.
+            t('You may also use special keywords to extend your search.').
+            ' '.
+            '<a href="javascript:void(0)" onclick="'.$this->getJSName().'.DialogDateExamples()">'.
+            t('More info...').
+            '</a>'
+        );
+
+        return $el;
+    }
+
+    /**
+     * Adds a country selector element.
+     *
+     * @param string $setting The name of the setting to which this should be tied
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @param array $options
+     * @return HTML_QuickForm2_Element_Select
+     */
+    public function addElementCountry(string $setting, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_Select
+    {
+        if(!is_array($options)) {
+            $options = array();
+        }
+
+        $options = array_merge(
+            array(
+                'with-invariant' => true,
+                'please-select' => true
+            ),
+            $options
+        );
+
+        $el = $this->addElementSelect($setting, $container);
+
+        if($options['please-select']) {
+            $el->addOption(t('Please select...'), '');
+        }
+
+        $collection = AppFactory::createCountries();
+        $countries = $collection->getAll();
+
+        foreach($countries as $country)
+        {
+            if( $options['with-invariant'] !== false && $country->isCountryIndependent()) {
+                continue;
+            }
+
+            $el->addOption(
+                $country->getLocalizedLabel(),
+                (string)$country->getID()
+            );
+        }
+
+        return $el;
+    }
+
     /**
      * Creates and adds an element to the container for
      * a setting, which automatically configures it, so
@@ -624,7 +815,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      */
     public function addElement(string $setting, string $type, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element
     {
-        if(!$container) {
+        if($container === null) {
             $container = $this->form->getForm();
         }
         
@@ -642,44 +833,48 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     * Adds a select element for the specified filter setting.
     * 
     * @param string $setting
-    * @param HTML_QuickForm2_Container $container
+    * @param HTML_QuickForm2_Container|NULL $container
     * @return HTML_QuickForm2_Element_Select
+    * @throws BaseClassHelperException
     */
-    public function addElementSelect(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
+    public function addElementSelect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Select::class,
             $this->addElement($setting, 'select', $container)
         );
     }
 
+    /**
+     * @param string $setting
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_InputText
+     * @throws BaseClassHelperException
+     */
     public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
-        $el =  $this->addElement($setting, 'text', $container);
-
-        if($el instanceof HTML_QuickForm2_Element_InputText)
-        {
-            return $el;
-        }
-
-        throw new UnexpectedInstanceException(HTML_QuickForm2_Element_InputText::class, $el);
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputText::class,
+            $this->addElement($setting, 'text', $container)
+        );
     }
     
    /**
     * Adds a switch (boolean) element.
     * 
     * @param string $setting
-    * @param HTML_QuickForm2_Container $container
-    * @return HTML_QuickForm2_Element_Switch 
+    * @param HTML_QuickForm2_Container|NULL $container
+    * @return HTML_QuickForm2_Element_Switch
+    * @throws BaseClassHelperException
     */
-    public function addElementSwitch(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
+    public function addElementSwitch(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $this->addElement($setting, 'switch', $container)
         );
     }
-    
+
     /**
      * Adds a previously created form element that has not been
      * created with the {@link addElement()} method, and configures
@@ -687,8 +882,10 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      *
      * @param HTML_QuickForm2_Element $element
      * @return $this
+     * @throws Application_Exception
+     * @throws HTML_QuickForm2_InvalidArgumentException
      */
-    public function addCustomElement(HTML_QuickForm2_Element $element)
+    public function addCustomElement(HTML_QuickForm2_Element $element) : self
     {
         $setting = $element->getName();
         
@@ -699,6 +896,8 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         
         return $this;
     }
+
+    // endregion
     
     protected function getElementID(string $setting) : string
     {
@@ -796,7 +995,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      *
      * @return string
      */
-    public function getJSName()
+    public function getJSName() : string
     {
         return 'lf'.$this->jsID;
     }
@@ -807,99 +1006,15 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      *
      * @return boolean
      */
-    public function isActive()
+    public function isActive() : bool
     {
         foreach($this->definitions as $name => $def) {
-            if($this->getSetting($name) != $def['default']) {
+            if($this->getSetting($name) !== $def['default']) {
                 return true;
             }
         }
         
         return false;
-    }
-    
-    /**
-     * Adds a generic search field to the filter settings,
-     * complete with information on the fields in which the
-     * search is made and more.
-     *
-     * @param array $searchFields
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Element
-     */
-    protected function addElementSearch($searchFields, HTML_QuickForm2_Container $container, $options=array())
-    {
-        $options = array_merge(
-            array(
-                'advanced-search' => true
-            ),
-            $options
-        );
-        
-        $this->requireSetting('search');
-        
-        $last = array_pop($searchFields);
-        
-        $text = $this->addElement('search', 'text', $container);
-        $text->addClass('input-block');
-        
-        if(empty($searchFields)) {
-            $fieldsLabel = t(
-                'Searches in %1$s.',
-                $last
-            );
-        } else {
-            $fieldsLabel = t(
-                'Searches in %1$s and %2$s.',
-                implode(', ', $searchFields),
-                $last
-            );
-        }
-        
-        $comment = $fieldsLabel .
-        ' ' .
-        t('The search is case insensitive.') . ' ' ;
-        
-        if($options['advanced-search']) {
-            $comment .=
-            t(
-                'You can use the keywords %1$s, %2$s and %3$s to refine your search %4$s.',
-                '<code>'.t('AND').'</code>',
-                '<code>'.t('OR').'</code>',
-                '<code>'.t('NOT').'</code>',
-                '(<a href="javascript:void(0);" onclick="'.$this->getJSName().'.DialogSearchExamples()">'.t('examples').'</a>)'
-            );
-        }
-        
-        $text->setComment($comment);
-        
-        return $text;
-    }
-    
-    /**
-     * Adds a multiselect element.
-     * @param string $setting
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Element_Multiselect
-     */
-    public function addMultiselect($setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Multiselect
-    {
-        return ensureType(
-            HTML_QuickForm2_Element_Multiselect::class,
-            $this->addElement($setting, 'multiselect', $container)
-        );
-    }
-    
-   /**
-    * Adds a regular select element.
-    * @param string $setting
-    * @param HTML_QuickForm2_Container $container
-    * @return HTML_QuickForm2_Element_Select
-    * @deprecated
-    */
-    public function addSelect($setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
-    {
-        return $this->addElementSelect($setting, $container);
     }
     
    /**
@@ -921,73 +1036,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         return isset($this->definitions[$name]) && $this->isSettingEnabled($name);
     }
-    
-    public function addElementDateSearch($setting, HTML_QuickForm2_Container $container=null)
-    {
-        $date = $this->addElement($setting, 'text', $container);
-        $date->setLabel(t('Last modified').'<sup><b class="text-warning">BETA</b></sup>');
-        $date->addFilter('trim');
-        $date->addClass('input-block');
-        $date->setComment(
-            t(
-                'Specify a date in the form %1$s, or with time included: %2$s (24-hour format).',
-                '<code>'.mb_strtolower(t('yyyy-mm-dd')).'</code>',
-                '<code>'.mb_strtolower(t('yyyy-mm-dd hh:mm')).'</code>'
-                )
-            .' '.
-            t('You may also use special keywords to extend your search.').
-            ' '.
-            '<a href="javascript:void(0)" onclick="'.$this->getJSName().'.DialogDateExamples()">'.
-                t('More info...').
-            '</a>'
-        );
-    }
-    
-   /**
-    * Adds a country selector element.
-    * 
-    * @param string $setting The name of the setting to which this should be tied
-    * @param HTML_QuickForm2_Container $container
-    * @param array $options
-    * @return HTML_QuickForm2_Element_Select
-    */
-    public function addElementCountry($setting, HTML_QuickForm2_Container $container=null, $options=array())
-    {
-        if(!is_array($options)) {
-            $options = array();
-        }
-        
-        $options = array_merge(
-            array(
-                'with-invariant' => true,
-                'please-select' => true
-            ),
-            $options
-        );
-        
-        $el = $this->addSelect($setting, $container);
 
-        if($options['please-select']) {
-            $el->addOption(t('Please select...'), '');
-        }
-        
-        $collection = Application_Driver::createCountries();
-        $countries = $collection->getAll();
-        
-        foreach($countries as $country) 
-        {
-            if($country->isCountryIndependent() && !$options['with-invariant']) {
-                continue;
-            }
-            
-            $el->addOption(
-                $country->getLocalizedLabel(), 
-                (string)$country->getID()
-            );
-        }
-        
-        return $el;
-    }
     
    /**
     * Attempts to retrieve the country selected in a country
@@ -1000,7 +1049,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         $countries = Application_Driver::createCountries();
         
-        $value = intval($this->getSetting($name));
+        $value = (int)$this->getSetting($name);
         
         if(!empty($value) && $countries->idExists($value)) {
             return $countries->getByID($value);
@@ -1009,50 +1058,31 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return null;
     }
     
-    public function getJSSubmitHandler()
+    public function getJSSubmitHandler() : string
     {
         return $this->getJSName().'.Submit()';
     }
     
-    protected $hasMore = false;
-    
-    public function addMore(HTML_QuickForm2_Container $container=null)
-    {
-        if($this->hasMore) {
-            throw new Application_Exception(
-                'Only one more element may be added.',
-                sprintf(
-                    'The filter settings [%s] can only accept one more element.',
-                    get_class($this)
-                ),
-                self::ERROR_ONLY_ONE_MORE_ALLOWED
-            );
-        }
-        
-        if(!$container) {
-            $container = $this->form->getForm();
-        }
-        
-        $this->hasMore = true;
-        
-        $tpl = $this->ui->getPage()->createTemplate('filtersettings/more-start.php');
-        $tpl->setVar('settings', $this);
-        
-        $el = $this->form->addHTML($tpl->render());
-        
-        return $el;
-    }
+    protected bool $hasMore = false;
 
-    protected function addMoreEnd()
+    /**
+     * @return $this
+     * @throws BaseClassHelperException
+     * @throws FileHelper_Exception
+     * @throws UI_Themes_Exception
+     */
+    protected function addMoreEnd() : self
     {
         if(!$this->hasMore) {
-            return;
+            return $this;
         }
         
         $tpl = $this->ui->getPage()->createTemplate('filtersettings/more-end');
         $tpl->setVar('settings', $this);
         
         $this->form->addHTML($tpl->render());
+
+        return $this;
     }
 
     /**

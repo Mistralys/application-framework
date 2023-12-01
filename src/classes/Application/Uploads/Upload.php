@@ -8,6 +8,8 @@
  */
 
 use Application\AppFactory;
+use Application\Media\DocumentTrait;
+use Application\Media\ThumbnailRenderer;
 use AppUtils\ImageHelper;
 
 /**
@@ -22,28 +24,21 @@ use AppUtils\ImageHelper;
 class Application_Uploads_Upload implements Application_Media_DocumentInterface
 {
     use Application_Traits_Loggable;
+    use DocumentTrait;
 
     public const ERROR_NO_TRANSACTION_STARTED = 532001;
     public const ERROR_NO_MATCHING_DOCUMENT_FOUND = 532002;
     
-    /**
-     * @var Application_Uploads
-     */
-    protected $uploads;
-
-    /**
-     * The ID of the uploaded file.
-     * @var int
-     */
-    protected $id;
+    protected Application_Uploads $uploads;
+    protected int $id;
 
     /**
      * All data from the database record for this upload.
-     * @var array
+     * @var array<string,mixed>
      */
-    protected $data = array();
+    protected array $data = array();
 
-    public function __construct($upload_id)
+    public function __construct(int $upload_id)
     {
         $data = DBHelper::fetch(
             "SELECT
@@ -76,7 +71,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
         $this->uploads = Application_Uploads::getInstance();
     }
 
-    public function getDateAdded()
+    public function getDateAdded() : DateTime
     {
         return new DateTime($this->data['upload_date']);
     }
@@ -85,7 +80,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
      * Retrieves the full path to the uploaded file in the temporary storage folder.
      * @return string
      */
-    public function getPath()
+    public function getPath() : string
     {
         return $this->uploads->getStorageFolder() . '/' . $this->id . '.' . $this->getExtension();
     }
@@ -94,157 +89,55 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
      * Retrieves the extension of the file. Always lowercase.
      * @return string
      */
-    public function getExtension()
+    public function getExtension() : string
     {
         return $this->data['upload_extension'];
     }
     
-    public function getFilename()
-    {
-        return $this->getName().'.'.$this->getExtension();
-    }
-
     /**
      * Retrieves the name of the uploaded file.
      * @return string
      */
-    public function getName()
+    public function getName() : string
     {
         return $this->data['upload_name'];
     }
 
-    /**
-     * Retrieves the user that created the upload.
-     * @return Application_User
-     */
-    public function getUser()
+    public function getUserID() : int
     {
-        $user = Application::getUser();
-        return $user->createByID($this->data['user_id']);
+        return (int)$this->data['user_id'];
     }
 
     /**
      * Retrieves the ID of the upload.
      * @return int
      */
-    public function getID()
+    public function getID() : int
     {
         return $this->id;
     }
 
-    public function getThumbnailURL(?int $width = null, ?int $height = null) : string
+    public function getMediaSourceID(): string
     {
-        return APP_URL . '/media.php?' . http_build_query(array(
-            'source' => 'upload',
-            'upload_id' => $this->id,
-            'width' => $width,
-            'height' => $height
-        ));
+        return Application_Uploads::MEDIA_TYPE;
     }
 
-    protected function getThumbnailPath($width = null, $height = null)
+    public function getMediaPrimaryName(): string
     {
-        if($this->isTypeSVG()) {
-            return $this->getPath();
-        }
-        
-        if (empty($width) && empty($height)) {
-            return $this->getPath();
-        }
-
-        $folder = dirname($this->getPath());
-
-        if (empty($width)) {
-            return sprintf(
-                '%s/%s_h%s.%s',
-                $folder,
-                $this->id,
-                $height,
-                $this->getExtension()
-            );
-        }
-
-        if (empty($height)) {
-            return sprintf(
-                '%s/%s_w%s.%s',
-                $folder,
-                $this->id,
-                $width,
-                $this->getExtension()
-            );
-        }
-
-        return sprintf(
-            '%s/%s_w%s_h%s.%s',
-            $folder,
-            $this->id,
-            $width,
-            $height,
-            $this->getExtension()
-        );
-    }
-    
-    public function isTypeSVG()
-    {
-        return strtolower($this->getExtension()) == 'svg';
+        return Application_Uploads::PRIMARY_NAME;
     }
 
-    public function serveFromRequest(Application_Media_Delivery $delivery, Application_Request $request)
-    {
-        $width = intval($request->getParam('width'));
-        $height = intval($request->getParam('height'));
-        
-        $targetFile = $this->getThumbnailPath($width, $height);
-
-        if (!file_exists($targetFile))
-        {
-            $helper = ImageHelper::createFromFile($this->getPath());
-            $helper->resample($width, $height);
-            $helper->save($targetFile);
-        }
-
-        ImageHelper::displayImage($targetFile);
-
-        Application::exit($this->getLogIdentifier().' | Sent document contents to stdout.');
-    }
-
-    /**
-     * Retrieves the size of the media file on disk, in bytes.
-     * @return int
-     */
-    public function getFilesize()
-    {
-        $size = filesize($this->getPath());
-        if($size !== false) {
-            return $size;
-        }
-
-        return 0;
-    }
-
-    /**
-     * Retrieves the size of the media file in a human redable format,
-     * e.g. 15 Kb.
-     *
-     * @return string
-     */
-    public function getFilesizeReadable()
-    {
-        return AppUtils\ConvertHelper::bytes2readable($this->getFilesize());
-    }
-
-    public function isUpload()
+    public function isUpload() : bool
     {
         return true;
     }
     
-    public function upgrade()
+    public function upgrade() : Application_Media_Document
     {
-        $media = Application_Media::getInstance();
-        return $media->createFromUpload($this);
+        return Application_Media::getInstance()->createFromUpload($this);
     }
 
-    public function delete()
+    public function delete() : void
     {
         $this->log('Requested to delete.');
         
@@ -265,9 +158,9 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
             "DELETE FROM
                 `uploads`
             WHERE
-                `upload_id`=:upload_id",
+                `upload_id`=:primary",
             array(
-                'upload_id' => $this->id
+                'primary' => $this->id
             )    
         );
     }
@@ -282,11 +175,6 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
         );
     }
 
-    public function isVector()
-    {
-        return $this->isTypeSVG();
-    }
-    
    /**
     * Sets the media document that has been created using this
     * upload. This usually means that the upload will soon be
@@ -379,5 +267,28 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
             ),
             self::ERROR_NO_MATCHING_DOCUMENT_FOUND
         );
+    }
+
+    public function isImage() : bool
+    {
+        return in_array($this->getExtension(), Application_Media_Document_Image::IMAGE_EXTENSIONS);
+    }
+
+    public function getMaxThumbnailSize(): int
+    {
+        if($this->isImage()) {
+            return $this->getThumbnailSourceImage()->getWidth();
+        }
+
+        return Application_Media_DocumentInterface::DEFAULT_TYPE_ICON_THUMBNAIL_SIZE;
+    }
+
+    public function getThumbnailSourcePath(): string
+    {
+        if($this->isImage()) {
+            return $this->getPath();
+        }
+
+        return $this->getTypeIconPath();
     }
 }

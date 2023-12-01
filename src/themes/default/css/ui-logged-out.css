@@ -1,4 +1,4 @@
 .hero-unit H1{
-font-size:28px;
+font-size:var(--font-size-xl);
 margin-bottom:25px;
 }

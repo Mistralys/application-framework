@@ -8,8 +8,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * Base class for section contents: these are specialized
@@ -21,9 +21,9 @@ use AppUtils\Traits_Optionable;
  */
 abstract class UI_Page_Section_Content
     extends UI_Renderable
-    implements Interface_Optionable
+    implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     
     protected UI_Page_Section $section;
     

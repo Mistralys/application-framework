@@ -1,5 +1,6 @@
 <?php
 
+use Application\Admin\Area\BaseNewsScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
@@ -121,7 +122,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
             $category
         );
     }
-    
+
     protected function registerAppLogs(?string $category=null) : void
     {
         if(Application::isDatabaseEnabled()) {

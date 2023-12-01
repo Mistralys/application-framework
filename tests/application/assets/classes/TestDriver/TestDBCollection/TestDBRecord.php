@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-class TestDriver_TestDBCollection_TestDBRecord extends DBHelper_BaseRecord
+namespace TestDriver\TestDBCollection;
+
+use DBHelper_BaseRecord;
+
+class TestDBRecord extends DBHelper_BaseRecord
 {
     public const COL_LABEL = 'label';
     public const COL_ALIAS = 'alias';
@@ -18,24 +22,24 @@ class TestDriver_TestDBCollection_TestDBRecord extends DBHelper_BaseRecord
         return $this->getRecordStringKey(self::COL_LABEL);
     }
 
-    public function getAlias() : string
+    public function getAlias(): string
     {
         return $this->getRecordStringKey(self::COL_ALIAS);
     }
 
-    public function setLabel(string $label) : bool
+    public function setLabel(string $label): bool
     {
         return $this->setRecordKey(self::COL_LABEL, $label);
     }
 
-    public function setAlias(string $alias) : bool
+    public function setAlias(string $alias): bool
     {
         return $this->setRecordKey(self::COL_ALIAS, $alias);
     }
 
-    public function setCustomField(string $name, string $value) : bool
+    public function setCustomField(string $name, string $value): bool
     {
-        if(isset($this->custom[$name]) && $this->custom[$name] === $value) {
+        if (isset($this->custom[$name]) && $this->custom[$name] === $value) {
             return false;
         }
 

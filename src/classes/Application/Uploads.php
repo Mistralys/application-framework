@@ -24,7 +24,11 @@ class Application_Uploads
 {
     public const ERROR_NO_UPLOAD_TMP_DIR = 42801;
     public const ERROR_UPLOAD_STOPPED_BY_EXTENSION = 42802;
-    
+
+    public const TABLE_NAME = 'uploads';
+    public const PRIMARY_NAME = 'upload_id';
+    public const MEDIA_TYPE = 'upload';
+
     protected static ?Application_Uploads $instance = null;
 
     /**
@@ -40,7 +44,7 @@ class Application_Uploads
      *
      * @return Application_Uploads
      */
-    public static function getInstance()
+    public static function getInstance() : Application_Uploads
     {
         if (!isset(self::$instance)) {
             self::$instance = new Application_Uploads();

@@ -92,6 +92,8 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
         $id = $this->resolveID();
 
+        UI_Form::setElementLabelID($this, $id.'-on');
+
         $this->injectJS($id);
 
         $btnON = UI::button($this->onLabel)
@@ -229,7 +231,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
             UI::icon()->no()->makeDangerous() . ' ' . $this->offLabel;
     }
 
-    protected function updateValue() : self
+    protected function updateValue() : void
     {
         $name = $this->getName();
 
@@ -239,11 +241,12 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
             if ($value !== null || $ds instanceof HTML_QuickForm2_DataSource_Submit)
             {
-                return $this->setValue($value);
+                $this->setValue($value);
+                return;
             }
         }
 
-        return $this->setValue($this->offValue);
+        $this->setValue($this->offValue);
     }
 
     public function setValue($value) : self
@@ -287,16 +290,23 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     * default "on" and "off" button labels.
     * 
     * NOTE: does not change the internal values: these stay
-    * "true" and "false".
-    * 
+    * "true" and "false", unless the $includeValue parameter
+    * is set to true.
+    *
+    * @param bool $includeValue If true, the values will be set to "yes" and "no".
     * @return $this
     */
-    public function makeYesNo() : self
+    public function makeYesNo(bool $includeValue=false) : self
     {
         $this->setOnLabel(t('Yes'));
         $this->setOffLabel(t('No'));
         $this->setOnIcon(UI::icon()->yes());
         $this->setOffIcon(UI::icon()->no());
+
+        if($includeValue) {
+            $this->setOnValue('yes');
+            $this->setOffValue('no');
+        }
 
         return $this;
     }

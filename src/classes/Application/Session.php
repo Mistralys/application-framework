@@ -15,18 +15,41 @@ declare(strict_types=1);
  * @package Application
  * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Bootstrap_Screen::initSession()
  */
 interface Application_Session extends Application_Interfaces_Loggable
 {
     public function getID() : string;
 
     /**
-     * The user object that is returned must implement the Application_User interface.
+     * Prefix used to store session values.
+     *
+     * It is prefixed to session variable names to avoid
+     * conflicts with other session variables.
+     *
+     * @return string
+     */
+    public function getPrefix() : string;
+
+    /**
+     * Fetches the currently authenticated user. If this is empty,
+     * the authentication has not been performed yet.
+     *
      * @return Application_User|null
      */
     public function getUser() : ?Application_User;
 
     /**
+     * Force the authentication of the user (only done if no user is authenticated yet).
+     * @return Application_User
+     */
+    public function authenticate() : Application_User;
+
+    /**
+     * Like {@see self::getUser()}, but triggers the authentication process
+     * if no user is authenticated yet.
+     *
      * @return Application_User
      * @throws Application_Session_Exception
      */

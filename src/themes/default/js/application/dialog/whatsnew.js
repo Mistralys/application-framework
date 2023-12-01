@@ -127,12 +127,16 @@ var Application_Dialog_Whatsnew =
 	
 	GetVersion:function(version)
 	{
-		if(typeof(this.processed[version]) != 'undefined') {
+		if(typeof(this.processed[version]) !== 'undefined') {
 			return this.processed[version];
 		}
 		
 		var cats = this.data.versions[version];
-		var dev = this.data.dev[version];
+		var dev = [];
+
+		if(typeof(this.data.dev[version]) !== 'undefined') {
+			dev = this.data.dev[version];
+		}
 		
 		if(cats == null) {
 			cats = [];

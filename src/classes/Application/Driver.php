@@ -7,6 +7,7 @@
  */
 
 use Application\AppFactory;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
@@ -16,6 +17,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
 use UI\Page\Navigation\NavConfigurator;
 
@@ -239,6 +241,11 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
     }
 
+    public static function isInitialized() : bool
+    {
+        return isset(self::$instance);
+    }
+
     /**
      * Retrieves the application object used by the driver.
      * @return Application
@@ -342,7 +349,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @return never
      * @throws DriverException
      */
-    public function redirectTo($paramsOrURL = null) : void
+    public function redirectTo($paramsOrURL = null)
     {
         if (is_array($paramsOrURL))
         {
@@ -624,7 +631,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws DriverException
      * @throws UI_Exception
      */
-    public function redirectWithInfoMessage($message, $paramsOrURL = null) : void
+    public function redirectWithInfoMessage($message, $paramsOrURL = null)
     {
         $this->getUI()->addInfoMessage($message);
 
@@ -642,7 +649,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws UI_Exception
      * @throws DriverException
      */
-    public function redirectWithErrorMessage($message, $paramsOrURL = null) : void
+    public function redirectWithErrorMessage($message, $paramsOrURL = null)
     {
         $this->ui->addErrorMessage($message);
         $this->redirectTo($paramsOrURL);
@@ -659,7 +666,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @throws UI_Exception
      * @throws DriverException
      */
-    public function redirectWithSuccessMessage($message, $paramsOrURL = null) : void
+    public function redirectWithSuccessMessage($message, $paramsOrURL = null)
     {
         $this->ui->addSuccessMessage($message);
         $this->redirectTo($paramsOrURL);
@@ -803,7 +810,8 @@ abstract class Application_Driver implements Application_Driver_Interface
      * are available at this time.
      *
      * NOTE: This is called even if the UI layer is
-     * turned off with the APP_RUN_MODE.
+     * turned off with the <code>APP_RUN_MODE</code>
+     * setting.
      */
     protected function _start() : void
     {
@@ -1090,21 +1098,23 @@ abstract class Application_Driver implements Application_Driver_Interface
      */
     protected function configureScripts() : void
     {
+        $this->ui->addJavascriptHeadHeading('Application setup');
+
         $this->ui->addJavascriptHeadVariable('FormHelper.ID_PREFIX', UI_Form::ID_PREFIX);
         $this->ui->addJavascriptHeadVariable('UI.BOOTSTRAP_VERSION', UI::getBoostrapVersion());
         $this->ui->addJavascriptHeadVariable('Driver.version', $this->getVersion());
 
         $this->ui->addJavascriptHead('application.setUp()');
-        $this->ui->addJavascriptOnload('application.start()');
         $this->ui->addJavascriptHeadVariable('application.locale', Localization::getAppLocale()->getName());
         $this->ui->addJavascriptHeadVariable('application.url', APP_URL);
         $this->ui->addJavascriptHeadVariable('application.host', parse_url(APP_URL, PHP_URL_HOST));
         $this->ui->addJavascriptHeadVariable('application.className', APP_CLASS_NAME);
         $this->ui->addJavascriptHeadVariable('application.deletionDelay', ConvertHelper::time2string(APP_AUTOMATIC_DELETION_DELAY));
         $this->ui->addJavascriptHeadVariable('application.appNameShort', $this->getAppNameShort());
-        $this->ui->addJavascriptHeadVariable('application.environment', boot_constant('APP_ENVIRONMENT'));
+        $this->ui->addJavascriptHeadVariable('application.environment', boot_constant(BaseConfigRegistry::ENVIRONMENT));
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
+        $this->ui->addJavascriptHeadStatement('application.keepAlive.SetInterval', $this->getKeepAliveInterval());
         $this->ui->addJavascriptHead('application.handle_JavaScriptError()');
 
         if (isset($this->activeArea))
@@ -1143,6 +1153,11 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
         $this->ui->addJavascriptHeadVariable('User.last_used_version', $lastVersion);
+
+        // ----------------------------------------------
+        // ON PAGE LOAD
+        // ----------------------------------------------
+        $this->ui->addJavascriptOnload('application.start()');
     }
 
     /**
@@ -1155,6 +1170,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $counter = 6000;
 
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
+        $this->ui->addStylesheet('ui-fonts.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-colors.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
@@ -1174,10 +1190,12 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         'class.js',
         'global_functions.js',
+        'application/keep_alive.js',
         'application.js',
         'application/exception.js',
         'application/base_renderable.js',
         'application/ajax.js',
+        'application/ajax-error.js',
         'sidebar.js',
         'user.js',
         'driver.js',
@@ -1711,5 +1729,57 @@ abstract class Application_Driver implements Application_Driver_Interface
     {
         return $this->getRequest()
             ->buildURL($params, Application_Bootstrap_Screen_Changelog::DISPATCHER);
+    }
+
+    public function setGlobalDevelMode(bool $enabled) : self
+    {
+        $develmodeFile = self::getGlobalDevelModeFile();
+
+        if($enabled)
+        {
+            $develmodeFile->putContents('true');
+        }
+        else
+        {
+            $develmodeFile->delete();
+        }
+
+        return $this;
+    }
+
+    private static ?FileInfo $globalDevelModeFile = null;
+
+    public static function getGlobalDevelModeFile() : FileInfo
+    {
+        if(!isset(self::$globalDevelModeFile)) {
+            self::$globalDevelModeFile = FileInfo::factory(Application::getStorageFolder() . '/.develmode');
+        }
+
+        return self::$globalDevelModeFile;
+    }
+
+    public static function isGlobalDevelModeEnabled() : bool
+    {
+        return self::getGlobalDevelModeFile()->exists();
+    }
+
+    public const APP_SETTING_KEEP_ALIVE_INTERVAL = 'KeepAliveInterval';
+    public const DEFAULT_KEEP_ALIVE_INTERVAL = 120;
+
+    /**
+     * @return int The interval in seconds.
+     */
+    private function getKeepAliveInterval() : int
+    {
+        $setting = (string)$this->getSettings()->get(self::APP_SETTING_KEEP_ALIVE_INTERVAL, '2 minutes');
+        $base = time();
+        $duration = strtotime($setting, $base);
+
+        if($duration !== false)
+        {
+            return $duration - $base;
+        }
+
+        return self::DEFAULT_KEEP_ALIVE_INTERVAL;
     }
 }

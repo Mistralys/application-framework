@@ -28,7 +28,7 @@
     const APP_VENDOR_PATH = __DIR__.'/../vendor';
 
     /**
-     * Specifies that this is the framework's own tests suite.
+     * Specifies that this is the framework's own test suite.
      * It is needed to determine the location of the tests
      * folder, which is different from where it is located in
      * the applications.

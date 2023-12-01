@@ -6,7 +6,10 @@
 
 declare(strict_types=1);
 
+use TestDriver\Area\MediaLibraryScreen;
+use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
+use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\WelcomeScreen;
 
@@ -30,7 +33,10 @@ class TestDriver extends Application_Driver
             Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
             Application_Admin_TranslationsArea::URL_NAME => getClassTypeName(TranslationsScreen::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
-            QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class)
+            QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class),
+            NewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
+            MediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class),
+            TestingScreen::URL_NAME => getClassTypeName(TestingScreen::class)
         );
     }
 
@@ -60,7 +66,7 @@ class TestDriver extends Application_Driver
 
     public function getAppName() : string
     {
-        return 'Application Framework TestSuite';
+        return 'AppFramework TestSuite';
     }
 
     public function getAppNameShort() : string

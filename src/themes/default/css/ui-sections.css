@@ -3,8 +3,8 @@
    ------------------------------------------------------------------- */
 
 .section H4.section-heading{
-    font-size: 14px;
-    font-weight:normal;
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-normal);
     text-transform: uppercase;
 }
 
@@ -42,7 +42,7 @@
 
 .section .body-wrapper > P.abstract {
     margin-top: 13px;
-    font-size: 16px;
+    font-size: var(--font-size-normal);
 }
 
 .section-body .body-wrapper{
@@ -59,22 +59,22 @@
 }
 
 .section.compact > .section-header {
-    font-size: 12px;
+    font-size: var(--font-size-s);
     line-height: 26px;
 }
 
 .section.compact > .section-header .section-tagline{
     margin-top:-5px;
-    font-size: 10px;
+    font-size: var(--font-size-xs);
     padding-bottom:5px;
 }
 
 .section.compact > .section-body > .body-wrapper{
-    font-size: 12px;
+    font-size: var(--font-size-s);
 }
 
 .section.compact > .section-body > .body-wrapper > .abstract{
-    font-size:12px;
+    font-size:var(--font-size-s);
     margin-bottom:16px;
 }
 
@@ -88,8 +88,8 @@
 
 /* Regular, non collapsible header */
 .section-header{
-    font-weight: normal;
-    font-size: 16px;
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-normal);
     text-transform: uppercase;
     line-height: 38px;
     padding: 0 0 0 8px;
@@ -119,7 +119,7 @@
 }
 
 .section-header .icon-form-required{
-    font-size: 76%;
+    font-size: var(--font-size-s);
     position: relative;
     top: 3px;
 }
@@ -151,7 +151,7 @@
 
 .section.error .section-header {
     color: #cc0000;
-    font-size: 120%;
+    font-size: var(--font-size-l);
 }
 
 .section.with-tabs.with-abstract .tabs-section {
@@ -230,7 +230,7 @@ UL.tabs-section LI.tab.tab-active > A {
    ------------------------------------------------------------------- */
 
 .content-section.with-context-buttons .content-section-header {
-    font-size: 18px;
+    font-size: var(--font-size-l);
 }
 
 .content-section > DIV.btn-toolbar {

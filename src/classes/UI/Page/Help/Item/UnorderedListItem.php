@@ -2,7 +2,7 @@
 
 namespace UI\Page\Help\Item;
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use UI_Exception;
 use UI_Page_Help_Item;
 
@@ -40,7 +40,7 @@ class UnorderedListItem extends UI_Page_Help_Item
     }
 
     /**
-     * @param string|int|float|Interface_Stringable|NULL $item
+     * @param string|int|float|StringableInterface|NULL $item
      * @return $this
      * @throws UI_Exception
      */
@@ -51,8 +51,9 @@ class UnorderedListItem extends UI_Page_Help_Item
     }
 
     /**
-     * @param array<int,string|int|float|Interface_Stringable|NULL>|string|int|float|Interface_Stringable|NULL ...$items
+     * @param array<int,string|int|float|StringableInterface|NULL>|string|int|float|StringableInterface|NULL ...$items
      * @return $this
+     * @throws UI_Exception
      */
     public function addItems(...$items) : self
     {

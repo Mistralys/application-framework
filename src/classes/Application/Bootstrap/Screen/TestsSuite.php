@@ -1,5 +1,6 @@
 <?php
 
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper;
 
 class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Screen
@@ -27,7 +28,7 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
 
         if (defined('APP_DB_TESTS_PORT'))
         {
-            $port = intval(APP_DB_TESTS_PORT);
+            $port = (int)APP_DB_TESTS_PORT;
         }
 
         DBHelper::registerDB(
@@ -53,7 +54,7 @@ class Application_Bootstrap_Screen_TestsSuite extends Application_Bootstrap_Scre
     {
         $testsRoot = APP_ROOT . '/tests';
 
-        if (boot_constant('APP_FRAMEWORK_TESTS') === true)
+        if (boot_constant(BaseConfigRegistry::FRAMEWORK_TESTS) === true)
         {
             $testsRoot = APP_ROOT;
         }

@@ -9,8 +9,8 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Classable;
-use AppUtils\Traits_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -19,9 +19,9 @@ use AppUtils\Traits_Classable;
  * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class template_default_sidebar_button extends UI_Page_Template_Custom implements Interface_Classable
+class template_default_sidebar_button extends UI_Page_Template_Custom implements ClassableInterface
 {
-    use Traits_Classable;
+    use ClassableTrait;
 
     protected function generateOutput() : void
     {

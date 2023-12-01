@@ -13,13 +13,13 @@
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- *
- * @property Application_Admin_Area_Mode $mode
- * @property Application_Admin_Area $area
  */
 abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;
+
+    protected Application_Admin_Area_Mode $mode;
+    protected Application_Admin_Area $area;
 
     public function __construct(Application_Driver $driver, Application_Admin_Area_Mode $mode)
     {

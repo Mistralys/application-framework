@@ -1,6 +1,7 @@
 <?php
 
 use Application\AppFactory;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering_Exception;
 
 abstract class Application_Updaters_Updater  implements Application_Updaters_Interface
@@ -77,9 +78,13 @@ abstract class Application_Updaters_Updater  implements Application_Updaters_Int
 	    return $this->cachedID;
 	}
 
-	public function buildURL($params=array())
+    /**
+     * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
+     * @return string
+     */
+	public function buildURL(array $params=array()) : string
 	{
-		$params['updater_id'] = $this->getID();
+		$params[Application_Updaters::REQUEST_PARAM_UPDATER_ID] = $this->getID();
 		return $this->updaters->buildURL($params);
 	}
 

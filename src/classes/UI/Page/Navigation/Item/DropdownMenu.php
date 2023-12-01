@@ -2,36 +2,17 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use function AppUtils\parseURL;
 
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 {
-   /**
-    * @var UI_Bootstrap_DropdownMenu
-    */
-    protected $menu;
-
-    /**
-     * @var string
-     */
-    protected $label;
-
-    /**
-     * @var bool
-     */
-    protected $split = false;
-
-    /**
-     * @var string
-     */
-    protected $link = '';
-
-    /**
-     * @var string
-     */
-    protected $click = '';
-
+    protected UI_Bootstrap_DropdownMenu $menu;
+    protected string $label;
+    protected bool $split = false;
+    protected string $link = '';
+    protected string $click = '';
     private bool $autoActivate = true;
     private bool $caret = true;
 
@@ -151,19 +132,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
     private function renderDefault() : string
     {
-        OutputBuffering::start();
-
-        ?>
-        <li class="<?php echo implode(' ', $this->classes) ?>">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <?php echo $this->renderLabel() ?>
-                <?php if($this->caret) { ?><b class="caret"></b><?php } ?>
-            </a>
-            <?php echo $this->menu->render() ?>
-        </li>
-        <?php
-
-        return OutputBuffering::get();
+        return UI::getInstance()->createButtonDropdown()
+            ->setLabel($this->label)
+            ->setIcon($this->getIcon())
+            ->setTooltip($this->tooltipInfo)
+            ->setCaretEnabled($this->caret)
+            ->makeNavItem()
+            ->addClasses($this->classes)
+            ->setMenu($this->menu)
+            ->render();
     }
 
     private function renderSplit() : string
@@ -173,7 +150,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         ?>
         <li class="<?php echo implode(' ', $this->classes) ?>">
             <a <?php echo compileAttributes($this->getLinkAttributes()) ?>>
-                <?php echo $this->renderLabel() ?>
+                <?php echo $this->label ?>
             </a>
             <a href="#" class="dropdown-toggle split-caret" data-toggle="dropdown">
                 <b class="caret"></b>
@@ -204,27 +181,13 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
         return $attributes;
     }
 
-    private function renderLabel() : string
-    {
-        $label = sb();
-
-        $icon = $this->getIcon();
-        if($icon !== null)
-        {
-            $label->icon($icon);
-        }
-
-        $label->add($this->label);
-
-        return (string)$label;
-    }
-    
     /**
      * Adds a menu item that links to a regular URL.
      *
      * @param string $label
      * @param string $url
      * @return UI_Bootstrap_DropdownAnchor
+     * @throws UI_Exception
      */
     public function addLink(string $label, string $url) : UI_Bootstrap_DropdownAnchor
     {
@@ -259,6 +222,15 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     public function addSeparator() : UI_Bootstrap_DropdownMenu
     {
         return $this->menu->addSeparator();
+    }
+
+    /**
+     * @param string|int|float|StringableInterface|NULL $label
+     * @return UI_Bootstrap_DropdownHeader
+     */
+    public function addHeader($label) : UI_Bootstrap_DropdownHeader
+    {
+        return $this->menu->addHeader($label);
     }
 
     public function isActive() : bool

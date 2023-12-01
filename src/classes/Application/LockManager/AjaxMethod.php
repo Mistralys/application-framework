@@ -13,10 +13,11 @@ abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
     public const ERROR_INVALID_LOCK_ID_TO_EXTEND = 13105;
     
     public const ERROR_INVALID_LOCK_ID_TO_RELEASE = 13106;
-    
+    public const REQUEST_PARAM_VISITOR_ID = 'visitor_id';
+
     protected $data;
     
-    protected function validateRequest()
+    protected function validateRequest() : void
     {
         Application_LockManager::cleanUpExpired();
         
@@ -42,9 +43,9 @@ abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
         
         $this->owner = Application::createUser($user_id);
 
-        $visitor_id = $this->request->registerParam('visitor_id')->setInteger()->get();
+        $visitor_id = $this->request->registerParam(self::REQUEST_PARAM_VISITOR_ID)->setInteger()->get();
         if(!empty($visitor_id)) {
-            $this->visitor = $this->user->createByID($visitor_id);
+            $this->visitor = Application::createUser($visitor_id);
         }
         
         $this->record = Application_LockManager::getByPath(
@@ -65,14 +66,14 @@ abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
     protected $visitor;
     
    /**
-    * @var Application_LockManager_Lock
+    * @var Application_LockManager_Lock|NULL
     */
-    protected $record;
+    protected ?Application_LockManager_Lock $record = null;
     
-    protected function requireRecord()
+    protected function requireRecord() : Application_LockManager_Lock
     {
         if(isset($this->record)) {
-           return;
+           return $this->record;
         }
          
         $this->sendError(
@@ -81,13 +82,20 @@ abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
             self::ERROR_NO_RECORD_FOUND
         );
     }
- 
-    protected function sendStatus($isVisitor=false)
+
+    /**
+     * @param bool $isVisitor
+     * @return never
+     * @throws Application_Exception
+     */
+    protected function sendStatus(bool $isVisitor=false)
     {
+        $record = $this->requireRecord();
+
         $data = array();
         $data['locked'] = true;
-        $data['current_lock_id'] = $this->record->getID();
-        $data['current_lock'] = $this->record->toArray($this->visitor);
+        $data['current_lock_id'] = $record->getID();
+        $data['current_lock'] = $record->toArray($this->visitor);
         $data['active_locks'] = array();
         $data['extended_locks'] = array();
         
@@ -160,7 +168,8 @@ abstract class Application_LockManager_AjaxMethod extends Application_AjaxMethod
             return;
         }
         
-        foreach($lockIDs as $lockID) {
+        foreach($lockIDs as $lockID)
+        {
             if(!is_numeric($lockID)) {
                 throw new Application_Exception(
                     'Invalid lock specified',

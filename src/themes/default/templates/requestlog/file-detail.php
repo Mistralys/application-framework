@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
 
@@ -39,6 +40,15 @@ class template_default_requestlog_file_detail extends UI_Page_Template_Custom
             ->collapse()
             ->setTitle(t('Server variables'))
             ->setContent('<pre>'.print_r($this->info->getServerVars(), true).'</pre>');
+
+        echo $this->createSection()
+            ->collapse()
+            ->setTitle(t('Session variables'))
+            ->setAbstract(t(
+                'Session prefix is %1$s.',
+                sb()->code(AppFactory::createSession()->getPrefix())
+            ))
+            ->setContent('<pre>'.print_r($this->info->getSessionVars(), true).'</pre>');
 
         echo $this->createSection()
             ->collapse()

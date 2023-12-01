@@ -2,10 +2,18 @@
 
 declare(strict_types=1);
 
+namespace TestDriver;
+
+use DBHelper_BaseCollection;
+use TestDriver\TestDBCollection\TestDBRecord;
+use TestDriver_TestDBCollection_FilterCriteria;
+use TestDriver_TestDBCollection_FilterSettings;
+
 /**
- * @method TestDriver_TestDBCollection_TestDBRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ * @method TestDBRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ * @method TestDBRecord getByID(int $record_id)
  */
-class TestDriver_TestDBCollection extends DBHelper_BaseCollection
+class TestDBCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'test_records';
     public const TABLE_NAME_DATA = 'test_records_data';
@@ -13,7 +21,7 @@ class TestDriver_TestDBCollection extends DBHelper_BaseCollection
 
     public function getRecordClassName(): string
     {
-        return TestDriver_TestDBCollection_TestDBRecord::class;
+        return TestDBRecord::class;
     }
 
     public function getRecordFiltersClassName(): string
@@ -28,13 +36,13 @@ class TestDriver_TestDBCollection extends DBHelper_BaseCollection
 
     public function getRecordDefaultSortKey(): string
     {
-        return TestDriver_TestDBCollection_TestDBRecord::COL_LABEL;
+        return TestDBRecord::COL_LABEL;
     }
 
     public function getRecordSearchableColumns(): array
     {
         return array(
-            TestDriver_TestDBCollection_TestDBRecord::COL_LABEL => t('Label')
+            TestDBRecord::COL_LABEL => t('Label')
         );
     }
 
@@ -68,11 +76,20 @@ class TestDriver_TestDBCollection extends DBHelper_BaseCollection
         return array();
     }
 
-    public function createTestRecord(string $label, string $alias): TestDriver_TestDBCollection_TestDBRecord
+    public function createTestRecord(string $label, string $alias): TestDBRecord
     {
         return $this->createNewRecord(array(
-            TestDriver_TestDBCollection_TestDBRecord::COL_LABEL => $label,
-            TestDriver_TestDBCollection_TestDBRecord::COL_ALIAS => $alias
+            TestDBRecord::COL_LABEL => $label,
+            TestDBRecord::COL_ALIAS => $alias
         ));
+    }
+
+    protected function _registerKeys(): void
+    {
+        $this->keys->register(TestDBRecord::COL_LABEL)
+            ->makeRequired();
+
+        $this->keys->register(TestDBRecord::COL_ALIAS)
+            ->makeRequired();
     }
 }

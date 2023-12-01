@@ -1,22 +1,31 @@
 <?php
 
-/* @var $this UI_Page_Template */
+declare(strict_types=1);
 
 use Application\AppFactory;
 
-$grid = $this->ui->createDataGrid('flag-icons');
-$grid->addColumn('label', t('Label'));
-$grid->addColumn('icon', t('Icon'));
+DBHelper::startTransaction();
 
-$countries = AppFactory::createCountries()->getAll(false);
+// The example application has no countries by
+// default, so we create some here.
+$countries = AppFactory::createCountries();
+$countries->createNewCountry('de', 'Germany');
+$countries->createNewCountry('us', 'United States');
+$countries->createNewCountry('es', 'Spain');
 
-$entries = array();
-foreach($countries as $country)
-{
-    $entries[] = array(
-        'label' => $country->getLocalizedLabel(),
-        'icon' => $country->getIcon()
-    );
-}
+$list = $countries->getAll();
 
-echo $grid->render($entries);
+DBHelper::rollbackTransaction();
+
+?>
+<p><?php pt('Found %1$s countries.', count($list)); ?></p>
+<ul>
+    <?php
+    foreach($list as $country)
+    {
+        ?>
+        <li><?php echo $country->getIconLabel() ?></li>
+        <?php
+    }
+    ?>
+</ul>

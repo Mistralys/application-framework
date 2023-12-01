@@ -5,11 +5,13 @@
  * @subpackage Core
  */
 
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
@@ -377,15 +379,14 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
 		    $info = 'No developer-specific information available.';
 		}
 		
-		if($info) 
-		{
-		    if(!$html) {
-		        $info = strip_tags($info);
-		    }
-		    
-    		$lines[] = '<h4 class="errorpage-header">Developer info</h4>';
-    		$lines[] = $info;
-		}		
+        if(!$html) {
+            $info = strip_tags($info);
+        } else {
+            $info = nl2br($info);
+        }
+
+        $lines[] = '<h4 class="errorpage-header">Developer info</h4>';
+        $lines[] = $info;
 	}
 	
 	$code = implode($nl, $lines);
@@ -859,18 +860,19 @@ function displayCSV($csv, $filename='download.csv', $debug=false)
 
 /**
  * Sends the specified CSV string to the browser with
- * the correct headers to triggr a download of the CSV
+ * the correct headers to trigger a download of the CSV
  * to a local file and terminates the request.
  *
  * @param string $csv
  * @param string $filename
+ * @return never
  */
-function downloadCSV($csv, $filename='download.csv')
+function downloadCSV(string $csv, string $filename='download.csv')
 {
     header('Content-type:text/csv; charset=UTF-8');
 	header('Content-Disposition: attachment; filename="'.$filename.'"');
 	
-	$boms = AppUtils\FileHelper::getUTFBOMs();
+	$boms = FileHelper::createUnicodeHandling()->getUTFBOMs();
 	
 	echo 
 	$boms['UTF8'].
@@ -1070,16 +1072,24 @@ function ensureType(string $className, object $object, int $code=0)
 
 /**
  * Whether developer mode is enabled.
+ *
+ * NOTE: It is automatically enabled when unit tests are
+ * running, or if the application runs in a development
+ * environment.
  * 
  * @return bool
  */
 function isDevelMode() : bool
 {
-    if(boot_constant('APP_TESTS_RUNNING') === true) {
+    if(boot_constant(BaseConfigRegistry::TESTS_RUNNING) === true) {
         return true;
     }
 
-    return boot_constant('APP_DEVELOPER_MODE') === true;
+    if(boot_constant(BaseConfigRegistry::DEVELOPER_MODE) === true) {
+        return true;
+    }
+
+    return Application::isDevelEnvironment();
 }
 
 /**
@@ -1203,4 +1213,28 @@ function statementBuilder(string $statementTemplate, ?DBHelper_StatementBuilder_
 function statementValues() : DBHelper_StatementBuilder_ValuesContainer
 {
     return new DBHelper_StatementBuilder_ValuesContainer();
+}
+
+/**
+ * Fetches the home folder of the current user.
+ *
+ * NOTE: Meant to be used when working locally
+ * on a project. Supports Windows, Linux and
+ * MacOS.
+ *
+ * @return string
+ */
+function getHomeFolder() : string
+{
+    $result = $_SERVER['HOME'] ?? getenv('HOME');
+
+    if(empty($result) && function_exists('exec')) {
+        if(PHP_OS_FAMILY === 'Windows') {
+            $result = exec("echo %userprofile%");
+        } else {
+            $result = exec("echo ~");
+        }
+    }
+
+    return $result;
 }

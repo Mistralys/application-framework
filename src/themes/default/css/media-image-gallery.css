@@ -1,0 +1,35 @@
+.image-gallery{
+    display:flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.gallery-card{
+    flex-basis: 200px;
+    border:solid 1px #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    background:#f0f0f0;
+}
+
+.gallery-image{
+    background: url(../img/forms/VisualSelect/bg-image.png) repeat;
+}
+
+.gallery-image > IMG{
+    object-fit: cover;
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+}
+
+.gallery-details{
+    padding-top:8px;
+    font-size: var(--font-size-s);
+}
+
+.gallery-pagination{
+    text-align: center;
+    margin: 1rem 0 1rem 0;
+}

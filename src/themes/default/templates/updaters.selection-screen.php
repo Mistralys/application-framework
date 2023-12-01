@@ -65,7 +65,7 @@
 			if($enabled) {
 				$list .=
 				'<li>'.
-					'<b><a href="upgrade.php?updater_id='.$updater->getID().'">'.
+					'<b><a href="'.$updater->buildURL().'">'.
 					    $updater->getListLabel().
 					'</a></b><br/>'.
 					'<small class="muted">'.rtrim($updater->getDescription(), '.').'.<br/>'.

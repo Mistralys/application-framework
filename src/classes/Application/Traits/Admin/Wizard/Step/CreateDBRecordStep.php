@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\BaseException;
 use AppUtils\ConvertHelper_Exception;
 
 /**
@@ -134,17 +135,15 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
      * Creates the mailing and the initial audience.
      *
      * @return DBHelper_BaseRecord
-     *
-     * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
-     * @throws DBHelper_Exception
-     * @throws ConvertHelper_Exception
+     * @throws BaseException
      */
     protected function createRecord() : DBHelper_BaseRecord
     {
         $this->log(sprintf('Creating the %s record.', $this->createCollection()->getRecordTypeName()));
 
-        $record = $this->settingsManager->createRecordFromValues($this->getSettingValues());
+        $this->settingsManager->makeSubmitted($this->getSettingValues());
+
+        $record = $this->settingsManager->createRecord();
 
         $this->log(sprintf('Created record with ID [%s].', $record->getID()));
 

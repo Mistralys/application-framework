@@ -9,10 +9,10 @@
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+use AppUtils\Traits\ClassableTrait;
 use function AppUtils\parseNumber;
 
 /**
@@ -36,10 +36,10 @@ abstract class UI_Page_Section
         Application_LockableItem_Interface,
         UI_Page_Sidebar_ItemInterface,
         Application_Interfaces_Iconizable,
-        Interface_Classable,
+        ClassableInterface,
         UI_Interfaces_StatusElementContainer
 {
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_Conditional;
     use UI_Traits_StatusElementContainer;
     use Application_Traits_LockableStatus;

@@ -9,9 +9,6 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
-
 /**
  * Base class for select elements that allow choosing
  * items of a DBHelper collection. Can inject the target
@@ -25,15 +22,8 @@ use AppUtils\Interface_Optionable;
  */
 abstract class Application_Formable_RecordSelector extends Application_Formable_Selector
 {
-   /**
-    * @var DBHelper_BaseCollection
-    */
-    protected $collection;
-    
-   /**
-    * @var DBHelper_BaseFilterCriteria
-    */
-    protected $filters;
+    protected DBHelper_BaseCollection $collection;
+    protected DBHelper_BaseFilterCriteria $filters;
     
     public function __construct(Application_Interfaces_Formable $formable)
     {
@@ -41,6 +31,13 @@ abstract class Application_Formable_RecordSelector extends Application_Formable_
 
         $this->collection = $this->createCollection();
         $this->filters = $this->collection->getFilterCriteria();
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
     
     abstract public function createCollection();

@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Helper class used to build `CASE` SQL statements.
@@ -16,7 +16,7 @@ use AppUtils\Interface_Stringable;
  * @package DBHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class DBHelper_CaseStatement implements Interface_Stringable
+class DBHelper_CaseStatement implements StringableInterface
 {
     /**
      * @var string

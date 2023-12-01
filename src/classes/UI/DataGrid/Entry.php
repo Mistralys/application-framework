@@ -8,8 +8,8 @@
  */
 
 use AppUtils\ConvertHelper;
-use AppUtils\Traits_Classable;
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Container for a single row in a data grid. Offers an API
@@ -21,9 +21,9 @@ use AppUtils\Interface_Classable;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @implements ArrayAccess<string,mixed>
  */
-class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
+class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
 {
-    use Traits_Classable;
+    use ClassableTrait;
 
     public const ERROR_MISSING_PRIMARY_VALUE = 536001;
     
@@ -243,11 +243,20 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
 
     // region: Array access interface
 
-    public function offsetExists($offset)
+    /**
+     * @param string $offset
+     * @return bool
+     */
+    public function offsetExists($offset) : bool
     {
         return isset($this->data[$offset]);
     }
 
+    /**
+     * @param string $offset
+     * @return mixed|null
+     */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if(isset($this->data[$offset])) {
@@ -257,12 +266,21 @@ class UI_DataGrid_Entry implements Interface_Classable, ArrayAccess
         return null;
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param string $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value) : void
     {
         $this->data[$offset] = $value;
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param string $offset
+     * @return void
+     */
+    public function offsetUnset($offset) : void
     {
         if(array_key_exists($offset, $this->data)) {
             unset($this->data[$offset]);

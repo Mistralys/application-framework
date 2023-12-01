@@ -814,5 +814,9 @@
   "snowflake":{
     "icon": "snowflake",
     "type": "far"
+  },
+  "news":{
+    "icon": "newspaper",
+    "type": "far"
   }
 }

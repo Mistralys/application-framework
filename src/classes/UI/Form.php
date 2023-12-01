@@ -8,10 +8,13 @@
  */
 
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\FileHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\RegexHelper;
+use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
 use function AppUtils\parseVariable;
 
 /**
@@ -40,6 +43,7 @@ class UI_Form extends UI_Renderable
     public const ERROR_INVALID_FORM_RENDERER = 45524014;
     public const ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
     public const ERROR_CANNOT_CREATE_ELEMENT = 45524016;
+    public const ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
 
     /**
      * Stores the string that form element IDs get prefixed with.
@@ -47,8 +51,12 @@ class UI_Form extends UI_Renderable
      */
     public const ID_PREFIX = 'f-';
 
+    public const ATTRIBUTE_LABEL_ID = 'data-label-id';
     public const REL_BUTTON = 'Button';
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
+    public const FORM_PREFIX = 'form-';
+    public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
+
 
     protected string $id;
     protected HTML_QuickForm2 $form;
@@ -82,7 +90,7 @@ class UI_Form extends UI_Renderable
         
         $this->id = $formID;
         $this->defaultDataSource = new HTML_QuickForm2_DataSource_Array($defaultData);
-        $this->form = new HTML_QuickForm2('form-' . $formID, $method);
+        $this->form = new HTML_QuickForm2(self::FORM_PREFIX . $formID, $method);
         $this->form->addDataSource($this->defaultDataSource);
         $this->form->setAttribute('data-jsid', $formID);
         
@@ -101,7 +109,24 @@ class UI_Form extends UI_Renderable
     {
         return $this->form->getId();
     }
-    
+
+    /**
+     * Sets the ID to use for the form element's <code>&lt;label&gt;</code>
+     * tag. This is used by the {@see UI_Form_Renderer} to adjust the label's
+     * target (instead of using the element's own ID).
+     *
+     * Use cases are when an element has sub-elements (like groups), to be
+     * able to specify what the target should be.
+     *
+     * @param HTML_QuickForm2_Node $node
+     * @param string $id
+     * @return void
+     */
+    public static function setElementLabelID(HTML_QuickForm2_Node $node, string $id) : void
+    {
+        $node->setAttribute(self::ATTRIBUTE_LABEL_ID, $id);
+    }
+
     public function getJSID() : string
     {
         return $this->form->getAttribute('data-jsid');
@@ -151,13 +176,13 @@ class UI_Form extends UI_Renderable
             }
             
             $names = FileHelper::createFileFinder($folder)
-            ->getPHPClassNames();
+                ->getPHPClassNames();
             
             foreach($names as $name) 
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form element [%s].', $id));
-                $this->registerCustomElement($id, $name, $folder.'/'.$name.'.php');
+                $this->registerCustomElement($id, $name);
             }
         }
     }
@@ -191,7 +216,7 @@ class UI_Form extends UI_Renderable
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form rule [%s].', $id));
-                $this->registerCustomRule($id, $name, $folder.'/'.$name.'.php');
+                $this->registerCustomRule($id, $name);
             }
         }
     }
@@ -206,75 +231,7 @@ class UI_Form extends UI_Renderable
     */
     protected static array $instances = array();
 
-    /**
-     * Creates and adds an image uploader element (specific to SPIN
-     * with the media classes).
-     *
-     * @param string $name
-     * @param HTML_QuickForm2_Container|NULL $container The container to add the element to, defaults to the form itself.
-     * @return HTML_QuickForm2_Element_ImageUploader
-     * @throws Application_Exception
-     */
-    public function addImageUploader(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ImageUploader
-    {
-        return ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_ImageUploader::class,
-            $this->addElement('imageuploader', $name, $container)
-        );
-    }
 
-    /**
-     * @param string $name
-     * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_ExpandableSelect
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
-     */
-    public function addExpandableSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
-    {
-        return ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_ExpandableSelect::class,
-            $this->addElement('ExpandableSelect', $name, $container)
-        );
-    }
-
-    public function addVisualSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
-    {
-        return ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_VisualSelect::class,
-            $this->addElement('visualselect', $name, $container)
-        );
-    }
-
-    /**
-     * @param string $type
-     * @param string $name
-     * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Node
-     * @throws Application_Formable_Exception
-     */
-    private function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
-    {
-        try
-        {
-            return $this->resolveContainer($container)
-                ->addElement($type, $name);
-        }
-        catch (HTML_QuickForm2_Exception $e)
-        {
-            throw new Application_Formable_Exception(
-                'Cannot create form element',
-                sprintf(
-                    'Tried creating element of type [%s].',
-                    $type
-                ),
-                self::ERROR_CANNOT_CREATE_ELEMENT,
-                $e
-            );
-        }
-    }
 
     /**
      * Registers a custom form element rule.
@@ -290,16 +247,18 @@ class UI_Form extends UI_Renderable
      * @param string $alias
      * @param string $ruleName
      */
-    public function registerCustomRule($alias, $ruleName, $filePath)
+    public function registerCustomRule(string $alias, string $ruleName) : void
     {
         HTML_QuickForm2_Factory::registerRule(
             $alias,
-            'HTML_QuickForm2_Rule_' . $ruleName,
-            $filePath
+            HTML_QuickForm2_Rule::class . '_'.$ruleName
         );
     }
 
-    protected $customElements = array();
+    /**
+     * @var array<string,array{alias:string,name:string}>
+     */
+    protected array $customElements = array();
     
     /**
      * Registers a custom form Element class.
@@ -315,18 +274,16 @@ class UI_Form extends UI_Renderable
      * @param string $alias
      * @param string $elementName
      */
-    public function registerCustomElement($alias, $elementName, $includeFile=null)
+    public function registerCustomElement(string $alias, string $elementName) : void
     {
         $this->customElements[$alias] = array(
             'alias' => $alias,
-            'name' => $elementName,
-            'file' => $includeFile
+            'name' => $elementName
         );
         
         HTML_QuickForm2_Factory::registerElement(
             $alias,
-            'HTML_QuickForm2_Element_' . $elementName,
-            $includeFile
+            HTML_QuickForm2_Element::class . '_' . $elementName
         );
     }
     
@@ -334,7 +291,7 @@ class UI_Form extends UI_Renderable
     * Retrieves a list of all registered custom elements.
     * @return array Indexed array with these keys in each entry: "alias", "name" and "file"
     */
-    public function getCustomElements()
+    public function getCustomElements() : array
     {
         return array_values($this->customElements);
     }
@@ -345,7 +302,7 @@ class UI_Form extends UI_Renderable
      *
      * @return HTML_QuickForm2_DataSource_Array
      */
-    public function getDefaultDataSource()
+    public function getDefaultDataSource() : HTML_QuickForm2_DataSource_Array
     {
         return $this->defaultDataSource;
     }
@@ -390,40 +347,6 @@ class UI_Form extends UI_Renderable
         $this->ui->addJavascriptOnload("application.focusField('" . $element->getId() . "')");
     }
 
-    /**
-     * Adds a hidden variable to the form that will get submitted along with visible fields.
-     *
-     * @param string $name
-     * @param string|null $value
-     * @param string|null $id
-     * @return HTML_QuickForm2_Element_InputHidden
-     * @throws HTML_QuickForm2_InvalidArgumentException
-     */
-    public function addHiddenVar(string $name, ?string $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
-    {
-        if (!isset($this->hiddens[$name]))
-        {
-            $this->hiddens[$name] = $this->form->addHidden($name);
-        }
-
-        if($value === null) {
-            $value = (string)$this->hiddens[$name]->getValue();
-        }
-
-        if(!empty($value)) {
-            $this->hiddens[$name]->setAttribute('value', $value);
-        }
-
-        if ($id === null)
-        {
-            $id = self::ID_PREFIX . $name;
-        }
-        
-        $this->hiddens[$name]->setId($id);
-
-        return $this->hiddens[$name];
-    }
-    
    /**
     * Sets an attribute of the form element itself.
     * 
@@ -437,7 +360,63 @@ class UI_Form extends UI_Renderable
         return $this;
     }
 
-   /**
+    /**
+     * @return HTML_QuickForm2_Node[]
+     */
+    public function getErroneousElements(array $result=array()) : array
+    {
+        $elements = $this->form->getElements();
+
+        foreach($elements as $element)
+        {
+            if($element->hasErrors()) {
+                $result[] = $element;
+            }
+
+            if($element instanceof HTML_QuickForm2_Container) {
+                $result = $this->getErroneousElements($element->getElements());
+            }
+        }
+
+        return $result;
+    }
+
+    public function renderErrorMessages() : string
+    {
+        $elements = $this->getErroneousElements();
+
+        $result = array();
+        foreach($elements as $element)
+        {
+            $result[] = $element->getName().': '.$element->getError();
+        }
+
+        return '<ul>'.implode('</li><li>', $result).'</ul>';
+    }
+
+    /**
+     * Manually submits the form given the specified data.
+     *
+     * @param array<string,mixed> $formValues
+     * @return $this
+     * @throws Application_Formable_Exception
+     */
+    public function makeSubmitted(array $formValues=array()) : self
+    {
+        $this->form->submitManually(new ManualSubmitDataSource($formValues));
+
+        if(!$this->isSubmitted()) {
+            throw new Application_Formable_Exception(
+                'Form could not be submitted',
+                'Setting the tracking var had no effect.',
+                self::ERROR_COULD_NOT_SUBMIT_FORM
+            );
+        }
+
+        return $this;
+    }
+
+    /**
     * Adds a class to the form tag itself.
     * 
     * @param string $className
@@ -561,159 +540,6 @@ class UI_Form extends UI_Renderable
         }
         
         return $result;
-    }
-
-    /**
-     * Adds a group to the form that will be rendered as
-     * a tab. Note that if you use this, you should add
-     * all form elements to tabs, and not add any single
-     * elements to the form.
-     *
-     * @param string $name
-     * @param string $label
-     * @param string|NULL $description
-     * @return HTML_QuickForm2_Container_Group
-     */
-    public function addTab(string $name, string $label, ?string $description = null) : HTML_QuickForm2_Container_Group
-    {
-        $tab = $this->form->addGroup($name);
-        $tab->setAttribute('rel', 'tab');
-        $tab->setLabel($label);
-        $tab->setId(self::ID_PREFIX . $name);
-        $tab->setAttribute('description', $description);
-
-        return $tab;
-    }
-
-    /**
-     * Adds a purely cosmetic header to the form that has no data.
-     *
-     * @param string $title
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @param string|null $anchor The name of an anchor to jump to this header in the page
-     * @param bool $collapsed
-     * @return HTML_QuickForm2_Element_InputText
-     * @deprecated
-     */
-    public function addHeader(string $title, ?HTML_QuickForm2_Container $container = null, ?string $anchor=null, bool $collapsed=true) : HTML_QuickForm2_Element_InputText
-    {
-        $el = $this->addDummyElement($title, 'header', $container);
-        
-        if(!empty($anchor)) {
-            $el->setAttribute('data-anchor', $anchor);
-        }
-        
-        if(!$collapsed) {
-            $el->setAttribute('data-collapsed', 'no');
-        }
-        
-        return $el;
-    }
-    
-    public function addStatic(string $label, string $content, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
-    {
-        if(empty($container)) {
-            $container = $this->form;
-        }
-        
-        $element = $this->addDummyElement($label, 'static', $container);
-        $element->setAttribute('static_content', $content);
-
-        return $element;
-    }
-
-   /**
-    * Adds arbitrary HTML code to the form.
-    * @param string $html
-    * @param HTML_QuickForm2_Container $container
-    * @return HTML_QuickForm2_Element_InputText
-    */
-    public function addHTML(string $html, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
-    {
-        return $this->addDummyElement($html, 'html', $container);
-    }
-
-    /**
-     * Adds a purely cosmetic hint message to the form, styled as an
-     * informational message that has no data.
-     *
-     * @param string $text
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Node
-     */
-    public function addHint($text, $container = null)
-    {
-        return $this->addDummyElement($text, 'hint', $container);
-    }
-    
-   /**
-    * Adds an ISO 8601 date element (YYYY-MM-DD).
-    * 
-    * @param string $name
-    * @param string $label
-    * @param HTML_QuickForm2_Container $container
-    * @return HTML_QuickForm2_Element_InputText
-    */
-    public function addISODate(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
-    {
-        $el = $this->form->addText($name, $container);
-        $el->addFilterTrim();
-        $el->setLabel($label);
-        $el->addClass('input-xlarge');
-
-        $this->addRuleISODate($el);
-        
-        return $el;
-    }
-
-    public function addInteger(string $name, string $label, ?HTML_QuickForm2_Container $container=null, int $min=0, int $max=0) : HTML_QuickForm2_Element_InputText
-    {
-        $element = $this->addText($name, $label, $container);
-        $element->addFilterTrim();
-        $element->addClass('input-small');
-
-        $this->addRuleInteger($element, $min, $max);
-
-        return $element;
-    }
-
-    /**
-     * Adds a purely cosmetic text paragraph to the form. Has no data.
-     * @param string $text
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Node
-     */
-    public function addParagraph($text, $container = null)
-    {
-        return $this->addDummyElement($text, 'paragraph', $container);
-    }
-
-    /**
-     * Adds a dummy element of the specified type with the specified content.
-     * If no container is set, the form itself is used.
-     *
-     * @param string $content
-     * @param string $type
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Element_InputText
-     */
-    protected function addDummyElement(string $content, string $type, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
-    {
-        if(is_null($container)) 
-        {
-            $container = $this->form;
-        }
-        
-        $this->dummyCounter++;
-        
-        $element = $container->addElement('text', 'dummy' . $this->dummyCounter);
-        $element->setLabel($content);
-        $element->setAttribute('rel', $type);
-
-        return ensureType(
-            HTML_QuickForm2_Element_InputText::class,
-            $element
-        );
     }
 
     protected $silentValidation = false;
@@ -842,106 +668,6 @@ class UI_Form extends UI_Renderable
     {
         $this->dummyCounter++;
         return 'form_el_' . $this->dummyCounter;
-    }
-
-    /**
-     * Adds a clickable button to the form that links to the specified URL.
-     * @param string $url
-     * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return HTML_QuickForm2_Element_UIButton
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws UI_Exception
-     */
-    public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
-    {
-        return $this->addButton($this->generateDummyName())
-            ->setTooltip($tooltip)
-            ->link($url)
-            ->setLabel($label);
-    }
-
-    /**
-     * Adds the primary submit button to the form's footer.
-     *
-     * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string $name
-     * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return HTML_QuickForm2_Element_UIButton
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws UI_Exception
-     */
-    public function addPrimarySubmit($label, string $name='save', $tooltip='') : HTML_QuickForm2_Element_UIButton
-    {
-        return $this->addSubmit($label, $name, $tooltip)
-            ->makePrimary();
-    }
-
-    /**
-     * Adds a primary submit button to the form's footer, which
-     * automatically enables simulation mode before submitting
-     * the form.
-     *
-     * @param string $label
-     * @param string $name
-     * @return HTML_QuickForm2_Element_UIButton
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws UI_Exception
-     */
-    public function addDevPrimarySubmit(string $label, string $name='save') : HTML_QuickForm2_Element_UIButton
-    {
-        return $this->addSubmit($label, $name)
-            ->makeDeveloper()
-            ->click("FormHelper.enableSimulation($(this).closest('form').attr('id'))");
-    }
-
-    /**
-     * Adds a blank button to the footer of the form,
-     * which must be configured further with a label
-     * and action.
-     *
-     * @param string $name
-     * @return HTML_QuickForm2_Element_UIButton
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     */
-    public function addButton(string $name) : HTML_QuickForm2_Element_UIButton
-    {
-        return ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_UIButton::class,
-            $this->addElement('uibutton', $name, $this->form)
-        );
-    }
-
-    /**
-     * Adds an unstyled submit button to the form's footer.
-     *
-     * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string $name
-     * @param string|number|UI_Renderable_Interface|NULL $tooltip
-     * @return HTML_QuickForm2_Element_UIButton
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws UI_Exception
-     */
-    public function addSubmit($label, string $name='save', $tooltip=null) : HTML_QuickForm2_Element_UIButton
-    {
-        return $this->addButton($name)
-            ->makeSubmit()
-            ->setLabel(toString($label))
-            ->setTooltip($tooltip);
     }
 
    /**
@@ -1223,19 +949,6 @@ class UI_Form extends UI_Renderable
     }
 
     /**
-     * Adds a subheader to the form, which does not contain any data.
-     * It is purely cosmetic and rendered using the form renderer.
-     *
-     * @param string $header
-     * @param null|HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Node
-     */
-    public function addSubheader($header, $container = null)
-    {
-        return $this->addDummyElement($header, 'subheader', $container);
-    }
-
-    /**
      * Retrieves the first element in the container's elements collection,
      * or null if it does not have any elements.
      *
@@ -1282,123 +995,7 @@ class UI_Form extends UI_Renderable
         return null;
     }
 
-   /**
-    * Adds a validation rule to make the element required.
-    * 
-    * @param HTML_QuickForm2_Node $el
-    * @return HTML_QuickForm2_Node
-    */
-    public function makeRequired(HTML_QuickForm2_Node $el, $message=null)
-    {
-        if(empty($message)) 
-        {
-            if($el instanceof HTML_QuickForm2_Element_Select) {
-                $message = t('Please select a value.');
-            } else {
-                $message = t('Please enter a value.');
-            }
-        }
-        
-        $el->addRule('required', $message);
-        
-        $el->setAttribute('data-required', 'true');
-        return $el;
-    }
-    
-   /**
-    * Adds a validation rule to the element to limit the length
-    * to the specified amount of characters. Automatically adds
-    * a validation hint for the length as well.
-    * 
-    * Note: To limit to a specific length, simply set the min and max
-    * to the same value.
-    * 
-    * @param HTML_QuickForm2_Node $el
-    * @param int $min
-    * @param int $max
-    * @return HTML_QuickForm2_Node
-    */
-    public function makeLengthLimited(HTML_QuickForm2_Node $el, $min, $max)
-    {
-        if($min > $max) {
-            throw new Application_Exception(
-                'Invalid length',
-                sprintf(
-                    'The minimum length [%s] is higher than the maximum [%s].',
-                    $min,
-                    $max    
-                ),
-                self::ERROR_INVALID_LENGTH_LIMIT
-            );
-        }
-        
-        if($min==$max) {
-            $el->addRule(
-                'length',
-                t('Has to be exactly %1$s characters long.', $min),
-                array($min, $max)
-            );
-        } else {
-            $el->addRule(
-                'length', 
-                t('Has to be between %1$s and %2$s characters long.', $min, $max), 
-                array($min, $max)
-            );
-        }
-        
-        $el->setAttribute('data-length', $min . '-' . $max);
-        
-        return $el;
-    }
 
-    /**
-     * @param HTML_QuickForm2_Node $el
-     * @param int|null $min
-     * @param int|null $max
-     * @return HTML_QuickForm2_Node
-     * @throws Application_Exception
-     * @throws HTML_QuickForm2_InvalidArgumentException
-     * @throws HTML_QuickForm2_NotFoundException
-     */
-    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null) : HTML_QuickForm2_Node
-    {
-        $minEmpty = $min === null || $min <= 0;
-        $maxEmpty = $max === null || $max <= 0;
-
-        if($minEmpty && $maxEmpty)
-        {
-            return $el;
-        }
-        
-        if(!$minEmpty && !$maxEmpty && $min > $max)
-        {
-            throw new Application_Exception(
-                'Invalid length',
-                sprintf(
-                    'The minimum value [%s] is higher than the maximum [%s] for element [%s].',
-                    $min,
-                    $max,
-                    $el->getName()
-                ),
-                self::ERROR_INVALID_MINMAX_VALUES
-            );
-        }
-        
-        $el->setAttribute('data-validate', 'minmax');
-        $el->setAttribute('data-min', (string)$min);
-        $el->setAttribute('data-max', (string)$max);
-        
-        $el->addRule(
-            'callback', 
-            '', 
-            array(
-                'callback' => array($this, 'handle_validateMinMax'),
-                'arguments' => array($min, $max)
-            )
-        );
-        
-        return $el;
-    }
     
     public function handle_validateMinMax($value, ?int $min, ?int $max) : bool
     {
@@ -1420,20 +1017,6 @@ class UI_Form extends UI_Renderable
     }
 
    /**
-    * Marks the element as structural, meaning changing 
-    * it will trigger a new revision when saving.
-    * 
-    * @param HTML_QuickForm2_Node $el
-    * @param boolean $structural Whether it is structural or not
-    * @return HTML_QuickForm2_Node
-    */
-    public function makeStructural(HTML_QuickForm2_Node $el, bool $structural=true)
-    {
-        $el->setAttribute('structural', AppUtils\ConvertHelper::bool2string($structural, true));
-        return $el;
-    }
-    
-   /**
     * Sets the onsubmit attribute of the form tag to the specified
     * javascript statement string.
     * 
@@ -1443,20 +1026,6 @@ class UI_Form extends UI_Renderable
     public function onSubmit($statement)
     {
         $this->form->setAttribute('onsubmit', $statement);
-        return $this;
-    }
-    
-   /**
-    * Adds a collection of hidden variables to the form.
-    * @param array $vars Name => value pairs
-    * @return UI_Form
-    */
-    public function addHiddenVars($vars)
-    {
-        foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
-        }
-        
         return $this;
     }
     
@@ -1589,7 +1158,452 @@ class UI_Form extends UI_Renderable
             call_user_func($handler, $this, $data);
         }
     }
-    
+
+    // region: Adding element flavors
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    public function addText(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputText::class,
+            $this->addElement('text', $name, $container)
+        )
+            ->setLabel($label);
+    }
+
+    /**
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_Textarea
+     *
+     * @throws Application_Formable_Exception
+     * @throws BaseClassHelperException
+     */
+    public function addTextarea(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Textarea
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_Textarea::class,
+            $this->addElement('textarea', $name, $container)
+        )
+            ->setLabel($label);
+    }
+
+    /**
+     * Adds a subheader to the form, which does not contain any data.
+     * It is purely cosmetic and rendered using the form renderer.
+     *
+     * @param string $header
+     * @param null|HTML_QuickForm2_Container $container
+     * @return HTML_QuickForm2_Node
+     */
+    public function addSubheader($header, $container = null)
+    {
+        return $this->addDummyElement($header, 'subheader', $container);
+    }
+
+    /**
+     * Adds a collection of hidden variables to the form.
+     * @param array $vars Name => value pairs
+     * @return UI_Form
+     */
+    public function addHiddenVars($vars)
+    {
+        foreach($vars as $name => $value) {
+            $this->addHiddenVar($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds an element to enter a percentage.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @param float $min
+     * @param float $max
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    public function addPercent(string $name, string $label, ?HTML_QuickForm2_Container $container=null, float $min=0, float $max=100) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->addText($name, $label, $container);
+        $el->addFilterTrim();
+        $el->addClass('input-small');
+
+        $this->addRulePercent($el, $min, $max);
+        $this->setElementAppend($el, '%');
+
+        return $el;
+    }
+
+    /**
+     * Creates and adds an image uploader element (specific to SPIN
+     * with the media classes).
+     *
+     * @param string $name
+     * @param HTML_QuickForm2_Container|NULL $container The container to add the element to, defaults to the form itself.
+     * @return HTML_QuickForm2_Element_ImageUploader
+     * @throws Application_Exception
+     */
+    public function addImageUploader(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ImageUploader
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_ImageUploader::class,
+            $this->addElement('imageuploader', $name, $container)
+        );
+    }
+
+    /**
+     * @param string $name
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_ExpandableSelect
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassHelper\ClassNotExistsException
+     * @throws ClassHelper\ClassNotImplementsException
+     */
+    public function addExpandableSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_ExpandableSelect
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_ExpandableSelect::class,
+            $this->addElement('ExpandableSelect', $name, $container)
+        );
+    }
+
+    public function addVisualSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_VisualSelect::class,
+            $this->addElement('visualselect', $name, $container)
+        );
+    }
+
+    /**
+     * @param string $type
+     * @param string $name
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Node
+     * @throws Application_Formable_Exception
+     */
+    private function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
+    {
+        try
+        {
+            return $this->resolveContainer($container)
+                ->addElement($type, $name);
+        }
+        catch (HTML_QuickForm2_Exception $e)
+        {
+            throw new Application_Formable_Exception(
+                'Cannot create form element',
+                sprintf(
+                    'Tried creating element of type [%s].',
+                    $type
+                ),
+                self::ERROR_CANNOT_CREATE_ELEMENT,
+                $e
+            );
+        }
+    }
+
+    /**
+     * Adds a group to the form that will be rendered as
+     * a tab. Note that if you use this, you should add
+     * all form elements to tabs, and not add any single
+     * elements to the form.
+     *
+     * @param string $name
+     * @param string $label
+     * @param string|NULL $description
+     * @return HTML_QuickForm2_Container_Group
+     */
+    public function addTab(string $name, string $label, ?string $description = null) : HTML_QuickForm2_Container_Group
+    {
+        $tab = $this->form->addGroup($name);
+        $tab->setAttribute('rel', 'tab');
+        $tab->setLabel($label);
+        $tab->setId(self::ID_PREFIX . $name);
+        $tab->setAttribute('description', $description);
+
+        return $tab;
+    }
+
+    /**
+     * Adds a purely cosmetic header to the form that has no data.
+     *
+     * @param string $title
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @param string|null $anchor The name of an anchor to jump to this header in the page
+     * @param bool $collapsed
+     * @return HTML_QuickForm2_Element_InputText
+     * @deprecated
+     */
+    public function addHeader(string $title, ?HTML_QuickForm2_Container $container = null, ?string $anchor=null, bool $collapsed=true) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->addDummyElement($title, 'header', $container);
+
+        if(!empty($anchor)) {
+            $el->setAttribute('data-anchor', $anchor);
+        }
+
+        if(!$collapsed) {
+            $el->setAttribute('data-collapsed', 'no');
+        }
+
+        return $el;
+    }
+
+    public function addStatic(string $label, string $content, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
+    {
+        if(empty($container)) {
+            $container = $this->form;
+        }
+
+        $element = $this->addDummyElement($label, 'static', $container);
+        $element->setAttribute('static_content', $content);
+
+        return $element;
+    }
+
+    /**
+     * Adds arbitrary HTML code to the form.
+     * @param string|int|float|bool|StringableInterface|NULL $html
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    public function addHTML($html, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
+    {
+        return $this->addDummyElement((string)$html, 'html', $container);
+    }
+
+    /**
+     * Adds a purely cosmetic hint message to the form, styled as an
+     * informational message that has no data.
+     *
+     * @param string $text
+     * @param HTML_QuickForm2_Container $container
+     * @return HTML_QuickForm2_Node
+     */
+    public function addHint($text, $container = null)
+    {
+        return $this->addDummyElement($text, 'hint', $container);
+    }
+
+    /**
+     * Adds an ISO 8601 date element (YYYY-MM-DD).
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container $container
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    public function addISODate(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->form->addText($name, $container);
+        $el->addFilterTrim();
+        $el->setLabel($label);
+        $el->addClass('input-xlarge');
+
+        $this->addRuleISODate($el);
+
+        return $el;
+    }
+
+    public function addInteger(string $name, string $label, ?HTML_QuickForm2_Container $container=null, int $min=0, int $max=0) : HTML_QuickForm2_Element_InputText
+    {
+        $element = $this->addText($name, $label, $container);
+        $element->addFilterTrim();
+        $element->addClass('input-small');
+
+        $this->addRuleInteger($element, $min, $max);
+
+        return $element;
+    }
+
+    /**
+     * Adds a purely cosmetic text paragraph to the form. Has no data.
+     * @param string $text
+     * @param HTML_QuickForm2_Container $container
+     * @return HTML_QuickForm2_Node
+     */
+    public function addParagraph($text, $container = null)
+    {
+        return $this->addDummyElement($text, 'paragraph', $container);
+    }
+
+    /**
+     * Adds a dummy element of the specified type with the specified content.
+     * If no container is set, the form itself is used.
+     *
+     * @param string $content
+     * @param string $type
+     * @param HTML_QuickForm2_Container $container
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    protected function addDummyElement(string $content, string $type, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
+    {
+        if(is_null($container))
+        {
+            $container = $this->form;
+        }
+
+        $this->dummyCounter++;
+
+        $element = $container->addElement('text', 'dummy' . $this->dummyCounter);
+        $element->setLabel($content);
+        $element->setAttribute('rel', $type);
+
+        return ensureType(
+            HTML_QuickForm2_Element_InputText::class,
+            $element
+        );
+    }
+
+    /**
+     * Adds a hidden variable to the form that will get submitted along with visible fields.
+     *
+     * @param string $name
+     * @param string|null $value
+     * @param string|null $id
+     * @return HTML_QuickForm2_Element_InputHidden
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     */
+    public function addHiddenVar(string $name, ?string $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
+    {
+        if (!isset($this->hiddens[$name]))
+        {
+            $this->hiddens[$name] = $this->form->addHidden($name);
+        }
+
+        if($value === null) {
+            $value = (string)$this->hiddens[$name]->getValue();
+        }
+
+        if(!empty($value)) {
+            $this->hiddens[$name]->setAttribute('value', $value);
+        }
+
+        if ($id === null)
+        {
+            $id = self::ID_PREFIX . $name;
+        }
+
+        $this->hiddens[$name]->setId($id);
+
+        return $this->hiddens[$name];
+    }
+
+    /**
+     * Adds a clickable button to the form that links to the specified URL.
+     * @param string $url
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|number|UI_Renderable_Interface|NULL $tooltip
+     * @return HTML_QuickForm2_Element_UIButton
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     * @throws UI_Exception
+     */
+    public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
+    {
+        return $this->addButton($this->generateDummyName())
+            ->setTooltip($tooltip)
+            ->link($url)
+            ->setLabel($label);
+    }
+
+    /**
+     * Adds the primary submit button to the form's footer.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string $name
+     * @param string|number|UI_Renderable_Interface|NULL $tooltip
+     * @return HTML_QuickForm2_Element_UIButton
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     * @throws UI_Exception
+     */
+    public function addPrimarySubmit($label, string $name='save', $tooltip='') : HTML_QuickForm2_Element_UIButton
+    {
+        return $this->addSubmit($label, $name, $tooltip)
+            ->makePrimary();
+    }
+
+    /**
+     * Adds a primary submit button to the form's footer, which
+     * automatically enables simulation mode before submitting
+     * the form.
+     *
+     * @param string $label
+     * @param string $name
+     * @return HTML_QuickForm2_Element_UIButton
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     * @throws UI_Exception
+     */
+    public function addDevPrimarySubmit(string $label, string $name='save') : HTML_QuickForm2_Element_UIButton
+    {
+        return $this->addSubmit($label, $name)
+            ->makeDeveloper()
+            ->click("FormHelper.enableSimulation($(this).closest('form').attr('id'))");
+    }
+
+    /**
+     * Adds a blank button to the footer of the form,
+     * which must be configured further with a label
+     * and action.
+     *
+     * @param string $name
+     * @return HTML_QuickForm2_Element_UIButton
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    public function addButton(string $name) : HTML_QuickForm2_Element_UIButton
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_UIButton::class,
+            $this->addElement('uibutton', $name, $this->form)
+        );
+    }
+
+    /**
+     * Adds an unstyled submit button to the form's footer.
+     *
+     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string $name
+     * @param string|number|UI_Renderable_Interface|NULL $tooltip
+     * @return HTML_QuickForm2_Element_UIButton
+     *
+     * @throws Application_Formable_Exception
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     * @throws UI_Exception
+     */
+    public function addSubmit($label, string $name='save', $tooltip=null) : HTML_QuickForm2_Element_UIButton
+    {
+        return $this->addButton($name)
+            ->makeSubmit()
+            ->setLabel(toString($label))
+            ->setTooltip($tooltip);
+    }
+
    /**
     * Creates a bootstrap switch element.
     * @param string $name
@@ -1712,50 +1726,29 @@ class UI_Form extends UI_Renderable
      * @param string $name
      * @param string $label
      * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Datepicker
+     * @return HTML_QuickForm2_Element_HTMLDateTimePicker
      *
      * @throws Application_Formable_Exception
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      */
-    public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Datepicker
+    public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_HTMLDateTimePicker
     {
-        $this->registerCustomElement('datepicker', 'BootstrapDatepicker');
+        $this->registerCustomElement(self::ELEMENT_TYPE_DATE_PICKER, ClassHelper::getClassTypeName(HTML_QuickForm2_Element_HTMLDateTimePicker::class));
         
         $element = ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_Datepicker::class,
-            $this->addElement('datepicker', $name, $container)
+            HTML_QuickForm2_Element_HTMLDateTimePicker::class,
+            $this->addElement(self::ELEMENT_TYPE_DATE_PICKER, $name, $container)
         );
         
         $element->setLabel($label);
 
-        $this->addRuleRegex(
-            $element,
-            $element->getRegex(),
-            t(
-                'Please enter a valid date, in the format %1$s.',
-                $element->getPlaceholder()
-            )
-        );
+        return $element;
+    }
 
-        return $element;
-    }
-    
-   /**
-    * Sets the element to be rendered as a standalone element:
-    * this hides the label, and removes the element's indentation
-    * so it can use the full available width.
-    * 
-    * @param HTML_QuickForm2_Element $element
-    * @return HTML_QuickForm2_Element
-    */
-    public function makeStandalone(HTML_QuickForm2_Element $element)
-    {
-        $element->setAttribute('standalone', 'yes');
-        return $element;
-    }
-    
-   /**
+    // endregion
+
+    /**
     * Adds an email validation rule to the element.
     * @param HTML_QuickForm2_Element $element
     * @return HTML_QuickForm2_Element
@@ -1807,7 +1800,7 @@ class UI_Form extends UI_Renderable
      * is always the value to validate, and the last is the
      * rule object instance, even if custom arguments are specified.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param callable $callback
      * @param string $errorMessage
      * @param array $arguments Arguments for the callback, as indexed array of parameters.
@@ -1818,7 +1811,7 @@ class UI_Form extends UI_Renderable
      * @throws HTML_QuickForm2_InvalidArgumentException
      * @throws HTML_QuickForm2_NotFoundException
      */
-    public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
         $rule = ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Rule_Callback::class,
@@ -1918,13 +1911,6 @@ class UI_Form extends UI_Renderable
         return $element;
     }
 
-    public function addFilterComma2Dot(HTML_QuickForm2_Element $element) : HTML_QuickForm2_Element
-    {
-        $element->addFilter(array($this, 'callback_convertComma'));
-
-        return $element;
-    }
-
     public function addRulePercent(HTML_QuickForm2_Element $element, float $min=0, float $max=100) : HTML_QuickForm2_Element
     {
         new UI_Form_Validator_Percent($this, $element, $min, $max);
@@ -2016,31 +2002,6 @@ class UI_Form extends UI_Renderable
     }
     
    /**
-    * Hides this element from the frozen variant of the form.
-    * 
-    * @param HTML_QuickForm2_Element $element
-    * @return HTML_QuickForm2_Element
-    */
-    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element)
-    {
-        $element->setAttribute('data-hidden-when-frozen', 'yes');
-        return $element;
-    }
-
-   /**
-    * Appends the related units for the element's values to the
-    * element in the UI, for example "Centimetres".
-    * 
-    * @param HTML_QuickForm2_Element $element
-    * @param string $units
-    * @return HTML_QuickForm2_Element
-    */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units)
-    {
-        return $this->setElementAppend($element, $units);
-    }
-    
-   /**
     * Post validation routine: gives all elements time to post-process
     * a valid form. This is used for example for the image elements so
     * uploaded images can be automatically transformed into regular media
@@ -2054,6 +2015,213 @@ class UI_Form extends UI_Renderable
         foreach($imageEls as $imageEl) {
             $imageEl->upgradeMedia();
         }
+    }
+
+    // region: Modifying elements
+
+    /**
+     * Adds a callback function that will be called when the element is
+     * rendered, to be able to influence how the element is rendered.
+     *
+     * The callback function gets an instance of the element's renderer
+     * class, which provides an API to customize the element.
+     *
+     * @param HTML_QuickForm2_Node $element
+     * @param callable $callback
+     * @throws Application_Exception
+     *
+     * @see UI_Form_Renderer_Element
+     */
+    public function addRenderCallback(HTML_QuickForm2_Node $element, $callback) : void
+    {
+        Application::requireCallableValid($callback, self::ERROR_INVALID_RENDER_CALLBACK);
+
+        $collection = $element->getRuntimeProperty('render-callbacks');
+        if(empty($collection)) {
+            $collection = array();
+        }
+
+        $collection[] = $callback;
+
+        $element->setRuntimeProperty('render-callbacks', $collection);
+    }
+
+    /**
+     * Marks the element as structural, meaning changing
+     * it will trigger a new revision when saving.
+     *
+     * @param HTML_QuickForm2_Node $el
+     * @param boolean $structural Whether it is structural or not
+     * @return HTML_QuickForm2_Node
+     */
+    public function makeStructural(HTML_QuickForm2_Node $el, bool $structural=true)
+    {
+        $el->setAttribute('structural', AppUtils\ConvertHelper::bool2string($structural, true));
+        return $el;
+    }
+
+    /**
+     * Sets the element to be rendered as a standalone element:
+     * this hides the label, and removes the element's indentation
+     * so it can use the full available width.
+     *
+     * @param HTML_QuickForm2_Element $element
+     * @return HTML_QuickForm2_Element
+     */
+    public function makeStandalone(HTML_QuickForm2_Element $element)
+    {
+        $element->setAttribute('standalone', 'yes');
+        return $element;
+    }
+
+    /**
+     * Adds a validation rule to make the element required.
+     *
+     * @param HTML_QuickForm2_Node $el
+     * @return HTML_QuickForm2_Node
+     */
+    public function makeRequired(HTML_QuickForm2_Node $el, $message=null)
+    {
+        if(empty($message))
+        {
+            if($el instanceof HTML_QuickForm2_Element_Select) {
+                $message = t('Please select a value.');
+            } else {
+                $message = t('Please enter a value.');
+            }
+        }
+
+        $el->addRule('required', $message);
+
+        $el->setAttribute('data-required', 'true');
+        return $el;
+    }
+
+    /**
+     * Adds a validation rule to the element to limit the length
+     * to the specified amount of characters. Automatically adds
+     * a validation hint for the length as well.
+     *
+     * Note: To limit to a specific length, simply set the min and max
+     * to the same value.
+     *
+     * @param HTML_QuickForm2_Node $el
+     * @param int $min
+     * @param int $max
+     * @return HTML_QuickForm2_Node
+     */
+    public function makeLengthLimited(HTML_QuickForm2_Node $el, $min, $max)
+    {
+        if($min > $max) {
+            throw new Application_Exception(
+                'Invalid length',
+                sprintf(
+                    'The minimum length [%s] is higher than the maximum [%s].',
+                    $min,
+                    $max
+                ),
+                self::ERROR_INVALID_LENGTH_LIMIT
+            );
+        }
+
+        if($min==$max) {
+            $el->addRule(
+                'length',
+                t('Has to be exactly %1$s characters long.', $min),
+                array($min, $max)
+            );
+        } else {
+            $el->addRule(
+                'length',
+                t('Has to be between %1$s and %2$s characters long.', $min, $max),
+                array($min, $max)
+            );
+        }
+
+        $el->setAttribute('data-length', $min . '-' . $max);
+
+        return $el;
+    }
+
+    /**
+     * @param HTML_QuickForm2_Node $el
+     * @param int|null $min
+     * @param int|null $max
+     * @return HTML_QuickForm2_Node
+     * @throws Application_Exception
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     * @throws HTML_QuickForm2_NotFoundException
+     */
+    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null) : HTML_QuickForm2_Node
+    {
+        $minEmpty = $min === null || $min <= 0;
+        $maxEmpty = $max === null || $max <= 0;
+
+        if($minEmpty && $maxEmpty)
+        {
+            return $el;
+        }
+
+        if(!$minEmpty && !$maxEmpty && $min > $max)
+        {
+            throw new Application_Exception(
+                'Invalid length',
+                sprintf(
+                    'The minimum value [%s] is higher than the maximum [%s] for element [%s].',
+                    $min,
+                    $max,
+                    $el->getName()
+                ),
+                self::ERROR_INVALID_MINMAX_VALUES
+            );
+        }
+
+        $el->setAttribute('data-validate', 'minmax');
+        $el->setAttribute('data-min', (string)$min);
+        $el->setAttribute('data-max', (string)$max);
+
+        $el->addRule(
+            'callback',
+            '',
+            array(
+                'callback' => array($this, 'handle_validateMinMax'),
+                'arguments' => array($min, $max)
+            )
+        );
+
+        return $el;
+    }
+
+    /**
+     * Hides this element from the frozen variant of the form.
+     *
+     * @param HTML_QuickForm2_Element $element
+     * @return HTML_QuickForm2_Element
+     */
+    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element)
+    {
+        $element->setAttribute('data-hidden-when-frozen', 'yes');
+        return $element;
+    }
+
+    /**
+     * Appends the related units for the element's values to the
+     * element in the UI, for example "Centimetres".
+     *
+     * @param HTML_QuickForm2_Element $element
+     * @param string $units
+     * @return HTML_QuickForm2_Element
+     */
+    public function setElementUnits(HTML_QuickForm2_Element $element, $units)
+    {
+        return $this->setElementAppend($element, $units);
+    }
+
+    public function addFilterComma2Dot(HTML_QuickForm2_Element $element) : HTML_QuickForm2_Element
+    {
+        $element->addFilter(array($this, 'callback_convertComma'));
+
+        return $element;
     }
 
    /**
@@ -2083,7 +2251,21 @@ class UI_Form extends UI_Renderable
         $element->setAttribute('data-prepend', $prependString);
         return $element;
     }
-    
+
+    protected function addElementHTML(string $position, HTML_QuickForm2_Element $element, $html, bool $whenFrozen=false) : HTML_QuickForm2_Element
+    {
+        $collection = $element->getRuntimeProperty($position.'-html', array());
+
+        $collection[] = array(
+            'html' => $html,
+            'whenFrozen' => $whenFrozen
+        );
+
+        $element->setRuntimeProperty($position.'-html', $collection);
+
+        return $element;
+    }
+
    /**
     * Adds custom HTML after the element's form input element.
     * Not to mistake with {@link setElementAppend()}.
@@ -2098,20 +2280,6 @@ class UI_Form extends UI_Renderable
     public function appendElementHTML(HTML_QuickForm2_Element $element, $html, $whenFrozen=false)
     {
         return $this->addElementHTML('append', $element, $html, $whenFrozen);
-    }
-    
-    protected function addElementHTML($position, HTML_QuickForm2_Element $element, $html, $whenFrozen=false)
-    {
-        $collection = $element->getRuntimeProperty($position.'-html', array());
-        
-        $collection[] = array(
-            'html' => $html,
-            'whenFrozen' => $whenFrozen
-        );
-        
-        $element->setRuntimeProperty($position.'-html', $collection);
-        
-        return $element;
     }
     
    /**
@@ -2166,7 +2334,9 @@ class UI_Form extends UI_Renderable
     {
         return $this->addElementHTML('prepend', $element, $html, $whenFrozen);
     }
-    
+
+    // endregion
+
     /**
      * Adds a label validation rule to the element.
      * @param HTML_QuickForm2_Element $element
@@ -2340,7 +2510,7 @@ class UI_Form extends UI_Renderable
             $name = $this->form->getId();
         }
         
-        return str_replace('form-', '', $name);
+        return str_replace(self::FORM_PREFIX, '', $name);
     }
     
    /**
@@ -2479,55 +2649,6 @@ class UI_Form extends UI_Renderable
         '</span>';
     }
 
-   /**
-    * Adds a callback function that will be called when the element is
-    * rendered, to be able to influence how the element is rendered. 
-    * 
-    * The callback function gets an instance of the element's renderer
-    * class, which provides an API to customize the element.
-    * 
-    * @param HTML_QuickForm2_Node $element
-    * @param callable $callback
-    * @throws Application_Exception
-    * 
-    * @see UI_Form_Renderer_Element
-    */
-    public function addRenderCallback(HTML_QuickForm2_Node $element, $callback) : void
-    {
-        Application::requireCallableValid($callback, self::ERROR_INVALID_RENDER_CALLBACK);
-        
-        $collection = $element->getRuntimeProperty('render-callbacks');
-        if(empty($collection)) {
-            $collection = array();
-        }
-        
-        $collection[] = $callback;
-        
-        $element->setRuntimeProperty('render-callbacks', $collection);
-    }
-
-    /**
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_InputText
-     *
-     * @throws Application_Formable_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     */
-    public function addText(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
-    {
-        $el = ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_InputText::class,
-            $this->addElement('text', $name, $container)
-        );
-
-        $el->setLabel($label);
-
-        return $el;
-    }
-    
     protected function resolveContainer(?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Container
     {
         if($container)
@@ -2536,28 +2657,6 @@ class UI_Form extends UI_Renderable
         }
         
         return $this->form;
-    }
-
-    /**
-     * Adds an element to enter a percentage.
-     *
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|null $container
-     * @param float $min
-     * @param float $max
-     * @return HTML_QuickForm2_Element_InputText
-     */
-    public function addPercent(string $name, string $label, ?HTML_QuickForm2_Container $container=null, float $min=0, float $max=100) : HTML_QuickForm2_Element_InputText
-    {
-        $el = $this->addText($name, $label, $container);
-        $el->addFilterTrim();
-        $el->addClass('input-small');
-
-        $this->addRulePercent($el, $min, $max);
-        $this->setElementAppend($el, '%');
-
-        return $el;
     }
 
     public function getElementValidator(HTML_QuickForm2_Element $element) : ?UI_Form_Validator

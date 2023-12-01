@@ -1,21 +1,21 @@
 <?php
 
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * 
  * @property UI_Bootstrap_BigSelection_Item[] $children
  *
  */
-class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Optionable
+class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
 
-    const OPTION_FILTERING_THRESHOLD = 'filteringThreshold';
-    const OPTION_FILTERING_ENABLED = 'filteringEnabled';
-    const OPTION_EMPTY_MESSAGE = 'emptyMessage';
-    const OPTION_HEIGHT_LIMITED = 'heightLimited';
+    public const OPTION_FILTERING_THRESHOLD = 'filteringThreshold';
+    public const OPTION_FILTERING_ENABLED = 'filteringEnabled';
+    public const OPTION_EMPTY_MESSAGE = 'emptyMessage';
+    public const OPTION_HEIGHT_LIMITED = 'heightLimited';
 
     public function getDefaultOptions() : array
     {
@@ -27,7 +27,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
         );
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         if(empty($this->children)) 
         {
@@ -76,20 +76,21 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     {
         return $this->setOption(self::OPTION_EMPTY_MESSAGE, toString($message));
     }
-    
-   /**
-    * Adds controls to filter the list by search terms.
-    * 
-    * @return UI_Bootstrap_BigSelection
-    */
+
+    /**
+     * Adds controls to filter the list by search terms.
+     *
+     * @param bool $enable
+     * @return UI_Bootstrap_BigSelection
+     */
     public function enableFiltering(bool $enable=true) : UI_Bootstrap_BigSelection
     {
         return $this->setOption(self::OPTION_FILTERING_ENABLED, $enable);
     }
     
    /**
-    * Whethe the filtering widget should be shown (it also
-    * depends on the filtering threshold, the minimum amount
+    * Whether the filtering widget should be shown (it also
+    * depends on the filtering threshold, the minimum number
     * of items to display it).
     * 
     * @return bool
@@ -112,7 +113,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     }
     
    /**
-    * Counts the amount of items in the selection.
+    * Counts the number of items in the selection.
     * 
     * @return int
     */
@@ -127,8 +128,8 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     }
     
    /**
-    * Sets the amount of items from which the filtering
-    * widget is displayed, if filtering is enabled.
+    * Sets the number of items from which the filtering
+    * widget is displayed if filtering is enabled.
     * 
     * @param int $amount
     * @return UI_Bootstrap_BigSelection
@@ -215,14 +216,16 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements Interface_Option
     {
         return $this->addItem($label)->makeLinked($url);
     }
-    
-   /**
-    * Adds an item to the list. Can be further configured
-    * via the returned instance.
-    * 
-    * @param string|number|UI_Renderable_Interface $label
-    * @return UI_Bootstrap_BigSelection_Item_Regular
-    */
+
+    /**
+     * Adds an item to the list.
+     * Can be further configured via the returned instance.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_Bootstrap_BigSelection_Item_Regular
+     * @throws Application_Exception
+     * @throws UI_Exception
+     */
     public function addItem($label) : UI_Bootstrap_BigSelection_Item_Regular
     {
         $item = $this->createRegularItem($label);

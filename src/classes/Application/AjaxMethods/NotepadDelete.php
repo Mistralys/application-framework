@@ -39,7 +39,7 @@ class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
     /**
      * @return never
      */
-    private function sendSuccessResponse() : void
+    private function sendSuccessResponse()
     {
         $this->sendResponse(array('success' => 'yes'));
     }

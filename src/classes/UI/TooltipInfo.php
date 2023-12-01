@@ -1,19 +1,44 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UserInterface
+ * @see \UI\TooltipInfo
+ */
 
 declare(strict_types=1);
 
 namespace UI;
 
+use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\AttributeCollection;
 use JSHelper;
 use UI_Renderable_Interface;
 use UI_Traits_RenderableGeneric;
 
+/**
+ * Helper class used to configure a tooltip.
+ *
+ * Use the method {@see UI::tooltip()} to create an instance.
+ *
+ * Usage for rendering:
+ *
+ * 1) Set the element ID to attach it to.
+ *    Either use {@see TooltipInfo::attachToID()}, or
+ *    {@see TooltipInfo::injectAttributes()} to use an
+ *    existing `id` attribute (or create one automatically).
+ * 2) Enable the tooltip. It will be automatically enabled
+ *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
+ *    is called, or if {@see TooltipInfo::injectJS()} is called.
+ *
+ * @package Application
+ * @subpackage UserInterface
+ * @see UI::tooltip()
+ */
 class TooltipInfo
     implements
     UI_Renderable_Interface,
-    \Application_Interfaces_Loggable
+    Application_Interfaces_Loggable
 {
     use UI_Traits_RenderableGeneric;
     use Application_Traits_Loggable;
@@ -74,12 +99,12 @@ class TooltipInfo
                 $this->elementID,
                 $this->placement
             );
+
+            return $this;
         }
-        else
-        {
-            $this->logUI('WARNING | No element ID set for tooltip.');
-            $this->logUI('Tooltip text: [%s]', $this->content);
-        }
+
+        $this->logUI('WARNING | No element ID set for tooltip.');
+        $this->logUI('Tooltip text: [%s]', $this->content);
 
         return $this;
     }
@@ -101,5 +126,10 @@ class TooltipInfo
     public function getLogIdentifier() : string
     {
         return 'TooltipInfo';
+    }
+
+    public function getContent() : string
+    {
+        return $this->content;
     }
 }

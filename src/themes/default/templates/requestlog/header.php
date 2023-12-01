@@ -28,31 +28,84 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
 
         ?>
         <div class="pull-right">
-            <p>
-                <?php echo sb()
-                    ->t('Logging:')
-                    ->bold($status->getEnabledLabel());
-                ?>
-                (<?php
-                echo sb()->link($status->getToggleLabel(), $status->getAdminToggleURL())
-                ?>)
-                |
-                <a href="<?php echo AppFactory::createRequestLog()->getAdminLogOutURL() ?>">
-                    <?php echo sb()
-                        ->icon(UI::icon()->logOut())
-                        ->t('Log out')
+            <p style="text-align: right">
+                <?php
+                if($this->isAuthenticated())
+                {
                     ?>
-                </a>
-                |
+                    <?php
+                    echo sb()->link(
+                        (string)sb()->icon(UI::icon()->home())->t('Overview'),
+                        $this->log->getAdminURL()
+                    );
+                    ?>
+                    |
+                    <a href="<?php echo $this->log->getAdminSettingsURL() ?>">
+                        <?php echo sb()
+                            ->icon(UI::icon()->settings())
+                            ->t('Settings')
+                        ?>
+                    </a>
+                    |
+                    <?php
+                        echo sb()->link(
+                            (string)sb()->icon(UI::icon()->list())->t('Dump info'),
+                            $this->log->getAdminDumpInfoURL()
+                        );
+                    ?>
+                    |
+                    <?php
+                    echo sb()->link(
+                        (string)sb()->icon(UI::icon()->deleteSign())->t('Destroy session'),
+                        $this->log->getAdminDestroySessionURL()
+                    );
+                    ?>
+                    |
+                    <a href="<?php echo $this->log->getAdminLogOutURL() ?>">
+                        <?php echo sb()
+                            ->icon(UI::icon()->logOut())
+                            ->t('Log out')
+                        ?>
+                    </a>
+                    |
+                    <?php
+                }
+                ?>
                 <a href="<?php echo APP_URL ?>">
                     <?php echo sb()
                         ->icon(UI::icon()->back())
                         ->t('Back to %1$s', $this->driver->getAppNameShort())
                     ?>
                 </a>
+
+                <br>
+
+                <?php
+                if($this->isAuthenticated())
+                {
+                    echo sb()
+                        ->t('Logging:')
+                        ->bold($status->getEnabledLabel());
+                    ?>
+                    (<?php
+                    echo sb()->link($status->getToggleLabel(), $status->getAdminToggleURL())
+                    ?>)
+                    <br>
+                    <?php
+                }
+                ?>
+                <?php pt('Global developer mode:') ?>
+                <?php
+                if(Application_Driver::isGlobalDevelModeEnabled()) {
+                    echo sb()->bold(sb()->danger(t('Active')));
+                } else {
+                    echo sb()->bold(sb()->muted(t('Inactive')));
+                }
+                ?>
             </p>
         </div>
-        <h1><?php pt('Request log'); ?></h1>
+        <h1 style="clear: both"><?php pt('Request log'); ?></h1>
+        <span style="clear: both"></span>
         <?php
         echo $this->page->renderMessages();
         echo $this->page->getBreadcrumb()->render();
@@ -64,5 +117,10 @@ class template_default_requestlog_header extends UI_Page_Template_Custom
     protected function preRender(): void
     {
         $this->log = AppFactory::createRequestLog();
+    }
+
+    private function isAuthenticated() : bool
+    {
+        return $this->getVar('authenticated') !== false;
     }
 }

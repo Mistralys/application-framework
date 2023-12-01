@@ -96,7 +96,7 @@ class Application_DBDumps_Dump
     * Sends the dump file to the browser to be downloaded.
     * @return never
     */
-    public function sendFile() : void
+    public function sendFile()
     {
         FileHelper::sendFile($this->path);
         

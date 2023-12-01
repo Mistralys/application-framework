@@ -1,71 +1,69 @@
 <?php
 /**
- * Function insight helper. This file is not included anywhere,
- * it is used merely as a helper file for PHP IDEs to be able
- * to discover application settings that are not easily discoverable.
+ * IDE function insight helper.
+ *
+ * This file is not included anywhere, it is used merely as a helper
+ * file for PHP IDEs to be able to discover application settings that
+ * are not easily discoverable.
  * 
- * @package Maileditor
+ * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 
-	// default defines
-	define('APP_CONTENT_LOCALES', '');
-	define('APP_AUTH_SALT', '');
-	define('APP_URL', '');
-	define('APP_ROOT', '');
-	define('APP_CLASS_NAME', '');
-	define('APP_LOGGING_ENABLED', true);
-	define('APP_SIMULATE_SESSION', false);
-	define('APP_OPTIMIZE_IMAGES', true);
-	define('APP_JAVASCRIPT_MINIFIED', true);
-	define('APP_SHOW_QUERIES', false);
-	define('APP_AUTOMATIC_DELETION_DELAY', 5);
-	define('APP_DEVELOPER_MODE', true);
-	define('APP_GRAPHICSMAGIC_PATH', '');
-	define('APP_THEME', 'default');
-	
-   /**
-    * Can be "access" or "hosting"
-    */
-	define('APP_INSTANCE_ID', 'dummy');
-	define('APP_RUN_MODE', 'mode');
-	define('APP_NO_AUTHENTICATION', false);
-	define('APP_DEMO_MODE', false);
-	
-   /**
-    * The application set to use. If not defined, defaults to all admin areas.
-    * @optional
-    */	
-	define('APP_APPSET', null);
-	
-	define('APP_DB_ENABLED', null);
-	define('APP_DB_HOST', null);
-	define('APP_DB_NAME', null);
-	define('APP_DB_USER', null);
-	define('APP_DB_PASSWORD', null);
-	define('APP_DB_PORT', null);
-	
-	define('APP_DB_TESTS_NAME', null);
-	define('APP_DB_TESTS_USER', null);
-    define('APP_DB_TESTS_PASSWORD', null);
-	define('APP_DB_TESTS_HOST', null);
-    define('APP_DB_TESTS_PORT', null);
-	
-	// OMS SVN
-	define('APP_OMSSVN_LOCAL_PATH', null);
-	define('APP_OMSSVN_REMOTE_URL', null);
-	define('APP_SVN_BINARIES_PATH', null);
-	define('APP_OMSSVN_TEST_REQUESTS_PATH', null);
-	
-	// rygnarok
-	define('APP_RYGNAROK_URL', null);
-	define('APP_RYGNAROK_MEDIA_PATH', null);
-	define('APP_RYGNAROK_MEDIA_BASEURL', null);
-	define('APP_RYGNAROK_OPCACHE_DELAY', null);	
-	
-	define('PROMS_SERVER', null);
-	define('PROMS_USERNAME', null);
-	define('PROMS_PASSWORD', null);
+declare(strict_types=1);
 
-    die('The function insight file may not be included anywhere.');
+const APP_CONTENT_LOCALES = 'de_DE,en_GB';
+const APP_UI_LOCALES = 'de_DE,en_GB';
+const APP_AUTH_SALT = '';
+const APP_URL = 'https://application.website';
+const APP_VENDOR_URL = APP_URL.'/vendor';
+const APP_ROOT = '/path/to/application';
+const APP_CLASS_NAME = 'DriverClassName';
+const APP_REQUEST_LOG_PASSWORD = 'password';
+const APP_LOGGING_ENABLED = true;
+const APP_SIMULATE_SESSION = false;
+const APP_JAVASCRIPT_MINIFIED = true;
+const APP_SHOW_QUERIES = false;
+const APP_TRACK_QUERIES = false;
+const APP_AUTOMATIC_DELETION_DELAY = 60 * 60 * 24 * 5;
+const APP_DEVELOPER_MODE = true;
+const APP_THEME = 'default';
+const APP_ENVIRONMENT = 'local';
+const APP_INSTANCE_ID = 'dummy';
+const APP_RUN_MODE = Application::RUN_MODE_UI;
+const APP_NO_AUTHENTICATION = false;
+const APP_FRAMEWORK_TESTS = false;
+const APP_TESTS_RUNNING = false;
+const APP_DEMO_MODE = false;
+const APP_APPSET = 'setname';
+const APP_COMPANY_NAME = 'Company Name';
+const APP_COMPANY_HOMEPAGE = 'https://company-homepage.website';
+const APP_DUMMY_EMAIL = 'dummy@application.website';
+const APP_SYSTEM_EMAIL = 'system@application.website';
+const APP_SYSTEM_NAME = 'Application Name';
+
+const APP_DB_ENABLED = true;
+const APP_DB_HOST = 'localhost';
+const APP_DB_NAME = 'application_db';
+const APP_DB_USER = 'application_user';
+const APP_DB_PASSWORD = 'password';
+const APP_DB_PORT = 3306;
+
+const APP_DB_TESTS_NAME = 'application_tests_db';
+const APP_DB_TESTS_USER = 'application_tests_user';
+const APP_DB_TESTS_PASSWORD = 'password';
+const APP_DB_TESTS_HOST = 'localhost';
+const APP_DB_TESTS_PORT = 3306;
+	
+const APP_CAS_HOST = 'login.cas-host.example';
+const APP_CAS_PORT = 443;
+const APP_CAS_SERVER = 'https://'.APP_CAS_HOST.':'.APP_CAS_PORT.'/servername';
+const APP_CAS_LOGOUT_URL = APP_CAS_SERVER.'/logout';
+const APP_CAS_NAME = 'Login Service';
+
+const APP_DEEPL_API_KEY = 'apikey';
+const APP_DEEPL_PROXY_URL = 'proxy.example:3128';
+const APP_DEEPL_PROXY_ENABLED = true;
+
+die('The function insight file may not be included anywhere.');

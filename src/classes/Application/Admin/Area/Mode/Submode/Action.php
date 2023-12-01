@@ -4,20 +4,9 @@ abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Ad
 {
     use Application_Traits_Admin_Screen;
     
-    /**
-     * @var Application_Admin_Area_Mode
-     */
-    protected $mode;
-
-    /**
-     * @var Application_Admin_Area_Mode_Submode
-     */
-    protected $submode;
-
-    /**
-     * @var Application_Admin_Area
-     */
-    protected $area;
+    protected Application_Admin_Area_Mode $mode;
+    protected Application_Admin_Area_Mode_Submode $submode;
+    protected Application_Admin_Area $area;
 
     public function __construct(Application_Driver $driver, Application_Admin_Area_Mode_Submode $submode)
     {

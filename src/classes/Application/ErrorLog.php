@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use AppUtils\FileHelper;
-use AppUtils\ConvertHelper_ThrowableInfo;
+use AppUtils\ThrowableInfo;
 
 /**
  * File containing the {@see Application_ErrorLog} class.
@@ -256,6 +256,20 @@ class Application_ErrorLog
         
         return $this->getAdminListURL($params);
     }
+
+    public function getAdminTriggerWarningURL(array $params=array()) : string
+    {
+        $params['trigger_warning'] = 'yes';
+
+        return $this->getAdminListURL($params);
+    }
+
+    public function getAdminTriggerErrorURL(array $params=array()) : string
+    {
+        $params['trigger_error'] = 'yes';
+
+        return $this->getAdminListURL($params);
+    }
     
     public function getAdminURL(array $params=array()) : string
     {
@@ -398,7 +412,7 @@ class Application_ErrorLog
         return $this->logData(self::LOG_TYPE_GENERAL, $data, $writeLog, $logID);
     }
     
-    public function logTrace(string $logID, ConvertHelper_ThrowableInfo $info) : void
+    public function logTrace(string $logID, ThrowableInfo $info) : void
     {
         $path = $this->getLogFilePath($logID.'.trace');
         

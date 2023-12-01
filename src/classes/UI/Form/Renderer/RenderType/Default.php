@@ -9,12 +9,12 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Classable;
-use AppUtils\Traits_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 
 /**
  * Renderer for all non-special form elements: this handles all regular
- * HTML quickform elements (like text input, select, etc...).
+ * HTML QuickForm elements (like text input, select, etc...).
  * 
  * These elements can be customized using callbacks, via the 
  * {@see UI_Form_Renderer_Element} class. To add a render callback for
@@ -27,9 +27,9 @@ use AppUtils\Traits_Classable;
  * @see UI_Form_Renderer_Element
  * @see UI_Form::addRenderCallback()
  */
-class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType implements Interface_Classable
+class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType implements ClassableInterface
 {
-    use Traits_Classable;
+    use ClassableTrait;
     
     public function includeInRegistry(): bool
     {
@@ -52,8 +52,13 @@ class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType im
             '<div class="control-group form-container %s" id="%s_form_container">%s</div>',
             $this->classesToString(),
             $this->renderDef->getElementID(),
-            $renderer->render()
+            $this->renderElement($renderer)
         );
+    }
+
+    protected function renderElement(UI_Form_Renderer_Element $renderer) : string
+    {
+        return $renderer->render();
     }
     
     private function initClasses() : void

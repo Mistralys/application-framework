@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 
-class Application_FilterCriteria_Database_Join implements Interface_Stringable
+class Application_FilterCriteria_Database_Join implements StringableInterface
 {
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
     /**
      * @var string|DBHelper_StatementBuilder
@@ -19,12 +16,9 @@ class Application_FilterCriteria_Database_Join implements Interface_Stringable
     /**
      * @var string[]
      */
-    private $requiredJoins = array();
+    private array $requiredJoins = array();
 
-    /**
-     * @var Application_FilterCriteria_Database
-     */
-    private $filters;
+    private Application_FilterCriteria_Database $filters;
 
     public function __construct(Application_FilterCriteria_Database $filters, $statement, string $joinID='')
     {
@@ -70,7 +64,7 @@ class Application_FilterCriteria_Database_Join implements Interface_Stringable
 
     public function requireJoin(string $joinID) : Application_FilterCriteria_Database_Join
     {
-        if(!in_array($joinID, $this->requiredJoins))
+        if(!in_array($joinID, $this->requiredJoins, true))
         {
             $this->requiredJoins[] = $joinID;
         }
@@ -210,7 +204,7 @@ class Application_FilterCriteria_Database_Join implements Interface_Stringable
 
             if($join->hasJoins())
             {
-                $result = array_merge($result, $join->getParentJoins());
+                array_push($result, ...$join->getParentJoins());
             }
         }
 

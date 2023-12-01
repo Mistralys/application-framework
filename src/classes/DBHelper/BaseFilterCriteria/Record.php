@@ -7,12 +7,8 @@ class DBHelper_BaseFilterCriteria_Record
     /**
      * @var array<string,string>
      */
-    private $data;
-
-    /**
-     * @var DBHelper_BaseRecord
-     */
-    private $record;
+    private array $data;
+    private DBHelper_BaseRecord $record;
 
     public function __construct(array $data, DBHelper_BaseRecord $record)
     {
@@ -44,7 +40,7 @@ class DBHelper_BaseFilterCriteria_Record
     {
         if(isset($this->data[$name]))
         {
-            return $this->data[$name];
+            return (string)$this->data[$name];
         }
 
         return '';
@@ -52,7 +48,7 @@ class DBHelper_BaseFilterCriteria_Record
 
     public function getColumnInt(string $name) : int
     {
-        return intval($this->getColumn($name));
+        return (int)$this->getColumn($name);
     }
 
     public function getColumnDate(string $name) : ?DateTime

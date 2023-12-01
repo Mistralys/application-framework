@@ -1,12 +1,16 @@
 composer.phar
 /vendor/
+node_modules/
 
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 .phpunit.result.cache
+.idea/dataSources.xml
+.idea/dataSources/
 /docs/phpstan/cache
-/tests/application/storage/logs
+/tests/application/storage/media/
+/tests/application/storage/logs/
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
@@ -14,8 +18,9 @@ tests/.buildpath
 tests/.project
 tests/.settings/org.eclipse.php.core.prefs
 src/dbhelper-upgrade.txt
-docs/phpstan/resultCache.php
-docs/phpstan/result.txt
+tests/phpstan/cache
+tests/phpstan/resultCache.php
+tests/phpstan/result.txt
 localization/storage.json
 errors.txt
 tests/files/TypeHinter/TypeHinterTestClass.php.output
@@ -26,3 +31,6 @@ tests/application/config/ui.php
 tests/application/storage/temp/localization.json
 tests/application/themes/default/js/localization/locale-de.js
 *.tmp
+tests/application/storage/request-logging.txt
+tests/application/config/test-ui.php
+tests/application/config/test-ui-config.php

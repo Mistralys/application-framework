@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use function AppUtils\parseVariable;
-
 abstract class UI_Form_Renderer_RenderType
 {
    /**
@@ -48,6 +46,13 @@ abstract class UI_Form_Renderer_RenderType
             $this->renderDef->getSubDefs(),
             $this->renderDef->getLevel() + 1
         );
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
     
     public function getRenderDef() : UI_Form_Renderer_ElementFilter_RenderDef

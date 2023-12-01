@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace UI\Page\Navigation;
 
 use Application;
+use Application\AppFactory;
+use Application_Driver;
 use Application_Session_Base;
 use Application_User_Notepad;
 use UI;
@@ -14,6 +16,9 @@ use UI_Page_Navigation;
 use UI_Renderable_Interface;
 use UI_Traits_RenderableGeneric;
 
+/**
+ * @see template_default_navigation_metanav
+ */
 class MetaNavigation implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
@@ -23,6 +28,7 @@ class MetaNavigation implements UI_Renderable_Interface
     public const META_NOTEPAD = 'notepad';
     public const META_DEVELOPER = 'developer';
     public const META_USER = 'user';
+    public const META_NEWS = 'news';
 
     private UI_Page_Navigation $metaNav;
     private UI $ui;
@@ -56,6 +62,11 @@ class MetaNavigation implements UI_Renderable_Interface
             ->setAlias(self::META_LOOKUP)
             ->setIcon(UI::icon()->search())
             ->setTooltip(UI::tooltip(t('Look up an item'))->makeBottom());
+
+        $this->metaNav->addURL('', AppFactory::createNews()->getLiveReadURL())
+            ->setAlias(self::META_NEWS)
+            ->setIcon(UI::icon()->news())
+            ->setTooltip(UI::tooltip(t('Latest %1$s news', Application_Driver::getInstance()->getAppNameShort()))->makeBottom());
 
         $this->metaNav->addClickable('', 'window.print()')
             ->setAlias(self::META_PRINT_PAGE)

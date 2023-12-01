@@ -5,7 +5,10 @@
  */
 
 use Application\AppFactory;
+use Application\Bootstrap\BootException;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 
 abstract class Application_Bootstrap_Screen implements Application_Interfaces_Loggable
@@ -16,6 +19,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     public const ERROR_DATABASE_WRITE_OPERATION_DURING_EXPORT = 28202;
 
     public const REQUEST_PARAM_SET_USERSETTING = 'set_usersetting';
+    public const REQUEST_PARAM_DEVELMODE_ENABLE = 'develmode_enable';
 
     protected array $params = array();
     protected Application $app;
@@ -31,13 +35,8 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     
     public function boot() : void
     {
-        register_shutdown_function(array($this, 'shutDown'));
+        $this->log('Booting the screen.');
 
-        if(!defined('APP_TIME_START'))
-        {
-            define('APP_TIME_START', microtime(true));
-        }
-        
         $this->_boot();
     }
     
@@ -74,9 +73,10 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
 
         $this->app = new Application($this);
 
-        $this->initLocalization();
         $this->authenticateUser();
+        $this->initUserSettingsInRequest();
         $this->initDeveloperMode();
+        $this->initLocalization();
         $this->initDriver();
 
         $this->app->start($this->driver);
@@ -122,11 +122,15 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     public function isDeveloperModeEnabled() : bool
     {
         return
-        isset($this->user)
-        &&
-        $this->user->isDeveloper()
-        &&
-        $this->user->isDeveloperModeEnabled();
+        Application_Driver::isGlobalDevelModeEnabled()
+        ||
+        (
+            isset($this->user)
+            &&
+            $this->user->isDeveloper()
+            &&
+            $this->user->isDeveloperModeEnabled()
+        );
     }
 
     private function initDeveloperMode() : void
@@ -164,21 +168,35 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         );
     }
 
-    protected function initSession() : void
+    private static ?string $sessionClass = null;
+
+    /**
+     * @param class-string|null $class
+     * @return void
+     */
+    public static function setSessionClass(?string $class) : void
     {
-        $class = ClassHelper::requireResolvedClass(APP_CLASS_NAME.'_Session');
+        self::$sessionClass = $class;
+    }
+
+    /**
+     * @return void
+     * @see Application_Session_Base
+     * @throws BaseClassHelperException
+     */
+    private function initSession() : void
+    {
+        $class = self::$sessionClass ?? ClassHelper::requireResolvedClass(APP_CLASS_NAME . '_Session');
 
         $this->session = ClassHelper::requireObjectInstanceOf(
             Application_Session::class,
             new $class()
         );
-
-        $this->user = $this->session->getUser();
     }
 
     private bool $dbInitialized = false;
 
-    protected function initDatabase() : void
+    private function initDatabase() : void
     {
         if($this->dbInitialized) {
             return;
@@ -210,73 +228,14 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         }
     }
     
-    protected function authenticateUser() : void
+    private function authenticateUser() : void
     {
-        // some parts of the application do not use the authentication,
-        // like the XML export.
-        if (defined('APP_NO_AUTHENTICATION') && APP_NO_AUTHENTICATION === true)
-        {
-            return;
-        }
-
         $this->log('SETUP | Authenticating the user.');
 
-        $user = $this->session->requireUser();
-        
-        if (isset($_REQUEST['develmode_enable']) && in_array($_REQUEST['develmode_enable'], array('yes', 'no')))
-        {
-            $new = $_REQUEST['develmode_enable'] === 'yes';
-            $old = $user->isDeveloperModeEnabled();
-            $user->setDeveloperModeEnabled($new);
-
-            if ($new !== $old) {
-                if ($new === true) {
-                    UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-success">enabled</b>.');
-                } else {
-                    UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-error">disabled</b>.');
-                }
-            }
-        }
-        else if(isset($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING]) && isset($_REQUEST['value']))
-        {
-            $updated = false;
-            $value = $_REQUEST['value'];
-            $settings = array();
-            
-            switch($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING])
-            {
-                case  'layout_width':
-                    if(in_array($value, array('standard', 'maximized'))) {
-                        $settings['layout_width'] = $value;
-                    }
-                    break;
-                    
-                case 'layout_fontsize':
-                    if(in_array($value, array('standard', 'bigger'))) {
-                        $settings['layout_fontsize'] = $value;
-                    }
-                    break;
-            }
-            
-            foreach($settings as $name => $value) {
-                if($user->getSetting($name) != $value) {
-                    $user->setSetting($name, $value);
-                    $updated = true;
-                }
-            }
-            
-            if($updated) {
-                UI::getInstance()->addInfoMessage(
-                    UI::icon()->information().' '.
-                    '<b>'.t('Your user settings have been updated.').'</b>'
-                );
-            }
-        }
-        
-        $user->saveSettings();
+        $this->session->authenticate();
     }
-    
-    public function getSession()
+
+    public function getSession() : Application_Session
     {
         return $this->session;
     }
@@ -294,7 +253,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Disabling authentication.');
 
-        $this->setDefine('APP_NO_AUTHENTICATION', true);
+        $this->setDefine(BaseConfigRegistry::NO_AUTHENTICATION, true);
     }
     
     private $disallowDBWriteOperations = false;
@@ -324,7 +283,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
             return;
         }
         
-        throw new Application_Exception(
+        throw new BootException(
             'Database write operation detected.',
             sprintf(
                 'Database write operations have been disallowed. Statement: %s',
@@ -351,7 +310,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Switching to script mode.');
 
-        $this->setDefine('APP_RUN_MODE', 'script');
+        $this->setDefine(BaseConfigRegistry::RUN_MODE, Application::RUN_MODE_SCRIPT);
     }
     
    /**
@@ -371,7 +330,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
                 return;
             }
             
-            throw new Application_Exception(
+            throw new BootException(
                 'Cannot overwrite a configuration setting',
                 sprintf(
                     'Cannot set [%s] to [%s], it has already been set to [%s].',
@@ -386,25 +345,6 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         define($name, $value);
     }
     
-    public function shutDown() : void
-    {
-        Application::log('Bootstrap | The system is shutting down.');
-
-        if(Application_EventHandler::hasListener(Application::EVENT_SYSTEM_SHUTDOWN))
-        {
-            Application_EventHandler::trigger(
-                Application::EVENT_SYSTEM_SHUTDOWN,
-                array($this->driver),
-                Application_EventHandler_Event_SystemShutDown::class
-            );
-        }
-               
-        if(AppFactory::createRequestLog()->getStatus()->isEnabled() === true)
-        {
-            AppFactory::createLogger()->write();
-        }
-    }
-
     protected function createPage() : UI_Page
     {
         return $this->driver->getUI()->createPage(get_class($this));
@@ -427,5 +367,77 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         }
 
         return $this->logIdentifier;
+    }
+
+    private function handleDeveloperMode(Application_User $user) : void
+    {
+        if (!isset($_REQUEST[self::REQUEST_PARAM_DEVELMODE_ENABLE])) {
+            return;
+        }
+        
+        $new = string2bool($_REQUEST[self::REQUEST_PARAM_DEVELMODE_ENABLE]) === true;
+        $old = $user->isDeveloperModeEnabled();
+
+        if ($new === $old) {
+            return;
+        }
+
+        $user->setDeveloperModeEnabled($new);
+
+        if ($new === true) {
+            UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-success">enabled</b>.');
+        } else {
+            UI::getInstance()->addInfoMessage('Developer mode is now <b class="text-error">disabled</b>.');
+        }
+    }
+
+    private function handleQuickSettings(Application_User $user) : void
+    {
+        if(!isset($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING], $_REQUEST['value'])) {
+            return;
+        }
+
+        $updated = false;
+        $value = $_REQUEST['value'];
+        $settings = array();
+
+        switch($_REQUEST[self::REQUEST_PARAM_SET_USERSETTING])
+        {
+            case 'layout_width':
+                if(in_array($value, array('standard', 'maximized'))) {
+                    $settings['layout_width'] = $value;
+                }
+                break;
+
+            case 'layout_fontsize':
+                if(in_array($value, array('standard', 'bigger'))) {
+                    $settings['layout_fontsize'] = $value;
+                }
+                break;
+        }
+
+        foreach($settings as $name => $value) {
+            if($user->getSetting($name) !== $value) {
+                $user->setSetting($name, $value);
+                $updated = true;
+            }
+        }
+
+        if($updated) {
+            UI::getInstance()->addInfoMessage(sb()
+                ->icon(UI::icon()->information())
+                ->bold(t('Your user settings have been updated.'))
+            );
+        }
+    }
+
+    private function initUserSettingsInRequest() : void
+    {
+        $user = $this->session->requireUser();
+
+        $this->handleDeveloperMode($user);
+        $this->handleQuickSettings($user);
+
+        $user->saveSettings();
     }
 }

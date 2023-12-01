@@ -33,6 +33,16 @@ class template_default_requestlog_year_selection extends UI_Page_Template_Custom
         echo $this->renderTemplate('requestlog/header');
         ?>
             <?php echo $grid->render($this->collectEntries()) ?>
+            <p>
+            <?php
+                echo UI::button(t('Clear all logs'))
+                    ->setIcon(UI::icon()->delete())
+                    ->makeWarning()
+                    ->link($this->log->getAdminDeleteAllURL())
+                    ->setTooltip(t('Deletes all stored logfiles.'))
+                    ->requireTrue($this->log->hasLogs());
+            ?>
+            </p>
         <?php
 
         echo $this->renderCleanFrame(OutputBuffering::get());
@@ -59,9 +69,11 @@ class template_default_requestlog_year_selection extends UI_Page_Template_Custom
      * @var Application_RequestLog_LogItems_Year[]
      */
     private array $years;
+    private Application_RequestLog $log;
 
     protected function preRender(): void
     {
-        $this->years = AppFactory::createRequestLog()->getYears();
+        $this->log = AppFactory::createRequestLog();
+        $this->years = $this->log->getYears();
     }
 }

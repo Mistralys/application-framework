@@ -62,7 +62,7 @@ top:1px;
 right:1px;
 background:#3a87ad;
 color:#fff;
-font-size:10px;
+font-size:var(--font-size-xs);
 line-height:12px;
 border-bottom-left-radius:3px;
 padding:1px 5px;

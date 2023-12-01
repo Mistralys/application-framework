@@ -60,10 +60,11 @@ abstract class Application_Admin_Skeleton
     protected static bool $simulationStarted = false;
     protected bool $outputToConsole = false;
 
-    /**
-     * @var UI_Page_Help
-     */
-    protected $help;
+    protected UI_Page_Help $help;
+    protected UI_Page_Navigation $subnav;
+    protected UI_Bootstrap_Tabs $tabs;
+    protected UI_Page_Sidebar $sidebar;
+    protected UI_Bootstrap_DropdownMenu $contextmenu;
     
    /**
     * Whether to run the screen in admin mode: if this is
@@ -261,7 +262,7 @@ abstract class Application_Admin_Skeleton
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithSuccessMessage($message, $paramsOrURL) : void
+    public function redirectWithSuccessMessage($message, $paramsOrURL)
     {
         /* TODO Redirect control needs review
         if(!$this->adminMode) {
@@ -281,7 +282,7 @@ abstract class Application_Admin_Skeleton
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithErrorMessage($message, $paramsOrURL) : void
+    public function redirectWithErrorMessage($message, $paramsOrURL)
     {
         /* TODO Redirect control needs review
         if(!$this->adminMode) {
@@ -301,7 +302,7 @@ abstract class Application_Admin_Skeleton
     * @param array|string $paramsOrURL
     * @return never
     */
-    public function redirectWithInfoMessage($message, $paramsOrURL) : void
+    public function redirectWithInfoMessage($message, $paramsOrURL)
     {
         /* TODO Redirect control needs review
         if(!$this->adminMode) {
@@ -319,7 +320,7 @@ abstract class Application_Admin_Skeleton
      * @return never
      * @throws Application_Exception
      */
-    public function redirectTo($paramsOrURL) : void
+    public function redirectTo($paramsOrURL)
     {
         /* TODO Redirect control needs review
         if(!$this->adminMode) {

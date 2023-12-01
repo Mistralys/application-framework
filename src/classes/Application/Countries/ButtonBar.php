@@ -8,10 +8,11 @@
 
 declare(strict_types=1);
 
-use AppUtils\Traits_Classable;
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Classable;
-use AppUtils\Interface_Optionable;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\ClassableTrait;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * UI widget to create and display a country selection
@@ -21,78 +22,39 @@ use AppUtils\Interface_Optionable;
  * @subpackage Countries
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_Countries_ButtonBar extends UI_Renderable implements Interface_Classable, Interface_Optionable
+class Application_Countries_ButtonBar extends UI_Renderable implements ClassableInterface, OptionableInterface
 {
     public const ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
     
-    use Traits_Classable;
-    use Traits_Optionable;
+    use ClassableTrait;
+    use OptionableTrait;
     
-   /**
-    * @var Application_Countries
-    */
-    protected $collection;
-    
-   /**
-    * @var bool
-    */
-    protected $withInvariant = false;
-    
-   /**
-    * @var string
-    */
-    protected $id;
-    
-   /**
-    * @var Application_User
-    */
-    protected $user;
-    
-   /**
-    * @var Application_Request
-    */
-    protected $request;
-    
-   /**
-    * @var int
-    */
-    protected $countryID = 0;
-    
-   /**
-    * @var Application_Countries_Country|NULL
-    */
-    protected $country = null;
-    
-   /**
-    * @var Application_Countries_FilterCriteria
-    */
-    protected $filters;
-    
+    protected Application_Countries $collection;
+    protected bool $withInvariant = false;
+    protected string $id;
+    protected Application_User $user;
+    protected Application_Request $request;
+    protected int $countryID = 0;
+    protected ?Application_Countries_Country $country = null;
+    protected Application_Countries_FilterCriteria $filters;
+    protected string $baseURL;
+    protected string $storageKey;
+    protected string $urlParamName = 'select_country';
+    protected bool $loaded = false;
+
    /**
     * @var Application_Countries_Country[]
     */
-    protected $countries = array();
-    
-   /**
-    * @var string
-    */
-    protected $baseURL;
-    
-   /**
-    * @var string
-    */
-    protected $storageKey;
-    
-   /**
-    * @var string
-    */
-    protected $urlParamName = 'select_country';
-    
-    protected $loaded = false;
-    
-   /**
-    * @param string $id A freeform ID to tie the country selection to: used to namespace the setting under which the country is stored.
-    */
+    protected array $countries = array();
+
+    /**
+     * @param string $id A freeform ID to tie the country selection to: Used to namespace the setting under which the country is stored.
+     * @param string $baseURL
+     *
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     * @throws BaseClassHelperException
+     */
     public function __construct(string $id, string $baseURL)
     {
         parent::__construct();
@@ -116,7 +78,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     }
     
    /**
-    * Sets the minimum amount of items that have to be
+    * Sets the minimum number of items that have to be
     * present for the bar to be displayed. Below this
     * number, it will not be displayed.
     * 
@@ -129,7 +91,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     }
     
    /**
-    * Whether to display the label beside the buttons. 
+    * Whether to display the label next to the buttons.
     * Defaults to false.
     * 
     * @param bool $enable
@@ -139,13 +101,14 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     {
         return $this->setOption('enableLabel', $enable);
     }
-    
-   /**
-    * Sets the label of the selector, which is shown beside the buttons.
-    * 
-    * @param string|number|UI_Renderable_Interface $label
-    * @return Application_Countries_ButtonBar
-    */
+
+    /**
+     * Sets the label of the selector, which is shown beside the buttons.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return Application_Countries_ButtonBar
+     * @throws UI_Exception
+     */
     public function setLabel($label) : Application_Countries_ButtonBar
     {
         return $this->setOption('label', toString($label));
@@ -159,7 +122,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     */
     protected function parseBaseURL(string $baseURL) : string
     {
-        if(!strstr($baseURL, '?')) {
+        if(strpos($baseURL, '?') === false) {
             $baseURL .= '?';
         } else {
             $baseURL .= '&';
@@ -218,11 +181,11 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     * @param Application_Countries_Country $country
     * @return boolean
     */
-    public function isSelected(Application_Countries_Country $country)
+    public function isSelected(Application_Countries_Country $country) : bool
     {
         $this->load();
         
-        return $country->getID() == $this->countryID;
+        return $country->getID() === $this->countryID;
     }
     
     protected function load() : void
@@ -236,14 +199,14 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
         
         $this->countries = $this->filters->getItemsObjects();
         
-        if(count($this->countries) == 0) {
+        if(count($this->countries) === 0) {
             return;
         }
         
-        $countryID = intval($this->request->registerParam('select_country')
-        ->setInteger()
-        ->setEnum($this->filters->getIDs())
-        ->get($this->user->getIntSetting($this->storageKey)));
+        $countryID = (int)$this->request->registerParam('select_country')
+            ->setInteger()
+            ->setEnum($this->filters->getIDs())
+            ->get($this->user->getIntSetting($this->storageKey));
         
         if(empty($countryID))
         {
@@ -265,7 +228,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     * 
     * @return Application_Countries_Country[]
     */
-    public function getCountries()
+    public function getCountries() : array
     {
         $this->load();
         
@@ -317,7 +280,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
     * 
     * @return int[]
     */
-    public function getCountryIDs()
+    public function getCountryIDs() : array
     {
         $this->load();
         
@@ -332,7 +295,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
         return $result;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $this->load();
         
@@ -341,8 +304,8 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Interface
         }
         
         return $this->ui->createTemplate('ui/countries/button-bar')
-        ->setVar('bar', $this)
-        ->render();
+            ->setVar('bar', $this)
+            ->render();
     }
     
     public function isLabelEnabled() : bool

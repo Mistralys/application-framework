@@ -6,10 +6,11 @@
  * @see DBHelper
  */
 
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
 use function AppUtils\parseVariable;
 
@@ -20,8 +21,8 @@ use function AppUtils\parseVariable;
  * required to run a query.
  *
  * Queries themselves have to be created manually, making it
- * easier to maintain individual queries as opposed to a know-
- * it-all approach that is often quite hermetic.
+ * easier to maintain individual queries as opposed to a
+ * know-it-all approach that is often quite hermetic.
  *
  * @package Helpers
  * @subpackage DBHelper
@@ -30,20 +31,20 @@ use function AppUtils\parseVariable;
 class DBHelper
 {
     /**
-     * Counter for the amount of queries that were run during a request.
+     * Counter for the number of queries that were run during a request.
      * @var int
      */
-    protected static $queryCount = 0;
+    protected static int $queryCount = 0;
 
     /**
      * @var int
      */
-    protected static $queryCountRead = 0;
+    protected static int $queryCountRead = 0;
 
     /**
      * @var int
      */
-    protected static $queryCountWrite = 0;
+    protected static int $queryCountWrite = 0;
 
     /**
      * The statement object for the last query that was run, if any.
@@ -55,7 +56,7 @@ class DBHelper
      * @var array<string,PDO|NULL>
      * @see getDB()
      */
-    protected static $db = array(
+    protected static array $db = array(
         'main' => null,
         'admin' => null
     );
@@ -82,24 +83,30 @@ class DBHelper
     public const ERROR_CANNOT_CONVERT_RESOURCE = 338701023;
     public const ERROR_EMPTY_WHERE = 338701024;
     
-    protected static $startTime;
-    
-    protected static $activeQuery;
+    protected static float $startTime;
+
+    /**
+     * @var array{0:string,1:array<string,mixed>}|null
+     */
+    protected static ?array $activeQuery = null;
     
     public static function isQueryTrackingEnabled() : bool
     {
-        return boot_constant('APP_TRACK_QUERIES') === true;
+        return boot_constant(BaseConfigRegistry::TRACK_QUERIES) === true;
     }
 
     /**
-     * Executes a query string with the specified variables. Uses
-     * the PDO->prepare() method, and returns the result of the
-     * PDOStatement->execute() method. If the query fails, the
-     * error information can be accessed via {@link getErrorMessage()}.
+     * Executes a query string with the specified variables.
+     *
+     * Uses the <code>PDO->prepare()</code> method to prepare the query.
+     * The result is returned by the <code>PDOStatement->execute()</code> method.
+     *
+     * If the query fails, the error information can be accessed via
+     * {@see self::getErrorMessage()}.
      *
      * @param int $operationType
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
-     * @param array $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,mixed> $variables Associative array with placeholders and values to replace in the query
      * @param bool $exceptionOnError
      * @return boolean
      * @throws DBHelper_Exception
@@ -192,7 +199,7 @@ class DBHelper
      * database compatible values, converting them as
      * necessary.
      *
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables
      * @return array<string,string|NULL>
      * @throws DBHelper_Exception
      *
@@ -243,7 +250,7 @@ class DBHelper
             return ConvertHelper::boolStrict2string($value);
         }
 
-        if($value instanceof Interface_Stringable)
+        if($value instanceof StringableInterface)
         {
             return (string)$value;
         }
@@ -255,7 +262,7 @@ class DBHelper
                 sprintf(
                     'An object of class [%s] cannot be converted to string. Only object that implement the [%s] interface may be used as values.',
                     parseVariable($value)->enableType()->toString(),
-                    Interface_Stringable::class
+                    StringableInterface::class
                 ),
                 self::ERROR_CANNOT_CONVERT_OBJECT
             );
@@ -282,7 +289,7 @@ class DBHelper
         return (string)$value;
     }
 
-    static protected $queryLogging = false;
+    static protected bool $queryLogging = false;
 
    /**
     * Runs an insert query and returns the insert ID if applicable.
@@ -291,9 +298,9 @@ class DBHelper
     * method is that it returns the insert ID.
     *
     * For tables that have no autoincrement fields, this will return
-    * a null value. As it triggers an exception in all cases something
-    * could go wrong, there is no need to check the return value of
-    * this method.
+    * a null value. As it triggers an exception in all cases where
+    * something could go wrong, there is no need to check the return
+    * value of this method.
     *
     * @param string|DBHelper_StatementBuilder $statementOrBuilder
     * @param array<string,mixed> $variables
@@ -419,7 +426,12 @@ class DBHelper
 
         return self::formatQuery(self::$activeQuery[0], self::$activeQuery[1]);
     }
-    
+
+    /**
+     * @param string $query
+     * @param array<string,mixed> $variables
+     * @return string
+     */
     public static function formatQuery(string $query, array $variables) : string
     {
         if(empty($variables))
@@ -453,7 +465,7 @@ class DBHelper
      * to use this method if you run UPDATE queries.
      *
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
@@ -468,7 +480,7 @@ class DBHelper
      *
      * @param int $operationType
      * @param string|DBHelper_StatementBuilder $statementOrBuilder
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables
      * @param bool $exceptionOnError
      * @return boolean
      * @throws DBHelper_Exception
@@ -488,7 +500,7 @@ class DBHelper
      * to use this method if you run DELETE queries.
      *
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
      * @throws DBHelper_Exception
      * @throws JsonException
@@ -501,7 +513,7 @@ class DBHelper
     /**
      * Fetches a single entry as an associative array from a SELECT query.
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return array<mixed>|NULL
      * @throws DBHelper_Exception
      * @throws JsonException
@@ -524,7 +536,7 @@ class DBHelper
      * fetch data from a single table.
      *
      * @param string $table The table name
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Any "WHERE" column values required
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $where Any "WHERE" column values required
      * @param string[] $columnNames The columns to fetch. Defaults to all columns if empty.
      * @return NULL|array
      * @throws DBHelper_Exception
@@ -564,7 +576,7 @@ class DBHelper
      * with associative arrays for each record.
      *
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception|ConvertHelper_Exception
      */
@@ -643,7 +655,7 @@ class DBHelper
                     $tokenInfo = json_encode(self::$activeQuery[1][$foundName], JSON_THROW_ON_ERROR);
                 } else {
                     $errors = true;
-                    $tokenInfo = '<i class="text-error">Placeholder not specified in values list</i>';
+                    $tokenInfo = '<i class="text-error">Placeholder has not been specified in the value list</i>';
                 }
                 
                 $tokens[] = $name . ' = ' . $tokenInfo;
@@ -651,9 +663,9 @@ class DBHelper
             
             if(isset(self::$activeQuery[1])) {
                 foreach(self::$activeQuery[1] as $name => $value) {
-                    if(!in_array(ltrim($name, ':'), $paramNames)) {
+                    if(!in_array(ltrim($name, ':'), $paramNames, true)) {
                         $errors = true;
-                        $tokens[] = $name . ' = <i class="text-error">No matching placeholder in query</i>';
+                        $tokens[] = $name . ' = <i class="text-error">No matching placeholder found in the query</i>';
                     }
                 }
             }
@@ -689,7 +701,7 @@ class DBHelper
     }
 
     /**
-     * Retrieves the current query count. Obviously, this has to be
+     * Retrieves the current query count. This has to be
      * done at the end of the request to be accurate for the total
      * number of queries in a request.
      *
@@ -718,7 +730,7 @@ class DBHelper
     /**
      * @var array<int,array<int,mixed>>
      */
-    protected static $queries = array();
+    protected static array $queries = array();
 
    /**
     * Retrieves all queries executed so far, optionally restricted
@@ -791,14 +803,6 @@ class DBHelper
     {
         $entries = self::fetchAll('SHOW TABLES');
         
-        if (!$entries || !is_array($entries)) 
-        {
-            throw self::createException(
-                self::ERROR_FETCHING,
-                'Failed retrieving the tables list'
-            );
-        }
-
         $list = array();
         foreach ($entries as $entry) {
             $list[] = $entry[key($entry)];
@@ -825,11 +829,13 @@ class DBHelper
      * Used to keep track of transactions.
      * @var boolean
      */
-    protected static $transactionStarted = false;
+    protected static bool $transactionStarted = false;
 
     /**
-     * Starts a new transaction. Don't forget to either commit or
-     * roll back once you have run all your statements!
+     * Starts a new transaction.
+     *
+     * NOTE: The transaction must be committed or rolled
+     * back once all statements have been run.
      *
      * @return boolean
      * @throws DBHelper_Exception
@@ -941,12 +947,12 @@ class DBHelper
     /**
      * @var string
      */
-    protected static $selectedDB = 'main';
+    protected static string $selectedDB = 'main';
 
     /**
      * @var PDO|NULL
      */
-    protected static $activeDB = null;
+    protected static ?PDO $activeDB = null;
 
     public static function init() : void
     {
@@ -976,7 +982,7 @@ class DBHelper
     /**
      * @var array<string,array{name:string,username:string,password:string,host:string,port:int}>
      */
-    protected static $databases = array();
+    protected static array $databases = array();
     
     public static function registerDB(string $id, string $name, string $username, string $password, string $host, int $port=0) : void
     {
@@ -1034,15 +1040,12 @@ class DBHelper
         return isset(self::$eventHandlers[$eventName]) && !empty(self::$eventHandlers[$eventName]);
     }
 
-    /**
-     * @var int
-     */
-    protected static $eventCounter = 0;
+    protected static int $eventCounter = 0;
 
     /**
      * @var array<string,array<int,array{id:int,callback:callable,data:mixed|NULL}>>
      */
-    protected static $eventHandlers = array();
+    protected static array $eventHandlers = array();
 
     /**
      * @param callable $handler
@@ -1098,7 +1101,7 @@ class DBHelper
     }
     
    /**
-    * Removes a specific event listener by its ID, if it exists.
+    * Removes a specific event listener by its ID if it exists.
     * @param int $listenerID
     */
     public static function removeListener(int $listenerID) : void
@@ -1392,10 +1395,7 @@ class DBHelper
         return implode(', ', $tokens);
     }
 
-    /**
-     * @var bool
-     */
-    protected static $debugging = false;
+    protected static bool $debugging = false;
 
     /**
      * Enables debugging, which will output all queries as they are run.
@@ -1521,7 +1521,7 @@ class DBHelper
     /**
      * @var array<string,bool>
      */
-    protected static $cachedColumnExist = array();
+    protected static array $cachedColumnExist = array();
 
     /**
      * Checks whether the specified column exists in the target table.
@@ -1690,7 +1690,7 @@ class DBHelper
     */
     public static function validateColumnName(string $column) : void
     {
-        if(preg_match('/\A[a-z][a-z_]+[a-z]\z/s', $column)) {
+        if(preg_match('/\A[a-z][a-z_]+[a-z]\z/', $column)) {
             return;
         }
         
@@ -1714,7 +1714,7 @@ class DBHelper
     */
     public static function validateTableName(string $name) : void
     {
-        if(preg_match('/\A[a-z][a-z_]+[a-z]\z/s', $name)) {
+        if(preg_match('/\A[a-z][a-z_]+[a-z]\z/', $name)) {
             return;
         }
         
@@ -1734,7 +1734,7 @@ class DBHelper
     * are deleted.
     * 
     * @param string $table The target table name.
-    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Associative array with column > value pairs for the where statement.
+    * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $where Associative array with column > value pairs for the where statement.
     * @return boolean
     */
     public static function deleteRecords(string $table, array $where=array()) : bool
@@ -1785,7 +1785,7 @@ class DBHelper
      * </pre>
      *
      * @param string $table
-     * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $where Associative array with key => value pairs to check
+     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $where Associative array with key => value pairs to check
      * @return boolean
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
@@ -1856,7 +1856,7 @@ class DBHelper
     * be set to NULL accordingly.
     * 
     * @param string $tableName
-    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $data
+    * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $data
     * @return string The insert ID, if any
     */
     public static function insertDynamic(string $tableName, array $data) : string
@@ -1968,11 +1968,11 @@ class DBHelper
     }
     
    /**
-    * Builds the fields conditions statement from a list of
-    * fields and values, connected by <code>AND</code>. The
-    * bound variable names match the field names.
+    * Builds the condition statement for the selected fields
+    * from a list of fields and values, connected by <code>AND</code>.
+    * The bound variable names match the field names.
     *  
-    * @param array<string,string|number|Interface_Stringable|Microtime|DateTime|bool|NULL> $params
+    * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $params
     * @return string
     */
     public static function buildWhereFieldsStatement(array $params) : string
@@ -2004,7 +2004,7 @@ class DBHelper
     /**
      * @var array<string,DBHelper_BaseCollection>
      */
-    protected static $collections = array();
+    protected static array $collections = array();
 
     /**
      * @param string $class

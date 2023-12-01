@@ -8,12 +8,8 @@ declare(strict_types=1);
 class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mode
 {
     public const URL_NAME_OVERVIEW = 'overview';
-    public const AUTO_REFRESH_DELAY = 60;
 
-    /**
-     * @var Application_User_Recent
-     */
-    private $recent;
+    private Application_User_Recent $recent;
 
     public function getDefaultSubmode() : string
     {
@@ -148,14 +144,6 @@ class Application_Admin_Area_Welcome_Overview extends Application_Admin_Area_Mod
 
     public function _renderContent()
     {
-        if($this->recent->isAutoRefreshEnabled())
-        {
-            $this->ui->addJavascriptOnload(sprintf(
-                'application.autoRefresh(%s)',
-                self::AUTO_REFRESH_DELAY * 1000
-            ));
-        }
-
         $tpl = $this->ui->createTemplate('content/welcome')
             ->setVar('user', $this->user)
             ->setVar('recent', $this->user->getRecent());

@@ -6,8 +6,8 @@
  * @see UI_Page_Navigation_Item
  */
 
-use AppUtils\Interface_Classable;
-use AppUtils\Traits_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Traits\ClassableTrait;
 use UI\Interfaces\TooltipableInterface;
 use UI\Traits\TooltipableTrait;
 
@@ -22,13 +22,13 @@ use UI\Traits\TooltipableTrait;
 abstract class UI_Page_Navigation_Item
     implements
     Application_Interfaces_Iconizable,
-    Interface_Classable,
+    ClassableInterface,
     UI_Interfaces_Conditional,
     Application_Interfaces_Loggable,
     TooltipableInterface
 {
     use Application_Traits_Iconizable;
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_Conditional;
     use Application_Traits_Loggable;
     use TooltipableTrait;

@@ -2,13 +2,12 @@
    FORMS
    ------------------------------------------------------------------------*/
 
-TEXTAREA.preformatted{
-font-family:monospace;
-white-space:nowrap;
+TEXTAREA.preformatted {
+    font-family: monospace;
+    white-space: nowrap;
 }
 
-input[type="file"]
-{
+input[type="file"] {
     display: block;
     background: aliceblue;
     padding: 2px 6px;
@@ -17,13 +16,12 @@ input[type="file"]
     cursor: pointer;
 }
 
-input[type="file"]:hover
-{
+input[type="file"]:hover {
     background: #ceedff;
 }
 
-.input-xllarge{
-width:340px;
+.input-xllarge {
+    width: 340px;
 }
 
 SECTION .form-horizontal,
@@ -40,7 +38,7 @@ H3.SectionSubheader {
 
 FORM H4 {
     text-transform: uppercase;
-    font-weight: normal;
+    font-weight: var(--font-weight-normal);
     margin-bottom: 28px;
     margin-top: 20px;
 }
@@ -76,13 +74,13 @@ H3.form-header.form-header-first {
 }
 
 .form-condensed .input-append,
-.form-condensed .input-prepend{
-    margin-bottom:3px !important;
+.form-condensed .input-prepend {
+    margin-bottom: 3px !important;
 }
 
 .form-actions > BUTTON.btn,
 .form-actions > A.btn {
-	margin-right:6px;
+    margin-right: 6px;
 }
 
 .form-condensed .form-actions {
@@ -100,11 +98,11 @@ H3.form-header.form-header-first {
 .form-hints {
     border-top: solid 1px #eee;
     padding-top: 13px;
-    font-size: 80%;
+    font-size: var(--font-size-s);
 }
 
 .form-heading-abstract {
-	font-style: italic;
+    font-style: italic;
     color: #999;
     margin-bottom: 15px;
 }
@@ -134,14 +132,14 @@ LABEL.checkbox {
 }
 
 LABEL.radio {
-padding: 2px 6px;
-float: left;
+    padding: 2px 6px;
+    float: left;
 }
 
 /* Avoid the float in multiselect dropdowns */
 LABEL.radio.standalone,
-.multiselect-container LABEL.radio{
-float:none;
+.multiselect-container LABEL.radio {
+    float: none;
 }
 
 .radio-group.with-icons LABEL {
@@ -202,105 +200,109 @@ float:none;
     border: solid 1px #b94a48;
 }
 
-.help-block{
-margin-top:6px;
-color:#727272;
+.help-block {
+    margin-top: 6px;
+    color: #727272;
 }
 
-.help-block,
-.help-block CODE{
-    font-size: 93% !important;
-    line-height: 146% !important;
+.help-block {
+    font-size: var(--font-size-s) !important;
+    line-height: var(--line-height-s) !important;
 }
 
-.form-sections-toolbar{
-text-align:right;
-margin-bottom:13px;
+.help-block CODE {
+    font-size: 0.750rem !important;
+    line-height: var(--line-height-s) !important;
+}
+
+.form-sections-toolbar {
+    text-align: right;
+    margin-bottom: 13px;
 }
 
 /* buttons in input appends */
-.input-append .add-on .btn{
-margin-top:-5px;
+.input-append .add-on .btn {
+    margin-top: -5px;
 }
 
-.control-group.control-type-static .controls{
-padding-top:5px;
+.control-group.control-type-static .controls {
+    padding-top: 5px;
 }
 
 .form-icon-required,
-.form-icon-structural{
-display:none;
-margin-left:5px;	
+.form-icon-structural {
+    display: none;
+    margin-left: 5px;
 }
 
 .form-icon-required.active,
-.form-icon-structural.active{
-display:inline;
+.form-icon-structural.active {
+    display: inline;
 }
 
 /* Make the delete icon red */
-.multiselect-container .btn.clear-search{
-color:#cc0000;
+.multiselect-container .btn.clear-search {
+    color: #cc0000;
 }
 
 /* The search bar in the multiselect element */
-.multiselect-item.filter{
-background:#fafafa;
-margin-bottom:13px;
-padding:5px;
+.multiselect-item.filter {
+    background: #fafafa;
+    margin-bottom: 13px;
+    padding: 5px;
 }
 
-.control-group .redactor-box{
-margin-bottom:0;
+.control-group .redactor-box {
+    margin-bottom: 0;
 }
 
 /* Buttons that are added after an input element in forms */
 .btn.after-input,
-.btn-group.after-input{
-display:inline-block;
-position:relative;
-top:-2px;
-margin-left:5px;
+.btn-group.after-input {
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    margin-left: 5px;
 }
 
-.form-error-hint{
-display:block;
-color:#c52320;
-padding:9px 0 9px 0;
+.form-error-hint {
+    display: block;
+    color: #c52320;
+    padding: 9px 0 9px 0;
 }
 
-.form-example-string{
-padding:2px 4px;
-background-color:#f7f7f9;
-border:solid 1px #f1f1f8;
-border-radius:3px;
+.form-example-string {
+    padding: 2px 4px;
+    background-color: #f7f7f9;
+    border: solid 1px #f1f1f8;
+    border-radius: 3px;
 }
 
-FORM p.abstract.form-abstract{
-margin-left:20px;
-font-size:16px;
+FORM p.abstract.form-abstract {
+    margin-left: 20px;
+    font-size: var(--font-size-normal);
 }
 
-.element-type-Multiselect .btn-group.multiselect{
+.element-type-Multiselect .btn-group.multiselect {
 }
 
-.btn-group.multiselect{
-padding-left:0;
+.btn-group.multiselect {
+    padding-left: 0;
 }
 
-.btn-group.multiselect.multiselect-block{
-width:100%;
+.btn-group.multiselect.multiselect-block {
+    width: 100%;
 }
 
-.element-icons{
+.element-icons {
 
 }
 
-.control-label-text{
+.control-label-text {
 
 }
 
 /* Add a padding so the WYSIWYG editor does not fill the whole width */
-.element-type-Textarea.standalone{
-padding:0 10px;
+.element-type-Textarea.standalone {
+    padding: 0 10px;
 }

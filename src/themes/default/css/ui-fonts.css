@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Roboto+Mono:ital,wght@0,200;0,300;0,400;0,500;1,200;1,300;1,400;1,500&display=swap');
+
+:root{
+    --font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-family-monospace: 'Roboto Mono', monospace;
+    --font-weight-light: 400;
+    --font-weight-normal: 500;
+    --font-weight-bold: 700;
+    --font-weight-bolder: 700;
+    --font-size-xs: 0.725rem;
+    --font-size-s: 0.875rem;
+    --font-size-normal: 1rem;
+    --font-size-l: 1.125rem;
+    --font-size-xl: 1.25rem;
+
+    --line-height-normal: 1.5rem;
+    --line-height-s: 1.25rem;
+    --line-height-l: 1.5rem;
+}
+
+BODY,
+INPUT,
+BUTTON,
+SELECT,
+TEXTAREA {
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-normal);
+}
+
+CODE{
+    font-family: var(--font-family-monospace);
+    font-weight: 400;
+}
+
+LI{
+    line-height: var(--line-height-normal);
+}
+
+.nav-tabs>li>a, .nav-pills>li>a{
+    line-height: var(--line-height-normal);
+}
+
+select, input[type="file"]{
+    height: 2rem;
+}
+
+.dropdown-menu>li>a,
+#app-quicknav .nav > LI > A,
+.whatsnew-category,
+.page-title .title-subline,
+.page-subtitle .title-subline{
+    font-weight: var(--font-weight-light);
+}
+
+select,
+textarea,
+button,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input{
+    font-weight: var(--font-weight-light);
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-normal);
+}
+
+label{
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-normal);
+}
+
+.properties-grid .prop-header TH,
+#footer_frame .footer-column-header,
+H1.page-title,
+H2.page-subtitle,
+H2.page-subtitle,
+H3.page-abstract {
+    font-weight: var(--font-weight-normal);
+}
+
+#developer_mode_hint,
+#simulate_session_hint,
+#maintenance_mode_hint,
+.loader_text,
+.keyboard-shortcut,
+.whatsnew-version,
+.table TH,
+STRONG,
+H1,H2,H3,H4,H5,H6{
+    font-weight: var(--font-weight-bold);
+}

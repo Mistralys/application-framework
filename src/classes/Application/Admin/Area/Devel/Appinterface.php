@@ -13,11 +13,11 @@ declare(strict_types=1);
  * Abstract base class used to display a reference of application UI
  * elements that can be used when building administration screens.
  * It creates a live menu to choose which examples to show.
- * 
+ *
  * The examples themselves are stored as templates, under
  * `templates/appinterface`, with folders corresponding to the
  * example's category ID.
- * 
+ *
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
@@ -29,17 +29,17 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     * @var array<string,array<string,mixed>>
     */
     private array $examples;
-    
+
    /**
     * @var string[]
     */
     private array $exampleIDs = array();
-    
+
    /**
     * @var string
     */
     private string $activeExample = '';
-    
+
     public function getURLName() : string
     {
         return self::URL_NAME;
@@ -64,7 +64,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     {
         return $this->user->isDeveloper();
     }
-    
+
     protected function getExamplesList() : array
     {
         return array(
@@ -88,7 +88,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'buttons-styles' => t('Button styles'),
                     'pretty-bool' => t('Pretty booleans'),
                     'copy-text-codeblock' => t('Copy text code block'),
-                    'country-flags' => t('Country flag icons')
+                    'country-flags' => t('Country flags')
                 )
             ),
             'forms' => array(
@@ -105,6 +105,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                 'examples' => array(
                     'visual-select' => t('Visual select'),
                     'visual-select-with-image-sets' => sb()->t('Visual select')->add('-')->t('With image sets'),
+                    'visual-select-multiple' => sb()->t('Visual select')->add('-')->t('Multiple form elements'),
+                    'markup-editor' => t('Markup editor')
                 )
             ),
             'errors' => array(
@@ -116,11 +118,11 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             )
         );
     }
-    
+
     protected function _handleActions() : bool
     {
         $this->examples = $this->getExamplesList();
-        
+
         $categoryIDs = array_keys($this->examples);
         foreach($categoryIDs as $categoryID) {
             $exampleIDs = array_keys($this->examples[$categoryID]['examples']);
@@ -128,7 +130,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                 $this->exampleIDs[] = $categoryID.'.'.$exampleID;
             }
         }
-        
+
         $active = (string)$this->request->getParam('example');
         if(!empty($active) && in_array($active, $this->exampleIDs))
         {
@@ -146,7 +148,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                 ->setGroup('app-interface')
                 ->setTitle($category['label'])
                 ->collapse();
-            
+
             $section->appendContent('<ul class="unstyled">');
             foreach($category['examples'] as $exampleID => $exampleTitle) {
                 $section->appendContent(
@@ -160,13 +162,13 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             $section->appendContent('</ul>');
         }
     }
-    
+
     protected function _handleBreadcrumb() : void
     {
         $this->breadcrumb->appendArea($this->area);
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
-    
+
     protected function _renderContent() : string
     {
         return $this->renderContentWithSidebar(

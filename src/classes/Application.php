@@ -7,6 +7,9 @@
  */
 
 use Application\AppFactory;
+use Application\ConfigSettings\AppConfig;
+use Application\ConfigSettings\BaseConfigRegistry;
+use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
@@ -172,7 +175,7 @@ class Application
     {
         self::log('Starting application.');
 
-        $runMode = boot_constant('APP_RUN_MODE');
+        $runMode = self::getRunMode();
 
         $this->started = true;
         $this->driver = $driver;
@@ -260,7 +263,7 @@ class Application
         return AppFactory::createLogger()->log($message, $header);
     }
 
-    public static function logSF(string $message, string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
+    public static function logSF(string $message, ?string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
         return AppFactory::createLogger()->logSF($message, $category, ...$args);
     }
@@ -364,7 +367,7 @@ class Application
      */
     public static function getUser() : Application_User
     {
-        return self::getSession()->getUser();
+        return self::getSession()->requireUser();
     }
 
     /**
@@ -452,7 +455,7 @@ class Application
 
         self::$develEnvironment = false;
 
-        $env = Application_Environments::getInstance()->getDetected();
+        $env = Environments::getInstance()->getDetected();
 
         if($env !== null && $env->isDev())
         {
@@ -542,6 +545,19 @@ class Application
         }
 
         return self::$storageFolder;
+    }
+
+    /**
+     * Sets the base storage folder path used for all permanent
+     * storage operations. Folders accessed via {@see self::getStorageSubfolderPath()}
+     * will use this as parent path.
+     *
+     * @param string $path
+     * @return void
+     */
+    public static function setStoragePath(string $path) : void
+    {
+        self::$storageFolder = $path;
     }
 
     /**
@@ -673,12 +689,15 @@ class Application
 
     public static function isUserDev() : bool
     {
-        if (!isset(self::$isDevUser))
-        {
-            self::$isDevUser = self::getUser()->isDeveloper();
+        // Use the session to get the user, as the application's
+        // getUser() method triggers authentication.
+        $user = self::getSession()->getUser();
+
+        if($user !== null) {
+            return $user->isDeveloper();
         }
 
-        return self::$isDevUser;
+        return false;
     }
 
     /**
@@ -756,28 +775,17 @@ class Application
      *
      * @param integer $seconds The limit to set. Use 0 for no limit.
      * @param string $operation Human-readable label of the operation that needs the time limit, shown in the exception.
-     * @throws Application_Exception
      */
     public static function setTimeLimit(int $seconds, string $operation) : void
     {
-        if (
-            set_time_limit($seconds) === true
-            ||
-            (defined('APP_TESTS_RUNNING') && APP_TESTS_RUNNING === true)
-        )
-        {
-            return;
-        }
-
-        throw new Application_Exception(
-            'Cannot change the execution time.',
-            sprintf(
-                'Tried changing the execution time to [%s] seconds for operation [%s].',
-                $seconds,
-                $operation
-            ),
-            self::ERROR_CANNOT_SET_EXECUTION_TIME
+        self::logSF(
+            'ExecutionTime | Setting to [%s] seconds for operation [%s].',
+            null,
+            $seconds,
+            $operation
         );
+
+        set_time_limit($seconds);
     }
 
     /**
@@ -856,7 +864,7 @@ class Application
      * @return never
      * @todo Handle shutdown tasks here.
      */
-    public static function exit(string $reason = '') : void
+    public static function exit(string $reason = '')
     {
         self::$exited = true;
 
@@ -868,6 +876,8 @@ class Application
         */
 
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
+
+        Application_Bootstrap::handleShutDown();
 
         exit;
     }
@@ -912,7 +922,7 @@ class Application
 
     public static function getRunMode() : string
     {
-        return (string)boot_constant('APP_RUN_MODE');
+        return (string)boot_constant(BaseConfigRegistry::RUN_MODE);
     }
 
     public static function isUIEnabled() : bool
@@ -922,17 +932,17 @@ class Application
 
     public static function isAuthenticationEnabled() : bool
     {
-        return boot_constant('APP_NO_AUTHENTICATION') !== true;
+        return boot_constant(BaseConfigRegistry::NO_AUTHENTICATION) !== true;
     }
 
     public static function isSessionSimulated() : bool
     {
-        return boot_constant('APP_SIMULATE_SESSION') === true;
+        return boot_constant(BaseConfigRegistry::SIMULATE_SESSION) === true;
     }
 
     public static function isDemoMode() : bool
     {
-        return boot_constant('APP_DEMO_MODE') === true;
+        return AppConfig::isDemoMode();
     }
 
     /**
@@ -943,7 +953,7 @@ class Application
      */
     public static function isDatabaseEnabled() : bool
     {
-        return boot_constant('APP_DB_ENABLED') === true;
+        return boot_constant(BaseConfigRegistry::DB_ENABLED) === true;
     }
 
     public static function createLDAP() : Application_LDAP
@@ -980,7 +990,7 @@ class Application
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect(string $url) : void
+    public static function redirect(string $url)
     {
         try
         {

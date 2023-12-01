@@ -8,9 +8,9 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Optionable;
-use AppUtils\Interface_Stringable;
-use AppUtils\Traits_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\StringableInterface;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * Base class for the available markup editors.
@@ -19,39 +19,16 @@ use AppUtils\Traits_Optionable;
  * @subpackage MarkupEditor
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
  */
-abstract class UI_MarkupEditor implements Interface_Optionable, Interface_Stringable
+abstract class UI_MarkupEditor implements OptionableInterface, StringableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
     
-    /**
-     * @var UI
-     */
-    protected $ui;
-    
-   /**
-    * @var string
-    */
-    protected $jsID; 
-    
-   /**
-    * @var bool
-    */
-    protected $started = false;
-    
-   /**
-    * @var HTML_QuickForm2_Element
-    */
-    protected $element;
-    
-   /**
-    * @var string
-    */
-    protected $selector;
-    
-   /**
-    * @var Application_Countries_Country
-    */
-    protected $country;
+    protected UI $ui;
+    protected string $jsID;
+    protected bool $started = false;
+    protected HTML_QuickForm2_Element $element;
+    protected string $selector;
+    protected Application_Countries_Country $country;
     
     public function __construct(UI $ui, HTML_QuickForm2_Element $element, Application_Countries_Country $country)
     {

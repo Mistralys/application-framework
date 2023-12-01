@@ -6,10 +6,10 @@
  * @see UI_QuickSelector
  */
 
-use AppUtils\Traits_Classable;
-use AppUtils\Traits_Optionable;
-use AppUtils\Interface_Optionable;
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\ClassableTrait;
+use AppUtils\Traits\OptionableTrait;
 
 /**
  * UI helper class for creating quick item selection elements with
@@ -19,24 +19,21 @@ use AppUtils\Interface_Classable;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
  */
-class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderable_Interface, Interface_Classable, Interface_Optionable, Application_Interfaces_Iconizable
+class UI_QuickSelector extends UI_QuickSelector_Container
+    implements
+    UI_Renderable_Interface,
+    ClassableInterface,
+    OptionableInterface,
+    Application_Interfaces_Iconizable
 {
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_RenderableGeneric;
-    use Traits_Optionable;
+    use OptionableTrait;
     use Application_Traits_Iconizable;
 
     public const ERROR_UNKNOWN_LAYOUT_PART = 24901;
     
-   /**
-    * @var UI
-    */
-    protected $ui;
-    
-   /**
-    * @var string
-    */
-    protected $jsName;
+    protected string $jsName;
 
     public function __construct(string $id='')
     {
@@ -61,10 +58,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         );
     }
 
-    /**
-    * @var string
-    */
-    protected $selectedItemID = '';
+    protected string $selectedItemID = '';
     
    /**
     * Sets the pre-selected item from the list. Default is the first item in the list.
@@ -90,7 +84,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
     
    /**
     * Creates an ID that is unique for the quick selector, for
-    * use in HTML element id attributes. 
+    * use in HTML element ID attributes.
     * 
     * @param string $part 
     * @return string
@@ -128,7 +122,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
     
    /**
     * Sets the label for the types of items in the list. This is
-    * used in tooltips for example, when the text makes reference
+    * used in tooltips, for example, when the text makes reference
     * to the items.
     * 
     * For example, if the list contained apples, you would use this
@@ -148,11 +142,6 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         return $this;
     }
     
-    public function getID() : string
-    {
-        return $this->id;
-    }
-    
     public function getJSName() : string
     {
         return $this->jsName;
@@ -170,7 +159,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
 
     private function resolveLabel() : string
     {
-        $result = sb()->add(strval($this->getIcon()));
+        $result = sb()->add($this->getIcon());
 
         $label = $this->getLabel();
 
@@ -210,7 +199,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         $this->ui->addJavascriptHead(sprintf(
             "var %s = new UI_QuickSelector(%s)",
             $this->getJSName(),
-            json_encode($this->getID())
+            json_encode($this->getID(), JSON_THROW_ON_ERROR)
         ));
         
         $this->ui->addJavascriptOnload(sprintf("%s.Start()", $jsName));
@@ -241,10 +230,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
                 }
                 $html .=
                 '<select id="'.$this->elementID('select').'" onchange="'.$jsName.'.Switch()" class="quick-selector-select">';
-                    $total = count($this->items);
-                    for($i=0; $i<$total; $i++) {
-                        $item = $this->items[$i];
-                        
+                    foreach ($this->items as $item) {
                         $html .= $item->render();
                     }
                     $html .=
@@ -256,7 +242,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
                             ->setID($this->elementID('btn_prev'))
                             ->click($jsName.'.Previous()')
                             ->setIcon(UI::icon()->previous())
-                            ->setTooltipText(t('Jump to the previous %1$s.', $this->getTypeSingular()));
+                            ->setTooltip(t('Jump to the previous %1$s.', $this->getTypeSingular()));
                         
                         if($this->getStringOption('size') === 'small') {
                             $btn->makeSmall();
@@ -271,7 +257,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
                             ->setID($this->elementID('btn_next'))
                             ->click($jsName.'.Next()')
                             ->setIcon(UI::icon()->next())
-                            ->setTooltipText(t('Jump to the next %1$s.', $this->getTypeSingular()));
+                            ->setTooltip(t('Jump to the next %1$s.', $this->getTypeSingular()));
                         
                         if($this->getStringOption('size') === 'small') {
                             $btn->makeSmall();
@@ -338,7 +324,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
    /**
     * @var array<string,bool>
     */
-    protected $partStates = array(
+    protected array $partStates = array(
         'label' => true,
         'buttonLeft' => true,
         'buttonRight' => true
@@ -352,7 +338,7 @@ class UI_QuickSelector extends UI_QuickSelector_Container implements UI_Renderab
         return $this;
     }
     
-    protected function requirePart(string $part)
+    protected function requirePart(string $part) : void
     {
         if(isset($this->partStates[$part])) {
             return;

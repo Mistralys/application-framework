@@ -4,10 +4,7 @@ abstract class Application_Admin_Area_Mode extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;
     
-    /**
-     * @var Application_Admin_Area
-     */
-    protected $area;
+    protected Application_Admin_Area $area;
 
     public function __construct(Application_Driver $driver, Application_Admin_Area $area)
     {

@@ -6,8 +6,10 @@
  * @subpackage Maintenance
  */
 
+declare(strict_types=1);
+
 use AppUtils\ClassHelper;
-use AppUtils\OutputBuffering;
+use AppUtils\Interfaces\StringableInterface;use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 
 /**
@@ -20,32 +22,17 @@ use AppUtils\OutputBuffering_Exception;
  */
 class Application_Updaters
 {
-   /**
+    public const REQUEST_PARAM_UPDATER_ID = 'updater_id';
+
+    /**
     * @var Application_Updaters_Updater[]
     */
 	protected array $updaters = array();
-
-	protected $classesFolder;
-
-   /**
-    * @var Application_Driver
-    */
-	protected $driver;
-
-   /**
-    * @var Application_Request
-    */
-	protected $request;
-
-   /**
-    * @var UI
-    */
-	protected $ui;
-
-   /**
-    * @var UI_Themes_Theme
-    */
-	protected $theme;
+	protected string $classesFolder;
+	protected Application_Driver $driver;
+	protected Application_Request $request;
+	protected UI $ui;
+	protected UI_Themes_Theme $theme;
 
 	public function __construct()
 	{
@@ -66,7 +53,7 @@ class Application_Updaters
 
 		$this->loadUpdaters();
 
-		$this->request->registerParam('updater_id')->setEnum(array_keys($this->updaters));
+		$this->request->registerParam(self::REQUEST_PARAM_UPDATER_ID)->setEnum(array_keys($this->updaters));
 	}
 
 	protected function loadUpdaters() : void
@@ -99,7 +86,7 @@ class Application_Updaters
 
 	public function start() : void
 	{
-	    $updaterID = $this->request->getParam('updater_id');
+	    $updaterID = $this->request->getParam(self::REQUEST_PARAM_UPDATER_ID);
 
 	    if(!empty($updaterID))
         {
@@ -198,10 +185,10 @@ class Application_Updaters
 	    return strnatcasecmp($a->getListLabel(), $b->getListLabel());
 	}
 
-	public function isEnabled(Application_Updaters_Interface $updater)
+	public function isEnabled(Application_Updaters_Interface $updater) : bool
 	{
 		$versions = $updater->getValidVersions();
-		if($versions=='*') {
+		if($versions === '*') {
 			return true;
 		}
 
@@ -209,7 +196,7 @@ class Application_Updaters
 		    $versions = array($versions);
 		}
 
-		return in_array($this->driver->getVersion(), $versions);
+		return in_array($this->driver->getVersion(), $versions, true);
 	}
 
     /**
@@ -285,14 +272,14 @@ class Application_Updaters
         return OutputBuffering::get();
 	}
 
-	public function buildURL($params=array())
+    /**
+     * @param array<string,string|int|float|bool|StringableInterface|NULL> $params
+     * @return string
+     */
+    public function buildURL(array $params=array()) : string
 	{
-	    $url = rtrim(APP_URL, '/').'/upgrade.php';
-	    if(!empty($params)) {
-	        $url .= '?'.http_build_query($params, '', '&amp;');
-	    }
-
-	    return $url;
+        return Application_Request::getInstance()
+            ->buildURL($params, Application_Bootstrap_Screen_Updaters::DISPATCHER_NAME);
 	}
 
 	public function renderPageFooter() : string

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Bootstrap\DeployCallbackBootstrap;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use Mistralys\AppFramework\AppFramework;
 
@@ -95,10 +95,11 @@ class template_default_frame_footer extends UI_Page_Template_Custom
         $this->activeColumn = t('Developer');
 
         $this
-            ->addItemURL(t('Changelog'), APP_URL.'/changelog.php')
-            ->addItemURL(t('Maintenance'), APP_URL.'/upgrade.php')
-            ->addItemURL(t('Monitoring'), APP_URL.'/xml/monitor/')
-            ->addItemURL(t('Run cronjob script'), APP_URL.'/cronjobs.php?output=yes')
+            ->addItemURL(t('Changelog'), APP_URL.'/'.Application_Bootstrap_Screen_Changelog::DISPATCHER)
+            ->addItemURL(t('Maintenance'), APP_URL.'/'.Application_Bootstrap_Screen_Updaters::DISPATCHER_NAME)
+            ->addItemURL(t('Monitoring'), APP_URL.'/xml/monitor/'.Application_Bootstrap_Screen_HealthMonitor::DISPATCHER)
+            ->addItemURL(t('Run cronjob script'), APP_URL.'/'.Application_Bootstrap_Screen_Cronjobs::DISPATCHER.'?output=yes')
+            ->addItemURL(t('Request log'), APP_URL.'/.'.Application_Bootstrap_Screen_RequestLog::DISPATCHER)
             ->addItemCallback(static function() : string {
                 return (string)UI::button(t('Deploy callback...'))
                     ->makeLink(false)
@@ -109,7 +110,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
                         )
                         ->para(sb()->cannotBeUndone())
                     )
-                    ->link(APP_URL.'/'. DeployCallbackBootstrap::DISPATCHER_NAME.'?');
+                    ->link(APP_URL.'/'. DeployCallbackBootstrap::DISPATCHER_NAME);
             });
 
         $this->registerDeveloperItems();
@@ -136,7 +137,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
     }
 
     /**
-     * @param string|Interface_Stringable $label
+     * @param string|StringableInterface $label
      * @param string $url
      * @return $this
      */
@@ -155,7 +156,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
     }
 
     /**
-     * @param string|Interface_Stringable|NULL $html
+     * @param string|StringableInterface|NULL $html
      * @return $this
      */
     protected function addItemHTML($html) : self

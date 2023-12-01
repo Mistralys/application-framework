@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package Application
+ * @subpackage UserInterface
+ * @see \UI\Traits\TooltipableTrait
+ */
 
 declare(strict_types=1);
 
@@ -6,6 +11,11 @@ namespace UI\Traits;
 
 use UI\TooltipInfo;
 
+/**
+ * @package Application
+ * @subpackage UserInterface
+ * @see TooltipableInterface
+ */
 trait TooltipableTrait
 {
     protected ?TooltipInfo $tooltipInfo = null;
@@ -14,7 +24,7 @@ trait TooltipableTrait
      * @param TooltipInfo|NULL $tooltip
      * @return $this
      */
-    public function setTooltip(?TooltipInfo $tooltip)
+    public function setTooltip(?TooltipInfo $tooltip) : self
     {
         $this->tooltipInfo = $tooltip;
         return $this;

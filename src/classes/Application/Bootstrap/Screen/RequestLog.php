@@ -3,39 +3,37 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use AppUtils\FileHelper;
 
 /**
  * @see Application_RequestLog
  */
 class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Screen
 {
+    public const ERROR_MISSING_AUTH_CONFIGURATION = 100901;
+
     public const REQUEST_PARAM_YEAR = 'year';
     public const REQUEST_PARAM_MONTH = 'month';
     public const REQUEST_PARAM_DAY = 'day';
     public const REQUEST_PARAM_HOUR = 'hour';
     public const REQUEST_PARAM_ID = 'requestID';
     public const REQUEST_PARAM_LOG_OUT = 'log_out';
+    public const REQUEST_PARAM_DELETE_ALL = 'delete_all';
+    public const REQUEST_PARAM_SETTINGS = 'settings';
     public const REQUEST_PARAM_TOGGLE_STATUS = 'set_status';
+    public const REQUEST_PARAM_DUMP_INFO = 'dump_info';
+    public const REQUEST_PARAM_DESTROY_SESSION = 'destroy_session';
 
     public const DISPATCHER = 'requestlog.php';
     public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
 
-    /**
-     * @var Application_RequestLog
-     */
-    private $log;
+    private Application_RequestLog $log;
 
-    /**
-     * @var UI_Page
-     */
-    private $page;
+    private UI_Page $page;
 
-    /**
-     * @var Application_Request
-     */
-    private $request;
+    private Application_Request $request;
 
-    private $persistVars = array();
+    private array $persistVars = array();
 
     public function getDispatcher()
     {
@@ -47,24 +45,56 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         $this->disableAuthentication();
         $this->createEnvironment();
 
+        if(!defined('APP_REQUEST_LOG_PASSWORD'))
+        {
+            throw new Application_RequestLog_Exception(
+                'No authentication configured.',
+                'The request log password has not been set in the configuration.',
+                self::ERROR_MISSING_AUTH_CONFIGURATION
+            );
+        }
+
         $this->log = AppFactory::createRequestLog();
         $this->page = $this->driver->getUI()->createPage('request-log');
         $this->request = AppFactory::createRequest();
         $breadcrumb = $this->page->getBreadcrumb();
+
+        $breadcrumb->appendItem(t('Overview'))
+            ->makeLinked($this->log->getAdminURL());
 
         if($this->request->getBool(self::REQUEST_PARAM_LOG_OUT))
         {
             $this->handleLogOut();
         }
 
+        if(!$this->isAuthenticated())
+        {
+            $this->handleAuthentication();
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DELETE_ALL))
+        {
+            $this->handleDeleteAll();
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_SETTINGS))
+        {
+            displayHTML($this->renderSettings());
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DUMP_INFO)) {
+            displayHTML($this->renderInfoDump());
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_DESTROY_SESSION)) {
+            session_destroy();
+            header('Location: '.$this->log->getAdminURL());
+            Application::exit('After session destroyed');
+        }
+
         if($this->request->hasParam(self::REQUEST_PARAM_TOGGLE_STATUS))
         {
             $this->handleStatusChange($this->request->getBool(self::REQUEST_PARAM_TOGGLE_STATUS));
-        }
-
-        if($this->session->getValue(self::SESSION_AUTH_PARAM) !== 'yes')
-        {
-            $this->handleAuthentication();
         }
 
         if(!$this->request->hasParam(self::REQUEST_PARAM_YEAR))
@@ -117,6 +147,11 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         Application::exit();
     }
 
+    public function isAuthenticated() : bool
+    {
+        return $this->session->getValue(self::SESSION_AUTH_PARAM) === 'yes';
+    }
+
     private function handleLogOut() : void
     {
         $this->session->setValue(self::SESSION_AUTH_PARAM, 'no');
@@ -140,6 +175,15 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         }
 
         UI::getInstance()->addSuccessMessage($message);
+
+        Application::redirect($this->log->getAdminURL());
+    }
+
+    private function handleDeleteAll() : void
+    {
+        $this->log->clearAllLogs();
+
+        UI::getInstance()->addSuccessMessage(t('All stored request logs have been successfully deleted.'));
 
         Application::redirect($this->log->getAdminURL());
     }
@@ -219,6 +263,64 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     }
 
     /**
+     * @return string
+     * @throws UI_Themes_Exception
+     */
+    private function renderSettings() : string
+    {
+        $form = $this->createSettingsForm();
+
+        if($form->isFormValid())
+        {
+            $this->applySettings($form->getFormValues());
+
+            UI::getInstance()->addSuccessMessage(t('The settings have been applied.'));
+            Application::redirect($this->log->getAdminURL());
+        }
+
+        return $this->page->renderTemplate(
+            'requestlog/settings',
+            array(
+                'form' => $form
+            )
+        );
+    }
+
+    private function applySettings(array $settings) : void
+    {
+        $this->driver->setGlobalDevelMode(($settings['develmode'] === 'true'));
+    }
+
+    private function createSettingsForm() : Application_Formable_Generic
+    {
+        $form = new Application_Formable_Generic();
+        $form->createFormableForm(
+            'requestlog-settings',
+            array(
+                'develmode' => bool2string(Application_Driver::isGlobalDevelModeEnabled())
+            )
+        );
+
+        $form->addHiddenVar('settings', 'yes');
+
+        $form->addElementSwitch('develmode', t('Developer mode'))
+            ->setComment(t('If enabled, the developer mode will be enabled for all requests, regardless of user rights.'));
+
+        $form->getFormInstance()->addPrimarySubmit((string)sb()
+            ->icon(UI::icon()->ok())
+            ->t('Apply settings')
+        );
+
+        $form->getFormInstance()->addButton('cancel')
+            ->setLabel('Cancel')
+            ->link($this->log->getAdminURL());
+
+        $form->setDefaultElement('develmode');
+
+        return $form;
+    }
+
+    /**
      * @param Application_RequestLog_LogItems_Year $year
      * @return string
      * @throws Application_Exception
@@ -283,6 +385,12 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
         );
     }
 
+    /**
+     * @param Application_RequestLog_LogFile $file
+     * @return string
+     * @throws UI_Themes_Exception
+     * @see template_default_requestlog_file_detail
+     */
     private function renderFileDetailView(Application_RequestLog_LogFile $file) : string
     {
         return $this->page->renderTemplate(
@@ -296,5 +404,17 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
     public function getPersistVars() : array
     {
         return $this->persistVars;
+    }
+
+    /**
+     * @return string
+     * @throws UI_Themes_Exception
+     * @see template_default_requestlog_info_dump
+     */
+    private function renderInfoDump() : string
+    {
+        return $this->page->renderTemplate(
+            'requestlog/info-dump'
+        );
     }
 }

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper;
 
 class Application_OAuth
@@ -50,13 +51,13 @@ class Application_OAuth
         $this->loadStrategies();
         $this->loadAppStrategies();
 
-        if(!boot_defined('APP_AUTH_SALT'))
+        if(!boot_defined(BaseConfigRegistry::AUTH_SALT))
         {
             throw new OAuth_Exception(
                 'The auth salt setting has not been set',
                 sprintf(
                     'The config setting [%s] must be present.',
-                    'APP_AUTH_SALT'
+                    BaseConfigRegistry::AUTH_SALT
                 ),
                 self::ERROR_AUTH_SALT_NOT_SET
             );
@@ -77,7 +78,7 @@ class Application_OAuth
 
     /**
      * Creates/returns the instance of the login strategy.
-     * Must be enabled in the application, i.e. the matching
+     * Must be enabled in the application, i.e., the matching
      * class file must have been created in the application's
      * `OAuth` class folder.
      *

@@ -120,7 +120,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * @var array<string,string>
     * @see https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
     */
-    protected $languages = array(
+    protected array $languages = array(
         'at' => 'de',
         'ca' => 'en',
         'de' => 'de',
@@ -135,14 +135,17 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     );
 
     /**
-     * @var array<string,string>
+     * @var array<string,string>|NULL
      */
-    protected $languageLabels;
-    
-    protected function initLanguages() : void
+    protected ?array $languageLabels = null;
+
+    /**
+     * @return array<string,string>
+     */
+    protected function getLanguageLabels() : array
     {
         if(isset($this->languageLabels)) {
-            return;
+            return $this->languageLabels;
         }
         
         $this->languageLabels = array(
@@ -154,6 +157,8 @@ class Application_Countries_Country extends DBHelper_BaseRecord
             'pl' => t('Polish'),
             'ro' => t('Romanian')
         );
+
+        return $this->languageLabels;
     }
     
    /**
@@ -190,7 +195,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     }
     
    /**
-    * Retrieves the human readable label of the country's
+    * Retrieves the human-readable label of the country's
     * main language (translated to the current app locale).
     *  
     * @throws Application_Exception
@@ -198,11 +203,11 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function getLanguageLabel() : string
     {
-        $this->initLanguages();
+        $labels = $this->getLanguageLabels();
         
         $iso = $this->getLanguageCode();
-        if(isset($this->languageLabels[$iso])) {
-            return $this->languageLabels[$iso];
+        if(isset($labels[$iso])) {
+            return $labels[$iso];
         }
         
         throw new Application_Exception(

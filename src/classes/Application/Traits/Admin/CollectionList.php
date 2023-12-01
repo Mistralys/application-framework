@@ -95,6 +95,11 @@ trait Application_Traits_Admin_CollectionList
     {
         
     }
+
+    protected function configureFilterSettings() : void
+    {
+
+    }
     
    /**
     * @return DBHelper_BaseCollection
@@ -175,6 +180,7 @@ trait Application_Traits_Admin_CollectionList
         $this->configureColumns();
         $this->configureActions();
         $this->configureFilters();
+        $this->configureFilterSettings();
 
         $vars = $this->getPersistVars();
 

@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\Admin\Wizard\InvalidationHandler;
+use Application\AppFactory;
 
 /**
  * Trait for adding a wizard to an administration screen.
@@ -123,7 +124,7 @@ trait Application_Traits_Admin_Wizard
             $this->createSession();
         }
 
-        $this->log('Using existing wizard ID.');
+        $this->log('Using existing wizard ID [%s].', $this->getWizardID());
 
         $this->sessionData = $this->session->getValue($this->sessionID);
         $this->invalidationHandler = $this->getWizardSetting('invalidationHandler');
@@ -138,26 +139,42 @@ trait Application_Traits_Admin_Wizard
         }
     }
 
+    public static function generateNewSessionID() : string
+    {
+        $user = Application::getUser();
+        $sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $user->getID());
+
+        $session = AppFactory::createSession();
+
+        $session->setValue(
+            $sessionID,
+            array(
+                'sessionID' => $sessionID,
+                'userID' => $user->getID(),
+                'lastActive' => time()
+            )
+        );
+
+        return $sessionID;
+    }
+
     /**
      * @return never
      * @throws Application_Exception
      */
-    private function createSession() : void
+    private function createSession()
     {
-        $this->sessionID = 'WZ' . crc32(microtime(true) . '-wizard-' . $this->user->getID());
+        $this->sessionID = self::generateNewSessionID();
 
         $this->log(sprintf('Generated the wizard ID [%s].', $this->sessionID));
 
-        $this->sessionData = array(
-            'sessionID' => $this->sessionID,
-            'userID' => $this->user->getID(),
-            'lastActive' => time()
-        );
+        $this->sessionData = $this->session->getValue($this->sessionID);
+
         $this->invalidationHandler = new InvalidationHandler();
         $this->invalidationHandler->setIsInvalidated(false);
         $this->setWizardSetting('invalidationHandler', $this->invalidationHandler);
 
-        $this->session->setValue($this->sessionID, $this->sessionData);
+        $this->saveSettings();
 
         $this->redirectTo($this->getURL($this->request->getRefreshParams()));
     }
@@ -640,7 +657,7 @@ trait Application_Traits_Admin_Wizard
 
     protected function saveSettings() : void
     {
-        // get a fresh copy of the data of each step
+        // get a fresh copy of the step data
         foreach ($this->steps as $step)
         {
             $this->setWizardSetting('step_' . $step->getID(), $step->getData());
@@ -744,11 +761,16 @@ trait Application_Traits_Admin_Wizard
         return false;
     }
 
+    public function getLastActive() : int
+    {
+        return (int)$this->sessionData['lastActive'];
+    }
+
     private function checkWizardExpiry() : void
     {
         // check when this wizard session was last active,
         // and reset it if it is too old.
-        $expiry = $this->sessionData['lastActive'] + ($this->sessionDuration * 60);
+        $expiry = $this->getLastActive() + ($this->sessionDuration * 60);
         if ($expiry < time())
         {
             $this->reset();

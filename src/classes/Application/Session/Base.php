@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use function AppUtils\parseURL;
 
 /**
  * Base session class: defines the core mechanisms of the
@@ -20,6 +21,8 @@ use Application\AppFactory;
  * @package Application
  * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ *
+ * @see Application_Bootstrap_Screen::initSession()
  */
 abstract class Application_Session_Base implements Application_Session
 {
@@ -38,6 +41,7 @@ abstract class Application_Session_Base implements Application_Session
     public const KEY_NAME_USER_RIGHTS = 'user_rights';
     public const KEY_NAME_SIMULATED_ID = 'simulate_user_id';
     public const KEY_NAME_RIGHTS_PRESET = 'simulate_rights_preset';
+    public const KEY_NAME_AUTH_RETURN_URI = 'auth_return_url';
 
     public const ADMIN_PRESET_ID = 'Admin';
 
@@ -62,7 +66,7 @@ abstract class Application_Session_Base implements Application_Session
     protected ?Application_User $user = null;
 
     abstract protected function start() : void;
-    abstract protected function handleLogout() : void;
+    abstract protected function handleLogout(array $clearKeys=array()) : void;
 
     /**
      * Handles the logic to log in the user. This must
@@ -74,57 +78,27 @@ abstract class Application_Session_Base implements Application_Session
      */
     abstract protected function handleLogin() : ?Application_Users_User;
 
+    /**
+     * @see Application_Bootstrap_Screen::initSession()
+     */
     public function __construct()
     {
-        $this->init();
-    }
-
-    final protected function init() : void
-    {
         $this->log('Starting the session.');
-
         $this->start();
-
         $this->log('Session started with ID [%s].', $this->getID());
-
-        $this->initRightPresets();
-
-        if (!Application::isAuthenticationEnabled())
-        {
-            $this->log('Authentication is disabled, using the system user.');
-            $this->user = Application::createSystemUser();
-            return;
-        }
-
-        if (isset($_REQUEST['logout']) && $_REQUEST['logout'] === 'yes')
-        {
-            $this->logOut();
-        }
-
-        $userID = $this->getUserID();
-
-        $this->initSimulatedSession($userID);
-
-        // Starts the authentication process. This ends either by
-        // storing the user ID in the session via `storeUser()`,
-        // or via a redirect to an error page.
-        if ($userID === 0)
-        {
-            $this->log('No user ID stored, starting authentication.');
-
-            $this->initAuthentication();
-        }
-        
-        $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
-
-        $this->user = $this->unpackUser();
     }
 
     public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
     {
         $this->log('Logout requested, logging the user out.');
 
-        $this->handleLogout();
+        $this->handleLogout(array(
+            self::KEY_NAME_AUTH_RETURN_URI,
+            self::KEY_NAME_RIGHTS_PRESET,
+            self::KEY_NAME_USER_ID,
+            self::KEY_NAME_SIMULATED_ID,
+            self::KEY_NAME_USER_RIGHTS
+        ));
 
         self::redirectToLogout($reasonID);
     }
@@ -139,9 +113,12 @@ abstract class Application_Session_Base implements Application_Session
         Application::redirect(APP_URL.'/registration-disabled.php');
     }
 
-    protected function initAuthentication() : void
+    private function initAuthentication() : void
     {
         $this->log('No user ID found in the session, initiating login sequence.');
+        $this->log('Return URI is [%s].', $_SERVER['REQUEST_URI']);
+
+        $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $_SERVER['REQUEST_URI']);
 
         $user = $this->handleLogin();
 
@@ -175,21 +152,25 @@ abstract class Application_Session_Base implements Application_Session
      * @return Application_User
      * @throws Application_Exception
      */
-    protected function unpackUser() : Application_User
+    private function unpackUser() : Application_User
     {
-        $user = Application::createUser($this->getUserID());
+        $userID = $this->getUserID();
+
+        $this->log('User [%s] | Unpacking the user and their rights.', $userID);
+
+        $user = Application::createUser($userID);
         $user->setRights($this->unpackRights());
 
         return $user;
     }
 
     /**
-     * Stores the specified user in the session as the logged in user
-     * after authentication.
+     * Stores the specified user in the session as the authenticated user
+     * after the authentication process has completed successfully.
      *
      * @param Application_Users_User $user
      */
-    protected function storeUser(Application_Users_User $user) : void
+    private function storeUser(Application_Users_User $user) : void
     {
         $userID = $user->getID();
 
@@ -212,10 +193,17 @@ abstract class Application_Session_Base implements Application_Session
 
         $this->log(sprintf('User [%s] | Stored in the session.', $userID));
 
+        // Unpack the user, as processes after this may need to access
+        // the instance. The redirect, for example, needs to know whether
+        // the user is a developer.
+        $this->unpackUser();
+
+        $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
+
         Application::redirect($this->unpackTargetURL());
     }
 
-    protected function initRightPresets() : void
+    private function initRightPresets() : void
     {
         $user = Application::createSystemUser();
 
@@ -236,10 +224,10 @@ abstract class Application_Session_Base implements Application_Session
      * Initializes the session when in simulation mode. Has no
      * effect if simulation mode is disabled.
      *
-     * @param int $userID The currently logged in user ID
+     * @param int $userID The currently authenticated user's ID
      * @throws Application_Exception
      */
-    protected function initSimulatedSession(int $userID) : void
+    private function initSimulatedSession(int $userID) : void
     {
         // Ignore this if we are not in simulation mode.
         if (!Application::isSessionSimulated()) {
@@ -271,13 +259,7 @@ abstract class Application_Session_Base implements Application_Session
 
     private function getSimulatedUserID() : int
     {
-        $simulateID = $this->defaultSimulatedUser;
-
-        // Is a user already simulated in the session?
-        if(isset($_SESSION[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_SESSION[self::KEY_NAME_SIMULATED_ID]]))
-        {
-            $simulateID = (int)$_SESSION[self::KEY_NAME_SIMULATED_ID];
-        }
+        $simulateID = (int)$this->getValue(self::KEY_NAME_SIMULATED_ID, $this->defaultSimulatedUser);
 
         // A user has been selected in the request.
         if(isset($_REQUEST[self::KEY_NAME_SIMULATED_ID], $this->simulateableUsers[$_REQUEST[self::KEY_NAME_SIMULATED_ID]]))
@@ -288,7 +270,7 @@ abstract class Application_Session_Base implements Application_Session
         return $simulateID;
     }
 
-    protected function unpackRights() : array
+    private function unpackRights() : array
     {
         $rights = (string)$this->getValue(self::KEY_NAME_USER_RIGHTS);
 
@@ -300,9 +282,39 @@ abstract class Application_Session_Base implements Application_Session
         return explode(',', $rights);
     }
 
+    /**
+     * Determines which URL to redirect to after authentication.
+     *
+     * The session automatically stores the URL accessed originally
+     * before the authentication was triggered, and redirects to
+     * that URL after authentication.
+     *
+     * @return string
+     * @see self::storeUser()
+     */
     protected function unpackTargetURL() : string
     {
-        return APP_URL;
+        // The return URI is the value of $_SERVER['REQUEST_URI'].
+        // Example: "/?foo=bar"
+        $returnURI = $this->getValue(self::KEY_NAME_AUTH_RETURN_URI);
+        $targetURI = '';
+
+        $appURL = parseURL(APP_URL);
+
+        if(is_string($returnURI) && !empty($returnURI))
+        {
+            $this->unsetValue(self::KEY_NAME_AUTH_RETURN_URI);
+            $targetURI = $returnURI;
+        }
+
+        // The URL is built dynamically using the application's
+        // base URL, and the target request URI (if any).
+        return sprintf(
+            '%s://%s/%s',
+            $appURL->getScheme(),
+            $appURL->getHost(),
+            ltrim($targetURI, '/')
+        );
     }
 
     /**
@@ -358,9 +370,11 @@ abstract class Application_Session_Base implements Application_Session
 
     public function getPresetBySession() : string
     {
-        if(isset($_SESSION[self::KEY_NAME_RIGHTS_PRESET]) && $this->presetExists($_SESSION[self::KEY_NAME_RIGHTS_PRESET]))
+        $preset = $this->getValue(self::KEY_NAME_RIGHTS_PRESET);
+
+        if(!empty($preset) && $this->presetExists($preset))
         {
-            return $_SESSION[self::KEY_NAME_RIGHTS_PRESET];
+            return $preset;
         }
 
         return '';
@@ -441,6 +455,47 @@ abstract class Application_Session_Base implements Application_Session
         return $this->user;
     }
 
+    final public function authenticate() : Application_User
+    {
+        if(isset($this->user)) {
+            return $this->user;
+        }
+
+        $this->initRightPresets();
+
+        if (!Application::isAuthenticationEnabled())
+        {
+            $this->log('Authentication is disabled, using the system user.');
+            $this->user = Application::createSystemUser();
+            return $this->user;
+        }
+
+        if (isset($_REQUEST['logout']) && string2bool($_REQUEST['logout']) === true)
+        {
+            $this->logOut();
+        }
+
+        $userID = $this->getUserID();
+
+        $this->initSimulatedSession($userID);
+
+        // Starts the authentication process. This ends either by
+        // storing the user ID in the session via `storeUser()`,
+        // or via a redirect to an error page.
+        if ($userID === 0)
+        {
+            $this->log('No user ID stored, starting authentication.');
+
+            $this->initAuthentication();
+        }
+
+        $this->log(sprintf('User ID [%s] found, initializing session.', $this->getUserID()));
+
+        $this->user = $this->unpackUser();
+
+        return $this->user;
+    }
+
     /**
      * @return Application_User
      * @throws Application_Session_Exception
@@ -492,7 +547,7 @@ abstract class Application_Session_Base implements Application_Session
             return $this->updateUser($user, $firstname, $lastname, $foreignID);
         }
 
-        // User not found in DB, and registration is disabled: redirect
+        // User isn't found in DB, and registration is disabled: redirect
         // to the registration disabled screen.
         if(!$this->isRegistrationEnabled())
         {
@@ -520,7 +575,7 @@ abstract class Application_Session_Base implements Application_Session
         return $user;
     }
 
-    protected function updateUser(Application_Users_User $user, string $firstname, string $lastname, string $foreignID) : Application_Users_User
+    private function updateUser(Application_Users_User $user, string $firstname, string $lastname, string $foreignID) : Application_Users_User
     {
         $user->setFirstName($firstname);
         $user->setLastName($lastname);

@@ -3,17 +3,15 @@
 use Application\AppFactory;
 use AppLocalize\Localization;
 
+/**
+ * @property Application_Admin_Area_Mode_Maintenance $mode
+ */
 abstract class Application_Admin_Area_Mode_Maintenance_Create extends Application_Admin_Area_Mode_Submode
 {
    /**
     * @var string
     */
     protected $formName = 'maintenance_create';
-    
-   /**
-    * @var Application_Admin_Area_Mode_Maintenance
-    */
-    protected $mode;
     
     public function getNavigationTitle() : string
     {

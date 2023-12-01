@@ -2,17 +2,14 @@
 
 declare(strict_types=1);
 
-use AppUtils\Interface_Optionable;
-use AppUtils\Traits_Optionable;
+use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Traits\OptionableTrait;
 
-abstract class UI_DataGrid_Row_Sums_ColumnDef implements Interface_Optionable
+abstract class UI_DataGrid_Row_Sums_ColumnDef implements OptionableInterface
 {
-    use Traits_Optionable;
+    use OptionableTrait;
 
-    /**
-     * @var UI_DataGrid_Column
-     */
-    protected $column;
+    protected UI_DataGrid_Column $column;
 
     /**
      * @param UI_DataGrid_Column $column

@@ -5,14 +5,18 @@
  * @see UI
  */
 
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
+use AppUtils\PaginationHelper;
 use UI\ClientResourceCollection;
+use UI\PaginationRenderer;
 use UI\TooltipInfo;
 use function AppUtils\parseVariable;
 
@@ -221,28 +225,6 @@ class UI
     }
 
     /**
-     * @param string $id
-     * @return UI_Page
-     */
-    public function createPage(string $id) : UI_Page
-    {
-        return new UI_Page($this, $id);
-    }
-
-    /**
-     * Creates a new instance of the quick selector helper
-     * class, which can be used to create quick selection
-     * UI elements for switching between items.
-     *
-     * @param string $id
-     * @return UI_QuickSelector
-     */
-    public function createQuickSelector(string $id='') : UI_QuickSelector
-    {
-        return new UI_QuickSelector($id);
-    }
-
-    /**
      * @return Application
      */
     public function getApplication() : Application
@@ -359,16 +341,19 @@ class UI
      *
      * @param string $statement
      * @param boolean $avoidDuplicates Whether to ignore identical statements that have already been added
+     * @return $this
      */
-    public function addJavascriptOnload(string $statement, bool $avoidDuplicates=false) : void
+    public function addJavascriptOnload(string $statement, bool $avoidDuplicates=false) : self
     {
         $statement = rtrim($statement, ';') . ';';
         
         if($avoidDuplicates && in_array($statement, $this->onloadJS, true)) {
-            return;
+            return $this;
         }
 
         $this->onloadJS[] = $statement;
+
+        return $this;
     }
 
     /**
@@ -382,14 +367,39 @@ class UI
      *
      * @param string $statement
      * @param bool $addSemicolon
+     * @return $this
      */
-    public function addJavascriptHead(string $statement, bool $addSemicolon=true) : void
+    public function addJavascriptHead(string $statement, bool $addSemicolon=true) : self
     {
         if($addSemicolon) {
         	$statement = rtrim($statement, ';') . ';';
         }
         
-        $this->headJS[] = $statement; 
+        $this->headJS[] = $statement;
+
+        return $this;
+    }
+
+    /**
+     * @param string|number|StringableInterface|NULL $comment
+     * @return $this
+     */
+    public function addJavascriptHeadComment($comment=null) : self
+    {
+        return $this->addJavascriptHead('// '.$comment, false);
+    }
+
+    /**
+     * @param string|number|StringableInterface|NULL $heading
+     * @return $this
+     */
+    public function addJavascriptHeadHeading($heading) : self
+    {
+        $this->addJavascriptHeadComment(str_repeat('-', 65));
+        $this->addJavascriptHeadComment($heading);
+        $this->addJavascriptHeadComment(str_repeat('-', 65));
+
+        return $this;
     }
 
     /**
@@ -398,10 +408,12 @@ class UI
      *
      * @param string $varName
      * @param mixed $varValue
+     * @return $this
      */
-    public function addJavascriptHeadVariable(string $varName, $varValue) : void
+    public function addJavascriptHeadVariable(string $varName, $varValue) : self
     {
         $this->headJS[] = JSHelper::buildVariable($varName, $varValue);
+        return $this;
     }
 
     /**
@@ -419,11 +431,13 @@ class UI
      * // add an alert('Alert text'); statement
      * addJavascriptHeadStatement('alert', 'Alert text');
      */
-    public function addJavascriptHeadStatement() : void
+    public function addJavascriptHeadStatement() : self
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
         $this->headJS[] = $statement;
+
+        return $this;
     }
 
    /**
@@ -432,11 +446,13 @@ class UI
     * 
     * @see addJavascriptHeadStatement()
     */
-    public function addJavascriptOnloadStatement() : void
+    public function addJavascriptOnloadStatement() : self
     {
         $args = func_get_args();
         $statement = call_user_func_array(array('JSHelper', 'buildStatement'), $args);
         $this->addJavascriptOnload($statement);
+
+        return $this;
     }
 
     /**
@@ -572,20 +588,6 @@ class UI
         return $this;
     }
 
-    /**
-     * Creates a new data grid object that can be used to display
-     * a list of items with added functionality like multiple
-     * selection and the like.
-     *
-     * @param string $id
-     * @param boolean $allowDuplicateID Allow using the same grid ID more than once?
-     * @return UI_DataGrid
-     */
-    public function createDataGrid(string $id, bool $allowDuplicateID=false) : UI_DataGrid
-    {
-        return new UI_DataGrid($this, $id, $allowDuplicateID);
-    }
-
     private static function initForms() : void
     {
         if (self::$formsInitDone) 
@@ -615,44 +617,6 @@ class UI
         );
         
         self::$formsInitDone = true;
-    }
-
-    /**
-     * Creates a new form object used as wrapper around the HTML_QuickForm2
-     * object to make handling forms easier within the application.
-     *
-     * @param string $id
-     * @param array<string,mixed> $defaultData
-     * @return UI_Form
-     * @see createGetForm()
-     */
-    public function createForm(string $id, array $defaultData = array()) : UI_Form
-    {
-        self::initForms();
-
-        $form = new UI_Form($this, $id, 'post', $defaultData);
-
-        if(Application_EventHandler::hasListener('FormCreated'))
-        {
-            Application_EventHandler::trigger('FormCreated', array($form), UI_Event_FormCreated::class);
-        }
-
-        return $form;
-    }
-
-    /**
-     * Creates a new form object that gets submitted via get instead
-     * of the default post method.
-     *
-     * @param string $id
-     * @param array<string,mixed> $defaultData
-     * @return UI_Form
-     */
-    public function createGetForm(string $id, array $defaultData = array()) : UI_Form
-    {
-        self::initForms();
-
-        return new UI_Form($this, $id, 'get', $defaultData);
     }
 
     /**
@@ -744,6 +708,141 @@ class UI
         $this->onloadJS = array();
         $this->markupEditorInstances = array();
         $this->resourceManager = new UI_ResourceManager($this);
+    }
+
+    // region: Create UI helpers
+
+    public function createPagination(PaginationHelper $helper, string $pageParamName, string $baseURL) : PaginationRenderer
+    {
+        return new PaginationRenderer($helper, $pageParamName, $baseURL);
+    }
+
+    /**
+     * @param string $type
+     * @return UI_Page_Section
+     */
+    public function createSection(string $type='') : UI_Page_Section
+    {
+        return $this->getPage()->createSection($type);
+    }
+
+    /**
+     * @param string $id
+     * @return UI_Page
+     */
+    public function createPage(string $id) : UI_Page
+    {
+        return new UI_Page($this, $id);
+    }
+
+    /**
+     * Creates a new instance of the quick selector helper
+     * class, which can be used to create quick selection
+     * UI elements for switching between items.
+     *
+     * @param string $id
+     * @return UI_QuickSelector
+     */
+    public function createQuickSelector(string $id='') : UI_QuickSelector
+    {
+        return new UI_QuickSelector($id);
+    }
+
+    /**
+     * Creates a new UI message instance and returns it.
+     *
+     * @param string|number|UI_Renderable_Interface $message
+     * @param string $type
+     * @param array<string,mixed> $options
+     * @return UI_Message
+     */
+    public function createMessage($message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
+    {
+        return new UI_Message($this, $message, $type, $options);
+    }
+
+    /**
+     * Creates a new template instance for the specified template ID.
+     *
+     * @param string $templateID
+     * @return UI_Page_Template
+     */
+    public function createTemplate(string $templateID) : UI_Page_Template
+    {
+        return $this->getPage()->createTemplate($templateID);
+    }
+
+    public static function string() : UI_StringBuilder
+    {
+        return new UI_StringBuilder();
+    }
+
+    /**
+     * Creates a new form object used as wrapper around the HTML_QuickForm2
+     * object to make handling forms easier within the application.
+     *
+     * @param string $id
+     * @param array<string,mixed> $defaultData
+     * @return UI_Form
+     * @see createGetForm()
+     */
+    public function createForm(string $id, array $defaultData = array()) : UI_Form
+    {
+        self::initForms();
+
+        $form = new UI_Form($this, $id, 'post', $defaultData);
+
+        if(Application_EventHandler::hasListener('FormCreated'))
+        {
+            Application_EventHandler::trigger('FormCreated', array($form), UI_Event_FormCreated::class);
+        }
+
+        return $form;
+    }
+
+    /**
+     * Creates a new form object that gets submitted via get instead
+     * of the default post method.
+     *
+     * @param string $id
+     * @param array<string,mixed> $defaultData
+     * @return UI_Form
+     */
+    public function createGetForm(string $id, array $defaultData = array()) : UI_Form
+    {
+        self::initForms();
+
+        return new UI_Form($this, $id, 'get', $defaultData);
+    }
+
+    /**
+     * Creates a new data grid object that can be used to display
+     * a list of items with added functionality like multiple
+     * selection and the like.
+     *
+     * @param string $id
+     * @param boolean $allowDuplicateID Allow using the same grid ID more than once?
+     * @return UI_DataGrid
+     */
+    public function createDataGrid(string $id, bool $allowDuplicateID=false) : UI_DataGrid
+    {
+        return new UI_DataGrid($this, $id, $allowDuplicateID);
+    }
+
+    /**
+     * @param string $type
+     * @return UI_Interfaces_Bootstrap
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
+     */
+    public function createBootstrap(string $type) : UI_Interfaces_Bootstrap
+    {
+        $class = ClassHelper::requireResolvedClass('UI_Bootstrap_'.$type);
+
+        return ClassHelper::requireObjectInstanceOf(
+            UI_Interfaces_Bootstrap::class,
+            new $class($this)
+        );
     }
 
     /**
@@ -881,18 +980,6 @@ class UI
     }
 
     /**
-     * Adds output to the console output, which is displayed
-     * for developer users.
-     *
-     * @since 3.3.5
-     * @param string $markup
-     */
-    public function addConsoleOutput(string $markup) : void
-    {
-        $this->getPage()->addConsoleOutput($markup);
-    }
-
-    /**
      * Creates and returns a new UI icon object.
      * @return UI_Icon
      */
@@ -922,6 +1009,25 @@ class UI
     public static function button(string $label='') : UI_Button
     {
     	return new UI_Button($label);
+    }
+
+    public function createPropertiesGrid(string $id='') : UI_PropertiesGrid
+    {
+        return new UI_PropertiesGrid($this->getPage(), $id);
+    }
+
+    // endregion
+
+    /**
+     * Adds output to the console output, which is displayed
+     * for developer users.
+     *
+     * @since 3.3.5
+     * @param string $markup
+     */
+    public function addConsoleOutput(string $markup) : void
+    {
+        $this->getPage()->addConsoleOutput($markup);
     }
 
     /**
@@ -978,11 +1084,6 @@ class UI
         $this->addJavascript('jquery.min.js', 9000);
     }
     
-    public function createPropertiesGrid(string $id='') : UI_PropertiesGrid
-    {
-        return new UI_PropertiesGrid($this->getPage(), $id);
-    }
-
     /**
      * Adds a redactor UI element.
      *
@@ -1131,15 +1232,6 @@ class UI
     }
     
    /**
-    * @param string $type
-    * @return UI_Page_Section
-    */
-    public function createSection(string $type='') : UI_Page_Section
-    {
-        return $this->getPage()->createSection($type);
-    }
-
-   /**
     * Adds support for clientside data grid building with
     * the `UI_DataGrid` classes.
     * 
@@ -1190,35 +1282,6 @@ class UI
         return self::getBoostrapVersion() === 4;
     }
 
-    /**
-     * Creates a new UI message instance and returns it.
-     *
-     * @param string|number|UI_Renderable_Interface $message
-     * @param string $type
-     * @param array<string,mixed> $options
-     * @return UI_Message
-     */
-    public function createMessage($message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
-    {
-        return new UI_Message($this, $message, $type, $options);
-    }
-    
-   /**
-    * Creates a new template instance for the specified template ID.
-    * 
-    * @param string $templateID
-    * @return UI_Page_Template
-    */
-    public function createTemplate(string $templateID) : UI_Page_Template
-    {
-        return $this->getPage()->createTemplate($templateID);
-    }
-    
-    public static function string() : UI_StringBuilder
-    {
-        return new UI_StringBuilder();
-    }
-    
    /**
     * Requires the subject to be a scalar value, or an object instance of the renderable interface.
     * 
@@ -1241,22 +1304,6 @@ class UI
                 parseVariable($subject)
             ),
             self::ERROR_NOT_A_RENDERABLE
-        );
-    }
-
-    /**
-     * @param string $type
-     * @return UI_Interfaces_Bootstrap
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     */
-    public function createBootstrap(string $type) : UI_Interfaces_Bootstrap
-    {
-        $class = ClassHelper::requireResolvedClass('UI_Bootstrap_'.$type);
-
-        return ClassHelper::requireObjectInstanceOf(
-            UI_Interfaces_Bootstrap::class,
-            new $class($this)
         );
     }
 
@@ -1292,7 +1339,7 @@ class UI
     
     public static function isJavascriptMinified() : bool
     {
-        return boot_constant('APP_JAVASCRIPT_MINIFIED') === true;
+        return boot_constant(BaseConfigRegistry::JAVASCRIPT_MINIFIED) === true;
     }
 
     /**
@@ -1310,8 +1357,8 @@ class UI
     }
 
     /**
-     * Creates a tooltip info instance, used to hold information
-     * for a tooltip, and configure it.
+     * Creates a tooltip instance used to hold information
+     * for a tooltip, to allow configuring it further.
      *
      * Usage:
      *
@@ -1323,7 +1370,7 @@ class UI
      *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
      *    is called, or if {@see TooltipInfo::injectJS()} is called.
      *
-     * @param $content
+     * @param string|int|float|StringableInterface|NULL $content
      * @return TooltipInfo
      */
     public static function tooltip($content) : TooltipInfo

@@ -68,7 +68,7 @@ margin-bottom:0;
 }
 
 .modal-body H4{
-font-size:110%;
+font-size:var(--font-size-l);
 }
 
 .modal-body H4:first-child{
@@ -147,7 +147,7 @@ margin-right:10px;
 
 .error-dialog-page-details{
 padding-top:20px;
-font-size:80%;
+font-size:var(--font-size-s);
 font-family:monospace;
 color:#aeaeae;	
 }
@@ -199,8 +199,6 @@ color:#d0d0d0;
 .item-row-indent1 TD,
 .item-row-indent2 TD,
 .item-row-indent3 TD{
-font-size:96%;
-line-height:16px;
 }
 
 .item-row-indent1 .item-cell-label{
@@ -233,8 +231,8 @@ border-bottom:0;
 }
 
 .modal-subsection-header{
-font-weight:normal;
-font-size:15px;
+    font-weight: var(--font-weight-normal);
+font-size:var(--font-size-normal);
 text-transform:uppercase;
 line-height:34px;
 padding:0;

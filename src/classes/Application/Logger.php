@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -65,9 +66,13 @@ class Application_Logger
     public function isLoggingEnabled(string $category='') : bool
     {
         return
-            boot_constant('APP_LOGGING_ENABLED') === true
-            &&
-            $this->isCategoryEnabled($category);
+            !Application_Bootstrap::isInitialized()
+            ||
+            (
+                boot_constant(BaseConfigRegistry::LOGGING_ENABLED) === true
+                &&
+               $this->isCategoryEnabled($category)
+            );
     }
 
     public function setCategoryEnabled(string $category, bool $enabled) : self
@@ -153,7 +158,13 @@ class Application_Logger
         return $this->addLogMessage((string)$message, $category, true);
     }
 
-    public function logSF(string $message, string $category=self::CATEGORY_GENERAL, ...$args) : Application_Logger
+    /**
+     * @param string $message
+     * @param string|null $category
+     * @param mixed ...$args
+     * @return $this
+     */
+    public function logSF(string $message, ?string $category=self::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
         return $this->addLogMessage($message, $category, true, ...$args);
     }
@@ -247,17 +258,26 @@ class Application_Logger
     /**
      * Logs a data array.
      *
-     * @param array $data
-     * @param string $category
+     * @param array<mixed> $data
+     * @param string|NULL $category
+     * @param string|NULL $label Label to display above the data dump.
      * @return Application_Logger
      * @throws JsonException
      */
-    public function logData(array $data, string $category=self::CATEGORY_GENERAL) : Application_Logger
+    public function logData(array $data, ?string $category=null, ?string $label=null) : Application_Logger
     {
+        if(empty($category)) {
+            $category = self::CATEGORY_GENERAL;
+        }
+
+        if(empty($label)) {
+            $label = 'Data dump:';
+        }
+
         $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
         $json = str_replace('\/', '/', $json);
 
-        $this->addLogMessage('Data dump:', $category, true);
+        $this->addLogMessage($label, $category, true);
         $this->addLogMessage($json, '', false);
         
         return $this;
@@ -280,13 +300,21 @@ class Application_Logger
 
     /**
      * @param string $message
-     * @param string $category
-     * @param bool $withTime
+     * @param string|NULL $category
+     * @param bool|NULL $withTime
      * @param mixed ...$args
      * @return $this
      */
-    private function addLogMessage(string $message, string $category, bool $withTime, ...$args) : Application_Logger
+    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : Application_Logger
     {
+        if (empty($category)) {
+            $category = self::CATEGORY_GENERAL;
+        }
+
+        if($withTime === null) {
+            $withTime = true;
+        }
+
         if(!$this->isLoggingEnabled($category))
         {
             return $this;
@@ -302,10 +330,7 @@ class Application_Logger
             $message = $this->getTime().' | '.$message;
         }
 
-        if(!empty($category))
-        {
-            $message = $category . ' | ' . $message;
-        }
+        $message = $category . ' | ' . $message;
 
         $this->log[] = $message;
 

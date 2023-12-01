@@ -1,35 +1,23 @@
 <?php
 
+use AppUtils\ConvertHelper;
+
 class Application_Changelog_Entry
 {
+    protected Application_Changelogable_Interface $owner;
+    protected int $id;
+    protected int $authorID;
+    protected string $date;
+    protected string $type;
+    protected string $data;
+    protected ?string $text = null;
+
    /**
-    * @var Application_Changelogable_Interface
+    * @var array<string,mixed>|NULL
     */
-    protected $owner;
+    protected ?array $dataDecoded = null;
     
-    protected $id;
-    
-    protected $authorID;
-    
-    protected $date;
-    
-   /**
-    * @var string
-    */
-    protected $type;
-    
-    protected $data; 
-    
-   /**
-    * @var array<string,mixed>
-    */
-    protected $dataDecoded = array();
-    
-    private $isDataDecoded = false;
-    
-    protected $text;
-    
-    public function __construct(Application_Changelogable_Interface $owner, $id, $authorID, string $type, $date, $data)
+    public function __construct(Application_Changelogable_Interface $owner, int $id, int $authorID, string $type, string $date, string $data)
     {
         $this->owner = $owner;
         $this->id = $id;
@@ -42,18 +30,18 @@ class Application_Changelog_Entry
    /**
     * @return integer
     */
-    public function getID()
+    public function getID() : int
     {
         return $this->id;
     }
     
    /**
-    * Human readable text describing the change that was made
+    * Human-readable text describing the change that was made
     * in this changelog entry.
     * 
     * @return string
     */
-    public function getText()
+    public function getText() : string
     {
         if(!isset($this->text)) {        
             $this->text = $this->owner->getChangelogEntryText($this->type, $this->getData());
@@ -62,7 +50,7 @@ class Application_Changelog_Entry
         return $this->text;
     }
     
-    public function getType()
+    public function getType() : string
     {
         return $this->type;
     }
@@ -71,24 +59,23 @@ class Application_Changelog_Entry
     * Retrieves the data set stored with the changelog entry.
     * @return array<string,mixed>
     */
-    public function getData()
+    public function getData() : array
     {
-        if(!$this->isDataDecoded) 
+        if(!isset($this->dataDecoded))
         {
-            $this->dataDecoded = json_decode($this->data, true);
-            $this->isDataDecoded = true;
-        }       
+            $this->dataDecoded = json_decode($this->data, true, 512, JSON_THROW_ON_ERROR);
+        }
 
         return $this->dataDecoded;
     }
     
-    protected $dateDecoded;
+    protected ?DateTime $dateDecoded = null;
     
    /**
     * Retrieves the date at which the changelog entry was added.
     * @return DateTime
     */
-    public function getDate()
+    public function getDate() : DateTime
     {
         if(!isset($this->dateDecoded)) {
             $this->dateDecoded = new DateTime($this->date);
@@ -97,30 +84,27 @@ class Application_Changelog_Entry
         return $this->dateDecoded;
     }
     
-    public function getDatePretty($includeTime=false)
+    public function getDatePretty(bool $includeTime=false) : string
     {
-        return AppUtils\ConvertHelper::date2listLabel($this->getDate(), $includeTime, true);
+        return ConvertHelper::date2listLabel($this->getDate(), $includeTime, true);
     }
     
    /**
     * The ID of the user who authored the changelog entry.
     * @return integer
     */
-    public function getAuthorID()
+    public function getAuthorID() : int
     {
         return $this->authorID;
     }
     
-   /**
-    * @var Application_User
-    */
-    protected $author;
+    protected ?Application_User $author = null;
     
    /**
     * Retrieves the user object for the author of the changelog entry.
     * @return Application_User
     */
-    public function getAuthor()
+    public function getAuthor() : Application_User
     {
         if(isset($this->author)) 
         {
@@ -139,40 +123,49 @@ class Application_Changelog_Entry
         return $this->author;
     }
     
-    public function getAuthorName()
+    public function getAuthorName() : string
     {
         return $this->getAuthor()->getName();
     }
-    
+
+    /**
+     * @return mixed|null
+     * @throws JsonException
+     */
     public function getValueBefore()
     {
         return $this->getDiffValue('before');
     }
-    
+
+    /**
+     * @return mixed|null
+     * @throws JsonException
+     */
     public function getValueAfter()
     {
         return $this->getDiffValue('after');
     }
-    
-    protected $diff;
-    
-    protected $diffLoaded = false;
-    
-    protected function getDiffValue($part)
+
+    /**
+     * @var array<mixed>|null
+     */
+    protected ?array $diff = null;
+
+    /**
+     * @param string $part
+     * @return mixed|null
+     * @throws JsonException
+     */
+    protected function getDiffValue(string $part)
     {
-        if(!$this->diffLoaded) {
+        if(!isset($this->diff)) {
             $this->diff = $this->owner->getChangelogEntryDiff($this->type, $this->getData());
-            $this->diffLoaded = true;
         }
     
-        if(isset($this->diff) && isset($this->diff[$part])) {
-            return $this->diff[$part];
-        }
-    
-        return null;
+        return $this->diff[$part] ?? null;
     }
     
-    public function hasDiff()
+    public function hasDiff() : bool
     {
         $this->getDiffValue('before');
         return is_array($this->diff);

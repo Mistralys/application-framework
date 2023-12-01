@@ -30,7 +30,7 @@ position:absolute;
 top:1px;
 left:10px;
 z-index:900;
-font-weight:bold;
+    font-weight: var(--font-weight-bold);
 font-size:16px;
 line-height:30px;
 color:#fff;

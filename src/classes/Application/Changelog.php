@@ -67,11 +67,11 @@ class Application_Changelog
         
         return new Application_Changelog_Entry(
             $this->owner,
-            $entry['changelog_id'],
-            $entry['changelog_author'],
-            $entry['changelog_type'],
-            $entry['changelog_date'],
-            $entry['changelog_data']
+            (int)$entry['changelog_id'],
+            (int)$entry['changelog_author'],
+            (string)$entry['changelog_type'],
+            (string)$entry['changelog_date'],
+            (string)$entry['changelog_data']
         );
     }
     

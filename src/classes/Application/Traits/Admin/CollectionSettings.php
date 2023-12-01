@@ -297,6 +297,12 @@ trait Application_Traits_Admin_CollectionSettings
             $this->saveRecord($filtered);
         }
 
+        // Overwrite any modified filtered keys in the
+        // data set, so the after save method gets the
+        // final versions of the data including the raw
+        // internal field values.
+        $data->setKeys($filtered->getValues());
+
         $this->handleAfterSave($record, $data);
 
         $this->endTransaction();
@@ -383,20 +389,14 @@ trait Application_Traits_Admin_CollectionSettings
         $result = array();
         foreach($keys as $keyName) 
         {
+            $isStatic = false;
+
             if(isset($this->settingsManager))
             {
-                $setting = $this->settingsManager->getSettingByName($keyName);
-
-                // All values must be present, except static settings, which
-                // do not necessarily have a value (they are cosmetic only,
-                // like static form elements for displaying information)
-                if ($setting->isStatic())
-                {
-                    continue;
-                }
+                $isStatic = $this->settingsManager->getSettingByName($keyName)->isStatic();
             }
 
-            if(!array_key_exists($keyName, $values)) {
+            if(!array_key_exists($keyName, $values) && !$isStatic) {
                 throw new Application_Exception(
                     'Unknown setting key',
                     sprintf(
@@ -437,7 +437,12 @@ trait Application_Traits_Admin_CollectionSettings
         foreach($data as $name => $value)
         {
             if($media->isMediaFormValue($value)) {
-                $value = $media->getByFormValue($value)->getID();
+                $document = $media->getByFormValue($value);
+                $value = null;
+
+                if($document !== null) {
+                    $value = $document->getID();
+                }
             }
             
             $result[$name] = $value;
@@ -445,7 +450,7 @@ trait Application_Traits_Admin_CollectionSettings
 
         if(isset($this->settingsManager))
         {
-            return $this->settingsManager->filterForStorage(
+            return $this->settingsManager->collectStorageValues(
                 new Application_Formable_RecordSettings_ValueSet($result)
             );
         }
@@ -457,19 +462,29 @@ trait Application_Traits_Admin_CollectionSettings
     {
         $this->log('Updating the record.');
 
+        if($this->settingsManager instanceof Application_Formable_RecordSettings_Extended)
+        {
+            $this->settingsManager->saveRecord();
+            return;
+        }
+
         $values = $data->getValues();
 
         foreach($values as $name => $value)
         {
             $this->record->setRecordKey($name, $value);
         }
-        
+
         $this->record->save();
     }
 
-    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data)
+    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data) : DBHelper_BaseRecord
     {
         $this->log('Creating a new record.');
+
+        if($this->settingsManager instanceof Application_Formable_RecordSettings_Extended) {
+            return $this->settingsManager->createRecord();
+        }
 
         return $this->collection->createNewRecord($data->getValues());
     }
@@ -546,10 +561,10 @@ trait Application_Traits_Admin_CollectionSettings
     
     public function getDeleteConfirmMessage() : string
     {
-        return sb()
-        ->bold(t('This will delete the item.'))
-        ->para()
-        ->danger(sb()->bold(t('Are you sure? This cannot be undone.')));
+        return (string)sb()
+            ->bold(t('This will delete the item.'))
+            ->para()
+            ->danger(sb()->bold(t('Are you sure? This cannot be undone.')));
     }
 
     protected function resolveTitle() : string
@@ -560,18 +575,20 @@ trait Application_Traits_Admin_CollectionSettings
         {
             $title = $this->record->getLabel();
         }
-        
-        if($this->collection->hasParentCollection())
+
+        $parent = $this->collection->getParentRecord();
+
+        if($parent !== null)
         {
             if(empty($title))
             {
-                $title = $this->collection->getParentRecord()->getLabel();
+                $title = $parent->getLabel();
             }
             else
             {
                 $title = t(
                     '%1$s: %2$s',
-                    $this->collection->getParentRecord()->getLabel(),
+                    $parent->getLabel(),
                     $title
                 );
             }
@@ -580,7 +597,7 @@ trait Application_Traits_Admin_CollectionSettings
         return $title;
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $title = $this->resolveTitle();
 
@@ -601,7 +618,7 @@ trait Application_Traits_Admin_CollectionSettings
             'Required method not implemented',
             sprintf(
                 'The method %1$s must be implemented when not using a settings manager instance. '.
-                'Either that, or implemement the getSettingsManager method instead.',
+                'Either that, or implement the getSettingsManager method instead.',
                 $methodName
             ),
             Application_Interfaces_Admin_CollectionSettings::ERROR_MISSING_REQUIRED_METHOD

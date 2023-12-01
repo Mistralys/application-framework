@@ -748,13 +748,14 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         // on another are above their dependent joins.
         // All other, independent joins get appended and
         // sorted by their ID at the end of the list.
-        usort($joins, function(Application_FilterCriteria_Database_Join $a, Application_FilterCriteria_Database_Join $b)
+        usort($joins, static function(Application_FilterCriteria_Database_Join $a, Application_FilterCriteria_Database_Join $b) : int
         {
             if($a->dependsOn($b))
             {
                 return 1;
             }
-            else if($b->dependsOn($a))
+
+            if($b->dependsOn($a))
             {
                 return -1;
             }
@@ -766,17 +767,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             {
                 return -1;
             }
-            else if(!$aJoins && $bJoins)
+
+            if(!$aJoins && $bJoins)
             {
                 return 1;
             }
 
-            if(!$bJoins && !$aJoins)
-            {
-                return strnatcasecmp($a->getID(), $b->getID());
-            }
-
-            return 0;
+            return strnatcasecmp($a->getID(), $b->getID());
         });
 
         return $joins;

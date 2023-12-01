@@ -20,9 +20,9 @@ class Application_ErrorLog_Log
     private $file;
     
    /**
-    * @var Application_ErrorLog_Log_Entry[]
+    * @var Application_ErrorLog_Log_Entry[]|NULL
     */
-    private $entries;
+    private ?array $entries = null;
     
     public function __construct(Application_ErrorLog $errorlog, string $file)
     {
@@ -94,7 +94,7 @@ class Application_ErrorLog_Log
         return $this->entries;
     }
     
-    protected function load()
+    protected function load() : void
     {
         if(isset($this->entries)) {
             return;

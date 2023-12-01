@@ -20,8 +20,6 @@ class UI_Themes
     public const ERROR_THEME_CLASS_FILE_NOT_FOUND = 28401;
     public const ERROR_THEME_CLASS_NOT_FOUND = 28402;
 
-    public const OPTION_SHOW_USER_NAME = 'theme_show_user_name';
-
     protected UI $ui;
     protected string $defaultTheme = 'default';
     protected ?UI_Themes_Theme $theme = null;

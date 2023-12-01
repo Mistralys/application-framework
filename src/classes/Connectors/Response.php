@@ -8,9 +8,7 @@
 declare(strict_types=1);
 
 use AppUtils\ArrayDataCollection;
-use AppUtils\ConvertHelper;
-use AppUtils\ConvertHelper_Exception;
-use AppUtils\ConvertHelper_ThrowableInfo;
+use AppUtils\ThrowableInfo;
 use Connectors\Response\ResponseEndpointError;
 use Connectors\Response\ResponseError;
 use Connectors\Response\ResponseSerializer;
@@ -53,7 +51,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
     protected Connectors_Request $request;
     protected HTTP_Request2_Response $result;
     protected Connectors_Connector $connector;
-    private ?ConvertHelper_ThrowableInfo $exception = null;
+    private ?ThrowableInfo $exception = null;
     protected string $json = '';
 
     /**
@@ -124,7 +122,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
         {
             $this->log('Error state | Found exception data.');
 
-            $this->exception = ConvertHelper_ThrowableInfo::fromSerialized(
+            $this->exception = ThrowableInfo::fromSerialized(
                 $this->responseData->getJSONArray(self::KEY_EXCEPTION)
             );
         }
@@ -145,10 +143,10 @@ class Connectors_Response implements Application_Interfaces_Loggable
      * NOTE: This is available even if the response is considered valid,
      * and exception details are present.
      *
-     * @return ConvertHelper_ThrowableInfo|null
+     * @return ThrowableInfo|null
      * @deprecated Use {@see Connectors_Response::getError()} and {@see ResponseEndpointError::getEndpointError()} instead.
      */
-    public function getEndpointException() : ?ConvertHelper_ThrowableInfo
+    public function getEndpointException() : ?ThrowableInfo
     {
         $error = $this->getError();
 

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
@@ -32,15 +33,13 @@ use AppUtils\Microtime;
  */
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
 {
-    public const ERROR_MISSING_AUTH_CONFIGURATION = 100901;
-
     public const SESSION_ID_NONE = 'none';
     public const SESSION_ID_SIMULATED = 'simulated';
 
     /**
      * @var Application_RequestLog_EnabledStatus|NULL
      */
-    private $status;
+    private ?Application_RequestLog_EnabledStatus $status = null;
 
     public function __construct()
     {
@@ -50,15 +49,11 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
             Application::getStorageSubfolderPath('logs/request'),
             $this
         );
+    }
 
-        if(!defined('APP_REQUEST_LOG_PASSWORD'))
-        {
-            throw new Application_RequestLog_Exception(
-                'No authentication configured.',
-                'The request log password has not been set in the configuration.',
-                self::ERROR_MISSING_AUTH_CONFIGURATION
-            );
-        }
+    public function isLoggingEnabled(): bool
+    {
+        return $this->getStatus()->isEnabled();
     }
 
     public function clearAllLogs() : Application_RequestLog
@@ -78,11 +73,44 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
             );
     }
 
+    public function getAdminDumpInfoURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DUMP_INFO] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminDestroySessionURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DESTROY_SESSION] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
     public function getAdminLogOutURL(array $params=array()) : string
     {
         $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_LOG_OUT] = 'yes';
 
         return $this->getAdminURL($params);
+    }
+
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_SETTINGS] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminDeleteAllURL(array $params=array()) : string
+    {
+        $params[Application_Bootstrap_Screen_RequestLog::REQUEST_PARAM_DELETE_ALL] = 'yes';
+
+        return $this->getAdminURL($params);
+    }
+
+    public function hasLogs() : bool
+    {
+        return !empty($this->getYears());
     }
 
     protected function isValidFolder(string $folder) : bool
@@ -131,13 +159,26 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
     /**
      * Writes the current application log to disk.
      *
-     * @param Application_Logger $logger
+     * @param Application_Logger|NULL $logger
      * @return Application_RequestLog_LogWriter
      * @throws FileHelper_Exception
      */
-    public function writeLog(Application_Logger $logger) : Application_RequestLog_LogWriter
+    public function writeLog(?Application_Logger $logger=null) : Application_RequestLog_LogWriter
     {
+        if($logger === null) {
+            $logger = AppFactory::createLogger();
+        }
+
         return (new Application_RequestLog_LogWriter($logger))->write();
+    }
+
+    public static function autoWriteLog() : void
+    {
+        $log = AppFactory::createRequestLog();
+
+        if($log->isLoggingEnabled()) {
+            $log->writeLog();
+        }
     }
 
     public function getLogIdentifier() : string

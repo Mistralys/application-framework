@@ -1,8 +1,8 @@
 <?php
 
-use AppUtils\Interface_Classable;
+use AppUtils\Interfaces\ClassableInterface;
 
-interface UI_Interfaces_Bootstrap extends Interface_Classable, UI_Renderable_Interface
+interface UI_Interfaces_Bootstrap extends ClassableInterface, UI_Renderable_Interface
 {
     public const ERROR_CHILD_NAME_ALREADY_EXISTS = 18601;
     public const ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT = 18602;

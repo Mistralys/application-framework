@@ -30,9 +30,9 @@ declare(strict_types=1);
 trait DBHelper_Traits_LooseRecord
 {
    /**
-    * @var array<string,string>
+    * @var array<string,string|int|float|bool>
     */
-    protected $recordData;
+    protected array $recordData;
     
    /**
     * @var integer
@@ -170,7 +170,7 @@ trait DBHelper_Traits_LooseRecord
     {
         if(isset($this->recordData[$name]))
         {
-            return $this->recordData[$name];
+            return (string)$this->recordData[$name];
         }
         
         return '';

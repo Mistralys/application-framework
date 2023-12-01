@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
@@ -32,6 +33,7 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
     public const KEY_OPERATING_SYSTEM = 'operatingSystem';
     public const KEY_OPERATING_SYSTEM_FAMILY = 'operatingSystemFamily';
     public const KEY_COMMAND_LINE_MODE = 'commandLineMode';
+    public const KEY_SESSION_VARS = 'sessionVars';
 
     private Application_Logger $logger;
     private Microtime $time;
@@ -173,9 +175,13 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
 
         if(Application::isSessionReady())
         {
-            $user = Application::getUser();
-            $userID = $user->getID();
-            $userName = $user->getName();
+            $session = AppFactory::createSession();
+            $user = $session->getUser();
+
+            if($user !== null) {
+                $userID = $user->getID();
+                $userName = $user->getName();
+            }
         }
 
         return array(
@@ -193,6 +199,7 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
             self::KEY_DEMO_MODE => Application::isDemoMode(),
             self::KEY_SERVER_VARS => $_SERVER ?? null,
             self::KEY_REQUEST_VARS => $_REQUEST ?? null,
+            self::KEY_SESSION_VARS => $_SESSION ?? null,
             self::KEY_QUERY_COUNT => DBHelper::getQueryCount(),
             self::KEY_SELECT_QUERY_COUNT => DBHelper::countSelectQueries(),
             self::KEY_WRITE_QUERY_COUNT => DBHelper::countWriteQueries(),

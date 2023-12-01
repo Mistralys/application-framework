@@ -2,13 +2,11 @@
 
 use Application\AppFactory;
 
+/**
+ * @property Application_Admin_Area_Mode_Maintenance $mode
+ */
 abstract class Application_Admin_Area_Mode_Maintenance_List extends Application_Admin_Area_Mode_Submode
 {
-   /**
-    * @var Application_Admin_Area_Mode_Maintenance
-    */
-    protected $mode;
-    
     public function getNavigationTitle() : string
     {
         return t('Maintenance plans');

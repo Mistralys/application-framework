@@ -9,7 +9,7 @@
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
-use AppUtils\Interface_Stringable;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Icon class used to display FontAwesome icons in the
@@ -19,7 +19,7 @@ use AppUtils\Interface_Stringable;
  * @package User Interface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
+class UI_Icon implements StringableInterface, UI_Renderable_Interface
 {
     public const ERROR_INVALID_TYPE_SELECTED = 95601;
     public const ERROR_INVALID_COLOR_STYLE = 95602;
@@ -528,6 +528,10 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function news() : self { return $this->setType('newspaper', 'far'); }
+    /**
+     * @return $this
+     */
     public function next() : self { return $this->setType('chevron-right'); }
     /**
      * @return $this
@@ -888,7 +892,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 
     public function spinner() : self
     {
-        $this->setType('SPINNER');
+        $this->setType('spinner');
         $this->makeSpinner();
         return $this;
     }
@@ -928,7 +932,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
      */
     public function addClass(string $className) : self
     {
-        if (!in_array($className, $this->classes)) {
+        if (!in_array($className, $this->classes, true)) {
             $this->classes[] = $className;
         }
 
@@ -1045,8 +1049,9 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
 
    /**
     * Gives the icon a clickable style: the cursor
-    * will be the click-enabled cursor. Optionally
-    * a click handling statement can be specified.
+    * will be the click-enabled cursor.
+    *
+    * Optionally, a click handling statement can be specified.
     */
     public function makeClickable(?string $statement=null) : self
     {
@@ -1257,7 +1262,7 @@ class UI_Icon implements Interface_Stringable, UI_Renderable_Interface
     }
 
     /**
-     * Sets the position for the tooltip, if one is used.
+     * Sets the position for the tooltip if one is used.
      *
      * @param string $position "top" (default), "left", "right", "bottom"
      * @return self
