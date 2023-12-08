@@ -27,7 +27,7 @@ final class ParseTests extends MediaTestCase
 
     public function test_parseMediaDocumentExists() : void
     {
-        $image = $this->createTestImageMedia();
+        $image = $this->createTestImage();
 
         $text = '{media: '.$image->getID().'}';
 
