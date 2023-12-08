@@ -111,7 +111,7 @@ class MediaTag extends BaseCustomTag
             ->addClass('visual')
             ->attr('src', $document->getThumbnailURL($this->getWidth()))
             ->attr('alt', $document->getName())
-            ->attr('title', $this->getTitle());
+            ->attr('title', (string)$this->getTitle());
 
         return (string)HTMLTag::create('a')
             ->attr('href', $document->getThumbnailURL())
