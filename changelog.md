@@ -1,3 +1,7 @@
+### v3.0.5 - News bugfix
+- News: Fixed the media tag causing a PHP error.
+- News: Added unit test for the media tag.
+
 ### v3.0.4 - News and Markdown update
 - News: Fixed the jumbled order of articles in the news list.
 - News: Added the creation date to the admin news list.
