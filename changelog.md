@@ -1,3 +1,8 @@
+### v3.1.1 - Maintenance release
+- Interface Refs: Added a property grid example.
+- Dependencies: Dropped the `erusev/parsedown` dependency.
+- Dependencies: Updated collections to [v1.1.1](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.1).
+
 ### v3.1.0 - UI and News update
 - News: Added article list navigation.
 - News: Made permalinks less visible.
