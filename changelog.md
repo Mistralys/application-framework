@@ -1,4 +1,4 @@
-### v3.0.4 - News and Markdown update
+### v3.1.0 - UI and News update
 - News: Fixed the jumbled order of articles in the news list.
 - News: Added the creation date to the admin news list.
 - News: Limited the width of the news entry detail view.
@@ -7,8 +7,40 @@
 - MarkdownRenderer: Added heading anchors and permalinks.
 - MarkdownRenderer: Added a dedicated style sheet.
 - MarkdownRenderer: Streamlined layout of the TOC and headings.
-- UserInterface: Fixed the UI font family not being applied.
-- UserInterface: Improved typography with unified line heights and font sizes.
+- Countries: Fixed unit tests adding duplicate countries.
+- Countries: Made the `iso` column in the database `UNIQUE`.
+- Countries: Added a check to see if an ISO code already exists.
+- Interface Refs: Added code copy block example.
+- Interface Refs: Added country flags example.
+- Interface Refs: Added badge and label examples.
+- Interface Refs: Added text color examples.
+- UI: Fixed the UI font family not being applied.
+- UI: Improved typography with unified line heights and font sizes.
+- UI: Added `addUnorderedList()` to the `UI_Help` class.
+- UI: Fixed the size of headings in the page help.
+- UI: Added dark mode (currently in Alpha state).
+- UI: Added the system hint UI helper.
+- StringBuilder: Added `secondary()`.
+- StringBuilder: Added `success()`.
+- Dependencies: Updated `zenorocha/clipboardjs`; simplified composer config.
+- Dependencies: Updated `lipis/flag-icons` to recent version.
+- Dependencies: Updated `ccampbell/mousetrap` to recent version.
+
+#### Dark mode
+
+This requires a `diver-dark.css` to be added in the application's
+`/htdocs/themes/default/css` folder. It is intended to contain any
+application-specific dark mode color adjustments. It may be an
+empty file.
+
+Dark mode is currently in Alpha, which means there are UI elements
+left that are not dark mode capable yet.
+
+#### Database update
+
+For existing installations, import the update SQL file:  
+
+`docs/sql/2023-12-01-countries.sql`
 
 ### v3.0.3 - Bugfix release
 - MediaGallery: Fixed the image upload failing because of the missing file size.
