@@ -47,6 +47,10 @@ TABLE.markdown-table{
     width:auto;
 }
 
+.markdown > P:last-child{
+    margin-bottom:0;
+}
+
 .markdown BLOCKQUOTE P{
     font-weight: var(--font-weight-light);
     font-size: var(--font-size-normal);
