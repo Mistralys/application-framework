@@ -43,7 +43,7 @@ interface Application_User_Interface
     
     public function can(string $role) : bool;
     
-    public function setSetting(string $name, string $value) : void;
+    public function setSetting(string $name, string $value) : bool;
     public function getSetting(string $name, string $default='');
 
     public function getArraySetting(string $name, array $default=array()) : array;
