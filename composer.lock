@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f523a41a83c91e5b02798e355b978fbf",
+    "content-hash": "b422e50a798e6c137d859eb9a16d5a36",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1423,16 +1423,16 @@
         },
         {
             "name": "mistralys/application-utils-collections",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils-collections.git",
-                "reference": "bb84a7f30c8d79da10d1b7f7c63abdab7083dbd0"
+                "reference": "971b151e9a92535b0252926ed815fb578ae8f8fe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils-collections/zipball/bb84a7f30c8d79da10d1b7f7c63abdab7083dbd0",
-                "reference": "bb84a7f30c8d79da10d1b7f7c63abdab7083dbd0",
+                "url": "https://api.github.com/repos/Mistralys/application-utils-collections/zipball/971b151e9a92535b0252926ed815fb578ae8f8fe",
+                "reference": "971b151e9a92535b0252926ed815fb578ae8f8fe",
                 "shasum": ""
             },
             "require": {
@@ -1464,9 +1464,9 @@
             "description": "Interfaces, traits and classes for handling static item collections, similar to Enums and with useful getter methods.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils-collections/issues",
-                "source": "https://github.com/Mistralys/application-utils-collections/tree/1.1.0"
+                "source": "https://github.com/Mistralys/application-utils-collections/tree/1.1.1"
             },
-            "time": "2023-12-15T12:22:53+00:00"
+            "time": "2023-12-15T14:55:38+00:00"
         },
         {
             "name": "mistralys/application-utils-core",
