@@ -2,15 +2,12 @@
 
 declare(strict_types=1);
 
-namespace TestDriver\TestDBCollection;
+namespace TestDriver\TestDBRecords;
 
 use DBHelper_BaseRecord;
 
 class TestDBRecord extends DBHelper_BaseRecord
 {
-    public const COL_LABEL = 'label';
-    public const COL_ALIAS = 'alias';
-
     private array $custom = array();
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
@@ -19,22 +16,27 @@ class TestDBRecord extends DBHelper_BaseRecord
 
     public function getLabel(): string
     {
-        return $this->getRecordStringKey(self::COL_LABEL);
+        return $this->getRecordStringKey(TestDBCollection::COL_LABEL);
     }
 
     public function getAlias(): string
     {
-        return $this->getRecordStringKey(self::COL_ALIAS);
+        return $this->getRecordStringKey(TestDBCollection::COL_ALIAS);
+    }
+
+    public function getLabelLinked() : string
+    {
+        return (string)sb()->link($this->getLabel(), '#');
     }
 
     public function setLabel(string $label): bool
     {
-        return $this->setRecordKey(self::COL_LABEL, $label);
+        return $this->setRecordKey(TestDBCollection::COL_LABEL, $label);
     }
 
     public function setAlias(string $alias): bool
     {
-        return $this->setRecordKey(self::COL_ALIAS, $alias);
+        return $this->setRecordKey(TestDBCollection::COL_ALIAS, $alias);
     }
 
     public function setCustomField(string $name, string $value): bool

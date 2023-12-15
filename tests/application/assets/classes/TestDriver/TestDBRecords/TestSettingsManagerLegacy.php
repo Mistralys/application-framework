@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TestDriver\TestDBCollection;
+namespace TestDriver\TestDBRecords;
 
 use Application_Exception;
 use Application_Formable_RecordSettings;
@@ -41,7 +41,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
         $group = $this->addGroup(t('Settings'))
             ->setIcon(UI::icon()->settings());
 
-        $group->registerSetting(TestDBRecord::COL_LABEL)
+        $group->registerSetting(TestDBCollection::COL_LABEL)
             ->makeRequired()
             ->makeDefault()
             ->setDefaultValue('Test label');
@@ -51,7 +51,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
             ->makeRequired()
             ->setDefaultValue('test-alias');
 
-        $group->registerSetting(TestDBRecord::COL_ALIAS)
+        $group->registerSetting(TestDBCollection::COL_ALIAS)
             ->makeVirtual('')
             ->setStorageFilter(function($value, Application_Formable_RecordSettings_ValueSet $valueSet) : string
             {
@@ -91,7 +91,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
 
     public function inject_label() : HTML_QuickForm2_Node
     {
-        $el = $this->addElementText(TestDBRecord::COL_LABEL, t('Label'));
+        $el = $this->addElementText(TestDBCollection::COL_LABEL, t('Label'));
         $el->addFilterTrim();
         $el->addClass('input-xlarge');
         $this->addRuleLabel($el);
@@ -103,7 +103,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
 
     public function inject_alias() : HTML_QuickForm2_Node
     {
-        $el = $this->addElementText(TestDBRecord::COL_ALIAS, t('Alias'));
+        $el = $this->addElementText(TestDBCollection::COL_ALIAS, t('Alias'));
         $el->addFilterTrim();
         $el->addClass('input-xlarge');
         $this->addRuleAlias($el);
@@ -115,7 +115,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
 
     public function getDefaultSettingName(): string
     {
-        return TestDBRecord::COL_LABEL;
+        return TestDBCollection::COL_LABEL;
     }
 
     public function isUserAllowedEditing(): bool
@@ -131,7 +131,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
     public static function verifyDataSet(Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $data->requireNotEmpty(self::SETTING_GENERATE_ALIAS);
-        $data->requireSame(TestDBRecord::COL_ALIAS, self::VALUE_PREFIX_ALIAS .$data->getKey(self::SETTING_GENERATE_ALIAS));
+        $data->requireSame(TestDBCollection::COL_ALIAS, self::VALUE_PREFIX_ALIAS .$data->getKey(self::SETTING_GENERATE_ALIAS));
         $data->requireSame(self::SETTING_STATIC, self::VALUE_STATIC);
     }
 }

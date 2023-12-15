@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-class TestDriver_TestDBCollection_FilterSettings extends DBHelper_BaseFilterSettings
+namespace TestDriver\TestDBRecords;
+use DBHelper_BaseFilterSettings;
+
+class TestDBFilterSettings extends DBHelper_BaseFilterSettings
 {
     protected function registerSettings(): void
     {

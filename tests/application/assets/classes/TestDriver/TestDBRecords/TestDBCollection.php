@@ -2,22 +2,35 @@
 
 declare(strict_types=1);
 
-namespace TestDriver;
+namespace TestDriver\TestDBRecords;
 
+use DBHelper;
 use DBHelper_BaseCollection;
-use TestDriver\TestDBCollection\TestDBRecord;
-use TestDriver_TestDBCollection_FilterCriteria;
-use TestDriver_TestDBCollection_FilterSettings;
 
 /**
  * @method TestDBRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  * @method TestDBRecord getByID(int $record_id)
+ * @method TestDBFilterCriteria getFilterCriteria()
+ * @method TestDBFilterSettings getFilterSettings()
  */
 class TestDBCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'test_records';
     public const TABLE_NAME_DATA = 'test_records_data';
     public const PRIMARY_NAME = 'record_id';
+    public const COL_ALIAS = 'alias';
+    public const COL_LABEL = 'label';
+
+    private static ?self $instance = null;
+
+    public static function getInstance(): self
+    {
+        if(self::$instance === null) {
+            self::$instance = DBHelper::createCollection(self::class, null, true);
+        }
+
+        return self::$instance;
+    }
 
     public function getRecordClassName(): string
     {
@@ -26,23 +39,23 @@ class TestDBCollection extends DBHelper_BaseCollection
 
     public function getRecordFiltersClassName(): string
     {
-        return TestDriver_TestDBCollection_FilterCriteria::class;
+        return TestDBFilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName(): string
     {
-        return TestDriver_TestDBCollection_FilterSettings::class;
+        return TestDBFilterSettings::class;
     }
 
     public function getRecordDefaultSortKey(): string
     {
-        return TestDBRecord::COL_LABEL;
+        return self::COL_LABEL;
     }
 
     public function getRecordSearchableColumns(): array
     {
         return array(
-            TestDBRecord::COL_LABEL => t('Label')
+            self::COL_LABEL => t('Label')
         );
     }
 
@@ -79,17 +92,17 @@ class TestDBCollection extends DBHelper_BaseCollection
     public function createTestRecord(string $label, string $alias): TestDBRecord
     {
         return $this->createNewRecord(array(
-            TestDBRecord::COL_LABEL => $label,
-            TestDBRecord::COL_ALIAS => $alias
+            self::COL_LABEL => $label,
+            self::COL_ALIAS => $alias
         ));
     }
 
     protected function _registerKeys(): void
     {
-        $this->keys->register(TestDBRecord::COL_LABEL)
+        $this->keys->register(self::COL_LABEL)
             ->makeRequired();
 
-        $this->keys->register(TestDBRecord::COL_ALIAS)
+        $this->keys->register(self::COL_ALIAS)
             ->makeRequired();
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TestDriver\TestDBCollection;
+namespace TestDriver\TestDBRecords;
 
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
@@ -45,7 +45,7 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
         // directly to the collection.
         $group->registerSetting(self::SETTING_LABEL)
             ->makeRequired()
-            ->setStorageName(TestDBRecord::COL_LABEL)
+            ->setStorageName(TestDBCollection::COL_LABEL)
             ->setDefaultValue('Test label')
             ->setCallback(Closure::fromCallable(array($this, 'injectLabel')));
 
@@ -58,7 +58,7 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
         $group->registerSetting(self::SETTING_ALIAS)
             ->makeRequired()
             ->makeVirtual('')
-            ->setStorageName(TestDBRecord::COL_ALIAS)
+            ->setStorageName(TestDBCollection::COL_ALIAS)
             ->setStorageFilter(function ($value, Application_Formable_RecordSettings_ValueSet $valueSet)
             {
                 $valueSet->requireNotEmpty(self::SETTING_GENERATE_ALIAS);
@@ -139,8 +139,8 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
     public static function verifyValueSet(Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $data->requireNotEmpty(self::SETTING_GENERATE_ALIAS);
-        $data->requireNotEmpty(TestDBRecord::COL_LABEL);
+        $data->requireNotEmpty(TestDBCollection::COL_LABEL);
         $data->requireSame(self::SETTING_STATIC, self::VALUE_STATIC);
-        $data->requireSame(TestDBRecord::COL_ALIAS, self::VALUE_PREFIX_ALIAS.$data->getKey(self::SETTING_GENERATE_ALIAS));
+        $data->requireSame(TestDBCollection::COL_ALIAS, self::VALUE_PREFIX_ALIAS.$data->getKey(self::SETTING_GENERATE_ALIAS));
     }
 }
