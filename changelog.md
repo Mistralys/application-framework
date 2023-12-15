@@ -34,6 +34,8 @@ For existing installations, import the update SQL file:
 
 `docs/sql/2023-12-01-countries.sql`
 
+This is not required, but recommended to avoid duplicate countries.
+
 ### v3.0.5 - News bugfix
 - News: Fixed the media tag causing a PHP error.
 - News: Added unit test for the media tag.
