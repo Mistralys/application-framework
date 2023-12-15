@@ -25,6 +25,10 @@ declare(strict_types=1);
 abstract class Application_Admin_Area_Devel_Appinterface extends Application_Admin_Area_Mode
 {
     public const URL_NAME = 'appinterface';
+
+    public const TEMPLATE_VAR_EXAMPLES = 'examples';
+    public const TEMPLATE_VAR_ACTIVE_ID = 'active';
+    public const REQUEST_PARAM_EXAMPLE_ID = 'example';
     /**
     * @var array<string,array<string,mixed>>
     */
@@ -82,6 +86,22 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'section-buttons' => t('Adding context buttons'),
                 )
             ),
+            'data-grids-db' => array(
+                'label' => t('Data Grids (DB)'),
+                'examples' => array(
+                    '_grid-setup' => t('Grid example setup'),
+                    'without-paging' => t('Without paging'),
+                    'with-paging' => t('With paging')
+                )
+            ),
+            'data-grids-non-db' => array(
+                'label' => t('Data Grids (No DB)'),
+                'examples' => array(
+                    '_grid-setup' => t('Grid example setup'),
+                    'without-paging' => t('Without paging'),
+                    'manual-paging' => t('With manual paging'),
+                )
+            ),
             'ui-elements' => array(
                 'label' => t('UI elements'),
                 'examples' => array(
@@ -93,7 +113,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
                     'text-colors' => t('Text colors'),
                     'system-hints' => t('System hints'),
                     'alerts' => t('Alerts'),
-                    'navigations' => t('Navigations')
+                    'navigations' => t('Navigations'),
+                    'property-grids' => t('Property grids'),
                 )
             ),
             'forms' => array(
@@ -136,7 +157,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             }
         }
 
-        $active = (string)$this->request->getParam('example');
+        $active = (string)$this->request->getParam(self::REQUEST_PARAM_EXAMPLE_ID);
         if(!empty($active) && in_array($active, $this->exampleIDs))
         {
             $this->activeExample = $active;
@@ -158,7 +179,7 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             foreach($category['examples'] as $exampleID => $exampleTitle) {
                 $section->appendContent(
                     '<li>'.
-                        '<a href="'.$this->getURL(array('example' => $categoryID.'.'.$exampleID)).'">'.
+                        '<a href="'.$this->getURL(array(self::REQUEST_PARAM_EXAMPLE_ID => $categoryID.'.'.$exampleID)).'">'.
                             $exampleTitle.
                         '</a>'.
                     '</li>'
@@ -180,8 +201,8 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
             $this->renderTemplate(
                 'devel.appinterface',
                 array(
-                    'examples' => $this->examples,
-                    'active' => $this->activeExample
+                    self::TEMPLATE_VAR_EXAMPLES => $this->examples,
+                    self::TEMPLATE_VAR_ACTIVE_ID => $this->activeExample
                 )
             ),
             $this->getTitle()
