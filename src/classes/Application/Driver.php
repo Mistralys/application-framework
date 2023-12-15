@@ -1180,6 +1180,13 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addStylesheet('ui/notepad.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-print.css', 'print', $counter--);
         $this->ui->addStylesheet('driver.css', 'all', $counter--);
+
+        if($this->user->isDarkModeEnabled())
+        {
+            $this->ui->addStylesheet('ui/dark.css', 'all', $counter--);
+            $this->ui->addStylesheet('driver-dark.css', 'all', $counter--);
+        }
+
     }
 
     protected $coreScripts = array
