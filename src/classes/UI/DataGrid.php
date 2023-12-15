@@ -1161,7 +1161,7 @@ class UI_DataGrid
         $tableDisplay = 'none';
         $dropperDisplay = 'block';
         if (!empty($entries)) {
-            $this->entries = $this->parseEntries($entries);
+            $this->entries = $this->filterAndSortEntries($entries);
             $emptyDisplay = 'none';
             $tableDisplay = 'table';
             $dropperDisplay = 'none';
@@ -1413,7 +1413,7 @@ class UI_DataGrid
     * @param array<int,array<string,mixed>|UI_DataGrid_Entry> $entries
     * @return UI_DataGrid_Entry[]
     */
-    protected function parseEntries(array $entries) : array
+    public function filterAndSortEntries(array $entries) : array
     {
         $result = array();
 
