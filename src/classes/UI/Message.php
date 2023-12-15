@@ -161,7 +161,7 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface
     */
     public function makeInline() : self
     {
-        return $this->addClass('alert-inline');
+        return $this->setProperty('inline', true);
     }
 
     /**

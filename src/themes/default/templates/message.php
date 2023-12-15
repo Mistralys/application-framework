@@ -11,10 +11,10 @@
 	}
 
 	$icons = array(
-	    UI::MESSAGE_TYPE_SUCCESS => 'OK',
-	    UI::MESSAGE_TYPE_WARNING => 'WARNING',
-	    UI::MESSAGE_TYPE_ERROR => 'WARNING',
-	    UI::MESSAGE_TYPE_INFO => 'INFORMATION'
+	    UI::MESSAGE_TYPE_SUCCESS => UI::icon()->ok(),
+	    UI::MESSAGE_TYPE_WARNING => UI::icon()->warning(),
+	    UI::MESSAGE_TYPE_ERROR => UI::icon()->warning(),
+	    UI::MESSAGE_TYPE_INFO => UI::icon()->information()
 	);
 	
 	$iconType = $this->getVar('icon');
@@ -22,11 +22,11 @@
 	$icon = '';
 	if($iconType === true && isset($icons[$type])) 
 	{
-	    $icon = UI::icon()->setType($icons[$type]);
+	    $icon = $icons[$type];
 	} 
 	else if($iconType instanceof UI_Icon) 
 	{
-	    $icon = $iconType->render();
+	    $icon = $iconType;
 	}
 	
 	$classes = array_merge(
@@ -37,9 +37,16 @@
     	    'alert-layout-'.$this->getVar('layout')
     	)
     );
+
+    $tag = 'div';
+    if($this->getVar('inline') === true)
+    {
+        $tag = 'span';
+        $classes[] = 'alert-inline';
+    }
 	
 	echo
-	'<div class="'.implode(' ', $classes).'">'.
+	'<'.$tag.' class="'.implode(' ', $classes).'">'.
 		$dismiss.
 		$icon.' '.$this->getVar('message').
-	'</div>';
+	'</'.$tag.'>';
