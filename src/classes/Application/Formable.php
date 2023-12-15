@@ -350,7 +350,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
             t('Not a valid hexadecimal color code.')
         );
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_InputText::class,
             $el
         );
@@ -370,7 +370,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $el->setLabel($label);
         $el->addClass('input-xxlarge');
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Textarea::class,
             $el
         );
@@ -527,7 +527,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $el = $this->addElement('select', $name, $container);
         $el->setLabel($label);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Select::class,
             $el
         );
@@ -565,7 +565,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $el = $this->addElement('multiselect', $name, $container);
         $el->setLabel($label);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Multiselect::class,
             $el
         );
@@ -948,7 +948,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $el = $this->addElement('switch', $name, $container);
         $el->setLabel($label);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $el
         );

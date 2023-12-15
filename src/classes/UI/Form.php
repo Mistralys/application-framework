@@ -458,7 +458,7 @@ class UI_Form extends UI_Renderable
         
         if(!empty($elements)) 
         {
-            return ensureType(
+            return ClassHelper::requireObjectInstanceOf(
                 HTML_QuickForm2_Element::class,
                 $elements[0]
             );
@@ -1464,7 +1464,7 @@ class UI_Form extends UI_Renderable
         $element->setLabel($content);
         $element->setAttribute('rel', $type);
 
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_InputText::class,
             $element
         );
@@ -1620,7 +1620,7 @@ class UI_Form extends UI_Renderable
         $element = $container->addElement('switch', $name);
         $element->setLabel($label);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $element
         );
@@ -1643,7 +1643,7 @@ class UI_Form extends UI_Renderable
         $el = $container->addElement('select', $name);
         $el->setLabel($label);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Select::class,
             $el
         );
@@ -1975,7 +1975,7 @@ class UI_Form extends UI_Renderable
     */
     public function makeRedactor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_Redactor
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             UI_MarkupEditor_Redactor::class,
             $this->makeMarkupEditor('Redactor', $element, $country)
         );
@@ -1983,7 +1983,7 @@ class UI_Form extends UI_Renderable
     
     public function makeCKEditor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_CKEditor
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             UI_MarkupEditor_CKEditor::class,
             $this->makeMarkupEditor('CKEditor', $element, $country)
         );

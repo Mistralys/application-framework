@@ -1,17 +1,19 @@
 <?php 
 
-    /* @var $error Application_ErrorDetails */
+/* @var $error Application_ErrorDetails */
 
-use Application\AppFactory;if(!isset($error))
-    {
-        return;
-    }
+use Application\AppFactory;
+use AppUtils\ClassHelper;
+
+if(!isset($error))
+{
+    return;
+}
+
+$error = ClassHelper::requireObjectInstanceOf(Application_ErrorDetails::class, $error);
+
+$themeURL = $error->getThemeURL();
     
-    $error = ensureType(Application_ErrorDetails::class, $error);
-
-    $themeURL = $error->getThemeURL();
-    
-
 ?><!DOCTYPE html>
 <html lang="en">
 	<head>

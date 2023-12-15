@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
 
@@ -163,7 +164,10 @@ class Application_Driver_AdminInfo implements OptionableInterface
         $mode = $tokens[1];
         if(!isset($this->areas[$area]['screens'][$mode]))
         {
-            $this->areascreen = ensureType(Application_Admin_Area::class, $this->instances[$this->areas[$area]['relativePath']]);
+            $this->areascreen = ClassHelper::requireObjectInstanceOf(
+                Application_Admin_Area::class,
+                $this->instances[$this->areas[$area]['relativePath']]
+            );
             
             /* @var $modeScreen Application_Admin_Area_Mode */
             $modeScreen = new $className($this->driver, $this->areascreen);

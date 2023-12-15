@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\ClassHelper;
+
 /**
  * 
  * @property Application_RevisionableCollection_FilterCriteria $filters
@@ -100,7 +102,7 @@ abstract class Application_RevisionableCollection_FilterSettings extends Applica
         }
      
         $this->stateConfig->configure(
-            ensureType(
+            ClassHelper::requireObjectInstanceOf(
                 Application_RevisionableCollection_FilterCriteria::class,
                 $this->filters
             )

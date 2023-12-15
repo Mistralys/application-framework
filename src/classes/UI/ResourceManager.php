@@ -8,6 +8,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 
 /**
@@ -72,7 +73,7 @@ class UI_ResourceManager
         $resource = new UI_ClientResource_Javascript($this->ui, $fileOrURL, $loadKey);
         $resource->setDefer($defer);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             UI_ClientResource_Javascript::class,
             $this->registerResource($resource, $priority)
         );
@@ -85,7 +86,7 @@ class UI_ResourceManager
         $resource = new UI_ClientResource_Stylesheet($this->ui, $fileOrURL, $loadKey);
         $resource->setMedia($media);
         
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             UI_ClientResource_Stylesheet::class,
             $this->registerResource($resource, $priority)
         );

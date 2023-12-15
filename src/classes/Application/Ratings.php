@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\ClassHelper;
+
 /**
  * 
  * @method Application_Ratings_Rating getByID(int $ratingID)
@@ -129,7 +131,7 @@ class Application_Ratings extends DBHelper_BaseCollection
     */
     public function createScreens() : Application_Ratings_Screens
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Ratings_Screens::class,
             DBHelper::createCollection(Application_Ratings_Screens::class)
         );

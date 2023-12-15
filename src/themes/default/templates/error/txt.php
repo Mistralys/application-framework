@@ -1,13 +1,15 @@
 <?php
 
-    /* @var $error Application_ErrorDetails */
+/* @var $error Application_ErrorDetails */
+
+use AppUtils\ClassHelper;
 
 if(!isset($error))
 {
     return;
 }
 
-$error = ensureType(Application_ErrorDetails::class, $error);
+$error = ClassHelper::requireObjectInstanceOf(Application_ErrorDetails::class, $error);
 
 ?>
 

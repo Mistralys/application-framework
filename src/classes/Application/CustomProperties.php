@@ -7,6 +7,8 @@
  * @see Application_CustomProperties
  */
 
+use AppUtils\ClassHelper;
+
 /**
  * Manages the collection of custom properties for the specified
  * owner type and key: The owner type being the type of records
@@ -361,7 +363,10 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     
     public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void
     {
-        $record = ensureType(Application_CustomProperties_Property::class, $record);
+        $record = ClassHelper::requireObjectInstanceOf(
+            Application_CustomProperties_Property::class,
+            $record
+        );
         
         parent::deleteRecord($record);
         

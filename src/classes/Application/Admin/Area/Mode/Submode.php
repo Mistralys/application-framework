@@ -7,6 +7,8 @@
  * @see Application_Admin_Area_Mode_Submode
  */
 
+use AppUtils\ClassHelper;
+
 /**
  * Base class for sub-mode admin screens.
  * 
@@ -73,7 +75,7 @@ abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Ske
      */
     public function getAction() : ?Application_Admin_Area_Mode_Submode_Action
     {
-        return ensureType(
+        return ClassHelper::requireObjectInstanceOf(
             Application_Admin_Area_Mode_Submode_Action::class,
             $this->getActiveSubscreen()
         );

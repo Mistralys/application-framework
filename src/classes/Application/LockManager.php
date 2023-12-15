@@ -8,6 +8,8 @@
  * @see Application_LockManager
  */
 
+use AppUtils\ClassHelper;
+
 /**
  * Class handling application screen locking to avoid several
  * users editing records at the same time.
@@ -633,7 +635,7 @@ class Application_LockManager extends DBHelper_BaseCollection
             return null;
         }
         
-        $screen = ensureType(
+        $screen = ClassHelper::requireObjectInstanceOf(
             Application_Interfaces_Admin_LockableScreen::class,
             Application_Driver::getInstance()->getScreenByPath($record['screen_url_path'])
         );
