@@ -1,5 +1,6 @@
 ### v3.1.0 - UI and News update
 - News: Added article list navigation.
+- News: Made permalinks less visible.
 - Countries: Fixed unit tests adding duplicate countries.
 - Countries: Made the `iso` column in the database `UNIQUE`.
 - Countries: Added a check to see if an ISO code already exists.
@@ -9,7 +10,7 @@
 - Interface Refs: Added text color examples.
 - UI: Added `addUnorderedList()` to the `UI_Help` class.
 - UI: Fixed the size of headings in the page help.
-- UI: Added dark mode (currently in Alpha state).
+- UI: Added dark mode (work in progress).
 - UI: Added the system hint UI helper.
 - StringBuilder: Added `secondary()`.
 - StringBuilder: Added `success()`.
@@ -24,7 +25,7 @@ This requires a `diver-dark.css` to be added in the application's
 application-specific dark mode color adjustments. It may be an
 empty file.
 
-Dark mode is currently in Alpha, which means there are UI elements
+Dark mode is still a work in progress, which means there are UI elements
 left that are not dark mode capable yet.
 
 #### Database update
