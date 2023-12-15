@@ -30,6 +30,10 @@ class MarkdownRenderer implements OptionableInterface
     public const HTML_MODE_STRIP = 'strip';
     public const HTML_MODE_ESCAPE = 'escape';
 
+    public const WRAPPER_CLASS = 'markdown';
+    public const WRAPPER_TAG_OPEN = '<div class="'.self::WRAPPER_CLASS.'">';
+    public const WRAPPER_TAG_CLOSE = '</div>';
+
     private function __construct()
     {
     }
@@ -76,7 +80,7 @@ class MarkdownRenderer implements OptionableInterface
 
         $markdown = (string)$parser->convert($markdown);
 
-        return '<div class="markdown">'.$this->postParse($markdown).'</div>';
+        return self::WRAPPER_TAG_OPEN .$this->postParse($markdown). self::WRAPPER_TAG_CLOSE;
     }
 
     private function preParse(string $markdown) : string

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\MarkdownRenderer;
+use AppUtils\ConvertHelper;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
 /**
@@ -90,7 +92,12 @@ final class User_NotepadTest extends UserTestCase
 
         $note = $notepad->addNote('Text with **bold** style', 'Title');
 
-        $this->assertEquals('<p>Text with <strong>bold</strong> style</p>', $note->renderContent());
+        $this->assertEquals(
+            MarkdownRenderer::WRAPPER_TAG_OPEN.
+            '<p>Text with <strong>bold</strong> style</p>'.
+            MarkdownRenderer::WRAPPER_TAG_CLOSE,
+            str_replace("\n", '', $note->renderContent())
+        );
     }
 
     public function test_specialChars() : void
@@ -102,6 +109,10 @@ final class User_NotepadTest extends UserTestCase
         $note = $notepad->addNote("<Text with '", "<Title with '");
 
         $this->assertEquals("<Text with '", $note->getContent());
-        $this->assertEquals("<p>&lt;Text with '</p>", $note->renderContent());
+        $this->assertEquals(
+            MarkdownRenderer::WRAPPER_TAG_OPEN.
+            "<p>&lt;Text with '</p>".
+            MarkdownRenderer::WRAPPER_TAG_CLOSE,
+            str_replace("\n", '', $note->renderContent()));
     }
 }
