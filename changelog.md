@@ -1,4 +1,5 @@
 ### v3.1.0 - UI and News update
+- News: Added article list navigation.
 - Countries: Fixed unit tests adding duplicate countries.
 - Countries: Made the `iso` column in the database `UNIQUE`.
 - Countries: Added a check to see if an ISO code already exists.
