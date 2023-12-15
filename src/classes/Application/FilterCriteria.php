@@ -7,6 +7,8 @@
  * @see Application_FilterCriteria
  */
 
+use AppUtils\PaginationHelper;
+use UI\PaginationRenderer;
 use function AppUtils\parseVariable;
 
 /**
@@ -172,6 +174,12 @@ abstract class Application_FilterCriteria
             $this->handleCriteriaChanged();
         }
         
+        return $this;
+    }
+
+    public function setLimitByPagination(PaginationRenderer $paginator) : self
+    {
+        $paginator->configureFilters($this);
         return $this;
     }
 
