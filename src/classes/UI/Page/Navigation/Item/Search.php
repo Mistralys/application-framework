@@ -329,6 +329,13 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
         
         return $this;
     }
+
+    public function addHiddenPageVars() : self
+    {
+        $vars = Application_Driver::getInstance()->getActiveScreen()->getPageParams();
+
+        return $this->addHiddenVars($vars);
+    }
     
    /**
     * Adds a search scope: this will be added to a select
