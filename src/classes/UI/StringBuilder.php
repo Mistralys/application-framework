@@ -101,6 +101,11 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     {
         return $this->spanned($string, 'text-error');
     }
+
+    public function dangerXXL($string) : UI_StringBuilder
+    {
+        return $this->spanned($string, 'text-error-xxl');
+    }
     
    /**
     * Adds a warning-styled text.
@@ -112,7 +117,41 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     {
         return $this->spanned($string, 'text-warning');
     }
-    
+
+    /**
+     * Adds a success-styled text.
+     *
+     * @param string|number|UI_Renderable_Interface $string
+     * @return $this
+     */
+    public function success($string) : UI_StringBuilder
+    {
+        return $this->spanned($string, 'text-success');
+    }
+
+    /**
+     * Adds an inverted color styled text.
+     *
+     * @param string|number|UI_Renderable_Interface $string
+     * @return $this
+     */
+    public function inverted($string) : UI_StringBuilder
+    {
+        return $this->spanned($string, 'text-inverted');
+    }
+
+    /**
+     * Adds a secondary-styled text, which is slightly more
+     * marked than muted text.
+     *
+     * @param string|number|UI_Renderable_Interface $string
+     * @return $this
+     */
+    public function secondary($string) : UI_StringBuilder
+    {
+        return $this->spanned($string, 'text-secondary');
+    }
+
    /**
     * Adds a monospace-styled text.
     * 
