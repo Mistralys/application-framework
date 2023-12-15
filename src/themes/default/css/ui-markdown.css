@@ -23,7 +23,7 @@
 .markdown H1 > A,
 .markdown H2 > A,
 .markdown H3 > A{
-    opacity:0.2;
+    opacity:0.1;
     text-decoration: none;
     display:inline-block;
     padding-right:0.15rem;
