@@ -2,17 +2,12 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+
 class UI_Form_Renderer_CommentGenerator
 {
-   /**
-    * @var UI_Form_Renderer_ElementFilter_RenderDef
-    */
-    private $renderDef;
-    
-   /**
-    * @var UI_StringBuilder
-    */
-    private $parts;
+    private UI_Form_Renderer_ElementFilter_RenderDef $renderDef;
+    private UI_StringBuilder $parts;
     
     public function __construct(UI_Form_Renderer_ElementFilter_RenderDef $renderDef)
     {
@@ -65,7 +60,7 @@ class UI_Form_Renderer_CommentGenerator
             return;
         }
         
-        $instance = ensureType(
+        $instance = ClassHelper::requireObjectInstanceOf(
             UI_Form_Renderer_CommentGenerator_DataType::class,
             new $typeClass($this->renderDef, $this->parts)
         );
@@ -117,7 +112,7 @@ class UI_Form_Renderer_CommentGenerator
         
         Application::requireCallableValid($callback);
             
-        $text = call_user_func($callback);
+        $text = (string)call_user_func($callback);
             
         if(!ctype_space($text))
         {
