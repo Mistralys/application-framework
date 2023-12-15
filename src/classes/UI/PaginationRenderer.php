@@ -13,6 +13,7 @@ use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\PaginationHelper;
 use AppUtils\Traits\RenderableTrait;
 use AppUtils\URLInfo;
+use TestDriver\ClassFactory;
 use UI;
 use function AppUtils\parseURL;
 
@@ -96,7 +97,7 @@ class PaginationRenderer implements RenderableInterface
             ->makeMini()
             ->link($this->getURL($this->paginator->getNextPage()));
 
-        if(!$this->paginator->hasNextPage()) {
+        if($this->paginator->getNextPage() === $this->current) {
             $btn->disable();
         }
 
@@ -166,5 +167,29 @@ class PaginationRenderer implements RenderableInterface
         $this->populateItems();
 
         return implode(' ', $this->items);
+    }
+
+    public function setCurrentPage(int $pageNumber) : self
+    {
+        $this->paginator->setCurrentPage($pageNumber);
+        $this->current = $pageNumber;
+
+        return $this;
+    }
+
+    public function setCurrentPageFromRequest() : self
+    {
+        $activePage = ClassFactory::createRequest()->registerParam($this->pageParam)->setInteger()->getInt(1);
+        $totalPages = $this->paginator->getTotalPages();
+
+        if($activePage < 1) {
+            return $this->setCurrentPage(1);
+        }
+
+        if($activePage > $totalPages) {
+            return $this->setCurrentPage($totalPages);
+        }
+
+        return $this->setCurrentPage($activePage);
     }
 }
