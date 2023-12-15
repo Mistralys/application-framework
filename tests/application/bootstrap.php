@@ -16,7 +16,7 @@ $configFile = __DIR__ . '/config/test-ui-config.php';
 
 if(!file_exists($configFile))
 {
-    die('config/test-ui.php file does not exist.');
+    die(sprintf('%s file does not exist.', basename($configFile)));
 }
 
 require_once $configFile;
