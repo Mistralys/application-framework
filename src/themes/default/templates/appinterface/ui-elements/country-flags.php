@@ -6,14 +6,17 @@ use Application\AppFactory;
 
 DBHelper::startTransaction();
 
-// The example application has no countries by
-// default, so we create some here.
 $countries = AppFactory::createCountries();
-$countries->createNewCountry('de', 'Germany');
-$countries->createNewCountry('us', 'United States');
-$countries->createNewCountry('es', 'Spain');
-
 $list = $countries->getAll();
+
+if(empty($list))
+{
+    $countries->createNewCountry('de', 'Germany');
+    $countries->createNewCountry('us', 'United States');
+    $countries->createNewCountry('es', 'Spain');
+
+    $list = $countries->getAll();
+}
 
 DBHelper::rollbackTransaction();
 
