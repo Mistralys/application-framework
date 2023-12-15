@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 namespace testsuites\DBHelper;
 
+use TestDriver\TestDBRecords\TestDBCollection;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
-use TestDriver\TestDBCollection;
-use TestDriver\TestDBCollection\TestDBRecord;
+use TestDriver\TestDBRecords\TestDBRecord;
 
 /**
  * @package Application
