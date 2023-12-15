@@ -42,7 +42,7 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
             ->setAbstract(t('Read the latest %1$s news.', $this->driver->getAppNameShort()));
     }
 
-    private int $itemsPerPage = 2;
+    private int $itemsPerPage = 10;
 
     protected function _handleActions(): bool
     {
@@ -60,10 +60,16 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
 
     protected function _renderContent()
     {
-        $pagination = $this->paginator->render();
+        $pagination = null;
 
-        $this->renderer->appendContent($pagination);
-        $this->renderer->appendContent('<hr>');
+        if($this->paginator->getTotalPages() > 1) {
+            $pagination = $this->paginator->render();
+        }
+
+        if($pagination !== null) {
+            $this->renderer->appendContent($pagination);
+            $this->renderer->appendContent('<hr>');
+        }
 
         $items = $this->filters
             ->selectArticles()
@@ -77,11 +83,12 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
         }
 
         // Be able to specify an icon or poster image?
-        // Use pagination helper
         // Add categories for posts?
 
-        $this->renderer->appendContent('<hr>');
-        $this->renderer->appendContent($pagination);
+        if($pagination !== null) {
+            $this->renderer->appendContent('<hr>');
+            $this->renderer->appendContent($pagination);
+        }
 
         return $this->renderer
             ->makeWithoutSidebar();
