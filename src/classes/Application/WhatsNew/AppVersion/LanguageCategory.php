@@ -71,7 +71,7 @@ class LanguageCategory
 
     public function renderLabel() : string
     {
-        return $this->getWhatsNew()->getParseDown()->parse($this->getLabel());
+        return $this->getWhatsNew()->getMarkdownRenderer()->render($this->getLabel());
     }
 
     /**

@@ -275,7 +275,7 @@ class CategoryItem
     public function toArray() : array
     {
         return array(
-            'text' => $this->getWhatsNew()->getParseDown()->parse($this->getText()),
+            'text' => $this->getWhatsNew()->getMarkdownRenderer()->render($this->getText()),
             'author' => $this->getAuthor(),
             'issue' => $this->getIssue()
         );

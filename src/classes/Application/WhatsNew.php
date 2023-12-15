@@ -27,7 +27,6 @@ use Application_Exception;
 use Application\WhatsNew\AppVersion;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
-use Parsedown;
 
 /**
  * Handles reading the application's `WHATSNEW.xml` file, as
@@ -45,7 +44,7 @@ class WhatsNew
     public const ERROR_VERSION_NUMBER_NOT_FOUND = 30003;
 
     protected string $file;
-    private Parsedown $parseDown;
+    private MarkdownRenderer $markdownRenderer;
 
     /**
      * @var AppVersion[]
@@ -55,7 +54,7 @@ class WhatsNew
     public function __construct(string $sourceFile)
     {
         $this->file = $sourceFile;
-        $this->parseDown = new Parsedown();
+        $this->markdownRenderer = MarkdownRenderer::create();
 
         if (!file_exists($this->file))
         {
@@ -80,11 +79,11 @@ class WhatsNew
     }
 
     /**
-     * @return Parsedown
+     * @return MarkdownRenderer
      */
-    public function getParseDown() : Parsedown
+    public function getMarkdownRenderer() : MarkdownRenderer
     {
-        return $this->parseDown;
+        return $this->markdownRenderer;
     }
 
     protected function parse() : void
