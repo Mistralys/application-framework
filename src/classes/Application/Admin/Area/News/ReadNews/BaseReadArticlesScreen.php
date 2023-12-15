@@ -7,13 +7,19 @@ namespace Application\Admin\Area\News\ReadNews;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application\NewsCentral\NewsFilterCriteria;
 use Application_Admin_Area_Mode_Submode;
 use Application_FilterCriteria;
+use AppUtils\PaginationHelper;
 use UI;
+use UI\PaginationRenderer;
 
 class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
 {
     public const URL_NAME = 'articles';
+    public const REQUEST_PARAM_PAGE_NUMBER = 'news-page';
+    private NewsFilterCriteria $filters;
+    private PaginationRenderer $paginator;
 
     public function getURLName(): string
     {
@@ -36,16 +42,33 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
             ->setAbstract(t('Read the latest %1$s news.', $this->driver->getAppNameShort()));
     }
 
-    private int $itemsPerPage = 10;
+    private int $itemsPerPage = 2;
+
+    protected function _handleActions(): bool
+    {
+        $this->filters = AppFactory::createNews()->getFilterCriteria();
+        $this->paginator = $this->ui->createPagination(
+            new PaginationHelper($this->filters->countUnfiltered(), $this->itemsPerPage),
+            self::REQUEST_PARAM_PAGE_NUMBER,
+            $this->getURL()
+        )
+            ->setCurrentPageFromRequest()
+            ->setAdjacentPages(5);
+        
+        return true;
+    }
 
     protected function _renderContent()
     {
-        $offset = ($this->getActivePage() - 1) * $this->itemsPerPage;
+        $pagination = $this->paginator->render();
 
-        $items = AppFactory::createNews()->getFilterCriteria()
+        $this->renderer->appendContent($pagination);
+        $this->renderer->appendContent('<hr>');
+
+        $items = $this->filters
             ->selectArticles()
             ->selectPublished()
-            ->setLimit($this->itemsPerPage, $offset)
+            ->setLimitByPagination($this->paginator)
             ->setOrderBy(NewsCollection::COL_DATE_CREATED, Application_FilterCriteria::ORDER_DIR_DESCENDING)
             ->getItemsObjects();
 
@@ -57,13 +80,11 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
         // Use pagination helper
         // Add categories for posts?
 
+        $this->renderer->appendContent('<hr>');
+        $this->renderer->appendContent($pagination);
+
         return $this->renderer
             ->makeWithoutSidebar();
-    }
-
-    protected function getActivePage(): int
-    {
-        return 1;
     }
 
     /**
