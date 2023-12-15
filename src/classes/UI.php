@@ -16,6 +16,7 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
 use UI\ClientResourceCollection;
+use UI\SystemHint;
 use UI\PaginationRenderer;
 use UI\TooltipInfo;
 use function AppUtils\parseVariable;
@@ -712,6 +713,85 @@ class UI
 
     // region: Create UI helpers
 
+    public static function createNavigation(string $navigationID) : UI_Page_Navigation
+    {
+        return self::getInstance()->getPage()->createNavigation($navigationID);
+    }
+
+    /**
+     * @param string|number|StringableInterface|NULL $hint
+     * @return SystemHint
+     * @throws UI_Exception
+     */
+    public static function systemHint($hint=null) : SystemHint
+    {
+        return (new SystemHint(UI::getInstance()->getPage()))->setContent($hint);
+    }
+
+    /**
+     * Creates a popover instance, which can be used to display
+     * a toggleable detailed popup. It is the big brother of the
+     * tooltip, but less detailed than a dialog.
+     *
+     * @param string $attachToID The ID of the element to attach to.
+     * @return UI_Bootstrap_Popover
+     * @throws UI_Exception
+     */
+    public static function popover(string $attachToID) : UI_Bootstrap_Popover
+    {
+        return (new UI_Bootstrap_Popover(self::getInstance()))->setAttachToID($attachToID);
+    }
+
+    /**
+     * Creates a tooltip instance used to hold information
+     * for a tooltip, to allow configuring it further.
+     *
+     * Usage:
+     *
+     * 1) Set the element ID to attach it to.
+     *    Either use {@see TooltipInfo::attachToID()}, or
+     *    {@see TooltipInfo::injectAttributes()} to use an
+     *    existing `id` attribute (or create one automatically).
+     * 2) Enable the tooltip. It will be automatically enabled
+     *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
+     *    is called, or if {@see TooltipInfo::injectJS()} is called.
+     *
+     * @param string|int|float|StringableInterface|NULL $content
+     * @return TooltipInfo
+     */
+    public static function tooltip($content) : TooltipInfo
+    {
+        return new TooltipInfo($content);
+    }
+
+    /**
+     * Creates a new Badge UI element and returns it. These can
+     * be converted to string, so they can be inserted directly
+     * into any content strings.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_Badge
+     * @throws UI_Exception
+     */
+    public static function badge($label) : UI_Badge
+    {
+        return new UI_Badge($label);
+    }
+
+    /**
+     * Creates a new Label UI element and returns it. These can
+     * be converted to string, so they can be inserted directly
+     * into any content strings.
+     *
+     * @param string|number|UI_Renderable_Interface $label
+     * @return UI_Label
+     * @throws UI_Exception
+     */
+    public static function label($label) : UI_Label
+    {
+        return new UI_Label($label);
+    }
+
     public function createPagination(PaginationHelper $helper, string $pageParamName, string $baseURL) : PaginationRenderer
     {
         return new PaginationRenderer($helper, $pageParamName, $baseURL);
@@ -1126,34 +1206,6 @@ class UI
         return $redactor;
     }
 
-    /**
-     * Creates a new Badge UI element and returns it. These can
-     * be converted to string, so they can be inserted directly
-     * into any content strings.
-     *
-     * @param string|number|UI_Renderable_Interface $label
-     * @return UI_Badge
-     * @throws UI_Exception
-     */
-    public static function badge($label) : UI_Badge
-    {
-        return new UI_Badge($label);
-    }
-
-    /**
-     * Creates a new Label UI element and returns it. These can
-     * be converted to string, so they can be inserted directly
-     * into any content strings.
-     *
-     * @param string|number|UI_Renderable_Interface $label
-     * @return UI_Label
-     * @throws UI_Exception
-     */
-    public static function label($label) : UI_Label
-    {
-        return new UI_Label($label);
-    }
-    
     public static function printBacktrace() : void
     {
         $trace = debug_backtrace();
@@ -1340,41 +1392,5 @@ class UI
     public static function isJavascriptMinified() : bool
     {
         return boot_constant(BaseConfigRegistry::JAVASCRIPT_MINIFIED) === true;
-    }
-
-    /**
-     * Creates a popover instance, which can be used to display
-     * a toggleable detailed popup. It is the big brother of the
-     * tooltip, but less detailed than a dialog.
-     *
-     * @param string $attachToID The ID of the element to attach to.
-     * @return UI_Bootstrap_Popover
-     * @throws UI_Exception
-     */
-    public static function popover(string $attachToID) : UI_Bootstrap_Popover
-    {
-        return (new UI_Bootstrap_Popover(self::getInstance()))->setAttachToID($attachToID);
-    }
-
-    /**
-     * Creates a tooltip instance used to hold information
-     * for a tooltip, to allow configuring it further.
-     *
-     * Usage:
-     *
-     * 1) Set the element ID to attach it to.
-     *    Either use {@see TooltipInfo::attachToID()}, or
-     *    {@see TooltipInfo::injectAttributes()} to use an
-     *    existing `id` attribute (or create one automatically).
-     * 2) Enable the tooltip. It will be automatically enabled
-     *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
-     *    is called, or if {@see TooltipInfo::injectJS()} is called.
-     *
-     * @param string|int|float|StringableInterface|NULL $content
-     * @return TooltipInfo
-     */
-    public static function tooltip($content) : TooltipInfo
-    {
-        return new TooltipInfo($content);
     }
 }
