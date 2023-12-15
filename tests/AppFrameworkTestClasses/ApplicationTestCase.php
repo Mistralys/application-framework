@@ -9,6 +9,10 @@ use Application\AppFactory;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
+use Application_Media_Document;
+use Application_Media_Document_Image;
+use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
@@ -22,6 +26,11 @@ abstract class ApplicationTestCase extends TestCase
      * @var array<string,int>
      */
     private static array $counter = array();
+
+    /**
+     * @var Application_Media_Document[]
+     */
+    protected array $testMedia = array();
 
     protected function logHeader(string $testName): void
     {
@@ -52,6 +61,15 @@ abstract class ApplicationTestCase extends TestCase
     {
         $this->clearTransaction();
         $this->disableLogging();
+        $this->clearTestMedia();
+    }
+
+    protected function clearTestMedia(): void
+    {
+        foreach($this->testMedia as $media)
+        {
+            FileHelper::deleteFile($media->getPath());
+        }
     }
 
     protected function startTransaction() : void
@@ -168,5 +186,35 @@ abstract class ApplicationTestCase extends TestCase
     protected function setUp(): void
     {
         Localization::selectAppLocale('en_UK');
+
+        $this->testMedia = array();
+    }
+
+    protected function getMediaStoragePath() : string
+    {
+        return __DIR__.'/../files/Media';
+    }
+
+    protected function getExampleImagePath() : string
+    {
+        $file = $this->getMediaStoragePath() . '/example-image.png';
+
+        $this->assertFileExists($file);
+
+        return $file;
+    }
+
+    public function createTestImage(string $name='example-image') : Application_Media_Document_Image
+    {
+        $file = $this->getExampleImagePath();
+
+        $document = AppFactory::createMedia()->createImageFromFile($name, FileInfo::factory($file));
+        $documentPath = $document->getPath();
+
+        $this->assertFileExists($documentPath);
+
+        $this->testMedia[] = $document;
+
+        return $document;
     }
 }
