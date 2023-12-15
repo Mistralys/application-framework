@@ -82,6 +82,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * @return array<string,string>
      */
     public function getAdminAreas() : array;
+    public function areaExists(string $name) : bool;
 
     public function getAllowedAreas() : array;
 
