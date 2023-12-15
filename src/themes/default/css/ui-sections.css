@@ -94,13 +94,14 @@
     line-height: 38px;
     padding: 0 0 0 8px;
     margin: 0 0 13px 0;
-    background: #f7f7f7;
+    background: var(--color-section-header-bg);
+    color: var(--color-section-header-text);
     border-radius: 2px;
 }
 
 /* Collapsible header */
 .section-header.collapsible{
-    color: #08c;
+    color: var(--color-section-header-clickable);
     cursor: pointer;
 }
 
@@ -109,7 +110,7 @@
 }
 
 .section-header.collapsible:hover{
-    background: #e8f5ff;
+    background: var(--color-section-header-bg-hover);
 }
 
 .section-header > .section-status-elements{

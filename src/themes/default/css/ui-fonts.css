@@ -1,12 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Roboto+Mono:ital,wght@0,200;0,300;0,400;0,500;1,200;1,300;1,400;1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;1,300&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Ysabeau+Infant&display=swap');
 
 :root{
     --font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --font-family-monospace: 'Roboto Mono', monospace;
     --font-weight-light: 400;
     --font-weight-normal: 500;
-    --font-weight-bold: 700;
+    --font-weight-bold: 600;
     --font-weight-bolder: 700;
+    --font-weight-monospace: 400;
+    --font-size-xxs: 0.625rem;
     --font-size-xs: 0.725rem;
     --font-size-s: 0.875rem;
     --font-size-normal: 1rem;
@@ -14,8 +16,10 @@
     --font-size-xl: 1.25rem;
 
     --line-height-normal: 1.5rem;
+    --line-height-xxs: 0.75rem;
+    --line-height-xs: 1rem;
     --line-height-s: 1.25rem;
-    --line-height-l: 1.5rem;
+    --line-height-l: 1.3rem;
 }
 
 BODY,
@@ -27,11 +31,18 @@ TEXTAREA {
     font-weight: var(--font-weight-light);
     font-size: var(--font-size-normal);
     line-height: var(--line-height-normal);
+    letter-spacing: -0.035rem;
 }
 
-CODE{
+.uppercase {
+    text-transform: uppercase;
+}
+
+CODE,
+PRE,
+.monospace {
     font-family: var(--font-family-monospace);
-    font-weight: 400;
+    font-weight: var(--font-weight-monospace);
 }
 
 LI{
@@ -77,12 +88,6 @@ input[type="color"],
     line-height: var(--line-height-normal);
 }
 
-label{
-    font-weight: var(--font-weight-normal);
-    font-size: var(--font-size-normal);
-    line-height: var(--line-height-normal);
-}
-
 .properties-grid .prop-header TH,
 #footer_frame .footer-column-header,
 H1.page-title,
@@ -99,7 +104,45 @@ H3.page-abstract {
 .keyboard-shortcut,
 .whatsnew-version,
 .table TH,
-STRONG,
-H1,H2,H3,H4,H5,H6{
+STRONG{
     font-weight: var(--font-weight-bold);
+}
+
+H1,H2,H3,H4,H5,H6{
+    font-weight: var(--font-weight-bolder);
+}
+
+
+/* region: Labels and badges */
+
+label{
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-normal);
+}
+
+/* Force the font size, for example when used in a title */
+.badge-dropdown .dropdown-menu {
+    font-size: var(--font-size-s);
+}
+
+.badge.badge-large {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-l);
+    line-height: var(--line-height-l);
+}
+
+.badge.badge-small {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xxs);
+}
+
+/* endregion */
+
+/* region: Buttons */
+
+.btn.btn-mini{
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xs);
 }

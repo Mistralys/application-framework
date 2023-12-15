@@ -3,6 +3,8 @@ BODY {
     position: absolute; /* to make it fill the viewport even in smaller resolutions */
     min-width: fit-content; /* to fix the body being smaller than the content in smaller resolutions */
     width: 100%;
+    color: var(--color-text);
+    background: var(--color-bg-document);
 }
 
 .clickable {
@@ -14,6 +16,17 @@ BODY {
 -----------------------------------------------------------------*/
 
 /* region: Navigation - Main */
+
+#app-mainnav{
+    background: var(--color-mainnav-bg);
+    background: var(--color-mainnav-gradient);
+    box-shadow: 0 7px 8px -4px var(--color-mainnav-shadow);
+}
+
+/* Lock Manager toolbar below the main navigation */
+#app-mainnav .navbar-toolbars {
+    box-shadow: 0 5px 5px var(--color-mainnav-toolbar-shadow);
+}
 
 #app-mainnav .brand {
     padding: 3px 0 0 0 !important;
@@ -30,6 +43,13 @@ BODY {
     padding-right: 6px;
 }
 
+#app-mainnav .nav > LI > A {
+    color: var(--color-mainnav-text);
+    text-shadow: 0 1px 0 var(--color-mainnav-text-shadow);
+    border: solid 1px transparent;
+    border-bottom: 0;
+}
+
 .navbar-appswitcher {
     margin-left: 20px !important;
 }
@@ -37,6 +57,77 @@ BODY {
 .nav.navbar-meta > LI > A{
     padding-left:8px !important;
     padding-right:8px !important;
+}
+
+/* Active navigation items */
+#app-mainnav .nav > LI.dropdown > A.nav-group-active,
+#app-mainnav .nav > LI.dropdown > A.nav-group-active:hover,
+#app-mainnav .nav > LI.dropdown > A.nav-group-active:focus,
+#app-mainnav .nav > LI.active > A,
+#app-mainnav .nav > LI.active > A:hover,
+#app-mainnav .nav > LI.active > A:focus{
+    color: var(--color-mainnav-active-text);
+    text-shadow: 0 1px 0 var(--color-mainnav-text-shadow);
+    background: var(--color-mainnav-active-bg);
+    background: var(--color-mainnav-active-gradient);
+}
+
+/* Lateral active item borders */
+#app-mainnav .nav > LI.dropdown > A.nav-group-active,
+#app-mainnav .nav > LI.active > A{
+    border:solid 1px var(--color-mainnav-active-border);
+    border-bottom: 0;
+}
+
+/* Hovering over inactive items */
+#app-mainnav .nav > LI > A:focus,
+#app-mainnav .nav > LI > A:hover {
+    color: var(--color-mainnav-hover-text);
+    background: var(--color-mainnav-hover-bg);
+}
+
+/* Hovering over active items */
+.navbar .nav > .active > a,
+.navbar .nav > .active > a:hover,
+.navbar .nav > .active > a:focus,
+.navbar .nav > li > a.nav-group-active,
+.navbar .nav > li > a.nav-group-active:hover,
+.navbar .nav > li > a.nav-group-active:focus {
+    /*color: #FFF !important;*/
+}
+
+.navbar .nav li.dropdown.open > .dropdown-toggle,
+.navbar .nav li.dropdown.active > .dropdown-toggle,
+.navbar .nav li.dropdown.open.active > .dropdown-toggle {
+    /*color: #000;*/
+}
+
+/* Muted color links in navigations */
+.nav-pills > .active > a .muted,
+.nav-pills > .active > a:hover .muted {
+    color: var(--color-text-muted);
+}
+
+.nav-pills>.active>a, .nav-pills>.active>a:hover, .nav-pills>.active>a:focus{
+    background: var(--color-pills-bg-active);
+}
+
+.nav>li>a:hover, .nav>li>a:focus{
+    background: var(--color-pills-bg-hover);
+}
+
+#app-mainnav .navbar-main li.dropdown>a:hover .caret,
+.navbar .nav li.dropdown>a:focus .caret{
+    border-top-color: var(--color-mainnav-caret-hover);
+}
+
+#app-mainnav .navbar-main > LI.dropdown.active > A > SPAN.caret,
+#app-mainnav .navbar-main .nav-link.dropdown > A > B.caret{
+    border-top-color: var(--color-mainnav-caret);
+}
+
+UL.nav > LI{
+    padding-bottom: 0;
 }
 
 /* endregion */
@@ -52,6 +143,29 @@ BODY.with-quicknav{
     margin: 4px 0;
     line-height: normal;
     font-size:var(--font-size-xs);
+    text-shadow: 0 1px 0 var(--color-quicknav-text-shadow);
+    border-radius: 2px;
+}
+
+#app-quicknav{
+    background: var(--color-quicknav-bg);
+    background: var(--color-quicknav-gradient);
+}
+
+#app-quicknav .nav > LI > A:link,
+#app-quicknav .nav > LI > A:visited{
+    color: var(--color-quicknav-text);
+}
+
+#app-quicknav .nav > LI > A:active,
+#app-quicknav .nav > LI > A:hover{
+    background: var(--color-quicknav-hover-bg);
+}
+
+#app-quicknav .nav > LI.item-active > A:link,
+#app-quicknav .nav > LI.item-active > A:visited{
+    background: var(--color-quicknav-active-bg);
+    text-shadow: 0 1px 0 var(--color-quicknav-active-text-shadow);
 }
 
 /* endregion */
@@ -64,7 +178,7 @@ BODY.with-quicknav{
 }
 
 #content_area {
-    background: #fff;
+    background: var(--color-bg-content);
 }
 
 #content_frame {
@@ -82,6 +196,10 @@ BODY.with-quicknav{
     margin:40px 0 0 0;
     padding:0;
     font-size: var(--font-size-s);
+    background: var(--color-footer-gradient);
+    border-top:solid 1px var(--color-footer-border);
+    box-shadow: 0 -7px 16px -1px var(--color-footer-shadow);
+    color: var(--color-footer-text);
 }
 
 #footer_frame {
@@ -93,6 +211,11 @@ BODY.with-quicknav{
     padding-left: 30px;
     padding-right: 30px;
     flex:1;
+    border-right:solid 1px var(--color-footer-separator);
+}
+
+#footer_frame > SECTION:last-child {
+    border-right:0;
 }
 
 #footer_frame P {
@@ -101,11 +224,22 @@ BODY.with-quicknav{
 
 #footer_frame .footer-column-header {
     text-transform: uppercase;
-    color: #fff;
+    color: var(--color-footer-column-header);
     font-size: var(--font-size-normal);
     line-height: 20px;
     padding: 0;
     margin: 0 0 20px 0;
+}
+
+#footer A:link,
+#footer A:visited,
+#footer A[type="button"]{
+    color: var(--color-footer-link);
+}
+
+#footer A:active,
+#footer A:hover {
+    color: var(--color-footer-link-hover);
 }
 
 /* endregion */
@@ -116,22 +250,37 @@ BODY.with-quicknav{
 
 /* region: Miscellaneous */
 
+A{
+    color: var(--color-link);
+}
+
+A:active,
+A:hover{
+    color: var(--color-link-hover);
+}
+
 .clear {
     clear: both;
 }
 
 /* font awesome icon in jquery UI wrappers */
 .ui-effects-wrapper .fa {
-    color: #cc0000;
+    color: var(--color-text-danger-xxl);
+}
+
+CODE {
+    color: var(--color-text-code);
+    background-color: var(--color-bg-code);
+    border-color: var(--color-border-code);
 }
 
 CODE.clickable{
-    color:#08c;
+    color: var(--color-link);
 }
 
 CODE.clickable:active,
 CODE.clickable:hover{
-    color:#005580;
+    color: var(--color-link-hover);
     text-decoration: underline;
 }
 
@@ -141,52 +290,9 @@ PRE.unstyled {
     border-radius: 0;
 }
 
-.btn-special {
-    background-color: #aad146;
-    background-image: linear-gradient(to bottom, #b0d84d, #89b027);
-    color: #fff;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-}
-
-.btn-special:hover,
-.btn-special:focus {
-    color: #fff;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-    background-image: none;
-    background-color: #aad146;
-}
-
-.btn-special:active {
-    color: #fff;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
-    background-image: none;
-    background-color: #79a017;
-}
-
-CODE {
-    color: #5b5b5b;
-}
 
 LABEL.link {
-    color: #08c;
-}
-
-.btn-dull {
-    color: #fff;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-    background-color: #b0b0b0;
-    background-image: linear-gradient(to bottom, #bbb, #828282);
-    background-repeat: repeat-x;
-    border-color: #222 #222 #000;
-    border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-}
-
-.btn-dull:hover,
-.btn-dull:focus,
-.btn-dull.disabled,
-.btn-dull[disabled] {
-    color: #fff;
-    background-color: #828282;
+    color: var(--color-link);
 }
 
 DIV.log > CODE {
@@ -195,7 +301,7 @@ DIV.log > CODE {
     border: 0;
     background: transparent;
     border-radius: 0;
-    color: #000;
+    color: var(--color-text);
 }
 
 .dropdown-menu.height-mini {
@@ -209,61 +315,31 @@ DIV.log > CODE {
     font-size: var(--font-size-s);
 }
 
-#auth {
-    float: right;
-    background: #004192;
-    margin-top: 7px;
-    padding: 4px 17px;
-    -webkit-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
-    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.3);
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-}
-
-#auth:hover {
-    background: url(../img/bg-nav-active.png) repeat-x;
-}
-
-#auth .dropdown-toggle {
-    font-size: var(--font-size-xs);
-    color: #fff;
-}
-
-#auth .dropdown-toggle:hover,
-#auth .dropdown-toggle:active {
-    text-decoration: none;
-}
-
-#auth .caret {
-    border-top-color: #fff;
-}
-
-#developer_mode_hint {
+.hint-message{
     border-radius: 4px;
     padding: 6px 20px;
     text-align: center;
-    background: url(../img/bg-button-developer.png);
-    color: #b83d00;
     margin-bottom: 13px;
-    border: solid 1px #b83d00;
+    border-width: 1px;
+    border-style: solid;
 }
 
-#simulate_session_hint {
-    border-radius: 4px;
-    padding: 6px 20px;
-    text-align: center;
-    background: #00cc00;
-    color: #fff;
-    border: solid 1px #008800;
-    margin-bottom: 13px;
+.hint-developer {
+    background: var(--color-hint-developer-bg);
+    color: var(--color-text-inverted);
+    border: solid 1px var(--color-hint-border-developer);
 }
 
-#maintenance_mode_hint {
-    padding: 6px 20px;
-    text-align: center;
-    background: #eac222;
-    color: #fff;
+.hint-system{
+    background: var(--color-hint-system-bg);
+    border: solid 1px var(--color-hint-border-system);
+    color: var(--color-text-inverted);
+}
+
+.hint-success {
+    background: var(--color-hint-system-success);
+    color: var(--color-text-inverted);
+    border-color: var(--color-hint-border-success);
 }
 
 .help {
@@ -288,54 +364,13 @@ DIV.log > CODE {
     padding-top: 6px;
 }
 
-.btn [class^="icon-"],
-.btn [class*=" icon-"] {
-    line-height: 1.2em;
-}
-
-.controls .static {
-    display: inline-block;
-    vertical-align: middle;
-    background-color: #fff;
-    border: solid 1px #ccc;
-    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
-    -moz-transition: border linear .2s, box-shadow linear 2s;
-    -o-transition: border linear .2s, box-shadow linear 2s;
-    transition: border linear .2s, box-shadow linear 2s;
-    height: 20px;
-    padding: 4px 10px;
-    line-height: 20px;
-    color: #555;
-    -webkit-border-radius: 3px;
-    border-radius: 3px;
-}
-
-.controls .custom {
-    display: inline-block;
-    vertical-align: middle;
-    padding: 4px 0;
-}
-
-.img-frame {
-    display: inline-block;
-    background: url(../img/checkers.png);
-}
-
-.img-frame .img-polaroid {
-    background-color: transparent;
-    padding: 0;
-    border: 1px solid #ccc;
-}
-
 ACRONYM {
-    border-bottom: dotted 1px #ccc;
+    border-bottom: dotted 1px var(--color-text-muted);
     cursor: help;
 }
 
 ACRONYM:hover {
-    color: #000066;
+    color: var(--color-link-hover);
 }
 
 P.abstract {
@@ -355,45 +390,24 @@ TD.nowrap {
     white-space: nowrap;
 }
 
-.variable-type-string {
-    color: #008040;
-}
-
-.variable-type-number {
-    color: #00009f;
-    font-family: monospace;
-}
-
 .text-tooltip{
     cursor: help;
     text-decoration: underline;
-    text-decoration-color: #e4ef9e;
+    text-decoration-color: var(--color-text-tooltip);
 }
 
 .text-link {
-    color: #08c;
+    color: var(--color-link);
     text-decoration: none;
 }
 
 .text-link:hover,
 .text-link:active {
     text-decoration: underline;
-    color: #005580;
+    color: var(--color-link-hover);
 }
 
 /* endregion */
-
-/* ------------------------------------------------------------------------
-   TEXT FORMATTING
-   ------------------------------------------------------------------------*/
-
-.monospace {
-    font-family: monospace;
-}
-
-.uppercase {
-    text-transform: uppercase;
-}
 
 
 /**
@@ -504,14 +518,9 @@ PRE.console {
     margin-bottom: 50px;
 }
 
-.btn-developer {
-    background: url(../img/bg-button-developer.png);
-    border-color: #f47e00;
-}
-
 TR.active,
 TR.active:hover {
-    background: #dce2ec;
+    background: var(--color-table-row-bg-hover);
 }
 
 .loader_text {
@@ -531,7 +540,7 @@ TR.active:hover {
 .keyboard-shortcut {
     display: inline-block;
     font-size: 80%;
-    color: #999;
+    color: var(--color-text-secondary);
     letter-spacing: -0.1em;
 }
 
@@ -556,13 +565,13 @@ TH.align-right {
 }
 
 UL.dropdown-menu .header {
-    color: #999;
+    color: var(--color-text-secondary);
     display: block;
     text-transform: uppercase;
     padding: 3px 15px;
     font-size: 11px;
     line-height: 20px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 0 var(--color-dropdown-header-text-shadow);
 }
 
 UL.dropdown-menu {
@@ -596,21 +605,21 @@ UL.dropdown-menu {
 }
 
 .dropdown-menu .danger A {
-    color: #b94a48;
+    color: var(--color-text-danger);
 }
 
 .dropdown-menu LI.danger > a:hover {
-    background: #b94a48;
-    color: #fff;
+    background: var(--color-text-danger);
+    color: var(--color-text-inverted);
 }
 
 .dropdown-menu .developer A {
-    color: #f47e00;
+    color: var(--color-text-developer);
 }
 
 .dropdown-menu LI.developer > a:hover {
-    background: #f47e00;
-    color: #fff;
+    background: var(--color-text-developer);
+    color: var(--color-text-inverted);
 }
 
 LI.select-block {
@@ -659,8 +668,8 @@ TABLE.layout-only TD{
 }
 
 .drag-helper {
-    background: #08c;
-    color: #fff;
+    background: var(--color-link);
+    color: var(--color-text-inverted);
     border-radius: 4px;
     padding: 2px 10px;
 }
@@ -699,7 +708,7 @@ TABLE.layout-only TD{
 .whatsnew-category {
     text-transform: uppercase;
     font-size: 13px !important;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
 .whatsnew-items {
@@ -747,9 +756,9 @@ BODY.fontsize-bigger.non-zoomable {
 
 #content_frame > .nav-pills {
     padding: 0;
-    border-top: solid 1px #e9e9e9;
-    border-bottom: solid 1px #e9e9e9;
-    background: #fafafa;
+    border-top: solid 1px var(--color-pills-bg);
+    border-bottom: solid 1px var(--color-pills-bg);
+    background: var(--color-pills-bg);
     margin-bottom: 30px;
 }
 
@@ -773,23 +782,15 @@ BODY.fontsize-bigger.non-zoomable {
     font-size: 12px;
 }
 
+/* Wrap around the document body directly under `content` */
 .body-wrap {
-    border: solid 1px #D5D6DE;
-    background: #f8f8f8;
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.20);
-    border-radius: 4px;
-    padding: 18px;
 }
 
 .body-wrap.slim {
-    border: none;
-    box-shadow: none;
-    padding: 0;
-    background: transparent;
 }
 
 .body-wrap TABLE.table {
-    background: #fff;
+    background: var(--color-table-bg);
 }
 
 .body-wrap TR.prop-header {
@@ -818,7 +819,11 @@ BODY.fontsize-bigger.non-zoomable {
 }
 
 .text-warning {
-    color: #e2500b;
+    color: var(--color-text-warning);
+}
+
+.text-secondary{
+    color: var(--color-text-secondary);
 }
 
 .popover-content p {
@@ -849,27 +854,18 @@ UL > LI:last-child{
     padding-bottom: 0;
 }
 
-UL.nav > LI{
-    padding-bottom: 0;
-}
-
-UL.navbar-main > LI.dropdown.active > A > SPAN.caret{
-    border-top-color: #ddd !important;
-    border-bottom-color: #ddd !important;
-}
-
 UL .popover {
     color: #000 !important;
 }
 
 .properties-grid {
-    border-bottom: solid 1px #ddd;
+    border-bottom: solid 1px var(--color-table-properties-border);
 }
 
 .properties-grid TD,
 .properties-grid TH {
-    border-left: solid 1px #ddd;
-    border-right: solid 1px #ddd;
+    border-left: solid 1px var(--color-table-properties-border);
+    border-right: solid 1px var(--color-table-properties-border);
 }
 
 .properties-grid .prop-header TH {
@@ -900,43 +896,10 @@ TD.force-ellipsis {
     white-space: nowrap;
 }
 
-/* Fix for multiselect dropdowns in collapsible sections:
- * they are truncated, so this makes them open inline 
- * instead of a hover menu. See the multiselect class.
- */
-.btn-group.multiselect.inline-menu .multiselect-container {
-    float: none;
-    position: relative;
-    margin-bottom: 8px;
-}
-
-/* To allow elements to be appended to these, and put it 
- * on the same baseline as other elements.
- */
-.btn-group.multiselect {
-    display: inline-block;
-    margin-top: -2px;
-}
-
 /* Fix for overlays not working in collapsible elements */
 .collapse.in,
 .accordion-body.in {
     overflow: visible;
-}
-
-UL.list-messages {
-    padding: 5px 10px;
-    border-left: solid 4px #ccc;
-}
-
-UL.list-messages.messages-error {
-    border-left-color: #b94a48;
-    background: #fcf0f0;
-}
-
-UL.list-messages.messages-warning {
-    border-left-color: #f89406;
-    background: #fef1df;
 }
 
 UL.unstyled.compact > LI {
@@ -953,6 +916,10 @@ UL.unstyled.compact > LI {
    ------------------------------------------------------------------- */
 
 /* region: Alerts */
+
+.alert.alert-layout-slim.alert-inline > .close {
+    top:1px;
+}
 
 .alert > P:last-child {
     margin-bottom: 0;
@@ -975,12 +942,12 @@ UL.unstyled.compact > LI {
 }
 
 .alert.alert-warning {
-    color: #e2500b;
+    color: var(--color-text-warning);
 }
 
 .alert.alert-warning {
-    border-color: #f2cfa5;
-    background-color: #fff1d1;
+    border-color: var(--color-border-warning);
+    background-color: var(--color-bg-warning);
 }
 
 .alert.alert-layout-slim {
@@ -1031,7 +998,7 @@ H1.page-title SMALL {
 }
 
 H1.page-title SMALL A {
-    color: #999;
+    color: var(--color-text-secondary);
 }
 
 H2 {
@@ -1054,7 +1021,7 @@ H3 {
 
 .title-subline {
     display: block;
-    color: #999;
+    color: var(--color-text-secondary);
 }
 
 H2.page-subtitle {
@@ -1076,12 +1043,12 @@ H3.page-abstract {
 
 .page-title .title-subline A:link,
 .page-title .title-subline A:visited {
-    color: #999;
+    color: var(--color-text-secondary);
 }
 
 .page-title .title-subline A:active,
 .page-title .title-subline A:hover {
-    color: #08c;
+    color: var(--color-link);
 }
 
 .page-title .title-badges,
@@ -1129,27 +1096,13 @@ H3.page-abstract {
     position: relative;
 }
 
-/* Force the font size, for example when used in a title */
-.badge-dropdown .dropdown-menu {
-    font-size: 14px;
-}
-
-.badge.badge-large {
-    font-size: 1.1em;
-    line-height: 1.2em;
-}
-
-.badge.badge-small {
-    line-height: 0.8em;
-}
-
 /* endregion */
 
 /* region: Links */
 
 .muted A:link,
 .muted A:visited{
-    color: #999;
+    color: var(--color-link-muted);
 }
 
 A.dark:link,
@@ -1168,13 +1121,13 @@ A.whatsnew-image > IMG {
     display: block;
 }
 
-/* avoid the arrow ususally shown on external links */
+/* avoid the arrow usually shown on external links */
 A.whatsnew-image:after {
     content: "" !important;
 }
 
 A[target="_blank"]:not([type="button"]) {
-    color: #063aae;
+    color: var(--color-link-external);
 }
 
 /*Don't change color for external links in a dropdown menu*/
@@ -1192,6 +1145,113 @@ A[target="_blank"]:not([type="button"]):after {
 
 A[type="button"] {
     cursor:pointer;
+}
+
+/* endregion */
+
+/* region: Buttons */
+
+.btn [class^="icon-"],
+.btn [class*=" icon-"] {
+    line-height: 1.2em;
+}
+
+.btn{
+    text-shadow: none;
+    box-shadow: none;
+}
+
+.btn.btn-default{
+    background: var(--color-btn-default-bg);
+    border-color: var(--color-btn-default-border);
+    color: var(--color-btn-default-text);
+}
+
+.btn.btn-default:hover{
+    background: var(--color-btn-default-bg-hover);
+}
+
+.btn.btn-primary{
+    background: var(--color-btn-primary-bg);
+    border-color: var(--color-btn-primary-border);
+    color: var(--color-btn-primary-text);
+}
+
+.btn.btn-primary:hover{
+    background: var(--color-btn-primary-bg-hover);
+}
+
+.btn.btn-warning{
+    background: var(--color-btn-warning-bg);
+    border-color: var(--color-btn-warning-border);
+    color: var(--color-btn-warning-text);
+}
+
+.btn.btn-warning:hover{
+    background: var(--color-btn-warning-bg-hover);
+}
+
+.btn.btn-danger{
+    background: var(--color-btn-danger-bg);
+    border-color: var(--color-btn-danger-border);
+    color: var(--color-btn-danger-text);
+}
+
+.btn.btn-danger:hover{
+    background: var(--color-btn-danger-bg-hover);
+}
+
+.btn.btn-success{
+    background: var(--color-btn-success-bg);
+    border-color: var(--color-btn-success-border);
+    color: var(--color-btn-success-text);
+}
+
+.btn.btn-success:hover{
+    background: var(--color-btn-success-bg-hover);
+}
+
+.btn.btn-info{
+    background: var(--color-btn-info-bg);
+    border-color: var(--color-btn-info-border);
+    color: var(--color-btn-info-text);
+}
+
+.btn.btn-info:hover{
+    background: var(--color-btn-info-bg-hover);
+}
+
+.btn.btn-inverted{
+    background: var(--color-btn-inverted-bg);
+    border-color: var(--color-btn-inverted-border);
+    color: var(--color-btn-inverted-text);
+}
+
+.btn.btn-inverted:hover{
+    background: var(--color-btn-inverted-bg-hover);
+}
+
+.btn-developer {
+    background: url(../img/bg-button-developer.png);
+    border-color: #f47e00;
+}
+
+/* Fix for multiselect dropdowns in collapsible sections:
+ * they are truncated, so this makes them open inline
+ * instead of a hover menu. See the multiselect class.
+ */
+.btn-group.multiselect.inline-menu .multiselect-container {
+    float: none;
+    position: relative;
+    margin-bottom: 8px;
+}
+
+/* To allow elements to be appended to these, and put it
+ * on the same baseline as other elements.
+ */
+.btn-group.multiselect {
+    display: inline-block;
+    margin-top: -2px;
 }
 
 /* endregion */

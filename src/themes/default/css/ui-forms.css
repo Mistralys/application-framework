@@ -2,6 +2,28 @@
    FORMS
    ------------------------------------------------------------------------*/
 
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input{
+    color: var(--color-form-element-text);
+    background-color: var(--color-form-element-bg);
+    border-color: var(--color-form-element-border);
+}
+
 TEXTAREA.preformatted {
     font-family: monospace;
     white-space: nowrap;
@@ -9,7 +31,7 @@ TEXTAREA.preformatted {
 
 input[type="file"] {
     display: block;
-    background: aliceblue;
+    background: var(--color-form-file-bg);
     padding: 2px 6px;
     border-radius: 3px;
     width: 96%;
@@ -17,11 +39,7 @@ input[type="file"] {
 }
 
 input[type="file"]:hover {
-    background: #ceedff;
-}
-
-.input-xllarge {
-    width: 340px;
+    background: var(--color-form-file-bg-hover);
 }
 
 SECTION .form-horizontal,
@@ -30,7 +48,7 @@ SECTION .form-inline {
 }
 
 H3.SectionSubheader {
-    border-bottom: solid 1px #ccc;
+    border-bottom: solid 1px var(--color-form-section-subheader-bg);
     line-height: 30px;
     margin-bottom: 34px;
     margin-top: 28px;
@@ -96,14 +114,14 @@ H3.form-header.form-header-first {
 }
 
 .form-hints {
-    border-top: solid 1px #eee;
+    border-top: solid 1px var(--color-form-hints-separator);
     padding-top: 13px;
     font-size: var(--font-size-s);
 }
 
 .form-heading-abstract {
     font-style: italic;
-    color: #999;
+    color: var(--color-text-secondary);
     margin-bottom: 15px;
 }
 
@@ -121,8 +139,8 @@ H3.form-header.form-header-first {
 }
 
 .radio.active {
-    background: #08c;
-    color: #fff;
+    background: var(--color-accent-primary);
+    color: var(--color-text-inverted);
     border-radius: 3px;
 }
 
@@ -229,6 +247,31 @@ LABEL.radio.standalone,
     padding-top: 5px;
 }
 
+.controls .static {
+    display: inline-block;
+    vertical-align: middle;
+    background-color: #fff;
+    border: solid 1px #ccc;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+    -moz-transition: border linear .2s, box-shadow linear 2s;
+    -o-transition: border linear .2s, box-shadow linear 2s;
+    transition: border linear .2s, box-shadow linear 2s;
+    height: 20px;
+    padding: 4px 10px;
+    line-height: 20px;
+    color: #555;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+.controls .custom {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 4px 0;
+}
+
 .form-icon-required,
 .form-icon-structural {
     display: none;
@@ -242,12 +285,12 @@ LABEL.radio.standalone,
 
 /* Make the delete icon red */
 .multiselect-container .btn.clear-search {
-    color: #cc0000;
+    color: var(--color-text-danger-xxl);
 }
 
 /* The search bar in the multiselect element */
 .multiselect-item.filter {
-    background: #fafafa;
+    background: var(--color-bg-light);
     margin-bottom: 13px;
     padding: 5px;
 }
@@ -267,7 +310,7 @@ LABEL.radio.standalone,
 
 .form-error-hint {
     display: block;
-    color: #c52320;
+    color: var(--color-text-danger-xxl);
     padding: 9px 0 9px 0;
 }
 
