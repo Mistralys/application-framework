@@ -600,7 +600,8 @@ ALTER TABLE `campaigns`
 --
 ALTER TABLE `countries`
     ADD PRIMARY KEY (`country_id`),
-    ADD KEY `iso` (`iso`);
+    ADD KEY `iso` (`iso`),
+    ADD UNIQUE(`iso`);
 
 --
 -- Indexes for table `custom_properties`
