@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
-use TestDriver\TestDBCollection;
-use TestDriver\TestDBCollection\TestDBRecord;
+use TestDriver\TestDBRecords\TestDBRecord;
 
 /**
  * Tests the basic record creation without settings manager:
@@ -80,8 +80,8 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
     public function getDefaultFormValues(): array
     {
         return array(
-            TestDBRecord::COL_LABEL => 'Test label',
-            TestDBRecord::COL_ALIAS => 'test-alias'
+            TestDBCollection::COL_LABEL => 'Test label',
+            TestDBCollection::COL_ALIAS => 'test-alias'
         );
     }
 
@@ -93,7 +93,7 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
 
     private function injectLabel() : void
     {
-        $el = $this->addElementText(TestDBRecord::COL_LABEL, t('Label'));
+        $el = $this->addElementText(TestDBCollection::COL_LABEL, t('Label'));
         $el->addFilterTrim();
         $el->addClass('input-xlarge');
         $this->addRuleLabel($el);
@@ -103,7 +103,7 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
 
     private function injectAlias() : void
     {
-        $el = $this->addElementText(TestDBRecord::COL_ALIAS, t('Alias'));
+        $el = $this->addElementText(TestDBCollection::COL_ALIAS, t('Alias'));
         $el->addFilterTrim();
         $el->addClass('input-xlarge');
         $this->addRuleAlias($el);
@@ -114,8 +114,8 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
     public function getSettingsKeyNames(): array
     {
         return array(
-            TestDBRecord::COL_LABEL,
-            TestDBRecord::COL_ALIAS
+            TestDBCollection::COL_LABEL,
+            TestDBCollection::COL_ALIAS
         );
     }
 
@@ -130,8 +130,8 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
 
     protected function _handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
-        $data->requireNotEmpty(TestDBRecord::COL_LABEL);
-        $data->requireNotEmpty(TestDBRecord::COL_ALIAS);
+        $data->requireNotEmpty(TestDBCollection::COL_LABEL);
+        $data->requireNotEmpty(TestDBCollection::COL_ALIAS);
 
         $this->redirectWithSuccessMessage(
             sprintf('The data has been processed successfully at %1$s.', sb()->time()),

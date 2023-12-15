@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
-use TestDriver\TestDBCollection\TestSettingsManagerLegacy;
-use TestDriver\TestDBCollection;
+use TestDriver\TestDBRecords\TestSettingsManagerLegacy;
 
 /**
  * @see TestSettingsManagerLegacy
