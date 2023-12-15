@@ -1,12 +1,4 @@
 ### v3.1.0 - UI and News update
-- News: Fixed the jumbled order of articles in the news list.
-- News: Added the creation date to the admin news list.
-- News: Limited the width of the news entry detail view.
-- MarkdownRenderer: Added the `{TOC}` tag.
-- MarkdownRenderer: Added table support.
-- MarkdownRenderer: Added heading anchors and permalinks.
-- MarkdownRenderer: Added a dedicated style sheet.
-- MarkdownRenderer: Streamlined layout of the TOC and headings.
 - Countries: Fixed unit tests adding duplicate countries.
 - Countries: Made the `iso` column in the database `UNIQUE`.
 - Countries: Added a check to see if an ISO code already exists.
@@ -14,8 +6,6 @@
 - Interface Refs: Added country flags example.
 - Interface Refs: Added badge and label examples.
 - Interface Refs: Added text color examples.
-- UI: Fixed the UI font family not being applied.
-- UI: Improved typography with unified line heights and font sizes.
 - UI: Added `addUnorderedList()` to the `UI_Help` class.
 - UI: Fixed the size of headings in the page help.
 - UI: Added dark mode (currently in Alpha state).
