@@ -2,36 +2,27 @@
 
 declare(strict_types=1);
 
+use Application\MarkdownRenderer;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Microtime;
 
 class Application_User_Notepad_Note
 {
     public const ERROR_NO_DATA_FOUND = 90001;
 
-    const KEY_DATE = 'date';
-    const KEY_TITLE = 'title';
-    const KEY_CONTENT = 'content';
-    const KEY_ID = 'id';
+    public const KEY_DATE = 'date';
+    public const KEY_TITLE = 'title';
+    public const KEY_CONTENT = 'content';
+    public const KEY_ID = 'id';
 
-    /**
-     * @var Application_User_Notepad
-     */
-    private $notepad;
-
-    /**
-     * @var string
-     */
-    private $keyName;
-
-    /**
-     * @var int
-     */
-    private $id;
+    private Application_User_Notepad $notepad;
+    private string $keyName;
+    private int $id;
 
     /**
      * @var array<string,mixed>
      */
-    private $data;
+    private array $data;
 
     /**
      * Creates a note by its ID.
@@ -50,8 +41,8 @@ class Application_User_Notepad_Note
 
         $json = $notepad->getUser()->getSetting($this->keyName);
 
-        $data = json_decode($json, true);
-        if($data === false || empty($data))
+        $data = JSONConverter::json2array($json);
+        if(empty($data))
         {
             throw new Application_Exception(
                 'Missing note data set',
@@ -74,22 +65,22 @@ class Application_User_Notepad_Note
 
     public function getTitle() : string
     {
-        return strval($this->data[self::KEY_TITLE]);
+        return (string)$this->data[self::KEY_TITLE];
     }
 
     public function getContent() : string
     {
-        return strval($this->data[self::KEY_CONTENT]);
+        return (string)$this->data[self::KEY_CONTENT];
     }
 
     public function renderContent() : string
     {
-        return Parsedown::instance()->parse($this->getContent());
+        return MarkdownRenderer::create()->render($this->getContent());
     }
 
     public function getDate() : Microtime
     {
-        return new Microtime(strval($this->data[self::KEY_DATE]));
+        return new Microtime((string)$this->data[self::KEY_DATE]);
     }
 
     public function setTitle(string $title) : void
@@ -111,7 +102,7 @@ class Application_User_Notepad_Note
     {
         $user = $this->notepad->getUser();
 
-        $user->setSetting($this->keyName, json_encode($this->data));
+        $user->setSetting($this->keyName, JSONConverter::var2json($this->data));
         $user->saveSettings();
     }
 
@@ -126,7 +117,7 @@ class Application_User_Notepad_Note
 
         $user = $notepad->getUser();
 
-        $user->setSetting($notepad->getNoteKey($id), json_encode($data));
+        $user->setSetting($notepad->getNoteKey($id), JSONConverter::var2json($data));
         $user->saveSettings();
     }
 
