@@ -169,6 +169,11 @@ class PaginationRenderer implements RenderableInterface
         return implode(' ', $this->items);
     }
 
+    public function getTotalPages() : int
+    {
+        return $this->paginator->getTotalPages();
+    }
+
     public function setCurrentPage(int $pageNumber) : self
     {
         $this->paginator->setCurrentPage($pageNumber);
