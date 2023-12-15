@@ -7,6 +7,7 @@
           <versions>
             <info id="Local" version="9.5.20" />
             <info id="Local/Users/smordziol/Webserver/libraries/application-framework/vendor/autoload.php" version="9.6.11" />
+            <info id="LocalF:\EasyPHP\eds-www\tools\application-framework\vendor\autoload.php" version="9.6.14" />
           </versions>
         </cache>
       </tool>
