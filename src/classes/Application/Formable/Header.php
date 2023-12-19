@@ -8,6 +8,7 @@
  */
 
 use AppUtils\HTMLTag;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Utility class used as a wrapper to add a collapsible
@@ -69,11 +70,11 @@ class Application_Formable_Header
     /**
      * @var string[]
      */
-    protected $abstractClasses = array();
+    protected array $abstractClasses = array();
 
     /**
      * @param Application_Formable $formable
-     * @param string|UI_Renderable_Interface $label
+     * @param string|number|StringableInterface|NULL $label
      * @throws UI_Exception
      */
     public function __construct(Application_Formable $formable, $label)
@@ -97,7 +98,7 @@ class Application_Formable_Header
     }
 
     /**
-     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|number|StringableInterface|NULL $label
      * @return $this
      * @throws UI_Exception
      */
