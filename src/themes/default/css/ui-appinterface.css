@@ -1,5 +1,22 @@
+.body-wrap > H2:first-child{
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.example-description{
+    padding: 1rem 0;
+    max-width: 40rem;
+}
+
 .example-output{
-    padding: 13px;
-    border: dotted 2px var(--color-border);
-    border-radius: 4px;
+    padding-top: 2rem;
+}
+
+.example-navigation{
+    margin-bottom: 1rem;
+}
+
+.sidebar-examples-list > LI.active > A{
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-success);
 }
