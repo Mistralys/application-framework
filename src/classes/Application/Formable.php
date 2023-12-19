@@ -10,6 +10,7 @@ use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\RegexHelper;
 
 /**
@@ -410,10 +411,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         );
     }
     
-   /**
-    * @var Application_Formable_Header
-    */
-    protected $activeHeader;
+    protected ?Application_Formable_Header $activeHeader = null;
     
    /**
     * Adds a configurable header element. Is intended to
@@ -424,18 +422,48 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * be configured as you need. Call the <code>apply()</code>
     * method last to have the form elements added.
     * 
-    * @param string $label
+    * @param string|number|StringableInterface|NULL $label
     * @return Application_Formable_Header
     */
-    public function addElementHeaderII(string $label) : Application_Formable_Header
+    public function addElementHeaderII($label) : Application_Formable_Header
+    {
+        return $this->addSection($label);
+    }
+
+    /**
+     * Adds a section to hold elements in the form.
+     *
+     * @param string|number|StringableInterface|NULL $label
+     * @return Application_Formable_Header
+     */
+    public function addSection($label) : Application_Formable_Header
     {
         $this->requireFormableInitialized();
-        
+
         $header = new Application_Formable_Header($this, $label);
-        
+
         $this->activeHeader = $header;
-        
+
         return $header;
+    }
+
+    /**
+     * Adds a tab to hold elements in the form.
+     *
+     * This is a form container object, which must be passed
+     * on to all elements that you wish to show there.
+     *
+     * @param string $name
+     * @param string|number|StringableInterface|NULL $label
+     * @param string|number|StringableInterface|NULL $description
+     * @return HTML_QuickForm2_Container_Group
+     * @throws Application_Formable_Exception
+     */
+    public function addTab(string $name, $label, $description=null) : HTML_QuickForm2_Container_Group
+    {
+        $this->requireFormableInitialized();
+
+        return $this->formableForm->addTab($name, $label, $description);
     }
     
    /**
@@ -582,8 +610,8 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * @param string $anchor The name of the anchor that can be used to jump to the heading
     * @param boolean $collapsed Whether the header should start collapsed
     * @return HTML_QuickForm2_Element_InputText
-    * @see Application_Formable::addElementHeaderII()
-    * @deprecated Use addElementHeaderII() instead.
+    * @see Application_Formable::addSection()
+    * @deprecated Use {@see self::addSection()} instead.
     */
     public function addElementHeader($title, $container = null, $anchor=null, $collapsed=true)
     {

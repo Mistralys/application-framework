@@ -7,6 +7,8 @@
  * @see Application_Interfaces_Formable
  */
 
+use AppUtils\Interfaces\StringableInterface;
+
 /**
  * Interface for classes that can act as an input form.
  *
@@ -115,10 +117,24 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * be configured as you need. Call the <code>apply()</code>
      * method last to have the form elements added.
      *
-     * @param string $label
+     * @param string|number|StringableInterface|NULL $label
      * @return Application_Formable_Header
      */
-    public function addElementHeaderII(string $label): Application_Formable_Header;
+    public function addElementHeaderII($label): Application_Formable_Header;
+
+    /**
+     * @param string|number|StringableInterface|NULL $label
+     * @return Application_Formable_Header
+     */
+    public function addSection($label) : Application_Formable_Header;
+
+    /**
+     * @param string $name
+     * @param string|number|StringableInterface|NULL $label
+     * @param string|number|StringableInterface|NULL $description
+     * @return HTML_QuickForm2_Container_Group
+     */
+    public function addTab(string $name, $label, $description=null) : HTML_QuickForm2_Container_Group;
 
     /**
      * Adds a file upload element.
