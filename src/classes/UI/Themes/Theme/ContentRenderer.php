@@ -9,7 +9,9 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
+use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
 
@@ -201,6 +203,24 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
         
         $this->appendContent($html);
         return $this;
+    }
+
+    /**
+     * @param string $templateIDOrClass
+     * @param array<string,mixed> $vars
+     * @return $this
+     *
+     * @throws UI_Themes_Exception
+     * @throws BaseClassHelperException
+     * @throws FileHelper_Exception
+     */
+    public function appendTemplateClass(string $templateIDOrClass, array $vars=array()) : self
+    {
+        return $this->appendTemplate(
+            $this->getPage()
+                ->createTemplate($templateIDOrClass)
+                ->setVars($vars)
+        );
     }
     
     public function appendTemplate(UI_Page_Template $template) : UI_Themes_Theme_ContentRenderer
