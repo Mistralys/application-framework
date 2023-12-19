@@ -75,6 +75,10 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
         $this->header = $this->page->getHeader();
         $this->footer = $this->page->getFooter();
 
+        if(class_exists($templateID)) {
+           return;
+        }
+
         if(stripos($templateID, '.php') !== false) {
             $templateID = FileHelper::removeExtension($templateID, true);
         }
