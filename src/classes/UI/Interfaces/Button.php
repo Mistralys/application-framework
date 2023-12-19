@@ -1,6 +1,7 @@
 <?php
 
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 
 interface UI_Interfaces_Button
     extends
@@ -87,10 +88,10 @@ interface UI_Interfaces_Button
     public function setID(string $id) : self;
 
     /**
-     * @param string $label
+     * @param string|number|StringableInterface|NULL $label
      * @return $this
      */
-    public function setLabel(string $label) : self;
+    public function setLabel($label) : self;
 
     public function getLabel() : string;
 
