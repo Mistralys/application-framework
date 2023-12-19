@@ -1083,10 +1083,10 @@ class UI
     * Use the button's API to configure its looks 
     * and functions. It supports string conversion.
     * 
-    * @param string $label
+    * @param string|number|StringableInterface|NULL $label
     * @return UI_Button
     */
-    public static function button(string $label='') : UI_Button
+    public static function button($label=null) : UI_Button
     {
     	return new UI_Button($label);
     }
