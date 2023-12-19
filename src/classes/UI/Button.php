@@ -7,6 +7,7 @@
  * @see UI_Button
  */
 
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits_Classable;
 
 /**
@@ -90,7 +91,10 @@ class UI_Button
     private array $dataAttributes = array();
     private bool $buttonLink = true;
 
-    public function __construct($label='')
+    /**
+     * @param string|StringableInterface|NULL $label
+     */
+    public function __construct($label=null)
     {
         $this->setLabel($label);
 
@@ -123,9 +127,9 @@ class UI_Button
         return $this->setStyle($name, $value);
     }
 
-    public function setLabel(string $label) : self
+    public function setLabel($label) : self
     {
-        $this->label = $label;
+        $this->label = toString($label);
         return $this;
     }
 
