@@ -477,6 +477,24 @@ abstract class UI_Page_Section
     }
 
     /**
+     * Like {@see self::endCapture()}, but appends the captured content
+     * to any existing content in the section.
+     *
+     * @return $this
+     * @throws OutputBuffering_Exception
+     * @throws UI_Exception
+     */
+    public function endCaptureAppend() : self
+    {
+        if($this->capturing) {
+            $this->appendContent(OutputBuffering::get());
+            $this->capturing = false;
+        }
+
+        return $this;
+    }
+
+    /**
      * Turns the section into an empty section with just an informational message.
      * The message is automatically set to not dismissible, and the message itself
      * is prepended with an information icon.
