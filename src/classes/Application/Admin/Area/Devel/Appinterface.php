@@ -9,6 +9,12 @@
 
 declare(strict_types=1);
 
+use Application\Themes\DefaultTemplate\devel\appinterface\ExampleOverviewTemplate;
+use Application\Themes\DefaultTemplate\devel\appinterface\ExampleTemplate;
+use Mistralys\Examples\InterfaceExamples;
+use Mistralys\Examples\UserInterface\ExampleFile;
+use Mistralys\Examples\UserInterface\ExamplesCategory;
+
 /**
  * Abstract base class used to display a reference of application UI
  * elements that can be used when building administration screens.
@@ -29,10 +35,11 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     public const TEMPLATE_VAR_EXAMPLES = 'examples';
     public const TEMPLATE_VAR_ACTIVE_ID = 'active';
     public const REQUEST_PARAM_EXAMPLE_ID = 'example';
+    public const TEMPLATE_VAR_CATEGORIES = 'categories';
     /**
-    * @var array<string,array<string,mixed>>
+    * @var array<string,ExampleFile>
     */
-    private array $examples;
+    private array $examples=array();
 
    /**
     * @var string[]
@@ -40,9 +47,14 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     private array $exampleIDs = array();
 
    /**
-    * @var string
+    * @var ExampleFile|NULL
     */
-    private string $activeExample = '';
+    private ?ExampleFile $activeExample = null;
+
+    /**
+     * @var ExamplesCategory[]
+     */
+    private array $categories;
 
     public function getURLName() : string
     {
@@ -69,8 +81,13 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
         return $this->user->isDeveloper();
     }
 
+    /**
+     * @return ExamplesCategory[]
+     */
     protected function getExamplesList() : array
     {
+        return (new InterfaceExamples())->getAll();
+
         return array(
             'content-sections' => array(
                 'label' => t('Content sections'),
@@ -147,20 +164,21 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
 
     protected function _handleActions() : bool
     {
-        $this->examples = $this->getExamplesList();
+        $this->categories = (new InterfaceExamples())->getAll();
 
-        $categoryIDs = array_keys($this->examples);
-        foreach($categoryIDs as $categoryID) {
-            $exampleIDs = array_keys($this->examples[$categoryID]['examples']);
-            foreach($exampleIDs as $exampleID) {
-                $this->exampleIDs[] = $categoryID.'.'.$exampleID;
+        foreach($this->categories as $category)
+        {
+            $examples = $category->getAll();
+            foreach($examples as $example)
+            {
+                $this->examples[$example->getScreenID()] = $example;
             }
         }
 
         $active = (string)$this->request->getParam(self::REQUEST_PARAM_EXAMPLE_ID);
-        if(!empty($active) && in_array($active, $this->exampleIDs))
+        if(!empty($active) && isset($this->examples[$active]))
         {
-            $this->activeExample = $active;
+            $this->activeExample = $this->examples[$active];
         }
 
         return true;
@@ -168,23 +186,38 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
 
     protected function _handleSidebar() : void
     {
-        foreach($this->examples as $categoryID => $category)
+        $activeCategoryID = null;
+        $activeExampleID = null;
+        if(isset($this->activeExample)) {
+            $activeCategoryID = $this->activeExample->getCategory()->getID();
+            $activeExampleID = $this->activeExample->getID();
+        }
+
+        foreach($this->categories as $category)
         {
             $section = $this->sidebar->addSection()
                 ->setGroup('app-interface')
-                ->setTitle($category['label'])
-                ->collapse();
+                ->setTitle($category->getTitle())
+                ->setCollapsed($category->getID() !== $activeCategoryID);
 
-            $section->appendContent('<ul class="unstyled">');
-            foreach($category['examples'] as $exampleID => $exampleTitle) {
+            $section->appendContent('<ul class="unstyled sidebar-examples-list">');
+
+            foreach($category->getAll() as $example)
+            {
+                $activeClass = '';
+                if($example->getID() === $activeExampleID) {
+                    $activeClass = ' class="active"';
+                }
+
                 $section->appendContent(
-                    '<li>'.
-                        '<a href="'.$this->getURL(array(self::REQUEST_PARAM_EXAMPLE_ID => $categoryID.'.'.$exampleID)).'">'.
-                            $exampleTitle.
+                    '<li'.$activeClass.'>'.
+                        '<a href="'.$example->getAdminViewURL().'">'.
+                            $example->getTitle().
                         '</a>'.
                     '</li>'
                 );
             }
+
             $section->appendContent('</ul>');
         }
     }
@@ -195,17 +228,33 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
         $this->breadcrumb->appendItem($this->getNavigationTitle())->makeLinkedFromMode($this);
     }
 
-    protected function _renderContent() : string
+    protected function _handleHelp(): void
     {
-        return $this->renderContentWithSidebar(
-            $this->renderTemplate(
-                'devel.appinterface',
+        $this->renderer
+            ->setTitle($this->getTitle());
+    }
+
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
+    {
+        if(isset($this->activeExample)) {
+            $this->renderer->appendTemplateClass(
+                ExampleTemplate::class,
                 array(
+                    self::TEMPLATE_VAR_CATEGORIES => $this->categories,
                     self::TEMPLATE_VAR_EXAMPLES => $this->examples,
                     self::TEMPLATE_VAR_ACTIVE_ID => $this->activeExample
                 )
-            ),
-            $this->getTitle()
-        );
+            );
+        } else {
+            $this->renderer->appendTemplateClass(
+                ExampleOverviewTemplate::class,
+                array(
+                    self::TEMPLATE_VAR_CATEGORIES => $this->categories
+                )
+            );
+        }
+
+        return $this->renderer
+            ->makeWithSidebar();
     }
 }
