@@ -9,7 +9,9 @@
 
 use Application\AppFactory;
 use Application\Traits\Admin\ScreenAccessTrait;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
+use AppUtils\FileHelper_Exception;
 
 /**
  * Base class for administration screens. This has all the 
@@ -451,17 +453,27 @@ abstract class Application_Admin_Skeleton
         return $this->renderContentWithoutSidebar($section, $pageTitle);
     }
     
-   /**
-    * @return UI_Page_Section
-    */
     protected function createSection() : UI_Page_Section
     {
         return $this->getUI()->createSection();
     }
 
     /**
+     * @param string|class-string $templateIDOrClass
+     * @return UI_Page_Template
+     *
+     * @throws UI_Themes_Exception
+     * @throws BaseClassHelperException
+     * @throws FileHelper_Exception
+     */
+    protected function createTemplate(string $templateIDOrClass) : UI_Page_Template
+    {
+        return $this->getPage()->createTemplate($templateIDOrClass);
+    }
+
+    /**
      * Creates a form, and automatically adds hidden variables for
-     * the current administration screen so the form gets submitted
+     * the current administration screen, so the form gets submitted
      * to the same page.
      *
      * NOTE: You still have to add hidden variables for IDs that may
