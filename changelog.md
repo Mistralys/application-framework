@@ -1,6 +1,23 @@
-### v3.1.1 - Maintenance release
-- Interface Refs: Added a property grid example.
+### v3.1.1 - Interface Reference enhancements
+- Interface Refs: Added more UI element examples.
+- Interface Refs: Built a support class structure for categories and examples.
+- Interface Refs: Improved the rendering of the reference pages.
+- Interface Refs: Added example descriptions and settings.
+- Interface Refs: Examples are now discovered automatically from the examples folder.
+- Interface Refs: Converted all examples to the new structure.
+- Interface Refs: Added example navigation.
+- Interface Refs: The active example sidebar section now automatically expands.
+- Forms: Added `addSection()` to formables as a more logical variant of `addElementHeaderII()`.
+- Forms: Added the `create()` factory method to the generic formable class.
+- Forms: Added `addTab()` to formables.
+- ScreenSkeleton: Added `createTemplate()`.
+- Templates: Template ID parameters now accept template class names.
+- Templates: Added support for namespaced template classes.
+- Templates: Template classes must use the base namespace `Application\Themes\DefaultTemplate`.
+- ThemeRenderer: Added `appendTemplateClass()`.
+- Buttons: The label now accepts Stringable.
 - Dependencies: Dropped the `erusev/parsedown` dependency.
+- Dependencies: Updated AppUtils Core to [v1.0.4](https://github.com/Mistralys/application-utils-core/releases/tag/1.0.4).
 - Dependencies: Updated collections to [v1.1.1](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.1).
 
 ### v3.1.0 - UI and News update
