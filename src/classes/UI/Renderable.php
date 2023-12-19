@@ -73,7 +73,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
      * createTemplate('content.my-template');
      * </pre>
      *
-     * @param string $templateID
+     * @param string $templateIDOrClass
      * @return UI_Page_Template
      *
      * @throws ClassNotExistsException
@@ -81,12 +81,31 @@ abstract class UI_Renderable implements UI_Renderable_Interface
      * @throws UI_Themes_Exception
      * @throws FileHelper_Exception
      */
-    public function createTemplate(string $templateID) : UI_Page_Template
+    public function createTemplate(string $templateIDOrClass) : UI_Page_Template
+    {
+        if(class_exists($templateIDOrClass)) {
+            $className = $templateIDOrClass;
+        } else {
+            $className = $this->resolveTemplateClass($templateIDOrClass);
+        }
+
+        if(class_exists($className))
+        {
+            return ClassHelper::requireObjectInstanceOf(
+                UI_Page_Template_Custom::class,
+                new $className($this->page, $templateIDOrClass)
+            );
+        }
+        
+        return new UI_Page_Template($this->page, $templateIDOrClass);
+    }
+
+    private function resolveTemplateClass(string $templateID) : string
     {
         if(stripos($templateID, '.php') !== false) {
             $templateID = FileHelper::removeExtension($templateID, true);
         }
-        
+
         $templateFile = $this->theme->getTemplatePath($templateID.'.php');
 
         $className = '';
@@ -94,18 +113,10 @@ abstract class UI_Renderable implements UI_Renderable_Interface
         {
             $className = 'driver_';
         }
-        
+
         $className .= 'template_default_'.str_replace(array('.', '/', '-'), '_', $templateID);
-        
-        if(class_exists($className))
-        {
-            return ClassHelper::requireObjectInstanceOf(
-                UI_Page_Template_Custom::class,
-                new $className($this->page, $templateID)
-            );
-        }
-        
-        return new UI_Page_Template($this->page, $templateID);
+
+        return $className;
     }
 
     /**
