@@ -1324,17 +1324,17 @@ class UI_Form extends UI_Renderable
      * elements to the form.
      *
      * @param string $name
-     * @param string $label
-     * @param string|NULL $description
+     * @param string|number|StringableInterface|NULL $label
+     * @param string|number|StringableInterface|NULL $description
      * @return HTML_QuickForm2_Container_Group
      */
-    public function addTab(string $name, string $label, ?string $description = null) : HTML_QuickForm2_Container_Group
+    public function addTab(string $name, $label, $description = null) : HTML_QuickForm2_Container_Group
     {
         $tab = $this->form->addGroup($name);
         $tab->setAttribute('rel', 'tab');
-        $tab->setLabel($label);
+        $tab->setLabel(toString($label));
         $tab->setId(self::ID_PREFIX . $name);
-        $tab->setAttribute('description', $description);
+        $tab->setAttribute('description', toString($description));
 
         return $tab;
     }
