@@ -26,9 +26,9 @@ abstract class UI_Page_Sidebar_Item extends UI_Renderable implements UI_Renderab
         $this->sidebar = $sidebar;
     }
 
-    public function createTemplate(string $templateID) : UI_Page_Template
+    public function createTemplate(string $templateIDOrClass) : UI_Page_Template
     {
-        return $this->page->createTemplate($templateID);
+        return $this->page->createTemplate($templateIDOrClass);
     }
     
    /**
