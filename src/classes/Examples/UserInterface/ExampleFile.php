@@ -117,6 +117,7 @@ class ExampleFile implements StringPrimaryRecordInterface
     public function renderOutput() : string
     {
         $activeExampleID = $this->getScreenID();
+        $activeURL = $this->getAdminViewURL();
 
         OutputBuffering::start();
         include $this->getCodeFile()->getPath();
