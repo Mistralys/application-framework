@@ -831,12 +831,12 @@ class UI
     /**
      * Creates a new UI message instance and returns it.
      *
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|number|UI_Renderable_Interface|NULL $message
      * @param string $type
      * @param array<string,mixed> $options
      * @return UI_Message
      */
-    public function createMessage($message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
+    public function createMessage($message=null, string $type=UI::MESSAGE_TYPE_INFO, array $options=array()) : UI_Message
     {
         return new UI_Message($this, $message, $type, $options);
     }
