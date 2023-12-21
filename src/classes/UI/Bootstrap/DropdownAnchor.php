@@ -104,6 +104,16 @@ class UI_Bootstrap_DropdownAnchor
     {
         return $this->addClass('danger');
     }
+
+    public function makeSuccess() : self
+    {
+        return $this->addClass('success');
+    }
+
+    public function makeWarning() : self
+    {
+        return $this->addClass('warning');
+    }
     
     public function makeActive() : self
     {
