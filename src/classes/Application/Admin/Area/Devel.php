@@ -1,6 +1,7 @@
 <?php
 
 use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Area\Devel\BaseCSSGenScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
@@ -140,6 +141,11 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     protected function registerAppSettings($category=null)
     {
         $this->registerCoreItem('appsettings', t('Application settings'), t('Settings'), $category);
+    }
+
+    protected function registerCSSGenerator($category=null) : void
+    {
+        $this->registerCoreItem(BaseCSSGenScreen::URL_NAME, t('CSS Generator'), t('Tools'), $category);
     }
 
     protected function registerUsers($category=null)
