@@ -18,42 +18,25 @@ abstract class UI_DataGrid_Action
     use UI_Traits_Conditional;
     use ClassableTrait;
     
-    /**
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * @var string
-     */
-    protected $label;
+    protected string $name;
+    protected string $label;
 
     /**
      * @var CallableContainer|NULL
      */
     protected $callback;
 
-    /**
-     * @var UI_DataGrid
-     */
-    protected $grid;
+    protected UI_DataGrid $grid;
 
     /**
      * @var array<string,string>
      */
-    protected $attributes = array(
+    protected array $attributes = array(
         'href' => 'javascript:void(0);'
     );
 
-    /**
-     * @var string
-     */
-    protected $id;
-    
-   /**
-    * @var UI
-    */
-    protected $ui;
+    protected string $id;
+    protected UI $ui;
 
     /**
      * @param UI_DataGrid $grid
@@ -95,7 +78,7 @@ abstract class UI_DataGrid_Action
     /**
      * @var string[]
      */
-    protected $lockedParams = array();
+    protected array $lockedParams = array();
     
     protected function lockParam(string $name) : void
     {
@@ -150,16 +133,13 @@ abstract class UI_DataGrid_Action
     *  
     * @return $this
     */
-    public function disableSelectAll()
+    public function disableSelectAll() : self
     {
         $this->selectAllDisabled = true;
         return $this;
     }
 
-    /**
-     * @var bool
-     */
-    protected $selectAllDisabled = false;
+    protected bool $selectAllDisabled = false;
     
     public function isSelectAllEnabled() : bool
     {
@@ -167,8 +147,22 @@ abstract class UI_DataGrid_Action
     }
 
     /**
-     * Renders the markup for the action, to be included in the actions
-     * drop down menu in the datagrid.
+     * @var string[]
+     */
+    protected array $liClasses = array();
+
+    public function addLIClass(string $class) : self
+    {
+        if(!in_array($class, $this->liClasses, true)) {
+            $this->liClasses[] = $class;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Renders the markup for the action, to be included in the action
+     * drop-down menu in the data grid.
      *
      * @return string
      * @throws OutputBuffering_Exception
@@ -185,7 +179,7 @@ abstract class UI_DataGrid_Action
         OutputBuffering::start();
 
         ?>
-        <li>
+        <li class="<?php echo implode(' ', $this->liClasses) ?>">
             <a <?php echo $this->renderAttributes() ?>>
                 <?php echo sb()
                     ->add((string)$this->getIcon())
@@ -201,26 +195,26 @@ abstract class UI_DataGrid_Action
     /**
      * @return $this
      */
-    public function makeDangerous()
+    public function makeDangerous() : self
     {
-        return $this->addClass('action-danger');
+        return $this->addLIClass('danger');
     }
 
     /**
      * @return $this
      */
-    public function makeSuccess()
+    public function makeSuccess() : self
     {
-        return $this->addClass('action-success');
+        return $this->addLIClass('success');
     }
 
     /**
      * @return $this
      */
-    public function makeDeveloper()
+    public function makeDeveloper() : self
     {
         $this->label = 'DEV: '.$this->label;
-        return $this->addClass('action-developer');
+        return $this->addLIClass('developer');
     }
 
     protected function renderAttributes() : string
