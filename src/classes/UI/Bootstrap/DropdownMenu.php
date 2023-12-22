@@ -32,12 +32,10 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         $this->addClass('dropdown-menu');
         $this->setAttribute('class', implode(' ', $this->classes));
         
-        $attributes = ConvertHelper::array2attributeString($this->attributes);
-        
         OutputBuffering::start();
         ?>
         <!-- start menu -->
-        <ul <?php echo $attributes ?>>
+        <ul <?php echo $this->renderAttributes() ?>>
             <?php
                 foreach ($this->items as $item)
                 {
