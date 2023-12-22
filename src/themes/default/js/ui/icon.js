@@ -149,6 +149,7 @@ var UI_Icon =
     Copy:function() { return this.SetType('copy'); },
     Countdown:function() { return this.SetType('clock', 'far'); },
     Countries:function() { return this.SetType('flag', 'far'); },
+    Css:function() { return this.SetType('css3'); },
     Csv:function() { return this.SetType('file-alt', 'far'); },
     CustomVariables:function() { return this.SetType('project-diagram'); },
     Deactivate:function() { return this.SetType('moon', 'far'); },

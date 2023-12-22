@@ -818,5 +818,9 @@
   "news":{
     "icon": "newspaper",
     "type": "far"
+  },
+  "css": {
+    "icon": "css3",
+    "type": ""
   }
 }

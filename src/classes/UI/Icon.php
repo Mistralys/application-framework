@@ -232,6 +232,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function css() : self { return $this->setType('css3'); }
+    /**
+     * @return $this
+     */
     public function csv() : self { return $this->setType('file-alt', 'far'); }
     /**
      * @return $this
