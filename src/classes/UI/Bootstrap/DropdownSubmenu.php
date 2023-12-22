@@ -41,9 +41,9 @@ class UI_Bootstrap_DropdownSubmenu
     
     protected function _render() : string
     {
-        $html = parent::render();
-        
         $this->addLIClass('dropdown-submenu');
+
+        $html = parent::_render();
         
         OutputBuffering::start();
 
