@@ -62,14 +62,24 @@ abstract class UI_Themes_Theme
         $this->ui = $themes->getUI();
         
         $this->paths = array(
-            self::LOCATION_DRIVER => APP_ROOT.'/themes/'.$themeID,
-            self::LOCATION_DEFAULT => APP_INSTALL_FOLDER.'/themes/'.$themeID
+            self::LOCATION_DRIVER => $this->getDriverRootPath().'/themes/'.$themeID,
+            self::LOCATION_DEFAULT => $this->getDefaultRootPath().'/themes/'.$themeID
         );
         
         $this->urls = array(
             self::LOCATION_DRIVER => APP_URL.'/themes/'.$themeID,
             self::LOCATION_DEFAULT => APP_INSTALL_URL.'/themes/'.$themeID
         );
+    }
+
+    public function getDefaultRootPath() : string
+    {
+        return APP_INSTALL_FOLDER;
+    }
+
+    public function getDriverRootPath() : string
+    {
+        return APP_ROOT;
     }
     
     public function getID()
