@@ -1,9 +1,13 @@
 <?php
 
+use UI\Interfaces\CapturableInterface;
 use UI\Interfaces\MessageLayoutInterface;
+use UI\Traits\CapturableTrait;
 
-class UI_Message extends UI_Renderable implements MessageLayoutInterface
+class UI_Message extends UI_Renderable implements MessageLayoutInterface, CapturableInterface
 {
+    use CapturableTrait;
+
     public const ERROR_INVALID_LAYOUT = 35901;
 
     public const LAYOUT_DEFAULT = 'default';
@@ -17,12 +21,12 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface
 
     /**
      * @param UI $ui
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|number|UI_Renderable_Interface|NULL $message
      * @param string $type
      * @param array<string,mixed> $options
      * @throws Exception
      */
-    public function __construct(UI $ui, $message, string $type=UI::MESSAGE_TYPE_INFO, array $options=array())
+    public function __construct(UI $ui, $message=null, string $type=UI::MESSAGE_TYPE_INFO, array $options=array())
     {
         parent::__construct($ui->getPage());
 
@@ -45,7 +49,7 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface
     /**
      * Sets the message text.
      *
-     * @param string|number|UI_Renderable_Interface $message
+     * @param string|number|UI_Renderable_Interface|NULL $message
      * @return $this
      * @throws UI_Exception
      */
@@ -243,6 +247,8 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface
     
     protected function _render() : string
     {
+        $this->endCapture();
+
         $vars = $this->properties;
         
         if($this->getProperty('add-dot') === true) 
@@ -300,5 +306,25 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface
         }
         
         return $default;
+    }
+
+    public function getMessage() : string
+    {
+        return $this->getProperty('message');
+    }
+
+    public function setContent($content) : self
+    {
+        return $this->setMessage($content);
+    }
+
+    public function appendContent($content): CapturableInterface
+    {
+        return $this->setMessage($this->getMessage().toString($content));
+    }
+
+    public function getContent(): string
+    {
+        return $this->getMessage();
     }
 }

@@ -10,9 +10,12 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits\ClassableTrait;
+use UI\Interfaces\CapturableInterface;
+use UI\Traits\CapturableTrait;
 use function AppUtils\parseNumber;
 
 /**
@@ -37,9 +40,11 @@ abstract class UI_Page_Section
         UI_Page_Sidebar_ItemInterface,
         Application_Interfaces_Iconizable,
         ClassableInterface,
+        CapturableInterface,
         UI_Interfaces_StatusElementContainer
 {
     use ClassableTrait;
+    use CapturableTrait;
     use UI_Traits_Conditional;
     use UI_Traits_StatusElementContainer;
     use Application_Traits_LockableStatus;
@@ -274,7 +279,7 @@ abstract class UI_Page_Section
      * Sets the markup to use as body for the section. If this is not set,
      * the section will not be rendered.
      *
-     * @param string|number|UI_Renderable_Interface $content
+     * @param string|number|StringableInterface|NULL $content
      * @return $this
      * @throws UI_Exception
      * @see startCapture()
@@ -304,7 +309,7 @@ abstract class UI_Page_Section
 
     /**
      * Appends markup to the existing section content.
-     * @param string|number|UI_Renderable_Interface $content
+     * @param string|number|StringableInterface|NULL $content
      * @return $this
      * @throws UI_Exception
      * @see prependContent()
@@ -439,61 +444,6 @@ abstract class UI_Page_Section
         return !empty($this->contextButtons);
     }
     
-    protected bool $capturing = false;
-
-    /**
-     * Starts output buffering to capture the content to use for the section's body.
-     * @return $this
-     * @throws OutputBuffering_Exception
-     * @see endCapture()
-     */
-    public function startCapture() : self
-    {
-        if(!$this->capturing) {
-            $this->capturing = true;
-            OutputBuffering::start();
-        }
-        
-        return $this;
-    }
-
-    /**
-     * Stops the output buffering started with {@link startCapture()}.
-     * Note: this is done automatically whenever you call {@link render()}
-     * or {@link display()}.
-     *
-     * @return $this
-     * @throws OutputBuffering_Exception
-     * @throws UI_Exception
-     */
-    public function endCapture() : self
-    {
-        if($this->capturing) {
-            $this->setContent(OutputBuffering::get());
-            $this->capturing = false; 
-        }
-
-        return $this;
-    }
-
-    /**
-     * Like {@see self::endCapture()}, but appends the captured content
-     * to any existing content in the section.
-     *
-     * @return $this
-     * @throws OutputBuffering_Exception
-     * @throws UI_Exception
-     */
-    public function endCaptureAppend() : self
-    {
-        if($this->capturing) {
-            $this->appendContent(OutputBuffering::get());
-            $this->capturing = false;
-        }
-
-        return $this;
-    }
-
     /**
      * Turns the section into an empty section with just an informational message.
      * The message is automatically set to not dismissible, and the message itself
