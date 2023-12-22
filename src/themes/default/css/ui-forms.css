@@ -144,6 +144,10 @@ H3.form-header.form-header-first {
     border-radius: 3px;
 }
 
+input[type="checkbox"]{
+    accent-color: var(--color-form-checkbox);
+}
+
 LABEL.radio,
 LABEL.checkbox {
     cursor: pointer;

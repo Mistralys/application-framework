@@ -268,6 +268,11 @@ A:hover{
     color: var(--color-text-danger-xxl);
 }
 
+HR{
+    border-top-color: var(--color-hseparator-top);
+    border-bottom-color: var(--color-hseparator-bottom);
+}
+
 CODE {
     color: var(--color-text-code);
     background-color: var(--color-bg-code);
@@ -282,6 +287,10 @@ CODE.clickable:active,
 CODE.clickable:hover{
     color: var(--color-link-hover);
     text-decoration: underline;
+}
+
+PRE{
+    background-color: var(--color-bg-code);
 }
 
 PRE.unstyled {
@@ -390,6 +399,27 @@ TD.nowrap {
     white-space: nowrap;
 }
 
+.bg-inverted{background-color: var(--color-bg-inverted);}
+
+
+/* endregion */
+
+/* region: Text */
+
+.text-secondary{
+    color: var(--color-text-secondary);
+}
+
+.text-error{color: var(--color-text-danger);}
+.text-error-xxl{color: var(--color-text-danger-xxl);}
+.text-warning{color: var(--color-text-warning);}
+.text-success{color: var(--color-text-success);}
+.text-info{color: var(--color-text-info);}
+.text-developer{color: var(--color-text-developer);}
+.text-muted{color: var(--color-text-muted);}
+.text-inverted{color: var(--color-text-inverted);}
+.muted{color: var(--color-text-muted);}
+
 .text-tooltip{
     cursor: help;
     text-decoration: underline;
@@ -407,8 +437,13 @@ TD.nowrap {
     color: var(--color-link-hover);
 }
 
-/* endregion */
+/* used by buttons when they are set to not wrap their text */
+.text-nowrap {
+    white-space: nowrap;
+}
 
+
+/* endregion */
 
 /**
  * ------------------------------------------------------------------
@@ -518,11 +553,6 @@ PRE.console {
     margin-bottom: 50px;
 }
 
-TR.active,
-TR.active:hover {
-    background: var(--color-table-row-bg-hover);
-}
-
 .loader_text {
     text-align: center;
     font-size: 110%;
@@ -549,42 +579,131 @@ TR.active:hover {
 
 }
 
-TD.align-center,
-TH.align-center {
-    text-align: center;
-}
-
-TD.align-right,
-TH.align-right {
-    text-align: right;
-}
-
 /* Make sure tooltips are shown above modal dialogs */
 .tooltip {
     z-index: 2000 !important;
 }
 
+/* region: Menus, Dropdowns */
+
+/* Fix for submenus nested in dropup menus */
+.dropdown-submenu.dropdown .dropdown-menu {
+    bottom: auto !important;
+}
+
+.dropdown-menu > LI.disabled A:hover {
+    background: transparent;
+}
+
+.dropdown-menu .menu-header A {
+    text-transform: uppercase;
+}
+
+.dropdown-menu .menu-header A:hover,
+.dropdown-menu .menu-header A:active {
+    background: transparent;
+}
+
+.dropdown-menu>li>a{
+    color: var(--color-menu-default-text);
+}
+
+.dropdown-menu>li>a:hover,
+.dropdown-menu>li>a:focus,
+.dropdown-submenu:hover>a,
+.dropdown-submenu:focus>a{
+    background-color: var(--color-menu-default-bg-hover);
+}
+
+.dropdown-menu A.action-developer {
+    color: var(--color-menu-developer-text);
+}
+
+.dropdown-menu A.action-developer:hover {
+    color: var(--color-menu-developer-text-hover);
+}
+
 UL.dropdown-menu .header {
-    color: var(--color-text-secondary);
+    color: var(--color-menu-header-text);
     display: block;
     text-transform: uppercase;
     padding: 3px 15px;
     font-size: 11px;
     line-height: 20px;
-    text-shadow: 0 1px 0 var(--color-dropdown-header-text-shadow);
+    text-shadow: 0 1px 0 var(--color-menu-header-text-shadow);
 }
 
-UL.dropdown-menu {
+.dropdown-menu {
     min-width: 185px;
+    background-color: var(--color-menu-bg);
 }
 
 .dropdown-form {
     padding: 0 20px;
 }
 
+.dropdown-menu LI {
+    text-align: left;
+}
+
+.dropdown-menu .danger A{
+    color: var(--color-menu-danger-text);
+}
+
+.dropdown-menu LI.danger > a:hover,
+.dropdown-menu LI.danger > a:focus{
+    color: var(--color-menu-danger-text-hover);
+    background: var(--color-menu-danger-bg-hover);
+}
+
+.dropdown-menu .success A{
+    color: var(--color-menu-success-text);
+}
+
+.dropdown-menu LI.success > a:hover,
+.dropdown-menu LI.success > a:focus{
+    color: var(--color-menu-success-text-hover);
+}
+
+.dropdown-menu .warning A {
+    color: var(--color-menu-warning-text);
+}
+
+.dropdown-menu LI.warning > a:hover,
+.dropdown-menu LI.warning > a:focus {
+    color: var(--color-menu-warning-text-hover);
+    background: var(--color-menu-warning-bg-hover);
+}
+
+.dropdown-menu .developer A {
+    color: var(--color-menu-developer-text);
+}
+
+.dropdown-menu LI.developer > a:hover,
+.dropdown-menu LI.developer > a:focus{
+    background: var(--color-menu-developer-bg-hover);
+    background-image: linear-gradient(45deg, var(--color-developer-gradient-a) 25%, var(--color-developer-gradient-b) 25%, var(--color-developer-gradient-b) 50%, var(--color-developer-gradient-a) 50%, var(--color-developer-gradient-a) 75%, var(--color-developer-gradient-b) 75%, var(--color-developer-gradient-b) 100%);
+    background-size: 57px 57px;
+    color: var(--color-menu-developer-text-hover);
+}
+
+/* endregion */
+
+/* region: Navigation */
+
 .nav-tabs-hint {
     float: right;
 }
+
+.nav-tabs>.active>a,
+.nav-tabs>.active>a:hover,
+.nav-tabs>.active>a:focus{
+    background-color: var(--color-tabs-active-bg);
+    color: var(--color-tabs-active-text);
+    border-color: var(--color-tabs-active-border);
+}
+
+/* endregion */
 
 .row.without-sidebar #content {
     width: auto;
@@ -593,33 +712,6 @@ UL.dropdown-menu {
 /* make sure that state labels with icons cannot wrap */
 .state-label {
     white-space: nowrap;
-}
-
-/* used by buttons when they are set to not wrap their text */
-.text-nowrap {
-    white-space: nowrap;
-}
-
-.dropdown-menu LI {
-    text-align: left;
-}
-
-.dropdown-menu .danger A {
-    color: var(--color-text-danger);
-}
-
-.dropdown-menu LI.danger > a:hover {
-    background: var(--color-text-danger);
-    color: var(--color-text-inverted);
-}
-
-.dropdown-menu .developer A {
-    color: var(--color-text-developer);
-}
-
-.dropdown-menu LI.developer > a:hover {
-    background: var(--color-text-developer);
-    color: var(--color-text-inverted);
 }
 
 LI.select-block {
@@ -644,6 +736,43 @@ LI.select-block.block-active {
     background: #c4e2f5;
 }
 
+/* region: Tables */
+
+TABLE.table{
+    background-color: var(--color-grid-bg);
+}
+
+TD.force-ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.table-hover tbody tr:hover>td,
+.table-hover tbody tr:hover>th{
+    background-color: var(--color-grid-row-bg-hover);
+}
+
+TR.active,
+TR.active:hover {
+    background: var(--color-grid-row-bg-hover);
+}
+
+TD.align-center,
+TH.align-center {
+    text-align: center;
+}
+
+TD.align-right,
+TH.align-right {
+    text-align: right;
+}
+
+.table-bordered,
+.table-bordered th, .table-bordered td{
+    border-color: var(--color-grid-border);
+}
+
 .table.table-first-unstyled TR:first-child TD,
 .table.table-first-unstyled TR:first-child TH {
     border-top: 0;
@@ -666,6 +795,8 @@ TABLE.layout-only {
 TABLE.layout-only TD{
     padding:0;
 }
+
+/* endregion */
 
 .drag-helper {
     background: var(--color-link);
@@ -696,16 +827,7 @@ TABLE.layout-only TD{
     border-top-color: #fff;
 }
 
-.dropdown-menu .menu-header A {
-    text-transform: uppercase;
-}
-
-.dropdown-menu .menu-header A:hover,
-.dropdown-menu .menu-header A:active {
-    background: transparent;
-}
-
-.whatsnew-category {
+.whatsnew-cavtegory {
     text-transform: uppercase;
     font-size: 13px !important;
     color: var(--color-text-secondary);
@@ -790,7 +912,7 @@ BODY.fontsize-bigger.non-zoomable {
 }
 
 .body-wrap TABLE.table {
-    background: var(--color-table-bg);
+    background: var(--color-grid-bg);
 }
 
 .body-wrap TR.prop-header {
@@ -818,14 +940,6 @@ BODY.fontsize-bigger.non-zoomable {
     margin-bottom: 0;
 }
 
-.text-warning {
-    color: var(--color-text-warning);
-}
-
-.text-secondary{
-    color: var(--color-text-secondary);
-}
-
 .popover-content p {
     margin-bottom: 8px;
 }
@@ -842,10 +956,6 @@ BODY.fontsize-bigger.non-zoomable {
     user-select: none;
 }
 
-.dropdown-menu > LI.disabled A:hover {
-    background: transparent;
-}
-
 LI{
     padding-bottom: 0.2rem;
 }
@@ -859,13 +969,13 @@ UL .popover {
 }
 
 .properties-grid {
-    border-bottom: solid 1px var(--color-table-properties-border);
+    border-bottom: solid 1px var(--color-grid-properties-border);
 }
 
 .properties-grid TD,
 .properties-grid TH {
-    border-left: solid 1px var(--color-table-properties-border);
-    border-right: solid 1px var(--color-table-properties-border);
+    border-left: solid 1px var(--color-grid-properties-border);
+    border-right: solid 1px var(--color-grid-properties-border);
 }
 
 .properties-grid .prop-header TH {
@@ -880,20 +990,9 @@ UL .popover {
     border-right: 0;
 }
 
-/* Fix for submenus nested in dropup menus */
-.dropdown-submenu.dropdown .dropdown-menu {
-    bottom: auto !important;
-}
-
 .toolbar-sort-categories {
     text-align: right;
     margin-bottom: 13px;
-}
-
-TD.force-ellipsis {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
 }
 
 /* Fix for overlays not working in collapsible elements */

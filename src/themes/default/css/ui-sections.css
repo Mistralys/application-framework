@@ -22,7 +22,7 @@
 
 .section .body-wrapper .tab-content,
 .section .body-wrapper .tab-toolbar {
-    background: #fff;
+    background: var(--color-section-body-bg);
     clear: right;
 }
 

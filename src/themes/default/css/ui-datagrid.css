@@ -1,107 +1,82 @@
-.datagrid-title{
-font-weight: var(--font-weight-bold);
-font-size:110%;
-margin-bottom:13px;
+.datagrid-title {
+    font-weight: var(--font-weight-bold);
+    font-size: 110%;
+    margin-bottom: 13px;
 }
 
-.datagrid-column-controls{
-margin-bottom:23px !important;
-float:right;
+.datagrid-column-controls {
+    margin-bottom: 23px !important;
+    float: right;
 }
 
-.datagrid-hidden-hint{
-float:left;
-margin-bottom:13px;
-line-height:30px;
+.datagrid-hidden-hint {
+    float: left;
+    margin-bottom: 13px;
+    line-height: 30px;
 }
 
-.datagrid-title{
-line-height: 30px;
-margin: 0;
-padding: 0;
-margin-bottom: 15px;
-font-size: 16px;
-text-transform:uppercase;
+.datagrid-title {
+    line-height: 30px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 15px;
+    font-size: 16px;
+    text-transform: uppercase;
     font-weight: var(--font-weight-normal);
 }
 
-.dropdown-menu A.action-danger{
-color:#cc0000;
+.table-nomargins {
+    margin: 0;
 }
 
-.dropdown-menu A.action-danger:hover{
-background:#cc0000;
-}
-
-.dropdown-menu A.action-success{
-color:#5bb75b;
-}
-
-.dropdown-menu A.action-success:hover{
-background:#5bb75b;
-}
-
-.dropdown-menu A.action-developer{
-color:#ff8a00;
-}
-
-.dropdown-menu A.action-developer:hover{
-background:url(../img/bg-button-developer.png);
-color:#000;
-}
-
-.table-nomargins{
-margin:0;
-}
-
-.datagrid .column-headers TH{
-vertical-align: top;
-position: relative;
+.datagrid .column-headers TH {
+    vertical-align: top;
+    position: relative;
 }
 
 /** -------------------------------------------------------------------------
     COLUMN ORDERING
     ------------------------------------------------------------------------- */
 
-.table TH > .sort-controls{
-display: block;
-white-space: nowrap;
-position: absolute;
-top:-16px;
+.table TH > .sort-controls {
+    display: block;
+    white-space: nowrap;
+    position: absolute;
+    top: -16px;
 }
 
-.role-cell.sorted{
-background:#f7fbff;
+.role-cell.sorted {
+    background: var(--color-grid-bg-sorted);
 }
 
-.role-cell .icon-sort{
-width:11px;
-color:#ccc;
+.role-cell .icon-sort {
+    width: 11px;
+    color: var(--color-grid-icon-sort);
 }
 
-.role-cell .icon-sort:hover{
-color:#005580;
+.role-cell .icon-sort:hover {
+    color: var(--color-grid-icon-sort-hover);
 }
 
 .role-cell.sorted-asc .icon-sort-asc,
 .role-cell.sorted-desc .icon-sort-desc,
 .role-cell.sorted-asc .icon-sort-asc:hover,
-.role-cell.sorted-desc .icon-sort-desc:hover{
-color:#ff3c00;
+.role-cell.sorted-desc .icon-sort-desc:hover {
+    color: var(--color-grid-icon-sort-active);
 }
 
 /** ------------------------------------------------------------------------- 
     Common row styles
     ------------------------------------------------------------------------- */
-.datagrid TR.row-highlighted{
-background:#fcffac;
+.datagrid TR.row-highlighted {
+    background: #fcffac;
 }
 
-.row-highlighted:hover TD{
-background:#faff7e !important;
+.row-highlighted:hover TD {
+    background: #faff7e !important;
 }
 
-.row-heading TD{
+.row-heading TD {
     font-weight: var(--font-weight-bold);
 }
 
@@ -111,52 +86,52 @@ background:#faff7e !important;
     See ui/datagrid/sortable.js
     ------------------------------------------------------------------------- */
 
-.datagrid TR.row-sortable{
-cursor:ns-resize;
+.datagrid TR.row-sortable {
+    cursor: ns-resize;
 }
 
-.datagrid TR.row-sortable.row-immovable{
-cursor:not-allowed;
-background:#ffe4be;
+.datagrid TR.row-sortable.row-immovable {
+    cursor: not-allowed;
+    background: #ffe4be;
 }
 
-.row-sortable.row-immovable:hover TD{
-background:#ffe4be !important;
+.row-sortable.row-immovable:hover TD {
+    background: #ffe4be !important;
 }
 
 .datagrid-row-sorting,
-.datagrid-row-sorting TD{
-border:none;
+.datagrid-row-sorting TD {
+    border: none;
 }
 
-.datagrid-sort-helper{
-background:#08c;
-color:#fff;
-border-radius:5px;
-padding:2px 10px;
-width:100%;
+.datagrid-sort-helper {
+    background: #08c;
+    color: #fff;
+    border-radius: 5px;
+    padding: 2px 10px;
+    width: 100%;
 }
 
-.datagrid-row-sort-target{
-background:#abf08c;
+.datagrid-row-sort-target {
+    background: #abf08c;
 }
 
-.datagrid-row-sort-target TD{
-border-left:0;
-border-right:0;
+.datagrid-row-sort-target TD {
+    border-left: 0;
+    border-right: 0;
 }
 
-.datagrid-row-sort-target.move-not-allowed{
-background:#b94a48;
+.datagrid-row-sort-target.move-not-allowed {
+    background: #b94a48;
 }
 
-.datagrid-row-sorting.move-not-allowed .datagrid-sort-helper{
-background:#cc0000;
-border:solid 1px #ff0000;
+.datagrid-row-sorting.move-not-allowed .datagrid-sort-helper {
+    background: #cc0000;
+    border: solid 1px #ff0000;
 }
 
-.datagrid-row-sort-target.initial-position{
-background:#ccc;
+.datagrid-row-sort-target.initial-position {
+    background: #ccc;
 }
 
 
@@ -165,72 +140,72 @@ background:#ccc;
     See ui/datagrid/droppable.js
     ------------------------------------------------------------------------- */
 
-.datagrid .dropper{
-margin-top:20px;
-color:#fff;
-text-transform:uppercase;
-line-height: 18px;
-font-size: 14px;
+.datagrid .dropper {
+    margin-top: 20px;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 18px;
+    font-size: 14px;
     font-weight: var(--font-weight-bold);
-padding:4px;
-text-align:center;
-border-radius:5px;
-letter-spacing: 3px;
+    padding: 4px;
+    text-align: center;
+    border-radius: 5px;
+    letter-spacing: 3px;
 }
 
-.datagrid .dropper.is-drag-target{
-background:#faa732;
+.datagrid .dropper.is-drag-target {
+    background: #faa732;
 }
 
-.datagrid .dropper.is-drag-target.can-be-dropped{
-background:#68de76;
+.datagrid .dropper.is-drag-target.can-be-dropped {
+    background: #68de76;
 }
 
 .datagrid TBODY.is-drag-target,
-.datagrid TBODY.is-drag-target .row-sortable.row-immovable{
-background:#a9e2ff;
+.datagrid TBODY.is-drag-target .row-sortable.row-immovable {
+    background: #a9e2ff;
 }
 
 .datagrid TBODY.is-drag-target.can-be-dropped,
-.datagrid TBODY.is-drag-target.can-be-dropped .row-sortable.row-immovable{
-background:#a6e8ae;
+.datagrid TBODY.is-drag-target.can-be-dropped .row-sortable.row-immovable {
+    background: #a6e8ae;
 }
 
 
 /** ------------------------------------------------------------------------- 
     EDITABLE ENTRIES
     ------------------------------------------------------------------------- */
-.datagrid .role-cell.editable{
-cursor:pointer;    
+.datagrid .role-cell.editable {
+    cursor: pointer;
 }
 
-.datagrid .role-cell.editable:hover{
-background:#dbf5ff;
+.datagrid .role-cell.editable:hover {
+    background: #dbf5ff;
 }
 
-.datagrid .role-cell.editable.editing{
-background:#fff;
-border:solid 1px #08c;
-cursor:default;
+.datagrid .role-cell.editable.editing {
+    background: #fff;
+    border: solid 1px #08c;
+    cursor: default;
 }
 
-.datagrid .role-cell.editable.error{
-background:transparent;
-cursor:default;
+.datagrid .role-cell.editable.error {
+    background: transparent;
+    cursor: default;
 }
 
-.datagrid-edit-buttons{
-position:absolute;
-top:0;
-left:0;
+.datagrid-edit-buttons {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.datagrid-edit-buttons .inner{
-background:#08c;
-padding:6px;
-border-bottom-left-radius:4px;
-border-bottom-right-radius:4px;    
-text-align:center;
+.datagrid-edit-buttons .inner {
+    background: #08c;
+    padding: 6px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    text-align: center;
 }
 
 
@@ -238,17 +213,17 @@ text-align:center;
     ENTRY STYLING
     ------------------------------------------------------------------------- */
 
-TABLE.table TR.row-type-warning{
-background:#fff6e8;
-	
+TABLE.table TR.row-type-warning {
+    background: #fff6e8;
+
 }
 
-TABLE.table TR.row-type-warning > TD{
-border-color:#e8dac3;
+TABLE.table TR.row-type-warning > TD {
+    border-color: #e8dac3;
 }
 
-TABLE.table.table-hover TR.row-type-warning:hover > TD{
-background-color:#ffe8c3 !important;
+TABLE.table.table-hover TR.row-type-warning:hover > TD {
+    background-color: #ffe8c3 !important;
 }
 
 /** -------------------------------------------------------------------------
@@ -256,22 +231,23 @@ background-color:#ffe8c3 !important;
     ------------------------------------------------------------------------- */
 
 .table-footer-disabled tfoot {
-    display:none;
+    display: none;
 }
 
 .table-header-disabled thead {
-    display:none;
+    display: none;
 }
 
 /** -------------------------------------------------------------------------
     Column fit size of content
     ------------------------------------------------------------------------- */
 
-.table-fit-content tbody>tr>td{
+.table-fit-content tbody > tr > td {
     white-space: nowrap;
 }
-.table-fit-content tbody>tr>td:last-child{
-    width:100%;
+
+.table-fit-content tbody > tr > td:last-child {
+    width: 100%;
 }
 
 .table-fit-content {
@@ -282,7 +258,7 @@ background-color:#ffe8c3 !important;
     Remove line separator
     ------------------------------------------------------------------------- */
 
-.table-remove-row-separator tbody>tr>td{
+.table-remove-row-separator tbody > tr > td {
     border: none;
 }
 
@@ -291,13 +267,13 @@ background-color:#ffe8c3 !important;
     and hiding header/footer
     ------------------------------------------------------------------------- */
 
-.table-mini tbody>tr>td {
+.table-mini tbody > tr > td {
     padding: 1px 5px;
     white-space: nowrap;
 }
 
-.table-mini tbody>tr>td:last-child{
-    width:100%;
+.table-mini tbody > tr > td:last-child {
+    width: 100%;
 }
 
 .table-mini {
@@ -306,8 +282,8 @@ background-color:#ffe8c3 !important;
 }
 
 .table-mini tfoot,
-.table-mini thead{
-    display:none;
+.table-mini thead {
+    display: none;
 }
 
 /** -------------------------------------------------------------------------
@@ -316,5 +292,5 @@ background-color:#ffe8c3 !important;
 
 .table TD.role-actions > INPUT[type="checkbox"] {
     position: relative;
-    top:-3px;
+    top: -3px;
 }

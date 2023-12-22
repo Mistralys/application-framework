@@ -36,10 +36,38 @@
     --color-mainnav-hover-text: #fff;
     --color-mainnav-text: #EAEEFF;
 
+    --color-grid-bg: #252A33;
+    --color-grid-row-bg-hover: #333d4f;
+    --color-grid-border: #111317;
+    --color-grid-bg-sorted: #27354D;
+    --color-grid-icon-sort: var(--color-text-secondary);
+    --color-grid-icon-sort-hover: var(--color-link-hover);
+    --color-grid-icon-sort-active: #ff3c00;
+    --color-grid-properties-border: #ddd;
+
+    --color-hseparator-top: #3c414b;
+    --color-hseparator-bottom: #0e0f12;
+
+    /*--color-sidebar-toggle-border: (hseparator top) */
+    --color-sidebar-toggler-text: var(--color-text-secondary);
+    --color-sidebar-toggler-bg-collapsed: #27354D;
+    --color-sidebar-toggler-text-collapsed: #91D6FF;
+
+    --color-menu-bg: #2C4A7C;
+    --color-menu-default-text: #CEEDFF;
+    --color-menu-default-bg-hover: #365891;
+
     --color-pills-bg: #27354D;
     --color-pills-border: #264564;
     /*--color-pills-bg-active: (accent primary);*/
     --color-pills-bg-hover: #333;
+
+    --color-tabs-active-bg: #252A33;
+    --color-tabs-active-text: #EAEEFF;
+    /*--color-tabs-active-border: (no border);*/
+
+    --color-section-header-bg-hover: #2B3340;
+    --color-section-body-bg: #252A33;
 
     --color-footer-gradient: #252A33;
     --color-footer-separator: #374152;
@@ -51,6 +79,7 @@
     --color-form-element-text: #c0c0c0;
     --color-form-element-bg: #333d4f;
     --color-form-element-border: #64738D;
+    --color-form-checkbox: #365891;
 
     --color-btn-default-bg: #27354D;
     --color-btn-default-text: #91D6FF;
@@ -65,10 +94,6 @@
 
 HTML{
     color-scheme: dark;
-}
-
-.section-header.collapsible:hover{
-    background: #2B3340;
 }
 
 .breadcrumb > LI{
@@ -86,11 +111,16 @@ HTML{
     background: #2C4A7C;
 }
 
-.nav-tabs .open .dropdown-toggle, .nav-pills .open .dropdown-toggle, .nav>li.dropdown.open.active>a:hover, .nav>li.dropdown.open.active>a:focus{
+.nav-tabs .open .dropdown-toggle,
+.nav-pills .open .dropdown-toggle,
+.nav>li.dropdown.open.active>a:hover,
+.nav>li.dropdown.open.active>a:focus{
     background: #39598E;
 }
 
-.nav-pills>.active>a, .nav-pills>.active>a:hover, .nav-pills>.active>a:focus{
+.nav-pills>.active>a,
+.nav-pills>.active>a:hover,
+.nav-pills>.active>a:focus{
     background: #365891;
 }
 
@@ -98,27 +128,20 @@ HTML{
     border-color: #264564;
 }
 
-.section .body-wrapper .tab-toolbar{
-    background: transparent;
-}
-
-.section .body-wrapper .tab-content{
-    background: #252A33;
-}
-
 .nav-tabs>.active>a,
 .nav-tabs>.active>a:hover,
 .nav-tabs>.active>a:focus{
-    background-color: #252A33;
     border: none;
-    color: #EAEEFF
+}
+
+.section .body-wrapper .tab-toolbar{
+    background: transparent;
 }
 
 .nav-tabs>li>a:hover,
 .nav-tabs>li>a:focus{
     border-color: transparent;
 }
-
 
 .nav-tabs{
     border: none;
@@ -127,38 +150,6 @@ HTML{
 .help-block{
     color: inherit;
     opacity: 0.7;
-}
-
-.body-wrap TABLE.table{
-    background-color: #252A33;
-}
-
-.table-bordered,
-.table-bordered th, .table-bordered td{
-    border-color: #000;
-}
-
-.table-hover tbody tr:hover>td, .table-hover tbody tr:hover>th{
-    background-color: #333d4f;
-}
-
-input[type="checkbox"]{
-    accent-color: #365891;
-}
-
-.dropdown-menu{
-    background-color: #2C4A7C;
-}
-
-.dropdown-menu>li>a{
-    color: #CEEDFF;
-}
-
-.dropdown-menu>li>a:hover,
-.dropdown-menu>li>a:focus,
-.dropdown-submenu:hover>a,
-.dropdown-submenu:focus>a{
-    background: #365891
 }
 
 .dropdown-menu .divider{

@@ -136,15 +136,15 @@
 /* region: Toggle sidebar */
 
 #sidebar-toggle {
-    color: #999999;
+    color: var(--color-sidebar-toggler-text);
     width: 16px; /* force minimum size */
     font-size: var(--font-size-s);
-    border-left: dotted 1px #ddd;
+    border-left: dotted 1px var(--color-sidebar-toggler-border);
 }
 
 #sidebar-toggle.collapsed {
-    background: #08c;
-    color: #fff;
+    background: var(--color-sidebar-toggler-bg-collapsed);
+    color: var(--color-sidebar-toggler-text-collapsed);
     width: 1px;
 }
 
