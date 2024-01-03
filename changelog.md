@@ -1,3 +1,15 @@
+### v3.1.2 - Config loading update
+- Environments: Added support for `app.php` + `environments.php` config files.
+- Interface Refs: Added more examples.
+- UI: Added the `Capturable` trait and interface.
+- UI: Fixed an endless loop when using dropdown submenus.
+- UI: Fixed the `style` attribute being ignored in dropdown menus.
+- UI: Continued consolidating colors in `ui-colors.css`.
+- UI: Added `makeWarning()` and `makeSuccess()` to dropdown link entries.
+- Icons: Added the `css` icon.
+- DataGrids: Added `addLIClass()` in grid actions.
+- DataGrids: Actions now use the regular menu CSS classes. 
+
 ### v3.1.1 - Interface Reference enhancements
 - Interface Refs: Added more UI element examples.
 - Interface Refs: Built a support class structure for categories and examples.
