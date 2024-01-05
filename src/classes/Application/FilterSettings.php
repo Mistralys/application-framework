@@ -201,7 +201,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     */
     protected function configureSearch(string $setting='search') : void
     {
-        $search = $this->getSetting($setting);
+        $search = $this->getSettingString($setting);
         
         if(strlen($search) >= 2) 
         {
