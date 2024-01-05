@@ -7,6 +7,7 @@
  */
 
 use Application\ConfigSettings\BaseConfigRegistry;
+use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
@@ -2007,6 +2008,17 @@ class DBHelper
     protected static array $collections = array();
 
     /**
+     * Clears/resets the internal collection instances cache,
+     * which will force them to be created anew if requested.
+     *
+     * @return void
+     */
+    public static function clearCollections() : void
+    {
+        self::$collections = array();
+    }
+
+    /**
      * @param string $class
      * @param DBHelper_BaseRecord|NULL $parentRecord
      * @param bool $newInstance
@@ -2024,23 +2036,12 @@ class DBHelper
             return self::$collections[$key];
         }
     
-        $baseClass = 'DBHelper_BaseCollection';
-    
-        /* @var $instance DBHelper_BaseCollection */
-    
-        $instance = new $class();
-        if(!$instance instanceof $baseClass) {
-            throw new DBHelper_Exception(
-                'Not a DBHelper collection',
-                sprintf(
-                    'Cannot use class [%s] as DBHelper collection: it does not extend the [%s] class.',
-                    $class,
-                    $baseClass
-                ),
-                self::ERROR_NOT_A_DBHELPER_COLLECTION
-            );
-        }
-    
+        $instance = ClassHelper::requireObjectInstanceOf(
+            DBHelper_BaseCollection::class,
+            new $class(),
+            self::ERROR_NOT_A_DBHELPER_COLLECTION
+        );
+
         if($instance->hasParentCollection())
         {
             if(!$parentRecord) {
