@@ -147,7 +147,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         {
             $this->parentRecord = $record; 
             $this->setForeignKey(
-                $record->getRecordPrimaryName(), 
+                $record->getParentPrimaryName(),
                 (string)$record->getID()
             );
 
@@ -858,7 +858,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
                 self::ERROR_CREATE_RECORD_CANCELLED
             );
         }
-        
+
         // use a special table for generating the record id?
         if(isset($this->recordIDTable)) 
         {
