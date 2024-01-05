@@ -1,3 +1,6 @@
+### v3.1.3 - DBHelper parent collection
+- DBHelper: Added the overridable `getParentPrimaryName()` to collections.
+
 ### v3.1.2 - Config loading update
 - Environments: Added support for `app.php` + `environments.php` config files.
 - Interface Refs: Added more examples.
