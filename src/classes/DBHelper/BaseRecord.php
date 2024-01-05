@@ -71,6 +71,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     protected string $instanceID;
     protected static int $instanceCounter = 0;
+    protected string $parentPrimaryName;
 
     /**
      * @param int $primary_id
@@ -84,6 +85,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->collection = $collection;
         $this->recordTable = $collection->getRecordTableName();
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
+        $this->parentPrimaryName = $collection->getParentPrimaryName();
         $this->recordTypeName = $collection->getRecordTypeName();
         $this->recordID = $primary_id;
         $this->instanceID = (string)self::$instanceCounter;
@@ -215,6 +217,11 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     public function getRecordPrimaryName() : string
     {
         return $this->recordPrimaryName;
+    }
+
+    public function getParentPrimaryName() : string
+    {
+        return $this->parentPrimaryName;
     }
 
     /**

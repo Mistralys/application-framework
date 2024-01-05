@@ -216,6 +216,20 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     abstract public function getRecordPrimaryName() : string;
 
     /**
+     * Retrieves the name of the primary key, when this collection
+     * is used as a parent collection for another collection.
+     *
+     * Defaults to the same as {@see self::getRecordPrimaryName()},
+     * but can be overridden to use a different column.
+     *
+     * @return string
+     */
+    public function getParentPrimaryName() : string
+    {
+        return $this->getRecordPrimaryName();
+    }
+
+    /**
      * @return string
      */
     abstract public function getRecordTypeName() : string;
