@@ -394,6 +394,10 @@ class Application_Bootstrap
         Application::log('Bootstrap | Loading configuration files.');
 
         $configs = array(
+            APP_ROOT . '/config/app.php', // First, contains only static settings
+            APP_ROOT . '/config/environments.php', // Environment loader
+
+            // Legacy config files
             APP_ROOT . '/config/app-config.php', // First, contains only static settings
             APP_ROOT . '/config/config-local.php' // Second, contains dynamic settings
         );
