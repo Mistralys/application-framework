@@ -1,6 +1,15 @@
 ### v3.1.3 - DBHelper parent collection
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
+- UI: Continued migrating colors to the new color stylesheets.
+- Data Grids: Criticality actions now use regular menu item classes.
+- UI: Added the `Capturable` trait and interface.
+- UI: Dropdowns: Added `makeSuccess()` and `makeWarning()`.
+- UI: Added the CSS generator tool to render CSS files from templates using CSS Crush.
+- UI: Added the CSS generator screen in the developer tools.
+- Icons: Added the `css` icon.
+- Interface Refs: Added examples of menus.
+- Interface Refs: Added example of data grid actions.
 
 ### v3.1.2 - Config loading update
 - Environments: Added support for `app.php` + `environments.php` config files.
