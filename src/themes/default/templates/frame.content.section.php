@@ -30,7 +30,6 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
                     $this->displayAnchor();
                     $this->displayToolbar();
                     $this->displayTitleBar();
-                    $this->displayTabs();
                     $this->displayBody();
                 ?>
             </section>
@@ -52,16 +51,17 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
             $classes[] = 'with-abstract';
         }
 
-        if($this->section->hasTabs()) {
-            $classes[] = 'with-tabs';
-        }
-
         if($this->section->hasContextButtons()) {
             $classes[] = 'with-context-buttons';
         }
 
         if($this->section->isCompact()) {
             $classes[] = 'compact';
+        }
+
+        $style = $this->section->getVisualStyle();
+        if($style !== null) {
+            $classes[] = $style;
         }
 
         $classes = array_merge($classes, $this->section->getClasses());
@@ -135,9 +135,9 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
 
         $maxBodyHeight = $this->section->getMaxBodyHeight();
 
-        if ($maxBodyHeight > 0) {
+        if ($maxBodyHeight !== null) {
             $classes[] = 'max-height';
-            $attributes['style'] = 'max-height:' . $maxBodyHeight . 'px;';
+            $attributes['style'] = 'max-height:' . $maxBodyHeight->toCSS();
         }
 
         $attributes['class'] = implode(' ', $classes);
@@ -150,7 +150,6 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
         $attributes = array();
         $classes = array();
 
-        $attributes['id'] = $this->section->getID() . '-body';
         $classes[] = 'section-body';
         $classes[] = $this->section->getType() . '-body';
 
@@ -162,61 +161,9 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
         }
 
         $attributes['class'] = implode(' ', $classes);
+        $attributes['id'] = $this->section->getID() . '-body';
 
         return $attributes;
-    }
-
-    protected function displayTabs() : void
-    {
-        if (!$this->section->hasTabs()) {
-            return;
-        }
-
-        $tabs = $this->section->getTabs();
-
-        ?>
-            <ul class="tabs-section">
-                <?php
-                    foreach ($tabs as $tab) {
-                        $this->displayTab($tab);
-                    }
-                ?>
-            </ul>
-        <?php
-    }
-
-    protected function displayTab(UI_Page_Section_Tab $tab) : void
-    {
-        $classes = array(
-            'tab',
-            'tab-' . $tab->getName()
-        );
-
-        if ($tab->isActive()) {
-            $classes[] = 'tab-active';
-        } else {
-            $classes[] = 'tab-default';
-        }
-
-        ?>
-            <li class="<?php echo implode(' ', $classes) ?>">
-                <?php
-
-                    if ($tab->isLink())
-                    {
-                        echo sb()->link(
-                            $tab->renderLabel(),
-                            $tab->getURL(),
-                            $tab->getURLTarget() !== ''
-                        );
-                    }
-                    else
-                    {
-                        echo $tab->renderLabel();
-                    }
-                ?>
-            </li>
-        <?php
     }
 
     protected function displayTitleBar() : void
@@ -271,6 +218,8 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
 
         if ($this->section->hasTagline()) {
             $headerClasses[] = 'with-tagline';
+        } else {
+            $headerClasses[] = 'without-tagline';
         }
 
         if ($this->section->isCollapsible())
