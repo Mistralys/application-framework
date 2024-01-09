@@ -97,7 +97,7 @@ class UI_Form_Renderer_Sections
     
     private function renderCollapseControls() : string
     {
-        return (string)UI_Page_Section::createGroupControls()
+        return (string)UI_Page_Section::createGroupControls($this->renderer->getID())
             ->addClass('form-sections-toolbar')
             ->makeMini()
             ->setTooltips(
