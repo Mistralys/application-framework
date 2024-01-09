@@ -111,10 +111,21 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
         return $label;
     }
 
-    public function makeLinked(string $url) : UI_Bootstrap_BigSelection_Item_Regular
+    /**
+     * @param string $url
+     * @return $this
+     */
+    public function makeLinked(string $url) : self
     {
-        $this->setAttribute(self::ATTRIBUTE_HREF, $url);
-        return $this;
+        return $this->setAttribute(self::ATTRIBUTE_HREF, $url);
+    }
+
+    /**
+     * @return $this
+     */
+    public function makeActive() : self
+    {
+        return $this->addClass('active');
     }
 
     public function makeClickable($statement) : UI_Bootstrap_BigSelection_Item_Regular
