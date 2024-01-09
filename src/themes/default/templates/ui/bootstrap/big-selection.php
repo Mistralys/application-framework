@@ -9,34 +9,39 @@
  * @see UI_Bootstrap_BigSelection
  */
 
-    /* @var $this UI_Page_Template */
-    /* @var $selection UI_Bootstrap_BigSelection */
+declare(strict_types=1);
 
-    $selection = $this->getVar('selection');
-    
-    $this->ui->addStylesheet('ui-bigselection.css');
+use AppUtils\AttributeCollection;
 
-    $selection->addClass('bigselection');
-
-    $items = $selection->getItems();
-    $jsID = $selection->getID();
-    
-    $wrapperClasses = array('bigselection-wrapper');
-    
-    if($selection->isHeightLimited()) 
-    { 
-        $wrapperClasses[] = 'bigselection-height-limited'; 
-    }
-    
-    if($selection->isFilteringInUse())
+class template_default_ui_bootstrap_big_selection extends UI_Page_Template_Custom
+{
+    protected function generateOutput(): void
     {
-        $wrapperClasses[] = 'bigselection-filtering-enabled';
-    }
-        
-?>
-<div class="<?php echo implode(' ', $wrapperClasses) ?>" id="<?php echo $jsID ?>-wrapper">
+        $this->ui->addStylesheet('ui-bigselection.css');
+
+        $this->selection->addClass('bigselection');
+
+        $items = $this->selection->getItems();
+        $jsID = $this->selection->getID();
+
+        $this->wrapperAttributes->addClass('bigselection-wrapper');
+        $this->wrapperAttributes->id($jsID.'-wrapper');
+
+        if($this->selection->isHeightLimited())
+        {
+            $this->wrapperAttributes->addClass('bigselection-height-limited');
+            $this->wrapperAttributes->style('max-height', $this->selection->getStringOption(UI_Bootstrap_BigSelection::OPTION_HEIGHT_LIMITED), false);
+        }
+
+        if($this->selection->isFilteringInUse())
+        {
+            $this->wrapperAttributes->addClass('bigselection-filtering-enabled');
+        }
+
+    ?>
+<div<?php echo $this->wrapperAttributes->render() ?>>
     <?php 
-        if($selection->isFilteringInUse())
+        if($this->selection->isFilteringInUse())
         {
             $this->ui->addJavascript('ui/bigselection/static.js');
             
@@ -76,7 +81,7 @@
             <?php 
         }
     ?>
-    <ul<?php echo $selection->renderAttributes() ?>>
+    <ul<?php echo $this->selection->renderAttributes() ?>>
     	<?php
             foreach($items as $item)
             {
@@ -85,3 +90,15 @@
         ?>
     </ul>
 </div>
+<?php
+    }
+
+    protected UI_Bootstrap_BigSelection $selection;
+    protected AttributeCollection $wrapperAttributes;
+
+    protected function preRender(): void
+    {
+        $this->selection = $this->getObjectVar('selection', UI_Bootstrap_BigSelection::class);
+        $this->wrapperAttributes = AttributeCollection::create();
+    }
+}
