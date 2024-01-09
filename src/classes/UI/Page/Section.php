@@ -11,10 +11,13 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
+use AppUtils\NumberInfo;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits\ClassableTrait;
 use UI\Interfaces\CapturableInterface;
+use UI\Page\Section\GroupControls;
+use UI\Page\Section\SectionsRegistry;
 use UI\Traits\CapturableTrait;
 use function AppUtils\parseNumber;
 
@@ -52,7 +55,10 @@ abstract class UI_Page_Section
     
     public const ERROR_INVALID_CONTEXT_BUTTON = 511001;
     public const ERROR_TAB_ALREADY_EXISTS = 511002;
-    
+    public const STYLE_DANGEROUS = 'dangerous';
+    public const PROPERTY_VISUAL_STYLE = 'visual-style';
+    public const DEFAULT_GROUP = 'default';
+
     protected string $templateName = 'frame.content.section';
 
     /**
@@ -68,7 +74,7 @@ abstract class UI_Page_Section
     * @see setProperty()
     * @see getProperty()
     */
-    protected $properties = array(
+    protected array $properties = array(
         'id' => '',
         'title' => '',
         'tagline' => '',
@@ -78,12 +84,39 @@ abstract class UI_Page_Section
         'collapsible' => false,
         'collapsed' => false,
         'visible-if-empty' => false,
-        'group' => '_default',
+        'group' => self::DEFAULT_GROUP,
         'type' => 'content-section',
-        'anchor' => ''
+        'anchor' => '',
+        self::PROPERTY_VISUAL_STYLE => null
     );
 
     private ?UI_QuickSelector $quickSelector = null;
+    private bool $rendered = false;
+
+    public function hasBeenRendered() : bool
+    {
+        return $this->rendered;
+    }
+
+    public function makeDangerous() : self
+    {
+        return $this->setVisualStyle(self::STYLE_DANGEROUS);
+    }
+
+    public function setVisualStyle(string $style) : self
+    {
+        return $this->setProperty(self::PROPERTY_VISUAL_STYLE, $style);
+    }
+
+    public function getVisualStyle() : ?string
+    {
+        $style = (string)$this->getProperty(self::PROPERTY_VISUAL_STYLE);
+        if(!empty($style)) {
+            return $style;
+        }
+
+        return null;
+    }
 
     /**
      * Every section gets a dynamically created ID. This can
@@ -97,6 +130,8 @@ abstract class UI_Page_Section
         $this->setProperty('id', nextJSID());
         
         $this->addClass('content-section');
+
+        SectionsRegistry::register($this);
     }
 
     public function getType() : string
@@ -201,8 +236,8 @@ abstract class UI_Page_Section
         return (string)$this->getProperty('group');
     }
     
-    public const BACKGROUND_TYPE_LIGHT = 'light';
-    
+    public const BACKGROUND_TYPE_SOLID_DEFAULT = 'solid-default';
+
    /**
     * Makes the section's background a solid color, with the specified
     * style. Use this in cases where the section should not have a transparent
@@ -217,14 +252,23 @@ abstract class UI_Page_Section
     }
     
    /**
-    * Gives the section a light background color, as defined
-    * in the CSS class "solid-background-light".
-    * 
     * @return $this
+    * @deprecated Use {@see makeBodySolidFill()} instead.
     */
     public function makeLightBackground() : self
     {
-        return $this->makeSolidBackground(self::BACKGROUND_TYPE_LIGHT);
+        return $this->makeBodySolidFill();
+    }
+
+    /**
+     * Fills the section body with the default content background
+     * color (default is a transparent background).
+     *
+     * @return $this
+     */
+    public function makeBodySolidFill() : self
+    {
+        return $this->makeSolidBackground(self::BACKGROUND_TYPE_SOLID_DEFAULT);
     }
     
    /**
@@ -295,14 +339,14 @@ abstract class UI_Page_Section
     }
     
    /**
-    * Limits the height of the body of the section 
-    * to the specified pixel height. A height above
-    * will display a scrollbar.
-    * 
-    * @param int $height
+    * Limits the height of the section body to the
+    * specified maximum pixel height.
+    * If the body is higher, a scrollbar will be shown.
+    *
+    * @param string|int|float|NULL $height A height in a format parsable by {@see NumberInfo}.
     * @return $this
     */
-    public function setMaxBodyHeight(int $height) : self
+    public function setMaxBodyHeight($height) : self
     {
         return $this->setProperty('max-body-height', $height);
     }
@@ -349,24 +393,20 @@ abstract class UI_Page_Section
     * @param string $name
     * @return mixed|NULL
     */
-    protected function getProperty(string $name)
+    public function getProperty(string $name)
     {
-        if(isset($this->properties[$name])) {
-            return $this->properties[$name];
-        }    
-        
-        return null;
+        return $this->properties[$name] ?? null;
     }
     
-    public function getMaxBodyHeight() : int
+    public function getMaxBodyHeight() : ?NumberInfo
     {
         $height = parseNumber($this->getProperty('max-body-height'));
 
         if(!$height->isEmpty()) {
-            return (int)$height->getNumber();
+            return $height;
         }
         
-        return 0;
+        return null;
     }
 
     /**
@@ -391,6 +431,8 @@ abstract class UI_Page_Section
         if(empty($content) && !$this->isVisibleIfEmpty()) {
             return '';
         }
+
+        $this->rendered = true;
         
         $params = $this->properties;
         $params['content'] = $content;
@@ -732,14 +774,36 @@ abstract class UI_Page_Section
         
         return $this;
     }
-    
+
+    public static function getJSExpandGroup(string $group) : string
+    {
+        return "UI.ExpandSections('".$group."')";
+    }
+
+    public static function getJSCollapseGroup(string $group) : string
+    {
+        return "UI.CollapseSections('".$group."')";
+    }
+
+    /**
+     * Creates a button group that can be used to expand and collapse
+     * all sections of the specified section group.
+     *
+     * @param string|NULL $group A group name. If NULL, the default group is used.
+     * @return GroupControls
+     */
+    public static function createGroupControls(?string $group=null) : GroupControls
+    {
+        return new GroupControls($group);
+    }
+
     public function getJSExpand() : string
     {
         if(!$this->isCollapsible()) {
             return '';
         }
 
-        return "UI.ExpandSections('".$this->getGroup()."')";
+        return self::getJSExpandGroup($this->getGroup());
     }
     
     public function getJSCollapse() : string
@@ -748,7 +812,7 @@ abstract class UI_Page_Section
             return '';
         }
         
-        return "UI.CollapseSections('".$this->getGroup()."')";
+        return self::getJSCollapseGroup($this->getGroup());
     }
     
     public function isCollapsible() : bool
@@ -757,24 +821,16 @@ abstract class UI_Page_Section
     }
 
     /**
+     * Adds a form instance to use as content of the section.
+     *
+     * If the section is set to collapsible, it is expanded
+     * automatically if the form has been submitted and is not
+     * valid.
+     *
      * @param UI_Form $form
      * @return $this
      */
     public function addForm(UI_Form $form) : self
-    {
-        return $this->addRenderable($form);
-    }
-    
-   /**
-    * Sets a form instance to use as content of the section.
-    * If the section is set to collapsible, it is expanded
-    * automatically if the form has been submitted and is not
-    * valid.
-    * 
-    * @param UI_Form $form
-    * @return $this
-    */
-    public function setForm(UI_Form $form) : self
     {
         return $this->addRenderable($form);
     }
@@ -803,8 +859,8 @@ abstract class UI_Page_Section
     {
         return $this->addRenderable(
             $this->createContent('Template')
-            ->setOption('variables', $params)
-            ->setOption('templateID', $templateID)
+                ->setOption('variables', $params)
+                ->setOption('templateID', $templateID)
         );
     }
 
@@ -869,70 +925,6 @@ abstract class UI_Page_Section
             UI_Page_Section_Content::class,
             new $class($this)
         );
-    }
-    
-   /**
-    * Disables the internal padding on the section's body,
-    * making the content touch on all sides of the section's body.
-    * 
-    * @return $this
-    */
-    public function disablePadding() : self
-    {
-        return $this->addClass('nopadding');
-    }
-    
-    public function enablePadding() : self
-    {
-        return $this->removeClass('nopadding');
-    }
-
-   /**
-    * @var array<string,UI_Page_Section_Tab>
-    */
-    protected array $tabs = array();
-    
-   /**
-    * Adds a tab to the section, which is used to compartmentalize the section's contents.
-    * 
-    * @param string $name Unique name/alias to identify the tab by - not shown in the UI.
-    * @param string $label Human-readable label of the tab.
-    * @return UI_Page_Section_Tab
-    */
-    public function addTab(string $name, string $label) : UI_Page_Section_Tab
-    {
-        if(isset($this->tabs[$name])) {
-            throw new Application_Exception(
-                'Tab already exists',
-                sprintf(
-                    'The tab [%s] has been added previously, the same name may not be used again.',
-                    $name
-                ),
-                self::ERROR_TAB_ALREADY_EXISTS
-            );
-        }
-        
-        $tab = new UI_Page_Section_Tab($this, $name, $label);
-        $this->tabs[$name] = $tab;
-        
-        return $tab;
-    }
-    
-   /**
-    * Checks whether this section has tabs.
-    * @return boolean
-    */
-    public function hasTabs() : bool
-    {
-        return !empty($this->tabs);
-    }
-    
-   /**
-    * @return UI_Page_Section_Tab[]
-    */
-    public function getTabs() : array
-    {
-        return array_values($this->tabs);
     }
     
     public function isSeparator() : bool
