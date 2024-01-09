@@ -1,15 +1,26 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Bootstrap
+ */
 
-require_once 'Application/Uploads.php';
+declare(strict_types=1);
 
+/**
+ * Bootstrap class for handling file uploads via the
+ * {@see ImageUploader} element, for example.
+ *
+ * @package Application
+ * @subpackage Bootstrap
+ */
 class Application_Bootstrap_Screen_Upload extends Application_Bootstrap_Screen
 {
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return 'storage/upload.php';
     }
     
-    protected function _boot()
+    protected function _boot() : void
     {
         $this->createEnvironment();
         
