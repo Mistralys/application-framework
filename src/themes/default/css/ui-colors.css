@@ -1,6 +1,12 @@
 /*
  * http://github.com/peteboere/css-crush (v4.1.3)
  */
+/**
+ * Color definitions for the UI: Collection of CSS variables
+ * that can be used to define colors in the UI.
+ *
+ * @package User Interface
+ */
 :root {
     --color-accent-base: #fff;
     --color-accent-primary: #08c;
@@ -36,6 +42,8 @@
     --color-bg-warning: #fff1d1;
     --color-bg-warning-hover: #ffe4be;
     --color-bg-warning-xl: var(--color-accent-warning);
+    --color-bg-success: #ebf8a4;
+    --color-bg-success-xl: var(--color-accent-success);
     --color-bg-code: var(--color-bg-highlight);
     --color-bg-active: var(--color-accent-primary);
     --color-border-code: #e1e1e8;
