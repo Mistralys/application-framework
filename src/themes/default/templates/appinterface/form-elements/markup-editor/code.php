@@ -6,7 +6,12 @@ DBHelper::startTransaction();
 
 // No countries by default, so we add one. German is available
 // as translation for the PasteAsPlainText plugin.
-$country = Application_Countries::getInstance()->createNewCountry('de', 'German');
+$countries = Application_Countries::getInstance();
+if($countries->isoExists('de')) {
+    $country = $countries->getByISO('de');
+} else {
+    $country = $countries->createNewCountry('de', 'German');
+}
 
 $form = new Application_Formable_Generic();
 $form->createFormableForm('markup-editor-example');
