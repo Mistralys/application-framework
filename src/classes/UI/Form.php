@@ -756,43 +756,23 @@ class UI_Form extends UI_Renderable
     protected ?UI_Form_Renderer $formRenderer = null;
 
     /**
-     * Renders the form to HTML using the forms.elements form based on QuickForm's
-     * array renderer.
+     * Renders the form to HTML using the form elements
+     * form based on QuickForm's array renderer.
      *
      * @return string
      */
-    protected function renderLayout($layout)
+    protected function renderLayout(string $layout) : string
     {
         if($this->readonly) {
             // do this again to ensure that all elements in the form get the info
             $this->makeReadonly();
         }
         
-        $renderer = HTML_QuickForm2_Renderer::factory('array');
-        
-        $this->form->render($renderer);
+        $renderer = new UI_Form_Renderer($this, $this->form->renderToArray(), $layout);
+        $renderer->setRegistryEnabled($this->clientRegistry);
 
-        // the factory returns a renderer proxy, so instanceof does not work.
-        if(is_callable(array($renderer, 'toArray')))
-        {
-            $renderer = new UI_Form_Renderer($this, $renderer->toArray(), $layout);
-            $renderer->setRegistryEnabled($this->clientRegistry);
-        }
-        else
-        {
-            throw new Application_Exception(
-                'Invalid form renderer',
-                sprintf(
-                    'Method [%s] missing from [%s].',
-                    'toArray',
-                    parseVariable($renderer)->enableType()->toString()
-                ),
-                self::ERROR_INVALID_FORM_RENDERER
-            );
-        }
-        
         //$renderer->debugFormDef();
-        
+
         $html = $renderer->render();
         
         $this->triggerEvent('rendered', array('renderer' => $renderer));
