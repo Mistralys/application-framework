@@ -41,6 +41,11 @@ class SectionsRegistry
         self::$sections[$section->getInstanceID()] = $section;
     }
 
+    public static function getAll() : array
+    {
+        return array_values(self::$sections);
+    }
+
     /**
      * @param string $group
      * @return UI_Page_Section[]
