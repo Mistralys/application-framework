@@ -134,6 +134,11 @@ class UI_Message extends UI_Renderable implements MessageLayoutInterface, Captur
         return $this->setType(UI::MESSAGE_TYPE_WARNING);
     }
 
+    public function makeWarningXL() : self
+    {
+        return $this->setType(UI::MESSAGE_TYPE_WARNING_XL);
+    }
+
     /**
      * @return $this
      */
