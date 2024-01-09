@@ -1,76 +1,75 @@
-.imageuploader_statusbar{
-height:28px;
-padding-left:9px;
-padding-top:6px;
-border-top:solid 1px #ddd;
-margin-bottom:4px;
-background:#fafafa;
+.imageuploader_statusbar {
+    height: 28px;
+    padding-left: 9px;
+    padding-top: 6px;
+    border-top: solid 1px var(--color-border);
+    margin-bottom: 4px;
+    background: var(--color-bg-highlight);
 }
 
-.imageuploader_statusbar.active.warning{
-background:#ffe3c5;
+.imageuploader_statusbar.active.warning {
+    background: var(--color-bg-warning);
 }
 
-.imageuploader_statusbar.active.success{
-background:#ebf8a4;
+.imageuploader_statusbar.active.success {
+    background: var(--color-bg-success);
 }
 
-.imageuploader_statusbar.active.neutral{
-background:#fafafa;
-color:#999;
+.imageuploader_statusbar.active.neutral {
+    background: var(--color-bg-highlight);
+    color: var(--color-text-muted);
 }
 
-.imageuploader_progressbar{
-width:0%;
-background:#00ff00;
-height:2px;
+.imageuploader_progressbar {
+    width: 0;
+    background: var(--color-bg-success-xl);
+    height: 2px;
 }
 
-.imageuploader_button{
-margin-bottom:6px;
+.imageuploader_button {
+    margin-bottom: 6px;
 }
 
-.imageuploader_filename{
-margin-bottom:6px;
+.imageuploader_filename {
+    margin-bottom: 6px;
 }
 
-.imageuploader_name{
-width:410px;
+.imageuploader_name {
+    width: 410px;
 }
 
-.imageuploader_preview{
-float:left;
-width:77px;
-height:77px;
-margin-right:20px;
-overflow:hidden;
-position:relative;
+.imageuploader_preview {
+    float: left;
+    width: 77px;
+    height: 77px;
+    margin-right: 20px;
+    overflow: hidden;
+    position: relative;
 }
 
-.imageuploader_preview_container{
-width:1%;	
+.imageuploader_preview_container {
+    width: 1%;
 }
 
-.imageuploader_preview IMG{
-display:block;
-border:solid 1px #ccc;
+.imageuploader_preview IMG {
+    display: block;
+    border: solid 1px var(--color-border);
 }
 
-.imageuploader_badge_filetype{
-position:absolute;
-top:1px;
-right:1px;
-background:#3a87ad;
-color:#fff;
-font-size:var(--font-size-xs);
-line-height:12px;
-border-bottom-left-radius:3px;
-padding:1px 5px;
-text-transform:uppercase;
+.imageuploader_badge_filetype {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    background: var(--color-badge-info-bg);
+    color: var(--color-text-inverted);
+    font-size: var(--font-size-xs);
+    line-height: 12px;
+    border-bottom-left-radius: 3px;
+    padding: 1px 5px;
+    text-transform: uppercase;
 }
 
 /* smaller width when the form has wide labels*/
-.wide-labels .imageuploader_name{
-width:360px;
+.wide-labels .imageuploader_name {
+    width: 360px;
 }
-
