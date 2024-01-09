@@ -1,12 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\NumberInfo;
 use AppUtils\Traits\OptionableTrait;
+use function AppUtils\parseNumber;
 
 /**
- * 
- * @property UI_Bootstrap_BigSelection_Item[] $children
+ * @package Application
+ * @subpackage User Interface
  *
+ * @property UI_Bootstrap_BigSelection_Item[] $children
+ * @see template_default_ui_bootstrap_big_selection
  */
 class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterface
 {
@@ -21,7 +27,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
     {
         return array(
             self::OPTION_EMPTY_MESSAGE => '',
-            self::OPTION_HEIGHT_LIMITED => false,
+            self::OPTION_HEIGHT_LIMITED => null,
             self::OPTION_FILTERING_ENABLED => false,
             self::OPTION_FILTERING_THRESHOLD => 10
         );
@@ -45,14 +51,25 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
     
    /**
     * Makes the list scroll if it becomes too long.
-    * 
-    * @param bool $limited
+    *
+    * @param string|int|float|NULL $maxHeight Height value parsable by {@see NumberInfo}. Set to NULL to disable.
     * @return UI_Bootstrap_BigSelection
     * @see UI_Bootstrap_BigSelection::isHeightLimited()
     */
-    public function makeHeightLimited(bool $limited=true) : UI_Bootstrap_BigSelection
+    public function makeHeightLimited($maxHeight) : UI_Bootstrap_BigSelection
     {
-        return $this->setOption(self::OPTION_HEIGHT_LIMITED, $limited);
+        return $this->setOption(self::OPTION_HEIGHT_LIMITED, $maxHeight);
+    }
+
+    public function getMaxHeight() : ?NumberInfo
+    {
+        $maxHeight = parseNumber($this->getOption(self::OPTION_HEIGHT_LIMITED));
+
+        if(!$maxHeight->isZeroOrEmpty()) {
+            return $maxHeight;
+        }
+
+        return null;
     }
     
    /**
@@ -63,7 +80,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
     */
     public function isHeightLimited() : bool
     {
-        return $this->getBoolOption(self::OPTION_HEIGHT_LIMITED);
+        return $this->getOption(self::OPTION_HEIGHT_LIMITED) !== null;
     }
     
    /**

@@ -27,10 +27,11 @@ class template_default_ui_bootstrap_big_selection extends UI_Page_Template_Custo
         $this->wrapperAttributes->addClass('bigselection-wrapper');
         $this->wrapperAttributes->id($jsID.'-wrapper');
 
-        if($this->selection->isHeightLimited())
+        $maxHeight = $this->selection->getMaxHeight();
+        if($maxHeight !== null)
         {
             $this->wrapperAttributes->addClass('bigselection-height-limited');
-            $this->wrapperAttributes->style('max-height', $this->selection->getStringOption(UI_Bootstrap_BigSelection::OPTION_HEIGHT_LIMITED), false);
+            $this->wrapperAttributes->style('max-height', $maxHeight->toCSS(), false);
         }
 
         if($this->selection->isFilteringInUse())
