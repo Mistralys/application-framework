@@ -12,6 +12,7 @@ node_modules/
 /docs/phpstan/cache
 /tests/application/storage/media/
 /tests/application/storage/logs/
+/tests/application/storage/temp/
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
