@@ -8,7 +8,7 @@
  */
 
 declare(strict_types=1);
-use Application\AppFactory;use UI\Page\Navigation\QuickNavigation;
+use Application\AppFactory;use AppUtils\ClassHelper;use UI\Event\PageRendered;use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -154,10 +154,29 @@ class template_default_frame extends UI_Page_Template_Custom
     
     protected function filterOutput(string $output) : string
     {
-        return str_replace(
+        $html = str_replace(
             array_keys($this->variables), 
             array_values($this->variables), 
             $output
         );
+
+        if(!Application_EventHandler::hasListener(UI::EVENT_PAGE_RENDERED)) {
+            return $html;
+        }
+
+        $event = Application_EventHandler::trigger(
+            UI::EVENT_PAGE_RENDERED,
+            array(
+                $this->page,
+                $html
+            ),
+            PageRendered::class
+        );
+
+        return ClassHelper::requireObjectInstanceOf(
+            PageRendered::class,
+            $event
+        )
+            ->getHTML();
     }
 }

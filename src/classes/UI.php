@@ -43,10 +43,12 @@ class UI
     public const MESSAGE_TYPE_SUCCESS = 'success';
     public const MESSAGE_TYPE_ERROR= 'error';
     public const MESSAGE_TYPE_WARNING ='warning';
+    public const MESSAGE_TYPE_WARNING_XL ='warning-xl';
     public const MESSAGE_TYPE_INFO = 'info';
 
     private const SESSION_VAR_APP_MESSAGES = 'application_messages';
     public const DUMMY_INSTANCE_ID = -1;
+    public const EVENT_PAGE_RENDERED = 'pageRendered';
 
     private Application $app;
     private Application_Session $session;
