@@ -26,6 +26,7 @@
 - Interface Refs: Added examples of menus.
 - Interface Refs: Added example of data grid actions.
 - Interface Refs: Added more section examples.
+- Uploads: Non-framework exceptions are now logged.
 
 ### v3.1.2 - Config loading update
 - Environments: Added support for `app.php` + `environments.php` config files.
