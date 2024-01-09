@@ -16,4 +16,10 @@ $form->addSection('Advanced settings')
 $form->addElementText('text3', 'Third element');
 $form->addElementText('text4', 'Fourth element');
 
+$form->addSection('Backup settings')
+    ->setIcon(UI::icon()->backup());
+
+$form->addElementText('text5', 'Fifth element');
+$form->addElementText('text6', 'Sixth element');
+
 echo $form;
