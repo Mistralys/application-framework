@@ -1,75 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_Form_Renderer extends UI_Renderable
 {
-    /**
-     * @var UI_Form
-     */
-    protected $wrapper;
-
-    /**
-     * @var HTML_QuickForm2
-     */
-    protected $form;
+    protected UI_Form $wrapper;
+    protected HTML_QuickForm2 $form;
 
    /**
     * @var array<string,mixed>
     */
-    protected $formDef;
+    protected array $formDef;
 
    /**
     * @var UI_Form_Renderer_RenderType_Button[]
     */
-    protected $submits = array();
+    protected array $submits = array();
 
-   /**
-    * @var string
-    */
-    protected $id;
-
-   /**
-    * @var string
-    */
-    protected $layout = 'horizontal';
+    protected string $id;
+    protected string $layout = 'horizontal';
+    private UI_Form_Renderer_Tabs $tabs;
+    private UI_Form_Renderer_Sections $sections;
+    private ?UI_Form_Renderer_Sections_Section $activeSection = null;
+    private UI_Form_Renderer_Registry $registry;
+    private UI_Form_Renderer_ElementFilter $elements;
+    private bool $rendered = false;
     
-   /**
-    * @var UI_Form_Renderer_Tabs
-    */
-    private $tabs;
-    
-   /**
-    * @var UI_Form_Renderer_Sections
-    */
-    private $sections;
-    
-   /**
-    * @var UI_Form_Renderer_Sections_Section|NULL
-    */
-    private $activeSection = null;
-    
-   /**
-    * @var UI_Form_Renderer_Registry
-    */
-    private $registry;
-    
-   /**
-    * @var UI_Form_Renderer_ElementFilter
-    */
-    private $elements;
-    
-   /**
-    * @var boolean
-    */
-    private $rendered = false;
-    
-    public function __construct(UI_Form $form, $elementsArray, $layout='horizontal')
+    public function __construct(UI_Form $form, array $elementArray, string $layout='horizontal')
     {
         parent::__construct($form->getUI()->getPage());
         
         $this->id = nextJSID();
         $this->wrapper = $form;
         $this->form = $this->wrapper->getForm();
-        $this->formDef = $elementsArray;
+        $this->formDef = $elementArray;
         $this->layout = $layout;
         $this->sections = new UI_Form_Renderer_Sections($this);
         $this->tabs = new UI_Form_Renderer_Tabs($this);
@@ -107,12 +71,7 @@ class UI_Form_Renderer extends UI_Renderable
         return $this->registry;
     }
     
-    public function debugFormDef()
-    {
-        echo '<pre>' . print_r($this->formDef, true) . '</pre>';
-    }
-
-    protected function _render()
+    protected function _render() : string
     {
         if($this->rendered)
         {
@@ -124,7 +83,7 @@ class UI_Form_Renderer extends UI_Renderable
         $parts = array(
             'body' => $this->renderBody(),
             'tabs' => $this->tabs->render(),
-            'hiddens' => $this->renderHiddens(),
+            'hiddens' => $this->renderHidden(),
             'controls' => $this->renderControls()
         );
         
@@ -168,7 +127,7 @@ class UI_Form_Renderer extends UI_Renderable
         $this->sections->render();
     }
 
-    protected function renderHiddens() : string
+    protected function renderHidden() : string
     {
         $html =
             "\t" . '<div class="hiddens">' . PHP_EOL;
@@ -210,29 +169,24 @@ class UI_Form_Renderer extends UI_Renderable
     {
         return $this->tabs;
     }
-    
-    protected $headers = array();
+
+    /**
+     * @var int[]
+     */
+    protected array $headers = array();
 
    /**
     * Renders a form header of the specified level.
     * 
     * @param string $label
     * @param integer $level
-    * @param string $anchorName
-    * @param string $hiddenWhenFrozen yes|no Whether the header should show in the frozen version of the form. The anchor will be preserved.
     * @return string
     */
-    public function renderHeader($label, $level, $anchorName=null, $hiddenWhenFrozen='no')
+    public function renderHeader(string $label, int $level) : string
     {
-        if(empty($anchorName)) {
-            $anchorName = 'heading'.nextJSID();
-        }
-        
+        $anchorName = 'heading'.nextJSID();
+
         $html = '<a id="' . $anchorName . '"></a>';
-        
-        if($this->wrapper->isReadonly() && $hiddenWhenFrozen=='yes') {
-            return $html;
-        } 
         
         $classes = array('form-header');
         if(!in_array($level, $this->headers)) {
@@ -297,7 +251,7 @@ class UI_Form_Renderer extends UI_Renderable
     }
     
    /**
-    * Registers a submit button in the form.
+    * Registers a "submit" button in the form.
     * 
     * @param UI_Form_Renderer_RenderType_Button $button
     */
