@@ -1,53 +1,53 @@
-#page-help{
+#page-help {
 }
 
-#page-help .help-header{
-font-size: var(--font-size-l);
+#page-help .help-header {
+    font-size: var(--font-size-l);
 }
 
-#page-help .help-contents{
-display:none;
-clear:both;
-background:#fff;
-padding:20px 30px;
-margin-bottom:20px;
-border:solid 1px #e8e8e8;
-font-size:var(--font-size-normal);
+#page-help .help-contents {
+    display: none;
+    clear: both;
+    background: var(--color-bg-content);
+    padding: 20px 30px;
+    margin-bottom: 20px;
+    border: solid 1px var(--color-border);
+    font-size: var(--font-size-normal);
 }
 
-#page-help .help-opener{
-float:right;
+#page-help .help-opener {
+    float: right;
 }
 
-#page-help .help-opener .label{
-background:#228600;
+#page-help .help-opener .label {
+    background: #228600;
 }
 
-#page-help .help-opener .label:hover{
-background:#52c02c;
+#page-help .help-opener .label:hover {
+    background: #52c02c;
 }
 
-#page-help .help-summary{
-font-style:italic;
-margin-bottom:20px;
+#page-help .help-summary {
+    font-style: italic;
+    margin-bottom: 20px;
     font-weight: var(--font-weight-normal);
-font-size:var(--font-size-normal);
+    font-size: var(--font-size-normal);
 }
 
-#page-help .help-para{
-margin-bottom:20px;
+#page-help .help-para {
+    margin-bottom: 20px;
 }
 
-#page-help .help-para-hint{
-background:#f0f0f0;
-padding:9px;
-border-radius:4px;
+#page-help .help-para-hint {
+    background: #f0f0f0;
+    padding: 9px;
+    border-radius: 4px;
 }
 
-#page-help .help-contents-wrapper{
-max-width:600px;
+#page-help .help-contents-wrapper {
+    max-width: 600px;
 }
 
-#page-help .help-body > P:last-child{
-margin-bottom:0;
+#page-help .help-body > P:last-child {
+    margin-bottom: 0;
 }

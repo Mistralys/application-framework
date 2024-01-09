@@ -1,17 +1,17 @@
-.countries-buttonbar{
-display:block;
-margin-bottom:20px;
+.countries-buttonbar {
+    display: block;
+    margin-bottom: 20px;
 }
 
-.countries-buttonbar .wrapper{
-display:inline-block;
-background:#e5e5e5;
-border-radius:5px;
-padding:2px 2px 2px 10px;
+.countries-buttonbar .wrapper {
+    display: inline-block;
+    background: var(--color-bg-highlight);
+    border-radius: var(--border-radius-normal);
+    padding: 2px 2px 2px 10px;
 }
 
-.countries-buttonbar .bar-label{
-display:inline-block;
-color:#333;
-padding-right:10px;
+.countries-buttonbar .bar-label {
+    display: inline-block;
+    color: var(--color-text-muted-xl);
+    padding-right: 10px;
 }

@@ -1,40 +1,40 @@
 .filter-form .filters-active-message {
-display: none;
-padding: 2px 4px;
-background: #f89406;
-border-radius: 3px;
-margin-bottom: 9px;
-color: #fff;
+    display: none;
+    padding: 2px 4px;
+    background: var(--color-bg-warning-xl);
+    border-radius: 3px;
+    margin-bottom: 9px;
+    color: var(--color-text-warning-xl);
 }
 
 .filter-form.filters-active .filters-active-message {
-display: block;
+    display: block;
 }
 
-.filter-form .filter-settings-more{
-margin-bottom:20px;
+.filter-form .filter-settings-more {
+    margin-bottom: 20px;
 }
 
-.filter-form .filter-settings-more .more-elements{
-display:none;
+.filter-form .filter-settings-more .more-elements {
+    display: none;
 }
 
 .filter-form .filter-settings-more .more-expand,
-.filter-form .filter-settings-more .more-collapse{
-color:#08c;
-cursor:pointer;
-text-align:center;
-padding:3px 6px;
-background:#f7fbff;
-border-radius:3px;
+.filter-form .filter-settings-more .more-collapse {
+    color: var(--color-link);
+    cursor: pointer;
+    text-align: center;
+    padding: 3px 6px;
+    background: var(--color-bg-highlight-info);
+    border-radius: 3px;
 }
 
 .filter-form .filter-settings-more .more-expand:hover,
-.filter-form .filter-settings-more .more-collapse:hover{
-color:#0093dc;
-background:#dcedff;
+.filter-form .filter-settings-more .more-collapse:hover {
+    color: var(--color-link-hover);
+    background: var(--color-bg-highlight-info-hover);
 }
 
-.filter-form .filter-settings-more .more-collapse{
-display:none;
+.filter-form .filter-settings-more .more-collapse {
+    display: none;
 }

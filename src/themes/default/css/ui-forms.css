@@ -294,7 +294,10 @@ LABEL.radio.standalone,
 
 /* The search bar in the multiselect element */
 .multiselect-item.filter {
-    background: var(--color-bg-light);
+    border-top-left-radius: var(--border-radius-l);
+    border-top-right-radius: var(--border-radius-l);
+    background: var(--color-bg-highlight);
+    border-bottom: solid 1px var(--color-border);
     margin-bottom: 13px;
     padding: 5px;
 }

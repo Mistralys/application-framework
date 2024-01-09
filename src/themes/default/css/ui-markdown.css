@@ -1,57 +1,60 @@
 .markdown H1,
 .markdown H2,
-.markdown H3{
-    padding:0;
-    margin:1rem 0 1rem 0;
+.markdown H3 {
+    padding: 0;
+    margin: 1rem 0 1rem 0;
 }
 
-.markdown H1{
-    font-size:var(--font-size-xl);
+.markdown H1 {
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-xl);
     margin-left: -0.8rem;
 }
 
-.markdown H2{
-    font-size:var(--font-size-l);
+.markdown H2 {
+    font-size: var(--font-size-l);
+    line-height: var(--line-height-l);
     margin-left: -0.7rem;
 }
 
-.markdown H3{
-    font-size:var(--font-size-normal);
+.markdown H3 {
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-normal);
     margin-left: -0.6rem;
 }
 
 .markdown H1 > A,
 .markdown H2 > A,
-.markdown H3 > A{
-    opacity:0.1;
+.markdown H3 > A {
+    opacity: 0.1;
     text-decoration: none;
-    display:inline-block;
-    padding-right:0.15rem;
+    display: inline-block;
+    padding-right: 0.15rem;
 }
 
 .markdown H1 > A:hover,
 .markdown H2 > A:hover,
-.markdown H3 > A:hover{
-    opacity:1;
+.markdown H3 > A:hover {
+    opacity: 1;
 }
 
-UL.table-of-contents{
+UL.table-of-contents {
     margin: 0 0 2rem 1rem;
 }
 
-UL.table-of-contents UL{
+UL.table-of-contents UL {
     margin: 0 0 1rem 0.6rem;
 }
 
-TABLE.markdown-table{
-    width:auto;
+TABLE.markdown-table {
+    width: auto;
 }
 
-.markdown > P:last-child{
-    margin-bottom:0;
+.markdown > P:last-child {
+    margin-bottom: 0;
 }
 
-.markdown BLOCKQUOTE P{
+.markdown BLOCKQUOTE P {
     font-weight: var(--font-weight-light);
     font-size: var(--font-size-normal);
     line-height: var(--line-height-normal);

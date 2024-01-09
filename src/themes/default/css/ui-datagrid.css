@@ -1,6 +1,7 @@
 .datagrid-title {
     font-weight: var(--font-weight-bold);
-    font-size: 110%;
+    font-size: var(--font-size-l);
+    line-height: var(--line-height-l);
     margin-bottom: 13px;
 }
 
@@ -17,9 +18,8 @@
 
 .datagrid-title {
     line-height: 30px;
-    margin: 0;
+    margin: 0 0 15px 0;
     padding: 0;
-    margin-bottom: 15px;
     font-size: 16px;
     text-transform: uppercase;
     font-weight: var(--font-weight-normal);
@@ -92,11 +92,11 @@
 
 .datagrid TR.row-sortable.row-immovable {
     cursor: not-allowed;
-    background: #ffe4be;
+    background: var(--color-bg-warning);
 }
 
 .row-sortable.row-immovable:hover TD {
-    background: #ffe4be !important;
+    background: var(--color-bg-warning-hover) !important;
 }
 
 .datagrid-row-sorting,
@@ -105,8 +105,8 @@
 }
 
 .datagrid-sort-helper {
-    background: #08c;
-    color: #fff;
+    background: var(--color-bg-active);
+    color: var(--color-text-inverted);
     border-radius: 5px;
     padding: 2px 10px;
     width: 100%;
@@ -214,16 +214,16 @@
     ------------------------------------------------------------------------- */
 
 TABLE.table TR.row-type-warning {
-    background: #fff6e8;
+    background: var(--color-bg-warning);
 
 }
 
 TABLE.table TR.row-type-warning > TD {
-    border-color: #e8dac3;
+    border-color: var(--color-border-warning);
 }
 
 TABLE.table.table-hover TR.row-type-warning:hover > TD {
-    background-color: #ffe8c3 !important;
+    background-color: var(--color-bg-warning-hover) !important;
 }
 
 /** -------------------------------------------------------------------------
@@ -277,7 +277,7 @@ TABLE.table.table-hover TR.row-type-warning:hover > TD {
 }
 
 .table-mini {
-    margin-bottom: 0px;
+    margin-bottom: 0;
     width: 1%;
 }
 

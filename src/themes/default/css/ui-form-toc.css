@@ -1,35 +1,35 @@
-UL.form-toc-sections{
-list-style:none;
-margin:0;
-padding:0;
+UL.form-toc-sections {
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-UL.form-toc-sections > LI{
-padding:0;
-margin:0;
-line-height:100%;
+UL.form-toc-sections > LI {
+    padding: 0;
+    margin: 0;
+    line-height: 100%;
 }
 
-.form-toc-autocomplete{
-margin-top:6px;
+.form-toc-autocomplete {
+    margin-top: 6px;
 }
 
-.form-toc-alphalink{
+.form-toc-alphalink {
 }
 
-.form-toc-sections > LI > A > .status-icons{
-    display:none;
+.form-toc-sections > LI > A > .status-icons {
+    display: none;
 }
 
-.form-toc-sections > LI > A{
-    display:block;
+.form-toc-sections > LI > A {
+    display: block;
     padding: 2px 0 2px 4px;
-    margin-left:-4px;
+    margin-left: -4px;
 }
 
 .form-toc-sections > LI > A:hover,
 .form-toc-sections > LI > A:active {
-    background: #d6f1ff;
+    background: var(--color-bg-highlight-info-hover);
     border-radius: 2px;
     text-decoration: none;
 }

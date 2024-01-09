@@ -2,264 +2,265 @@
     GENERAL DIALOG STYLES 
     ------------------------------------------------------------- */
 
-.dialog-buttonbar-text{
-display:inline-block;
-margin-right:5px;
+.dialog-buttonbar-text {
+    display: inline-block;
+    margin-right: 5px;
 }
 
-.modal FORM{
-margin:0;
+.modal FORM {
+    margin: 0;
 }
 
-.modal-header H3{
-padding:0;
+.modal-header H3 {
+    padding: 0;
 }
 
 .dialog_property_form,
-.dialog_property_edit_form{
-margin-top:14px;
-background:#cff1d8;
-padding:6px 13px;
+.dialog_property_edit_form {
+    margin-top: 14px;
+    background: #cff1d8;
+    padding: 6px 13px;
 }
 
-.dialog_property_edit_form{
-background:#ffdb96;
-margin-bottom:14px;
+.dialog_property_edit_form {
+    background: #ffdb96;
+    margin-bottom: 14px;
 }
 
 body .modal {
-width: 900px;
-/* must be half of the width, minus scrollbar on the left (30px) */
-margin-left: -420px;
+    width: 900px;
+    /* must be half of the width, minus scrollbar on the left (30px) */
+    margin-left: -420px;
 }
 
-.modal.modal-large{
-width:90%;
-margin-left: -45%;
-min-width:700px;
+.modal.modal-large {
+    width: 90%;
+    margin-left: -45%;
+    min-width: 700px;
 }
 
 .modal.large,
-.modal.modal-large{
-top:10%;
-margin-top:0;
+.modal.modal-large {
+    top: 10%;
+    margin-top: 0;
 }
 
 .modal-body.large,
-.modal-body.modal-large{
-max-height:520px;
+.modal-body.modal-large {
+    max-height: 520px;
 }
 
-.modal-body .form-actions{
-margin-bottom:0;
-padding-top:12px;
-padding-bottom:12px;
+.modal-body .form-actions {
+    margin-bottom: 0;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
-.modal-abstract{
-border-bottom:dotted 1px #ddd;
-padding-bottom:13px;
-margin-bottom:20px;
+.modal-abstract {
+    border-bottom: dotted 1px var(--color-border);
+    padding-bottom: 13px;
+    margin-bottom: 20px;
 }
 
-.modal-abstract P:last-child{
-padding-bottom:0;
-margin-bottom:0;
+.modal-abstract P:last-child {
+    padding-bottom: 0;
+    margin-bottom: 0;
 }
 
-.modal-body H4{
-font-size:var(--font-size-l);
+.modal-body H4 {
+    font-size: var(--font-size-l);
 }
 
-.modal-body H4:first-child{
-margin-top:0;
+.modal-body H4:first-child {
+    margin-top: 0;
 }
 
-.modal.modal-danger{
-border:solid 2px #cc0000; 
+.modal.modal-danger {
+    border: solid 2px var(--color-border-danger-xl);
 }
 
-.modal.modal-danger .modal-title{
-color:#b94a48;
+.modal.modal-danger .modal-title {
+    color: var(--color-text-danger);
 }
 
 .modal-body .form-horizontal .control-group {
-margin-bottom:12px;
+    margin-bottom: 12px;
 }
 
-.modal-body .controls>.checkbox:first-child{
-padding-top:0;
-margin-bottom:0;
+.modal-body .controls > .checkbox:first-child {
+    padding-top: 0;
+    margin-bottom: 0;
 }
 
-.modal .form-horizontal .checkbox-line .help-block{
-margin-bottom:0;
+.modal .form-horizontal .checkbox-line .help-block {
+    margin-bottom: 0;
 }
 
-.modal-footer-left{
-float:left;
+.modal-footer-left {
+    float: left;
 }
 
-.dialog-form-title.with-abstract{
-margin-bottom:13px;
+.dialog-form-title.with-abstract {
+    margin-bottom: 13px;
 }
 
-.dialog-form-abstract{
-margin-bottom:20px;
-font-style:italic;
+.dialog-form-abstract {
+    margin-bottom: 20px;
+    font-style: italic;
 }
 
-.dialog-list-buttons{
-margin-top:20px;
-border-top:dotted 1px #ddd;
-padding-top:13px;
+.dialog-list-buttons {
+    margin-top: 20px;
+    border-top: dotted 1px var(--color-border);
+    padding-top: 13px;
 }
 
-.integrated-statustext{
-display:inline-block;
-margin-left:20px;
-font-style:italic;
-line-height:26px;
+.integrated-statustext {
+    display: inline-block;
+    margin-left: 20px;
+    font-style: italic;
+    line-height: 26px;
 }
 
-.button-separator{
-border:0;
-background:#ccc;
-width:1px !important;
-padding-left:0;
-padding-right:0;
-overflow:hidden;
-border-radius:0;
-margin:0 5px 0 10px !important;
-box-shadow:none;
-cursor:default;
+.button-separator {
+    border: 0;
+    background: var(--color-border);
+    width: 1px !important;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+    border-radius: 0;
+    margin: 0 5px 0 10px !important;
+    box-shadow: none;
+    cursor: default;
 }
 
-.button-separator:hover{
-background:#ccc;
+.button-separator:hover {
+    background: var(--color-border);
 }
 
-.dialog-simulation-badge{
-float:right;
-margin-top:-4px;
-margin-right:10px;
+.dialog-simulation-badge {
+    float: right;
+    margin-top: -4px;
+    margin-right: 10px;
 }
 
-.error-dialog-page-details{
-padding-top:20px;
-font-size:var(--font-size-s);
-font-family:monospace;
-color:#aeaeae;	
+.error-dialog-page-details {
+    padding-top: 20px;
+    font-size: var(--font-size-s);
+    font-family: monospace;
+    color: var(--color-bg-highlight);
 }
 
 /** ------------------------------------------------------------- 
     ITEM SELECTION DIALOGS 
     ------------------------------------------------------------- */
 
-.unused-item-row{
-cursor:pointer;
+.unused-item-row {
+    cursor: pointer;
 }
 
-.unused-item-row:hover{
-background:#f5f5f5;
+.unused-item-row:hover {
+    background: #f5f5f5;
 }
 
 .unused-item-row.selected,
-.unused-item-row.selected:hover{
-background:#669cdd;
-color:#fff;
+.unused-item-row.selected:hover {
+    background: #669cdd;
+    color: #fff;
 }
 
-.unused-item-row.selected .muted{
-color:#e5e5e5;
+.unused-item-row.selected .muted {
+    color: #e5e5e5;
 }
 
-.item-row-collapser{
-display:inline-block;
-padding:0 4px 0 4px;
-margin-right:8px;
-line-height:20px;
-border-radius:4px;
+.item-row-collapser {
+    display: inline-block;
+    padding: 0 4px 0 4px;
+    margin-right: 8px;
+    line-height: 20px;
+    border-radius: 4px;
 }
 
 .item-row-collapser.collapser-expand:hover,
-.item-row-collapser.collapser-collapse:hover{
-background:#333;
+.item-row-collapser.collapser-collapse:hover {
+    background: #333;
 }
 
 .item-row-collapser.collapser-expand:hover .fa,
-.item-row-collapser.collapser-collapse:hover .fa{
-color:#fff;
+.item-row-collapser.collapser-collapse:hover .fa {
+    color: #fff;
 }
 
-.item-row-collapser.collapser-disabled .fa{
-color:#d0d0d0;
+.item-row-collapser.collapser-disabled .fa {
+    color: #d0d0d0;
 }
 
 .item-row-indent1 TD,
 .item-row-indent2 TD,
-.item-row-indent3 TD{
+.item-row-indent3 TD {
 }
 
-.item-row-indent1 .item-cell-label{
-padding-left:25px;
+.item-row-indent1 .item-cell-label {
+    padding-left: 25px;
 }
 
-.item-row-indent2 .item-cell-label{
-padding-left:50px;
+.item-row-indent2 .item-cell-label {
+    padding-left: 50px;
 }
 
-.item-row-indent3 .item-cell-label{
-padding-left:75px;
+.item-row-indent3 .item-cell-label {
+    padding-left: 75px;
 }
 
 /* remove the border of the first row when no headers are shown */
-.table.without-headers TR:first-child TD{
-border-top:0;
+.table.without-headers TR:first-child TD {
+    border-top: 0;
 }
 
 /** ------------------------------------------------------------- 
     COLLAPSIBLE FORM SECTIONS 
     ------------------------------------------------------------- */
 
-.modal-subsection{
-border-bottom:dotted 1px #ccc;
+.modal-subsection {
+    border-bottom: dotted 1px var(--color-border);
 }
 
-.modal-subsection.last{
-border-bottom:0;
+.modal-subsection.last {
+    border-bottom: 0;
 }
 
-.modal-subsection-header{
+.modal-subsection-header {
     font-weight: var(--font-weight-normal);
-font-size:var(--font-size-normal);
-text-transform:uppercase;
-line-height:34px;
-padding:0;
-margin:0;
-background:#f0f0f0;	
+    font-size: var(--font-size-normal);
+    text-transform: uppercase;
+    line-height: 34px;
+    padding: 0;
+    margin: 0;
+    background: var(--color-section-header-bg);
 }
 
-.modal-subsection-header.collapsible{
-cursor:pointer;
+.modal-subsection-header.collapsible {
+    cursor: pointer;
 }
 
-.modal-subsection-header.collapsed{
-background:transparent;	
+.modal-subsection-header.collapsed {
+    background: transparent;
 }
 
-.modal-subsection-header.collapsed:hover{
-background:#f0f0f0;	
+.modal-subsection-header.collapsed:hover {
+    background: var(--color-section-header-bg-hover);
 }
 
-.modal-subsection-body .body-wrapper{
-padding:13px 0 30px 0;
-}
-.modal-subsection.form-section-error .modal-subsection-header{
-color:#b94a48;
-background:#feeded;
+.modal-subsection-body .body-wrapper {
+    padding: 13px 0 30px 0;
 }
 
-.modal-subsection.form-section-error .modal-subsection-header.collapsed:hover{
-background:#fedfdf;	
+.modal-subsection.form-section-error .modal-subsection-header {
+    color: var(--color-text-danger);
+    background: var(--color-bg-warning);
+}
+
+.modal-subsection.form-section-error .modal-subsection-header.collapsed:hover {
+    background: var(--color-bg-warning-hover);
 }

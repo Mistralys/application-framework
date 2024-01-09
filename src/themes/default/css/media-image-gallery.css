@@ -27,6 +27,7 @@
 .gallery-details{
     padding-top:8px;
     font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
 }
 
 .gallery-pagination{

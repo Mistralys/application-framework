@@ -8,24 +8,22 @@
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 
-.revisionable-title-subline{
-display:block;
-color:#999;
+.revisionable-title-subline {
+    display: block;
+    color: var(--color-text-muted);
 }
 
-H1.page-title .revisionable-title-subline{
-font-size:var(--font-size-s);
+H1.page-title .revisionable-title-subline {
+    font-size: var(--font-size-s);
     font-weight: var(--font-weight-normal);
 }
 
 H1.page-title .revisionable-title-subline A:link,
-H1.page-title .revisionable-title-subline A:visited{
-color:#999;
+H1.page-title .revisionable-title-subline A:visited {
+    color: var(--color-link-muted);
 }
 
 H1.page-title .revisionable-title-subline A:active,
-H1.page-title .revisionable-title-subline A:hover{
-color:#08c;
+H1.page-title .revisionable-title-subline A:hover {
+    color: var(--color-link);
 }
-
-

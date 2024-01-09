@@ -1,3 +1,13 @@
+:root{
+    --border-radius-xs: 2px;
+    --border-radius-s: 3px;
+    --border-radius-normal: 4px;
+    --border-radius-l: 8px;
+
+    --box-spacing: 13px;
+    --box-padding: 13px;
+}
+
 BODY {
     padding-top: 40px;
     position: absolute; /* to make it fill the viewport even in smaller resolutions */
@@ -1049,6 +1059,17 @@ UL.unstyled.compact > LI {
     background-color: var(--color-bg-warning);
 }
 
+.alert.alert-warning-xl,
+.alert.alert-warning-xl .close{
+    color: var(--color-text-warning-xl);
+    text-shadow: none;
+}
+
+.alert.alert-warning-xl {
+    border-color: var(--color-bg-warning-xl);
+    background-color: var(--color-bg-warning-xl);
+}
+
 .alert.alert-layout-slim {
     padding: 3px 26px 3px 6px;
     font-size: 92%;
@@ -1189,6 +1210,42 @@ H3.page-abstract {
    ------------------------------------------------------------------- */
 
 /* region: Badges */
+
+.badge-default,
+.label-default{
+    background-color: var(--color-badge-default-bg);
+    color: var(--color-badge-default-text);
+}
+
+.badge-success,
+.label-success{
+    background-color: var(--color-badge-success-bg);
+    color: var(--color-badge-success-text);
+}
+
+.badge-important,
+.label-important{
+    background-color: var(--color-badge-important-bg);
+    color: var(--color-badge-important-text);
+}
+
+.badge-warning,
+.label-warning{
+    background-color: var(--color-badge-warning-bg);
+    color: var(--color-badge-warning-text);
+}
+
+.badge-info,
+.label-info{
+    background-color: var(--color-badge-info-bg);
+    color: var(--color-badge-info-text);
+}
+
+.badge-inverse,
+.label-inverse{
+    background-color: var(--color-badge-inverted-bg);
+    color: var(--color-badge-inverted-text);
+}
 
 .badge-dropdown {
     display: inline-block;

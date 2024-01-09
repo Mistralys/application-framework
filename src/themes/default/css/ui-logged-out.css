@@ -1,4 +1,5 @@
-.hero-unit H1{
-font-size:var(--font-size-xl);
-margin-bottom:25px;
+.hero-unit H1 {
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-xl);
+    margin-bottom: 25px;
 }
