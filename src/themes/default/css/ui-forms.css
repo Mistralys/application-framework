@@ -119,6 +119,10 @@ H3.form-header.form-header-first {
     font-size: var(--font-size-s);
 }
 
+.form-actions{
+    border-top-width: 5px;
+}
+
 .form-heading-abstract {
     font-style: italic;
     color: var(--color-text-secondary);
