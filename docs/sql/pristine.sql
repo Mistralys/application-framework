@@ -587,15 +587,6 @@ ALTER TABLE `app_settings`
     ADD KEY `data_role` (`data_role`);
 
 --
--- Indexes for table `campaigns`
---
-ALTER TABLE `campaigns`
-    ADD PRIMARY KEY (`campaign_id`),
-    ADD KEY `campaign_created` (`campaign_created`),
-    ADD KEY `user_id` (`user_id`),
-    ADD KEY `campaign_alias` (`campaign_alias`);
-
---
 -- Indexes for table `countries`
 --
 ALTER TABLE `countries`
@@ -763,12 +754,6 @@ ALTER TABLE `app_ratings_screens`
     MODIFY `rating_screen_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `campaigns`
---
-ALTER TABLE `campaigns`
-    MODIFY `campaign_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `countries`
 --
 ALTER TABLE `countries`
@@ -897,12 +882,6 @@ ALTER TABLE `app_news_user_receipts`
 ALTER TABLE `app_ratings`
     ADD CONSTRAINT `app_ratings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `app_ratings_ibfk_2` FOREIGN KEY (`rating_screen_id`) REFERENCES `app_ratings_screens` (`rating_screen_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `campaigns`
---
-ALTER TABLE `campaigns`
-    ADD CONSTRAINT `campaigns_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `media`
