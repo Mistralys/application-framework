@@ -177,7 +177,19 @@ class Application_Uploads
         try {
             $upload = $this->insertNew($name, $extension);
             $targetFile = $upload->getPath();
-        } catch (Exception $e) {
+        } catch (Exception $e)
+        {
+            // Enable logging of non-application exceptions.
+            if(!$e instanceof Application_Exception) {
+                (new Application_Exception(
+                    'Failed to create a new upload entry.',
+                    '',
+                    $e->getCode(),
+                    $e
+                ))
+                    ->log();
+            }
+
             $this->addMessage('Exception with message [' . $e->getMessage() . ']');
 
             return false;
