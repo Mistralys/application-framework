@@ -168,7 +168,7 @@
 
     --color-menu-bg: var(--color-accent-base);
     --color-menu-default-bg-hover: #0081c2;
-    --color-menu-default-text: var(--color-link);
+    --color-menu-default-text: var(--color-text);
     --color-menu-danger-text: var(--color-text-danger);
     --color-menu-danger-text-hover: var(--color-text-inverted);
     --color-menu-danger-bg-hover: var(--color-text-danger);
