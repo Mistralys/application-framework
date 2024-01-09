@@ -25,6 +25,8 @@ use AppUtils\ConvertHelper;
  * @package Application
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
+ *
+ * @see template_default_frame
  */
 class UI_Page extends UI_Renderable
 {
