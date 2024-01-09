@@ -97,22 +97,13 @@ class UI_Form_Renderer_Sections
     
     private function renderCollapseControls() : string
     {
-        return $this->ui->createButtonGroup()
-        ->addClass('form-sections-toolbar')
-        ->addButton(
-            UI::button(t('Expand all'))
-            ->setTooltipText(t('Expands all sections of the form.'))
-            ->setIcon(UI::icon()->expand())
-            ->click($this->sections[0]->getJSExpand())
-        )
-        ->addButton(
-            UI::button(t('Collapse all'))
-            ->setTooltipText(t('Collapses all sections of the form.'))
-            ->setIcon(UI::icon()->collapse())
-            ->click($this->sections[0]->getJSCollapse())
-        )
-        ->makeMini()
-        ->render();
+        return (string)UI_Page_Section::createGroupControls()
+            ->addClass('form-sections-toolbar')
+            ->makeMini()
+            ->setTooltips(
+                t('Expands all sections of the form.'),
+                t('Collapses all sections of the form.')
+            );
     }
     
    /**
