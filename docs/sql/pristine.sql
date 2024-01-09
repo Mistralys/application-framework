@@ -418,7 +418,8 @@ CREATE TABLE `uploads` (
 `user_id` int(11) UNSIGNED NOT NULL,
 `upload_date` datetime NOT NULL,
 `upload_name` varchar(240) NOT NULL,
-`upload_extension` varchar(20) NOT NULL
+`upload_extension` varchar(20) NOT NULL,
+`media_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -684,7 +685,8 @@ ALTER TABLE `test_records_data`
 --
 ALTER TABLE `uploads`
     ADD PRIMARY KEY (`upload_id`),
-    ADD KEY `user_id` (`user_id`);
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `media_id` (`media_id`);
 
 --
 -- Indexes for table `user_emails`
@@ -899,7 +901,8 @@ ALTER TABLE `test_records_data`
 -- Constraints for table `uploads`
 --
 ALTER TABLE `uploads`
-    ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `uploads_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Constraints for table `user_emails`
