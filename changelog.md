@@ -1,15 +1,31 @@
 ### v3.1.3 - DBHelper parent collection
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
-- UI: Continued migrating colors to the new color stylesheets.
 - Data Grids: Criticality actions now use regular menu item classes.
+- UI: Continued migrating colors to the new color stylesheets.
 - UI: Added the `Capturable` trait and interface.
 - UI: Dropdowns: Added `makeSuccess()` and `makeWarning()`.
 - UI: Added the CSS generator tool to render CSS files from templates using CSS Crush.
 - UI: Added the CSS generator screen in the developer tools.
+- UI: Added the `PageRendered` event that allows modifying the rendered HTML code.
+- UI: Messages: Added `makeWarningXL()`.
+- BigSelection: `makeHeightLimited()` now accepts a string parameter for the height.
+- BigSelection: Fixed the height limit not being applied.
+- BigSelection: Converted the template to a class-based template.
+- BigSelection: Items can now be made active with `makeActive()`.
+- Sections: Added a helper class for the collapse controls.
+- Sections: Added `makeDangerous()` to formalize the existing danger-styled section.
+- Sections: Added the  `SectionRegistry` static helper class.
+- Sections: Fixed subsections not being visually different from regular sections.
+- Sections: Tweaked the font sizes and paddings of UI elements.
+- Sections: Removed custom tabs implementation (prefer the actual tabs helper).
+- Sections: Removed `disablePadding()`, as sections have no padding by default.
+- Sections: Deprecated `makeLightBackground()`, replaced with `makeBodySolidFill()`.
+- Forms: Now using the new section collapse controls.
 - Icons: Added the `css` icon.
 - Interface Refs: Added examples of menus.
 - Interface Refs: Added example of data grid actions.
+- Interface Refs: Added more section examples.
 
 ### v3.1.2 - Config loading update
 - Environments: Added support for `app.php` + `environments.php` config files.
