@@ -17,10 +17,13 @@
  *
  * @see template_default_frame_sidebar
  */
-class UI_Page_Sidebar implements Application_LockableItem_Interface
+class UI_Page_Sidebar implements
+    Application_LockableItem_Interface,
+    UI_Renderable_Interface
 {
     use Application_Traits_LockableItem;
     use Application_Traits_LockableStatus;
+    use UI_Traits_RenderableGeneric;
 
     /**
      * @var UI_Page
@@ -61,7 +64,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         $this->instanceID = 'sidebar'.self::$instanceCounter;
         $this->page = $page;
     }
-    
+
     public function getInstanceID() : string
     {
         return $this->instanceID;
@@ -276,12 +279,17 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
     * @param UI_Form $form
     * @return UI_Page_Sidebar_Item_FormTOC
     */
-    public function addFormTOC(UI_Form $form)
+    public function addFormTOC(UI_Form $form) : UI_Page_Sidebar_Item_FormTOC
     {
         $item = new UI_Page_Sidebar_Item_FormTOC($this, $form);
         $this->items[] = $item;
         
         return $item;
+    }
+
+    public function addFormableTOC(Application_Interfaces_Formable $formable) : UI_Page_Sidebar_Item_FormTOC
+    {
+        return $this->addFormTOC($formable->getFormInstance());
     }
 
     /**
@@ -492,10 +500,7 @@ class UI_Page_Sidebar implements Application_LockableItem_Interface
         return $result;
     }
 
-    /**
-     * @return UI
-     */
-    public function getUI()
+    public function getUI() : UI
     {
         return $this->page->getUI();
     }
