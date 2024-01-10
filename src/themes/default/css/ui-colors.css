@@ -56,6 +56,7 @@
     --color-text-inverted: var(--color-accent-inverted-text);
     --color-text-inverted-muted: #c4c4c4;
     --color-text-muted: var(--color-accent-secondary-s);
+    --color-text-muted-l: var(--color-accent-secondary);
     --color-text-muted-xl: var(--color-accent-secondary-xl);
     --color-text-secondary: var(--color-accent-secondary);
     --color-text-code: #5b5b5b;
@@ -174,6 +175,15 @@
     --color-pills-border: #e9e9e9;
     --color-pills-bg-active: var(--color-accent-primary);
     --color-pills-bg-hover: #eee;
+    --color-steps-item-bg: var(--color-bg-content);
+    --color-steps-item-bg-hover: var(--color-bg-highlight);
+    --color-steps-item-bg-active: var(--color-accent-primary);
+    --color-steps-item-text: var(--color-text-muted);
+    --color-steps-item-text-enabled: var(--color-text-muted-l);
+    --color-steps-item-text-active: var(--color-text-inverted);
+    --color-steps-item-text-number-active: var(--color-text-inverted-muted);
+    --color-steps-item-number-sep: var(--color-border);
+    --color-steps-item-number-sep-active: var(--color-accent-highlight-50);
     --color-tabs-active-bg: #fff;
     --color-tabs-active-text: #555;
     --color-tabs-active-border: var(--color-accent-borders);
