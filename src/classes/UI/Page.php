@@ -69,7 +69,7 @@ class UI_Page extends UI_Renderable
         parent::__construct($this);
         
         $this->user = $this->driver->getUser();
-        $this->sidebar = new UI_Page_Sidebar($this);
+        $this->sidebar = new UI_Page_Sidebar(null, $this);
         $this->header = new UI_Page_Header($this);
         $this->footer = new UI_Page_Footer($this);
         $this->breadcrumb = $this->createBreadcrumb('main');
