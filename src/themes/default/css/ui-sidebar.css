@@ -3,13 +3,8 @@
 }
 
 #sidebar {
-    font-size: var(--font-size-normal);
-    line-height: normal;
     width: 310px;
     padding-left: 15px;
-}
-
-.sidebar-wrap {
 }
 
 #content,
@@ -20,10 +15,6 @@
 .content-wrap > table {
     width: 100%;
     min-height: 100px;
-}
-
-#sidebar .accordion-inner {
-    line-height: 110%; /* to make it more compact */
 }
 
 .content-wrap.without-sidebar #content {
@@ -40,21 +31,13 @@
 
 .sidebar_separator {
     height: 1px;
-    border-bottom: dotted 1px #ccc;
+    border-bottom: dotted 1px var(--color-border);
     margin-bottom: 14px;
     margin-top: 14px;
 }
 
 #sidebar select {
     width: 100%;
-}
-
-#sidebar .control-label {
-    /* width:60px; */
-}
-
-#sidebar .controls {
-    /* margin-left:70px; */
 }
 
 #sidebar .form-actions {
@@ -74,13 +57,35 @@
     margin-bottom: 13px;
 }
 
-#sidebar P {
-    line-height: 14px;
+.sidebar-wrap {
+    font-size: var(--font-size-normal);
+    line-height: var(--line-height-s);
+}
+
+.sidebar-help .accordion-heading{
+    background: var(--color-bg-highlight-info);
+}
+
+.sidebar-wrap P {
+    line-height: var(--line-height-s);
 }
 
 #sidebar .alert.with-margin-top {
     margin-top: 10px;
 }
+
+/* region: Accordions */
+
+.sidebar-wrap .accordion-inner P {
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+}
+
+.sidebar-wrap .accordion-inner P:last-child {
+    margin-bottom: 0;
+}
+
+/* endregion */
 
 /* region: Sections */
 /* ---------------------------------------------------------------------------
@@ -92,7 +97,7 @@
 }
 
 .sidebar-section.with-separator {
-    border-bottom: dotted 1px #ccc;
+    border-bottom: dotted 1px var(--color-border);
 }
 
 .sidebar-section-header {
@@ -147,6 +152,7 @@
     color: var(--color-sidebar-toggler-text);
     width: 16px; /* force minimum size */
     font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
     border-left: dotted 1px var(--color-sidebar-toggler-border);
 }
 
@@ -166,12 +172,12 @@
 
 #sidebar-toggle:hover {
     background: url("../img/bg-sidebar-toggler.png") repeat-y top left;
-    color: #488ff1;
+    color: var(--color-link-hover);
 }
 
 #sidebar-toggle.collapsed:hover {
-    background: #08c;
-    color: #fff;
+    background: var(--color-link);
+    color: var(--color-text-inverted);
 }
 
 /* endregion */
