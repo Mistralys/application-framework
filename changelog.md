@@ -1,4 +1,4 @@
-## v3.1.3 - DBHelper parent collection
+## v3.1.3 - UI system update
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
 - Data Grids: Criticality actions now use regular menu item classes.
