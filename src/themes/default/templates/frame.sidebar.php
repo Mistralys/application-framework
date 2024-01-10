@@ -25,7 +25,7 @@ class template_default_frame_sidebar extends UI_Page_Template_Custom
         ?>
             <<?php echo $this->subject->getTagName() ?>
                     class="<?php echo implode(' ', $this->subject->getClasses()) ?>"
-                    id="sidebar"
+                    id="<?php echo $this->subject->getID() ?>"
                     style="<?php if($this->subject->isCollapsed()) { echo 'display:none'; } ?>">
                 <div class="sidebar-wrap">
                     <?php
@@ -40,10 +40,7 @@ class template_default_frame_sidebar extends UI_Page_Template_Custom
         <?php
     }
 
-    /**
-     * @var UI_Page_Sidebar
-     */
-    private $subject;
+    private UI_Page_Sidebar $subject;
 
     protected function preRender(): void
     {
