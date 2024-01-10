@@ -27,6 +27,8 @@
 - StepsNavigator: Strict typing and modernized code.
 - StepsNavigator: Upgraded CSS to use the color variables.
 - StepsNavigator: Fixed non-numbered steps not having rounded corners.
+- StepsNavigator: Added `makeEnabled()` to items keep in line with common method naming.
+- StepsNavigator: Added `makeActive()` to items as alternative to `selectStep()`.
 - Interface Refs: Added examples of menus.
 - Interface Refs: Added example of data grid actions.
 - Interface Refs: Added more section examples.
