@@ -7,6 +7,10 @@
  * @see UI_Page_StepsNavigator_Step
  */
 
+declare(strict_types=1);
+
+use AppUtils\Interfaces\StringableInterface;
+
 /**
  * Container for individual steps in the navigator.
  *
@@ -16,41 +20,42 @@
  */
 class UI_Page_StepsNavigator_Step
 {
-   /**
-    * @var UI_Page_StepsNavigator
-    */
-    protected $navigator;
-    
-   /**
-    * @var UI_Page
-    */
-    protected $page;
-    
-    protected $number;
-    
-    protected $name;
-    
-    protected $label;
-    
-    public function __construct(UI_Page_StepsNavigator $navigator, $number, $name, $label)
+    protected UI_Page_StepsNavigator $navigator;
+    protected UI_Page $page;
+    protected int $number;
+    protected string $name;
+    protected string $label;
+    protected string $link;
+    protected bool $enabled = false;
+
+    /**
+     * @param UI_Page_StepsNavigator $navigator
+     * @param int $number
+     * @param string $name
+     * @param string|number|StringableInterface|NULL $label
+     * @throws UI_Exception
+     */
+    public function __construct(UI_Page_StepsNavigator $navigator, int $number, string $name, $label)
     {
         $this->navigator = $navigator;
         $this->page = $navigator->getPage();
         $this->number = $number;
         $this->name = $name;
-        $this->label = $label;
+        $this->label = toString($label);
         
         $this->setAttribute('id', nextJSID());
     }
     
-    protected $link;
-    
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
-    
-    public function setID($id)
+
+    /**
+     * @param string $id
+     * @return $this
+     */
+    public function setID(string $id) : self
     {
         return $this->setAttribute('id', $id);
     }
@@ -60,9 +65,9 @@ class UI_Page_StepsNavigator_Step
         return $this->getAttribute('id');
     }
     
-    protected $classes = array();
+    protected array $classes = array();
     
-    public function addClass($class)
+    public function addClass(string $class) : self
     {
         if(!$this->hasClass($class)) {
             $this->classes[] = $class;
@@ -71,53 +76,47 @@ class UI_Page_StepsNavigator_Step
         return $this;
     }
     
-    public function hasClass($class)
+    public function hasClass(string $class) : bool
     {
-        return in_array($class, $this->classes);
+        return in_array($class, $this->classes, true);
     }
     
-    public function setAttribute($name, $value)
+    public function setAttribute(string $name, $value) : self
     {
         $this->attributes[$name] = $value;
         return $this;
     }
     
-    public function getAttribute($name)
+    public function getAttribute(string $name)
     {
-        if(isset($this->attributes[$name])) {
-            return $this->attributes[$name];
-        }
-        
-        return null;
+        return $this->attributes[$name] ?? null;
     }
     
    /**
     * Turns the step into a linked text.
     * @param string $url
-    * @return UI_Page_StepsNavigator_Step
+    * @return $this
     */
-    public function link($url)
+    public function link(string $url) : self
     {
         $this->link = $url;
         return $this;
     }
     
-    protected $enabled = false;
-    
-    public function isEnabled()
+    public function isEnabled() : bool
     {
         return $this->enabled;
     }
     
-    public function setEnabled($enabled=true)
+    public function setEnabled(bool $enabled=true) : self
     {
         $this->enabled = $enabled;
         return $this;
     }
     
-    protected $attributes = array();
+    protected array $attributes = array();
     
-    public function render()
+    public function render() : string
     {
         $this->page->getUI()->addStylesheet('ui-steps-navigator.css');
         
@@ -159,18 +158,16 @@ class UI_Page_StepsNavigator_Step
             $content .=
         '</span>';
 
-        $atts = $this->attributes;
-        $atts['data-name'] = $this->name;
-        $atts['class'] = null;
+        $attributes = $this->attributes;
+        $attributes['data-name'] = $this->name;
+        $attributes['class'] = null;
         if(!empty($classes)) {
-            $atts['class'] = implode(' ', $classes);
+            $attributes['class'] = implode(' ', $classes);
         }
-        
-        $html = 
-        '<li'.compileAttributes($atts).'>'.
-            $content.
-        '</li>';
-        
-        return $html;
+
+        return
+            '<li'.compileAttributes($attributes).'>'.
+                $content.
+            '</li>';
     }
 }
