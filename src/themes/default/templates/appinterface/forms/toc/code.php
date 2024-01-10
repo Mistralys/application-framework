@@ -27,9 +27,8 @@ $form->addElementText('text6', 'Sixth element');
 <?php
 
 // Simulating a sidebar to be able to show the TOC
-$sidebar = new UI_Page_Sidebar(UI::getInstance()->getPage());
-$sidebar->addFormableTOC($form);
-echo $sidebar;
+echo (new UI_Page_Sidebar('example-toc'))
+    ->addFormableTOC($form);
 
 ?>
 <hr>
