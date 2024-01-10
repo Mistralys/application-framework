@@ -27,7 +27,7 @@ var UI_Section =
 		this.content = '';
 		this.abstractText = null;
 		this.type = 'content';
-		this.id = nextJSID();
+		this.id = 'ELS' + nextJSID();
 		this.group = '_default';
 		this.rendered = false;
 		this.collapsible = false;
@@ -180,13 +180,13 @@ var UI_Section =
 		    }
 
 		    title += ' '+
-			UI.Icon().Expand()
-				.AddClass('icon-toggle')
+			UI.Icon().CaretDown()
+				.AddClass('toggle')
 				.AddClass('toggle-expand')
 				.SetID(this.elementID('expand'))
 				.Render()+
-			UI.Icon().Collapse()
-				.AddClass('icon-toggle')
+			UI.Icon().CaretUp()
+				.AddClass('toggle')
 				.AddClass('toggle-expand')
 				.SetID(this.elementID('collapse'))
 				.Render();
@@ -257,8 +257,20 @@ var UI_Section =
 	Handle_PostRender:function()
 	{
 		this.TriggerEvent('Rendered');
-		
+
 		this.rendered = true;
+
+		this.log('Finished rendering.');
+
+		this.Start();
+	},
+
+	/**
+	 * @param {String} message
+	 */
+	log:function(message)
+	{
+		application.log('Section #' + this.id, message);
 	},
 	
 	TriggerEvent:function(name)
@@ -301,10 +313,15 @@ var UI_Section =
 	{
 		return this.SetCollapsed(false);
 	},
-	
+
+	/**
+	 *
+	 * @param {Boolean} collapsed
+	 * @returns {UI_Section}
+	 */
 	SetCollapsed:function(collapsed) 
 	{
-		if(collapsed != true) {
+		if(collapsed !== true) {
 			collapsed = false;
 		}
 		
@@ -312,7 +329,7 @@ var UI_Section =
 			return this;
 		}
 		
-		if(this.collapsed == collapsed) {
+		if(this.collapsed === collapsed) {
 			return this;
 		}
 		
@@ -333,6 +350,14 @@ var UI_Section =
 		this.element('body').on('hidden', function() {
 			section.Handle_Collapsed();
 		});
+
+		this.log('Started the section.');
+
+		if(this.collapsed) {
+			this.Handle_Collapsed();
+		} else {
+			this.Handle_Expanded();
+		}
 	},
 	
 	Handle_Expanded:function()

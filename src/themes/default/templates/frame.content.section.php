@@ -264,13 +264,13 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
 
             $result
                 ->icon(UI::icon()->caretDown()
-                    ->addClass('icon-toggle')
+                    ->addClass('toggle')
                     ->addClass('toggle-expand')
                     ->setHidden($this->section->isExpanded())
                     ->setID($id.'-expand')
                 )
                 ->icon(UI::icon()->caretUp()
-                    ->addClass('icon-toggle')
+                    ->addClass('toggle')
                     ->addClass('toggle-collapse')
                     ->setHidden($this->section->isCollapsed())
                     ->setID($id.'-collapse')

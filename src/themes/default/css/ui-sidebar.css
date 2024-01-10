@@ -1,3 +1,7 @@
+:root{
+    --sidebar-header-min-height: 30px;
+}
+
 #sidebar {
     font-size: var(--font-size-normal);
     line-height: normal;
@@ -94,15 +98,19 @@
 .sidebar-section-header {
     display:block;
     font-size: var(--font-size-normal);
-    line-height: 30px;
+    line-height: var(--sidebar-header-min-height);
     background:transparent;
     padding-left:6px;
     margin-left:-6px;
 }
 
-.sidebar-section-header > .icon-toggle{
+.sidebar-section-header.without-tagline {
+    line-height: var(--sidebar-header-min-height);
+}
+
+.sidebar-section-header > .toggle{
     font-size: var(--font-size-s);
-    line-height: 14px; /* Like the header font size */
+    line-height: var(--sidebar-header-min-height);
 }
 
 .sidebar-section-header.regular {
