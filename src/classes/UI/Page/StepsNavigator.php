@@ -123,6 +123,11 @@ class UI_Page_StepsNavigator implements UI_Renderable_Interface
         return $this->selectedName;
     }
 
+    public function isStepSelected(UI_Page_StepsNavigator_Step $step) : bool
+    {
+        return $this->getSelectedStep()->getName() === $step->getName();
+    }
+
     /**
      * Retrieves the currently selected (marked as active) step
      * object instance. If none has been specifically selected,
