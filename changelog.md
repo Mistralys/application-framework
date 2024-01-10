@@ -1,4 +1,4 @@
-### v3.1.3 - DBHelper parent collection
+## v3.1.3 - DBHelper parent collection
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
 - Data Grids: Criticality actions now use regular menu item classes.
@@ -21,6 +21,7 @@
 - Sections: Removed custom tabs implementation (prefer the actual tabs helper).
 - Sections: Removed `disablePadding()`, as sections have no padding by default.
 - Sections: Deprecated `makeLightBackground()`, replaced with `makeBodySolidFill()`.
+- Sections: Fixed clientside sections collapse icons not being toggled.
 - Forms: Now using the new section collapse controls.
 - Icons: Added the `css` icon.
 - Interface Refs: Added examples of menus.
@@ -29,8 +30,15 @@
 - Interface Refs: Added a form TOC example.
 - Uploads: Non-framework exceptions are now logged.
 - Sidebar: Added `addFormableTOC()`.
+- SQL: Fixed the `pristine.sql` file not being importable without errors.
 
-### v3.1.2 - Config loading update
+### Database changes
+
+The SQL update file `docs/sql/2024-01-10-countries.sql` must be imported
+to fix the index of the `iso` column in the `countries` table. This is
+not a critical change, but recommended to avoid duplicate countries.
+
+## v3.1.2 - Config loading update
 - Environments: Added support for `app.php` + `environments.php` config files.
 - Interface Refs: Added more examples.
 - UI: Added the `Capturable` trait and interface.
@@ -42,7 +50,7 @@
 - DataGrids: Added `addLIClass()` in grid actions.
 - DataGrids: Actions now use the regular menu CSS classes. 
 
-### v3.1.1 - Interface Reference enhancements
+## v3.1.1 - Interface Reference enhancements
 - Interface Refs: Added more UI element examples.
 - Interface Refs: Built a support class structure for categories and examples.
 - Interface Refs: Improved the rendering of the reference pages.
@@ -64,7 +72,7 @@
 - Dependencies: Updated AppUtils Core to [v1.0.4](https://github.com/Mistralys/application-utils-core/releases/tag/1.0.4).
 - Dependencies: Updated collections to [v1.1.1](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.1).
 
-### v3.1.0 - UI and News update
+## v3.1.0 - UI and News update
 - News: Added article list navigation.
 - News: Made permalinks less visible.
 - Countries: Fixed unit tests adding duplicate countries.
@@ -84,7 +92,7 @@
 - Dependencies: Updated `lipis/flag-icons` to recent version.
 - Dependencies: Updated `ccampbell/mousetrap` to recent version.
 
-#### Dark mode
+### Dark mode
 
 This requires a `diver-dark.css` to be added in the application's
 `/htdocs/themes/default/css` folder. It is intended to contain any
@@ -94,7 +102,7 @@ empty file.
 Dark mode is still a work in progress, which means there are UI elements
 left that are not dark mode capable yet.
 
-#### Database update
+### Database update
 
 For existing installations, import the update SQL file:  
 
@@ -102,11 +110,11 @@ For existing installations, import the update SQL file:
 
 This is not required, but recommended to avoid duplicate countries.
 
-### v3.0.5 - News bugfix
+## v3.0.5 - News bugfix
 - News: Fixed the media tag causing a PHP error.
 - News: Added unit test for the media tag.
 
-### v3.0.4 - News and Markdown update
+## v3.0.4 - News and Markdown update
 - News: Fixed the jumbled order of articles in the news list.
 - News: Added the creation date to the admin news list.
 - News: Limited the width of the news entry detail view.
@@ -118,7 +126,7 @@ This is not required, but recommended to avoid duplicate countries.
 - UserInterface: Fixed the UI font family not being applied.
 - UserInterface: Improved typography with unified line heights and font sizes.
 
-### v3.0.3 - Bugfix release
+## v3.0.3 - Bugfix release
 - MediaGallery: Fixed the image upload failing because of the missing file size.
 - News: Added modified and created date fields in the settings.
 - News: Enabled the scheduling feature.
@@ -127,20 +135,20 @@ This is not required, but recommended to avoid duplicate countries.
 - News: Added basic image styling.
 - News: Adjusted heading sizes.
 
-### v3.0.2 - Maintenance update
+## v3.0.2 - Maintenance update
 - Code: Replaced all uses of the obsolete `Interface_Stringable` interface.
 - Code: Replaced all uses of the obsolete `Interface_Classable` interface.
 - Code: Replaced all uses of the obsolete `Interface_Optionable` interface.
 - Code: Modernized some classes, added type hints.
 
-### v3.0.1 - Media Gallery update
+## v3.0.1 - Media Gallery update
 - MediaGallery: Added the missing pagination in the image gallery.
 - UI: Added the `PaginationRenderer` helper class.
 - FilterCriteria: Renamed inverted `$limit` and `$offset` parameters in `setLimit()`.
 - Theme: Added `getEmptyImageURL()` and `getEmptyImagePath()`.
 - Dependencies: Updated AppUtils to [v3.0.3](https://github.com/Mistralys/application-utils/releases/tag/3.0.3).
 
-### v3.0.0 - News and forms release (breaking-m)
+## v3.0.0 - News and forms release (breaking-m)
 - News: Added the experimental news feature for news articles and alerts.
 - News: An example is available in the test application.
 - Forms: Revamped the DateTimePicker element to work as intended.
@@ -177,7 +185,7 @@ This is not required, but recommended to avoid duplicate countries.
 - Code: Moved the PHPStan files to `tests/phpstan`.
 - Code: PHPStan analysis clean @ level 5 with some leftover suppressed warnings.
 
-#### Breaking changes (M)
+### Breaking changes (M)
 
 - The base test case class has been renamed and namespaced to
   `AppFrameworkTestClasses\ApplicationTestCase`.
@@ -194,7 +202,7 @@ This is not required, but recommended to avoid duplicate countries.
   in combination with a settings manager, to ensure data
   is processed correctly.
 
-#### RecordSettings changes
+### RecordSettings changes
 
 When using `setDefaultsUseStorageNames()`, the setting of values in
 the record has been streamlined. This expects `setStorageName()` to
@@ -208,7 +216,7 @@ manually. All others are set automatically in the record instance.
 The `updateRecord()` method is now called after the record has been
 created, to avoid code duplication with the creation methods.
 
-#### News Upgrade Guide
+### News Upgrade Guide
 
 To use the experimental news feature, the database must be updated.
 The necessary changes to upgrade an existing installation are available
