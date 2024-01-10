@@ -24,12 +24,18 @@
 - Sections: Fixed clientside sections collapse icons not being toggled.
 - Forms: Now using the new section collapse controls.
 - Icons: Added the `css` icon.
+- StepsNavigator: Strict typing and modernized code.
+- StepsNavigator: Upgraded CSS to use the color variables.
+- StepsNavigator: Fixed non-numbered steps not having rounded corners.
 - Interface Refs: Added examples of menus.
 - Interface Refs: Added example of data grid actions.
 - Interface Refs: Added more section examples.
 - Interface Refs: Added a form TOC example.
+- Interface Refs: Added sidebar examples.
 - Uploads: Non-framework exceptions are now logged.
 - Sidebar: Added `addFormableTOC()`.
+- Sidebar: Added possibility to customize the element ID.
+- Sidebar: Added `setID()` and `getID()`.
 - SQL: Fixed the `pristine.sql` file not being importable without errors.
 
 ### Database changes
