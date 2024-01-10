@@ -25,44 +25,50 @@ class UI_Page_Sidebar implements
     use Application_Traits_LockableStatus;
     use UI_Traits_RenderableGeneric;
 
-    /**
-     * @var UI_Page
-     */
+    public const DEFAULT_ELEMENT_ID = 'sidebar';
     private UI_Page $page;
-
-   /**
-    * @var UI_Page_Sidebar_ItemInterface[]
-    */
-    private array $items = array();
+    private ?UI_Page_Template $template = null;
+    protected string $instanceID;
+    private bool $collapsed = false;
+    private static int $instanceCounter = 0;
+    private string $id;
 
     /**
-     * @var UI_Page_Template|NULL
+     * @var UI_Page_Sidebar_ItemInterface[]
      */
-    private ?UI_Page_Template $template = null;
+    private array $items = array();
 
     /**
      * @var string[]
      */
-    protected $classes = array();
+    protected array $classes = array();
 
-    /**
-     * @var string
-     */
-    protected $instanceID;
-
-    /**
-     * @var bool
-     */
-    private $collapsed = false;
-
-    private static $instanceCounter = 0;
-
-    public function __construct(UI_Page $page)
+    public function __construct(?string $id=null, ?UI_Page $page=null)
     {
         self::$instanceCounter++;
 
+        if(empty($id)) {
+            $id = self::DEFAULT_ELEMENT_ID;
+        }
+
+        if($page === null) {
+            $page = UI::getInstance()->getPage();
+        }
+
+        $this->id = $id;
         $this->instanceID = 'sidebar'.self::$instanceCounter;
         $this->page = $page;
+    }
+
+    public function getID() : string
+    {
+        return $this->id;
+    }
+
+    public function setID(string $id) : self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getInstanceID() : string
