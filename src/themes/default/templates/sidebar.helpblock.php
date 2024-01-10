@@ -19,7 +19,7 @@
     }
     
     echo
-    '<div class="accordion" id="'.$jsID.'">'.
+    '<div class="accordion sidebar-help" id="'.$jsID.'">'.
        '<div class="accordion-group">'.
            '<div class="accordion-heading">'.
     	       '<a class="accordion-toggle" data-toggle="collapse" data-parent="'.$jsID.'" href="#'.$jsID.'A">'.
