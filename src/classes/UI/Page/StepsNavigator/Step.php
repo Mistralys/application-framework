@@ -29,6 +29,16 @@ class UI_Page_StepsNavigator_Step
     protected bool $enabled = false;
 
     /**
+     * @var string[]
+     */
+    protected array $classes = array();
+
+    /**
+     * @var array<string,mixed>
+     */
+    protected array $attributes = array();
+
+    /**
      * @param UI_Page_StepsNavigator $navigator
      * @param int $number
      * @param string $name
@@ -64,8 +74,6 @@ class UI_Page_StepsNavigator_Step
     {
         return $this->getAttribute('id');
     }
-    
-    protected array $classes = array();
     
     public function addClass(string $class) : self
     {
@@ -107,14 +115,38 @@ class UI_Page_StepsNavigator_Step
     {
         return $this->enabled;
     }
-    
+
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
     public function setEnabled(bool $enabled=true) : self
     {
         $this->enabled = $enabled;
         return $this;
     }
-    
-    protected array $attributes = array();
+
+    /**
+     * Enables the step, so it becomes clickable in the UI.
+     * @return $this
+     */
+    public function makeEnabled() : self
+    {
+        return $this->setEnabled();
+    }
+
+    /**
+     * Enables the step and marks it as the active one.
+     *
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function makeActive() : self
+    {
+        $this->makeEnabled();
+        $this->navigator->selectStep($this->getName());
+        return $this;
+    }
     
     public function render() : string
     {
@@ -123,7 +155,7 @@ class UI_Page_StepsNavigator_Step
         $classes = $this->classes;
         $classes[] = 'steps-navigator-item';
         
-        if($this->name == $this->navigator->getSelectedName()) {
+        if($this->navigator->isStepSelected($this)) {
             $classes[] = 'active';
         } else {
             $classes[] = 'inactive';
