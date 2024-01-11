@@ -200,17 +200,19 @@ class Application_Updaters
 	}
 
     /**
-     * @param string|number|UI_Renderable_Interface$title
-     * @param string|number|UI_Renderable_Interface $content
+     * @param string|number|StringableInterface $title
+     * @param string|number|StringableInterface $content
      * @return string
      * @throws Application_Exception
      * @throws OutputBuffering_Exception
      */
 	public function renderPage($title, $content) : string
 	{
+        $content = toString($content);
+
 		return
             $this->renderPageHeader($title).
-		    toString($content).
+		    $content.
 		    $this->renderPageFooter();
 	}
 
@@ -253,6 +255,8 @@ class Application_Updaters
 						</div>
 					</div>
 		          <?php
+
+                  echo $this->ui->getPage()->renderMessages();
 
 		if(isset($this->activeUpdater))
         {
