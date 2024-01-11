@@ -8,7 +8,7 @@
 
 ?>
 <div class="hero-unit">
-	<img src="<?php echo $this->theme->getImageURL('logo_big.png') ?>" class="pull-left" style="margin-right:30px;"/>
+	<img src="<?php echo $this->theme->getImageURL('logo_big.png') ?>" class="pull-left" style="margin-right:30px;max-width: 100px;" alt=""/>
 	<h1><?php pt('Maintenance scripts') ?></h1>
 	<p>
 		<?php pt('Regular maintenance and update scripts.') ?><br/>
