@@ -1,3 +1,7 @@
+## v3.1.4 - UI system update
+- Maintenance: Fixed logo shown too big if the source image is larger.
+- Maintenance: Message redirects are now functional.
+
 ## v3.1.3 - UI system update
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
