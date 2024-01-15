@@ -1,4 +1,4 @@
-## v3.1.4 - UI system update
+## v3.1.4 - Maintenance improvements
 - Maintenance: Fixed logo shown too big if the source image is larger.
 - Maintenance: Message redirects are now functional.
 
