@@ -26,8 +26,7 @@ var Application_Dialog_LookupItems =
 	_RenderAbstract:function()
 	{
 		return t('Quickly find records using the item lookup:') + ' ' + 
-		t('The types of record you can search for are shown in the form below.') + ' ' +
-		t('Each specifies what search terms you may use.');
+		t('The types of record you can search for are shown in the form below.');
 	},
  
 	_Handle_Shown:function()
@@ -41,7 +40,8 @@ var Application_Dialog_LookupItems =
     	{
 	        this.CreateForm();
 	        this.ChangeBody(
-        		this.form.Render() + 
+        		this.form.Render() +
+				this.RenderHints() +
         		'<hr>' + 
         		'<div id="'+this.elementID('results')+'">'+
         			t('Search results will be shown here.') +
@@ -66,6 +66,19 @@ var Application_Dialog_LookupItems =
     	}
         
         this.focusElement.Focus();
+	},
+
+	RenderHints:function()
+	{
+		return ''+
+		'<p>' +
+			'<small>'+
+				'<strong>' + t('Search hints:') + '</strong> ' +
+				t('Multiple search terms can be separated with commas.') + ' ' +
+				t('Items match if all search terms are present.') + ' ' +
+				t('The search is case insensitive.') + ' ' +
+			'</small>' +
+		'</p>';
 	},
  
 	_RenderBody:function()
@@ -109,11 +122,11 @@ var Application_Dialog_LookupItems =
 		var dialog = this;
 		
 		application.createAJAX('GetLookupItems')
-		.Error(t('Could not load the available lookup items.'), this.ERROR_LOADING_ITEMS_FAILED)
-		.Success(function(responsePayload) {
-		    dialog.Handle_LoadLookupItemsSuccess(responsePayload);
-		})
-		.Send();
+			.Error(t('Could not load the available lookup items.'), this.ERROR_LOADING_ITEMS_FAILED)
+			.Success(function(responsePayload) {
+				dialog.Handle_LoadLookupItemsSuccess(responsePayload);
+			})
+			.Send();
 	},
 	
 	Handle_LoadLookupItemsSuccess:function(data)
@@ -131,7 +144,7 @@ var Application_Dialog_LookupItems =
 		{
 			var el = form.AddText('terms_'+itemDef.id, itemDef.field_label)
 			.AddClass('input-xxlarge')
-			.SetHelpText(itemDef.field_description + ' ' + t('Several can be specified with commas.'));
+			.SetHelpText(itemDef.field_description);
 			
 			if(first==null) {
 				first = el;
