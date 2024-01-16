@@ -1,3 +1,7 @@
+## v3.1.5 - Lookup items improvements
+- LookupItems: Improved the parsing of search terms.
+- LookupItems: Added some search hints in the dialog.
+
 ## v3.1.4 - Maintenance improvements
 - Maintenance: Fixed logo shown too big if the source image is larger.
 - Maintenance: Message redirects are now functional.
