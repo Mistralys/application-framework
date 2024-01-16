@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use Application\AppFactory;
 use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
 {
-    public function processJSON()
+    public function processJSON() : void
     {
         $payload = array();
         
@@ -28,12 +30,12 @@ class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
    /**
     * @var array<int,string[]>
     */
-    protected $terms = array();
+    protected array $terms = array();
     
    /**
     * @var Application_LookupItems_Item[]
     */
-    protected $items = array();
+    protected array $items = array();
     
     protected function validateRequest() : void
     {
@@ -43,14 +45,39 @@ class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
         foreach($items as $item)
         {
             $id = $item->getID();
-            $terms = strval($this->request->getParam('terms_'.$id));
+            $terms = (string)$this->request->getParam('terms_' . $id);
 
             if(empty($terms)) {
                 continue;
             }
 
+            $terms = $this->filterTerms($terms);
+
             $this->items[] = $item;
             $this->terms[] = ConvertHelper::explodeTrim(',', $terms);
         }
+    }
+
+    /**
+     * @var array<string,string>
+     */
+    private array $replaceChars = array(
+        '_' => ' ',
+        '-' => ' ',
+    );
+
+    private function filterTerms(string $terms) : string
+    {
+        $terms = str_replace(
+            array_keys($this->replaceChars),
+            array_values($this->replaceChars),
+            $terms
+        );
+
+        while(strpos($terms, '  ') !== false) {
+            $terms = str_replace('  ', ' ', $terms);
+        }
+
+        return $terms;
     }
 }
