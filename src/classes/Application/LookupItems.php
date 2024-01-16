@@ -50,7 +50,7 @@ class Application_LookupItems implements Application_Interfaces_Loggable
         }
         
         $names = FileHelper::createFileFinder($this->folder)
-        ->getPHPClassNames();
+            ->getPHPClassNames();
         
         foreach($names as $name) 
         {
