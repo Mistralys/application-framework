@@ -84,7 +84,7 @@ var Application_AJAX_Error =
 
     IsServerException:function()
     {
-        return typeof(this.data) === 'object' && this.data.isExceptionData !== undefined;
+        return this.data !== null && 'isExceptionData' in this.data;
     },
 
     /**
