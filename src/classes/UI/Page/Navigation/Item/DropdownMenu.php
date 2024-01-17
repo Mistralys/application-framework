@@ -145,14 +145,17 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
 
     private function renderSplit() : string
     {
+        if($this->isActive()) {
+            $this->addClass('active');
+        }
+
         OutputBuffering::start();
 
         ?>
         <li class="<?php echo implode(' ', $this->classes) ?>">
             <a <?php echo compileAttributes($this->getLinkAttributes()) ?>>
                 <?php echo $this->label ?>
-            </a>
-            <a href="#" class="dropdown-toggle split-caret" data-toggle="dropdown">
+            </a><!-- NO SPACE HERE --><a href="#" class="dropdown-toggle split-caret" data-toggle="dropdown">
                 <b class="caret"></b>
             </a>
             <?php echo $this->menu->render() ?>
