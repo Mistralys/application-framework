@@ -284,6 +284,7 @@ var UI_Icon =
     SwitchCampaign:function() { return this.SetType('exchange-alt', 'fas'); },
     SwitchMode:function() { return this.SetType('compass'); },
     Table:function() { return this.SetType('table'); },
+    Tags:function() { return this.SetType('tag', 'fas'); },
     TariffMatrix:function() { return this.SetType('table'); },
     Task:function() { return this.SetType('tasks'); },
     Template:function() { return this.SetType('file-alt', 'far'); },

@@ -822,5 +822,9 @@
   "css": {
     "icon": "css3",
     "type": ""
+  },
+  "tags": {
+    "icon": "tag",
+    "type": "fas"
   }
 }

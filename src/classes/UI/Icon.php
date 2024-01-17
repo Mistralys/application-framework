@@ -772,6 +772,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function tags() : self { return $this->setType('tag', 'fas'); }
+    /**
+     * @return $this
+     */
     public function tariffMatrix() : self { return $this->setType('table'); }
     /**
      * @return $this
