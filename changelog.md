@@ -1,6 +1,8 @@
 ## v3.1.5 - Lookup items improvements
 - LookupItems: Improved the parsing of search terms.
 - LookupItems: Added some search hints in the dialog.
+- LookupItems: Now displaying an error message and retry button if the search fails.
+- AJAX: Fixed a property check syntax that could cause a JavaScript error.
 
 ## v3.1.4 - Maintenance improvements
 - Maintenance: Fixed logo shown too big if the source image is larger.
