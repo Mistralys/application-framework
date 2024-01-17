@@ -1,3 +1,10 @@
+## v3.1.7 - Navigation update
+- Navigation: Fixed the search being executed for empty search terms.
+- Navigation: Added `setTemplateID()` to freely select the template.
+- Interface Refs: Improved the subnavigation example.
+- Tabs: Fixed active tabs having a bottom border.
+- Tabs: Added `setURLTarget()`.
+
 ## v3.1.6 - Filter settings update
 - FilterSettings: Fixed setting values comparison for the active filters check.
 
@@ -69,7 +76,7 @@ not a critical change, but recommended to avoid duplicate countries.
 - UI: Added `makeWarning()` and `makeSuccess()` to dropdown link entries.
 - Icons: Added the `css` icon.
 - DataGrids: Added `addLIClass()` in grid actions.
-- DataGrids: Actions now use the regular menu CSS classes. 
+- DataGrids: Actions now use the regular menu CSS classes.
 
 ## v3.1.1 - Interface Reference enhancements
 - Interface Refs: Added more UI element examples.
