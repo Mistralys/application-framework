@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace Application\Area\Tags;
 
 use Application\AppFactory;
+use Application\Tags\TagRecord;
 use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings;
 use Application\Tags\TagCollection;
+use AppUtils\ClassHelper;
 use DBHelper_BaseRecord;
 use UI;
 
 abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_CollectionCreate
 {
     public const URL_NAME = 'create';
+    public const REQUEST_PARAM_PARENT_TAG = 'parent-tag';
 
     public function getURLName(): string
     {
@@ -39,7 +42,44 @@ abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_Collectio
      */
     public function getSettingsManager(): ?Application_Formable_RecordSettings
     {
-        return $this->createCollection()->createSettingsManager($this, null);
+        return $this->createCollection()
+            ->createSettingsManager($this, null)
+            ->setParentTag($this->resolveParentTag());
+    }
+
+    protected function _handleHiddenVars(): void
+    {
+        $parent = $this->resolveParentTag();
+        if($parent !== null) {
+            $this->addHiddenVar(self::REQUEST_PARAM_PARENT_TAG, (string)$parent->getID());
+        }
+    }
+
+    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    {
+        $parent = $this->resolveParentTag();
+        if($parent !== null) {
+            return $parent->getAdminTagTreeURL();
+        }
+
+        return ClassHelper::requireObjectInstanceOf(TagRecord::class, $record)
+            ->getAdminURL();
+    }
+
+    private function resolveParentTag() : ?TagRecord
+    {
+        $collection = $this->createCollection();
+
+        $parentID = $this->request
+            ->registerParam(self::REQUEST_PARAM_PARENT_TAG)
+            ->setInteger()
+            ->getInt();
+
+        if($parentID > 0 && $collection->idExists($parentID)) {
+            return $collection->getByID($parentID);
+        }
+
+        return null;
     }
 
     public function getBackOrCancelURL(): string

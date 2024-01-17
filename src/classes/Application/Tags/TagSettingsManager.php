@@ -21,12 +21,24 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
 {
     const SETTING_LABEL = 'label';
     public const SETTING_PARENT = 'parent';
+    private ?TagRecord $parentTag = null;
 
     public function __construct(Application_Formable $formable, TagCollection $collection, ?TagRecord $record = null)
     {
         parent::__construct($formable, $collection, $record);
 
         $this->setDefaultsUseStorageNames(true);
+    }
+
+    /**
+     * Forces the use of a specific parent tag.
+     * @param TagRecord|null $parentTag
+     * @return $this
+     */
+    public function setParentTag(?TagRecord $parentTag) : self
+    {
+        $this->parentTag = $parentTag;
+        return $this;
     }
 
     protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
@@ -83,22 +95,28 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
             ->t('Avoid moving root tags, this can have big repercussions.')
         );
 
-        $tags = AppFactory::createTags()
-            ->getFilterCriteria()
-            ->getItemsObjects();
-
-        $el->addOption(t('Select a tag...'), '');
-
-        $currentID = $this->getTagID();
-
-        foreach($tags as $tag)
+        if(isset($this->parentTag))
         {
-            $tagID = $tag->getID();
-            if($tagID === $currentID) {
-                continue;
-            }
+            $el->addOption($this->parentTag->getLabel(), $this->parentTag->getID());
+        }
+        else
+        {
+            $tags = AppFactory::createTags()
+                ->getFilterCriteria()
+                ->getItemsObjects();
 
-            $el->addOption($tag->getLabel(), $tagID);
+            $el->addOption(t('Select a tag...'), '');
+
+            $currentID = $this->getTagID();
+
+            foreach ($tags as $tag) {
+                $tagID = $tag->getID();
+                if ($tagID === $currentID) {
+                    continue;
+                }
+
+                $el->addOption($tag->getLabel(), $tagID);
+            }
         }
 
         return $el;
