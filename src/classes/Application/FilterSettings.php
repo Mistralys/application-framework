@@ -1008,13 +1008,32 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      */
     public function isActive() : bool
     {
-        foreach($this->definitions as $name => $def) {
-            if($this->getSetting($name) !== $def['default']) {
+        foreach($this->definitions as $name => $def)
+        {
+            $value = $this->nullify($this->getSetting($name));
+            $default = $this->nullify($def['default']);
+
+            if($value !== $default) {
                 return true;
             }
         }
-        
+
         return false;
+    }
+
+    /**
+     * Converts empty string values to NULL to facilitate comparisons.
+     *
+     * @param mixed|NULL $value
+     * @return mixed|null
+     */
+    private function nullify($value)
+    {
+        if($value === '' || $value === null) {
+            return null;
+        }
+
+        return $value;
     }
     
    /**
