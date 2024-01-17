@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
+use Application\Area\Tags\ViewTag\BaseTagSettingsScreen;
+use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
 use Application_Admin_ScreenInterface;
 use Application\Area\Tags\BaseViewTagScreen;
 use DBHelper_BaseRecord;
@@ -85,5 +87,30 @@ class TagRecord extends DBHelper_BaseRecord
         $params[TagCollection::PRIMARY_NAME] = $this->getID();
 
         return $this->collection->getAdminURL($params);
+    }
+
+    public function getAdminSettingsURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagSettingsScreen::URL_NAME;
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminTagTreeURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagTreeScreen::URL_NAME;
+
+        return $this->getAdminURL($params);
+    }
+
+    public function getAdminCreateSubTagURL(array $params=array()) : string
+    {
+        return AppFactory::createTags()
+            ->getAdminCreateSubTagURL($this, $params);
+    }
+
+    public function createTreeRenderer() : TagTreeRenderer
+    {
+        return new TagTreeRenderer($this);
     }
 }
