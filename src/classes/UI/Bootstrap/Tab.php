@@ -57,7 +57,8 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
     /**
      * @var array<string,array<int,string>>
      */
-    protected $clientEvents = array();
+    protected array $clientEvents = array();
+    private string $urlTarget = '';
 
     /**
      * @param string|int|float|UI_Renderable_Interface $label
@@ -158,12 +159,20 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
      * @param string|int|float|UI_Renderable_Interface $content
      * @return $this
      */
-    public function setContent($content)
+    public function setContent($content) : self
     {
         $this->content = toString($content);
         return $this;
     }
-    
+
+    /**
+     * @return string
+     */
+    public function getURLTarget() : string
+    {
+        return $this->urlTarget;
+    }
+
     protected function _render() : string
     {
         return $this->content;
@@ -188,13 +197,18 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
     * Turns the tab into a static link that does not have any content.
     * 
     * @param string $url
+    * @param bool $newTab
     * @return UI_Bootstrap_Tab
     */
-    public function makeLinked(string $url) : UI_Bootstrap_Tab
+    public function makeLinked(string $url, bool $newTab=false) : UI_Bootstrap_Tab
     {
         $this->type = self::TYPE_LINK;
         $this->url = $url;
-        
+
+        if($newTab) {
+            $this->setURLTarget('_blank');
+        }
+
         return $this;
     }
 
@@ -276,5 +290,18 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
     {
         $class = 'UI_Bootstrap_Tab_Renderer_'.$this->type;
         return new $class($this);
+    }
+
+    /**
+     * Sets the target of the URL to open when the tab
+     * is in URL mode.
+     *
+     * @param string $target
+     * @return $this
+     */
+    public function setURLTarget(string $target) : self
+    {
+        $this->urlTarget = $target;
+        return $this;
     }
 }
