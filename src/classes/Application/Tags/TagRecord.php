@@ -109,6 +109,36 @@ class TagRecord extends DBHelper_BaseRecord
             ->getAdminCreateSubTagURL($this, $params);
     }
 
+    public function getRootTag() : TagRecord
+    {
+        $parentTag = $this->getParentTag();
+        if($parentTag === null) {
+            return $this;
+        }
+
+        return $parentTag->getRootTag();
+    }
+
+    public function isRootTag() : bool
+    {
+        return $this->getParentTag() === null;
+    }
+
+    public function getAdminDeleteURL(?int $tagID=null, array $params=array()) : string
+    {
+        if($tagID === null) {
+            $tagID = $this->getID();
+        }
+
+        if(!$this->isRootTag()) {
+            return $this->getRootTag()->getAdminDeleteURL($tagID, $params);
+        }
+
+        $params[BaseTagTreeScreen::REQUEST_PARAM_DELETE_TAG] = $tagID;
+
+        return $this->getAdminTagTreeURL($params);
+    }
+
     public function createTreeRenderer() : TagTreeRenderer
     {
         return new TagTreeRenderer($this);
