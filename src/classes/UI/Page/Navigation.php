@@ -33,12 +33,24 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
      * @var UI_Page_Navigation_Item[]
      */
     private array $items = array();
+    private string $templateID;
+    private bool $initDone = false;
 
     public function __construct(UI_Page $page, string $id)
     {
         $this->id = $id;
+        $this->templateID = 'navigation.' . $id;
         
         parent::__construct($page);
+    }
+
+    public static function create(string $id, ?UI_Page $page=null) : UI_Page_Navigation
+    {
+        if($page === null) {
+            $page = UI::getInstance()->getPage();
+        }
+
+        return new static($page, $id);
     }
 
     /**
@@ -111,6 +123,16 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     }
 
     /**
+     * @param string $templateID
+     * @return $this
+     */
+    public function setTemplateID(string $templateID) : self
+    {
+        $this->templateID = $templateID;
+        return $this;
+    }
+
+    /**
      * Renders the navigation using the corresponding template file
      * and returns the generated HTML code.
      *
@@ -119,13 +141,15 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
      */
     protected function _render() : string
     {
+        $this->initDone();
+
         if(empty($this->items)) {
             return $this->append;
         }
         
         $this->addClass('nav');
         
-        $template = $this->page->createTemplate('navigation.' . $this->id);
+        $template = $this->page->createTemplate($this->templateID);
         $template->setVar('navigation', $this);
 
         return $template->render().$this->append;
@@ -293,6 +317,13 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
      * Adds a search box to the navigation. Use the returned
      * object to configure the widget further.
      *
+     * The callback gets the following parameters:
+     *
+     * 1. The search item instance (@see UI_Page_Navigation_Item_Search)
+     * 2. The search term string
+     * 3. The scope string (if applicable)
+     * 4. The country name (if applicable)
+     *
      * @param callable $callback
      * @return UI_Page_Navigation_Item_Search
      * @throws Application_Exception
@@ -335,10 +366,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
         return $item;
     }
 
-    /**
-     * @var UI_Page_Navigation_Item|null
-     */
-    protected $activeItem;
+    protected ?UI_Page_Navigation_Item $activeItem = null;
 
     /**
      * Force any navigation item active.
@@ -405,6 +433,12 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     */
     public function initDone() : void
     {
+        if($this->initDone) {
+            return;
+        }
+
+        $this->initDone = true;
+
         foreach($this->items as $item) {
             $item->initDone();
         }
