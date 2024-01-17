@@ -466,22 +466,34 @@ TD.nowrap {
     display: inline-block;
 }
 
-.dropdown > a.split-link {
+.nav .dropdown > a.split-link {
     margin-right: 0;
     padding-right: 10px;
-    border-right: solid 1px #f0f0f0;
+    border-right: solid 1px var(--color-border);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    display: inline-block;
 }
 
-.dropdown > a.split-caret {
+.nav .dropdown > a.split-caret {
+    margin-left: 0;
     padding-left: 4px;
-    padding-right: 4px;
+    padding-right: 8px;
+    display: inline-block;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
-.dropdown.active > a.split-link {
+.nav .dropdown > a.split-caret > .caret {
+    margin-top: 0;
+    vertical-align: super;
+}
+
+.nav .dropdown.active > a.split-link {
     border-right-color: #07b;
 }
 
-.dropdown.open > a.split-link {
+.nav .dropdown.open > a.split-link {
     border-right-color: #888;
 }
 
@@ -548,12 +560,6 @@ TD.nowrap {
 .control-icon {
     margin-top: 7px;
     display: block;
-}
-
-.tab-abstract {
-    padding-bottom: 13px;
-    border-bottom: solid 1px #dfdfdf;
-    margin-bottom: 18px;
 }
 
 .body-wrap .nav.nav-tabs {
@@ -711,7 +717,9 @@ UL.dropdown-menu .header {
 .nav-tabs>.active>a:focus{
     background-color: var(--color-tabs-active-bg);
     color: var(--color-tabs-active-text);
-    border-color: var(--color-tabs-active-border);
+    border-top-color: var(--color-tabs-active-border);
+    border-left-color: var(--color-tabs-active-border);
+    border-right-color: var(--color-tabs-active-border);
 }
 
 /* endregion */
@@ -887,7 +895,7 @@ BODY.fontsize-bigger.non-zoomable {
     width: 90.9%;
 }
 
-#content_frame > .nav-pills {
+#content_frame .nav-pills.subnav {
     padding: 0;
     border-top: solid 1px var(--color-pills-bg);
     border-bottom: solid 1px var(--color-pills-bg);
@@ -895,7 +903,7 @@ BODY.fontsize-bigger.non-zoomable {
     margin-bottom: 30px;
 }
 
-#content_frame > .nav-pills > li > a {
+#content_frame .nav-pills.subnav > li > a {
     border-radius: 0;
     padding-top: 12px;
     padding-bottom: 12px;
@@ -903,7 +911,7 @@ BODY.fontsize-bigger.non-zoomable {
     margin-bottom: 0;
 }
 
-#content_frame > .breadcrumb {
+#content_frame .breadcrumb {
     background: transparent;
     padding-left: 0;
     margin-bottom: 0;
