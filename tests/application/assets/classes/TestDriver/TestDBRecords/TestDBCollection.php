@@ -17,9 +17,13 @@ class TestDBCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'test_records';
     public const TABLE_NAME_DATA = 'test_records_data';
+    public const TABLE_NAME_TAGS = 'test_records_tags';
+
     public const PRIMARY_NAME = 'record_id';
+
     public const COL_ALIAS = 'alias';
     public const COL_LABEL = 'label';
+
 
     private static ?self $instance = null;
 
