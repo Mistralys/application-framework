@@ -112,6 +112,13 @@ class TagCollection extends DBHelper_BaseCollection
         return new TagSettingsManager($formable, $this, $record);
     }
 
+    public function getAdminCreateSubTagURL(TagRecord $parentTag, array $params=array()) : string
+    {
+        $params[BaseCreateTagScreen::REQUEST_PARAM_PARENT_TAG] = $parentTag->getID();
+
+        return $this->getAdminCreateURL($params);
+    }
+
     protected function _registerKeys(): void
     {
         $this->keys->register(self::COL_LABEL)
