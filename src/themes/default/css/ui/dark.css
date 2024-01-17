@@ -1,11 +1,12 @@
-:root{
+:root
+{
+    --color-accent-base: #1D2025;
     --color-accent-primary: #91D6FF;
+    --color-accent-secondary-xs: #3e4b60;
+    --color-accent-secondary-s: #58667f;
     --color-accent-secondary: #64738D;
+    --color-accent-secondary-xl: #8798b7;
 
-    --color-bg-document: #1D2025;
-    --color-bg-content: #1D2025;
-    --color-bg-inverted: #eee;
-    --color-bg-highlight: #252A33;
     --color-bg-warning: #c57300;
     --color-bg-code: #333d4f;
     --color-border-code: #64738D;
