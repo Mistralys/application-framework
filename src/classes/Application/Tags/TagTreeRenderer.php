@@ -7,6 +7,7 @@ namespace Application\Tags;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\Traits\OptionableTrait;
+use UI;
 use UI_Renderable;
 
 class TagTreeRenderer extends UI_Renderable
@@ -18,6 +19,7 @@ class TagTreeRenderer extends UI_Renderable
     public const OPTION_EDITABLE = 'editable';
 
     private TagRecord $rootTag;
+    private ?TagRecord $activeTag = null;
 
     public function __construct(TagRecord $rootTag)
     {
@@ -26,23 +28,34 @@ class TagTreeRenderer extends UI_Renderable
         parent::__construct(null);
     }
 
+    public function setActiveTag(TagRecord $record) : self
+    {
+        $this->activeTag = $record;
+        return $this;
+    }
+
     protected function _render() : string
     {
+        $this->ui->addStylesheet('ui/tags.css');
+
         OutputBuffering::start();
 
+        $tags = $this->rootTag->getSubTags();
+
         ?>
-        <ul class="tags-tree">
-            <?php
-            if($this->isRootShown()) {
-                $this->renderTree($this->rootTag);
-            } else {
-                $tags = $this->rootTag->getSubTags();
-                foreach ($tags as $tag) {
-                    $this->renderTree($tag);
+        <div class="tags-tree-wrapper">
+            <ul class="tags-tree last-with-spacing <?php if(!empty($tags)) { echo 'with-subtags'; } ?>">
+                <?php
+                if($this->isRootShown()) {
+                    $this->renderTree($this->rootTag);
+                } else {
+                    foreach ($tags as $tag) {
+                        $this->renderTree($tag);
+                    }
                 }
-            }
-            ?>
-        </ul>
+                ?>
+            </ul>
+        </div>
         <?php
 
         return OutputBuffering::get();
@@ -50,30 +63,61 @@ class TagTreeRenderer extends UI_Renderable
 
     private function renderTree(TagRecord $record) : void
     {
-        ?>
-        <li class="tag-entry">
-            <?php
-            echo $record->getLabelLinked();
+        $subTags = $record->getSubTags();
 
-            $subTags = $record->getSubTags();
+        $classes = array('tag-entry');
+        if($record === $this->activeTag) { $classes[] = 'active'; }
+        if($record->isRootTag()) {$classes[] = 'root';}
+
+        ?>
+        <li class="<?php echo implode(' ', $classes) ?>">
+            <div class="tag-label">
+                <a href="<?php echo $record->getAdminTagTreeURL() ?>">
+                    <?php
+                    echo sb()
+                        ->icon(UI::icon()->tags())
+                        ->add($record->getLabelLinked());
+                    ?>
+                </a>
+                <?php
+                if($this->isEditable()) {
+                    ?>
+                    <div class="tag-entry-actions">
+                        <?php
+                        echo $this->ui->createButtonGroup()
+                            ->makeMini()
+                            ->addButton(UI::button()
+                                ->setIcon(UI::icon()->add())
+                                ->setTooltip(t('Add a sub-tag to %1$s', $record->getLabel()))
+                                ->link($record->getAdminCreateSubTagURL())
+                            )
+                            ->addButton(UI::button()
+                                ->setIcon(UI::icon()->delete())
+                                ->makeDangerous()
+                                ->makeConfirm(t('Are you sure you want to delete %1$s and all its sub-tags?', sb()->bold($record->getLabel())))
+                                ->setTooltip(t('Delete this tag and all its sub-tags.'))
+                                ->link($record->getAdminDeleteURL())
+                                ->requireFalse($record === $this->rootTag)
+                            );
+                        ?>
+                    </div>
+                <?php
+            }
+
+            ?>
+            </div>
+            <?php
+
             if(!empty($subTags))
             {
                 ?>
-                <ul class="tags-tree">
+                <ul class="tags-tree last-with-spacing with-subtags">
                     <?php
                     foreach ($subTags as $subTag) {
                         $this->renderTree($subTag);
                     }
                     ?>
                 </ul>
-                <?php
-            }
-
-            if($this->isEditable()) {
-                ?>
-                <div class="tag-entry-actions">
-                    <a href="<?php echo $record->getAdminCreateSubTagURL() ?>"><?php pt('Add subtag') ?></a>
-                </div>
                 <?php
             }
             ?>
