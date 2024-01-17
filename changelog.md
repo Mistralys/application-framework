@@ -1,3 +1,6 @@
+## v3.1.6 - Filter settings update
+- FilterSettings: Fixed setting values comparison for the active filters check.
+
 ## v3.1.5 - Lookup items improvements
 - LookupItems: Improved the parsing of search terms.
 - LookupItems: Added some search hints in the dialog.
