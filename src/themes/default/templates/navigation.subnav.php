@@ -15,7 +15,7 @@ $below = array();
 $dropdown = null;
 
 $nav->addClass('nav-pills');
-$nav->addClass('subnav');
+$nav->addClass($nav->getID());
 
 $menu = $nav->getContextMenu();
 
