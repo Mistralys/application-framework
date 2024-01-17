@@ -15,6 +15,7 @@ use Application_Admin_Area_Mode_Submode_CollectionRecord;
 class BaseTagTreeScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
 {
     public const URL_NAME = 'tag-tree';
+    public const REQUEST_PARAM_DELETE_TAG = 'delete-tag';
 
     public function getURLName(): string
     {
@@ -46,11 +47,51 @@ class BaseTagTreeScreen extends Application_Admin_Area_Mode_Submode_CollectionRe
         return '';
     }
 
+    protected function _handleActions(): bool
+    {
+        if(parent::_handleActions() === false) {
+            return false;
+        }
+
+        $this->handleDeleteTag();
+
+        return true;
+    }
+
+    private function handleDeleteTag() : void
+    {
+        $tagID = $this->request->registerParam(self::REQUEST_PARAM_DELETE_TAG)->getInt();
+        $collection = $this->createCollection();
+
+        if($tagID === 0 || !$collection->idExists($tagID) || $tagID === $this->record->getID()) {
+            return;
+        }
+
+        $tag = $collection->getByID($tagID);
+
+        $this->startTransaction();
+
+        $collection->deleteRecord($tag);
+
+        $this->endTransaction();
+
+        $this->redirectWithSuccessMessage(
+            t(
+                'The tag %1$s has been deleted successfully at %2$s.',
+                $tag->getLabel(),
+                sb()->time()
+            ),
+            $this->record->getAdminTagTreeURL()
+        );
+    }
+
     protected function _renderContent()
     {
         return $this->renderer
             ->appendContent($this->record
+                ->getRootTag()
                 ->createTreeRenderer()
+                ->setActiveTag($this->record)
                 ->makeEditable()
             )
             ->makeWithSidebar();
