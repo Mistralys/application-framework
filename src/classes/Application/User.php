@@ -911,6 +911,20 @@ abstract class Application_User implements Application_User_Interface, Applicati
 
     // endregion
 
+    // region: Tags management
+
+    public const RIGHT_CREATE_TAGS = 'CreateTags';
+    public const RIGHT_EDIT_TAGS = 'EditTags';
+    public const RIGHT_DELETE_TAGS = 'DeleteTags';
+    public const RIGHT_VIEW_TAGS = 'ViewTags';
+
+    public function canViewTags() : bool { return $this->can(self::RIGHT_VIEW_TAGS); }
+    public function canCreateTags() : bool { return $this->can(self::RIGHT_CREATE_TAGS); }
+    public function canEditTags() : bool { return $this->can(self::RIGHT_EDIT_TAGS); }
+    public function canDeleteTags() : bool { return $this->can(self::RIGHT_DELETE_TAGS); }
+
+    // endregion
+
     // region: Media management
 
     public const RIGHT_CREATE_MEDIA = 'CreateMedia';
