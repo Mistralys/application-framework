@@ -10,7 +10,8 @@
 :root {
     --color-accent-base: #fff;
     --color-accent-primary: #08c;
-    --color-accent-secondary-xs: #f5f5f5;
+    --color-accent-secondary-xxs: #f5f5f5;
+    --color-accent-secondary-xs: #e0e0e0;
     --color-accent-secondary-s: #ccc;
     --color-accent-secondary: #888;
     --color-accent-secondary-xl: #333;
@@ -42,7 +43,8 @@
     --color-bg-document: var(--color-accent-base);
     --color-bg-content: var(--color-accent-base);
     --color-bg-inverted: var(--color-accent-secondary-xl);
-    --color-bg-highlight: var(--color-accent-secondary-xs);
+    --color-bg-highlight: var(--color-accent-secondary-xxs);
+    --color-bg-highlight-hover: var(--color-accent-secondary-xs);
     --color-bg-highlight-info: var(--color-accent-info-xxs);
     --color-bg-highlight-info-hover: var(--color-accent-info-xs);
     --color-bg-danger: var(--color-accent-danger-xxs);
