@@ -816,6 +816,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function tree() : self { return $this->setType('sitemap', 'fas'); }
+    /**
+     * @return $this
+     */
     public function uncombine() : self { return $this->setType('unlink'); }
     /**
      * @return $this

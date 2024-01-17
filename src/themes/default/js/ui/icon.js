@@ -295,6 +295,7 @@ var UI_Icon =
     Tools:function() { return this.SetType('tools'); },
     Translation:function() { return this.SetType('globe'); },
     Transmission:function() { return this.SetType('satellite-dish'); },
+    Tree:function() { return this.SetType('sitemap', 'fas'); },
     Uncombine:function() { return this.SetType('unlink'); },
     Uncombined:function() { return this.SetType('object-ungroup'); },
     Undelete:function() { return this.SetType('reply'); },
