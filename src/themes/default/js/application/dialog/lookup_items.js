@@ -74,9 +74,10 @@ var Application_Dialog_LookupItems =
 		'<p>' +
 			'<small>'+
 				'<strong>' + t('Search hints:') + '</strong> ' +
-				t('Multiple search terms can be separated with commas.') + ' ' +
-				t('Items match if all search terms are present.') + ' ' +
 				t('The search is case insensitive.') + ' ' +
+				t('Separator characters like underscores (_) and dashes (-) are ignored.') + ' ' +
+				t('Multiple search terms can be separated with commas.') + ' ' +
+				t('Items match if all search terms are found.') + ' ' +
 			'</small>' +
 		'</p>';
 	},
