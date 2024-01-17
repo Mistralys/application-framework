@@ -6,7 +6,7 @@
  */
 
 UL.nav FORM.nav-search {
-    margin: 0 5px 0 50px;
+    margin: 0 5px 0 var(--box-spacing);
     padding-top: 4px;
 }
 
