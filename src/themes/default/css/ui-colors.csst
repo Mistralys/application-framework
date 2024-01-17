@@ -16,11 +16,18 @@
     --color-accent-secondary-xl: #333;
 
     /* Color variants */
+    --color-accent-danger-xxs: #fedfdf;
     --color-accent-danger: #b94a48;
     --color-accent-danger-xxl: #c52320;
+    --color-accent-warning-xxs: #fff1d1;
+    --color-accent-warning-xs: #ffe4be;
+    --color-accent-warning-s: #f2cfa5;
     --color-accent-warning: #e2500b;
-    --color-accent-success: #468847;
+    --color-accent-success-xxs: #ebf8a4;
     --color-accent-success-s: #5bb75b;
+    --color-accent-success: #468847;
+    --color-accent-info-xxs: #f0f5ff;
+    --color-accent-info-xs: #e5f0ff;
     --color-accent-info: #3a87ad;
     --color-accent-developer: #f47e00;
     --color-accent-developer-hover: #ff9d00;
@@ -42,18 +49,18 @@
     --color-bg-content: var(--color-accent-base);
     --color-bg-inverted: var(--color-accent-secondary-xl);
     --color-bg-highlight: var(--color-accent-secondary-xs);
-    --color-bg-highlight-info: #f0f5ff;
-    --color-bg-highlight-info-hover: #e5f0ff;
-    --color-bg-danger: #fedfdf;
-    --color-bg-warning: #fff1d1;
-    --color-bg-warning-hover: #ffe4be;
+    --color-bg-highlight-info: var(--color-accent-info-xxs);
+    --color-bg-highlight-info-hover: var(--color-accent-info-xs);
+    --color-bg-danger: var(--color-accent-danger-xxs);
+    --color-bg-warning: var(--color-accent-warning-xxs);
+    --color-bg-warning-hover: var(--color-accent-warning-xs);
     --color-bg-warning-xl: var(--color-accent-warning);
-    --color-bg-success: #ebf8a4;
+    --color-bg-success: var(--color-accent-success-xxs);
     --color-bg-success-xl: var(--color-accent-success);
     --color-bg-code: var(--color-bg-highlight);
     --color-bg-active: var(--color-accent-primary);
-    --color-border-code:#e1e1e8;
-    --color-border-warning: #f2cfa5;
+    --color-border-code: #e1e1e8;
+    --color-border-warning: var(--color-accent-warning-s);
     --color-border-danger: var(--color-accent-danger);
     --color-border-danger-xl: var(--color-accent-danger-xxl);
     --color-border: var(--color-accent-borders);
