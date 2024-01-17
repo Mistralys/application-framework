@@ -2081,4 +2081,68 @@ class DBHelper
 
         return $instance;
     }
+
+    /**
+     * @var array<string,array<int,array{tablename:string,columname:string}>>
+     */
+    private static array $fieldRelations = array();
+
+    /**
+     * Fetches all fields from other tables in the database that
+     * have relations to the specified field.
+     *
+     * NOTE: Results are cached within the request.
+     *
+     * @param string $tableName
+     * @param string $fieldName
+     * @return array<int,array{tablename:string,columname:string}>
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @see https://stackoverflow.com/a/31972009/2298192
+     */
+    public static function getRelationsForField(string $tableName, string $fieldName) : array
+    {
+        $cacheKey = $tableName.'.'.$fieldName;
+
+        if(isset(self::$fieldRelations[$cacheKey])) {
+            return self::$fieldRelations[$cacheKey];
+        }
+
+        $query = <<<'SQL'
+SELECT 
+    c.table_name tablename,
+    CONCAT(' ',GROUP_CONCAT(c.column_name ORDER BY ordinal_position SEPARATOR ', ')) columnname
+FROM
+    information_schema.columns c 
+RIGHT JOIN
+    (
+        SELECT column_name , column_type FROM information_schema.columns WHERE 
+        table_schema = DATABASE() AND table_name = '%1$s'
+     ) 
+    AS p
+    USING (column_name,column_type)
+WHERE
+    c.table_schema = DATABASE()
+AND 
+    c.table_name != '%1$s'
+GROUP BY 
+    tablename
+HAVING 
+    (locate(' %2$s',columnname) > 0)  
+ORDER BY
+    columnname
+SQL;
+
+        $result = self::fetchAll(
+            sprintf(
+                $query,
+                $tableName,
+                $fieldName
+            )
+        );
+
+        self::$fieldRelations[$cacheKey] = $result;
+
+        return $result;
+    }
 }
