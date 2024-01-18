@@ -1,7 +1,12 @@
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
+- Navigation: Fixed the search not being executed in some cases.
 - Navigation: Added `setTemplateID()` to freely select the template.
+- Navigation: Fixed the spacing before the split button caret.
+- Navigation: Nav ID and template ID are now separate.
+- Navigation: It is now possible to reuse the subnav template for other navs.
 - Interface Refs: Improved the subnavigation example.
+- Interface Refs: Added tabs example.
 - Tabs: Fixed active tabs having a bottom border.
 - Tabs: Added `setURLTarget()`.
 
