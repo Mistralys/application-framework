@@ -562,10 +562,6 @@ TD.nowrap {
     display: block;
 }
 
-.body-wrap .nav.nav-tabs {
-    margin-bottom: 0;
-}
-
 PRE.console {
     margin-bottom: 50px;
 }
