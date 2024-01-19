@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
+use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TaggableInterface;
+use Application\Tags\Taggables\TaggableTrait;
 use DBHelper_BaseRecord;
 
-class TestDBRecord extends DBHelper_BaseRecord
+/**
+ * @property TestDBCollection $collection
+ */
+class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
 {
+    use TaggableTrait;
+
     private array $custom = array();
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
@@ -48,5 +56,15 @@ class TestDBRecord extends DBHelper_BaseRecord
         $this->custom[$name] = $value;
         $this->setCustomModified($name);
         return true;
+    }
+
+    public function getTaggingPrimaryKey(): int
+    {
+        return $this->getID();
+    }
+
+    public function getTaggingCollection(): TagContainer
+    {
+        return $this->collection->getTagContainer();
     }
 }

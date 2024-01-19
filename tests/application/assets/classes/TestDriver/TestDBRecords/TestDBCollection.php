@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
+use Application\Tags\Taggables\TagContainerInterface;
+use Application\Tags\Taggables\TagContainerTrait;
 use DBHelper;
 use DBHelper_BaseCollection;
 
@@ -12,9 +14,12 @@ use DBHelper_BaseCollection;
  * @method TestDBRecord getByID(int $record_id)
  * @method TestDBFilterCriteria getFilterCriteria()
  * @method TestDBFilterSettings getFilterSettings()
+ * @method TestDBTagContainer getTagContainer()
  */
-class TestDBCollection extends DBHelper_BaseCollection
+class TestDBCollection extends DBHelper_BaseCollection implements TagContainerInterface
 {
+    use TagContainerTrait;
+
     public const TABLE_NAME = 'test_records';
     public const TABLE_NAME_DATA = 'test_records_data';
     public const TABLE_NAME_TAGS = 'test_records_tags';
@@ -108,5 +113,20 @@ class TestDBCollection extends DBHelper_BaseCollection
 
         $this->keys->register(self::COL_ALIAS)
             ->makeRequired();
+    }
+
+    public function getTagContainerClass(): ?string
+    {
+        return TestDBTagContainer::class;
+    }
+
+    public function getTaggingPrimaryName(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTaggingTableName(): string
+    {
+        return self::TABLE_NAME_TAGS;
     }
 }
