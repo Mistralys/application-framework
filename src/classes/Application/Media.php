@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Application\Media\Collection\MediaCollection;
 use Application\Media\MediaException;
 use Application\Media\MediaTagContainer;
-use Application\Tags\Taggables\TagContainerInterface;
-use Application\Tags\Taggables\TagContainerTrait;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagCollectionTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -15,9 +15,9 @@ use AppUtils\FileHelper\FileInfo;
 /**
  * @method MediaTagContainer getTagContainer()
  */
-class Application_Media implements TagContainerInterface
+class Application_Media implements TagCollectionInterface
 {
-    use TagContainerTrait;
+    use TagCollectionTrait;
 
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
     public const ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
@@ -313,12 +313,12 @@ class Application_Media implements TagContainerInterface
         return $config;
     }
 
-    public function getTaggingPrimaryName(): string
+    public function getTagPrimary(): string
     {
         return self::PRIMARY_NAME;
     }
 
-    public function getTaggingTableName(): string
+    public function getTagTable(): string
     {
         return self::TABLE_TAGS;
     }

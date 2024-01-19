@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
-use Application\Tags\Taggables\TagContainerInterface;
-use Application\Tags\Taggables\TagContainerTrait;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagCollectionTrait;
 use DBHelper;
 use DBHelper_BaseCollection;
 
@@ -16,9 +16,9 @@ use DBHelper_BaseCollection;
  * @method TestDBFilterSettings getFilterSettings()
  * @method TestDBTagContainer getTagContainer()
  */
-class TestDBCollection extends DBHelper_BaseCollection implements TagContainerInterface
+class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
-    use TagContainerTrait;
+    use TagCollectionTrait;
 
     public const TABLE_NAME = 'test_records';
     public const TABLE_NAME_DATA = 'test_records_data';
@@ -120,13 +120,18 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagContainerIn
         return TestDBTagContainer::class;
     }
 
-    public function getTaggingPrimaryName(): string
+    public function getTagPrimary(): string
     {
         return self::PRIMARY_NAME;
     }
 
-    public function getTaggingTableName(): string
+    public function getTagTable(): string
     {
         return self::TABLE_NAME_TAGS;
+    }
+
+    public function getTagSourceTable(): string
+    {
+        return self::TABLE_NAME;
     }
 }

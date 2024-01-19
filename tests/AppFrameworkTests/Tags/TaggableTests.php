@@ -11,7 +11,7 @@ final class TaggableTests extends TaggingTestCase
     public function test_addTag() : void
     {
         $record = $this->recordCollection->createTestRecord('Foo', 'foo');
-        $manager = $record->getTagger();
+        $manager = $record->getTagManager();
 
         $this->assertSame(0, $manager->countTags());
 
@@ -27,7 +27,7 @@ final class TaggableTests extends TaggingTestCase
     public function test_hasTag() : void
     {
         $record = $this->recordCollection->createTestRecord('Foo', 'foo');
-        $manager = $record->getTagger();
+        $manager = $record->getTagManager();
 
         $tag = $this->tagsCollection->createNewTag('FooTag');
         $manager->addTag($tag);
@@ -38,7 +38,7 @@ final class TaggableTests extends TaggingTestCase
     public function test_removeTag() : void
     {
         $record = $this->recordCollection->createTestRecord('Foo', 'foo');
-        $manager = $record->getTagger();
+        $manager = $record->getTagManager();
 
         $tag = $this->tagsCollection->createNewTag('FooTag');
         $manager->addTag($tag);
@@ -53,7 +53,7 @@ final class TaggableTests extends TaggingTestCase
     public function test_removeAll() : void
     {
         $record = $this->recordCollection->createTestRecord('Foo', 'foo');
-        $manager = $record->getTagger();
+        $manager = $record->getTagManager();
 
         $manager->addTag($this->tagsCollection->createNewTag('FooTag'));
         $manager->addTag($this->tagsCollection->createNewTag('BarTag'));

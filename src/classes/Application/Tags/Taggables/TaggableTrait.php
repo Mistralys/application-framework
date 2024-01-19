@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Tags\Taggables;
 
+/**
+ * @see TaggableInterface
+ */
 trait TaggableTrait
 {
     private ?Taggable $tagger = null;
 
-    public function getTagger() : Taggable
+    public function getTagManager() : Taggable
     {
         if(!isset($this->tagger)) {
             $this->tagger = new Taggable(
-                $this->getTaggingCollection(),
-                $this->getTaggingPrimaryKey()
+                $this->getTagCollection(),
+                $this->getTagPrimaryKey()
             );
         }
 

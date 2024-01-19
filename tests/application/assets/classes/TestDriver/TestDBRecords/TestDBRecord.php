@@ -58,12 +58,12 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
         return true;
     }
 
-    public function getTaggingPrimaryKey(): int
+    public function getTagPrimaryKey(): int
     {
         return $this->getID();
     }
 
-    public function getTaggingCollection(): TagContainer
+    public function getTagCollection(): TagContainer
     {
         return $this->collection->getTagContainer();
     }

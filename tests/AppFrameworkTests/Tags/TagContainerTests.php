@@ -25,8 +25,8 @@ final class TagContainerTests extends TaggingTestCase
         $tag = $this->tagsCollection->createNewTag('Foo1');
 
         $this->recordCollection->createTestRecord('WithoutTag', 'without');
-        $this->recordCollection->createTestRecord('WithTag', 'with1')->getTagger()->addTag($tag);
-        $this->recordCollection->createTestRecord('AlsoWithTag', 'with2')->getTagger()->addTag($tag);
+        $this->recordCollection->createTestRecord('WithTag', 'with1')->getTagManager()->addTag($tag);
+        $this->recordCollection->createTestRecord('AlsoWithTag', 'with2')->getTagManager()->addTag($tag);
 
         $this->assertCount(3, $this->recordCollection->getAll());
 

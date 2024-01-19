@@ -567,12 +567,12 @@ abstract class Application_Media_Document
 
     abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
 
-    public function getTaggingCollection(): TagContainer
+    public function getTagCollection(): TagContainer
     {
         return AppFactory::createMedia()->getTagContainer();
     }
 
-    public function getTaggingPrimaryKey(): int
+    public function getTagPrimaryKey(): int
     {
         return $this->getID();
     }

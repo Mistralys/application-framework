@@ -6,7 +6,10 @@ namespace Application\Tags\Taggables;
 
 use AppUtils\ClassHelper;
 
-trait TagContainerTrait
+/**
+ * @see TagCollectionInterface
+ */
+trait TagCollectionTrait
 {
     private ?TagContainer $tagContainer = null;
 
@@ -24,8 +27,8 @@ trait TagContainerTrait
         $container = ClassHelper::requireObjectInstanceOf(
             TagContainer::class,
             new $class(
-                $this->getTaggingTableName(),
-                $this->getTaggingPrimaryName()
+                $this->getTagTable(),
+                $this->getTagPrimary()
             )
         );
 

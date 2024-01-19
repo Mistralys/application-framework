@@ -10,7 +10,7 @@ interface TaggableInterface
      * Retrieves an instance of the helper class that can be used to manage tags for this record.
      * @return Taggable
      */
-    public function getTagger() : Taggable;
-    public function getTaggingCollection() : TagContainer;
-    public function getTaggingPrimaryKey() : int;
+    public function getTagManager() : Taggable;
+    public function getTagCollection() : TagContainer;
+    public function getTagPrimaryKey() : int;
 }
