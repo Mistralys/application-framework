@@ -81,7 +81,10 @@ abstract class Application_RevisionStorage_CopyRevision
             $this->targetRevision
         ));
     }
-    
+
+    /**
+     * @return array<int,callable|string>
+     */
     abstract protected function getParts();
     
     public function process() : void
@@ -111,6 +114,11 @@ abstract class Application_RevisionStorage_CopyRevision
 
         foreach($parts as $part)
         {
+            if(is_callable($part)) {
+               $part($targetRevisionable);
+               continue;
+            }
+
             $method = 'copy'.ucfirst($part);
             $this->$method($targetRevisionable);
         }
