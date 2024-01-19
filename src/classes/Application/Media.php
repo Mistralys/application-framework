@@ -274,7 +274,7 @@ class Application_Media implements TagContainerInterface
     */
     public function idExists(int $media_id) : bool
     {
-        return DBHelper::keyExists('media', array('media_id' => $media_id));
+        return DBHelper::keyExists(self::TABLE_NAME, array(self::PRIMARY_NAME => $media_id));
     }
     
     public function configurationIDExists(int $config_id) : bool

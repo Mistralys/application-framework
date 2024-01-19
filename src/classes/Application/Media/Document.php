@@ -519,9 +519,9 @@ abstract class Application_Media_Document
             "DELETE FROM
                 `media`
             WHERE
-                `media_id`=:media_id",
+                `media_id`=:primary",
             array(
-                'media_id' => $this->id
+                'primary' => $this->id
             )    
         );
         
