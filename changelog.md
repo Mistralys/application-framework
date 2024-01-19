@@ -1,3 +1,6 @@
+## v3.1.8 - Revisionable update
+- RevisionCopy: `getParts()` can now return callables.
+
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
 - Navigation: Fixed the search not being executed in some cases.
