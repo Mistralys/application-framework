@@ -1,6 +1,7 @@
 <?php
 
-use AppUtils\FileHelper\FileInfo;
+declare(strict_types=1);
+
 use AppUtils\ImageHelper;
 
 interface Application_Media_DocumentInterface extends Application_Interfaces_Loggable
@@ -23,7 +24,7 @@ interface Application_Media_DocumentInterface extends Application_Interfaces_Log
     public function isUpload() : bool;
     
     /**
-     * Retrieves the name of the uploaded file, without extension.
+     * Retrieves the name of the uploaded file, without an extension.
      * @return string
      */
     public function getName() : string;

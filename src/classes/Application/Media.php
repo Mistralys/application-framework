@@ -1,16 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 use Application\Media\Collection\MediaCollection;
 use Application\Media\MediaException;
+use Application\Media\MediaTagContainer;
+use Application\Tags\Taggables\TagContainerInterface;
+use Application\Tags\Taggables\TagContainerTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
 
-class Application_Media
+/**
+ * @method MediaTagContainer getTagContainer()
+ */
+class Application_Media implements TagContainerInterface
 {
+    use TagContainerTrait;
+
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
     public const ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
+
+    public const TABLE_NAME = 'media';
+    public const TABLE_NAME_CONFIGURATIONS = 'media_configurations';
+    public const TABLE_TAGS = 'media_tags';
+    public const PRIMARY_NAME = 'media_id';
 
     protected static ?Application_Media $instance = null;
     protected string $storageFolder;
@@ -109,19 +124,18 @@ class Application_Media
      *
      * @param int $media_id
      * @return Application_Media_Document
-     * @throws Application_Exception
      */
-    public function getByID($media_id)
+    public function getByID(int $media_id) : Application_Media_Document
     {
         return Application_Media_Document::create($media_id);
     }
     
    /**
     * Attempts to retrieve a media document from a form value.
-    * @param array $value
+    * @param mixed $value
     * @return Application_Media_Document|NULL
     */
-    public function getByFormValue($value)
+    public function getByFormValue($value) : ?Application_Media_Document
     {
         if($this->isMediaFormValue($value)) {
             return $this->getByID($value['id']); 
@@ -158,7 +172,7 @@ class Application_Media
      * @param string $extension
      * @return NULL|string
      */
-    public function getTypeByExtension($extension)
+    public function getTypeByExtension(string $extension) : ?string
     {
         $this->loadTypes();
         if (isset($this->extensions[$extension])) {
@@ -233,16 +247,15 @@ class Application_Media
 
     /**
      * Creates a media configuration instance. These are document
-     * type specific, and are used to store configurations for
+     * type-specific, and are used to store configurations for
      * media pre-processing using the media processor class. For
      * example, they are used to store the size presets to resize
      * images.
      *
-     * @param string $type The configuration type, e.g. "Image". Case sensitive.
+     * @param string $type The configuration type, e.g. "Image". Case-sensitive.
      * @return Application_Media_Configuration
      *
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
+     * @throws BaseClassHelperException
      * @throws Throwable
      */
     public function createConfiguration(string $type) : Application_Media_Configuration
@@ -259,17 +272,17 @@ class Application_Media
     * @param integer $media_id
     * @return boolean
     */
-    public function idExists($media_id) 
+    public function idExists(int $media_id) : bool
     {
         return DBHelper::keyExists('media', array('media_id' => $media_id));
     }
     
-    public function configurationIDExists($config_id)
+    public function configurationIDExists(int $config_id) : bool
     {
         return DBHelper::keyExists('media_configurations', array('config_id' => $config_id));
     }
     
-    public function getConfigurationByID($config_id)
+    public function getConfigurationByID(int $config_id) : Application_Media_Configuration
     {
         $data = DBHelper::fetch(
             "SELECT
@@ -298,5 +311,20 @@ class Application_Media
         $config->loadData($config_id);
         
         return $config;
+    }
+
+    public function getTaggingPrimaryName(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTaggingTableName(): string
+    {
+        return self::TABLE_TAGS;
+    }
+
+    public function getTagContainerClass(): ?string
+    {
+        return MediaTagContainer::class;
     }
 }

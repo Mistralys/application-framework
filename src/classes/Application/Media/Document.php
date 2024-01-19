@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;
+use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TaggableInterface;
+use Application\Tags\Taggables\TaggableTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -15,10 +19,14 @@ use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
 
-abstract class Application_Media_Document implements Application_Media_DocumentInterface
+abstract class Application_Media_Document
+    implements
+    Application_Media_DocumentInterface,
+    TaggableInterface
 {
     use Application_Traits_Loggable;
     use DocumentTrait;
+    use TaggableTrait;
 
     public const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
     public const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
@@ -69,6 +77,11 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     public function getID() : int
     {
         return $this->id;
+    }
+
+    public function getTaggingTableName(): string
+    {
+        return Application_Media::TABLE_TAGS;
     }
 
     /**
@@ -553,4 +566,14 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     }
 
     abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
+
+    public function getTaggingCollection(): TagContainer
+    {
+        return AppFactory::createMedia()->getTagContainer();
+    }
+
+    public function getTaggingPrimaryKey(): int
+    {
+        return $this->getID();
+    }
 }
