@@ -23,6 +23,12 @@
       "src/functions/functions.php"
     ]
   },
+  "autoload-dev": {
+    "classmap": [
+      "tests/application/assets/classes",
+      "tests/AppFrameworkTestClasses"
+    ]
+  },
   "repositories": [
     {
       "type": "vcs",
