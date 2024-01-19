@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BMStorageTests\TestSuites\Tags;
+namespace AppFrameworkTests\TestSuites\Tags;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;

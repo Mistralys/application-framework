@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use DBHelper;
 use TestDriver\TestDBRecords\TestDBCollection;
 use TestDriver\TestDBRecords\TestDBRecord;
 
@@ -29,5 +30,8 @@ abstract class DBHelperTestCase extends ApplicationTestCase
         parent::setUp();
 
         $this->startTransaction();
+
+        // Ensure we're always working with an empty tests table.
+        DBHelper::deleteRecords(self::TEST_RECORDS_TABLE);
     }
 }

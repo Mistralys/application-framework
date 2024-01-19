@@ -17,6 +17,7 @@ use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
+use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
 use UI_Page;
 
@@ -216,5 +217,30 @@ abstract class ApplicationTestCase extends TestCase
         $this->testMedia[] = $document;
 
         return $document;
+    }
+
+    /**
+     * @param TestDBRecord[] $records
+     * @param string[] $names
+     * @return void
+     */
+    protected function assertTestRecordsContainNames(array $records, array $names) : void
+    {
+        $recordLabels = array();
+        foreach($records as $record) {
+            $recordLabels[] = $record->getLabel();
+        }
+
+        foreach($names as $name)
+        {
+            if(!in_array($name, $recordLabels)) {
+                $this->fail(sprintf(
+                    'Record %1$s not found in result set. Record labels: '.PHP_EOL.
+                    '- %2$s',
+                    $name,
+                    implode(PHP_EOL.'- ', $recordLabels)
+                ));
+            }
+        }
     }
 }
