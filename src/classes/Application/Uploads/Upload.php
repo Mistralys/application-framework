@@ -9,8 +9,6 @@
 
 use Application\AppFactory;
 use Application\Media\DocumentTrait;
-use Application\Media\ThumbnailRenderer;
-use AppUtils\ImageHelper;
 
 /**
  * Upload object: used to represent a single uploaded file. Can
