@@ -29,6 +29,7 @@ use DBHelper_BaseCollection;
 class TagCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'tags';
+    public const TABLE_REGISTRY = 'tags_registry';
     public const PRIMARY_NAME = 'tag_id';
     public const COL_LABEL = 'label';
     public const COL_PARENT_TAG_ID = 'parent_tag_id';
