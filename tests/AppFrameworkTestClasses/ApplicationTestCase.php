@@ -6,6 +6,7 @@ namespace AppFrameworkTestClasses;
 
 use Application;
 use Application\AppFactory;
+use Application\Tags\TagCollection;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
@@ -241,6 +242,20 @@ abstract class ApplicationTestCase extends TestCase
                     implode(PHP_EOL.'- ', $recordLabels)
                 ));
             }
+        }
+    }
+
+    /**
+     * Empties the given tables by deleting all existing records from them.
+     * @param string[] $tables
+     * @return void
+     */
+    protected function cleanUpTables(array $tables) : void
+    {
+        DBHelper::requireTransaction('Clean up database tables');
+
+        foreach($tables as $table) {
+            DBHelper::deleteRecords($table);
         }
     }
 }
