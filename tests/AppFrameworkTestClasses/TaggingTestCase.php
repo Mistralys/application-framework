@@ -15,14 +15,22 @@ abstract class TaggingTestCase extends ApplicationTestCase
     protected TagCollection $tagsCollection;
     protected TestDBCollection $recordCollection;
 
+    /**
+     * @var string[]
+     */
+    private array $tableCleanup = array(
+        TagCollection::TABLE_NAME,
+        TagCollection::TABLE_REGISTRY,
+        TestDBCollection::TABLE_NAME
+    );
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->startTransaction();
 
-        DBHelper::deleteRecords(TagCollection::TABLE_NAME);
-        DBHelper::deleteRecords(TestDBCollection::TABLE_NAME);
+        $this->cleanUpTables($this->tableCleanup);
 
         $this->tagsCollection = AppFactory::createTags();
         $this->recordCollection = TestDBCollection::getInstance();
