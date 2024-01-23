@@ -9,6 +9,7 @@ use Application\Admin\Area\Media\BaseViewMediaScreen;
 use Application\Admin\Area\Media\View\BaseMediaSettingsScreen;
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\AppFactory;
+use Application\Tags\Taggables\TagContainer;
 use Application_Admin_ScreenInterface;
 use Application_Exception_DisposableDisposed;
 use Application_Media_Document;
@@ -23,8 +24,10 @@ use DBHelper_BaseRecord;
  * @property MediaCollection $collection
  * @method MediaCollection getCollection()
  */
-class MediaRecord extends DBHelper_BaseRecord
+class MediaRecord extends DBHelper_BaseRecord implements Application\Tags\Taggables\TaggableInterface
 {
+    use Application\Tags\Taggables\TaggableTrait;
+
     public function getLabel(): string
     {
         return $this->getRecordStringKey(MediaCollection::COL_NAME);
@@ -158,5 +161,15 @@ class MediaRecord extends DBHelper_BaseRecord
     protected function _onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context): void
     {
         FileHelper::deleteFile($context->getOption('file_path'));
+    }
+
+    public function getTagCollection(): TagContainer
+    {
+        return $this->collection->getTagContainer();
+    }
+
+    public function getTaggedRecordPrimary(): int
+    {
+        return $this->getID();
     }
 }
