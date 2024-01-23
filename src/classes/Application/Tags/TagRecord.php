@@ -40,6 +40,64 @@ class TagRecord extends DBHelper_BaseRecord
             ->selectParentTag($this);
     }
 
+    /**
+     * Fetches all sub tags recursively, in a flat list
+     * sorted alphabetically.
+     *
+     * @return TagRecord[]
+     */
+    public function getSubTagsRecursive() : array
+    {
+        $tags = array();
+
+        foreach($this->getSubTags() as $tag)
+        {
+            $tags[] = $tag;
+            array_push($tags, ...$tag->getSubTagsRecursive());
+        }
+
+        usort($tags, function(TagRecord $a, TagRecord $b) {
+            return strnatcasecmp($a->getLabel(), $b->getLabel());
+        });
+
+        return $tags;
+    }
+
+    public function isSubTagOf(TagRecord $tag) : bool
+    {
+        $parentTag = $this->getParentTag();
+
+        if($parentTag === null) {
+            return false;
+        }
+
+        if($parentTag->getID() === $tag->getID()) {
+            return true;
+        }
+
+        return $parentTag->isSubTagOf($tag);
+    }
+
+    /**
+     * Fetches all parent tags recursively, in a flat list
+     * from closest to furthest.
+     *
+     * @return TagRecord[]
+     */
+    public function getParentTags() : array
+    {
+        $tags = array();
+        $active = $this;
+
+        while($active->getParentTag() !== null)
+        {
+            $active = $active->getParentTag();
+            $tags[] = $active;
+        }
+
+        return $tags;
+    }
+
     public function addSubTag(string $label) : TagRecord
     {
         return AppFactory::createTags()->createNewTag($label, $this);
