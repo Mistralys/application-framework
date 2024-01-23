@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\TestSuites\Tags;
 
-use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
 use Application\Tags\TagCollection;
-use DBHelper;
+use Mistralys\AppFrameworkTests\TestClasses\TaggingTestCase;
 
-class SubTagTests extends ApplicationTestCase
+class SubTagTests extends TaggingTestCase
 {
     public function test_createTag(): void
     {
@@ -81,12 +80,49 @@ class SubTagTests extends ApplicationTestCase
         $this->assertSame($tag3->getParentTag(), $tag2);
     }
 
-    protected function setUp(): void
+    public function test_getSubTagsRecursive() : void
     {
-        parent::setUp();
+        $collection = AppFactory::createTags();
 
-        $this->startTransaction();
+        $tag1 = $collection->createNewTag('Tag A');
+        $tag2 = $tag1->addSubTag('Tag C');
+        $tag3 = $tag2->addSubTag('Tag B');
 
-        DBHelper::deleteRecords(TagCollection::TABLE_NAME);
+        $this->assertSame(
+            array(
+                $tag3,
+                $tag2
+            ),
+            $tag1->getSubTagsRecursive()
+        );
+    }
+
+    public function test_isSubTagOf() : void
+    {
+        $collection = AppFactory::createTags();
+
+        $tag1 = $collection->createNewTag('Tag A');
+        $tag2 = $tag1->addSubTag('Tag B');
+        $tag3 = $tag2->addSubTag('Tag C');
+
+        $this->assertTrue($tag3->isSubTagOf($tag2));
+        $this->assertTrue($tag3->isSubTagOf($tag1));
+    }
+
+    public function test_getParentTags() : void
+    {
+        $collection = AppFactory::createTags();
+
+        $tag1 = $collection->createNewTag('Tag A');
+        $tag2 = $tag1->addSubTag('Tag B');
+        $tag3 = $tag2->addSubTag('Tag C');
+
+        $this->assertSame(
+            array(
+                $tag2,
+                $tag1
+            ),
+            $tag3->getParentTags()
+        );
     }
 }
