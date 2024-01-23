@@ -12,5 +12,5 @@ interface TaggableInterface
      */
     public function getTagManager() : Taggable;
     public function getTagCollection() : TagContainer;
-    public function getTagPrimaryKey() : int;
+    public function getTaggedRecordPrimary() : int;
 }

@@ -34,6 +34,12 @@ trait TagCollectionTrait
 
         $this->tagContainer = $container;
 
+        $this->handleTaggingInitialized($container);
+
         return $container;
+    }
+
+    protected function handleTaggingInitialized(TagContainer $container) : void
+    {
     }
 }
