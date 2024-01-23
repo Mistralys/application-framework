@@ -49,11 +49,8 @@ UL.tags-tree.with-subtags > LI > UL{
 }
 
 .tag-entry.root > .tag-label{
-    font-weight: var(--font-weight-bold);
-}
-
-.tag-entry.root > .tag-label{
-    background-color: var(--color-bg-success-xl);
+    font-weight: var(--font-weight-bold) !important;
+    background-color: var(--color-bg-success-xl) !important;
 }
 
 .tag-entry.root > .tag-label > A{
