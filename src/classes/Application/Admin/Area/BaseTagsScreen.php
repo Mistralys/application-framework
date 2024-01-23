@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Area;
 
+use Application\AppFactory;
 use Application_Admin_Area;
 use Application\Area\Tags\BaseTagListScreen;
 use UI;
@@ -40,6 +41,15 @@ abstract class BaseTagsScreen extends Application_Admin_Area
 
     public function isCore(): bool
     {
+        return true;
+    }
+
+    protected function _handleActions(): bool
+    {
+        $this->startTransaction();
+        AppFactory::createMedia()->setUpTagging();
+        $this->endTransaction();
+
         return true;
     }
 
