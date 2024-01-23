@@ -10,8 +10,10 @@ use Application\Admin\Area\Media\BaseCreateMediaScreen;
 use Application\Admin\Area\Media\BaseImageGalleryScreen;
 use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
+use Application\Media\MediaTagContainer;
 use Application_Admin_ScreenInterface;
 use Application_Formable;
+use Application_Media;
 use AppUtils\Microtime;
 use DBHelper;
 use DBHelper_BaseCollection;
@@ -21,8 +23,10 @@ use DBHelper_BaseCollection;
  * @method MediaFilterCriteria getFilterCriteria()
  * @method MediaFilterSettings getFilterSettings()
  */
-class MediaCollection extends DBHelper_BaseCollection
+class MediaCollection extends DBHelper_BaseCollection implements Application\Tags\Taggables\TagCollectionInterface
 {
+    use Application\Tags\Taggables\TagCollectionTrait;
+
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
     public const MEDIA_TYPE = 'media';
@@ -84,12 +88,12 @@ class MediaCollection extends DBHelper_BaseCollection
 
     public function getRecordTableName(): string
     {
-        return self::TABLE_NAME;
+        return Application_Media::TABLE_NAME;
     }
 
     public function getRecordPrimaryName(): string
     {
-        return self::PRIMARY_NAME;
+        return Application_Media::PRIMARY_NAME;
     }
 
     public function getRecordTypeName(): string
@@ -207,5 +211,25 @@ class MediaCollection extends DBHelper_BaseCollection
                 ->refreshFileSize()
                 ->dispose();
         }
+    }
+
+    public function getTagContainerClass(): ?string
+    {
+        return MediaTagContainer::class;
+    }
+
+    public function getTagPrimary(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTagTable(): string
+    {
+        return Application_Media::TABLE_TAGS;
+    }
+
+    public function getTagSourceTable(): string
+    {
+        return Application_Media::TABLE_NAME;
     }
 }

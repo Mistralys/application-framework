@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
+use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\MediaException;
 use Application\Media\MediaTagContainer;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
+use Application\Tags\Taggables\TagContainer;
+use Application\Tags\TagRecord;
+use Application\Tags\TagRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -26,6 +31,7 @@ class Application_Media implements TagCollectionInterface
     public const TABLE_NAME_CONFIGURATIONS = 'media_configurations';
     public const TABLE_TAGS = 'media_tags';
     public const PRIMARY_NAME = 'media_id';
+    public const TAG_REGISTRY_KEY = 'media_tagging';
 
     protected static ?Application_Media $instance = null;
     protected string $storageFolder;
@@ -202,7 +208,7 @@ class Application_Media implements TagCollectionInterface
         $this->extensions = array();
         $this->types = array();
 
-        $folder = $this->driver->getApplication()->getClassesFolder() . '/Application/Media/Document';
+        $folder = __DIR__ . '/Media/Document';
         $d = new DirectoryIterator($folder);
 
         foreach ($d as $item)
@@ -279,7 +285,7 @@ class Application_Media implements TagCollectionInterface
     
     public function configurationIDExists(int $config_id) : bool
     {
-        return DBHelper::keyExists('media_configurations', array('config_id' => $config_id));
+        return DBHelper::keyExists(self::TABLE_NAME_CONFIGURATIONS, array('config_id' => $config_id));
     }
     
     public function getConfigurationByID(int $config_id) : Application_Media_Configuration
@@ -313,6 +319,8 @@ class Application_Media implements TagCollectionInterface
         return $config;
     }
 
+    // region: Tagging
+
     public function getTagPrimary(): string
     {
         return self::PRIMARY_NAME;
@@ -326,5 +334,60 @@ class Application_Media implements TagCollectionInterface
     public function getTagContainerClass(): ?string
     {
         return MediaTagContainer::class;
+    }
+
+    public function getMediaRootTag() : TagRecord
+    {
+        $this->setUpTagging();
+
+        return TagRegistry::getTagByKey(self::TAG_REGISTRY_KEY);
+    }
+
+    /**
+     * Gets an array of all tags available for tagging documents,
+     * in a flat list sorted alphabetically.
+     *
+     * @return TagRecord[]
+     */
+    public function getAvailableTags() : array
+    {
+        return $this->getMediaRootTag()->getSubTagsRecursive();
+    }
+
+    /**
+     * Sets up tagging support for the media management in the current
+     * application. This creates the media root tag used to tag documents.
+     *
+     * NOTE: This is called automatically when the media tagging feature
+     * is accessed, so it is not necessary to call this manually. This
+     * method exists to trigger the setup when visiting the tagging screens,
+     * so the media tag is there when needed.
+     *
+     * @return void
+     */
+    public function setUpTagging() : void
+    {
+        if(TagRegistry::isKeyRegistered(self::TAG_REGISTRY_KEY)) {
+            return;
+        }
+
+        TagRegistry::registerKey(self::TAG_REGISTRY_KEY, 'Media Documents');
+    }
+
+    public function getTagSourceTable(): string
+    {
+        return self::TABLE_NAME;
+    }
+
+    protected function handleTaggingInitialized(TagContainer $container): void
+    {
+        $this->setUpTagging();
+    }
+
+    // endregion: Tagging
+
+    public function getFilterCriteria() : MediaFilterCriteria
+    {
+        return AppFactory::createMediaCollection()->getFilterCriteria();
     }
 }
