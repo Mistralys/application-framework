@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Media\Collection\MediaRecord;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;
 use Application\Tags\Taggables\TagContainer;
@@ -572,8 +573,13 @@ abstract class Application_Media_Document
         return AppFactory::createMedia()->getTagContainer();
     }
 
-    public function getTagPrimaryKey(): int
+    public function getTaggedRecordPrimary(): int
     {
         return $this->getID();
+    }
+
+    public function getRecord() : MediaRecord
+    {
+        return AppFactory::createMediaCollection()->getByID($this->getID());
     }
 }
