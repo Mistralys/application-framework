@@ -42,8 +42,21 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
         $this->size = $size;
         return $this;
     }
-    
-    protected function _render()
+
+    /**
+     * @param UI_Button[] $buttons
+     * @return self
+     */
+    public function addButtons(array $buttons) : self
+    {
+        foreach($buttons as $button) {
+            $this->addButton($button);
+        }
+
+        return $this;
+    }
+
+    protected function _render() : string
     {
         if(empty($this->buttons)) {
             return '';
