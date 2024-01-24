@@ -14,6 +14,9 @@ use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
 use Application_Admin_ScreenInterface;
 use Application\Area\Tags\BaseViewTagScreen;
 use DBHelper_BaseRecord;
+use UI;
+use UI\Tree\TreeNode;
+use UI\Tree\TreeRenderer;
 
 /**
  * @package Application
@@ -28,6 +31,9 @@ class TagRecord extends DBHelper_BaseRecord
     {
     }
 
+    /**
+     * @return TagRecord[]
+     */
     public function getSubTags() : array
     {
         return $this->getSubTagCriteria()->getItemsObjects();
@@ -197,8 +203,51 @@ class TagRecord extends DBHelper_BaseRecord
         return $this->getAdminTagTreeURL($params);
     }
 
-    public function createTreeRenderer() : TagTreeRenderer
+    public function createTreeRenderer() : TreeRenderer
     {
-        return new TagTreeRenderer($this);
+        return UI::getInstance()->createTreeRenderer($this->createNodeTree());
+    }
+
+    public function createNodeTree(?TreeNode $parent=null) : TreeNode
+    {
+        if($parent === null) {
+            $parent = TreeNode::create(UI::getInstance(), $this->getLabel());
+            $node = $parent;
+        } else {
+            $node = $parent->createChildNode($this->getLabel());
+        }
+
+        $this->configureTreeNode($node);
+
+        $subTags = $this->getSubTags();
+        foreach($subTags as $subTag) {
+            $subTag->createNodeTree($parent);
+        }
+
+        return $node;
+    }
+
+    private function configureTreeNode(TreeNode $node) : void
+    {
+        $node->setValue($this->getID());
+
+        $node->link($this->getAdminTagTreeURL());
+
+        $node->addButton(
+            UI::button()
+                ->setIcon(UI::icon()->add())
+                ->setTooltip(t('Add a sub-tag to %1$s', $node->getLabel()))
+                ->link($this->getAdminCreateSubTagURL())
+        );
+
+        $node->addButton(
+            UI::button()
+                ->setIcon(UI::icon()->delete())
+                ->makeDangerous()
+                ->makeConfirm(t('Are you sure you want to delete %1$s and all its sub-tags?', sb()->bold($this->getLabel())))
+                ->setTooltip(t('Delete this tag and all its sub-tags.'))
+                ->link($this->getAdminDeleteURL())
+                ->requireFalse($this->isRootTag())
+        );
     }
 }
