@@ -1,0 +1,85 @@
+:root{
+    --item-padding: 0.3rem;
+    --item-spacing: 0.6rem;
+    --item-indent: 1.4rem;
+    --item-indent-negative: -1.4rem;
+}
+
+.node-tree-wrapper{
+    margin-left: var(--item-indent-negative);
+}
+
+UL.node-tree{
+    list-style: none;
+    margin:0 0 0 var(--item-indent);
+    padding: 0;
+}
+
+UL.node-tree LI{
+    padding:0;
+    margin: 0 0 var(--item-spacing) 0;
+}
+
+UL.node-tree.with-children > LI > UL{
+    margin-top: var(--item-spacing);
+}
+
+.node-label {
+    display: inline-block;
+    padding: var(--item-padding) 8px;
+    border-radius: var(--border-radius-normal);
+    background-color: var(--color-bg-highlight);
+}
+
+.node-label:hover{
+    background-color: var(--color-bg-highlight-hover);
+}
+
+.node-label > A{
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.node-label > A > I{
+    color: var(--color-text-muted);
+}
+
+.node-label.root > A > I{
+    color: var(--color-text-inverted-muted);
+}
+
+.node-entry.root > .node-label{
+    font-weight: var(--font-weight-bold) !important;
+    background-color: var(--color-bg-success-xl) !important;
+    color: var(--color-text-inverted);
+}
+
+.node-entry.root > .node-label > A{
+    color: var(--color-text-inverted);
+}
+
+LI.node-entry.active > .node-label{
+    font-weight: var(--font-weight-bold);
+    background-color: var(--color-bg-highlight-info);
+}
+
+LI.node-entry.active:hover > .node-label{
+    background-color: var(--color-bg-highlight-info-hover);
+}
+
+.node-entry-actions{
+    display:inline-block;
+    margin-left: 8px;
+}
+
+.node-label > .tree-checkbox{
+    display:inline-block;
+    position: relative;
+    top: -0.2rem;
+}
+
+.node-label > LABEL{
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
