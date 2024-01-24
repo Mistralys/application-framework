@@ -1189,7 +1189,10 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     }
 
-    protected $coreScripts = array
+    /**
+     * @var string[]
+     */
+    protected array $coreScripts = array
     (
         // -----------------------------------------------------------
         // CORE SCRIPTS
@@ -1199,6 +1202,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         'global_functions.js',
         'application/keep_alive.js',
         'application.js',
+        'application/logger.js',
         'application/exception.js',
         'application/base_renderable.js',
         'application/ajax.js',
