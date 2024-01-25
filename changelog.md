@@ -5,6 +5,9 @@
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
 
+### Breaking changes (M)
+- Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
+
 ### Deprecations
 
 - FilterSettings: Deprecated `addAutoConfigure()`, replaced by `SettingDef::setConfigureCallback()`.
