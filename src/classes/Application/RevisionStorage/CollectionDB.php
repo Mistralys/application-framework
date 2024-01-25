@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * @property Application_RevisionableCollection_DBRevisionable $revisionable
+ */
 abstract class Application_RevisionStorage_CollectionDB extends Application_RevisionStorage_DBStandardized
 { 
     public const ERROR_INVALID_REVISIONABLE_TYPE = 14601;
-    
-    /**
-     * @var Application_RevisionableCollection_DBRevisionable
-     */
-    protected $revisionable;
     
    /**
     * @var Application_RevisionableCollection
