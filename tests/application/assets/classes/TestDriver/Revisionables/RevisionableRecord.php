@@ -6,32 +6,43 @@ namespace TestDriver\Revisionables;
 
 use Application_RevisionableCollection_DBRevisionable;
 use Application_StateHandler_State;
+use Closure;
+use DBHelper;
+use TestDriver\Revisionables\Storage\RevisionableStorage;
 
+/**
+ * @property RevisionableStorage $revisions
+ */
 class RevisionableRecord extends Application_RevisionableCollection_DBRevisionable
 {
     public const STATUS_DRAFT = 'draft';
     public const STATUS_FINALIZED = 'finalized';
     public const STATUS_DELETED = 'deleted';
     public const STATUS_INACTIVE = 'inactive';
+    public const STORAGE_SETTINGS = 'settings';
 
     public function makeFinalized() : self
     {
-        return $this->setState($this->getStateByName(self::STATUS_FINALIZED));
+        $this->makeState($this->getStateByName(self::STATUS_FINALIZED));
+        return $this;
     }
 
     public function makeInactive() : self
     {
-        return $this->setState($this->getStateByName(self::STATUS_INACTIVE));
+        $this->makeState($this->getStateByName(self::STATUS_INACTIVE));
+        return $this;
     }
 
     public function makeDeleted() : self
     {
-        return $this->setState($this->getStateByName(self::STATUS_DELETED));
+        $this->makeState($this->getStateByName(self::STATUS_DELETED));
+        return $this;
     }
 
     public function makeDraft() : self
     {
-        return $this->setState($this->getStateByName(self::STATUS_DRAFT));
+        $this->makeState($this->getStateByName(self::STATUS_DRAFT));
+        return $this;
     }
 
     public function getLabel(): string
@@ -41,9 +52,62 @@ class RevisionableRecord extends Application_RevisionableCollection_DBRevisionab
 
     public function setLabel(string $label) : self
     {
-        $this->revisions->setKey(RevisionableCollection::COL_REV_LABEL, $label);
+        $this->setRevisionKey(
+            RevisionableCollection::COL_REV_LABEL,
+            $label,
+            self::STORAGE_SETTINGS,
+            false
+        );
+
         return $this;
     }
+
+    public function getStructuralKey() : string
+    {
+        return (string)$this->revisions->getKey(RevisionableCollection::COL_REV_STRUCTURAL);
+    }
+
+    public function setStructuralKey(string $freeform) : self
+    {
+        $this->setRevisionKey(
+            RevisionableCollection::COL_REV_STRUCTURAL,
+            $freeform,
+            self::STORAGE_SETTINGS,
+            true
+        );
+
+        return $this;
+    }
+
+    // region: C - Saving data
+
+    protected function initStorageParts(): void
+    {
+        $this->registerStoragePart(self::STORAGE_SETTINGS, Closure::fromCallable(array($this, 'saveSettings')));
+    }
+
+    public function getCustomRevisionData() : array
+    {
+        return array(
+            RevisionableCollection::COL_REV_LABEL => $this->getLabel(),
+            RevisionableCollection::COL_REV_STRUCTURAL => $this->getStructuralKey()
+        );
+    }
+
+    private function saveSettings() : void
+    {
+        $data = $this->getCustomRevisionData();
+        $revKey = $this->collection->getRevisionKeyName();
+        $data[$revKey] = $this->getRevision();
+
+        DBHelper::updateDynamic(
+            RevisionableCollection::TABLE_REVISIONS,
+            $data,
+            array($revKey)
+        );
+    }
+
+    // endregion
 
     // region: X - Interface methods
 
@@ -114,14 +178,6 @@ class RevisionableRecord extends Application_RevisionableCollection_DBRevisionab
 
     }
 
-    protected function _saveWithStateChange() : void
-    {
-    }
-
-    protected function _save() : void
-    {
-    }
-
     protected function _registerEvents(): void
     {
     }
@@ -139,4 +195,5 @@ class RevisionableRecord extends Application_RevisionableCollection_DBRevisionab
     }
 
     // endregion
+
 }

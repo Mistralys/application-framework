@@ -25,6 +25,7 @@ class RevisionableCollection extends Application_RevisionableCollection
     public const COL_REV_STATE = 'state';
     public const COL_REV_DATE = 'date';
     public const COL_REV_COMMENTS = 'comments';
+     public const COL_REV_STRUCTURAL = 'structural';
 
     use Application_Traits_Eventable;
     use Application_Traits_Disposable;
@@ -44,6 +45,8 @@ class RevisionableCollection extends Application_RevisionableCollection
     {
         return $this->createNewRecord($label);
     }
+
+    // region: X - Interface methods
 
     public function getIdentification(): string
     {
@@ -119,4 +122,6 @@ class RevisionableCollection extends Application_RevisionableCollection
             self::COL_REV_LABEL => t('Label')
         );
     }
+
+    // endregion
 }
