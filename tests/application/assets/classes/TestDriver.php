@@ -9,9 +9,11 @@ declare(strict_types=1);
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
+use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\WelcomeScreen;
+use TestDriver\CustomIcon;
 
 /**
  * @package TestDriver
@@ -19,6 +21,11 @@ use TestDriver\Area\WelcomeScreen;
  */
 class TestDriver extends Application_Driver
 {
+    public static function icon() : CustomIcon
+    {
+        return new CustomIcon();
+    }
+
     /**
      * NOTE: Uses the custom navigation generation,
      * see {@see \TestDriver\UI\MainNavConfigurator}.
@@ -36,7 +43,8 @@ class TestDriver extends Application_Driver
             QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class),
             NewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
             MediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class),
-            TestingScreen::URL_NAME => getClassTypeName(TestingScreen::class)
+            TestingScreen::URL_NAME => getClassTypeName(TestingScreen::class),
+            RevisionableScreen::URL_NAME => getClassTypeName(RevisionableScreen::class),
         );
     }
 

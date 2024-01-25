@@ -2,5 +2,9 @@
   "planet": {
     "icon": "globe-europe",
     "type": "fas"
+  },
+  "revisionable": {
+    "icon": "rev",
+    "type": "fab"
   }
 }
