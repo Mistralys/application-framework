@@ -491,7 +491,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
         return $this->section;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->render();
     }
