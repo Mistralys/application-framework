@@ -47,16 +47,38 @@ class RevisionSelectionTests extends RevisionableTestCase
         $record->makeFinalized();
     }
 
-    public function test_automaticStateChange() : void
+    public function test_noStateChangeForNonStructuralSettings() : void
     {
         $record = $this->createTestRevisionable();
 
         $record->makeFinalized();
 
+        $rev = $record->getRevision();
+
         $record->startCurrentUserTransaction();
         $record->setLabel('New label');
         $record->endTransaction();
 
+        $this->assertTrue($record->getRevision() > $rev);
+        $this->assertRecordIsFinalized($record, 'A non-structural change must not change the finalized state.');
         $this->assertSame('New label', $record->getLabel());
+    }
+
+    public function test_stateChangeForStructuralSettings() : void
+    {
+        $record = $this->createTestRevisionable();
+
+        $record->makeFinalized();
+
+        $rev = $record->getRevision();
+
+        $record->startCurrentUserTransaction();
+        $record->setStructuralKey('New freeform value');
+        $this->assertTrue($record->hasStructuralChanges());
+        $record->endTransaction();
+
+        $this->assertTrue($record->getRevision() > $rev);
+        $this->assertRecordIsDraft($record, 'A structural change must switch to draft.');
+        $this->assertSame('New freeform value', $record->getStructuralKey());
     }
 }
