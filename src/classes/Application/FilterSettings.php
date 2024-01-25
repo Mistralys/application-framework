@@ -10,6 +10,7 @@
 use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
+use Application\FilterSettings\SettingDef;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -40,9 +41,10 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     public const ERROR_UNKNOWN_SETTING = 450001;
     public const ERROR_NO_SETTINGS_REGISTERED = 450002;
-    public const ERROR_MISSING_AUTOCONFIG_METHOD = 450003;
     public const ERROR_ONLY_ONE_MORE_ALLOWED = 450004;
     public const ERROR_MISSING_ID = 450005;
+    public const ERROR_SETTING_ALREADY_REGISTERED = 450006;
+
     public const SETTING_PREFIX = 'filter_settings_';
 
     protected string $id;
@@ -56,20 +58,10 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     private array $settings = array();
 
     /**
-     * @var array<string,array{label:string,default:string|number|array<mixed>|bool|NULL,elementID:string}>
+     * @var array<string,SettingDef>
      */
     protected array $definitions = array();
 
-    /**
-     * @var array<string,mixed>
-     */
-    protected array $defaultSettings;
-
-    /**
-     * @var string[]
-     */
-    protected array $autoConfigure = array();
-    
    /**
     * Available during the injectElements method.
     * @var HTML_QuickForm2_Container
@@ -83,7 +75,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     */
     protected array $hiddens = array();
 
-    protected array $enabledStatus = array();
     protected string $storageID;
     private bool $settingsLoaded = false;
 
@@ -124,9 +115,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      * share stored settings.
      *
      * NOTE: This should be called before the form is rendered, ideally
-     * before doing anything so the settings do not get loaded several
+     * before doing anything, so the settings do not get loaded several
      * times. Settings use lazy loading, but this way the chance is
-     * minimised.
+     * minimized.
      *
      * @param string $id
      * @return $this
@@ -152,8 +143,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         $this->settingsLoaded = false;
         $this->cachedLogIdentifier = null;
 
-
-
         return $this;
     }
     
@@ -173,8 +162,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     * Injects the required filtering form elements into the provided
     * form container.
     * 
-    * NOTE: Legacy method. The new way is to add methods called
-    * <code>inject_(setting_name)</code> for each setting.
+    * NOTE: Legacy method.
+    * The new way is to set the form element injection callback with
+    * the {@see SettingDef::setInjectCallback()} method.
     *
     * @deprecated
     * @param HTML_QuickForm2_Container $container
@@ -191,22 +181,68 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      * current filtering settings.
      */
     abstract protected function _configureFilters() : void;
-    
+
+    public const SETTING_DEFAULT_SEARCH = 'search';
+
+    private bool $searchConfigured = false;
+
    /**
     * Automatically configures search terms in the filters
     * if a search setting is present. Meant to be used during
     * the <code>_configureFilters()</code> method.
     * 
-    * @param string $setting
+    * @param string|NULL $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
     */
-    protected function configureSearch(string $setting='search') : void
+    protected function configureSearch(?string $setting=null) : void
     {
-        $search = $this->getSettingString($setting);
+        if($this->searchConfigured) {
+            return;
+        }
+
+        $this->searchConfigured = true;
+
+        $search = trim($this->getSearchSetting($setting)->getValue());
         
         if(strlen($search) >= 2) 
         {
             $this->filters->setSearch($search);
         }
+    }
+
+    /**
+     * Registers the generic search field that uses the collection's
+     * configured search fields list in the UI.
+     *
+     * See the {@link inject_search()} method to inject the
+     * matching element into the form where you want it.
+     * The rest is automatic.
+     *
+     * @param string|null $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
+     * @param string|null $label Defaults to "Search".
+     * @return void
+     */
+    protected function registerSearchSetting(?string $setting=null, string $label=null) : void
+    {
+        if(empty($label)) {
+            $label = t('Search');
+        }
+
+        $this->registerSetting($setting, $label)
+            ->setConfigureCallback(Closure::fromCallable(array($this, 'configureSearch')));
+    }
+
+    protected function inject_search() : HTML_QuickForm2_Element_InputText
+    {
+        return $this->addElementSearch(array('Full text'));
+    }
+
+    public function getSearchSetting(?string $name=null) : SettingDef
+    {
+        if(empty($name)) {
+            $name = self::SETTING_DEFAULT_SEARCH;
+        }
+
+        return $this->requireSetting($name);
     }
     
     protected function injectElementsContainer(HTML_QuickForm2_Container $container): void
@@ -217,26 +253,21 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         
         $this->injectElements($container);
         
-        $names = array_keys($this->settings);
+        $names = array_keys($this->definitions);
         
         foreach($names as $name)
         {
-            if(!$this->isSettingEnabled($name))
-            {
+            $setting = $this->requireSetting($name);
+
+            if(!$setting->isEnabled()) {
                 continue;
             }
 
-            $method = 'inject_'.str_replace('-', '_', $name);
-            if(method_exists($this, $method)) {
-                $this->$method();
-            }
+            $setting->inject();
         }
     }
     
-   /**
-    * @var Application_FilterCriteria
-    */
-    protected $filters;
+    protected Application_FilterCriteria $filters;
     
     /**
      * Configures the provided filter criteria instance with the
@@ -247,63 +278,57 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     public function configureFilters(Application_FilterCriteria $filters) : void
     {
         $this->filters = $filters;
-        
-        foreach($this->autoConfigure as $method) {
-            $this->$method();
+
+        foreach($this->definitions as $def) {
+            $def->configure();
         }
-        
+
         $this->_configureFilters();
     }
     
-   /**
-    * Adds a setting to be configured automatically when the 
-    * {@link configureFilters()} method is called. This requires
-    * a matching method called <code>autoConfigure_settingName</code>
-    * to be implemented, which configures the setting.
-    * 
-    * @param string $settingName
-    * @throws Application_Exception
-    */
-    protected function addAutoConfigure(string $settingName) : void
-    {
-        $method = 'autoConfigure_'.$settingName;
-        if(method_exists($this, $method)) {
-            if(!in_array($method, $this->autoConfigure, true)) {
-                $this->autoConfigure[] = $method;
-            }
-            return;
-        }
-        
-        throw new Application_Exception(
-            'Missing auto configure method',
-            sprintf(
-                'The filter settings class [%s] must implement the [%s] method to automatically configure the [%s] property.',
-                get_class($this),
-                $method,
-                $settingName
-            ),
-            self::ERROR_MISSING_AUTOCONFIG_METHOD
-        );
-    }
-    
     /**
-     * Registers a setting that is handled by the settings.
+     * Registers a setting handled by the settings.
      *
      * @param string $name
      * @param string|number|StringableInterface|NULL $label
      * @param mixed $default
+     * @param class-string|NULL $customClass
+     * @return SettingDef
+     * @throws UI_Exception
      */
-    protected function registerSetting(string $name, $label, $default=null) : void
+    protected function registerSetting(string $name, $label, $default=null, string $customClass=null) : SettingDef
     {
         $this->log('RegisterSettings | Registered setting [%s].', $name);
 
-        $this->defaultSettings[$name] = $default;
-        
-        $this->definitions[$name] = array(
-            'label' => toString($label),
-            'default' => $default,
-            'elementID' => $this->jsID.'-'.$name
+        if(isset($this->definitions[$name])) {
+            throw new UI_Exception(
+                'Filter setting already registered',
+                sprintf(
+                    'The filter setting [%s] has already been registered.',
+                    $name
+                ),
+                self::ERROR_SETTING_ALREADY_REGISTERED
+            );
+        }
+
+        if($customClass === null) {
+            $customClass = SettingDef::class;
+        }
+
+        $def = ClassHelper::requireObjectInstanceOf(
+            SettingDef::class,
+            new $customClass($this, $name, $label, $default)
         );
+
+        // Legacy setting support with injection methods in the filter class
+        $method = 'inject_'.str_replace('-', '_', $name);
+        if(method_exists($this, $method)) {
+            $def->setInjectCallback(Closure::fromCallable(array($this, $method)));
+        }
+
+        $this->definitions[$name] = $def;
+
+        return $def;
     }
     
     /**
@@ -319,9 +344,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
         $this->settingsLoaded = true;
 
-        $settings = $this->defaultSettings;
         $json = $this->user->getSetting($this->storageID);
         $data = array();
+        $settings = array();
 
         if (!empty($json))
         {
@@ -333,13 +358,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
             $this->log('LoadSettings | None found: Empty, or could not be decoded.');
         }
 
-        $names = array_keys($settings);
-        foreach ($names as $name)
+        foreach ($this->definitions as $name => $def)
         {
-            if (isset($data[$name]))
-            {
-                $settings[$name] = $data[$name];
-            }
+            $settings[$name] = $data[$name] ?? $def->getDefault();
         }
 
         $this->settings = $settings;
@@ -368,9 +389,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         $this->log('Saving | Storing values.');
 
         $values = $this->form->getValues();
-        
+
         if($this->request->getBool('reset')) {
-            $values = $this->defaultSettings;
+            $values = $this->getDefaultSettings();
         }
         
         // remove all unneeded request parameters to avoid them
@@ -386,6 +407,18 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         $this->user->saveSettings();
 
         Application_Driver::getInstance()->redirectTo($url);
+    }
+
+    protected function getDefaultSettings() : array
+    {
+        $result = array();
+
+        foreach($this->definitions as $name => $def)
+        {
+            $result[$name] = $def->getDefault();
+        }
+
+        return $result;
     }
 
     // region: Access setting values
@@ -418,27 +451,34 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      */
     public function getSetting(string $name)
     {
-        $this->requireSetting($name);
+        $setting = $this->requireSetting($name);
+
         $this->loadSettings();
         
         if(isset($this->settings[$name])) {
             return $this->settings[$name];
         }
         
-        return $this->definitions[$name]['default'];
+        return $setting->getDefault();
     }
 
     /**
      * @param string $name
      * @return array<mixed>
+     * @deprecated Use {@see getSettingArray()} instead.
      */
     public function getArraySetting(string $name) : array
     {
+        return $this->getSettingArray($name);
+    }
+
+    public function getSettingArray(string $name) : array
+    {
         $value = $this->getSetting($name);
-        if(!empty($value) && is_array($value)) {
+        if(is_array($value)) {
             return $value;
         }
-        
+
         return array();
     }
 
@@ -475,17 +515,13 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     public function setSettingEnabled(string $name, bool $enabled) : self
     {
-        $this->enabledStatus[$name] = $enabled;
+        $this->requireSetting($name)->setEnabled($enabled);
         return $this;
     }
 
     public function isSettingEnabled(string $name) : bool
     {
-        if(!isset($this->enabledStatus[$name])) {
-            return true;
-        }
-
-        return $this->enabledStatus[$name] !== false;
+        return $this->requireSetting($name)->isEnabled();
     }
     
     protected UI_Form $form;
@@ -887,36 +923,20 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      */
     public function addCustomElement(HTML_QuickForm2_Element $element) : self
     {
-        $setting = $element->getName();
+        $setting = $this->requireSetting($element->getName());
         
-        $this->requireSetting($setting);
-        
-        $element->setId($this->getElementID($setting));
-        $element->setLabel($this->getElementLabel($setting));
+        $element->setId($setting->getElementID());
+        $element->setLabel($setting->getLabel());
         
         return $this;
     }
 
     // endregion
     
-    protected function getElementID(string $setting) : string
-    {
-        $this->requireSetting($setting);
-        
-        return $this->definitions[$setting]['elementID'];
-    }
-    
-    protected function getElementLabel(string $setting) : string
-    {
-        $this->requireSetting($setting);
-        
-        return $this->definitions[$setting]['label'];
-    }
-    
-    protected function requireSetting(string $name) : void
+    protected function requireSetting(string $name) : SettingDef
     {
         if(isset($this->definitions[$name])) {
-            return;
+            return $this->definitions[$name];
         }
         
         throw new Application_Exception(
@@ -956,8 +976,8 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
             $this->ui->addJavascriptHeadStatement(
                 sprintf('%s.RegisterSetting', $jsName),
                 $name,
-                $def['label'],
-                $def['elementID']
+                $def->getLabel(),
+                $def->getElementID()
             );
         }
         
@@ -975,7 +995,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
                 }
 
                 if(!isset($preset['settings'][$name])) {
-                    $preset['settings'][$name] = $def['default'];
+                    $preset['settings'][$name] = $def->getDefault();
                 }
             }
             
@@ -986,6 +1006,11 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
                 $preset['settings']
             );
         }
+    }
+
+    public function getJSID() : string
+    {
+        return $this->jsID;
     }
     
     /**
@@ -1011,7 +1036,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         foreach($this->definitions as $name => $def)
         {
             $value = $this->nullify($this->getSetting($name));
-            $default = $this->nullify($def['default']);
+            $default = $this->nullify($def->getDefault());
 
             if($value !== $default) {
                 return true;
