@@ -1,5 +1,19 @@
 ## v3.1.8 - Revisionable update
 - RevisionCopy: `getParts()` can now return callables.
+- FilterSettings: Settings are now class-based.
+- FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
+- Revisionables: Added a test revisionable collection to the test application.
+- Revisionables: Added first unit tests.
+
+### Deprecations
+
+- FilterSettings: Deprecated `addAutoConfigure()`, replaced by `SettingDef::setConfigureCallback()`.
+- FilterSettings: Deprecated `getArraySetting()`, replaced by `getSettingArray()`.
+
+### Database update
+
+The SQL update file `docs/sql/2024-01-25-revisionables.sql` must be imported
+for the unit tests to work. 
 
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
