@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 06, 2023 at 07:58 AM
+-- Generation Time: Jan 25, 2024 at 06:38 AM
 -- Server version: 10.5.22-MariaDB
 -- PHP Version: 7.4.33
 
@@ -22,16 +22,16 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `app_locking` (
-`lock_id` bigint(11) UNSIGNED NOT NULL,
-`screen_url_path` varchar(250) NOT NULL,
-`screen_name` varchar(250) NOT NULL DEFAULT '',
-`item_primary` varchar(250) NOT NULL DEFAULT '',
-`lock_label` varchar(250) NOT NULL DEFAULT '',
-`locked_by` int(11) UNSIGNED NOT NULL,
-`locked_time` datetime NOT NULL,
-`locked_until` datetime NOT NULL,
-`last_activity` datetime NOT NULL,
-`properties` text NOT NULL
+    `lock_id` bigint(11) UNSIGNED NOT NULL,
+    `screen_url_path` varchar(250) NOT NULL,
+    `screen_name` varchar(250) NOT NULL DEFAULT '',
+    `item_primary` varchar(250) NOT NULL DEFAULT '',
+    `lock_label` varchar(250) NOT NULL DEFAULT '',
+    `locked_by` int(11) UNSIGNED NOT NULL,
+    `locked_time` datetime NOT NULL,
+    `locked_until` datetime NOT NULL,
+    `last_activity` datetime NOT NULL,
+    `properties` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -41,9 +41,9 @@ CREATE TABLE `app_locking` (
 --
 
 CREATE TABLE `app_locking_messages` (
-`lock_id` bigint(11) UNSIGNED NOT NULL,
-`requested_by` int(11) UNSIGNED NOT NULL,
-`message_id` bigint(11) UNSIGNED NOT NULL
+    `lock_id` bigint(11) UNSIGNED NOT NULL,
+    `requested_by` int(11) UNSIGNED NOT NULL,
+    `message_id` bigint(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -53,12 +53,12 @@ CREATE TABLE `app_locking_messages` (
 --
 
 CREATE TABLE `app_messagelog` (
-`log_id` bigint(11) UNSIGNED NOT NULL,
-`date` datetime NOT NULL,
-`type` varchar(60) NOT NULL,
-`message` text NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL,
-`category` varchar(180) NOT NULL
+    `log_id` bigint(11) UNSIGNED NOT NULL,
+    `date` datetime NOT NULL,
+    `type` varchar(60) NOT NULL,
+    `message` text NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `category` varchar(180) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -68,18 +68,18 @@ CREATE TABLE `app_messagelog` (
 --
 
 CREATE TABLE `app_messaging` (
-`message_id` bigint(11) UNSIGNED NOT NULL,
-`in_reply_to` bigint(11) UNSIGNED DEFAULT NULL,
-`from_user` int(11) UNSIGNED NOT NULL,
-`to_user` int(11) UNSIGNED NOT NULL,
-`message` text NOT NULL,
-`priority` varchar(60) NOT NULL DEFAULT 'normal',
-`date_sent` datetime NOT NULL,
-`date_received` datetime DEFAULT NULL,
-`date_responded` datetime DEFAULT NULL,
-`response` text DEFAULT NULL,
-`custom_data` text DEFAULT NULL,
-`lock_id` bigint(11) UNSIGNED DEFAULT NULL
+    `message_id` bigint(11) UNSIGNED NOT NULL,
+    `in_reply_to` bigint(11) UNSIGNED DEFAULT NULL,
+    `from_user` int(11) UNSIGNED NOT NULL,
+    `to_user` int(11) UNSIGNED NOT NULL,
+    `message` text NOT NULL,
+    `priority` varchar(60) NOT NULL DEFAULT 'normal',
+    `date_sent` datetime NOT NULL,
+    `date_received` datetime DEFAULT NULL,
+    `date_responded` datetime DEFAULT NULL,
+    `response` text DEFAULT NULL,
+    `custom_data` text DEFAULT NULL,
+    `lock_id` bigint(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -89,22 +89,22 @@ CREATE TABLE `app_messaging` (
 --
 
 CREATE TABLE `app_news` (
-`news_id` int(11) UNSIGNED NOT NULL,
-`parent_news_id` int(11) UNSIGNED DEFAULT NULL,
-`news_type` varchar(60) NOT NULL,
-`label` varchar(120) NOT NULL,
-`author` int(11) UNSIGNED NOT NULL,
-`locale` varchar(5) NOT NULL,
-`status` varchar(20) NOT NULL DEFAULT 'draft',
-`synopsis` text NOT NULL DEFAULT '',
-`article` mediumtext NOT NULL DEFAULT '',
-`date_created` datetime NOT NULL,
-`date_modified` datetime NOT NULL,
-`criticality` varchar(60) DEFAULT NULL COMMENT 'Used for alerts.',
-`scheduled_from_date` datetime DEFAULT NULL,
-`scheduled_to_date` datetime DEFAULT NULL,
-`requires_receipt` enum('yes','no') NOT NULL DEFAULT 'no' COMMENT 'Used for alerts.',
-`views` int(11) UNSIGNED NOT NULL DEFAULT 0
+    `news_id` int(11) UNSIGNED NOT NULL,
+    `parent_news_id` int(11) UNSIGNED DEFAULT NULL,
+    `news_type` varchar(60) NOT NULL,
+    `label` varchar(120) NOT NULL,
+    `author` int(11) UNSIGNED NOT NULL,
+    `locale` varchar(5) NOT NULL,
+    `status` varchar(20) NOT NULL DEFAULT 'draft',
+    `synopsis` text NOT NULL DEFAULT '',
+    `article` mediumtext NOT NULL DEFAULT '',
+    `date_created` datetime NOT NULL,
+    `date_modified` datetime NOT NULL,
+    `criticality` varchar(60) DEFAULT NULL COMMENT 'Used for alerts.',
+    `scheduled_from_date` datetime DEFAULT NULL,
+    `scheduled_to_date` datetime DEFAULT NULL,
+    `requires_receipt` enum('yes','no') NOT NULL DEFAULT 'no' COMMENT 'Used for alerts.',
+    `views` int(11) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -114,8 +114,8 @@ CREATE TABLE `app_news` (
 --
 
 CREATE TABLE `app_news_categories` (
-`news_category_id` int(11) UNSIGNED NOT NULL,
-`label` varchar(160) NOT NULL
+     `news_category_id` int(11) UNSIGNED NOT NULL,
+     `label` varchar(160) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -125,8 +125,8 @@ CREATE TABLE `app_news_categories` (
 --
 
 CREATE TABLE `app_news_entry_categories` (
-`news_id` int(11) UNSIGNED NOT NULL,
-`news_category_id` int(11) UNSIGNED NOT NULL
+     `news_id` int(11) UNSIGNED NOT NULL,
+     `news_category_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -136,9 +136,9 @@ CREATE TABLE `app_news_entry_categories` (
 --
 
 CREATE TABLE `app_news_reactions` (
-`reaction_id` int(11) UNSIGNED NOT NULL,
-`label` varchar(60) NOT NULL,
-`emoji` varchar(16) NOT NULL
+    `reaction_id` int(11) UNSIGNED NOT NULL,
+    `label` varchar(60) NOT NULL,
+    `emoji` varchar(16) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -148,10 +148,10 @@ CREATE TABLE `app_news_reactions` (
 --
 
 CREATE TABLE `app_news_related` (
-`news_id` int(11) UNSIGNED NOT NULL,
-`related_news_id` int(11) UNSIGNED NOT NULL,
-`relation_type` varchar(160) NOT NULL,
-`relation_params` text NOT NULL COMMENT 'JSON configuration.'
+    `news_id` int(11) UNSIGNED NOT NULL,
+    `related_news_id` int(11) UNSIGNED NOT NULL,
+    `relation_type` varchar(160) NOT NULL,
+    `relation_params` text NOT NULL COMMENT 'JSON configuration.'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -161,9 +161,9 @@ CREATE TABLE `app_news_related` (
 --
 
 CREATE TABLE `app_news_user_reactions` (
-`news_id` int(11) UNSIGNED NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL,
-`reaction_id` int(11) UNSIGNED NOT NULL
+    `news_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `reaction_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -173,8 +173,8 @@ CREATE TABLE `app_news_user_reactions` (
 --
 
 CREATE TABLE `app_news_user_receipts` (
-`news_id` int(11) UNSIGNED NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL
+    `news_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -184,13 +184,13 @@ CREATE TABLE `app_news_user_receipts` (
 --
 
 CREATE TABLE `app_ratings` (
-`rating_id` int(11) UNSIGNED NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL,
-`rating_screen_id` int(11) UNSIGNED NOT NULL,
-`date` datetime NOT NULL,
-`rating` int(11) NOT NULL,
-`comments` text NOT NULL,
-`app_version` varchar(60) NOT NULL
+    `rating_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `rating_screen_id` int(11) UNSIGNED NOT NULL,
+    `date` datetime NOT NULL,
+    `rating` int(11) NOT NULL,
+    `comments` text NOT NULL,
+    `app_version` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='Stores user ratings for application screens.';
 
 -- --------------------------------------------------------
@@ -200,11 +200,11 @@ CREATE TABLE `app_ratings` (
 --
 
 CREATE TABLE `app_ratings_screens` (
-`rating_screen_id` int(11) UNSIGNED NOT NULL,
-`hash` varchar(32) NOT NULL,
-`dispatcher` varchar(250) NOT NULL,
-`path` varchar(250) NOT NULL,
-`params` text NOT NULL
+     `rating_screen_id` int(11) UNSIGNED NOT NULL,
+     `hash` varchar(32) NOT NULL,
+     `dispatcher` varchar(250) NOT NULL,
+     `path` varchar(250) NOT NULL,
+     `params` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='Unique application screens rated by users';
 
 -- --------------------------------------------------------
@@ -214,11 +214,10 @@ CREATE TABLE `app_ratings_screens` (
 --
 
 CREATE TABLE `app_settings` (
-`data_key` varchar(80) NOT NULL,
-`data_value` mediumtext NOT NULL,
-`data_role` enum('cache','persistent') NOT NULL DEFAULT 'cache'
+    `data_key` varchar(80) NOT NULL,
+    `data_value` mediumtext NOT NULL,
+    `data_role` enum('cache','persistent') NOT NULL DEFAULT 'cache'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
-
 
 -- --------------------------------------------------------
 
@@ -227,9 +226,9 @@ CREATE TABLE `app_settings` (
 --
 
 CREATE TABLE `countries` (
-`country_id` int(11) UNSIGNED NOT NULL,
-`iso` varchar(2) NOT NULL,
-`label` varchar(180) NOT NULL
+     `country_id` int(11) UNSIGNED NOT NULL,
+     `iso` varchar(2) NOT NULL,
+     `label` varchar(180) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='Cache for Editor countries';
 
 --
@@ -237,18 +236,18 @@ CREATE TABLE `countries` (
 --
 
 INSERT INTO `countries` (`country_id`, `iso`, `label`) VALUES
-(1, 'de', 'Germany'),
-(2, 'fr', 'France'),
-(3, 'es', 'Spain'),
-(4, 'uk', 'United Kingdom'),
-(5, 'pl', 'Poland'),
-(6, 'it', 'Italy'),
-(7, 'us', 'United States'),
-(8, 'ro', 'Romania'),
-(9, 'ca', 'Canada'),
-(10, 'at', 'Austria'),
-(11, 'mx', 'Mexico'),
-(9999, 'zz', 'Country-independent');
+    (1, 'de', 'Germany'),
+    (2, 'fr', 'France'),
+    (3, 'es', 'Spain'),
+    (4, 'uk', 'United Kingdom'),
+    (5, 'pl', 'Poland'),
+    (6, 'it', 'Italy'),
+    (7, 'us', 'United States'),
+    (8, 'ro', 'Romania'),
+    (9, 'ca', 'Canada'),
+    (10, 'at', 'Austria'),
+    (11, 'mx', 'Mexico'),
+    (9999, 'zz', 'Country-independent');
 
 -- --------------------------------------------------------
 
@@ -257,7 +256,7 @@ INSERT INTO `countries` (`country_id`, `iso`, `label`) VALUES
 --
 
 CREATE TABLE `custom_properties` (
-`property_id` int(11) UNSIGNED NOT NULL
+    `property_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -267,15 +266,15 @@ CREATE TABLE `custom_properties` (
 --
 
 CREATE TABLE `custom_properties_data` (
-`property_id` int(11) UNSIGNED NOT NULL,
-`owner_type` varchar(250) NOT NULL,
-`owner_key` varchar(250) NOT NULL,
-`name` varchar(180) NOT NULL,
-`is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
-`value` text NOT NULL,
-`label` varchar(180) NOT NULL,
-`default_value` text NOT NULL,
-`preset_id` int(11) UNSIGNED DEFAULT NULL
+    `property_id` int(11) UNSIGNED NOT NULL,
+    `owner_type` varchar(250) NOT NULL,
+    `owner_key` varchar(250) NOT NULL,
+    `name` varchar(180) NOT NULL,
+    `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
+    `value` text NOT NULL,
+    `label` varchar(180) NOT NULL,
+    `default_value` text NOT NULL,
+    `preset_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -285,13 +284,13 @@ CREATE TABLE `custom_properties_data` (
 --
 
 CREATE TABLE `custom_properties_presets` (
-`preset_id` int(11) UNSIGNED NOT NULL,
-`owner_type` varchar(250) NOT NULL,
-`editable` enum('yes','no') NOT NULL DEFAULT 'yes',
-`name` varchar(180) NOT NULL,
-`is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
-`label` varchar(180) NOT NULL,
-`default_value` text NOT NULL
+     `preset_id` int(11) UNSIGNED NOT NULL,
+     `owner_type` varchar(250) NOT NULL,
+     `editable` enum('yes','no') NOT NULL DEFAULT 'yes',
+     `name` varchar(180) NOT NULL,
+     `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
+     `label` varchar(180) NOT NULL,
+     `default_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -301,13 +300,13 @@ CREATE TABLE `custom_properties_presets` (
 --
 
 CREATE TABLE `feedback` (
-`feedback_id` int(11) NOT NULL,
-`user_id` int(11) NOT NULL,
-`date` datetime NOT NULL,
-`feedback` text NOT NULL,
-`request_params` text NOT NULL,
-`feedback_scope` varchar(40) NOT NULL DEFAULT 'application',
-`feedback_type` varchar(40) NOT NULL
+    `feedback_id` int(11) NOT NULL,
+    `user_id` int(11) NOT NULL,
+    `date` datetime NOT NULL,
+    `feedback` text NOT NULL,
+    `request_params` text NOT NULL,
+    `feedback_scope` varchar(40) NOT NULL DEFAULT 'application',
+    `feedback_type` varchar(40) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -317,11 +316,11 @@ CREATE TABLE `feedback` (
 --
 
 CREATE TABLE `known_users` (
-`user_id` int(11) UNSIGNED NOT NULL,
-`foreign_id` varchar(250) NOT NULL,
-`firstname` varchar(250) NOT NULL,
-`lastname` varchar(250) NOT NULL,
-`email` varchar(254) NOT NULL
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `foreign_id` varchar(250) NOT NULL,
+    `firstname` varchar(250) NOT NULL,
+    `lastname` varchar(250) NOT NULL,
+    `email` varchar(254) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -329,8 +328,8 @@ CREATE TABLE `known_users` (
 --
 
 INSERT INTO `known_users` (`user_id`, `foreign_id`, `firstname`, `lastname`, `email`) VALUES
-(1, '__system', 'Application Framework', 'Application', 'system@app-framework.ui'),
-(2, '__dummy', 'Dummy', 'User', 'someone@app-framework.ui');
+    (1, '__system', 'Application Framework', 'Application', 'system@app-framework.ui'),
+    (2, '__dummy', 'Dummy', 'User', 'someone@app-framework.ui');
 
 -- --------------------------------------------------------
 
@@ -339,7 +338,7 @@ INSERT INTO `known_users` (`user_id`, `foreign_id`, `firstname`, `lastname`, `em
 --
 
 CREATE TABLE `locales_application` (
-`locale_name` varchar(5) NOT NULL
+     `locale_name` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -349,7 +348,7 @@ CREATE TABLE `locales_application` (
 --
 
 CREATE TABLE `locales_content` (
-`locale_name` varchar(5) NOT NULL
+     `locale_name` varchar(5) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -359,15 +358,15 @@ CREATE TABLE `locales_content` (
 --
 
 CREATE TABLE `media` (
-`media_id` int(11) UNSIGNED NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL,
-`media_date_added` datetime NOT NULL,
-`media_type` varchar(100) NOT NULL,
-`media_name` varchar(240) NOT NULL,
-`media_extension` varchar(20) NOT NULL,
-`file_size` int(11) UNSIGNED NOT NULL DEFAULT 0,
-`keywords` varchar(500) NOT NULL DEFAULT '',
-`description` varchar(1200) NOT NULL DEFAULT ''
+     `media_id` int(11) UNSIGNED NOT NULL,
+     `user_id` int(11) UNSIGNED NOT NULL,
+     `media_date_added` datetime NOT NULL,
+     `media_type` varchar(100) NOT NULL,
+     `media_name` varchar(240) NOT NULL,
+     `media_extension` varchar(20) NOT NULL,
+     `file_size` int(11) UNSIGNED NOT NULL DEFAULT 0,
+     `keywords` varchar(500) NOT NULL DEFAULT '',
+     `description` varchar(1200) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -377,11 +376,60 @@ CREATE TABLE `media` (
 --
 
 CREATE TABLE `media_configurations` (
-`config_id` int(11) UNSIGNED NOT NULL,
-`type_id` varchar(60) NOT NULL,
-`config_key` varchar(32) NOT NULL,
-`config` text NOT NULL
+    `config_id` int(11) UNSIGNED NOT NULL,
+    `type_id` varchar(60) NOT NULL,
+    `config_key` varchar(32) NOT NULL,
+    `config` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revisionables`
+--
+
+CREATE TABLE `revisionables` (
+    `revisionable_id` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revisionables_changelog`
+--
+
+CREATE TABLE `revisionables_changelog` (
+    `changelog_id` int(11) UNSIGNED NOT NULL,
+    `revisionable_id` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revisionables_current_revisions`
+--
+
+CREATE TABLE `revisionables_current_revisions` (
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `current_revision` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revisionables_revisions`
+--
+
+CREATE TABLE `revisionables_revisions` (
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `revisionable_revision` int(11) UNSIGNED NOT NULL,
+    `pretty_revision` int(11) UNSIGNED NOT NULL,
+    `label` varchar(160) NOT NULL,
+    `state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
+    `date` datetime NOT NULL,
+    `author` int(11) UNSIGNED NOT NULL,
+    `comments` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -390,9 +438,9 @@ CREATE TABLE `media_configurations` (
 --
 
 CREATE TABLE `test_records` (
-`record_id` int(11) UNSIGNED NOT NULL,
-`label` varchar(180) NOT NULL,
-`alias` varchar(160) NOT NULL
+    `record_id` int(11) UNSIGNED NOT NULL,
+    `label` varchar(180) NOT NULL,
+    `alias` varchar(160) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -402,9 +450,9 @@ CREATE TABLE `test_records` (
 --
 
 CREATE TABLE `test_records_data` (
-`record_id` int(11) UNSIGNED NOT NULL,
-`name` varchar(250) NOT NULL,
-`value` mediumtext NOT NULL
+    `record_id` int(11) UNSIGNED NOT NULL,
+    `name` varchar(250) NOT NULL,
+    `value` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -414,12 +462,12 @@ CREATE TABLE `test_records_data` (
 --
 
 CREATE TABLE `uploads` (
-`upload_id` int(11) UNSIGNED NOT NULL,
-`user_id` int(11) UNSIGNED NOT NULL,
-`upload_date` datetime NOT NULL,
-`upload_name` varchar(240) NOT NULL,
-`upload_extension` varchar(20) NOT NULL,
-`media_id` int(11) UNSIGNED DEFAULT NULL
+    `upload_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `upload_date` datetime NOT NULL,
+    `upload_name` varchar(240) NOT NULL,
+    `upload_extension` varchar(20) NOT NULL,
+    `media_id` int(11) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -429,8 +477,8 @@ CREATE TABLE `uploads` (
 --
 
 CREATE TABLE `user_emails` (
-`user_id` int(11) UNSIGNED NOT NULL,
-`email` varchar(255) NOT NULL
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `email` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=COMPACT;
 
 -- --------------------------------------------------------
@@ -440,9 +488,9 @@ CREATE TABLE `user_emails` (
 --
 
 CREATE TABLE `user_settings` (
-`user_id` int(11) UNSIGNED NOT NULL,
-`setting_name` varchar(180) NOT NULL,
-`setting_value` text NOT NULL
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `setting_name` varchar(180) NOT NULL,
+    `setting_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -592,8 +640,7 @@ ALTER TABLE `app_settings`
 --
 ALTER TABLE `countries`
     ADD PRIMARY KEY (`country_id`),
-    ADD KEY `iso` (`iso`),
-    ADD UNIQUE(`iso`);
+    ADD UNIQUE KEY `iso` (`iso`);
 
 --
 -- Indexes for table `custom_properties`
@@ -663,6 +710,38 @@ ALTER TABLE `media`
 ALTER TABLE `media_configurations`
     ADD PRIMARY KEY (`config_id`),
     ADD KEY `type_id` (`type_id`,`config_key`);
+
+--
+-- Indexes for table `revisionables`
+--
+ALTER TABLE `revisionables`
+    ADD PRIMARY KEY (`revisionable_id`);
+
+--
+-- Indexes for table `revisionables_changelog`
+--
+ALTER TABLE `revisionables_changelog`
+    ADD PRIMARY KEY (`changelog_id`),
+    ADD KEY `revisionable_id` (`revisionable_id`);
+
+--
+-- Indexes for table `revisionables_current_revisions`
+--
+ALTER TABLE `revisionables_current_revisions`
+    ADD KEY `revisionable_id` (`revisionable_id`),
+    ADD KEY `revisionable_revision` (`current_revision`);
+
+--
+-- Indexes for table `revisionables_revisions`
+--
+ALTER TABLE `revisionables_revisions`
+    ADD PRIMARY KEY (`revisionable_revision`),
+    ADD KEY `revisionable_id` (`revisionable_id`),
+    ADD KEY `label` (`label`),
+    ADD KEY `state` (`state`),
+    ADD KEY `date` (`date`),
+    ADD KEY `author` (`author`),
+    ADD KEY `pretty_revision` (`pretty_revision`);
 
 --
 -- Indexes for table `test_records`
@@ -798,6 +877,24 @@ ALTER TABLE `media_configurations`
     MODIFY `config_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `revisionables`
+--
+ALTER TABLE `revisionables`
+    MODIFY `revisionable_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `revisionables_changelog`
+--
+ALTER TABLE `revisionables_changelog`
+    MODIFY `changelog_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `revisionables_revisions`
+--
+ALTER TABLE `revisionables_revisions`
+    MODIFY `revisionable_revision` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `test_records`
 --
 ALTER TABLE `test_records`
@@ -890,6 +987,20 @@ ALTER TABLE `app_ratings`
 --
 ALTER TABLE `media`
     ADD CONSTRAINT `media_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `revisionables_current_revisions`
+--
+ALTER TABLE `revisionables_current_revisions`
+    ADD CONSTRAINT `revisionables_current_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `revisionables_current_revisions_ibfk_2` FOREIGN KEY (`current_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `revisionables_revisions`
+--
+ALTER TABLE `revisionables_revisions`
+    ADD CONSTRAINT `revisionables_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `revisionables_revisions_ibfk_2` FOREIGN KEY (`author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `test_records_data`
