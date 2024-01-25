@@ -1,26 +1,30 @@
 <?php
 
-class Application_RevisionableCollection_FilterSettings_StateFilter
+declare(strict_types=1);
+
+use Application\FilterSettings\SettingDef;
+
+/**
+ * @property Application_RevisionableCollection_FilterSettings $settings
+ */
+class Application_RevisionableCollection_FilterSettings_StateFilter extends SettingDef
 {
     public const ERROR_INVALID_STATE_IN_PRESET = 16001;
     
-    /**
-     * @var Application_RevisionableCollection_FilterSettings
-     */
-    protected $settings;
+    protected Application_RevisionableCollection $collection;
     
-    /**
-     * @var Application_RevisionableCollection
-     */
-    protected $collection;
+    protected array $states = array();
     
-    protected $states = array();
-    
-    protected $presets = array();
+    protected array $presets = array();
     
     public function __construct(Application_RevisionableCollection_FilterSettings $settings)
     {
-        $this->settings = $settings;
+        parent::__construct($settings, Application_RevisionableCollection_FilterSettings::FILTER_STATE, t('State'), 'any');
+
+        $this
+            ->setInjectCallback(Closure::fromCallable(array($this, 'injectElement')))
+            ->setConfigureCallback(Closure::fromCallable(array($this, 'configure')));
+
         $this->collection = $settings->getCollection();
         
         $states = $this->collection->createDummyRecord()->getStateHandler()->getStates();
@@ -39,8 +43,9 @@ class Application_RevisionableCollection_FilterSettings_StateFilter
      * @param string $presetLabel
      * @param string[] $includeStates State names to limit the list to. Leave empty to select all states.
      * @param string[] $excludeStates
+     * @return $this
      */
-    public function addPreset($presetName, $presetLabel, $includeStates=array(), $excludeStates=array())
+    public function addPreset(string $presetName, string $presetLabel, array $includeStates=array(), array $excludeStates=array()) : self
     {
         $this->presets[$presetName] = array(
             'label' => $presetLabel,
@@ -55,7 +60,7 @@ class Application_RevisionableCollection_FilterSettings_StateFilter
         return $this;
     }
     
-    protected function requireState($stateName)
+    protected function requireState(string $stateName) : void
     {
         if(isset($this->states[$stateName])) {
             return;
@@ -73,7 +78,7 @@ class Application_RevisionableCollection_FilterSettings_StateFilter
             );
     }
     
-    public function configure(Application_RevisionableCollection_FilterCriteria $filterCriteria)
+    public function configure() : self
     {
         $value = $this->settings->getSetting('state');
         
@@ -94,6 +99,8 @@ class Application_RevisionableCollection_FilterSettings_StateFilter
         {
             $filterCriteria->selectState($value);
         }
+
+        return $this;
     }
     
     /**
@@ -102,9 +109,9 @@ class Application_RevisionableCollection_FilterSettings_StateFilter
      * @param HTML_QuickForm2_Container $container
      * @return HTML_QuickForm2_Element_Select
      */
-    public function injectElement(HTML_QuickForm2_Container $container)
+    public function injectElement() : HTML_QuickForm2_Element_Select
     {
-        $element = $this->settings->addElementSelect('state', $container);
+        $element = $this->settings->addElementSelect(Application_RevisionableCollection_FilterSettings::FILTER_STATE);
         
         $presetGroup = $element->addOptgroup(t('Filter presets'));
         foreach($this->presets as $name => $def) {
