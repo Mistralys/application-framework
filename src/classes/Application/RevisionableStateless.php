@@ -7,6 +7,8 @@
  * @see Application_RevisionableStateless
  */
 
+use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionableStorageException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 
@@ -32,6 +34,7 @@ abstract class Application_RevisionableStateless
     public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
     public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
     public const ERROR_CHANGELOG_FEATURE_NOT_IMPLEMENTED = 68437006;
+    public const ERROR_STORAGE_PART_ALREADY_REGISTERED = 68437007;
 
     use Application_Traits_LockableWithManager;
     use Application_Traits_Disposable;
@@ -59,6 +62,7 @@ abstract class Application_RevisionableStateless
         $this->instanceID = self::$instanceCounter;
 
         $this->initRevisionEvents();
+        $this->initStorageParts();
 
         $this->init();
         $this->initialized = true;
@@ -67,6 +71,17 @@ abstract class Application_RevisionableStateless
     protected function init()
     {
         
+    }
+
+    protected function setRequiresNewRevision(string $reason) : self
+    {
+        if ($this->requiresNewRevision === true) {
+            return $this;
+        }
+
+        $this->log('Transaction | New revision required: %s', $reason);
+        $this->requiresNewRevision = true;
+        return $this;
     }
     
    /**
@@ -321,15 +336,17 @@ abstract class Application_RevisionableStateless
     
    /**
     * Starts a new transaction with the currently authenticated
-    * user as owner of the transaction.
+    * user as the owner of the transaction.
     * 
-    * @param string $comments
+    * @param string|NULL $comments
+    * @return $this
     * @see startTransaction()
     */
-    public function startCurrentUserTransaction($comments = '')
+    public function startCurrentUserTransaction(?string $comments = null) : self
     {
         $user = Application::getUser();
-        $this->startTransaction($user->getID(), $user->getName(), $comments);
+
+        return $this->startTransaction($user->getID(), $user->getName(), $comments);
     }
 
     /**
@@ -369,7 +386,9 @@ abstract class Application_RevisionableStateless
         // been non-structural changes that are not handled automatically.
         $this->revisions->writeRevdata();
 
-        if (!$this->requiresNewRevision)
+        $requiresNewRevision = $this->requiresNewRevision;
+
+        if (!$requiresNewRevision)
         {
             $this->log('No new revision was required in the transaction.');
             $this->log('Replacing the existing revision with the temporary revision, keeping the original revision author.');
@@ -411,17 +430,19 @@ abstract class Application_RevisionableStateless
         $this->log(sprintf('Comments: [%s].', $this->getRevisionComments()));
         $this->log(sprintf('Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s')));
         
-        return $this->requiresNewRevision;
+        return $requiresNewRevision;
     }
 
     /**
      * Rolls back any new revision added by a transaction. Has no
      * effect if the transaction did not add a new revision.
+     *
+     * @return $this
      */
-    public function rollBackTransaction()
+    public function rollBackTransaction() : self
     {
         if (!$this->transactionActive || !isset($this->lastTransactionAddedRevision)) {
-            return;
+            return $this;
         }
 
         $this->log('Rolling back the transaction.');
@@ -430,6 +451,8 @@ abstract class Application_RevisionableStateless
         $this->lastTransactionAddedRevision = null;
         $this->transactionActive = false;
         $this->revisions->selectLatest();
+
+        return $this;
     }
 
     /**
@@ -446,12 +469,7 @@ abstract class Application_RevisionableStateless
      */
     protected function changesMade()
     {
-        if ($this->requiresNewRevision === true) {
-            return;
-        }
-
-        $this->requiresNewRevision = true;
-        $this->log('A change was made.');
+        $this->setRequiresNewRevision('A change was made.');
     }
 
     /**
@@ -472,11 +490,12 @@ abstract class Application_RevisionableStateless
      * @see hasChanges()
      * @see changesMade()
      */
-    protected function resetChanges()
+    protected function resetChanges() : void
     {
         $this->log('Resetting all internal changes.');
         
-        $this->requiresNewRevision = false;
+        $this->setRequiresNewRevision('Reset internal changes');
+
         $this->changedParts = array();
     }
 
@@ -646,7 +665,7 @@ abstract class Application_RevisionableStateless
      * @see _save()
      * @see saveParts()
      */
-    public function save()
+    public function save() : bool
     {
         $this->log('SAVE!');
         
@@ -661,7 +680,53 @@ abstract class Application_RevisionableStateless
 
         return true;
     }
-    
+
+    /**
+     * Used to register all data sets (parts) that must be
+     * saved during transactions. The record must handle
+     * applying any changes itself in these methods.
+     *
+     * Use the {@see self::registerStoragePart()} method to
+     * register callbacks for each of these parts.
+     *
+     * Changes made to any custom revision fields of the
+     * record must be saved this way. Typically, this part
+     * is called <code>settings</code>.
+     *
+     * @return void
+     */
+    abstract protected function initStorageParts() : void;
+
+    /**
+     * @var array<string, callable>
+     */
+    private array $storageParts = array();
+
+    /**
+     * Registers a data storage part that must be saved
+     * whenever a transaction is active.
+     *
+     * @param string $name
+     * @param callable $callback
+     * @return void
+     * @throws RevisionableStorageException
+     */
+    protected function registerStoragePart(string $name, callable $callback) : void
+    {
+        if(isset($this->storageParts[$name])) {
+            throw new RevisionableStorageException(
+                'Cannot overwrite existing storage part',
+                sprintf(
+                    'The storage part [%s] has already been registered, and may not be overwritten.',
+                    $name
+                ),
+                self::ERROR_STORAGE_PART_ALREADY_REGISTERED
+            );
+        }
+
+        $this->storageParts[$name] = $callback;
+    }
+
    /**
     * Saves all individual parts of the revisionable item
     * that have been marked as changed using the {@link setPartChanged()}
@@ -670,40 +735,48 @@ abstract class Application_RevisionableStateless
     * 
     * @throws Application_Exception
     */
-    protected function saveParts()
+    protected function saveParts() : void
     {
-        $this->log('Saving parts that have been set as changed.');
+        $this->log('StorageParts | Saving parts that have been set as changed.');
         
-        foreach($this->changedParts as $part => $changed) {
-            if(!$changed) {
-                continue;
+        foreach($this->changedParts as $part => $changed)
+        {
+            if($changed) {
+                $this->log('StorageParts | [%s] | Has changes, saving...', $part);
+                $this->savePart($part);
+            } else {
+                $this->log('StorageParts | [%s] | No changes, ignoring.', $part);
             }
-            
-            $method = '_savePart_'.$part;
-            if(!method_exists($this, $method)) {
-                throw new Application_Exception(
-                    'Unknown revisionable part',
-                    sprintf(
-                        'Tried saving part [%s], but the revisionable does not implement the [%s] method.',
-                        $part,
-                        $method    
-                    ),
-                    self::ERROR_MISSING_PART_SAVE_METHOD
-                );
-            }
-
-            $this->log(sprintf('Saving part [%s].', $part));
-            $this->$method();
         }
         
-        $this->log('Saving parts done.');
+        $this->log('StorageParts | Done.');
+    }
+
+    private function savePart(string $name) : void
+    {
+        if(isset($this->storageParts[$name])) {
+            $callback = $this->storageParts[$name];
+            $callback();
+            return;
+        }
+
+        throw new RevisionableException(
+            'Unknown revisionable storage part',
+            sprintf(
+                'Tried saving part [%s], but no callback has been registered for it.'.PHP_EOL.
+                'Parts can be registered with the [%s] method.',
+                $name,
+                array($this, 'registerStoragePart')[1].'()'
+            ),
+            self::ERROR_MISSING_PART_SAVE_METHOD
+        );
     }
 
     /**
      * Object-specific save method: this is where your class
      * must implement its save mechanism.
      */
-    abstract protected function _save();
+    abstract protected function _save() : void;
 
    /**
     * This is called by the revisionable storage when a new
@@ -741,38 +814,40 @@ abstract class Application_RevisionableStateless
     }
     
     protected $changedParts = array();
-    
-   /**
-    * Sets that the specified part of the revisionable item has
-    * been modified, to keep track of granular changes. Sets the
-    * global change flag as well.
-    * 
-    * Example:
-    * 
-    * <pre>
-    * setPartChanged('properties');
-    * </pre>
-    * 
-    * Then, when saving, it is possible to check whether properties
-    * have been modified:
-    * 
-    * <pre>
-    * if($this->hasPartChanged('properties')) {
-    *     // save properties
-    * }
-    * </pre>
-    * 
-    * <b>WARNING:</b> The revisionable has to implement the _savePart_xxxx
-    * method if you use this (where xxxx is the part name), to save
-    * the data related to the part when the save() method is called. 
-    * 
-    * @param string $part
-    * @param boolean $structural (Unused for stateless revisionables)
-    */
-    protected function setPartChanged($part, $structural=false)
+
+    /**
+     * Sets that the specified part of the revisionable item has
+     * been modified, to keep track of granular changes. Sets the
+     * global change flag as well.
+     *
+     * Example:
+     *
+     * <pre>
+     * setPartChanged('properties');
+     * </pre>
+     *
+     * Then, when saving, it is possible to check whether properties
+     * have been modified:
+     *
+     * <pre>
+     * if($this->hasPartChanged('properties')) {
+     *     // save properties
+     * }
+     * </pre>
+     *
+     * <b>WARNING:</b> The revisionable has to implement the _savePart_xxxx
+     * method if you use this (where xxxx is the part name), to save
+     * the data related to the part when the save() method is called.
+     *
+     * @param string $part
+     * @param boolean $structural (Unused for stateless revisionables)
+     * @return $this
+     * @throws RevisionableException
+     */
+    protected function setPartChanged(string $part, bool $structural=false) : self
     {
         if (!$this->isTransactionStarted()) {
-            throw new Application_Exception(
+            throw new RevisionableException(
                 'No transaction started',
                 sprintf(
                     '%s [%s v%s] instance [%s]: Tried to set part [%s] as modified without starting a transaction.',
@@ -787,14 +862,16 @@ abstract class Application_RevisionableStateless
         }
         
         if(isset($this->changedParts[$part]) && $this->changedParts[$part]===true) {
-            return;
+            return $this;
         }
         
         $this->changesMade();
         
         $this->changedParts[$part] = true;
-        
-        $this->log(sprintf('Part [%s] has changed.', $part));
+
+        $this->log('Transaction | Part [%s] has changed.', $part);
+
+        return $this;
     }
     
    /**
@@ -1083,7 +1160,7 @@ abstract class Application_RevisionableStateless
     * @param array $changelogData Any data that should be stored alongside the changelog entry.
     * @return boolean Whether the value has changed, and a save will be needed.
     */
-    private function _setRevisionKey(string $type, string $name, $value, string $part, bool $structural, string $changelogID='', array $changelogData=array())
+    private function _setRevisionKey(string $type, string $name, $value, string $part, bool $structural, string $changelogID='', array $changelogData=array()) : bool
     {
         $this->requireTransaction();
         
@@ -1098,7 +1175,9 @@ abstract class Application_RevisionableStateless
         if(AppUtils\ConvertHelper::areVariablesEqual($old, $value)) {
             return false;
         }
-        
+
+        $this->log('Transaction | Key [%s] has changed.', $name);
+
         if($value === '') { $value = null; }
         if($old === '') { $old = null; }
         
@@ -1166,9 +1245,12 @@ abstract class Application_RevisionableStateless
    /**
     * Ensures that a transaction is active for operations that
     * may only be done within a transaction.
+    *
+    * @return $this
     */
-    public function requireTransaction()
+    public function requireTransaction() : self
     {
+        return $this;
     }
 
     // region: Event handling
