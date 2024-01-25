@@ -115,7 +115,7 @@ interface Application_Revisionable_Interface
     /**
      * Saves the item using whatever storage the item uses.
      */
-    public function save();
+    public function save() : bool;
 
    /**
     * Retrieves the item's primary ID.
