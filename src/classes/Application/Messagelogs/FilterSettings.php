@@ -2,6 +2,7 @@
 
 /**
  * @property Application_Messagelogs $collection
+ * @property Application_Messagelogs_FilterCriteria $filters
  */
 class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
 {
@@ -41,11 +42,6 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
         $this->addElementSearch(array_values($fields), $container);
     }
     
-   /**
-    * @var Application_Messagelogs_FilterCriteria
-    */
-    protected $filters;
-
     /**
      * {@inheritDoc}
      * @see Application_FilterSettings::_configureFilters()
