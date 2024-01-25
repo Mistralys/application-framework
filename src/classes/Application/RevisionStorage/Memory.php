@@ -7,6 +7,8 @@
  * @see Application_RevisionStorage_Memory
  */
 
+use Application\Revisionable\RevisionableException;
+
 /**
  * Utility class for storing revision data: stores data sets
  * by revision number, and allows selecting revisions / switching
@@ -39,7 +41,7 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         return count($this->data);
     }
 
-    public function revisionExists(int $number) : bool
+    public function revisionExists(int $number, bool $forceLiveCheck=false) : bool
     {
         return isset($this->data[$number]);
     }
@@ -136,9 +138,9 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         return $revisions;
     }
     
-    public function getFilterCriteria()
+    public function getFilterCriteria() : Application_FilterCriteria_RevisionableRevisions
     {
-        throw new Application_Exception(
+        throw new RevisionableException(
             'Not implemented',
             'Filter criteria are not available for memory revision storage.',
             self::ERROR_FILTER_CRITERIA_NOT_AVAILABLE
@@ -147,7 +149,7 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
     
     public function copyTo(Application_Revisionable $revisionable) : void
     {
-        throw new Application_Exception(
+        throw new RevisionableException(
             'Not implemented',
             'Copying between revisions in memory is not supported.',
             self::ERROR_COPYTO_NOT_IMPLEMENTED        

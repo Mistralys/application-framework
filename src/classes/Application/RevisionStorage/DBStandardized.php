@@ -125,7 +125,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         );
 
         if (!is_array($data) || !isset($data[$this->idColumn])) {
-            throw new Application_Exception(
+             throw new Application_Exception(
                 'Could not load revision',
                 sprintf(
                     'Tried loading revision [%1$s] for revisionable [%2$s].',
@@ -207,9 +207,9 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     
     protected array $cacheKnownRevisions = array();
 
-    public function revisionExists(int $number) : bool
+    public function revisionExists(int $number, bool $forceLiveCheck=false) : bool
     {
-        if (isset($this->cacheKnownRevisions[$number])) {
+        if (!$forceLiveCheck && isset($this->cacheKnownRevisions[$number])) {
             return $this->cacheKnownRevisions[$number];
         }
 
@@ -301,9 +301,15 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         
         $user = Application::getUser();
 
+        $customFields = $this->getNextRevisionData();
+
+        if(!empty($customFields)) {
+            $this->log('Using custom revision fields: [%s].', implode(', ', array_keys($customFields)));
+        }
+
         // retrieves revisionable-specific data in addition
         // to any required static column values.
-        $data = $this->getColumns($this->getNextRevisionData());
+        $data = $this->getColumns($customFields);
         
         $data['author'] = $user->getID();
         $data['date'] = date('Y-m-d H:i:s');
@@ -323,7 +329,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         $this->cacheRevisionCount++;
 
         $this->log(sprintf(
-            'Next revision created with number [%1$s], pretty revision [%2$s].',
+            'Next revision [%1$s] inserted, with pretty revision [%2$s].',
             $number,
             $data['pretty_revision']
         ));
@@ -368,7 +374,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $this->cacheRevisionsList;
     }
     
-    public function getFilterCriteria()
+    public function getFilterCriteria() : Application_FilterCriteria_RevisionableRevisions
     {
         return new Application_FilterCriteria_RevisionableRevisions($this);
     }
