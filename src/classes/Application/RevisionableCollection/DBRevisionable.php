@@ -8,7 +8,10 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const ERROR_INVALID_REVISION_STORAGE = 14702;
-    
+    public const COL_REV_STATE = 'state';
+    public const COL_REV_DATE = 'date';
+    public const COL_REV_AUTHOR = 'author';
+
     protected Application_RevisionableCollection $collection;
     protected int $id;
     protected array $customKeys;
@@ -117,12 +120,12 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         return $this->id;
     }
 
-    protected function _saveWithStateChange()
+    protected function _saveWithStateChange() : void
     {
-        $this->saveRevisionData(array('state'));
+        $this->saveRevisionData(array(self::COL_REV_STATE));
     }
 
-    protected function _save()
+    protected function _save() : void
     {
     }
     
@@ -132,7 +135,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     * 
     * @param string[] $columnNames
     */
-    protected function saveRevisionData($columnNames)
+    protected function saveRevisionData(array $columnNames) : void
     {
         $this->log(sprintf('Saving revision data for keys [%s].', implode(', ', $columnNames)));
         
@@ -153,15 +156,15 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
                     $value = '__ignore_key';
                     break;
                     
-                case 'state':
+                case self::COL_REV_STATE:
                     $value = $this->getStateName();
                     break;
                     
-                case 'date':
+                case self::COL_REV_DATE:
                     $value = $this->getRevisionDate()->format('Y-m-d H:i:s');
                     break;
                     
-                case 'author':
+                case self::COL_REV_AUTHOR:
                     $value = $this->getOwnerID();
                     break;
                 
@@ -212,16 +215,13 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         // existing transaction, we check if we have to 
         // start one automatically or not.
         $this->handleDBTransaction = false;
+
         if(!DBHelper::isTransactionStarted()) {
             $this->handleDBTransaction = true;
             DBHelper::startTransaction();
         }
         
-        $this->log(sprintf('Current state is [%1$s].', $this->getStateName()));
-        
-        parent::startTransaction($newOwnerID, $newOwnerName, $comments);
-
-        return $this;
+        return parent::startTransaction($newOwnerID, $newOwnerName, $comments);
     }
 
     public function endTransaction() : bool
@@ -266,11 +266,17 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         return $result;
     }
 
-    public function rollBackTransaction()
+    /**
+     * @return $this
+     * @throws DBHelper_Exception
+     */
+    public function rollBackTransaction() : self
     {
         parent::rollBackTransaction();
 
         DBHelper::rollbackTransaction();
+
+        return $this;
     }
 
     public function getChangelogTable()
@@ -328,7 +334,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         
         $where = $this->collection->getCampaignKeys();
         $where[$primaryKey] = $this->getID();
-        $where['state'] = $state->getName();
+        $where[self::COL_REV_STATE] = $state->getName();
         
         $query = sprintf(
             "SELECT
