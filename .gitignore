@@ -10,9 +10,13 @@ node_modules/
 .idea/dataSources.xml
 .idea/dataSources/
 /docs/phpstan/cache
+/tests/application/version
+/tests/application/config
 /tests/application/storage/media/
 /tests/application/storage/logs/
 /tests/application/storage/temp/
+/tests/application/tests
+/tools
 tests/application/themes/default/js/localization/cachekey.txt
 tests/application/themes/default/js/localization/md5.min.js
 tests/application/themes/default/js/localization/translator.js
