@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `revisionables` (
-`revisionable_id` int(11) UNSIGNED NOT NULL
+    `revisionable_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -34,8 +34,8 @@ CREATE TABLE `revisionables` (
 --
 
 CREATE TABLE `revisionables_changelog` (
-`changelog_id` int(11) UNSIGNED NOT NULL,
-`revisionable_id` int(11) UNSIGNED NOT NULL
+    `changelog_id` int(11) UNSIGNED NOT NULL,
+    `revisionable_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -45,8 +45,8 @@ CREATE TABLE `revisionables_changelog` (
 --
 
 CREATE TABLE `revisionables_current_revisions` (
-`revisionable_id` int(11) UNSIGNED NOT NULL,
-`current_revision` int(11) UNSIGNED NOT NULL
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `current_revision` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -56,14 +56,15 @@ CREATE TABLE `revisionables_current_revisions` (
 --
 
 CREATE TABLE `revisionables_revisions` (
-`revisionable_id` int(11) UNSIGNED NOT NULL,
-`revisionable_revision` int(11) UNSIGNED NOT NULL,
-`pretty_revision` int(11) UNSIGNED NOT NULL,
-`label` varchar(160) NOT NULL,
-`state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
-`date` datetime NOT NULL,
-`author` int(11) UNSIGNED NOT NULL,
-`comments` text NOT NULL
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `revisionable_revision` int(11) UNSIGNED NOT NULL,
+    `pretty_revision` int(11) UNSIGNED NOT NULL,
+    `label` varchar(160) NOT NULL,
+    `state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
+    `date` datetime NOT NULL,
+    `author` int(11) UNSIGNED NOT NULL,
+    `comments` text NOT NULL,
+    `structural` VARCHAR(400) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

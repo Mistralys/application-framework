@@ -428,7 +428,8 @@ CREATE TABLE `revisionables_revisions` (
     `state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
     `date` datetime NOT NULL,
     `author` int(11) UNSIGNED NOT NULL,
-    `comments` text NOT NULL
+    `comments` text NOT NULL,
+    `structural` VARCHAR(400) NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
