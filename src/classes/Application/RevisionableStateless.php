@@ -111,34 +111,22 @@ abstract class Application_RevisionableStateless
         return $this->revisions->getOwnerName();
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Application_Revisionable_Interface::countRevisions()
-     */
-    public function countRevisions()
+    public function countRevisions() : int
     {
         return $this->revisions->countRevisions();
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Application_Revisionable_Interface::getRevisionComments()
-     */
-    public function getRevisionComments()
+    public function getRevisionComments() : ?string
     {
         return $this->revisions->getComments();
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Application_Revisionable_Interface::getRevisions()
-     */
-    public function getRevisions()
+    public function getRevisions() : array
     {
         return $this->revisions->getRevisions();
     }
     
-    public function getRevision()
+    public function getRevision() : int
     {
         return $this->revisions->getRevision();
     }
@@ -156,15 +144,13 @@ abstract class Application_RevisionableStateless
     
     public function getPrettyRevision() : int
     {
-        return (int)$this->getRevision();
+        return $this->getRevision();
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Application_Revisionable_Interface::selectRevision()
-     * @return Application_RevisionableStateless
+     * @return $this
      */
-    public function selectRevision($number)
+    public function selectRevision(int $number) : self
     {
         $this->revisions->selectRevision($number);
         return $this;
@@ -174,7 +160,7 @@ abstract class Application_RevisionableStateless
      * @return int
      * @throws Application_Exception
      */
-    public function getLatestRevision()
+    public function getLatestRevision() : int
     {
         return $this->revisions->getLatestRevision();
     }
@@ -270,7 +256,7 @@ abstract class Application_RevisionableStateless
         $this->revisions->restoreRevision();
     }
 
-    public function revisionExists($number)
+    public function revisionExists(int $number) : bool
     {
         return $this->revisions->revisionExists($number);
     }
@@ -288,8 +274,9 @@ abstract class Application_RevisionableStateless
      *
      * @see endTransaction()
      * @throws Application_Exception
+     * @return $this
      */
-    public function startTransaction($newOwnerID, $newOwnerName, $comments = '')
+    public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
         $this->log('Starting new transaction.');
 
@@ -302,10 +289,10 @@ abstract class Application_RevisionableStateless
         }
         
         // store the current revision details, in case we need
-        // to restore them later. This is necessary for example
+        // to restore them later. This is necessary, for example,
         // for revisionables with states, since a new revision
         // is automatically created for the current user. In some
-        // cases though, when no state change is needed the owner
+        //  cases, though, when no state change is needed, the owner
         // needs to stay the same. 
         $this->transactionSource = array(
             'author' => $this->getOwnerID(),
@@ -328,6 +315,8 @@ abstract class Application_RevisionableStateless
         $this->revisions->selectRevision($this->transactionTargetRevision);
 
         $this->log('New transaction initialized.');
+
+        return $this;
     }
     
    /**
@@ -364,7 +353,7 @@ abstract class Application_RevisionableStateless
      * @see startTransaction()
      * @return boolean
      */
-    public function endTransaction()
+    public function endTransaction() : bool
     {
         if(!$this->transactionActive) {
             throw new Application_Exception(
@@ -509,17 +498,22 @@ abstract class Application_RevisionableStateless
         return $this->revisions->getFirstRevision();
     }
     
-    public function lockRevision()
+    public function lockRevision() : self
     {
         $this->revisions->lock();
+        return $this;
     }
-    
-    public function unlockRevision()
+
+    /**
+     * @return $this
+     */
+    public function unlockRevision() : self
     {
         $this->revisions->unlock();
+        return $this;
     }
     
-    public function isRevisionLocked()
+    public function isRevisionLocked() : bool
     {
         return $this->revisions->isLocked();
     }
@@ -818,9 +812,9 @@ abstract class Application_RevisionableStateless
         return false;
     }
     
-    protected $revisionableTypeName;
+    protected ?string $revisionableTypeName = null;
     
-    public function getRevisionableTypeName()
+    public function getRevisionableTypeName() : string
     {
         if(!isset($this->revisionableTypeName)) {
             $tokens = explode('_', get_class($this));
@@ -835,7 +829,7 @@ abstract class Application_RevisionableStateless
         return '';
     }
     
-    protected $changelogStringMaxlen = 40;
+    protected int $changelogStringMaxlen = 40;
     
    /**
      * Formats a string for use in changelog text placeholders.
@@ -1046,16 +1040,6 @@ abstract class Application_RevisionableStateless
         return $this->getRevisionableTypeName().'-'.$this->getID();
     }
     
-    public function isExportable() : bool
-    {
-        return false;
-    }
-    
-    public function getExportRevision() : ?int
-    {
-        return null;
-    }
-
     /**
      * Sets a revision key value.
      *

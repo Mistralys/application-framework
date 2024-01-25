@@ -1,18 +1,23 @@
 <?php
 
-require_once 'Application/StateHandler/State.php';
+declare(strict_types=1);
+
+use Application\StateHandler\StateHandlerException;
+use AppUtils\BaseException;
+use function AppUtils\parseVariable;
 
 class Application_StateHandler
 {
     public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14001;
-    
     public const ERROR_DUPLICATE_INITIAL_STATE = 14002;
-    
     public const ERROR_NO_INITIAL_STATE_DEFINED = 14003;
-    
-    protected $states = array();
 
-    protected $item;
+    /**
+     * @var array<string, Application_StateHandler_State>
+     */
+    protected array $states = array();
+
+    protected ?Application_Revisionable_Interface $item = null;
 
     protected ?Application_StateHandler_State $initial = null;
     
@@ -24,13 +29,13 @@ class Application_StateHandler
     /**
      * @param string $stateName
      * @param string $label
-     * @param string $uiType 
+     * @param string|NULL $uiType
      * @param boolean $changesAllowed
      * @param boolean $isInitial
-     * @throws InvalidArgumentException
      * @return Application_StateHandler_State
+     * @throws StateHandlerException
      */
-    public function registerState($stateName, $label, $uiType = null, $changesAllowed=false, $isInitial=false)
+    public function registerState(string $stateName, string $label, ?string $uiType = null, bool $changesAllowed=false, bool $isInitial=false) : Application_StateHandler_State
     {
         if ($this->isStateKnown($stateName)) {
             throw new InvalidArgumentException('Cannot add the same state twice');
@@ -39,7 +44,7 @@ class Application_StateHandler
         $state = new Application_StateHandler_State(
             $stateName, 
             $label, 
-            $uiType, 
+            $uiType ?? Application_StateHandler_State::UI_TYPE_DEFAULT,
             $changesAllowed,
             $isInitial,
             $this, 
@@ -48,7 +53,7 @@ class Application_StateHandler
 
         if($state->isInitial()) {
             if(isset($this->initial)) {
-                throw new Application_Exception(
+                throw new StateHandlerException(
                     'Duplicate initial state defined.',
                     sprintf(
                         'The state [%s] is set as initial state, but the state [%s] is already set as initial. Only one state may be flagged as initial.',
@@ -65,24 +70,29 @@ class Application_StateHandler
         $this->states[$stateName] = $state;
         return $state;
     }
-    
-    public function getInitalState()
+
+    /**
+     * @return Application_StateHandler_State
+     * @throws StateHandlerException
+     * @throws BaseException
+     */
+    public function getInitialState() : Application_StateHandler_State
     {
         if(isset($this->initial)) {
             return $this->initial;
         }
         
-        throw new Application_Exception(
+        throw new StateHandlerException(
             'No initial state defined.',
             sprintf(
                 'No initial state has been defined for the revisionable [%s].',
-                get_class($this->item)
+                parseVariable($this->item)->enableType()->toString()
             ),
             self::ERROR_NO_INITIAL_STATE_DEFINED
         );
     }
 
-    public function isStateKnown($stateName)
+    public function isStateKnown(string $stateName) : bool
     {
         return isset($this->states[$stateName]);
     }
@@ -92,7 +102,7 @@ class Application_StateHandler
      * @throws InvalidArgumentException
      * @return Application_StateHandler_State
      */
-    public function getStateByName($stateName)
+    public function getStateByName($stateName) : Application_StateHandler_State
     {
         if ($stateName instanceof Application_StateHandler_State) {
             return $stateName;
@@ -109,22 +119,26 @@ class Application_StateHandler
      * Retrieves an indexed array with state objects for all available states.
      * @return Application_StateHandler_State[]
      */
-    public function getStates()
+    public function getStates() : array
     {
-        $states = array_values($this->states);
-
-        return $states;
+        return array_values($this->states);
     }
     
     public function __clone()
     {
         $this->item = null;
+
         foreach($this->states as $name => $state) {
             $this->states[$name] = clone $state;
         }
     }
-    
-    public function setRevisionable(Application_Revisionable $revisionable)
+
+    /**
+     * @param Application_Revisionable $revisionable
+     * @return void
+     * @throws StateHandlerException
+     */
+    public function setRevisionable(Application_Revisionable $revisionable) : void
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;
@@ -136,7 +150,7 @@ class Application_StateHandler
         
         // the item can only be null after the state handler was cloned,
         // so ensure that this is not done outside of that context.
-        throw new Application_Exception(
+        throw new StateHandlerException(
             'Cannot replace existing revisionable',
             sprintf(
                 'Cannot switch the state handler\'s revisionable to [%s], it already uses the revisionable [%s].',

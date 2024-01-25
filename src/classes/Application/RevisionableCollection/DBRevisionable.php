@@ -191,22 +191,22 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     * 
     * @return array
     */
-    public function getAdminURLParams()
+    public function getAdminURLParams() : array
     {
         $params = $this->collection->getAdminURLParams();
         $params[$this->collection->getPrimaryKeyName()] = $this->getID();
         return $params;
     }
     
-    protected function getAdminURL($params=array())
+    protected function getAdminURL(array $params=array()) : string
     {
         $params = array_merge($params, $this->getAdminURLParams());
         return Application_Driver::getInstance()->getRequest()->buildURL($params);
     }
     
-    protected $handleDBTransaction = false;
+    protected bool $handleDBTransaction = false;
 
-    public function startTransaction($newOwnerID, $newOwnerName, $comments = '')
+    public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
         // to allow this transaction to be wrapped in an 
         // existing transaction, we check if we have to 
@@ -220,9 +220,11 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         $this->log(sprintf('Current state is [%1$s].', $this->getStateName()));
         
         parent::startTransaction($newOwnerID, $newOwnerName, $comments);
+
+        return $this;
     }
 
-    public function endTransaction()
+    public function endTransaction() : bool
     {
         $this->save();
 
@@ -255,7 +257,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         $this->log('Reloading the revision data.');
         $this->revisions->reload();
 
-        // now that everything's through we can trigger the event.
+        // now that everything's through, we can trigger the event.
         $this->unignoreEvent('TransactionEnded');
         $this->triggerEvent('TransactionEnded');
         
@@ -367,51 +369,5 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     public function getPrettyRevision() : int
     {
         return (int)$this->revisions->getKey('pretty_revision');
-    }
-
-    /**
-     * Retrieves the revisonable's master revision for the export.
-     * Note that this can be empty if the revisionable does not
-     * support this, or none has been selected yet.
-     *
-     * @return int|NULL
-     */
-    public function getExportRevision() : ?int
-    {
-        $table = $this->collection->getRecordExportRevisionsTableName();
-        if(!DBHelper::tableExists($table)) {
-            return null;
-        }
-        
-        $where = $this->collection->getCampaignKeys();
-        $where[$this->collection->getPrimaryKeyName()] = $this->getID();
-        
-        return DBHelper::fetchKeyInt(
-            'export_revision',
-            sprintf(
-                "SELECT
-                    `export_revision`
-                FROM
-                    `%s`
-                WHERE
-                    %s",
-                $table,
-                DBHelper::buildWhereFieldsStatement($where)
-            ),
-            $where
-        );
-    }
-    
-    public function getExportRevisionPretty()
-    {
-        $rev = $this->getExportRevision();
-        if(!empty($rev)) {
-            return $rev;
-        }
-        
-        return UI::icon()->notRequired()
-        ->makeMuted()
-        ->cursorHelp()
-        ->setTooltip(t('No specific export version has been selected.'));
     }
 }

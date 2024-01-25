@@ -85,7 +85,7 @@ abstract class Application_RevisionStorage_CopyRevision
     /**
      * @return array<int,callable|string>
      */
-    abstract protected function getParts();
+    abstract protected function getParts() : array;
     
     public function process() : void
     {

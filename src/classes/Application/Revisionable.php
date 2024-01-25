@@ -7,6 +7,8 @@
  * @see Application_Revisionable
  */
 
+use Application\StateHandler\StateHandlerException;
+
 /**
  * Base class for data types that are revisionable and have states.
  * Provides a skeleton and common functionality for all revisionable
@@ -19,13 +21,11 @@
  */
 abstract class Application_Revisionable extends Application_RevisionableStateless
 {
-    /**
-     * @var Application_StateHandler
-     */
-    protected $stateHandler;
+    public const ERROR_SAVING_WITHOUT_TRANSACTION = 149301;
+    public const ERROR_INVALID_EVENT_CALLBACK = 149302;
+    public const ERROR_INVALID_STATE_CHANGE = 149303;
 
-    public const ERROR_SAVING_WITHOUT_TRANSACTION = 68439001;
-    public const ERROR_INVALID_EVENT_CALLBACK = 68439002;
+    protected Application_StateHandler $stateHandler;
 
     /**
      * Initializes the underlying objects like the revision
@@ -42,7 +42,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      * Retrieves the item's state handler.
      * @return Application_StateHandler
      */
-    public function getStateHandler()
+    public function getStateHandler() : Application_StateHandler
     {
         return $this->stateHandler;
     }
@@ -50,7 +50,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
    /**
     * @var Application_StateHandler[]
     */
-    protected static $masterStateHandlers = array();
+    protected static array $masterStateHandlers = array();
     
     /**
      * Initializes the state handler by retrieving the item-specific
@@ -80,6 +80,8 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
 
         $states = array_keys($defs);
         $total = count($states);
+
+        /* @var $collection array<string,Application_StateHandler_State> */
         $collection = array(); // keep the collection locally for performance reasons
         for($i=0; $i<$total; $i++) {
             $stateName = $states[$i];
@@ -249,12 +251,21 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      *
      * @param Application_StateHandler_State $newState
      * @throws InvalidArgumentException
+     * @return $this
      */
-    public function setState(Application_StateHandler_State $newState)
+    public function setState(Application_StateHandler_State $newState) : self
     {
         $state = $this->getState();
         if (!is_null($state) && !$state->hasDependency($newState)) {
-            throw new InvalidArgumentException('Cannot set state to ' . $newState . ', it is not allowed after the current ' . $state . ' state.');
+            throw new StateHandlerException(
+                'Invalid state change.',
+                sprintf(
+                'Cannot set state to [%s], it is not allowed after the current [%s] state.',
+                    $newState,
+                    $state
+                ),
+                self::ERROR_INVALID_STATE_CHANGE
+            );
         }
 
         $this->log(sprintf(
@@ -279,6 +290,8 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
         $this->triggerEvent('StateChanged', array($newState));
         
         $this->log('State changed successfully.');
+
+        return $this;
     }
     
    /**
@@ -346,13 +359,13 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      * )
      *
      * Each entry defines the name of the state as well as
-     * a human readable label and a list of dependencies.
+     * a human-readable label and a list of dependencies.
      * The dependencies determine which states can be set
      * after the state.
      *
      * @return array
      */
-    abstract protected function buildStateDefs();
+    abstract protected function buildStateDefs() : array;
 
     /**
      * Checks whether the currently selected state has the
@@ -597,14 +610,23 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
         return true;
     }
 
-    public function startTransaction($newOwnerID, $newOwnerName, $comments = '')
+    /**
+     * @param int $newOwnerID
+     * @param string $newOwnerName
+     * @param string|null $comments
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
         parent::startTransaction($newOwnerID, $newOwnerName, $comments);
 
         $this->stateChanged = false;
+
+        return $this;
     }
 
-    public function endTransaction()
+    public function endTransaction() : bool
     {
         if ($this->stateChanged) {
             $this->requiresNewRevision = true;
@@ -622,10 +644,10 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      * automatically add the current state of the item within the title,
      * including developer-specific information for developer users.
      *
-     * @param string $title
+     * @param string|NULL $title
      * @return UI_Page_RevisionableTitle
      */
-    public function renderTitle($title='')
+    public function renderTitle(?string $title=null) : UI_Page_RevisionableTitle
     {
         return UI::getInstance()->getPage()->createRevisionableTitle($this)->setLabel($title);
     }
@@ -664,6 +686,6 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     */
     public function getInitialState()
     {
-        return $this->stateHandler->getInitalState();
+        return $this->stateHandler->getInitialState();
     }
 }

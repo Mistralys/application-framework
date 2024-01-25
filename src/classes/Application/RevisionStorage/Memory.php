@@ -18,7 +18,7 @@
  */
 class Application_RevisionStorage_Memory extends Application_RevisionStorage
 {
-    public function getTypeID()
+    public function getTypeID() : string
     {
         return 'Memory';
     }
@@ -29,17 +29,17 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
     
     public const ERROR_FILTER_CRITERIA_NOT_AVAILABLE = 117756003;
 
-    protected function _loadRevision($number)
+    protected function _loadRevision(int $number) : void
     {
         // no data to load
     }
 
-    public function countRevisions()
+    public function countRevisions() : int
     {
         return count($this->data);
     }
 
-    public function revisionExists($number)
+    public function revisionExists(int $number) : bool
     {
         return isset($this->data[$number]);
     }
@@ -87,10 +87,13 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
      * revision may be removed. If you wish to remove
      * an earlier revision, you will need to remove all
      * revisions that came after it.
+     *
+     * @return $this
      */
-    protected function _removeRevision($number)
+    protected function _removeRevision(int $number) : self
     {
         unset($this->data[$number]);
+        return $this;
     }
 
     /**
@@ -120,12 +123,12 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         return $value;
     }
 
-    public function nextRevision()
+    public function nextRevision() : int
     {
         return $this->getLatestRevision() + 1;
     }
 
-    public function getRevisions()
+    public function getRevisions() : array
     {
         $revisions = array_keys($this->data);
         sort($revisions);
@@ -151,17 +154,17 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         );
     }
     
-    public function _hasRevdata()
+    public function _hasRevdata() : bool
     {
         return false;
     }
     
-    protected function _loadRevdataKey($name)
+    protected function _loadRevdataKey(string $name) : string
     {
-        
+        return '';
     }
     
-    protected function _writeRevdataKey($key, $value)
+    protected function _writeRevdataKey(string $key, $value) : void
     {
         
     }

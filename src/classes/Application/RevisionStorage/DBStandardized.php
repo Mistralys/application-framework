@@ -13,7 +13,7 @@
  * loading and modifying revisions automatically given information 
  * about the revision storage tables.
  * 
- * Assumes the following things to work:
+ * This assumes the following things to work:
  * 
  * - A single ID column for the revisionable
  * - An autoincrement column for the revision ID
@@ -35,7 +35,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     public const ERROR_LOADING_REVISION = 534001;
     public const ERROR_LOADING_REVISION_USER = 534002;
 
-    const FREEFORM_KEY_PREFIX = 'freeform_';
+    public const FREEFORM_KEY_PREFIX = 'freeform_';
 
     /**
      * @var int
@@ -77,32 +77,32 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     * Retrieves the value for the revisionable ID column.
     * @return integer
     */
-    abstract public function getRevisionableID();
+    abstract public function getRevisionableID() : int;
     
    /**
     * Retrieves the name of the table storing the revisionable's revision data.
     * @return string
     */
-    abstract public function getRevisionsTable();
+    abstract public function getRevisionsTable() : string;
     
    /**
     * Retrieves the name of the column in which the revisionable ID is stored.
     * @return string
     */
-    abstract public function getIDColumn();
+    abstract public function getIDColumn() : string;
     
    /**
     * Retrieves the name of the column in which the revision ID is stored.
     * @return string
     */
-    abstract public function getRevisionColumn();
+    abstract public function getRevisionColumn() : string;
 
     /**
      * @param int $number
      * @throws Application_Exception
      * @throws DBHelper_Exception
      */
-    protected function _loadRevision($number)
+    protected function _loadRevision(int $number) : void
     {
         $data = DBHelper::fetch(
             sprintf(
@@ -177,7 +177,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     /**
      * @return int
      */
-    public function countRevisions()
+    public function countRevisions() : int
     {
         if ($this->cacheRevisionCount !== null) {
             return $this->cacheRevisionCount;
@@ -205,9 +205,9 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $count;
     }
     
-    protected $cacheKnownRevisions = array();
+    protected array $cacheKnownRevisions = array();
 
-    public function revisionExists($number)
+    public function revisionExists(int $number) : bool
     {
         if (isset($this->cacheKnownRevisions[$number])) {
             return $this->cacheKnownRevisions[$number];
@@ -238,13 +238,15 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $this->cacheKnownRevisions[$number];
     }
 
-    protected function resetCache()
+    protected function resetCache() : self
     {
         $this->cacheKnownRevisions = array();
         $this->cacheRevisionsList = null;
         $this->cacheRevisionCount = null;
 
         $this->log('Internal cache reset.');
+
+        return $this;
     }
 
     /**
@@ -255,7 +257,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
      * 
      * @param int $number
      */
-    protected function _removeRevision($number)
+    protected function _removeRevision(int $number) : self
     {
         DBHelper::delete(
             sprintf(
@@ -275,7 +277,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
 
         $this->log('Revision removed.');
 
-        $this->resetCache();
+        return $this->resetCache();
     }
 
    /**
@@ -285,11 +287,11 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     * excluding those like state, author, date or comments as
     * well as the IDs.
     * 
-    * @return array
+    * @return array<string,string|number|DateTime|bool|NULL>
     */
-    abstract public function getNextRevisionData();
+    abstract public function getNextRevisionData() : array;
     
-    public function nextRevision()
+    public function nextRevision() : int
     {
         $this->log('Creating the next revision.');
         
@@ -314,7 +316,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             $data['state'] = $this->revisionable->getStateName();
         }
         
-        $number = intval(DBHelper::insertDynamic($this->revisionsTable, $data));
+        $number = (int)DBHelper::insertDynamic($this->revisionsTable, $data);
         
         $this->cacheKnownRevisions[$number] = true;
         $this->cacheRevisionsList[] = $number;
@@ -329,9 +331,12 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $number;
     }
 
-    protected $cacheRevisionsList = null;
+    /**
+     * @var int[]|null
+     */
+    protected ?array $cacheRevisionsList = null;
 
-    public function getRevisions()
+    public function getRevisions() : array
     {
         if ($this->cacheRevisionsList) {
             return $this->cacheRevisionsList;
@@ -384,7 +389,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     * 
     * @return integer
     */
-    public function nextPrettyRevision()
+    public function nextPrettyRevision() : int
     {
         $query = sprintf(
             "SELECT
@@ -397,16 +402,19 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             $this->buildColumnsWhere()
         );
         
-        $rev = DBHelper::fetchKey('pretty_revision', $query, $this->getColumns());
-        $int = 1;
-        if(!empty($rev)) {
-            $int = intval($rev);
+        $rev = DBHelper::fetchKeyInt('pretty_revision', $query, $this->getColumns());
+        if($rev > 0) {
+            return $rev;
         }
         
-        return $int;
+        return 1;
     }
-    
-    public function getColumns($data=array())
+
+    /**
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>
+     */
+    public function getColumns(array $data=array()) : array
     {
         foreach($this->staticColumns as $column => $value) {
             $data[$column] = $value;
@@ -417,7 +425,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $data;
     }
     
-    protected function buildColumnsWhere()
+    protected function buildColumnsWhere() : string
     {
         $reqs = $this->getColumns();
         
@@ -431,19 +439,19 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return implode(" AND ", $tokens);
     }
     
-    public function getRevdataTable()
+    public function getRevdataTable() : string
     {
         return $this->revdataTable;
     }
     
-    protected function _hasRevdata()
+    protected function _hasRevdata() : bool
     {
         return DBHelper::tableExists($this->revdataTable);
     }
     
-    protected function _loadRevdataKey($name)
+    protected function _loadRevdataKey(string $name) : string
     {
-        return DBHelper::fetchKey(
+        return (string)DBHelper::fetchKey(
             'data_value', 
             sprintf(
                 "SELECT
@@ -465,7 +473,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         );
     }
     
-    protected function _writeRevdataKey($name, $value)
+    protected function _writeRevdataKey(string $name, $value) : void
     {
         $this->log('Write revdata key: '.$name);
         

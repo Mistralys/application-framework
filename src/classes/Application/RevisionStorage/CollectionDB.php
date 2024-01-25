@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Application/RevisionStorage/DBStandardized.php';
+declare(strict_types=1);
 
 abstract class Application_RevisionStorage_CollectionDB extends Application_RevisionStorage_DBStandardized
 { 
@@ -40,40 +40,45 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
         }
     }
     
-    public function getRevisionsTable()
+    public function getRevisionsTable() : string
     {
         return $this->collection->getRevisionsTableName();
     }
     
-    public function getIDColumn()
+    public function getIDColumn() : string
     {
         return $this->collection->getPrimaryKeyName();
     }
     
-    public function getRevisionColumn()
+    public function getRevisionColumn() : string
     {
         return $this->collection->getRevisionKeyName();
     }
     
-    public function getRevisionableID()
+    public function getRevisionableID() : int
     {
         return $this->revisionable->getID();
     }
 
-   /**
-    * Creates a new revision for the specified revisionable.
-    * 
-    * @param integer $revisionable_id
-    * @param string $label
-    * @param Application_StateHandler_State $state
-    * @param DateTime $date
-    * @param Application_User $author
-    * @param integer $prettyRevision
-    * @param string $comments
-    * @param array $customColumns
-    */
-    public function createRevision($revisionable_id, $label, Application_StateHandler_State $state, DateTime $date, Application_User $author=null, $prettyRevision=1, $comments=null, $customColumns=array())
+    /**
+     * Creates a new revision for the specified revisionable.
+     *
+     * @param integer $revisionable_id
+     * @param string $label
+     * @param Application_StateHandler_State $state
+     * @param DateTime $date
+     * @param Application_User|NULL $author
+     * @param integer $prettyRevision
+     * @param string|NULL $comments
+     * @param string[] $customColumns
+     * @return int
+     */
+    public function createRevision(int $revisionable_id, string $label, Application_StateHandler_State $state, DateTime $date, ?Application_User $author=null, int $prettyRevision=1, ?string $comments=null, array $customColumns=array()): int
     {
+        if($author === null) {
+            $author = Application::getUser();
+        }
+
         $data = $customColumns;
         $data[$this->idColumn] = $revisionable_id;
         $data['label'] = $label;
@@ -88,15 +93,13 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
             $data[$keyName] = $keyValue; 
         }
         
-        $revision = DBHelper::insertDynamic(
+        return (int)DBHelper::insertDynamic(
             $this->revisionsTable, 
             $data
         );
-        
-        return $revision;
     }
 
-    protected function getRevisionCopyClass()
+    protected function getRevisionCopyClass() : string
     {
         return $this->collection->getRecordCopyRevisionClass();
     }

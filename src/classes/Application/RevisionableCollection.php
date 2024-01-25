@@ -10,59 +10,58 @@ abstract class Application_RevisionableCollection implements Application_Collect
 
     public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
     public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
-    public const ERROR_CANNOT_INSTANTIATE_ABSTRACT_COLLECTION = 16103;
 
     public const DUMMY_ID = -1;
 
    /**
-    * @return string
+    * @return class-string
     */
-    abstract public function getRecordTableName();
+    abstract public function getRecordTableName() : string;
+    
+   /**
+    * @return class-string
+    */
+    abstract public function getRecordClassName() : string;
     
    /**
     * @return string
     */
-    abstract public function getRecordClassName();
+    abstract public function getRecordTypeName() : string;
     
    /**
-    * @return string
+    * @return class-string
     */
-    abstract public function getRecordTypeName();
+    abstract public function getRecordFiltersClassName() : string;
     
    /**
-    * @return string
+    * @return class-string
     */
-    abstract public function getRecordFiltersClassName();
+    abstract public function getRecordFilterSettingsClassName() : string;
     
    /**
-    * @return string
+    * @return class-string
     */
-    abstract public function getRecordFilterSettingsClassName();
-    
-   /**
-    * @return string
-    */
-    abstract public function getRevisionsStorageClass();
+    abstract public function getRevisionsStorageClass() : string;
     
    /**
     * @return array<string,string|number>
     */
-    abstract public function getAdminURLParams();
+    abstract public function getAdminURLParams() : array;
     
    /**
     * @return string
     */
-    abstract public function getRecordReadableNameSingular();
+    abstract public function getRecordReadableNameSingular() : string;
     
    /**
     * @return string
     */
-    abstract public function getRecordReadableNamePlural();
+    abstract public function getRecordReadableNamePlural() : string;
     
    /**
-    * @return string
+    * @return class-string
     */
-    abstract public function getRecordCopyRevisionClass();
+    abstract public function getRecordCopyRevisionClass() : string;
     
     /**
      * This is called right after the collection's constructor:
@@ -72,62 +71,27 @@ abstract class Application_RevisionableCollection implements Application_Collect
      * Use this to enforce and/or validate specific arguments the
      * collection implementation may require.
      *
-     * @param array $arguments
+     * @param array<mixed> $arguments
      */
     abstract protected function initCustomArguments(array $arguments=array()) : void;
     
     /**
-     * Retrieves the column names and human readable labels for
+     * Retrieves the column names and human-readable labels for
      * all columns that are relevant for a search.
      *
      * @return array<string,string> Associative array with column name => readable label pairs.
      */
-    abstract public function getRecordSearchableColumns();
-    
-   /**
-    * @var string
-    */
-    protected $recordTypeName;
-    
-   /**
-    * @var string
-    */
-    protected $tableName;
-    
-   /**
-    * @var string
-    */
-    protected $revisionsTableName;
-    
-   /**
-    * @var string
-    */
-    protected $revisionKeyName;
-    
-   /**
-    * @var string
-    */
-    protected $currentRevisionsTableName;
-    
-   /**
-    * @var string
-    */
-    protected $primaryKeyName;
-    
-   /**
-    * @var string
-    */
-    protected $changelogTableName;
-    
-   /**
-    * @var string
-    */
-    protected $exportRevisionsTableName;
-    
-   /**
-    * @var string
-    */
-    protected $instanceID;
+    abstract public function getRecordSearchableColumns() : array;
+
+    protected string $recordTypeName;
+    protected string $tableName;
+    protected string $revisionsTableName;
+    protected string $revisionKeyName;
+    protected string $currentRevisionsTableName;
+    protected string $primaryKeyName;
+    protected string $changelogTableName;
+    protected string $exportRevisionsTableName;
+    protected string $instanceID;
     
    /**
     * @param array<int,mixed> $customArguments
@@ -170,23 +134,20 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * Initializer, called after the constructor to allow extended classes to do their stuff.
     */
-    protected function init()
+    protected function init() : void
     {
         
     }
-    
-   /**
-    * @return string
-    */
-    public function getRecordExportRevisionsTableName()
+
+    /**
+     * @return class-string
+     */
+    public function getRecordExportRevisionsTableName() : string
     {
         return $this->exportRevisionsTableName;
     }
     
-   /**
-    * @return string
-    */
-    public function getInstanceID()
+    public function getInstanceID() : string
     {
         return $this->instanceID;
     }
@@ -194,16 +155,16 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return string[]
     */
-    public function getRecordSearchableKeys()
+    public function getRecordSearchableKeys() : array
     {
         $columns = $this->getRecordSearchableColumns();
         return array_keys($columns);
     }
     
    /**
-    * @return string
+    * @return class-string
     */
-    public function getCurrentRevisionsTableName()
+    public function getCurrentRevisionsTableName() : string
     {
         return $this->currentRevisionsTableName;
     }
@@ -211,7 +172,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return string
     */
-    public function getPrimaryKeyName()
+    public function getPrimaryKeyName() : string
     {
         return $this->primaryKeyName;
     }
@@ -219,15 +180,15 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return string
     */
-    public function getTableName()
+    public function getTableName() : string
     {
         return $this->tableName;
     }
 
    /**
-    * @return string
+    * @return class-string
     */
-    public function getRevisionsTableName()
+    public function getRevisionsTableName() : string
     {
         return $this->revisionsTableName;
     }
@@ -235,15 +196,15 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return string
     */
-    public function getRevisionKeyName()
+    public function getRevisionKeyName() : string
     {
         return $this->revisionKeyName;
     }
 
    /**
-    * @return string
+    * @return class-string
     */
-    public function getRecordChangelogTableName()
+    public function getRecordChangelogTableName() : string
     {
         return $this->changelogTableName;
     }
@@ -260,20 +221,20 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return Application_RevisionableCollection_FilterSettings
     */
-    public function getFilterSettings()
+    public function getFilterSettings() : Application_RevisionableCollection_FilterSettings
     {
         $class = $this->getRecordFilterSettingsClassName();
         return new $class($this);
     }
     
     /**
-     * Creates a dummy revisionable object to access
+     * Creates a stub revisionable object to access
      * information that only instances can provide, like
      * the available revisionable states.
      *
      * @return Application_RevisionableCollection_DBRevisionable
      */
-    public function createDummyRecord()
+    public function createDummyRecord() : Application_RevisionableCollection_DBRevisionable
     {
         return $this->getByID(self::DUMMY_ID);
     }
@@ -286,20 +247,20 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * @param array<string,mixed> $data 
     * @return Application_RevisionableCollection_DBRevisionable
     */
-    public function createNewRecord(string $label, ?Application_User $author=null, array $data=array())
+    public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : Application_RevisionableCollection_DBRevisionable
     {
         DBHelper::requireTransaction(sprintf('Create a new %s record.', $this->getRecordReadableNameSingular()));
         
         $this->log(sprintf('Creating new record | [%s]', $label));
         
         // first off, we need an ID.
-        $revisionable_id = intval(DBHelper::insert(sprintf(
+        $revisionable_id = (int)DBHelper::insert(sprintf(
             "INSERT INTO
                 `%s`
             SET `%s` = DEFAULT",
             $this->tableName,
             $this->primaryKeyName
-        )));
+        ));
         
         if(!$author) 
         {
@@ -345,13 +306,12 @@ abstract class Application_RevisionableCollection implements Application_Collect
     */
     public function getInitialState() : Application_StateHandler_State
     {
-        $dummy = $this->createDummyRecord();
-        return $dummy->getInitialState();
+        return $this->createDummyRecord()->getInitialState();
     }
     
-    public function idExists(int $revisionableID) : bool
+    public function idExists(int $record_id) : bool
     {
-        return $this->getCurrentRevision($revisionableID) !== null;
+        return $this->getCurrentRevision($record_id) !== null;
     }
     
     public function getAll() : array
@@ -418,9 +378,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
     *
     * @return Application_RevisionableCollection_DBRevisionable|NULL
     */
-    public function getByRequest()
+    public function getByRequest() : ?Application_RevisionableCollection_DBRevisionable
     {
-        $id = intval(Application_Request::getInstance()->registerParam($this->getPrimaryKeyName())->setInteger()->get());
+        $id = (int)Application_Request::getInstance()->registerParam($this->getPrimaryKeyName())->setInteger()->get();
         if(!empty($id) && $this->idExists($id)) {
             return $this->getByID($id);
         }
@@ -581,15 +541,15 @@ abstract class Application_RevisionableCollection implements Application_Collect
             $revision
         ));
         
-        $campaignKeys = $this->getCampaignKeys();
+        $foreignKeys = $this->getCampaignKeys();
         
-        $data = $campaignKeys;
+        $data = $foreignKeys;
         $data[$this->primaryKeyName] = $revisionableID;
         $data['current_revision'] = $revision;
         
         // Primary keys are the campaign keys + the revisionable ID.
         // Without campaign keys, it's just the revisionable ID.
-        $primaries = array_keys($campaignKeys);
+        $primaries = array_keys($foreignKeys);
         $primaries[] = $this->primaryKeyName;
         
         DBHelper::insertOrUpdate(
