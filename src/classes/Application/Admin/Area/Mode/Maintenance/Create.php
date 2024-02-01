@@ -124,7 +124,7 @@ abstract class Application_Admin_Area_Mode_Maintenance_Create extends Applicatio
         $this->createFormableForm($this->formName, $defaultValues);
         $this->addFormablePageVars();
         
-        $this->addElementHeader(t('Configuration'), null, null, false);
+        $this->addElementHeaderII(t('Configuration'));
         
         $dateStart = $this->addElementText('datetime_start', t('Starting time'));
         $dateStart->addFilter('trim');
