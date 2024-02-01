@@ -871,7 +871,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
-            $this->addElement($setting, 'switch', $container)
+            $this->addElement($setting, HTML_QuickForm2_Element_Switch::ELEMENT_TYPE, $container)
         );
     }
 

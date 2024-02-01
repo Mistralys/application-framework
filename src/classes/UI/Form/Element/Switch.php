@@ -18,6 +18,8 @@ declare(strict_types=1);
  */
 class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 {
+    public const ELEMENT_TYPE = 'switch';
+
     /**
      * @var array<string,string>
      */
