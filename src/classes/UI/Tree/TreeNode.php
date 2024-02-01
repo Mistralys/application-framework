@@ -116,6 +116,15 @@ class TreeNode implements Application_Interfaces_Iconizable
     }
 
     /**
+     * Sets a value for the node, which is used when the tree
+     * renderer is set to selectable mode. When the tree's form
+     * is submitted, this value is used as the value of the
+     * checkbox.
+     *
+     * NOTE: Duplicate values are not allowed, but are not
+     * validated. If you set the same value on multiple nodes,
+     * the first one will be used.
+     *
      * @param string|int|float $value
      * @return $this
      */
@@ -264,5 +273,42 @@ class TreeNode implements Application_Interfaces_Iconizable
         foreach ($childNodes as $childNode) {
             $childNode->injectJS($treeObjectName);
         }
+    }
+
+    public function findNodeByValue($value) : ?TreeNode
+    {
+        if($value === null || $value === '') {
+            return null;
+        }
+
+        if($this->getValue() === (string)$value) {
+            return $this;
+        }
+
+        $childNodes = $this->getChildNodes();
+
+        foreach ($childNodes as $childNode) {
+            $node = $childNode->findNodeByValue($value);
+            if($node !== null) {
+                return $node;
+            }
+        }
+
+        return null;
+    }
+
+    public function getSelectedNodes(array $result=array()) : array
+    {
+        if($this->isSelected()) {
+            $result[] = $this;
+        }
+
+        $childNodes = $this->getChildNodes();
+
+        foreach ($childNodes as $childNode) {
+            $result = $childNode->getSelectedNodes($result);
+        }
+
+        return $result;
     }
 }
