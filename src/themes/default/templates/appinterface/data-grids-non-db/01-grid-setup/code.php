@@ -1,6 +1,6 @@
 <?php
 
-/* @var string $activeExampleID */
+/** @var string $activeExampleID */
 
 $grid = UI::getInstance()->createDataGrid('datagrid-example');
 

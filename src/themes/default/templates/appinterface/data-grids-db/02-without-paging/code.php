@@ -7,7 +7,7 @@ use TestDriver\TestDBRecords\TestDBCollection;
 // Configure the data grid
 require_once __DIR__.'/../01-grid-setup/code.php';
 
-/* @var UI_DataGrid $grid */
+/** @var UI_DataGrid $grid */
 
 // Get all items from the DB.
 $items = TestDBCollection::getInstance()

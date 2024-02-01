@@ -9,8 +9,8 @@ use TestDriver\TestDBRecords\TestDBCollection;
 // Configure the data grid
 require_once __DIR__.'/../01-grid-setup/code.php';
 
-/* @var UI_DataGrid $grid */
-/* @var string $activeURL */
+/** @var UI_DataGrid $grid */
+/** @var string $activeURL */
 
 // Enable the paging feature using default items per page
 $grid->enableLimitOptionsDefault();
