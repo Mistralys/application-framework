@@ -55,9 +55,9 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * @param string $type
      * @param string $name
      * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element
+     * @return HTML_QuickForm2_Node
      */
-    public function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element;
+    public function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Node;
 
     /**
      * Adds a text element.
@@ -104,9 +104,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param string $abstract
      * @param string[] $classes
+     * @param HTML_QuickForm2_Container|null $container
      * @return HTML_QuickForm2_Element_InputText
      */
-    public function addElementAbstract(string $abstract, array $classes = array()): HTML_QuickForm2_Element_InputText;
+    public function addElementAbstract(string $abstract, array $classes = array(), ?HTML_QuickForm2_Container $container=null): HTML_QuickForm2_Element_InputText;
 
     /**
      * Adds a configurable header element. Is intended to
@@ -119,10 +120,13 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param string|number|StringableInterface|NULL $label
      * @return Application_Formable_Header
+     * @deprecated Use {@see self::addSection()} instead.
      */
     public function addElementHeaderII($label): Application_Formable_Header;
 
     /**
+     * Adds a section to hold elements in the form.
+     *
      * @param string|number|StringableInterface|NULL $label
      * @return Application_Formable_Header
      */
@@ -215,12 +219,12 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param string $title
      * @param HTML_QuickForm2_Container|NULL $container
-     * @param string $anchor The name of the anchor that can be used to jump to the heading
+     * @param string|NULL $anchor The name of the anchor that can be used to jump to the heading
      * @param boolean $collapsed Whether the header should start collapsed
      * @return HTML_QuickForm2_Element_InputText
      * @see Application_Formable::addElementHeaderII()
      */
-    public function addElementHeader($title, $container = null, $anchor = null, $collapsed = true);
+    public function addElementHeader(string $title, ?HTML_QuickForm2_Container $container = null, ?string $anchor = null, bool $collapsed = true) : HTML_QuickForm2_Element_InputText;
 
     /**
      * Adds a group to contain elements, but which does not generate any layout.
@@ -240,7 +244,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * @param string $value
      * @return $this
      */
-    public function addHiddenVar(string $name, string $value = '');
+    public function addHiddenVar(string $name, string $value = '') : self;
 
     /**
      * Adds a collection of hidden form variables.
@@ -259,7 +263,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * @param array<string,string> $vars Associative array with variable name => value pairs.
      * @return $this
      */
-    public function addHiddenVars(array $vars);
+    public function addHiddenVars(array $vars) : self;
 
     /**
      * Makes the target element required by adding the standard
@@ -267,10 +271,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * if set.
      *
      * @param HTML_QuickForm2_Node $element
-     * @param string $message The error message to display
+     * @param string|number|StringableInterface|NULL $message The error message to display
      * @return Application_Formable
      */
-    public function makeRequired(HTML_QuickForm2_Node $element, $message = null);
+    public function makeRequired(HTML_QuickForm2_Node $element, $message = null) : self;
 
     /**
      * @return string
@@ -381,6 +385,17 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
     public function addElementSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_Switch;
 
     /**
+     * Adds a tree selection element that uses a {@see \UI\Tree\TreeRenderer}
+     * to display the item tree.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_TreeSelect
+     */
+    public function addElementTreeSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_TreeSelect;
+
+    /**
      * Hides the element from the readonly ("frozen") version of the form.
      * @param HTML_QuickForm2_Element $element
      * @return $this
@@ -399,11 +414,11 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
     public function addElementInteger(string $name, string $label, ?HTML_QuickForm2_Container $container = null, int $min = 0, int $max = 0): HTML_QuickForm2_Element_InputText;
 
     /**
-     * Creates an form element to enter a date with time.
+     * Creates a form element to enter a date without time.
      *
      * @param string $name
      * @param string $label
-     * @param HTML_QuickForm2_Container $container
+     * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_InputText
      */
     public function addElementISODate(string $name, string $label, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_InputText;
@@ -424,10 +439,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * hint for the user.
      *
      * @param HTML_QuickForm2_Element $element
-     * @param string $units
-     * @return Application_Formable
+     * @param string|number|StringableInterface|NULL $units
+     * @return $this
      */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units);
+    public function setElementUnits(HTML_QuickForm2_Element $element, $units) : self;
 
     /**
      * Marks the specified element as structural, which means the
@@ -436,9 +451,9 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param HTML_QuickForm2_Element $element
      * @param bool $structural
-     * @return Application_Formable
+     * @return $this
      */
-    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural = true);
+    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural = true) : self;
 
     /**
      * Adds a redactor to the specified element.
@@ -509,7 +524,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @return array<string,mixed>
      */
-    public function getFormValues();
+    public function getFormValues() : array;
 
     public function isFormSubmitted(): bool;
 
@@ -523,9 +538,9 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * Adds all page navigation variables as hidden variables to
      * the form.
      *
-     * @return Application_Formable
+     * @return $this
      */
-    public function addFormablePageVars();
+    public function addFormablePageVars() : self;
 
     /**
      * Retrieves a form element by its name.
@@ -554,20 +569,29 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @return HTML_QuickForm2_Container
      */
-    public function getFormableContainer();
+    public function getFormableContainer() : HTML_QuickForm2_Container;
 
     /**
-     * Retrieves the javascript statement required to submit the form,
+     * Gets the form container that elements are added to by default.
+     *
+     * @param HTML_QuickForm2_Container|null $container A container to use if no default has been set.
+     * @return HTML_QuickForm2_Container|null Can be null if no default container is available.
+     */
+    public function getFormableDefaultContainer(?HTML_QuickForm2_Container $container=null) : ?HTML_QuickForm2_Container;
+
+    /**
+     * Retrieves the javascript statement required to submit the form.
+     *
      * @param bool $simulate_only
      * @return string
      */
-    public function getFormableJSSubmit(bool $simulate_only = false);
+    public function getFormableJSSubmit(bool $simulate_only = false) : string;
 
     /**
      * Retrieves the name of the form.
      * @return string
      */
-    public function getFormableName();
+    public function getFormableName() : string;
 
     /**
      * Appends a button to the element.
@@ -610,7 +634,11 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      */
     public function enableFormableClientRegistry(bool $enabled = true);
 
-    public function setDefaultFormValues($values);
+    /**
+     * @param array<string,mixed> $values
+     * @return $this
+     */
+    public function setDefaultFormValues(array $values) : self;
 
     public function registerContainer(Application_Formable_Container $container);
 

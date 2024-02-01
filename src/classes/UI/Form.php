@@ -280,10 +280,10 @@ class UI_Form extends UI_Renderable
             'alias' => $alias,
             'name' => $elementName
         );
-        
+
         HTML_QuickForm2_Factory::registerElement(
             $alias,
-            HTML_QuickForm2_Element::class . '_' . $elementName
+            ClassHelper::requireResolvedClass(HTML_QuickForm2_Element::class . '_' . $elementName)
         );
     }
     
@@ -414,6 +414,16 @@ class UI_Form extends UI_Renderable
         }
 
         return $this;
+    }
+
+    public function addGroupLayoutless(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Container_Group
+    {
+        $container = $this->resolveContainer($container);
+
+        $group = $container->addGroup($name);
+        $group->setAttribute('rel', UI_Form::REL_LAYOUT_LESS_GROUP);
+
+        return $group;
     }
 
     /**
@@ -1175,7 +1185,8 @@ class UI_Form extends UI_Renderable
             HTML_QuickForm2_Element_Textarea::class,
             $this->addElement('textarea', $name, $container)
         )
-            ->setLabel($label);
+            ->setLabel($label)
+            ->addClass('input-xxlarge');
     }
 
     /**
@@ -1261,6 +1272,15 @@ class UI_Form extends UI_Renderable
         );
     }
 
+    public function addFile(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputFile
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputFile::class,
+            $this->addElement('file', $name, $container)
+        )
+            ->setLabel($label);
+    }
+
     public function addVisualSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -1276,7 +1296,7 @@ class UI_Form extends UI_Renderable
      * @return HTML_QuickForm2_Node
      * @throws Application_Formable_Exception
      */
-    private function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
+    public function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
     {
         try
         {
@@ -1342,6 +1362,43 @@ class UI_Form extends UI_Renderable
         }
 
         return $el;
+    }
+
+    /**
+     * Adds an element for entering a hexadecimal color code.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    public function addHexColor(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->addText($name, $label, $container);
+        $el->addFilterTrim();
+        $el->addClass('input-small');
+        $el->addClass('monospace');
+        $el->setAttribute('data-type', 'hexcolor');
+
+        $this->setElementPrepend($el, '#');
+        $this->addRuleCallback(
+            $el,
+            function($value)
+            {
+                // this is handled by the field's required status
+                if(empty($value)) {
+                    return true;
+                }
+
+                return preg_match(RegexHelper::REGEX_HEX_COLOR_CODE, $value);
+            },
+            t('Not a valid hexadecimal color code.')
+        );
+
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputText::class,
+            $el
+        );
     }
 
     public function addStatic(string $label, string $content, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
@@ -1593,16 +1650,36 @@ class UI_Form extends UI_Renderable
     */
     public function addSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
-        if(!$container) {
-            $container = $this->form;
-        }
-        
-        $element = $container->addElement('switch', $name);
+        $element = $this->resolveContainer($container)->addElement(HTML_QuickForm2_Element_Switch::ELEMENT_TYPE, $name);
         $element->setLabel($label);
         
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $element
+        );
+    }
+
+    /**
+     * Adds a tree selection element that uses a {@see \UI\Tree\TreeRenderer}
+     * to display the item tree.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_TreeSelect
+     *
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     * @throws HTML_QuickForm2_NotFoundException
+     */
+    public function addTreeSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_TreeSelect
+    {
+        $el = $this->resolveContainer($container)->addElement(HTML_QuickForm2_Element_TreeSelect::ELEMENT_TYPE, $name);
+        $el->setLabel($label);
+
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_TreeSelect::class,
+            $el
         );
     }
     
@@ -1697,6 +1774,21 @@ class UI_Form extends UI_Renderable
         }
         
         return $el;
+    }
+
+    /**
+     * Adds an abstract text to the form.
+     *
+     * @param string $abstract
+     * @param string[] $classes
+     * @return HTML_QuickForm2_Element_InputText
+     */
+    public function addAbstract(string $abstract, array $classes=array(), ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        return $this->addHTML(
+            '<p class="abstract form-abstract '.implode(' ', $classes).'">'.$abstract.'</p>',
+            $container
+        );
     }
 
     /**
@@ -2058,10 +2150,13 @@ class UI_Form extends UI_Renderable
      * Adds a validation rule to make the element required.
      *
      * @param HTML_QuickForm2_Node $el
+     * @param string|number|StringableInterface|NULL $message
      * @return HTML_QuickForm2_Node
      */
-    public function makeRequired(HTML_QuickForm2_Node $el, $message=null)
+    public function makeRequired(HTML_QuickForm2_Node $el, $message=null) : HTML_QuickForm2_Node
     {
+        $message = toString($message);
+
         if(empty($message))
         {
             if($el instanceof HTML_QuickForm2_Element_Select) {
@@ -2072,8 +2167,8 @@ class UI_Form extends UI_Renderable
         }
 
         $el->addRule('required', $message);
-
         $el->setAttribute('data-required', 'true');
+
         return $el;
     }
 
@@ -2186,13 +2281,15 @@ class UI_Form extends UI_Renderable
 
     /**
      * Appends the related units for the element's values to the
-     * element in the UI, for example "Centimetres".
+     * element in the UI.
      *
-     * @param HTML_QuickForm2_Element $element
-     * @param string $units
-     * @return HTML_QuickForm2_Element
+     * Example: "Centimetres".
+     *
+     * @param HTML_QuickForm2_Node $element
+     * @param string|number|StringableInterface|NULL $units
+     * @return HTML_QuickForm2_Node
      */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units)
+    public function setElementUnits(HTML_QuickForm2_Node $element, $units) : HTML_QuickForm2_Node
     {
         return $this->setElementAppend($element, $units);
     }
@@ -2208,13 +2305,13 @@ class UI_Form extends UI_Renderable
     * Adds a string to append to an element. For example
     * for units, like "Centimetres".
     * 
-    * @param HTML_QuickForm2_Element $element
-    * @param string $appendString
-    * @return HTML_QuickForm2_Element
+    * @param HTML_QuickForm2_Node $element
+    * @param string|number|StringableInterface|NULL $appendString
+    * @return HTML_QuickForm2_Node
     */
-    public function setElementAppend(HTML_QuickForm2_Element $element, $appendString)
+    public function setElementAppend(HTML_QuickForm2_Node $element, $appendString) : HTML_QuickForm2_Node
     {
-        $element->setAttribute('data-append', $appendString);
+        $element->setAttribute('data-append', toString($appendString));
         return $element;
     }
     
