@@ -1674,13 +1674,13 @@ class UI_Form extends UI_Renderable
      */
     public function addTreeSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_TreeSelect
     {
-        $el = $this->resolveContainer($container)->addElement(HTML_QuickForm2_Element_TreeSelect::ELEMENT_TYPE, $name);
-        $el->setLabel($label);
-
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_TreeSelect::class,
-            $el
-        );
+            $this
+                ->resolveContainer($container)
+                ->addElement(HTML_QuickForm2_Element_TreeSelect::ELEMENT_TYPE, $name)
+        )
+            ->setLabel($label);
     }
     
    /**
