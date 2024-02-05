@@ -36,6 +36,7 @@ class TreeRenderer extends UI_Renderable
     public const OPTION_SELECTABLE = 'selectable';
     public const OPTION_ELEMENT_NAME = 'selectable_name';
     public const DEFAULT_ELEMENT_NAME = 'tree_items';
+    public const OPTION_STANDALONE_FORM = 'standalone_form';
 
     private TreeNode $rootNode;
     /**
@@ -89,6 +90,42 @@ class TreeRenderer extends UI_Renderable
         }
 
         return $this;
+    }
+
+
+    /**
+     * @return string[]
+     */
+    public function getSelectedValues() : array
+    {
+        sort($this->selectedValues);
+
+        return $this->selectedValues;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getPossibleValues() : array
+    {
+        return $this->findNodeValues($this->rootNode);
+    }
+
+    private function findNodeValues(TreeNode $node, array $values=array()) : array
+    {
+        $value = $node->getValue();
+
+        if(!empty($value)) {
+            $values[] = $value;
+        }
+
+        foreach($node->getChildNodes() as $childNode) {
+            $values = $this->findNodeValues($childNode, $values);
+        }
+
+        sort($values);
+
+        return $values;
     }
 
     protected function _render() : string
@@ -238,13 +275,10 @@ class TreeRenderer extends UI_Renderable
         return $this->getBoolOption(self::OPTION_SELECTABLE);
     }
 
-    public function makeSelectable(?string $elementName=null) : self
+    public function makeSelectable(string $elementName) : self
     {
         $this->setSelectable(true);
-
-        if(!empty($elementName)) {
-            $this->setOption(self::OPTION_ELEMENT_NAME, $elementName);
-        }
+        $this->setElementName($elementName);
 
         return $this;
     }
@@ -267,5 +301,32 @@ class TreeRenderer extends UI_Renderable
             self::OPTION_SELECTABLE => false,
             self::OPTION_ELEMENT_NAME => self::DEFAULT_ELEMENT_NAME
         );
+    }
+
+    /**
+     * Retrieves a flattened list of all selected nodes.
+     * @return TreeNode[]
+     */
+    public function getSelectedNodes() : array
+    {
+        $this->updateSelectedNodes($this->rootNode);
+
+        return $this->rootNode->getSelectedNodes();
+    }
+
+
+    /**
+     * Attempts to find a node by its value.
+     *
+     * @param string|int|float $value
+     * @return TreeNode|null
+     */
+    public function findNodeByValue($value) : ?TreeNode
+    {
+        if($value === null || $value === '') {
+            return null;
+        }
+
+        return $this->rootNode->findNodeByValue($value);
     }
 }
