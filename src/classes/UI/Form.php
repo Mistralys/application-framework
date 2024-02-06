@@ -1309,7 +1309,7 @@ class UI_Form extends UI_Renderable
      * @return HTML_QuickForm2_Node
      * @throws FormException
      */
-    private function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
+    public function addElement(string $type, string $name, ?HTML_QuickForm2_Container $container) : HTML_QuickForm2_Node
     {
         try
         {
