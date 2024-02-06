@@ -275,9 +275,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
    /**
     * Overridden to add the required hidden form variables.
+    *
     * @see Application_Formable::createFormableForm()
+    * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData = array()) : void
+    public function createFormableForm(string $name, array $defaultData = array()) : self
     {
         parent::createFormableForm($name, $defaultData);
 
@@ -287,6 +289,8 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
             'wizard' => $this->wizard->getSessionID(),
             'step' => $this->wizard->getActiveStep()->getID()
         ));
+
+        return $this;
     }
 
    /**

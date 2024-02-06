@@ -93,7 +93,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
     * @param string $name
     * @param array $defaultData
     */
-    public function createFormableForm(string $name, array $defaultData=array()) : void
+    public function createFormableForm(string $name, array $defaultData=array()) : self
     {
         parent::createFormableForm($name, $defaultData);
         
@@ -111,5 +111,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
             
             $this->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
         }
+
+        return $this;
     }
 }
