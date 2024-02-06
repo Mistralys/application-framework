@@ -14,7 +14,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public const DUMMY_ID = -1;
 
    /**
-    * @return class-string
+    * @return string
     */
     abstract public function getRecordTableName() : string;
     
