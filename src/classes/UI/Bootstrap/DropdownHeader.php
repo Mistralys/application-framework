@@ -42,7 +42,7 @@ class UI_Bootstrap_DropdownHeader
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         OutputBuffering::start();
 

@@ -35,7 +35,7 @@ class UI_Page_Sidebar_Item_Template extends UI_Page_Sidebar_LockableItem
         return $this->template->setVar($name, $value);
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         $this->template->setVar('disabled', $this->disabled);
         $this->template->setVar('locked', $this->locked);

@@ -52,7 +52,7 @@ class UI_ItemsSelector extends UI_Renderable
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $this->ui->addStylesheet('ui-items-selector.css');
         

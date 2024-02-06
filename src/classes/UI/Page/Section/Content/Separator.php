@@ -7,7 +7,7 @@ class UI_Page_Section_Content_Separator extends UI_Page_Section_Content
         return array();
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return $this->page->renderTemplate(
             'sidebar.section.separator'

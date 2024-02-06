@@ -14,7 +14,7 @@ class UI_Page_Sidebar_Item_FormTOC extends UI_Page_Sidebar_Item
         $this->form = $form; 
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         // tell the form to add clientside information on elements
         // which can be accessed to create the TOC

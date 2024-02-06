@@ -18,7 +18,7 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $label = $this->badge->getLabel();
         

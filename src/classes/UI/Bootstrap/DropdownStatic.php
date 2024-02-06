@@ -33,7 +33,7 @@ class UI_Bootstrap_DropdownStatic
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return '<li class="static">'.$this->content.'</li>';
 	}

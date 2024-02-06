@@ -59,7 +59,7 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
         $this->linkAttributes[$name] = $value;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         if(isset($this->size)) {
             $this->addLinkClass($this->size);

@@ -43,7 +43,7 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         if(empty($this->buttons)) {
             return '';
