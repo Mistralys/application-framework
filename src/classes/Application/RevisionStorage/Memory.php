@@ -48,18 +48,10 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
 
 
     /**
-     * Copies the data from the source revision to the
-     * target revision number. Both revisions have to
-     * exist, otherwise this will trigger an exception.
-     *
-     * All reference types get cloned to avoid reference
-     * issues in the data keys.
-     *
-     * @param int $sourceRevision
-     * @param int $targetRevision
+     * @inheritDoc
      * @throws InvalidArgumentException
      */
-    public function copy($sourceRevision, $targetRevision, $targetOwnerID, $targetOwnerName, $targetComments, DateTime $targetDate=null)
+    public function copy(int $sourceRevision, int $targetRevision, int $targetOwnerID, string $targetOwnerName, ?string $targetComments, ?DateTime $targetDate=null) : self
     {
         if (!$this->revisionExists($sourceRevision) || !$this->revisionExists($targetRevision)) {
             throw new InvalidArgumentException('The source or target revisions do not exist.');
@@ -82,6 +74,8 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         $copiedData['__comments'] = $targetComments;
 
         $this->data[$targetRevision] = $copiedData;
+
+        return $this;
     }
 
     /**
@@ -117,9 +111,7 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         }
 
         if (is_object($value)) {
-            $newObj = clone $value;
-
-            return $newObj;
+            return clone $value;
         }
 
         return $value;
@@ -147,7 +139,7 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         );
     }
     
-    public function copyTo(Application_Revisionable $revisionable) : void
+    public function copyTo(Application_Revisionable $revisionable) : self
     {
         throw new RevisionableException(
             'Not implemented',
