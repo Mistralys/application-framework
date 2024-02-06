@@ -45,6 +45,7 @@ class SettingDef
     private $configureCallback;
     protected Application_FilterSettings $settings;
     private bool $configured = false;
+    private bool $injected = false;
 
     /**
      * @param Application_FilterSettings $settings
@@ -116,17 +117,16 @@ class SettingDef
     {
         if($this->injectCallback !== null) {
             call_user_func($this->injectCallback, $this);
+            $this->injected = true;
             return $this;
         }
 
-        throw new UI_Exception(
-            'No inject callback',
-            sprintf(
-                'No inject callback defined for setting [%s].',
-                $this->name
-            ),
-            self::ERROR_NO_INJECT_CALLBACK
-        );
+        return $this;
+    }
+
+    public function isInjected() : bool
+    {
+        return $this->injected;
     }
 
     /**
