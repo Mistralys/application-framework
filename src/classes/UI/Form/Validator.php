@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper\BaseClassHelperException;
+
 /**
  * Base class for validators.
  *
@@ -18,20 +20,9 @@ declare(strict_types=1);
  */
 abstract class UI_Form_Validator
 {
-    /**
-     * @var HTML_QuickForm2_Element
-     */
-    protected $element;
-
-    /**
-     * @var UI_Form
-     */
-    protected $form;
-
-    /**
-     * @var HTML_QuickForm2_Rule_Callback
-     */
-    protected $rule;
+    protected HTML_QuickForm2_Node $element;
+    protected UI_Form $form;
+    protected HTML_QuickForm2_Rule_Callback $rule;
 
     /**
      * @var mixed
@@ -40,11 +31,12 @@ abstract class UI_Form_Validator
 
     /**
      * @param UI_Form $form
-     * @param HTML_QuickForm2_Element $element
-     * @throws HTML_QuickForm2_InvalidArgumentException
-     * @throws HTML_QuickForm2_NotFoundException
+     * @param HTML_QuickForm2_Node $element
+     *
+     * @throws HTML_QuickForm2_Exception
+     * @throws BaseClassHelperException
      */
-    public function __construct(UI_Form $form, HTML_QuickForm2_Element $element)
+    public function __construct(UI_Form $form, HTML_QuickForm2_Node $element)
     {
         $this->form = $form;
         $this->element = $element;
@@ -76,7 +68,7 @@ abstract class UI_Form_Validator
         return $this->value;
     }
 
-    public function getElement() : HTML_QuickForm2_Element
+    public function getElement() : HTML_QuickForm2_Node
     {
         return $this->element;
     }
@@ -94,7 +86,7 @@ abstract class UI_Form_Validator
 
     public function getErrorMessage() : string
     {
-        return strval($this->rule->getMessage());
+        return $this->rule->getMessage();
     }
 
     /**
@@ -121,7 +113,7 @@ abstract class UI_Form_Validator
     {
         if(empty($value) || !$this->validate($value))
         {
-            return strval($value);
+            return (string)$value;
         }
 
         return $this->applyFilters($value);
