@@ -1479,7 +1479,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @return $this
      * @throws Application_Exception
      */
-    public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
+    public function setOrderBy($fieldName, string $orderDir = self::ORDER_DIR_ASCENDING) : self
     {
         return parent::setOrderBy((string)$fieldName, $orderDir);
     }
