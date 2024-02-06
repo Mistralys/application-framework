@@ -4,9 +4,12 @@
 - FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
+- Formables: Added the `$id` parameter to `addHiddenVar()`.
+- Forms: Modernized the `UI_Form` class, now with strict typing.
 
 ### Breaking changes (M)
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
+- Renderables: Added strict `string` return type for `_render()` methods.
 
 ### Deprecations
 
