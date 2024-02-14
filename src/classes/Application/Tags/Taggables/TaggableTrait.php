@@ -16,7 +16,7 @@ trait TaggableTrait
         if(!isset($this->tagger)) {
             $this->tagger = new Taggable(
                 $this->getTagCollection(),
-                $this->getTaggedRecordPrimary()
+                $this->getTagRecordPrimaryValue()
             );
         }
 

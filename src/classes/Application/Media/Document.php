@@ -571,7 +571,7 @@ abstract class Application_Media_Document
         return $this->media;
     }
 
-    public function getTaggedRecordPrimary(): int
+    public function getTagRecordPrimaryValue(): int
     {
         return $this->getID();
     }

@@ -176,7 +176,7 @@ class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
 
 
 
-    public function getTaggedRecordPrimary(): int
+    public function getTagRecordPrimaryValue(): int
     {
         return $this->getID();
     }
