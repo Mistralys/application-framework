@@ -70,6 +70,12 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
             ->setIcon(UI::icon()->status());
 
         $this->subnav->addURL(
+            t('Tagging'),
+            $this->record->getAdminTaggingURL()
+        )
+            ->setIcon(UI::icon()->tags());
+
+        $this->subnav->addURL(
             t('Settings'),
             $this->record->getAdminSettingsURL()
         )
