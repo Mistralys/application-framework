@@ -137,9 +137,9 @@ trait RecordTaggingScreenTrait
             ->makeWithSidebar();
     }
 
-    private function renderNoTagsAvailable() : StringableInterface
+    private function renderNoTagsAvailable() : string
     {
-        return $this->getUI()->createMessage(sb()
+        return (string)$this->getUI()->createMessage(sb()
             ->t('No tags are available for this record type.')
             ->ifTrue(
                 $this->getUser()->canCreateTags(),
@@ -168,7 +168,10 @@ trait RecordTaggingScreenTrait
 
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormData());
         $this->addFormablePageVars();
-        $this->addHiddenVar($record->getTagConnector()->getPrimaryName(), (string)$record->getID());
+        $this->addHiddenVar(
+            $record->getTagConnector()->getPrimaryName(),
+            (string)$record->getTagRecordPrimaryValue()
+        );
 
         $this->injectTagTree();
     }
