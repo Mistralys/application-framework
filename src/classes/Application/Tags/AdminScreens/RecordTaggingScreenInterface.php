@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Tags
+ */
 
 declare(strict_types=1);
 
@@ -8,6 +12,8 @@ use Application\Tags\Taggables\TaggableInterface;
 use Application_Admin_ScreenInterface;
 
 /**
+ * @package Application
+ * @subpackage Tags
  * @see RecordTaggingScreenTrait
  */
 interface RecordTaggingScreenInterface extends Application_Admin_ScreenInterface

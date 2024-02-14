@@ -24,19 +24,25 @@ use DBHelper_Exception;
  * @package Application
  * @subpackage Tags
  */
-class TagContainer
+class TagConnector
 {
     private string $primaryName;
     private string $tableName;
+    private TagCollectionInterface $collection;
 
     /**
-     * @param string $tableName Name of the table storing the record-tag connections.
-     * @param string $primaryName Primary key column name of the record to tag.
+     * @param TagCollectionInterface $collection
      */
-    public function __construct(string $tableName, string $primaryName)
+    public function __construct(TagCollectionInterface $collection)
     {
-        $this->primaryName = $primaryName;
-        $this->tableName = $tableName;
+        $this->collection = $collection;
+        $this->primaryName = $collection->getTagPrimary();
+        $this->tableName = $collection->getTagTable();
+    }
+
+    public function getCollection() : TagCollectionInterface
+    {
+        return $this->collection;
     }
 
     public function getPrimaryName() : string

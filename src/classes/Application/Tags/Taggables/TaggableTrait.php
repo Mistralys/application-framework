@@ -22,4 +22,9 @@ trait TaggableTrait
 
         return $this->tagger;
     }
+
+    public function getTagConnector(): TagConnector
+    {
+        return $this->getTagCollection()->getTagConnector();
+    }
 }

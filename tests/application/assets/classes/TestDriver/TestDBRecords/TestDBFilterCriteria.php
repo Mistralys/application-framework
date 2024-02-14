@@ -25,7 +25,7 @@ class TestDBFilterCriteria extends DBHelper_BaseFilterCriteria implements Taggab
     {
     }
 
-    public function getTagContainer(): TagCollectionInterface
+    public function getTagCollection(): TagCollectionInterface
     {
         return TestDBCollection::getInstance();
     }

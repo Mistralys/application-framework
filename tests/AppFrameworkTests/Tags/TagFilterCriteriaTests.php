@@ -10,7 +10,7 @@ final class TagFilterCriteriaTests extends TaggingTestCase
 {
     public function test_selectTag() : void
     {
-        $tagContainer = $this->recordCollection->getTagContainer();
+        $tagContainer = $this->recordCollection->getTagConnector();
         $tag = $this->tagsCollection->createNewTag('Foo');
 
         $this->recordCollection->createTestRecord('Without tag', 'without');

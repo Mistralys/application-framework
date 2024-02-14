@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
-use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TagConnector;
 use Application\Tags\TagRecord;
 use DBHelper_BaseCollection;
 
@@ -22,7 +22,7 @@ use DBHelper_BaseCollection;
  *
  * @method TestDBRecord[] getDBRecordsByTag(TagRecord $tag, DBHelper_BaseCollection $collection)
  */
-class TestDBTagContainer extends TagContainer
+class TestDBTagConnector extends TagConnector
 {
     /**
      * @param TagRecord $tag

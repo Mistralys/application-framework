@@ -18,7 +18,7 @@ final class TaggingTests extends MediaTestCase
 
         $this->assertSame(2, $media->getFilterCriteria()->countItems());
 
-        $tag = $media->getMediaRootTag()->addSubTag('Foo');
+        $tag = $media->getRootTag()->addSubTag('Foo');
 
         $image1->getTagManager()->addTag($tag);
 

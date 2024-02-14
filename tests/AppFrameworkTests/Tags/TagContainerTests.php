@@ -12,7 +12,7 @@ use Mistralys\AppFrameworkTests\TestClasses\TaggingTestCase;
 
 /**
  * The test DB collection has a custom tag container class,
- * {@see TestDBTagContainer}, which is used to retrieve records
+ * {@see TestDBTagConnector}, which is used to retrieve records
  * directly of the correct type.
  *
  * @package Application Tests
@@ -30,7 +30,7 @@ final class TagContainerTests extends TaggingTestCase
 
         $this->assertCount(3, $this->recordCollection->getAll());
 
-        $manager = $this->recordCollection->getTagContainer();
+        $manager = $this->recordCollection->getTagConnector();
         $records = $manager->getByTag($tag);
 
         $this->assertCount(2, $records);

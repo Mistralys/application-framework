@@ -23,5 +23,5 @@ interface TaggableFilterCriteriaInterface
      */
     public function selectTags(array $tags) : self;
 
-    public function getTagContainer(): TagCollectionInterface;
+    public function getTagCollection(): TagCollectionInterface;
 }

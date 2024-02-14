@@ -5,20 +5,16 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Media\View;
 
 use Application\AppFactory;
-use Application\MarkdownRenderer;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Tags\AdminScreens\RecordTaggingScreenInterface;
 use Application\Tags\AdminScreens\RecordTaggingScreenTrait;
 use Application\Tags\Taggables\TaggableInterface;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
-use Application_Media_Document;
-use AppUtils\FileHelper;
-use UI;
-use UI_PropertiesGrid;
-use UI_Themes_Theme_ContentRenderer;
 
 /**
+ * @package Application
+ * @subpackage Tags
  * @property MediaRecord $record
  */
 class BaseMediaTagsScreen

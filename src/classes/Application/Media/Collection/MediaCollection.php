@@ -10,7 +10,11 @@ use Application\Admin\Area\Media\BaseCreateMediaScreen;
 use Application\Admin\Area\Media\BaseImageGalleryScreen;
 use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
-use Application\Media\MediaTagContainer;
+use Application\Media\MediaTagConnector;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagCollectionTrait;
+use Application\Tags\Taggables\TagConnector;
+use Application\Tags\TagRecord;
 use Application_Admin_ScreenInterface;
 use Application_Formable;
 use Application_Media;
@@ -23,9 +27,9 @@ use DBHelper_BaseCollection;
  * @method MediaFilterCriteria getFilterCriteria()
  * @method MediaFilterSettings getFilterSettings()
  */
-class MediaCollection extends DBHelper_BaseCollection implements Application\Tags\Taggables\TagCollectionInterface
+class MediaCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
-    use Application\Tags\Taggables\TagCollectionTrait;
+    use TagCollectionTrait;
 
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
@@ -51,6 +55,8 @@ class MediaCollection extends DBHelper_BaseCollection implements Application\Tag
 
         return self::$hasSizeColumn;
     }
+
+    // region: X - Interface methods
 
     public function getRecordClassName(): string
     {
@@ -115,6 +121,8 @@ class MediaCollection extends DBHelper_BaseCollection implements Application\Tag
     {
         return array();
     }
+
+    // endregion: X - Interface methods
 
     public function getAdminListURL(array $params=array()) : string
     {
@@ -213,9 +221,11 @@ class MediaCollection extends DBHelper_BaseCollection implements Application\Tag
         }
     }
 
-    public function getTagContainerClass(): ?string
+    // region: Tagging
+
+    public function getTagConnectorClass(): ?string
     {
-        return MediaTagContainer::class;
+        return MediaTagConnector::class;
     }
 
     public function getTagPrimary(): string
@@ -232,4 +242,25 @@ class MediaCollection extends DBHelper_BaseCollection implements Application\Tag
     {
         return Application_Media::TABLE_NAME;
     }
+
+    public function getRootTag(): TagRecord
+    {
+        return AppFactory::createMedia()->getRootTag();
+    }
+
+    public function getTagRegistryKey(): string
+    {
+        return Application_Media::TAG_REGISTRY_KEY;
+    }
+
+    public function getRootTagLabelInvariant(): string
+    {
+        return AppFactory::createMedia()->getRootTagLabelInvariant();
+    }
+
+    protected function handleTaggingInitialized(TagConnector $connector): void
+    {
+    }
+
+    // endregion: Tagging
 }

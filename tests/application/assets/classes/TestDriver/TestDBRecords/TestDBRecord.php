@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
-use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use DBHelper_BaseRecord;
@@ -63,9 +63,9 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
         return $this->getID();
     }
 
-    public function getTagCollection(): TagContainer
+    public function getTagCollection(): TagCollectionInterface
     {
-        return $this->collection->getTagContainer();
+        return $this->collection;
     }
 
     public function getAdminTaggingURL(array $params = array()): string

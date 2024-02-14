@@ -10,7 +10,8 @@ use Application\Admin\Area\Media\View\BaseMediaSettingsScreen;
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\Admin\Area\Media\View\BaseMediaTagsScreen;
 use Application\AppFactory;
-use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagConnector;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use Application_Admin_ScreenInterface;
@@ -173,13 +174,15 @@ class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
         FileHelper::deleteFile($context->getOption('file_path'));
     }
 
-    public function getTagCollection(): TagContainer
-    {
-        return $this->collection->getTagContainer();
-    }
+
 
     public function getTaggedRecordPrimary(): int
     {
         return $this->getID();
+    }
+
+    public function getTagCollection(): TagCollectionInterface
+    {
+        return $this->collection;
     }
 }

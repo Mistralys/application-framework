@@ -10,18 +10,37 @@ namespace Application\Tags\AdminScreens;
 
 use Application\AppFactory;
 use Application\Tags\Taggables\Taggable;
+use Application\Tags\Taggables\TaggableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
 /**
+ * Trait used to implement a screen for tagging records.
+ * The record must implement the {@see TaggableInterface} interface.
+ *
+ * Usage:
+ *
+ * 1. Implement the interface {@see RecordTaggingScreenInterface}
+ * 2. Use this trait.
+ * 3. Call the method {@see handleTaggableActions()} in the action method.
+ *
  * @package Application
  * @subpackage Tags
  * @see RecordTaggingScreenInterface
  */
 trait RecordTaggingScreenTrait
 {
+    private bool $tagsAvailable = false;
+
     protected function handleTaggableActions() : void
     {
+        $this->tagsAvailable = $this->getTaggableRecord()->getTagCollection()->hasAvailableTags();
+
+        if(!$this->tagsAvailable) {
+            return;
+        }
+
         $this->createTagForm();
 
         if($this->request->getBool(self::REQUEST_VAR_CLEAR_ALL)) {
@@ -78,6 +97,10 @@ trait RecordTaggingScreenTrait
 
     public function _handleSidebar() : void
     {
+        if(!$this->tagsAvailable) {
+            return;
+        }
+
         $this->sidebar->addButton('save-tags', t('Save now'))
             ->makePrimary()
             ->setIcon(UI::icon()->save())
@@ -103,9 +126,33 @@ trait RecordTaggingScreenTrait
 
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
+        if(!$this->tagsAvailable) {
+            return $this->renderer
+                ->appendContent($this->renderNoTagsAvailable())
+                ->makeWithoutSidebar();
+        }
+
         return $this->renderer
             ->appendFormable($this)
             ->makeWithSidebar();
+    }
+
+    private function renderNoTagsAvailable() : StringableInterface
+    {
+        return $this->getUI()->createMessage(sb()
+            ->t('No tags are available for this record type.')
+            ->ifTrue(
+                $this->getUser()->canCreateTags(),
+                function () {
+                    return UI::button(t('Manage tags'))
+                        ->makeSmall()
+                        ->setIcon(UI::icon()->tags())
+                        ->link($this->getTaggableRecord()->getTagCollection()->getAdminEditTagsURL(), '_blank');
+                }
+            ))
+            ->makeInfo()
+            ->enableIcon()
+            ->makeNotDismissable();
     }
 
     private function getDefaultFormData() : array
@@ -121,7 +168,7 @@ trait RecordTaggingScreenTrait
 
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormData());
         $this->addFormablePageVars();
-        $this->addHiddenVar($record->getTagCollection()->getPrimaryName(), (string)$record->getID());
+        $this->addHiddenVar($record->getTagConnector()->getPrimaryName(), (string)$record->getID());
 
         $this->injectTagTree();
     }

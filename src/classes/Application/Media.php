@@ -6,10 +6,10 @@ use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\MediaException;
-use Application\Media\MediaTagContainer;
+use Application\Media\MediaTagConnector;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
-use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TagConnector;
 use Application\Tags\TagRecord;
 use Application\Tags\TagRegistry;
 use AppUtils\ClassHelper;
@@ -20,7 +20,7 @@ use UI\Tree\TreeNode;
 use UI\Tree\TreeRenderer;
 
 /**
- * @method MediaTagContainer getTagContainer()
+ * @method MediaTagConnector getTagConnector()
  */
 class Application_Media implements TagCollectionInterface
 {
@@ -333,82 +333,9 @@ class Application_Media implements TagCollectionInterface
         return self::TABLE_TAGS;
     }
 
-    public function getTagContainerClass(): ?string
+    public function getTagConnectorClass(): ?string
     {
-        return MediaTagContainer::class;
-    }
-
-    public function getMediaRootTag() : TagRecord
-    {
-        $this->setUpTagging();
-
-        return TagRegistry::getTagByKey(self::TAG_REGISTRY_KEY);
-    }
-
-    public function createTreeRenderer(?UI $ui=null) : TreeRenderer
-    {
-        return new TreeRenderer($ui, $this->createTagTree($ui));
-    }
-
-    /**
-     * Creates a tree of tags for use in the media tagging screens,
-     * using the media root tag's subtags.
-     *
-     * @param UI|NULL $ui
-     * @return TreeNode
-     * @throws UI_Exception
-     */
-    public function createTagTree(?UI $ui=null) : TreeNode
-    {
-        $rootTag = AppFactory::createMedia()->getMediaRootTag();
-
-        $rootNode = new TreeNode($ui, $rootTag->getLabel());
-
-        $this->addTreeNodesRecursive($rootNode, $rootTag);
-
-        return $rootNode;
-    }
-
-    private function addTreeNodesRecursive(TreeNode $node, TagRecord $tag) : void
-    {
-        foreach($tag->getSubTags() as $subTag)
-        {
-            $subNode = $node->createChildNode($subTag->getLabel())
-                ->setValue($subTag->getID());
-
-            $this->addTreeNodesRecursive($subNode, $subTag);
-        }
-    }
-
-    /**
-     * Gets an array of all tags available for tagging documents,
-     * in a flat list sorted alphabetically.
-     *
-     * @return TagRecord[]
-     */
-    public function getAvailableTags() : array
-    {
-        return $this->getMediaRootTag()->getSubTagsRecursive();
-    }
-
-    /**
-     * Sets up tagging support for the media management in the current
-     * application. This creates the media root tag used to tag documents.
-     *
-     * NOTE: This is called automatically when the media tagging feature
-     * is accessed, so it is not necessary to call this manually. This
-     * method exists to trigger the setup when visiting the tagging screens,
-     * so the media tag is there when needed.
-     *
-     * @return void
-     */
-    public function setUpTagging() : void
-    {
-        if(TagRegistry::isKeyRegistered(self::TAG_REGISTRY_KEY)) {
-            return;
-        }
-
-        TagRegistry::registerKey(self::TAG_REGISTRY_KEY, 'Media Documents');
+        return MediaTagConnector::class;
     }
 
     public function getTagSourceTable(): string
@@ -416,9 +343,18 @@ class Application_Media implements TagCollectionInterface
         return self::TABLE_NAME;
     }
 
-    protected function handleTaggingInitialized(TagContainer $container): void
+    public function getTagRegistryKey(): string
     {
-        $this->setUpTagging();
+        return self::TAG_REGISTRY_KEY;
+    }
+
+    public function getRootTagLabelInvariant(): string
+    {
+        return 'Media Documents';
+    }
+
+    protected function handleTaggingInitialized(TagConnector $connector): void
+    {
     }
 
     // endregion: Tagging

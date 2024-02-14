@@ -48,7 +48,7 @@ class MediaFilterCriteria extends DBHelper_BaseFilterCriteria implements Taggabl
     {
     }
 
-    public function getTagContainer(): TagCollectionInterface
+    public function getTagCollection(): TagCollectionInterface
     {
         return AppFactory::createMediaCollection();
     }

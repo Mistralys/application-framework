@@ -6,7 +6,8 @@ use Application\AppFactory;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;
-use Application\Tags\Taggables\TagContainer;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagConnector;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use AppUtils\ClassHelper;
@@ -78,11 +79,6 @@ abstract class Application_Media_Document
     public function getID() : int
     {
         return $this->id;
-    }
-
-    public function getTaggingTableName(): string
-    {
-        return Application_Media::TABLE_TAGS;
     }
 
     /**
@@ -568,9 +564,11 @@ abstract class Application_Media_Document
 
     abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
 
-    public function getTagCollection(): TagContainer
+    // region: Tagging
+
+    public function getTagCollection(): TagCollectionInterface
     {
-        return AppFactory::createMedia()->getTagContainer();
+        return $this->media;
     }
 
     public function getTaggedRecordPrimary(): int
@@ -578,13 +576,15 @@ abstract class Application_Media_Document
         return $this->getID();
     }
 
-    public function getRecord() : MediaRecord
-    {
-        return AppFactory::createMediaCollection()->getByID($this->getID());
-    }
-
     public function getAdminTaggingURL(array $params = array()) : string
     {
         return $this->getRecord()->getAdminTaggingURL($params);
+    }
+
+    // endregion
+
+    public function getRecord() : MediaRecord
+    {
+        return AppFactory::createMediaCollection()->getByID($this->getID());
     }
 }

@@ -14,7 +14,8 @@ interface TaggableInterface
      * @return Taggable
      */
     public function getTagManager() : Taggable;
-    public function getTagCollection() : TagContainer;
+    public function getTagConnector() : TagConnector;
     public function getTaggedRecordPrimary() : int;
     public function getAdminTaggingURL(array $params=array()) : string;
+    public function getTagCollection() : TagCollectionInterface;
 }

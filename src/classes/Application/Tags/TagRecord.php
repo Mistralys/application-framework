@@ -46,6 +46,11 @@ class TagRecord extends DBHelper_BaseRecord
             ->selectParentTag($this);
     }
 
+    public function hasSubTags() : bool
+    {
+        return !empty($this->getSubTags());
+    }
+
     /**
      * Fetches all sub tags recursively, in a flat list
      * sorted alphabetically.

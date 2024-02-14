@@ -14,8 +14,6 @@ use Application\Tags\TagRecord;
 use Application_Interfaces_Formable;
 use DBHelper;
 use HTML_QuickForm2_Element_TreeSelect;
-use UI\Tree\TreeNode;
-use UI\Tree\TreeRenderer;
 
 /**
  * Helper class that can be used to manage tags for a record.
@@ -31,23 +29,30 @@ class Taggable
     private string $tableName;
     private string $primaryName;
     private int $primaryKey;
-    private TagContainer $collection;
+    private TagConnector $connector;
+    private TagCollectionInterface $collection;
 
     /**
-     * @param TagContainer $collection Tag collection to use.
+     * @param TagCollectionInterface $collection
      * @param int $primaryKey Primary key value of the record to tag.
      */
-    public function __construct(TagContainer $collection, int $primaryKey)
+    public function __construct(TagCollectionInterface $collection, int $primaryKey)
     {
         $this->collection = $collection;
-        $this->primaryName = $collection->getPrimaryName();
-        $this->tableName = $collection->getTableName();
+        $this->connector = $collection->getTagConnector();
+        $this->primaryName = $this->connector->getPrimaryName();
+        $this->tableName = $this->connector->getTableName();
         $this->primaryKey = $primaryKey;
     }
 
-    public function getCollection() : TagContainer
+    public function getCollection() : TagCollectionInterface
     {
         return $this->collection;
+    }
+
+    public function getConnector() : TagConnector
+    {
+        return $this->connector;
     }
 
     public function countTags() : int
@@ -145,7 +150,7 @@ class Taggable
 
     public function injectTagTree(Application_Interfaces_Formable $formable, string $name, string $label) : HTML_QuickForm2_Element_TreeSelect
     {
-        $rootNode = AppFactory::createMedia()->createTreeRenderer($formable->getUI());
+        $rootNode = $this->getCollection()->createTreeRenderer($formable->getUI());
 
         $el = $formable->addElementTreeSelect($name, $label);
         $el->setTree($rootNode);

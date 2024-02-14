@@ -6,6 +6,7 @@ namespace TestDriver\TestDBRecords;
 
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
+use Application\Tags\Taggables\TagConnector;
 use DBHelper;
 use DBHelper_BaseCollection;
 
@@ -14,7 +15,7 @@ use DBHelper_BaseCollection;
  * @method TestDBRecord getByID(int $record_id)
  * @method TestDBFilterCriteria getFilterCriteria()
  * @method TestDBFilterSettings getFilterSettings()
- * @method TestDBTagContainer getTagContainer()
+ * @method TestDBTagConnector getTagConnector()
  */
 class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
@@ -28,6 +29,8 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
 
     public const COL_ALIAS = 'alias';
     public const COL_LABEL = 'label';
+
+    public const TAG_REGISTRY_KEY = 'test_record_tags';
 
 
     private static ?self $instance = null;
@@ -115,9 +118,11 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
             ->makeRequired();
     }
 
-    public function getTagContainerClass(): ?string
+    // region: Tagging
+
+    public function getTagConnectorClass(): ?string
     {
-        return TestDBTagContainer::class;
+        return TestDBTagConnector::class;
     }
 
     public function getTagPrimary(): string
@@ -134,4 +139,20 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
     {
         return self::TABLE_NAME;
     }
+
+    public function getTagRegistryKey(): string
+    {
+        return self::TAG_REGISTRY_KEY;
+    }
+
+    public function getRootTagLabelInvariant(): string
+    {
+        return 'Test records';
+    }
+
+    protected function handleTaggingInitialized(TagConnector $connector): void
+    {
+    }
+
+    // endregion: Tagging
 }

@@ -59,13 +59,13 @@ trait TaggableFilterCriteriaTrait
             return;
         }
 
-        $container = $this->getTagContainer();
+        $tagCollection = $this->getTagCollection();
 
         $values = statementValues()
-            ->table('{table_connection}', $container->getTagTable())
-            ->table('{table_source}', $container->getTagSourceTable())
+            ->table('{table_connection}', $tagCollection->getTagTable())
+            ->table('{table_source}', $tagCollection->getTagSourceTable())
             ->field('{tag_primary}', TagCollection::PRIMARY_NAME)
-            ->field('{record_primary}', $container->getTagPrimary());
+            ->field('{record_primary}', $tagCollection->getTagPrimary());
 
         $join = <<<'EOT'
 LEFT JOIN

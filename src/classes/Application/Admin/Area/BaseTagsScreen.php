@@ -46,8 +46,9 @@ abstract class BaseTagsScreen extends Application_Admin_Area
 
     protected function _handleActions(): bool
     {
+        // To force the creation of the root tag
         $this->startTransaction();
-        AppFactory::createMedia()->setUpTagging();
+        AppFactory::createMedia()->getRootTag();
         $this->endTransaction();
 
         return true;
