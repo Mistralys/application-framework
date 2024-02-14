@@ -91,7 +91,6 @@ class BaseTagTreeScreen extends Application_Admin_Area_Mode_Submode_CollectionRe
             ->appendContent($this->record
                 ->getRootTag()
                 ->createTreeRenderer()
-                ->setActiveTag($this->record)
                 ->makeEditable()
             )
             ->makeWithSidebar();
