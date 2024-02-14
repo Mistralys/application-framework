@@ -40,11 +40,17 @@ class TreeNode implements Application_Interfaces_Iconizable
     private UI $ui;
 
     /**
+     * @param UI|NULL $ui
      * @param string|number|StringableInterface|NULL $label
+     * @param TreeNode|null $parentNode
      * @throws UI_Exception
      */
-    public function __construct(UI $ui, $label, ?TreeNode $parentNode=null)
+    public function __construct(?UI $ui, $label, ?TreeNode $parentNode=null)
     {
+        if($ui === null) {
+            $ui = UI::getInstance();
+        }
+
         $this->ui = $ui;
         $this->label = toString($label);
         $this->parentNode = $parentNode;

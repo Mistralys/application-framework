@@ -45,8 +45,12 @@ class TreeRenderer extends UI_Renderable
     private array $selectedValues = array();
     private string $id;
 
-    public function __construct(UI $ui, TreeNode $rootNode)
+    public function __construct(?UI $ui, TreeNode $rootNode)
     {
+        if($ui === null) {
+            $ui = UI::getInstance();
+        }
+
         $this->rootNode = $rootNode;
         $this->id = 'tree'.nextJSID();
 
