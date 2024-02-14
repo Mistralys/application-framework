@@ -279,6 +279,7 @@ class UI_Form extends UI_Renderable
      *
      * @param string $alias
      * @param string $elementName
+     * @throws BaseClassHelperException
      */
     public function registerCustomElement(string $alias, string $elementName) : void
     {
@@ -1045,11 +1046,11 @@ class UI_Form extends UI_Renderable
      * so that clientside scripts can access them easily as well.
      *
      * @param string $jsid
-     * @param string $elementName
+     * @param string|NULL $elementName
      * @return string
      * @throws FormException
      */
-    public function createElementID(string $jsid, string $elementName) : string
+    public function createElementID(string $jsid, ?string $elementName) : string
     {
         $elementID = $jsid.'_field_'.str_replace(array('[', ']'), array('_', ''), $elementName);
 
@@ -1299,8 +1300,9 @@ class UI_Form extends UI_Renderable
 
     /**
      * @param string $name
+     * @param string $label
      * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_VisualSelect
+     * @return HTML_QuickForm2_Element_InputFile
      *
      * @throws BaseClassHelperException
      * @throws FormException
@@ -1411,6 +1413,11 @@ class UI_Form extends UI_Renderable
      * @param string $label
      * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws BaseClassHelperException
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     * @throws UI_Exception
      */
     public function addHexColor(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
@@ -1726,27 +1733,16 @@ class UI_Form extends UI_Renderable
     }
 
     /**
-     * Adds a select element.
-     *
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Select
-     *
-     * @throws BaseClassHelperException
-     * @throws HTML_QuickForm2_Exception
-     */
      * Adds a tree selection element that uses a {@see \UI\Tree\TreeRenderer}
      * to display the item tree.
      *
      * @param string $name
      * @param string $label
-     * @param HTML_QuickForm2_Container|null $container
+     * @param HTML_QuickForm2_Container|NULL $container
      * @return HTML_QuickForm2_Element_TreeSelect
      *
      * @throws BaseClassHelperException
-     * @throws HTML_QuickForm2_InvalidArgumentException
-     * @throws HTML_QuickForm2_NotFoundException
+     * @throws HTML_QuickForm2_Exception
      */
     public function addTreeSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_TreeSelect
     {
@@ -1759,14 +1755,17 @@ class UI_Form extends UI_Renderable
             ->setLabel($label);
     }
 
-   /**
-    * Adds a select element.
-    *
-    * @param string $name
-    * @param string $label
-    * @param HTML_QuickForm2_Container|NULL $container
-    * @return HTML_QuickForm2_Element_Select
-    */
+    /**
+     * Adds a select element.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_Select
+     *
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     */
     public function addSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -1849,7 +1848,12 @@ class UI_Form extends UI_Renderable
      *
      * @param string $abstract
      * @param string[] $classes
+     * @param HTML_QuickForm2_Container|null $container
      * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     * @throws UI_Exception
      */
     public function addAbstract(string $abstract, array $classes=array(), ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
@@ -2388,6 +2392,8 @@ class UI_Form extends UI_Renderable
      * @param HTML_QuickForm2_Node $element
      * @param string|number|StringableInterface|NULL $units
      * @return HTML_QuickForm2_Node
+     *
+     * @throws UI_Exception
      */
     public function setElementUnits(HTML_QuickForm2_Node $element, $units) : HTML_QuickForm2_Node
     {
@@ -2401,14 +2407,16 @@ class UI_Form extends UI_Renderable
         return $element;
     }
 
-   /**
-    * Adds a string to append to an element. For example
-    * for units, like "Centimetres".
-    *
-    * @param HTML_QuickForm2_Node $element
-    * @param string|number|StringableInterface|NULL $appendString
-    * @return HTML_QuickForm2_Node
-    */
+    /**
+     * Adds a string to append to an element.
+     * For example for units, like "Centimetres".
+     *
+     * @param HTML_QuickForm2_Node $element
+     * @param string|number|StringableInterface|NULL $appendString
+     * @return HTML_QuickForm2_Node
+     *
+     * @throws UI_Exception
+     */
     public function setElementAppend(HTML_QuickForm2_Node $element, $appendString) : HTML_QuickForm2_Node
     {
         $element->setAttribute('data-append', toString($appendString));
@@ -2616,14 +2624,15 @@ class UI_Form extends UI_Renderable
 
     protected string $title = '';
 
-   /**
-    * Sets the title of the form. This is typically used
-    * in the form rendering template as title for the content
-    * section in which the form is shown.
-    *
-    * @param string|number|StringableInterface|NULL $title
-    * @return $this
-    */
+    /**
+     * Sets the title of the form. This is typically used
+     * in the form rendering template as title for the content
+     * section in which the form is shown.
+     *
+     * @param string|number|StringableInterface|NULL $title
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setTitle($title) : self
     {
         $this->title = toString($title);
@@ -2637,14 +2646,15 @@ class UI_Form extends UI_Renderable
 
     protected string $abstract = '';
 
-   /**
-    * Sets the abstract of the form. This is typically used
-    * in the form rendering template as title for the content
-    * section in which the form is shown.
-    *
-    * @param string|number|StringableInterface|NULL $abstract
-    * @return $this
-    */
+    /**
+     * Sets the abstract of the form. This is typically used
+     * in the form rendering template as title for the content
+     * section in which the form is shown.
+     *
+     * @param string|number|StringableInterface|NULL $abstract
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setAbstract($abstract) : self
     {
         $this->abstract = toString($abstract);
@@ -2714,13 +2724,16 @@ class UI_Form extends UI_Renderable
         return str_replace(self::FORM_PREFIX, '', $name);
     }
 
-   /**
-    * Gets the javascript statement that can be used to submit
-    * the form, optionally in simulation mode.
-    *
-    * @param bool $simulate
-    * @return string
-    */
+    /**
+     * Gets the javascript statement that can be used to submit
+     * the form, optionally in simulation mode.
+     *
+     * @param bool $simulate
+     * @return string
+     * @throws Application_Formable_Exception
+     * @throws ConvertHelper_Exception
+     * @throws FormException
+     */
     public function getJSSubmitHandler(bool $simulate=false) : string
     {
         return self::renderJSSubmitHandler($this, $simulate);
@@ -2729,6 +2742,7 @@ class UI_Form extends UI_Renderable
     /**
      * @param class-string|UI_DataGrid|UI_Form|Application_Formable|Application_Interfaces_Formable|mixed $subject
      * @return string
+     * @throws Application_Formable_Exception
      */
     public static function resolveFormName($subject) : string
     {
@@ -2763,6 +2777,7 @@ class UI_Form extends UI_Renderable
      * @param boolean $simulate
      * @return string
      *
+     * @throws Application_Formable_Exception
      * @throws ConvertHelper_Exception
      * @throws FormException
      */

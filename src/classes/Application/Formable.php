@@ -6,15 +6,13 @@
  * @see Application_Formable
  */
 
-use Application\Exception\UnexpectedInstanceException;
-use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
+use AppUtils\ConvertHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
-use AppUtils\RegexHelper;
 use UI\Form\FormException;
 
 /**
@@ -42,38 +40,25 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     public const ERROR_FORM_NOT_VALID = 38732005;
 
     protected UI_Form $formableForm;
-
     protected ?HTML_QuickForm2_Container $formableContainer = null;
+    protected HTML_QuickForm2_Container $formableMainContainer;
+    protected string $formableJSID;
+    protected bool $formableLogging = false;
 
-   /**
-    * This is always the main form object.
-    * @var HTML_QuickForm2_Container
-    */
-    protected $formableMainContainer;
-
-   /**
-    * @var string
-    */
-    protected $formableJSID;
-
-   /**
-    * @var boolean
-    */
-    protected $formableLogging = false;
-
-   /**
-    * Creates a form to use specifically for clientside forms.
-    * These require the JSID to be set, and ensure that any
-    * unnecessary elements are stripped.
-    *
-    * Additionally, a dummy UI object is used to capture only
-    * the javascript required by the form so it can be sent
-    * along with the form.
-    *
-    * @param string $name
-    * @param array $defaultData
-    * @return UI_Form
-    */
+    /**
+     * Creates a form to use specifically for clientside forms.
+     * These require the JSID to be set and ensure that any
+     * unnecessary elements are stripped.
+     *
+     * Additionally, a stub UI object is used to capture only
+     * the javascript required by the form, so it can be sent
+     * along with the form.
+     *
+     * @param string $name
+     * @param array<string,mixed> $defaultData
+     * @return UI_Form
+     * @throws Application_Exception
+     */
     protected function createClientForm(string $name, array $defaultData=array()) : UI_Form
     {
         $ui = UI::selectDummyInstance();
@@ -85,13 +70,14 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $form;
     }
 
-   /**
-    * Creates a regular, non clientside form.
-    *
-    * @param string $name
-    * @param array<string,mixed> $defaultData
-    * @return UI_Form
-    */
+    /**
+     * Creates a regular, non clientside form.
+     *
+     * @param string $name
+     * @param array<string,mixed> $defaultData
+     * @return UI_Form
+     * @throws UI_Exception
+     */
     protected function createForm(string $name, array $defaultData=array()) : UI_Form
     {
         return UI::getInstance()->createForm($name, $defaultData);
@@ -173,9 +159,9 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->formableJSID;
     }
 
-    protected $formableInstanceID;
+    protected string $formableInstanceID;
 
-    public function getFormableInstanceID()
+    public function getFormableInstanceID() : string
     {
         if(!isset($this->formableInstanceID)) {
             $this->formableInstanceID = nextJSID();
@@ -213,12 +199,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
    /**
-    * Sets the name of the form's default element.
-    * Adds a data attribute to the form that can be used clientside
-    * to determine the default element.
-    *
-    * @param string|HTML_QuickForm2_Node $elementNameOrObject
-    * @return Application_Formable
+    * @inheritDoc
     */
     public function setDefaultElement($elementNameOrObject) : self
     {
@@ -246,6 +227,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     // region: A - Adding elements
 
+    /**
+     * @inheritDoc
+     * @throws Application_Formable_Exception
+     * @throws BaseClassHelperException
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     */
     public function addElementSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
         $el = $this->getFormInstance()->addSwitch($name, $label, $this->getFormableDefaultContainer($container));
@@ -292,12 +280,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Creates a form element to enter a percentage value.
+     * @inheritDoc
      *
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_InputText
+     * @throws Application_Formable_Exception
+     * @throws BaseClassHelperException
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     * @throws UI_Exception
      */
     public function addElementPercent(string $name, string $label, ?HTML_QuickForm2_Container $container=null, float $min=0, float $max=100) : HTML_QuickForm2_Element_InputText
     {
@@ -309,15 +298,9 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Helper method to add a form element, which automatically sets
-     * the correct ID for elements. If no container is specified, the
-     * form itself is used as the container.
+     * @inheritDoc
      *
-     * @param string $type
-     * @param string $name
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Node
-     *
+     * @throws Application_Formable_Exception
      * @throws FormException
      * @throws HTML_QuickForm2_Exception
      */
@@ -331,12 +314,12 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Adds a text element.
+     * @inheritDoc
      *
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_InputText
+     * @throws Application_Formable_Exception
+     * @throws BaseClassHelperException
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
      */
     public function addElementText(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
@@ -672,20 +655,22 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this;
     }
 
-   /**
-    * Retrieves the ID for an element given its name.
-    * @param string $name
-    * @return string
-    * @see UI_Form::createElementID()
-    */
-    protected function getElementID($name)
+    /**
+     * Retrieves the ID for an element given its name.
+     * @param string|NULL $name
+     * @return string
+     *
+     * @throws Application_Formable_Exception
+     * @throws FormException
+     *
+     * @see UI_Form::createElementID()
+     */
+    protected function getElementID(?string $name) : string
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->createElementID($this->formableJSID, $name);
+        return $this->getFormInstance()->createElementID($this->formableJSID, $name);
     }
 
-    public function renderFormable()
+    public function renderFormable() : string
     {
         $this->requireFormableInitialized();
 
@@ -699,18 +684,19 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $html;
     }
 
-   /**
-    * Creates an element ID using the specified client jsID
-    * so the clientside application can access these elements
-    * by their ID.
-    *
-    * NOTE: This is not necessary for form fields, those are
-    * handled automatically. This is only for custom DOM elements.
-    *
-    * @param string $part
-    * @return string
-    */
-    protected function getClientElementID($part)
+    /**
+     * Creates an element ID using the specified client jsID
+     * so the clientside application can access these elements
+     * by their ID.
+     *
+     * NOTE: This is not necessary for form fields, those are
+     * handled automatically. This is only for custom DOM elements.
+     *
+     * @param string $part
+     * @return string
+     * @throws Application_Formable_Exception
+     */
+    protected function getClientElementID(string $part) : string
     {
         $this->requireFormableInitialized();
 
@@ -720,38 +706,32 @@ abstract class Application_Formable implements Application_Interfaces_Formable
    /**
     * Retrieves the default value for image uploader elements.
     * This is an array with a specific structure, so to avoid
-    * having to create it manually it is recommended to use this
+    * having to create it manually, it is recommended to use this
     * method.
     *
-    * @return array
+    * @return array{name:string,state:string,id:string}
     * @see HTML_QuickForm2_Element_ImageUploader::getDefaultData()
     */
-    protected function getDefaultImageUploaderValue()
+    protected function getDefaultImageUploaderValue() : array
     {
         return HTML_QuickForm2_Element_ImageUploader::getDefaultData();
     }
 
     // region: B - Adding rules
 
-    public function addRulePhone(HTML_QuickForm2_Element $element)
+    public function addRulePhone(HTML_QuickForm2_Element $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRulePhone($element);
+        return $this->getFormInstance()->addRulePhone($element);
     }
 
-    public function addRuleEmail(HTML_QuickForm2_Element $element)
+    public function addRuleEmail(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleEmail($element);
+        return $this->getFormInstance()->addRuleEmail($element);
     }
 
-    public function addRuleAlias(HTML_QuickForm2_Element $element, $allowCapitalLetters=false)
+    public function addRuleAlias(HTML_QuickForm2_Element $element, bool $allowCapitalLetters=false) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleAlias($element, $allowCapitalLetters);
+        return $this->getFormInstance()->addRuleAlias($element, $allowCapitalLetters);
     }
 
    /**
@@ -768,16 +748,12 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     */
     public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleCallback($element, $callback, $errorMessage, $arguments);
+        return $this->getFormInstance()->addRuleCallback($element, $callback, $errorMessage, $arguments);
     }
 
     public function addRuleLabel(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleLabel($element);
+        return $this->getFormInstance()->addRuleLabel($element);
     }
 
     /**
@@ -791,9 +767,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      */
     public function addRuleFilename(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleFilename($element);
+        return $this->getFormInstance()->addRuleFilename($element);
     }
 
     /**
@@ -808,9 +782,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      */
     public function addRuleNameOrTitle(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleNameOrTitle($element);
+        return $this->getFormInstance()->addRuleNameOrTitle($element);
     }
 
     /**
@@ -825,33 +797,23 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      */
     public function addRuleNoHTML(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleNoHTML($element);
+        return $this->getFormInstance()->addRuleNoHTML($element);
     }
 
-    public function addRuleRegex(HTML_QuickForm2_Element $element, string $regex, string $message)
+    public function addRuleRegex(HTML_QuickForm2_Element $element, string $regex, string $message) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleRegex($element, $regex, $message);
+        return $this->getFormInstance()->addRuleRegex($element, $regex, $message);
     }
 
-   /**
-    * Adds an integer validation rule to the element, with the
-    * possiblity to set a minimum and/or maximum value. Automatically
-    * adds validation hints to the element comments.
-    *
-    * @param HTML_QuickForm2_Node $element
-    * @param integer $min
-    * @param integer $max
-    * @return HTML_QuickForm2_Node
-    */
+    /**
+     * @inheritDoc
+     * @throws Application_Formable_Exception
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     */
     public function addRuleInteger(HTML_QuickForm2_Node $element, int $min=0, int $max=0) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleInteger($element, $min, $max);
+        return $this->getFormInstance()->addRuleInteger($element, $min, $max);
     }
 
     /**
@@ -862,9 +824,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      */
     public function addRuleISODate(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleISODate($element);
+        return $this->getFormInstance()->addRuleISODate($element);
     }
 
     /**
@@ -941,125 +901,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     public function addRuleFloat(HTML_QuickForm2_Node $element, float $min=0, float $max=0) : HTML_QuickForm2_Node
     {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addRuleFloat($element, $min, $max);
-    }
-
-    /**
-     * Adds a switch element to the form and returns its instance.
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Switch
-     *
-     * @throws Application_Formable_Exception
-     * @throws BaseClassHelperException
-     * @throws HTML_QuickForm2_Exception
-     * @throws UnexpectedInstanceException
-     */
-    public function addElementSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
-    {
-        $el = $this->addElement('switch', $name, $container);
-        $el->setLabel($label);
-
-        return ClassHelper::requireObjectInstanceOf(
-            HTML_QuickForm2_Element_Switch::class,
-            $el
-        );
-    }
-
-   /**
-    * Hides the element from the readonly ("frozen") version of the form.
-    * @param HTML_QuickForm2_Element $element
-    * @return $this
-    */
-    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element)
-    {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->makeHiddenWhenReadonly($element);
-        return $this;
-    }
-
-   /**
-    * Creates an integer form element that comes with a validation
-    * rule for integer values.
-    *
-    * @param string $name
-    * @param string $label
-    * @param HTML_QuickForm2_Container|NULL $container
-    * @return HTML_QuickForm2_Element_InputText
-    */
-    public function addElementInteger(string $name, string $label, ?HTML_QuickForm2_Container $container=null, int $min=0, int $max=0) : HTML_QuickForm2_Element_InputText
-    {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addInteger($name, $label, $container, $min, $max);
-    }
-
-    /**
-     * Creates a form element to enter a date without time.
-     *
-     * @param string $name
-     * @param string $label
-     * @param HTML_QuickForm2_Container $container
-     * @return HTML_QuickForm2_Element_InputText
-     */
-    public function addElementISODate(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
-    {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->addISODate($name, $label, $container);
         return $this->getFormInstance()->addRuleFloat($element, $min, $max);
     }
 
     // endregion
-
-   /**
-    * Marks the specified element as structural, which means the
-    * related object being modified will need a new draft revision
-    * (only relevant with revisionables).
-    *
-    * @param HTML_QuickForm2_Element $element
-    * @param bool $structural
-    * @return Application_Formable
-    */
-    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural=true)
-    {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->makeStructural($element, $structural);
-        return $this;
-    }
-
-   /**
-    * Adds a redactor to the specified element.
-    * @param HTML_QuickForm2_Element $element
-    * @return UI_MarkupEditor_Redactor
-    */
-    public function makeRedactor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_Redactor
-    {
-        $this->requireFormableInitialized();
-
-        return $this->formableForm->makeRedactor($element, $country);
-    }
-
-   /**
-    * Makes the target element required by adding the standard
-    * required rule with the default text, or the one specified
-    * if set.
-    *
-    * @param HTML_QuickForm2_Element $element
-    * @return $this
-    */
-    public function makeStandalone(HTML_QuickForm2_Element $element)
-    {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->makeStandalone($element);
-        return $this;
-    }
 
     /**
      * Registers an element with the formable. This is done automatically
@@ -1072,25 +917,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws FormException
      * @throws HTML_QuickForm2_Exception
      */
-
-
-
-
-   /**
-    * Registers an element with the formable. This is done automatically
-    * with all elements created with the formable methods, but can be
-    * used to register elements created any other way.
-    *
-    * @param HTML_QuickForm2_Node $el
-    * @return HTML_QuickForm2_Node
-    */
     protected function registerFormableElement(HTML_QuickForm2_Node $el) : HTML_QuickForm2_Node
     {
         $el->setId($this->formableForm->createElementID($this->formableJSID, $el->getName()));
         return $el;
     }
-
-
 
    /**
     * Retrieves the form's values as an associative array
@@ -1317,6 +1148,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     * @throws Application_Formable_Exception
+     */
     public function setElementUnits(HTML_QuickForm2_Element $element, $units) : self
     {
         $this->getFormInstance()->setElementUnits($element, $units);
@@ -1324,13 +1159,9 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Marks the specified element as structural, which means the
-     * related object being modified will need a new draft revision
-     * (only relevant with revisionables).
-     *
-     * @param HTML_QuickForm2_Element $element
-     * @param bool $structural
-     * @return $this
+     * @inheritDoc
+     * @throws Application_Formable_Exception
+     * @throws ConvertHelper_Exception
      */
     public function makeStructural(HTML_QuickForm2_Element $element, bool $structural=true) : self
     {
@@ -1339,9 +1170,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Adds a redactor to the specified element.
-     * @param HTML_QuickForm2_Element $element
-     * @return UI_MarkupEditor_Redactor
+     * @inheritDoc
      */
     public function makeRedactor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_Redactor
     {
@@ -1351,12 +1180,8 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Makes the target element required by adding the standard
-     * required rule with the default text, or the one specified
-     * if set.
-     *
-     * @param HTML_QuickForm2_Element $element
-     * @return $this
+     * @inheritDoc
+     * @throws Application_Formable_Exception
      */
     public function makeStandalone(HTML_QuickForm2_Element $element) : self
     {
@@ -1365,9 +1190,8 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Hides the element from the readonly ("frozen") version of the form.
-     * @param HTML_QuickForm2_Element $element
-     * @return $this
+     * @inheritDoc
+     * @throws Application_Formable_Exception
      */
     public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element) : self
     {
@@ -1376,107 +1200,78 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     }
 
     /**
-     * Adds a validation rule to the element to limit the length
-     * to the specified number of characters. Automatically adds
-     * a validation hint for the length as well.
-     *
-     * Note: To limit to a specific length, set the min and max
-     * to the same value.
-     *
-     * @param HTML_QuickForm2_Node $el
-     * @param int $min
-     * @param int $max
-     * @return Application_Formable
-     */
-    public function makeLengthLimited(HTML_QuickForm2_Node $el, $min, $max)
-    {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->makeLengthLimited($el, $min, $max);
-        return $this;
-    }
-
-    /**
-     * Adds a validation rule to a number form element to limit the
-     * value to the specified range.
-     *
-     * @param HTML_QuickForm2_Node $el
-     * @param int|NULL $min
-     * @param int|NULL $max
-     * @return Application_Formable
-     */
-    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null)
-    {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->makeMinMax($el, $min, $max);
-        return $this;
-    }
-
-    /**
-     * Adds a string to prepend to an element. For example
-     * for units, like "Centimetres".
-     *
-     * @param HTML_QuickForm2_Element $element
-     * @param string $prependString
+     * @inheritDoc
      * @return $this
+     * @throws Application_Formable_Exception
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     */
+    public function makeLengthLimited(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null) : self
+    {
+        $this->getFormInstance()->makeLengthLimited($el, $min, $max);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     * @throws Application_Formable_Exception
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     */
+    public function makeMinMax(HTML_QuickForm2_Node $el, ?int $min=null, ?int $max=null) : self
+    {
+        $this->getFormInstance()->makeMinMax($el, $min, $max);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     * @throws Application_Formable_Exception
+     * @throws UI_Exception
      */
     public function setElementPrepend(HTML_QuickForm2_Element $element, $prependString) : self
     {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->setElementPrepend($element, $prependString);
+        $this->getFormInstance()->setElementPrepend($element, $prependString);
         return $this;
     }
 
     /**
-     * Adds a string to append to an element. For example
-     * for units, like "Centimetres".
-     *
-     * @param HTML_QuickForm2_Element $element
-     * @param string $appendString
+     * @inheritDoc
      * @return $this
+     * @throws Application_Formable_Exception
+     * @throws UI_Exception
      */
     public function setElementAppend(HTML_QuickForm2_Element $element, $appendString) : self
     {
-        $this->requireFormableInitialized();
-
-        $this->formableForm->setElementAppend($element, $appendString);
+        $this->getFormInstance()->setElementAppend($element, $appendString);
         return $this;
     }
 
     /**
-     * Adds a callback function that will be called when the element is
-     * rendered, to be able to influence how the element is rendered.
-     *
-     * @param HTML_QuickForm2_Node $element
-     * @param callable $callback
+     * @inheritDoc
+     * @return $this
      * @throws Application_Exception
+     * @throws Application_Formable_Exception
+     * @throws FormException
      */
-    public function addElementRenderCallback(HTML_QuickForm2_Node $element, $callback) : void
+    public function addElementRenderCallback(HTML_QuickForm2_Node $element, callable $callback) : self
     {
-        $this->formableForm->addRenderCallback($element, $callback);
+        $this->getFormInstance()->addRenderCallback($element, $callback);
+        return $this;
     }
 
    /**
-    * Appends a button to the element.
-    *
-    * @param HTML_QuickForm2_Node $element
-    * @param UI_Button|UI_Bootstrap $button
-    * @param boolean $whenFrozen Whether to append even when the element is frozen.
-    * @return HTML_QuickForm2_Node
+    * @inheritDoc
     */
     public function appendElementButton(HTML_QuickForm2_Node $element, $button, bool $whenFrozen=false) : HTML_QuickForm2_Node
     {
-        return $this->formableForm->appendElementButton($element, $button, $whenFrozen);
+        return $this->getFormInstance()->appendElementButton($element, $button, $whenFrozen);
     }
 
    /**
-    * Appends HTML to the element, visually connected to the element.
-    * @param HTML_QuickForm2_Node $element
-    * @param string|number|StringableInterface $html
-    * @param bool $whenFrozen Whether to append even when the element is frozen.
-    * @return HTML_QuickForm2_Node
+    * @inheritDoc
     */
     public function appendElementHTML(HTML_QuickForm2_Node $element, $html, bool $whenFrozen=false) : HTML_QuickForm2_Node
     {
@@ -1550,10 +1345,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         $this->containers = $keep;
     }
 
-    public function logFormable($message)
+    public function logFormable(?string $message) : self
     {
         if(!$this->formableLogging) {
-            return;
+            return $this;
         }
 
         Application::log(sprintf(
@@ -1561,9 +1356,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
             $this->getFormableIdentification(),
             $message
         ));
+
+        return $this;
     }
 
-    public function getFormableIdentification()
+    public function getFormableIdentification() : string
     {
         $type = 'Formable';
         if($this instanceof Application_Formable_Container) {
@@ -1589,7 +1386,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     }
 
-    public function isInitialized()
+    public function isInitialized() : bool
     {
         return $this->formableInitialized;
     }
