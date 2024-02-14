@@ -16,6 +16,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
+use UI\Tree\TreeNode;
+use UI\Tree\TreeRenderer;
 
 /**
  * @method MediaTagContainer getTagContainer()
@@ -341,6 +343,41 @@ class Application_Media implements TagCollectionInterface
         $this->setUpTagging();
 
         return TagRegistry::getTagByKey(self::TAG_REGISTRY_KEY);
+    }
+
+    public function createTreeRenderer(?UI $ui=null) : TreeRenderer
+    {
+        return new TreeRenderer($ui, $this->createTagTree($ui));
+    }
+
+    /**
+     * Creates a tree of tags for use in the media tagging screens,
+     * using the media root tag's subtags.
+     *
+     * @param UI|NULL $ui
+     * @return TreeNode
+     * @throws UI_Exception
+     */
+    public function createTagTree(?UI $ui=null) : TreeNode
+    {
+        $rootTag = AppFactory::createMedia()->getMediaRootTag();
+
+        $rootNode = new TreeNode($ui, $rootTag->getLabel());
+
+        $this->addTreeNodesRecursive($rootNode, $rootTag);
+
+        return $rootNode;
+    }
+
+    private function addTreeNodesRecursive(TreeNode $node, TagRecord $tag) : void
+    {
+        foreach($tag->getSubTags() as $subTag)
+        {
+            $subNode = $node->createChildNode($subTag->getLabel())
+                ->setValue($subTag->getID());
+
+            $this->addTreeNodesRecursive($subNode, $subTag);
+        }
     }
 
     /**
