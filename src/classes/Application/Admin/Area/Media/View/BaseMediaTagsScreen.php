@@ -60,6 +60,16 @@ class BaseMediaTagsScreen
         return '';
     }
 
+    protected function _handleHelp(): void
+    {
+        $this->renderer
+            ->setAbstract(sb()
+                ->t('This allows you to select the tags relevant for this media file.')
+                ->t('Tip:')
+                ->t('It can make it easier to find media files if they are correctly tagged.')
+            );
+    }
+
     protected function _handleActions(): bool
     {
         $this->handleTaggableActions();
