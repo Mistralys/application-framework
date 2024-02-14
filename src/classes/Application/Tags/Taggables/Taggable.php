@@ -11,7 +11,11 @@ namespace Application\Tags\Taggables;
 use Application\AppFactory;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
+use Application_Interfaces_Formable;
 use DBHelper;
+use HTML_QuickForm2_Element_TreeSelect;
+use UI\Tree\TreeNode;
+use UI\Tree\TreeRenderer;
 
 /**
  * Helper class that can be used to manage tags for a record.
@@ -137,5 +141,15 @@ class Taggable
         );
 
         return $this;
+    }
+
+    public function injectTagTree(Application_Interfaces_Formable $formable, string $name, string $label) : HTML_QuickForm2_Element_TreeSelect
+    {
+        $rootNode = AppFactory::createMedia()->createTreeRenderer($formable->getUI());
+
+        $el = $formable->addElementTreeSelect($name, $label);
+        $el->setTree($rootNode);
+
+        return $el;
     }
 }
