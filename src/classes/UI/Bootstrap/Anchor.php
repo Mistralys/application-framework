@@ -38,7 +38,7 @@ class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces
         return $this->setAttribute('target', $target);
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         $label = $this->label;
         if (isset($this->icon)) {

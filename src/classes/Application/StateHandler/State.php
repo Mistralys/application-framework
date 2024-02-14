@@ -1,40 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\StateHandler\StateHandlerException;
+
 class Application_StateHandler_State
 {
     public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14101;
-    
-    protected $name;
+    public const ERROR_INVALID_TIMED_CHANGE = 14102;
 
-    protected $label;
+    public const UI_TYPE_SUCCESS = 'success';
+    public const UI_TYPE_INACTIVE = 'inactive';
+    public const UI_TYPE_DANGER = 'danger';
+    public const UI_TYPE_WARNING = 'warning';
+    public const UI_TYPE_DEFAULT = 'default';
+
+    protected string $name;
+    protected string $label;
+    protected Application_StateHandler $handler;
+    protected ?Application_StateHandler_State $timedState = null;
+    protected int $timedDelay = 0;
+    protected ?Application_Revisionable_Interface $item = null;
+    protected string $uiType;
+    protected bool $changesAllowed = false;
+    protected bool $isInitial = false;
 
     /**
-     * @var Application_StateHandler
+     * @var string[]
      */
-    protected $handler;
+    protected array $dependencies = array();
 
-    protected $dependencies = array();
-
-    protected $timedState = null;
-
-    protected $timedDelay = null;
-
-    /**
-     * @var Application_Revisionable|NULL
-     */
-    protected $item = null;
-
-    protected $uiType;
-    
-    protected $isInitial = false;
-
-   /**
-    * Whether changes are allowed in this state.
-    * @var boolean
-    */
-    protected $changesAllowed = false;
-    
-    public function __construct($name, $label, $uiType, $changesAllowed, $isInitial, Application_StateHandler $handler, Application_Revisionable $item)
+    public function __construct(string $name, string $label, string $uiType, bool $changesAllowed, bool $isInitial, Application_StateHandler $handler, Application_Revisionable_Interface $item)
     {
         $this->name = $name;
         $this->label = $label;
@@ -45,12 +41,12 @@ class Application_StateHandler_State
         $this->isInitial = $isInitial;
     }
 
-    public function getName()
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }
@@ -61,7 +57,7 @@ class Application_StateHandler_State
     * 
     * @return boolean
     */
-    public function isInitial()
+    public function isInitial() : bool
     {
         return $this->isInitial;
     }
@@ -70,36 +66,36 @@ class Application_StateHandler_State
     * Whether changes may be made to the revisionable in this state.
     * @return boolean
     */
-    public function isChangingAllowed()
+    public function isChangingAllowed() : bool
     {
         return $this->changesAllowed;
     }
     
-    public function getPrettyLabel()
+    public function getPrettyLabel() : string
     {
         switch ($this->uiType) {
-            case 'success':
+            case self::UI_TYPE_SUCCESS:
                 return
                     '<span class="text-success state-label">' .
                     UI::icon()->published() . ' ' .
                     $this->getLabel() .
                     '</span>';
 
-            case 'inactive':
+            case self::UI_TYPE_INACTIVE:
                 return
                     '<span class="muted state-label">' .
                     UI::icon()->inactive() . ' ' .
                     $this->getLabel() .
                     '</span>';
 
-            case 'danger':
+            case self::UI_TYPE_DANGER:
                 return
                     '<span class="text-error state-label">' .
                     UI::icon()->deleted() . ' ' .
                     $this->getLabel() .
                     '</span>';
 
-            case 'warning':
+            case self::UI_TYPE_WARNING:
                 return
                     '<span class="text-warning state-label">' .
                     UI::icon()->draft() . ' ' .
@@ -110,85 +106,105 @@ class Application_StateHandler_State
                 return $this->getLabel();
         }
     }
-    
-   /**
-    * Retrieves a badge instance of the item's state.
-    * @return UI_Label
-    */
-    public function getBadge()
+
+    /**
+     * Retrieves a badge instance of the item's state.
+     * @return UI_Label
+     *
+     * @throws Application_Exception
+     * @throws UI_Exception
+     */
+    public function getBadge() : UI_Label
     {
         $badge = UI::label($this->getLabel());
         $badge->addClass('state-badge');
         
         switch ($this->uiType) {
-            case 'success':
+            case self::UI_TYPE_SUCCESS:
                 $badge->makeSuccess();
                 break;
         
-            case 'danger':
+            case self::UI_TYPE_DANGER:
                 $badge->makeDangerous();
+                break;
         
-            case 'warning':
+            case self::UI_TYPE_WARNING:
                 $badge->makeWarning();
+                break;
+
+            case self::UI_TYPE_INACTIVE:
+                $badge->makeInactive();
+                break;
         }
         
         return $badge;
     }
 
-    public function __toString()
+    public function __toString() : string
     {
         return $this->getLabel();
     }
 
-    public function addDependency(Application_StateHandler_State $state)
+    public function addDependency(Application_StateHandler_State $state) : void
     {
         $name = $state->getName();
-        if (!in_array($name, $this->dependencies)) {
+
+        if (!in_array($name, $this->dependencies, true)) {
             $this->dependencies[] = $name;
         }
     }
 
-    public function hasDependency(Application_StateHandler_State $state)
+    public function hasDependency(Application_StateHandler_State $state) : bool
     {
-        return in_array($state->getName(), $this->dependencies);
+        return in_array($state->getName(), $this->dependencies, true);
     }
 
-    public function setTimedChange(Application_StateHandler_State $state, $delay)
+    public function setTimedChange(Application_StateHandler_State $state, $delay) : self
     {
         if (!$this->hasDependency($state)) {
-            throw new InvalidArgumentException('Cannot set the state to have a timed change to the target state, it is not a valid dependency of this state.');
+            throw new StateHandlerException(
+                'Invalid state dependency',
+                sprintf(
+                    'Cannot set the state [%s] to have a timed change to the target state [%s], it is not a valid dependency of this state.',
+                    $this->getName(),
+                    $state->getName()
+                ),
+                self::ERROR_INVALID_TIMED_CHANGE
+            );
         }
 
         $this->timedState = $state;
         $this->timedDelay = $delay;
+
+        return $this;
     }
 
-    public function hasTimedChange()
+    public function hasTimedChange() : bool
     {
         return isset($this->timedState);
     }
 
-    public function getTimeLeft()
+    public function getTimeLeft() : int
     {
         return ($this->item->getRevisionTimestamp() + $this->timedDelay) - time();
     }
 
-    public function getTimeLeftLabel()
+    public function getTimeLeftLabel() : string
     {
         return convert_time2string($this->getTimeLeft());
     }
 
-    public function activate($ownerID, $ownerName)
+    public function activate($ownerID, $ownerName) : self
     {
         if (!isset($this->timedState)) {
-            return;
+            return $this;
         }
 
         // check if the delay is depleted
         $timeLeft = $this->getTimeLeft();
         if ($timeLeft > 0) {
             //Application::log('Timed state change: Item '.$this->item->getIdentification().' will automatically be changed to '.$this->timedState->getName().' in '.$this->getTimeLeftLabel().'.');
-            return;
+            return $this;
         }
 
         // start a transaction to change the state
@@ -202,9 +218,11 @@ class Application_StateHandler_State
         $this->item->save();
 
         Application::log('Timed state change: Item ' . $this->item->getIdentification() . ' automatically changed from state ' . $this->getName() . ' to ' . $this->timedState->getName() . '.');
+
+        return $this;
     }
 
-    protected $onStructuralChange;
+    protected ?Application_StateHandler_State $onStructuralChange = null;
 
     /**
      * Sets the state the item should automatically be changed to
@@ -212,11 +230,13 @@ class Application_StateHandler_State
      * automatically be changed to the new state on saving the item.
      *
      * @param Application_StateHandler_State $state
+     * @return $this
      * @see Application_Revisionable::save()
      */
-    public function setOnStructuralChange(Application_StateHandler_State $state)
+    public function setOnStructuralChange(Application_StateHandler_State $state) : self
     {
         $this->onStructuralChange = $state;
+        return $this;
     }
 
     /**
@@ -225,7 +245,7 @@ class Application_StateHandler_State
      *
      * @return boolean
      */
-    public function hasStructuralStateChange()
+    public function hasStructuralStateChange() : bool
     {
         return isset($this->onStructuralChange);
     }
@@ -233,9 +253,9 @@ class Application_StateHandler_State
     /**
      * Retrieves the state to change to after structural changes to the item.
      *
-     * @return Application_StateHandler_State
+     * @return Application_StateHandler_State|NULL
      */
-    public function getStructuralChangeState()
+    public function getStructuralChangeState() : ?Application_StateHandler_State
     {
         return $this->onStructuralChange;
     }
@@ -244,15 +264,20 @@ class Application_StateHandler_State
     {
         $this->item = null;
     }
-    
-    public function setRevisionable(Application_Revisionable $revisionable)
+
+    /**
+     * @param Application_Revisionable $revisionable
+     * @return $this
+     * @throws StateHandlerException {@see self::ERROR_CANNOT_REPLACE_REVISIONABLE}
+     */
+    public function setRevisionable(Application_Revisionable $revisionable) : self
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;
-            return;
+            return $this;
         }
         
-        throw new Application_Exception(
+        throw new StateHandlerException(
             'Cannot replace existing revisionable',
             sprintf(
                 'Cannot switch the state\'s revisionable to [%s], it already uses the revisionable [%s].',

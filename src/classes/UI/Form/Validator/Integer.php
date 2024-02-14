@@ -8,6 +8,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\RegexHelper;
 
 /**
@@ -27,23 +28,19 @@ class UI_Form_Validator_Integer extends UI_Form_Validator
 {
     public const ERROR_INVALID_CONFIGURATION = 74901;
 
-   /**
-    * @var int
-    */
-    protected $min = 0;
-    
-   /**
-    * @var int
-    */
-    protected $max = 0;
+    protected int $min = 0;
+    protected int $max = 0;
 
     /**
      * @param UI_Form $form
      * @param HTML_QuickForm2_Element $element
      * @param int $min
      * @param int $max
+     *
+     * @throws HTML_QuickForm2_Exception
+     * @throws BaseClassHelperException
      */
-    public function __construct(UI_Form $form, HTML_QuickForm2_Element $element, int $min=0, int $max=0)
+    public function __construct(UI_Form $form, HTML_QuickForm2_Node $element, int $min=0, int $max=0)
     {
         parent::__construct($form, $element);
 
@@ -84,7 +81,7 @@ class UI_Form_Validator_Integer extends UI_Form_Validator
 
     protected function applyFilters($value) : string
     {
-        return trim(strval($value));
+        return trim((string)$value);
     }
 
     protected function _validate() : bool
@@ -94,7 +91,7 @@ class UI_Form_Validator_Integer extends UI_Form_Validator
             return $this->makeError(t('Not a valid integer value.'));
         }
 
-        $number = intval($this->value);
+        $number = (int)$this->value;
 
         if($number < $this->min)
         {

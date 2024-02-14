@@ -30,7 +30,7 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
         return 'tabs-'.$this->getName();
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         if(!$this->hasChildren()) {
             return '';

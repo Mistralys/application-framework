@@ -53,7 +53,7 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
         return (string)$this->getAttribute(self::ATTRIBUTE_DESCRIPTION);
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         $anchorAtts = array(
             'href' => $this->getAttribute(self::ATTRIBUTE_HREF),

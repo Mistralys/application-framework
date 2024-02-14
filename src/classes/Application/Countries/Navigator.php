@@ -250,7 +250,7 @@ class Application_Countries_Navigator extends UI_Renderable
     /**
      * @return string
      */
-    protected function _render()
+    protected function _render() : string
     {
         $this->autoSelect();
         

@@ -179,7 +179,7 @@ class UI_Page_Help extends UI_Renderable
      *
      * @see template_default_frame_page_help
      */
-    protected function _render()
+    protected function _render() : string
     {
         return $this->page->renderTemplate(
             $this->template, 

@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
+
 /**
  * Wrapper for the page title class to handle revisionable
  * title specifics (state badges, etc.). 
@@ -20,15 +22,8 @@ declare(strict_types=1);
  */
 class UI_Page_RevisionableTitle extends UI_Renderable
 {
-   /**
-    * @var Application_Revisionable_Interface
-    */
-    protected $revisionable;
-
-   /**
-    * @var bool
-    */
-    protected $configured = false;
+    protected Application_Revisionable_Interface $revisionable;
+    protected bool $configured = false;
     
     public function __construct(UI_Page $page, Application_Revisionable_Interface $revisionable)
     {
@@ -39,7 +34,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
 
    /**
     * @param string|number|UI_Renderable_Interface $subline
-    * @return UI_Page_RevisionableTitle
+    * @return $this
     */
     public function setSubline($subline) : UI_Page_RevisionableTitle
     {
@@ -49,7 +44,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
     }
 
    /**
-    * @param string|number|UI_Renderable_Interface $label
+    * @param string|number|UI_Renderable_Interface|NULL $label
     * @return UI_Page_RevisionableTitle
     */
     public function setLabel($label) : UI_Page_RevisionableTitle
@@ -69,8 +64,13 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         
         return $this;
     }
-    
-    public function addTextAppend($text)
+
+    /**
+     * @param string|number|StringableInterface|NULL $text
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function addTextAppend($text) : self
     {
         $this->renderer->getTitle()->addTextAppend($text);
         
@@ -173,7 +173,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         );
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return $this->renderer->getTitle()->render();
     }

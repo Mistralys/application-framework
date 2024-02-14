@@ -141,7 +141,7 @@ class UI_Form_Renderer_Element extends UI_Renderable
         return $this->renderDef->getElementValue();
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return $this->renderContainer(
             $this->renderAddHTML(self::HTML_ABOVE_CONTROL).

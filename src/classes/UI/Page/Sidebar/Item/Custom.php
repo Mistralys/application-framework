@@ -11,7 +11,7 @@ class UI_Page_Sidebar_Item_Custom extends UI_Page_Sidebar_LockableItem
         $this->content = $content;
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         $tpl = $this->createTemplate('sidebar.custom');
         

@@ -117,7 +117,7 @@ class UI_Page_Sidebar_Item_DeveloperPanel extends UI_Page_Sidebar_Item
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         if(Application::isDemoMode()) {
             return '';

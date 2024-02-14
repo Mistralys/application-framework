@@ -18,6 +18,10 @@ class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
     public const FILTER_STATUSES = 'statuses';
     private bool $schedulingEnabled = true;
 
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
     public function selectSchedulingEnabled(bool $enabled = true) : self
     {
         $this->schedulingEnabled = $enabled;
@@ -42,16 +46,25 @@ class NewsFilterCriteria extends DBHelper_BaseFilterCriteria
         return $this->selectCriteriaValue(self::FILTER_STATUSES, $status->getID());
     }
 
+    /**
+     * @return $this
+     */
     public function selectArticles() : self
     {
         return $this->selectType(NewsEntryTypes::getInstance()->getTypeArticle());
     }
 
+    /**
+     * @return $this
+     */
     public function selectAlerts() : self
     {
         return $this->selectType(NewsEntryTypes::getInstance()->getTypeAlert());
     }
 
+    /**
+     * @return $this
+     */
     public function selectPublished() : self
     {
         return $this->selectStatus(NewsEntryStatuses::getInstance()->getPublished());

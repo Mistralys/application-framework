@@ -30,14 +30,15 @@ trait Application_Traits_Admin_RevisionableList
     
     protected function _handleActions() : bool
     {
-        $this->gridName = $this->recordTypeName.'-list';
+        $this->collection = $this->getCollection();
+        $this->gridName = $this->collection->getRecordTypeName().'-list';
         $this->filterSettings = $this->collection->getFilterSettings();
         
         $this->createDataGrid();
 
         return true;
     }
-    
+
     abstract protected function getEntryData(Application_RevisionableCollection_DBRevisionable $revisionable);
     
     protected function _renderContent() : string

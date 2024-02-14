@@ -16,6 +16,7 @@ use Application_Admin_TranslationsArea;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
+use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver_Area_WizardTest;
@@ -43,6 +44,7 @@ class MainNavConfigurator extends NavConfigurator
             ->addSeparator()
             ->addAreaChained(NewsScreen::URL_NAME)
             ->addAreaChained(MediaLibraryScreen::URL_NAME)
+            ->addAreaChained(RevisionableScreen::URL_NAME)
             ->addAreaChained(TagsScreen::URL_NAME)
             ->addSeparator()
             ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)

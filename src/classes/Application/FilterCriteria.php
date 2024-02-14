@@ -181,6 +181,10 @@ abstract class Application_FilterCriteria
         return $this;
     }
 
+    /**
+     * @param PaginationRenderer $paginator
+     * @return $this
+     */
     public function setLimitByPagination(PaginationRenderer $paginator) : self
     {
         $paginator->configureFilters($this);
@@ -317,7 +321,7 @@ abstract class Application_FilterCriteria
      *
      * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
      */
-    public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING)
+    public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING) : self
     {
         if($this->orderField !== $fieldName)
         {

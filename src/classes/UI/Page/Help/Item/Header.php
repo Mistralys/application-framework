@@ -2,7 +2,7 @@
 
 class UI_Page_Help_Item_Header extends UI_Page_Help_Item
 {
-    protected function _render()
+    protected function _render() : string
     {
         $this->addClass('help-header');
         

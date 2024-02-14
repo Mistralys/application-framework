@@ -79,7 +79,7 @@ class UI_Badge extends UI_HTMLElement implements Application_Interfaces_Iconizab
         return $this->label;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $this->addClass($this->classType);
         $this->addClass($this->classType . '-' . $this->layout);

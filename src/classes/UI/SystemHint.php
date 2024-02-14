@@ -44,9 +44,9 @@ class SystemHint extends UI_Renderable
      * @return void
      * @see \template_default_ui_system_hint
      */
-    protected function _render()
+    protected function _render() : string
     {
-        return $this->ui->createTemplate('ui/system-hint')
+        return (string)$this->ui->createTemplate('ui/system-hint')
             ->setVar('hint', $this)
             ->setVar(self::OPTION_CLASSES, $this->getClasses())
             ->setVars($this->options);

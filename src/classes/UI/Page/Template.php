@@ -103,7 +103,7 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
         }
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         ob_start();
         include $this->templateFile;

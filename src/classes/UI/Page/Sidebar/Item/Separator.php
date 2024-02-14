@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_Page_Sidebar_Item_Separator extends UI_Page_Sidebar_Item
 {
-    protected function _render()
+    protected function _render() : string
     {
-        $tpl = $this->createTemplate('sidebar.separator');
-
-        return $tpl->render();
+        return $this->createTemplate('sidebar.separator')->render();
     }
 }

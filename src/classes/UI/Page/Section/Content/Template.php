@@ -10,7 +10,7 @@ class UI_Page_Section_Content_Template extends UI_Page_Section_Content
         );
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return $this->section->getPage()->renderTemplate(
             $this->getTemplateID(), 

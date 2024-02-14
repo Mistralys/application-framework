@@ -19,4 +19,6 @@ interface Application_Interfaces_Admin_RevisionableList extends Application_Admi
      * @return Application_RevisionableCollection_DataGridMultiAction
      */
     public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : Application_RevisionableCollection_DataGridMultiAction;
+
+    public function getCollection() : Application_RevisionableCollection;
 }

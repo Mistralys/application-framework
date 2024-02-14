@@ -26,7 +26,7 @@ class UI_Bootstrap_BigSelection_Item_Header extends UI_Bootstrap_BigSelection_It
         return '';
     }
 
-    protected function _render()
+    protected function _render() : string
     {
         OutputBuffering::start();
 

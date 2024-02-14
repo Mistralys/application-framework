@@ -27,9 +27,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * and {@link initFormable()}.
      *
      * @param string $name
-     * @param array $defaultData
+     * @param array<string,mixed> $defaultData
+     * @return $this
      */
-    public function createFormableForm(string $name, array $defaultData = array());
+    public function createFormableForm(string $name, array $defaultData = array()) : self;
 
     public function getFormableJSID(): string;
 
@@ -50,7 +51,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
     /**
      * Helper method to add a form element, which automatically sets
      * the correct ID for elements. If no container is specified, the
-     * form itself is used as container.
+     * form itself is used as the container.
      *
      * @param string $type
      * @param string $name
@@ -242,9 +243,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param string $name
      * @param string $value
+     * @param string|null $id Optional ID for the element. Will use an automatically generated one otherwise.
      * @return $this
      */
-    public function addHiddenVar(string $name, string $value = '') : self;
+    public function addHiddenVar(string $name, string $value = '', ?string $id = null) : self;
 
     /**
      * Adds a collection of hidden form variables.
@@ -296,38 +298,38 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * @param HTML_QuickForm2_Element $element
      * @param callable $callback
      * @param string $errorMessage
-     * @param mixed[] $arguments Arguments for the callback
+     * @param array<int,mixed> $arguments Arguments for the callback
      * @return HTML_QuickForm2_Rule_Callback
      */
-    public function addRuleCallback(HTML_QuickForm2_Element $element, $callback, string $errorMessage, array $arguments = array()) : HTML_QuickForm2_Rule_Callback;
+    public function addRuleCallback(HTML_QuickForm2_Element $element, callable $callback, string $errorMessage, array $arguments = array()) : HTML_QuickForm2_Rule_Callback;
 
-    public function addRuleLabel(HTML_QuickForm2_Element $element);
+    public function addRuleLabel(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node;
 
     /**
      * Adds a rule to enter a filename.
      *
-     * @param HTML_QuickForm2_Element $element
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
      */
-    public function addRuleFilename(HTML_QuickForm2_Element $element);
+    public function addRuleFilename(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node;
 
     /**
      * Adds a rule to validate as name or title, which is less
      * restrictive than the label rule.
      *
-     * @param HTML_QuickForm2_Element $element
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
      */
-    public function addRuleNameOrTitle(HTML_QuickForm2_Element $element);
+    public function addRuleNameOrTitle(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node;
 
     /**
      * Adds a validation rule to the element that disallows
      * using HTML in its content.
      *
-     * @param HTML_QuickForm2_Element $element
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
      */
-    public function addRuleNoHTML(HTML_QuickForm2_Element $element): HTML_QuickForm2_Element;
+    public function addRuleNoHTML(HTML_QuickForm2_Node $element): HTML_QuickForm2_Node;
 
     public function addRuleRegex(HTML_QuickForm2_Element $element, string $regex, string $message);
 
@@ -336,32 +338,34 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * possiblity to set a minimum and/or maximum value. Automatically
      * adds validation hints to the element comments.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param integer $min
      * @param integer $max
-     * @return HTML_QuickForm2_Element
+     * @return HTML_QuickForm2_Node
      */
-    public function addRuleInteger(HTML_QuickForm2_Element $element, int $min = 0, int $max = 0);
+    public function addRuleInteger(HTML_QuickForm2_Node $element, int $min = 0, int $max = 0) : HTML_QuickForm2_Node;
 
     /**
      * Adds a date time validation to the element.
      *
-     * @param HTML_QuickForm2_Element $element
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
      */
-    public function addRuleISODate(HTML_QuickForm2_Element $element);
+    public function addRuleISODate(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node;
 
     /**
      * Adds a rule that the element should be required if
      * the other element's value matches the specified value.
      *
      * @param HTML_QuickForm2_Node $element
+     * @param string|number|StringableInterface $message
      * @param HTML_QuickForm2_Node $otherElement
      * @param mixed $otherValue
      * @param string $operator The operator to use for the comparison
+     * @return HTML_QuickForm2_Node
      * @see HTML_QuickForm2_Rule_Compare
      */
-    public function addRuleRequiredIfOther(HTML_QuickForm2_Node $element, $message, HTML_QuickForm2_Node $otherElement, $otherValue, $operator = '==');
+    public function addRuleRequiredIfOther(HTML_QuickForm2_Node $element, $message, HTML_QuickForm2_Node $otherElement, $otherValue, string $operator = '==') : HTML_QuickForm2_Node;
 
     /**
      * Adds a rule to make the element required if the
@@ -369,11 +373,11 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      *
      * @param HTML_QuickForm2_Node $element
      * @param HTML_QuickForm2_Node $otherElement
-     * @param string|NULL $message A specific message, to overwrite the default message
+     * @param string|number|StringableInterface|NULL $message A specific message, to overwrite the default message
      */
-    public function addRuleRequiredIfOtherNonEmpty(HTML_QuickForm2_Node $element, HTML_QuickForm2_Node $otherElement, $message = null);
+    public function addRuleRequiredIfOtherNonEmpty(HTML_QuickForm2_Node $element, HTML_QuickForm2_Node $otherElement, $message = null) : HTML_QuickForm2_Node;
 
-    public function addRuleFloat(HTML_QuickForm2_Element $element);
+    public function addRuleFloat(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node;
 
     /**
      * Adds a switch element to the form and returns its instance.
@@ -596,32 +600,32 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
     /**
      * Appends a button to the element.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param UI_Button|UI_Bootstrap $button
-     * @param boolean $whenFrozen Wether to append even when the element is frozen.
-     * @return HTML_QuickForm2_Element
+     * @param boolean $whenFrozen Whether to append even when the element is frozen.
+     * @return HTML_QuickForm2_Node
      */
-    public function appendElementButton(HTML_QuickForm2_Element $element, $button, $whenFrozen = false);
+    public function appendElementButton(HTML_QuickForm2_Node $element, $button, bool $whenFrozen = false) : HTML_QuickForm2_Node;
 
     /**
      * Appends HTML to the element, visually connected to the element.
-     * @param HTML_QuickForm2_Element $element
-     * @param string $html
-     * @param bool $whenFrozen Wether to append even when the element is frozen.
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $element
+     * @param string|number|StringableInterface $html
+     * @param bool $whenFrozen Whether to append even when the element is frozen.
+     * @return HTML_QuickForm2_Node
      */
-    public function appendElementHTML(HTML_QuickForm2_Element $element, $html, $whenFrozen = false);
+    public function appendElementHTML(HTML_QuickForm2_Node $element, $html, bool $whenFrozen = false) : HTML_QuickForm2_Node;
 
     /**
      * Appends a button to the element to generate an alias from the content
      * of the target element. Uses the AJAX transliterate function to create
      * the alias from a string.
      *
-     * @param HTML_QuickForm2_Element $aliasElement
-     * @param HTML_QuickForm2_Element $fromElement
-     * @return HTML_QuickForm2_Element
+     * @param HTML_QuickForm2_Node $aliasElement
+     * @param HTML_QuickForm2_Node $fromElement
+     * @return HTML_QuickForm2_Node
      */
-    public function appendGenerateAliasButton(HTML_QuickForm2_Element $aliasElement, HTML_QuickForm2_Element $fromElement);
+    public function appendGenerateAliasButton(HTML_QuickForm2_Node $aliasElement, HTML_QuickForm2_Node $fromElement) : HTML_QuickForm2_Node;
 
     /**
      * Enables the clientside form elements registry for

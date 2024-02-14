@@ -9,7 +9,7 @@ class UI_Page_Section_Content_HTML extends UI_Page_Section_Content
         );
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         return $this->getHTML();
     }

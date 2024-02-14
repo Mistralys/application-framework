@@ -264,7 +264,7 @@ class UI_Page_Title extends UI_Renderable
         return !empty($this->text) || !empty($this->contextElements);
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $this->addClass('page-'.$this->baseClass);
         

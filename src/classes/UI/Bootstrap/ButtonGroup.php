@@ -8,7 +8,7 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
     * @var UI_Button[]|UI_Bootstrap_ButtonDropdown[]
     */
     protected $buttons = array();
-    
+
    /**
     * Adds a button to the group.
     * @param UI_Button|UI_Bootstrap_ButtonDropdown $button
@@ -19,9 +19,9 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
         $this->buttons[] = $button;
         return $this;
     }
-    
+
     protected $size = null;
-    
+
     public function makeSmall()
     {
         return $this->makeSize('small');
@@ -36,12 +36,13 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
     {
         return $this->makeSize('large');
     }
-    
+
     protected function makeSize($size)
     {
         $this->size = $size;
         return $this;
     }
+
 
     /**
      * @param UI_Button[] $buttons
@@ -61,22 +62,22 @@ class UI_Bootstrap_ButtonGroup extends UI_Bootstrap
         if(empty($this->buttons)) {
             return '';
         }
-        
+
         $this->addClass('btn-group');
-        
+
         $html =
         '<div'.$this->renderAttributes().'>';
             foreach($this->buttons as $button) {
-                
+
                 if($this->size) {
                     $button->makeSize($this->size);
                 }
-                
+
                 $html .= $button->render();
-            } 
+            }
             $html .=
         '</div>';
-            
+
         return $html;
     }
 }

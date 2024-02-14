@@ -9,10 +9,38 @@
 The SQL update file `docs/sql/2024-01-17-tags.sql` must be imported
 for the tagging management.  
 
+## v3.1.8 - Revisionable update
+- RevisionCopy: `getParts()` can now return callables.
+- FilterSettings: Settings are now class-based.
+- FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
+- Revisionables: Added a test revisionable collection to the test application.
+- Revisionables: Added first unit tests.
+- Formables: Added the `$id` parameter to `addHiddenVar()`.
+- Forms: Modernized the `UI_Form` class, now with strict typing.
+
+### Breaking changes (M)
+- Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
+- Renderables: Added strict `string` return type for `_render()` methods.
+
+### Deprecations
+
+- FilterSettings: Deprecated `addAutoConfigure()`, replaced by `SettingDef::setConfigureCallback()`.
+- FilterSettings: Deprecated `getArraySetting()`, replaced by `getSettingArray()`.
+
+### Database update
+
+The SQL update file `docs/sql/2024-01-25-revisionables.sql` must be imported
+for the unit tests to work.
+
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
+- Navigation: Fixed the search not being executed in some cases.
 - Navigation: Added `setTemplateID()` to freely select the template.
+- Navigation: Fixed the spacing before the split button caret.
+- Navigation: Nav ID and template ID are now separate.
+- Navigation: It is now possible to reuse the subnav template for other navs.
 - Interface Refs: Improved the subnavigation example.
+- Interface Refs: Added tabs example.
 - Tabs: Fixed active tabs having a bottom border.
 - Tabs: Added `setURLTarget()`.
 

@@ -111,7 +111,7 @@ class UI_Page_Sidebar_Item_Message extends UI_Page_Sidebar_LockableItem
         return $this;
     }
     
-    protected function _render()
+    protected function _render() : string
     {
         $prev = $this->getPreviousSibling();
         if($prev && !$prev->isSeparator()) {

@@ -22,7 +22,7 @@ require_once 'Application/RevisionStorage.php';
  */
 abstract class Application_RevisionStorage_DB extends Application_RevisionStorage
 {
-    public function getTypeID()
+    public function getTypeID() : string
     {
         return 'DB';
     }
