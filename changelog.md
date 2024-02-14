@@ -3,6 +3,14 @@
 - Media: Documents are now taggable.
 - Tests: The Test DB collection is now taggable.
 - DBHelper: Added `getRelationsForField()` to fetch all field relations.
+- JS: Added the `Logger` utility class.
+- ButtonGroup: Added `addButtons()`.
+- TreeRenderer: Added the `TreeRenderer` UI helper class.
+- UI: Added `createTreeRenderer()`.
+- Formables: Unified form element creation methods to use `UI_Form` methods.
+- Forms: Moved some element creation methods to `UI_Form`.
+- Forms: Code modernization and quality improvements.
+- Formables: Added some interface methods.
 
 ### Database changes
 
