@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Tags\Taggables;
 
+/**
+ * @see TaggableTrait
+ */
 interface TaggableInterface
 {
     /**
@@ -13,4 +16,5 @@ interface TaggableInterface
     public function getTagManager() : Taggable;
     public function getTagCollection() : TagContainer;
     public function getTaggedRecordPrimary() : int;
+    public function getAdminTaggingURL(array $params=array()) : string;
 }

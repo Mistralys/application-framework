@@ -582,4 +582,9 @@ abstract class Application_Media_Document
     {
         return AppFactory::createMediaCollection()->getByID($this->getID());
     }
+
+    public function getAdminTaggingURL(array $params = array()) : string
+    {
+        return $this->getRecord()->getAdminTaggingURL($params);
+    }
 }

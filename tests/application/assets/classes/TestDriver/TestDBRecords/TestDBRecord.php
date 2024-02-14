@@ -67,4 +67,9 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
     {
         return $this->collection->getTagContainer();
     }
+
+    public function getAdminTaggingURL(array $params = array()): string
+    {
+        return '';
+    }
 }
