@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
-use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
 
@@ -149,9 +148,9 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
     
    /**
     * @param string|number|UI_Renderable_Interface $content
-    * @return UI_Themes_Theme_ContentRenderer
+    * @return $this
     */
-    public function setContent($content) : UI_Themes_Theme_ContentRenderer
+    public function setContent($content) : self
     {
         $this->content = toString($content);
         return $this;        
@@ -159,26 +158,41 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
     
    /**
     * @param string|number|UI_Renderable_Interface $content
-    * @return UI_Themes_Theme_ContentRenderer
+    * @return $this
     */
-    public function appendContent($content) : UI_Themes_Theme_ContentRenderer
+    public function appendContent($content) : self
     {
         $this->content .= toString($content);
         return $this;
     }
-    
-    public function setTemplateVar(string $name, $value) : UI_Themes_Theme_ContentRenderer
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setTemplateVar(string $name, $value) : self
     {
         $this->templateVars[$name] = $value;
         return $this;
     }
-    
-    public function appendFormable(Application_Interfaces_Formable $formable) : UI_Themes_Theme_ContentRenderer
+
+    /**
+     * @param Application_Interfaces_Formable $formable
+     * @return $this
+     */
+    public function appendFormable(Application_Interfaces_Formable $formable) : self
     {
         return $this->appendForm($formable->getFormInstance());
     }
-    
-    public function appendForm(UI_Form $form) : UI_Themes_Theme_ContentRenderer
+
+    /**
+     * @param UI_Form $form
+     * @return $this
+     * @throws UI_Themes_Exception
+     * @throws BaseClassHelperException
+     */
+    public function appendForm(UI_Form $form) : self
     {
         $html = $this->getPage()->renderTemplate(
             'frame.content.form',
@@ -187,11 +201,19 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
             )
         );
         
-        $this->appendContent($html);
-        return $this;
+        return $this->appendContent($html);
     }
-    
-    public function appendDataGrid(UI_DataGrid $grid, $entries) : UI_Themes_Theme_ContentRenderer
+
+    /**
+     * @param UI_DataGrid $grid
+     * @param array<int,array<string,mixed>|UI_DataGrid_Entry> $entries
+     * @return $this
+     *
+     * @throws Application_Exception
+     * @throws UI_Themes_Exception
+     * @throws BaseClassHelperException
+     */
+    public function appendDataGrid(UI_DataGrid $grid, array $entries) : self
     {
         $html = $this->getPage()->renderTemplate(
             'frame.content.datagrid',
@@ -201,8 +223,7 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
             )
         );
         
-        $this->appendContent($html);
-        return $this;
+        return $this->appendContent($html);
     }
 
     /**
@@ -212,7 +233,6 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
      *
      * @throws UI_Themes_Exception
      * @throws BaseClassHelperException
-     * @throws FileHelper_Exception
      */
     public function appendTemplateClass(string $templateIDOrClass, array $vars=array()) : self
     {
@@ -222,8 +242,12 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
                 ->setVars($vars)
         );
     }
-    
-    public function appendTemplate(UI_Page_Template $template) : UI_Themes_Theme_ContentRenderer
+
+    /**
+     * @param UI_Page_Template $template
+     * @return $this
+     */
+    public function appendTemplate(UI_Page_Template $template) : self
     {
         return $this->appendContent($template->render());
     }

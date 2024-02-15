@@ -70,9 +70,9 @@ class UI_Page_StepsNavigator_Step
         return $this->setAttribute('id', $id);
     }
     
-    public function getID()
+    public function getID() : string
     {
-        return $this->getAttribute('id');
+        return (string)$this->getAttribute('id');
     }
     
     public function addClass(string $class) : self
@@ -88,7 +88,12 @@ class UI_Page_StepsNavigator_Step
     {
         return in_array($class, $this->classes, true);
     }
-    
+
+    /**
+     * @param string $name
+     * @param string|int|float|NULL $value
+     * @return $this
+     */
     public function setAttribute(string $name, $value) : self
     {
         $this->attributes[$name] = $value;
@@ -192,10 +197,7 @@ class UI_Page_StepsNavigator_Step
 
         $attributes = $this->attributes;
         $attributes['data-name'] = $this->name;
-        $attributes['class'] = null;
-        if(!empty($classes)) {
-            $attributes['class'] = implode(' ', $classes);
-        }
+        $attributes['class'] = implode(' ', $classes);
 
         return
             '<li'.compileAttributes($attributes).'>'.

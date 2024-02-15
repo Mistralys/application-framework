@@ -1145,7 +1145,7 @@ class UI_DataGrid
      * $datagrid->render($entries);
      * </pre>
      *
-     * @param array $entries
+     * @param array<int,array<string,mixed>|UI_DataGrid_Entry> $entries
      * @return string
      * @throws Application_Exception
      */

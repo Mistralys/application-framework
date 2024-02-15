@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use UI\Tree\TreeNode;
 
-$root = TreeNode::create('Root');
+$ui = UI::getInstance();
+
+$root = TreeNode::create($ui, 'Root');
 
 $root->createChildNode('Editable item')
     ->addButton(
@@ -34,6 +36,6 @@ $root->createChildNode('Multiple actions')
             ->makeDangerous()
     );
 
-echo UI::getInstance()
+echo $ui
     ->createTreeRenderer($root)
     ->makeEditable();

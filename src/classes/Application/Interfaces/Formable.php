@@ -43,7 +43,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * Adds a data attribute to the form that can be used clientside
      * to determine the default element.
      *
-     * @param string|HTML_QuickForm2_Element $elementNameOrObject
+     * @param string|HTML_QuickForm2_Node $elementNameOrObject
      * @return $this
      */
     public function setDefaultElement($elementNameOrObject) : self;

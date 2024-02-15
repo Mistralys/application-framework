@@ -322,7 +322,7 @@ class TreeRenderer extends UI_Renderable
     /**
      * Attempts to find a node by its value.
      *
-     * @param string|int|float $value
+     * @param string|int|float|NULL $value
      * @return TreeNode|null
      */
     public function findNodeByValue($value) : ?TreeNode

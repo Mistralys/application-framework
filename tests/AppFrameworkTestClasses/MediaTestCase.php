@@ -18,6 +18,7 @@ abstract class MediaTestCase extends ApplicationTestCase
 {
     protected Application_Media $media;
     protected Application_Uploads $uploads;
+    protected string $storageFolder;
 
     protected function setUp(): void
     {

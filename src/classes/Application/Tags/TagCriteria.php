@@ -9,6 +9,7 @@ use DBHelper_StatementBuilder_ValuesContainer;
 
 /**
  * @property TagCollection $collection
+ * @method TagRecord[] getItemsObjects()
  */
 class TagCriteria extends DBHelper_BaseFilterCriteria
 {

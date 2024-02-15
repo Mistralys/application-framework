@@ -203,7 +203,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     */
     public function setDefaultElement($elementNameOrObject) : self
     {
-        $this->requireFormableInitialized();
+        $form = $this->getFormInstance();
 
         $element = $elementNameOrObject;
 
@@ -219,7 +219,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
                 $elementNameOrObject
             );
 
-            $this->formableForm->setDefaultElement($element);
+            $form->setDefaultElement($element);
         }
 
         return $this;

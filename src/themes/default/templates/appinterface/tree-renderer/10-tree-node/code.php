@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use UI\Tree\TreeNode;
 
-$root = TreeNode::create('Sitemap')
+$ui = UI::getInstance();
+
+$root = TreeNode::create($ui, 'Sitemap')
     ->setIcon(UI::icon()->home());
 
 $root->createChildNode('Home');
@@ -23,4 +25,4 @@ $about = $root->createChildNode('About');
 $about->createChildNode('The Company');
 $about->createChildNode('Contact');
 
-echo UI::getInstance()->createTreeRenderer($root);
+echo $ui->createTreeRenderer($root);

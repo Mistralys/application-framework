@@ -238,6 +238,9 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         return $this->cacheKnownRevisions[$number];
     }
 
+    /**
+     * @return $this
+     */
     protected function resetCache() : self
     {
         $this->cacheKnownRevisions = array();
