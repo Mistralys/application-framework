@@ -1502,7 +1502,7 @@ class UI_Form extends UI_Renderable
      */
     public function addISODate(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
-        $el = $this->form->addText($name, $container);
+        $el = $this->resolveContainer($container)->addText($name);
         $el->addFilterTrim();
         $el->setLabel($label);
         $el->addClass('input-xlarge');

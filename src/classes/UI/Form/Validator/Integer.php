@@ -33,7 +33,7 @@ class UI_Form_Validator_Integer extends UI_Form_Validator
 
     /**
      * @param UI_Form $form
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param int $min
      * @param int $max
      *

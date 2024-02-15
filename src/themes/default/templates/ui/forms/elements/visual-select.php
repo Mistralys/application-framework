@@ -143,7 +143,7 @@ class template_default_ui_forms_elements_visual_select extends UI_Page_Template_
     }
 
     /**
-     * @param array<int,HTML_QuickForm2_Element_VisualSelect_Optgroup|VisualSelectOption> $options
+     * @param array<int,HTML_QuickForm2_Element_VisualSelect_Optgroup|HTML_QuickForm2_Element_Select_Optgroup|VisualSelectOption> $options
      * @param HTML_QuickForm2_Element_VisualSelect_Optgroup|null $group
      * @return void
      * @throws UI_Exception
@@ -156,7 +156,7 @@ class template_default_ui_forms_elements_visual_select extends UI_Page_Template_
             {
                 $this->renderOptionGroup($option);
             }
-            else
+            else if($option instanceof VisualSelectOption)
             {
                 if(!$option->hasImage()) {
                     continue;
@@ -269,7 +269,7 @@ class template_default_ui_forms_elements_visual_select extends UI_Page_Template_
     }
 
     /**
-     * @param array<int,HTML_QuickForm2_Element_VisualSelect_Optgroup|array<string,string>> $options
+     * @param array<int,HTML_QuickForm2_Element_VisualSelect_Optgroup|HTML_QuickForm2_Element_Select_Optgroup|array<string,string>> $options
      * @return HTML_QuickForm2_Element_VisualSelect_Optgroup[]
      */
     protected function getRootGroups(array $options) : array

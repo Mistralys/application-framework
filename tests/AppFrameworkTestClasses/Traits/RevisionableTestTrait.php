@@ -30,9 +30,9 @@ trait RevisionableTestTrait
         return $this->revCollection->createNewRevisionable($label);
     }
 
-    protected function assertRecordIsFinalized(RevisionableRecord $record): void
+    protected function assertRecordIsFinalized(RevisionableRecord $record, ?string $message=null): void
     {
-        $this->assertRecordStateIs($record, RevisionableRecord::STATUS_FINALIZED);
+        $this->assertRecordStateIs($record, RevisionableRecord::STATUS_FINALIZED, $message);
     }
 
     protected function assertRecordIsInactive(RevisionableRecord $record): void
@@ -45,13 +45,13 @@ trait RevisionableTestTrait
         $this->assertRecordStateIs($record, RevisionableRecord::STATUS_DELETED);
     }
 
-    protected function assertRecordIsDraft(RevisionableRecord $record): void
+    protected function assertRecordIsDraft(RevisionableRecord $record, ?string $message=null): void
     {
-        $this->assertRecordStateIs($record, RevisionableRecord::STATUS_DRAFT);
+        $this->assertRecordStateIs($record, RevisionableRecord::STATUS_DRAFT, $message);
     }
 
-    protected function assertRecordStateIs(RevisionableRecord $record, string $state): void
+    protected function assertRecordStateIs(RevisionableRecord $record, string $state, ?string $message=null): void
     {
-        $this->assertSame($state, $record->getStateName());
+        $this->assertSame($state, $record->getStateName(), (string)$message);
     }
 }

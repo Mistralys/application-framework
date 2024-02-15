@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use UI\Tree\TreeNode;
 
-$root = TreeNode::create('Root');
+$ui = UI::getInstance();
+
+$root = TreeNode::create($ui, 'Root');
 
 $root->createChildNode('Unlinked item');
 
@@ -25,4 +27,4 @@ $root->createChildNode('Active linked item')
     ->link('https://mistralys.eu');
 
 
-echo UI::getInstance()->createTreeRenderer($root);
+echo $ui->createTreeRenderer($root);
