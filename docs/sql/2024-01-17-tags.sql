@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jan 20, 2024 at 06:05 PM
+-- Generation Time: Feb 15, 2024 at 08:43 AM
 -- Server version: 10.3.10-MariaDB-log
 -- PHP Version: 8.2.14
 
@@ -49,6 +49,22 @@ CREATE TABLE `tags_registry` (
 `registry_key` varchar(180) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Dumping data for table `tags_registry`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `tags_translations`
+--
+
+CREATE TABLE `tags_translations` (
+`tag_id` int(11) UNSIGNED NOT NULL,
+`locale_name` varchar(5) NOT NULL,
+`locale_label` varchar(160) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Stores tag label translations.';
+
 -- --------------------------------------------------------
 
 --
@@ -88,6 +104,14 @@ ADD PRIMARY KEY (`registry_key`),
 ADD KEY `tag_id` (`tag_id`);
 
 --
+-- Indexes for table `tags_translations`
+--
+ALTER TABLE `tags_translations`
+ADD KEY `tag_id` (`tag_id`),
+ADD KEY `locale_name` (`locale_name`),
+ADD KEY `locale_label` (`locale_label`);
+
+--
 -- Indexes for table `test_records_tags`
 --
 ALTER TABLE `test_records_tags`
@@ -115,6 +139,13 @@ MODIFY `tag_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 ALTER TABLE `media_tags`
 ADD CONSTRAINT `media_tags_ibfk_1` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE CASCADE ON UPDATE CASCADE,
 ADD CONSTRAINT `media_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `tags_translations`
+--
+ALTER TABLE `tags_translations`
+ADD CONSTRAINT `tags_translations_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+ADD CONSTRAINT `tags_translations_ibfk_2` FOREIGN KEY (`locale_name`) REFERENCES `locales_application` (`locale_name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `test_records_tags`
