@@ -168,4 +168,15 @@ class TagCollection extends DBHelper_BaseCollection
 
         return $result;
     }
+
+    private static ?bool $tableExists = null;
+
+    public static function tableExists() : bool
+    {
+        if(!isset(self::$tableExists)) {
+            self::$tableExists = DBHelper::tableExists(self::TABLE_NAME);
+        }
+
+        return self::$tableExists;
+    }
 }
