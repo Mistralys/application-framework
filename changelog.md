@@ -1,4 +1,4 @@
-## v4.0.0 - Tagging management (DB-update XL)
+## v4.0.0 - Tagging management & Revisionables update (DB-update L)
 - Tags: Added the tagging management.
 - Media: Documents are now taggable.
 - Tests: The Test DB collection is now taggable.
@@ -8,25 +8,29 @@
 - TreeRenderer: Added the `TreeRenderer` UI helper class.
 - UI: Added `createTreeRenderer()`.
 - Formables: Unified form element creation methods to use `UI_Form` methods.
+- Formables: Added the `$id` parameter to `addHiddenVar()`.
 - Forms: Moved some element creation methods to `UI_Form`.
 - Forms: Code modernization and quality improvements.
+- Forms: Modernized the `UI_Form` class, now with strict typing.
 - Formables: Added some interface methods.
-- Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
-
-### Database changes
-
-The SQL update file `docs/sql/2024-01-17-tags.sql` must be imported
-for the tagging management. As long as the tagging admin area is not
-enabled in the application driver, this does not affect the application.
-
-## v3.1.8 - Revisionable update
 - RevisionCopy: `getParts()` can now return callables.
 - FilterSettings: Settings are now class-based.
 - FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
-- Formables: Added the `$id` parameter to `addHiddenVar()`.
-- Forms: Modernized the `UI_Form` class, now with strict typing.
+- Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
+
+### Database changes (L)
+
+The SQL update file must be imported: 
+
+``` 
+docs/sql/2024-02-15-revisionables-tagging.sql
+```  
+
+> Note: An existing application can use this framework release without
+> the database update, as long as the tagging admin area is not enabled 
+> in the application driver.
 
 ### Breaking changes (M)
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
@@ -36,11 +40,6 @@ enabled in the application driver, this does not affect the application.
 
 - FilterSettings: Deprecated `addAutoConfigure()`, replaced by `SettingDef::setConfigureCallback()`.
 - FilterSettings: Deprecated `getArraySetting()`, replaced by `getSettingArray()`.
-
-### Database update
-
-The SQL update file `docs/sql/2024-01-25-revisionables.sql` must be imported
-for the unit tests to work.
 
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
