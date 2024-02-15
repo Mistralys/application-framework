@@ -8,7 +8,12 @@ use Application;
 use Application\Admin\Area\Media\BaseViewMediaScreen;
 use Application\Admin\Area\Media\View\BaseMediaSettingsScreen;
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
+use Application\Admin\Area\Media\View\BaseMediaTagsScreen;
 use Application\AppFactory;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagConnector;
+use Application\Tags\Taggables\TaggableInterface;
+use Application\Tags\Taggables\TaggableTrait;
 use Application_Admin_ScreenInterface;
 use Application_Exception_DisposableDisposed;
 use Application_Media_Document;
@@ -23,8 +28,10 @@ use DBHelper_BaseRecord;
  * @property MediaCollection $collection
  * @method MediaCollection getCollection()
  */
-class MediaRecord extends DBHelper_BaseRecord
+class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
 {
+    use TaggableTrait;
+
     public function getLabel(): string
     {
         return $this->getRecordStringKey(MediaCollection::COL_NAME);
@@ -49,6 +56,13 @@ class MediaRecord extends DBHelper_BaseRecord
     public function getAdminStatusURL(array $params=array()) : string
     {
         $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseMediaStatusScreen::URL_NAME;
+
+        return $this->getAdminViewURL($params);
+    }
+
+    public function getAdminTaggingURL(array $params=array()) : string
+    {
+        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseMediaTagsScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
@@ -158,5 +172,17 @@ class MediaRecord extends DBHelper_BaseRecord
     protected function _onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context): void
     {
         FileHelper::deleteFile($context->getOption('file_path'));
+    }
+
+
+
+    public function getTagRecordPrimaryValue(): int
+    {
+        return $this->getID();
+    }
+
+    public function getTagCollection(): TagCollectionInterface
+    {
+        return $this->collection;
     }
 }

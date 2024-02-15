@@ -6,10 +6,15 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Area\BaseMediaLibraryScreen;
+use Application\Admin\Area\BaseNewsScreen;
+use Application\Area\BaseTagsScreen;
+use Application\Tags\TagCollection;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
+use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\WelcomeScreen;
@@ -34,18 +39,24 @@ class TestDriver extends Application_Driver
      */
     public function getAdminAreas() : array
     {
-        return array(
+        $areas = array(
             Application_Admin_Area_Welcome::URL_NAME_WELCOME => getClassTypeName(WelcomeScreen::class),
             Application_Admin_Area_Devel::URL_NAME => getClassTypeName(TestDriver_Area_Devel::class),
             Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
             Application_Admin_TranslationsArea::URL_NAME => getClassTypeName(TranslationsScreen::class),
             TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
             QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class),
-            NewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
-            MediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class),
+            BaseNewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
+            BaseMediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class),
             TestingScreen::URL_NAME => getClassTypeName(TestingScreen::class),
             RevisionableScreen::URL_NAME => getClassTypeName(RevisionableScreen::class),
         );
+
+        if(TagCollection::tableExists()) {
+            $areas[BaseTagsScreen::URL_NAME] = getClassTypeName(TagsScreen::class);
+        }
+
+        return $areas;
     }
 
     public function areaExists(string $name) : bool
@@ -101,7 +112,7 @@ class TestDriver extends Application_Driver
     {
         return array();
     }
-    
+
     public function getExtendedVersion() : string
     {
         return '1.0.0';

@@ -10,8 +10,14 @@ use Application\Admin\Area\Media\BaseCreateMediaScreen;
 use Application\Admin\Area\Media\BaseImageGalleryScreen;
 use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
+use Application\Media\MediaTagConnector;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagCollectionTrait;
+use Application\Tags\Taggables\TagConnector;
+use Application\Tags\TagRecord;
 use Application_Admin_ScreenInterface;
 use Application_Formable;
+use Application_Media;
 use AppUtils\Microtime;
 use DBHelper;
 use DBHelper_BaseCollection;
@@ -21,8 +27,10 @@ use DBHelper_BaseCollection;
  * @method MediaFilterCriteria getFilterCriteria()
  * @method MediaFilterSettings getFilterSettings()
  */
-class MediaCollection extends DBHelper_BaseCollection
+class MediaCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
+    use TagCollectionTrait;
+
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
     public const MEDIA_TYPE = 'media';
@@ -47,6 +55,8 @@ class MediaCollection extends DBHelper_BaseCollection
 
         return self::$hasSizeColumn;
     }
+
+    // region: X - Interface methods
 
     public function getRecordClassName(): string
     {
@@ -84,12 +94,12 @@ class MediaCollection extends DBHelper_BaseCollection
 
     public function getRecordTableName(): string
     {
-        return self::TABLE_NAME;
+        return Application_Media::TABLE_NAME;
     }
 
     public function getRecordPrimaryName(): string
     {
-        return self::PRIMARY_NAME;
+        return Application_Media::PRIMARY_NAME;
     }
 
     public function getRecordTypeName(): string
@@ -111,6 +121,8 @@ class MediaCollection extends DBHelper_BaseCollection
     {
         return array();
     }
+
+    // endregion: X - Interface methods
 
     public function getAdminListURL(array $params=array()) : string
     {
@@ -208,4 +220,47 @@ class MediaCollection extends DBHelper_BaseCollection
                 ->dispose();
         }
     }
+
+    // region: Tagging
+
+    public function getTagConnectorClass(): ?string
+    {
+        return MediaTagConnector::class;
+    }
+
+    public function getTagPrimary(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTagTable(): string
+    {
+        return Application_Media::TABLE_TAGS;
+    }
+
+    public function getTagSourceTable(): string
+    {
+        return Application_Media::TABLE_NAME;
+    }
+
+    public function getRootTag(): TagRecord
+    {
+        return AppFactory::createMedia()->getRootTag();
+    }
+
+    public function getTagRegistryKey(): string
+    {
+        return Application_Media::TAG_REGISTRY_KEY;
+    }
+
+    public function getRootTagLabelInvariant(): string
+    {
+        return AppFactory::createMedia()->getRootTagLabelInvariant();
+    }
+
+    protected function handleTaggingInitialized(TagConnector $connector): void
+    {
+    }
+
+    // endregion: Tagging
 }

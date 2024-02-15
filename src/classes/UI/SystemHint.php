@@ -41,7 +41,7 @@ class SystemHint extends UI_Renderable
     public const OPTION_CONTENT = 'content';
 
     /**
-     * @return void
+     * @return string
      * @see \template_default_ui_system_hint
      */
     protected function _render() : string

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Application\AppFactory;
 use AppUtils\Request;
 
-/* @var string $activeURL The URL to this example */
+/** @var string $activeURL The URL to this example */
 
 $nav = UI_Page_Navigation::create('custom-nav')
     ->setTemplateID('navigation.subnav');

@@ -8,6 +8,9 @@ declare(strict_types=1);
 
 namespace TestDriver\UI;
 
+use Application\Admin\Area\BaseMediaLibraryScreen;
+use Application\Admin\Area\BaseNewsScreen;
+use Application\Area\BaseTagsScreen;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
@@ -17,6 +20,7 @@ use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
+use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver_Area_WizardTest;
 use UI\Page\Navigation\NavConfigurator;
@@ -41,9 +45,10 @@ class MainNavConfigurator extends NavConfigurator
         $menu
             ->addAreaChained(Application_Admin_Area_Settings::URL_NAME)
             ->addSeparator()
-            ->addAreaChained(NewsScreen::URL_NAME)
-            ->addAreaChained(MediaLibraryScreen::URL_NAME)
+            ->addAreaChained(BaseNewsScreen::URL_NAME)
+            ->addAreaChained(BaseMediaLibraryScreen::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)
+            ->addAreaChained(BaseTagsScreen::URL_NAME)
             ->addSeparator()
             ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)
             ->addAreaChained(TestingScreen::URL_NAME)

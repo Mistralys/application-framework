@@ -50,7 +50,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
             $page = UI::getInstance()->getPage();
         }
 
-        return new static($page, $id);
+        return new self($page, $id);
     }
 
     /**

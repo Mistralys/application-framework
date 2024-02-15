@@ -48,7 +48,7 @@ abstract class Application_Formable_Container extends Application_Formable
     {
         $this->initFormable(
             $this->originFormable->getFormInstance(),
-            $this->originFormable->getFormableContainer()
+            $this->originFormable->getFormableDefaultContainer()
         );
     }
     

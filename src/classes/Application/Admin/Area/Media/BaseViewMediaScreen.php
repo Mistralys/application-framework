@@ -8,6 +8,7 @@ use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
+use Application\Tags\TagCollection;
 use Application_Admin_Area_Mode_CollectionRecord;
 use UI;
 
@@ -68,6 +69,13 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
             $this->record->getAdminStatusURL()
         )
             ->setIcon(UI::icon()->status());
+
+        $this->subnav->addURL(
+            t('Tagging'),
+            $this->record->getAdminTaggingURL()
+        )
+            ->requireTrue(TagCollection::tableExists())
+            ->setIcon(UI::icon()->tags());
 
         $this->subnav->addURL(
             t('Settings'),

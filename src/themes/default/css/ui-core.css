@@ -971,7 +971,8 @@ BODY.fontsize-bigger.non-zoomable {
     user-select: none;
 }
 
-LI{
+LI,
+UL.last-with-spacing > LI:last-child{
     padding-bottom: 0.2rem;
 }
 

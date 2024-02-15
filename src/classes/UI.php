@@ -19,6 +19,8 @@ use UI\ClientResourceCollection;
 use UI\SystemHint;
 use UI\PaginationRenderer;
 use UI\TooltipInfo;
+use UI\Tree\TreeNode;
+use UI\Tree\TreeRenderer;
 use function AppUtils\parseVariable;
 
 /**
@@ -986,6 +988,11 @@ class UI
     public function createBigSelection() : UI_Bootstrap_BigSelection
     {
         return new UI_Bootstrap_BigSelection($this);
+    }
+
+    public function createTreeRenderer(TreeNode $rootNode) : TreeRenderer
+    {
+        return new TreeRenderer($this, $rootNode);
     }
     
    /**

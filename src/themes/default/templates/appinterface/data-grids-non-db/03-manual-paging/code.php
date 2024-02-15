@@ -7,7 +7,7 @@ use Mistralys\Examples\HerbsCollection;
 // Create the data grid
 require_once __DIR__ . '/../01-grid-setup/code.php';
 
-/* @var UI_DataGrid $grid */
+/** @var UI_DataGrid $grid */
 
 $entries = array();
 

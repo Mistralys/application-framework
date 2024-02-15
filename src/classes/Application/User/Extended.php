@@ -76,6 +76,7 @@ abstract class Application_User_Extended extends Application_User
             ->setDescription(t('Handle translations of the user interface.'));
 
         $this->registerNews($group);
+        $this->registerTags($group);
         $this->registerMedia($group);
 
         // Give the developer all rights.
@@ -85,11 +86,18 @@ abstract class Application_User_Extended extends Application_User
         $coreRights = array(
             self::RIGHT_LOGIN,
             self::RIGHT_TRANSLATE_UI,
+            
             self::RIGHT_CREATE_NEWS,
             self::RIGHT_EDIT_NEWS,
             self::RIGHT_DELETE_NEWS,
             self::RIGHT_VIEW_NEWS,
             self::RIGHT_CREATE_NEWS_ALERTS,
+
+            self::RIGHT_CREATE_TAGS,
+            self::RIGHT_EDIT_TAGS,
+            self::RIGHT_DELETE_TAGS,
+            self::RIGHT_VIEW_TAGS,
+            
             self::RIGHT_CREATE_MEDIA,
             self::RIGHT_EDIT_MEDIA,
             self::RIGHT_DELETE_MEDIA,
@@ -125,6 +133,21 @@ abstract class Application_User_Extended extends Application_User
 
         $group->registerRight(self::RIGHT_CREATE_NEWS_ALERTS, t('Create alerts'))
             ->setDescription(t('Create and modify news alerts.'));
+    }
+
+    protected function registerTags(Application_User_Rights_Group $group) : void
+    {
+        $group->registerRight(self::RIGHT_CREATE_TAGS, t('Create tags'))
+            ->setDescription(t('Create tags.'));
+
+        $group->registerRight(self::RIGHT_EDIT_TAGS, t('Edit tags'))
+            ->setDescription(t('Edit tags.'));
+
+        $group->registerRight(self::RIGHT_DELETE_TAGS, t('Delete tags'))
+            ->setDescription(t('Delete tags.'));
+
+        $group->registerRight(self::RIGHT_VIEW_TAGS, t('View tags'))
+            ->setDescription(t('View tags.'));
     }
 
     protected function registerMedia(Application_User_Rights_Group $group) : void

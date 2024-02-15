@@ -1,6 +1,6 @@
 <?php
 
-/* @var string $activeExampleID */
+/** @var string $activeExampleID */
 
 use TestDriver\TestDBRecords\TestDBCollection;
 

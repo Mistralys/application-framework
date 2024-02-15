@@ -6,6 +6,7 @@ namespace AppFrameworkTestClasses;
 
 use Application;
 use Application\AppFactory;
+use Application\Tags\TagCollection;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
@@ -17,6 +18,7 @@ use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
+use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
 use UI_Page;
 
@@ -216,5 +218,44 @@ abstract class ApplicationTestCase extends TestCase
         $this->testMedia[] = $document;
 
         return $document;
+    }
+
+    /**
+     * @param TestDBRecord[] $records
+     * @param string[] $names
+     * @return void
+     */
+    protected function assertTestRecordsContainNames(array $records, array $names) : void
+    {
+        $recordLabels = array();
+        foreach($records as $record) {
+            $recordLabels[] = $record->getLabel();
+        }
+
+        foreach($names as $name)
+        {
+            if(!in_array($name, $recordLabels)) {
+                $this->fail(sprintf(
+                    'Record %1$s not found in result set. Record labels: '.PHP_EOL.
+                    '- %2$s',
+                    $name,
+                    implode(PHP_EOL.'- ', $recordLabels)
+                ));
+            }
+        }
+    }
+
+    /**
+     * Empties the given tables by deleting all existing records from them.
+     * @param string[] $tables
+     * @return void
+     */
+    protected function cleanUpTables(array $tables) : void
+    {
+        DBHelper::requireTransaction('Clean up database tables');
+
+        foreach($tables as $table) {
+            DBHelper::deleteRecords($table);
+        }
     }
 }

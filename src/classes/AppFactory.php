@@ -15,6 +15,7 @@ use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application\Tags\TagCollection;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -33,6 +34,7 @@ use Application_Uploads;
 use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use DBHelper;
 use DeeplHelper;
 use UI;
 use UI_Themes_Theme;
@@ -145,6 +147,14 @@ class AppFactory
     public static function createWhatsNew() : WhatsNew
     {
         return self::createClassInstance(WhatsNew::class, APP_ROOT . '/WHATSNEW.xml');
+    }
+
+    public static function createTags() : TagCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            TagCollection::class,
+            DBHelper::createCollection(TagCollection::class)
+        );
     }
 
     public function createDriverSettings() : DriverSettings

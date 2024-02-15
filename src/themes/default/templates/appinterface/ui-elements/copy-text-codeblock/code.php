@@ -1,5 +1,5 @@
 <?php
 
-/* @var $this UI_Page_Template */
+declare(strict_types=1);
 
 echo sb()->codeCopy('Text to copy');

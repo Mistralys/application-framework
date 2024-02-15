@@ -9,8 +9,6 @@
 
 use Application\AppFactory;
 use Application\Media\DocumentTrait;
-use Application\Media\ThumbnailRenderer;
-use AppUtils\ImageHelper;
 
 /**
  * Upload object: used to represent a single uploaded file. Can
@@ -204,12 +202,12 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
         DBHelper::requireTransaction('Setting an upload\'s document');
         
         DBHelper::updateDynamic(
-            'uploads', 
+            Application_Uploads::TABLE_NAME,
             array(
-                'media_id' => $document->getID(),
-                'upload_id' => $this->getID()
+                Application_Media::PRIMARY_NAME => $document->getID(),
+                Application_Uploads::PRIMARY_NAME => $this->getID()
             ),
-            array('upload_id')
+            array(Application_Uploads::PRIMARY_NAME)
         );
     }
     
@@ -221,7 +219,7 @@ class Application_Uploads_Upload implements Application_Media_DocumentInterface
     */
     public function getDocumentID() :?int
     {
-        $id = $this->data['media_id'];
+        $id = $this->data[Application_Media::PRIMARY_NAME] ?? 0;
         if(!empty($id)) {
             return (int)$id;
         }

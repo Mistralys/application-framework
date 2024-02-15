@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\AppFactory;
-use AppUtils\Request;
-
-/* @var string $activeURL The URL to this example */
+/** @var string $activeURL The URL to this example */
 
 $tabs = UI::getInstance()->createTabs('tabs-example');
 

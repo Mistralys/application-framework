@@ -6,8 +6,10 @@
 
 declare(strict_types=1);
 
+use Application\Tags\TagCollection;
 use AppUtils\Microtime;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
+use TestDriver\TestDBRecords\TestDBCollection;
 
 /**
  * @package Application
@@ -184,5 +186,13 @@ final class DBHelper_CoreTests extends DBHelperTestCase
             DBHelperTestCase::TEST_RECORDS_TABLE,
             'unknown-column-'.$this->getTestCounter()
         ));
+    }
+
+    public function test_getFieldRelations() : void
+    {
+        $relations = DBHelper::getRelationsForField(TagCollection::TABLE_NAME, TagCollection::PRIMARY_NAME);
+
+        $this->assertCount(1, $relations);
+        $this->assertSame(TestDBCollection::TABLE_NAME_TAGS, $relations[0]['tablename']);
     }
 }

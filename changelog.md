@@ -1,3 +1,24 @@
+## v4.0.0 - Tagging management (DB-update XL)
+- Tags: Added the tagging management.
+- Media: Documents are now taggable.
+- Tests: The Test DB collection is now taggable.
+- DBHelper: Added `getRelationsForField()` to fetch all field relations.
+- JS: Added the `Logger` utility class.
+- ButtonGroup: Added `addButtons()`.
+- TreeRenderer: Added the `TreeRenderer` UI helper class.
+- UI: Added `createTreeRenderer()`.
+- Formables: Unified form element creation methods to use `UI_Form` methods.
+- Forms: Moved some element creation methods to `UI_Form`.
+- Forms: Code modernization and quality improvements.
+- Formables: Added some interface methods.
+- Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
+
+### Database changes
+
+The SQL update file `docs/sql/2024-01-17-tags.sql` must be imported
+for the tagging management. As long as the tagging admin area is not
+enabled in the application driver, this does not affect the application.
+
 ## v3.1.8 - Revisionable update
 - RevisionCopy: `getParts()` can now return callables.
 - FilterSettings: Settings are now class-based.
@@ -19,7 +40,7 @@
 ### Database update
 
 The SQL update file `docs/sql/2024-01-25-revisionables.sql` must be imported
-for the unit tests to work. 
+for the unit tests to work.
 
 ## v3.1.7 - Navigation update
 - Navigation: Fixed the search being executed for empty search terms.
@@ -39,14 +60,14 @@ for the unit tests to work.
 ## v3.1.5 - Lookup items improvements
 - LookupItems: Improved the parsing of search terms.
 - LookupItems: Added some search hints in the dialog.
-- LookupItems: Now displaying an error message and retry button if the search fails.
+- LookupItems: An error message is now displayed with a retry button if the search fails.
 - AJAX: Fixed a property check syntax that could cause a JavaScript error.
 
 ## v3.1.4 - Maintenance improvements
 - Maintenance: Fixed logo shown too big if the source image is larger.
 - Maintenance: Message redirects are now functional.
 
-## v3.1.3 - UI system update
+## v3.1.3 - UI system update (DB-update XS)
 - DBHelper: Added the overridable `getParentPrimaryName()` to collections.
 - DBHelper: Added the static `clearCollections()` method.
 - Data Grids: Criticality actions now use regular menu item classes.
@@ -80,7 +101,7 @@ for the unit tests to work.
 - Interface Refs: Added examples of menus.
 - Interface Refs: Added example of data grid actions.
 - Interface Refs: Added more section examples.
-- Interface Refs: Added a form TOC example.
+- Interface Refs: Added a form table of contents example.
 - Interface Refs: Added sidebar examples.
 - Uploads: Non-framework exceptions are now logged.
 - Sidebar: Added `addFormableTOC()`.
@@ -111,7 +132,7 @@ not a critical change, but recommended to avoid duplicate countries.
 - Interface Refs: Built a support class structure for categories and examples.
 - Interface Refs: Improved the rendering of the reference pages.
 - Interface Refs: Added example descriptions and settings.
-- Interface Refs: Examples are now discovered automatically from the examples folder.
+- Interface Refs: Examples are now discovered automatically from the example folder.
 - Interface Refs: Converted all examples to the new structure.
 - Interface Refs: Added example navigation.
 - Interface Refs: The active example sidebar section now automatically expands.

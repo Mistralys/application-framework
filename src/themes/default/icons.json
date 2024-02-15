@@ -822,5 +822,13 @@
   "css": {
     "icon": "css3",
     "type": ""
+  },
+  "tags": {
+    "icon": "tag",
+    "type": "fas"
+  },
+  "tree": {
+    "icon": "sitemap",
+    "type": "fas"
   }
 }

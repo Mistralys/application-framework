@@ -1,16 +1,39 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
+use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\MediaException;
+use Application\Media\MediaTagConnector;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagCollectionTrait;
+use Application\Tags\Taggables\TagConnector;
+use Application\Tags\TagRecord;
+use Application\Tags\TagRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper\FileInfo;
+use UI\Tree\TreeNode;
+use UI\Tree\TreeRenderer;
 
-class Application_Media
+/**
+ * @method MediaTagConnector getTagConnector()
+ */
+class Application_Media implements TagCollectionInterface
 {
+    use TagCollectionTrait;
+
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
     public const ERROR_NOT_AN_IMAGE_MEDIA_FILE = 680002;
+
+    public const TABLE_NAME = 'media';
+    public const TABLE_NAME_CONFIGURATIONS = 'media_configurations';
+    public const TABLE_TAGS = 'media_tags';
+    public const PRIMARY_NAME = 'media_id';
+    public const TAG_REGISTRY_KEY = 'media_tagging';
 
     protected static ?Application_Media $instance = null;
     protected string $storageFolder;
@@ -109,19 +132,18 @@ class Application_Media
      *
      * @param int $media_id
      * @return Application_Media_Document
-     * @throws Application_Exception
      */
-    public function getByID($media_id)
+    public function getByID(int $media_id) : Application_Media_Document
     {
         return Application_Media_Document::create($media_id);
     }
     
    /**
     * Attempts to retrieve a media document from a form value.
-    * @param array $value
+    * @param mixed $value
     * @return Application_Media_Document|NULL
     */
-    public function getByFormValue($value)
+    public function getByFormValue($value) : ?Application_Media_Document
     {
         if($this->isMediaFormValue($value)) {
             return $this->getByID($value['id']); 
@@ -158,7 +180,7 @@ class Application_Media
      * @param string $extension
      * @return NULL|string
      */
-    public function getTypeByExtension($extension)
+    public function getTypeByExtension(string $extension) : ?string
     {
         $this->loadTypes();
         if (isset($this->extensions[$extension])) {
@@ -188,7 +210,7 @@ class Application_Media
         $this->extensions = array();
         $this->types = array();
 
-        $folder = $this->driver->getApplication()->getClassesFolder() . '/Application/Media/Document';
+        $folder = __DIR__ . '/Media/Document';
         $d = new DirectoryIterator($folder);
 
         foreach ($d as $item)
@@ -233,16 +255,15 @@ class Application_Media
 
     /**
      * Creates a media configuration instance. These are document
-     * type specific, and are used to store configurations for
+     * type-specific, and are used to store configurations for
      * media pre-processing using the media processor class. For
      * example, they are used to store the size presets to resize
      * images.
      *
-     * @param string $type The configuration type, e.g. "Image". Case sensitive.
+     * @param string $type The configuration type, e.g. "Image". Case-sensitive.
      * @return Application_Media_Configuration
      *
-     * @throws ClassHelper\ClassNotExistsException
-     * @throws ClassHelper\ClassNotImplementsException
+     * @throws BaseClassHelperException
      * @throws Throwable
      */
     public function createConfiguration(string $type) : Application_Media_Configuration
@@ -259,17 +280,17 @@ class Application_Media
     * @param integer $media_id
     * @return boolean
     */
-    public function idExists($media_id) 
+    public function idExists(int $media_id) : bool
     {
-        return DBHelper::keyExists('media', array('media_id' => $media_id));
+        return DBHelper::keyExists(self::TABLE_NAME, array(self::PRIMARY_NAME => $media_id));
     }
     
-    public function configurationIDExists($config_id)
+    public function configurationIDExists(int $config_id) : bool
     {
-        return DBHelper::keyExists('media_configurations', array('config_id' => $config_id));
+        return DBHelper::keyExists(self::TABLE_NAME_CONFIGURATIONS, array('config_id' => $config_id));
     }
     
-    public function getConfigurationByID($config_id)
+    public function getConfigurationByID(int $config_id) : Application_Media_Configuration
     {
         $data = DBHelper::fetch(
             "SELECT
@@ -298,5 +319,48 @@ class Application_Media
         $config->loadData($config_id);
         
         return $config;
+    }
+
+    // region: Tagging
+
+    public function getTagPrimary(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTagTable(): string
+    {
+        return self::TABLE_TAGS;
+    }
+
+    public function getTagConnectorClass(): ?string
+    {
+        return MediaTagConnector::class;
+    }
+
+    public function getTagSourceTable(): string
+    {
+        return self::TABLE_NAME;
+    }
+
+    public function getTagRegistryKey(): string
+    {
+        return self::TAG_REGISTRY_KEY;
+    }
+
+    public function getRootTagLabelInvariant(): string
+    {
+        return 'Media Documents';
+    }
+
+    protected function handleTaggingInitialized(TagConnector $connector): void
+    {
+    }
+
+    // endregion: Tagging
+
+    public function getFilterCriteria() : MediaFilterCriteria
+    {
+        return AppFactory::createMediaCollection()->getFilterCriteria();
     }
 }

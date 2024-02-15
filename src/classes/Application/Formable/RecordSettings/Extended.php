@@ -240,13 +240,13 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      * create the record.
      *
      * @param array<string,mixed> $formValues
-     * @return void
+     * @return $this
      * @throws Application_Exception
      */
-    public function makeSubmitted(array $formValues = array()): void
+    public function makeSubmitted(array $formValues = array()): self
     {
         $this->inject();
 
-        parent::makeSubmitted($formValues);
+        return parent::makeSubmitted($formValues);
     }
 }

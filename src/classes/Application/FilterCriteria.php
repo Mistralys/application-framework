@@ -7,6 +7,7 @@
  * @see Application_FilterCriteria
  */
 
+use Application\FilterCriteria\Events\ApplyFiltersEvent;
 use AppUtils\PaginationHelper;
 use UI\PaginationRenderer;
 use function AppUtils\parseVariable;
@@ -29,10 +30,12 @@ use function AppUtils\parseVariable;
 abstract class Application_FilterCriteria
     implements
     Application_Interfaces_Loggable,
-    Application_Interfaces_Instanceable
+    Application_Interfaces_Instanceable,
+    Application_Interfaces_Eventable
 {
     use Application_Traits_Loggable;
     use Application_Traits_Instanceable;
+    use Application_Traits_Eventable;
 
     public const ERROR_INVALID_SORTING_ORDER = 710003;
     public const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
@@ -42,6 +45,7 @@ abstract class Application_FilterCriteria
     const MESSAGE_TYPE_WARNING = 'warning';
     const ORDER_DIR_ASCENDING = 'ASC';
     const ORDER_DIR_DESCENDING = 'DESC';
+    public const EVENT_APPLY_FILTERS = 'ApplyFilters';
 
     /**
      * @var string|NULL
@@ -632,6 +636,13 @@ abstract class Application_FilterCriteria
     public final function applyFilters() : void
     {
         $this->_applyFilters();
+
+        $this->triggerEvent(self::EVENT_APPLY_FILTERS, array($this), ApplyFiltersEvent::class);
+    }
+
+    public function onApplyFilters(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_APPLY_FILTERS, $listener);
     }
 
     protected function _applyFilters() : void {}

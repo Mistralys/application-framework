@@ -1,11 +1,16 @@
 <?php
 
-use AppUtils\ConvertHelper;
-use AppUtils\Traits_Classable;
+declare(strict_types=1);
 
-abstract class UI_Bootstrap extends UI_Renderable implements UI_Interfaces_Bootstrap, UI_Interfaces_Conditional
+use AppUtils\ConvertHelper;
+use AppUtils\Traits\ClassableTrait;
+
+abstract class UI_Bootstrap extends UI_Renderable
+    implements
+    UI_Interfaces_Bootstrap,
+    UI_Interfaces_Conditional
 {
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_Conditional;
     
    /**

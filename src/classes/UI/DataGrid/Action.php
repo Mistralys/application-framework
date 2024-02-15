@@ -151,6 +151,10 @@ abstract class UI_DataGrid_Action
      */
     protected array $liClasses = array();
 
+    /**
+     * @param string $class
+     * @return $this
+     */
     public function addLIClass(string $class) : self
     {
         if(!in_array($class, $this->liClasses, true)) {

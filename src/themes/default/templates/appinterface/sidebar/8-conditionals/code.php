@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/* @var string $activeURL */
+/** @var string $activeURL */
 
 use Application\AppFactory;
 

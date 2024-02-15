@@ -80,7 +80,7 @@ class UI_Form extends UI_Renderable
     public function __construct(UI $ui, string $formID, string $method, array $defaultData = array())
     {
         parent::__construct($ui->getPage());
-        
+
         $this->registerCustomElements();
         $this->registerCustomRules();
 
@@ -89,29 +89,29 @@ class UI_Form extends UI_Renderable
                 'Invalid form data',
                 sprintf(
                     'The default form data must be an array, [%s] given.',
-                    gettype($defaultData)        
+                    gettype($defaultData)
                 ),
                 self::ERROR_INVALID_FORM_DATA
             );
         }
-        
+
         $this->id = $formID;
         $this->defaultDataSource = new HTML_QuickForm2_DataSource_Array($defaultData);
         $this->form = new HTML_QuickForm2(self::FORM_PREFIX . $formID, $method);
         $this->form->addDataSource($this->defaultDataSource);
         $this->form->setAttribute('data-jsid', $formID);
-        
+
         $this->form->getEventHandler()->onNodeAdded(array($this, 'callback_onNodeAdded'));
 
         if($ui->hasPage()) {
             $this->addHiddenVar('page', $this->ui->getPage()->getID());
         }
-        
+
         $this->ui->addJavascriptOnload('FormHelper.init()');
-        
+
         self::$instances[] = $this;
     }
-    
+
     public function getID() : string
     {
         return $this->form->getId();
@@ -138,11 +138,11 @@ class UI_Form extends UI_Renderable
     {
         return $this->form->getAttribute('data-jsid');
     }
-    
+
     public function callback_onNodeAdded(HTML_QuickForm2_Event_NodeAdded $event) : void
     {
         $node = $event->getNode();
-        
+
         // Adds the filter to strip control characters from all text elements.
         if($node instanceof HTML_QuickForm2_Element_Textarea || $node instanceof HTML_QuickForm2_Element_InputText)
         {
@@ -150,9 +150,9 @@ class UI_Form extends UI_Renderable
             $node->setAttribute('data-strip-controlchars', 'yes');
         }
     }
-    
+
     protected static bool $customElementsRegistered = false;
-    
+
    /**
     * Registers all available custom form elements with
     * QuickForm2: source folders are the elements bundled
@@ -164,27 +164,27 @@ class UI_Form extends UI_Renderable
         if(self::$customElementsRegistered === true) {
             return;
         }
-        
+
         self::$customElementsRegistered = true;
-        
+
         $driver = Application_Driver::getInstance();
         $app = $driver->getApplication();
-        
+
         $folders = array(
             $app->getClassesFolder().'/UI/Form/Element',
             $driver->getClassesFolder().'/FormElements'
         );
-        
-        foreach($folders as $folder) 
+
+        foreach($folders as $folder)
         {
             if(!is_dir($folder)) {
                 continue;
             }
-            
+
             $names = FileHelper::createFileFinder($folder)
                 ->getPHPClassNames();
-            
-            foreach($names as $name) 
+
+            foreach($names as $name)
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form element [%s].', $id));
@@ -192,33 +192,33 @@ class UI_Form extends UI_Renderable
             }
         }
     }
-    
+
    /**
     * Registers all custom form rules with QuickForm2:
-    * source folders are the rules bundled with the 
-    * Form manager (UI/Form/Rule) as well as those 
+    * source folders are the rules bundled with the
+    * Form manager (UI/Form/Rule) as well as those
     * specific to the application (DriverName/FormRules).
     */
     protected function registerCustomRules() : void
     {
         $driver = Application_Driver::getInstance();
         $app = $driver->getApplication();
-        
+
         $folders = array(
             $app->getClassesFolder().'/UI/Form/Rule',
             $driver->getClassesFolder().'/FormRules'
         );
-        
+
         foreach($folders as $folder)
         {
             if(!is_dir($folder)) {
                 continue;
             }
-            
+
             $names = FileHelper::createFileFinder($folder)
                 ->getPHPClassNames();
-            
-            foreach($names as $name) 
+
+            foreach($names as $name)
             {
                 $id = strtolower($name);
                 $this->log(sprintf('Registering custom form rule [%s].', $id));
@@ -226,12 +226,12 @@ class UI_Form extends UI_Renderable
             }
         }
     }
-    
+
     protected function log(string $message) : void
     {
         Application::log('Form Manager | '.$message);
     }
-    
+
    /**
     * @var UI_Form[]
     */
@@ -265,7 +265,7 @@ class UI_Form extends UI_Renderable
      * @var array<string,array{alias:string,name:string}>
      */
     protected array $customElements = array();
-    
+
     /**
      * Registers a custom form Element class.
      *
@@ -279,6 +279,7 @@ class UI_Form extends UI_Renderable
      *
      * @param string $alias
      * @param string $elementName
+     * @throws BaseClassHelperException
      */
     public function registerCustomElement(string $alias, string $elementName) : void
     {
@@ -286,13 +287,13 @@ class UI_Form extends UI_Renderable
             'alias' => $alias,
             'name' => $elementName
         );
-        
+
         HTML_QuickForm2_Factory::registerElement(
             $alias,
-            HTML_QuickForm2_Element::class . '_' . $elementName
+            ClassHelper::requireResolvedClass(HTML_QuickForm2_Element::class . '_' . $elementName)
         );
     }
-    
+
    /**
     * Retrieves a list of all registered custom elements.
     * @return array Indexed array with these keys in each entry: "alias", "name" and "file"
@@ -346,7 +347,7 @@ class UI_Form extends UI_Renderable
 
    /**
     * Sets an attribute of the form element itself.
-    * 
+    *
     * @param string $name
     * @param string|int|float|NULL $value
     * @return UI_Form
@@ -413,9 +414,19 @@ class UI_Form extends UI_Renderable
         return $this;
     }
 
+    public function addGroupLayoutless(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Container_Group
+    {
+        $container = $this->resolveContainer($container);
+
+        $group = $container->addGroup($name);
+        $group->setAttribute('rel', UI_Form::REL_LAYOUT_LESS_GROUP);
+
+        return $group;
+    }
+
     /**
     * Adds a class to the form tag itself.
-    * 
+    *
     * @param string $className
     * @return UI_Form
     */
@@ -424,7 +435,7 @@ class UI_Form extends UI_Renderable
         $this->form->addClass($className);
         return $this;
     }
-    
+
     public function removeClass(string $className) : self
     {
         $this->form->removeClass($className);
@@ -453,15 +464,15 @@ class UI_Form extends UI_Renderable
     public function getElementByName(string $name) : ?HTML_QuickForm2_Element
     {
         $elements = $this->form->getElementsByName($name);
-        
-        if(!empty($elements)) 
+
+        if(!empty($elements))
         {
             return ClassHelper::requireObjectInstanceOf(
                 HTML_QuickForm2_Element::class,
                 $elements[0]
             );
         }
-        
+
         return null;
     }
 
@@ -491,11 +502,11 @@ class UI_Form extends UI_Renderable
     {
         return $this->form;
     }
-    
+
    /**
-    * Retrieves all required elements in the form, or the 
+    * Retrieves all required elements in the form, or the
     * specified container if the first parameter is set.
-    * 
+    *
     * @param HTML_QuickForm2_Container|NULL $container
     * @param array $result
     * @return HTML_QuickForm2_Node[]
@@ -503,23 +514,23 @@ class UI_Form extends UI_Renderable
     public function getRequiredElements(?HTML_QuickForm2_Container $container=null, array $result=array()) : array
     {
         $container = $this->resolveContainer($container);
-        
+
         $elements = $container->getElements();
-        
-        foreach($elements as $element) 
+
+        foreach($elements as $element)
         {
             if($element->isRequired() || $element->getAttribute('data-required') === 'true')
             {
                 $result[] = $element;
                 continue;
             }
-            
-            if($element instanceof HTML_QuickForm2_Container) 
+
+            if($element instanceof HTML_QuickForm2_Container)
             {
                 $result = $this->getRequiredElements($element);
             }
         }
-        
+
         return $result;
     }
 
@@ -538,12 +549,12 @@ class UI_Form extends UI_Renderable
         $this->silentValidation = $enabled;
         return $this;
     }
-    
+
    /**
     * Simulates the form being submitted using the form's current
     * values. This can be used to validate an arbitrary set of values
     * without needing to submit an actual form mask.
-    * 
+    *
     * To use this, create a form with the values you wish to validate
     * as default values, then validate the form as per usual.
     *
@@ -552,15 +563,15 @@ class UI_Form extends UI_Renderable
     public function simulateSubmit() : self
     {
         $this->setSilentValidation();
-        
+
         $values = $this->getValues();
-        
+
         $values[$this->form->getName()] = 'true';
-        
+
         foreach($values as $varName => $value) {
             $_POST[$varName] = $value;
         }
-        
+
         // the presence of this datasource tells the form that it
         // has been submitted.
         $ds = new HTML_QuickForm2_DataSource_SuperGlobal();
@@ -568,7 +579,7 @@ class UI_Form extends UI_Renderable
 
         return $this;
     }
-    
+
     protected ?bool $validationResult = null;
 
     /**
@@ -602,7 +613,7 @@ class UI_Form extends UI_Renderable
                 $this->ui->addErrorMessage($message);
             }
         }
-        
+
         if($this->validationResult) {
             $this->postValidation();
         }
@@ -623,11 +634,11 @@ class UI_Form extends UI_Renderable
         if($simulateSubmit) {
             $this->simulateSubmit();
         }
-        
+
         if($this->validate()) {
             return array();
         }
-        
+
         return $this->collectInvalidElements($this->form);
     }
 
@@ -644,13 +655,13 @@ class UI_Form extends UI_Renderable
             if($element instanceof HTML_QuickForm2_Container) {
                 $collection = $this->collectInvalidElements($element, $collection);
                 continue;
-            } 
+            }
 
             if(method_exists($element, 'hasErrors') && $element->hasErrors()) {
                 $collection[] = $element;
             }
         }
-        
+
         return $collection;
     }
 
@@ -665,7 +676,7 @@ class UI_Form extends UI_Renderable
     {
         return $this->validate();
     }
-    
+
     protected int $dummyCounter = 0;
 
     private function generateDummyName() : string
@@ -676,7 +687,7 @@ class UI_Form extends UI_Renderable
 
    /**
     * Retrieves all form element values in an associative array.
-    * 
+    *
     * @param boolean $removeTrackingVar
     * @return array<string,mixed>
     */
@@ -688,7 +699,7 @@ class UI_Form extends UI_Renderable
             $value = $element->getValue();
             $values[$element->getName()] = $value;
         }
-        
+
         if($removeTrackingVar) {
             $varName = $this->getTrackingName();
             unset($values[$varName]);
@@ -696,7 +707,7 @@ class UI_Form extends UI_Renderable
 
         return $values;
     }
-    
+
    /**
     * @return HTML_QuickForm2_Element_ImageUploader[]
     */
@@ -709,41 +720,41 @@ class UI_Form extends UI_Renderable
                 $result[] = $element;
             }
         }
-        
+
         return $result;
     }
-    
+
    /**
     * Retrieves the name of the request variable that is used by the
     * form to track whether it has been submitted.
-    * 
+    *
     * @return string
     */
     public function getTrackingName() : string
     {
         return '_qf__'.$this->form->getId();
     }
-    
+
     public function isTrackingElement(HTML_QuickForm2_Node $element) : bool
     {
         return $element->getName() === $this->getTrackingName();
     }
-    
+
     public function isDummyElement(HTML_QuickForm2_Node $element) : bool
     {
         return stripos($element->getName(), 'dummy') !== false;
     }
-    
+
     protected function _render() : string
     {
         return $this->renderHorizontal();
     }
-    
+
     public function renderHorizontal() : string
     {
         return $this->renderLayout('horizontal');
     }
-    
+
    /**
     * @var UI_Form_Renderer|NULL
     */
@@ -762,20 +773,20 @@ class UI_Form extends UI_Renderable
             // do this again to ensure that all elements in the form get the info
             $this->makeReadonly();
         }
-        
+
         $renderer = new UI_Form_Renderer($this, $this->form->renderToArray(), $layout);
         $renderer->setRegistryEnabled($this->clientRegistryEnabled);
 
         //$renderer->debugFormDef();
 
         $html = $renderer->render();
-        
+
         $this->triggerEvent('rendered', array('renderer' => $renderer));
         $this->formRenderer = $renderer;
 
         return $html;
     }
-    
+
     public function renderColumnized() : string
     {
         return $this->renderLayout('columnized');
@@ -818,7 +829,7 @@ class UI_Form extends UI_Renderable
 
         return $this;
     }
-    
+
     /**
      * Makes the field labels wider to allow for longer labels.
      * @return $this
@@ -836,12 +847,12 @@ class UI_Form extends UI_Renderable
     {
         return $this->toggleFormClass('form-condensed', $enabled);
     }
-    
+
    /**
     * Marks the form as being collapsible: all headers within the
     * form will be rendered so that their contained form elements
     * can be collapsed/expanded at will.
-    * 
+    *
     * @return $this
     */
     public function makeCollapsible(bool $enabled=true) : self
@@ -865,25 +876,25 @@ class UI_Form extends UI_Renderable
     public static function getRegexHint(string $name) : string
     {
         $name = strtoupper($name);
-        
+
         switch ($name) {
             case 'LABEL':
-                return 
-                    t('Allowed characters:') . ' ' . 
+                return
+                    t('Allowed characters:') . ' ' .
                     t('Regular words, digits and punctuation.');
-                
+
             case 'ALIAS':
-                return 
+                return
                     t('Allowed characters:') . ' ' .
                     t('Lowercase letters, digits, dots (.), underscores (_) and hyphens (-).') . ' ' .
                     t('Must start with a letter.');
-                        
+
             case 'ALIAS_CAPITALS':
-                return 
+                return
                     t('Allowed characters:') . ' ' .
                     t('Lowercase and uppercase letters, digits, dots (.), underscores (_) and hyphens (-).') . ' ' .
                     t('Must start with a letter.');
-               
+
             case 'NAME_OR_TITLE':
                 return t('May not contain any special characters or HTML.');
 
@@ -894,40 +905,40 @@ class UI_Form extends UI_Renderable
                         'If you omitted the %1$s, please add it.',
                         sb()->code('https://')
                     );
-                
+
             case 'FILENAME':
                 return (string)sb()
                     ->t('Allowed characters:')
                     ->t('Regular words, digits, spaces, dots (.), underscores (_), hyphens (-).')
                     ->t('Must start with a letter or number.');
-                
+
             case 'EMAIL':
                 return t('Must be a valid e-mail address.');
-                
+
             case 'PHONE':
                 return t('Allowed characters:') . ' ' .
                 t('Digits, spaces, hyphens (-), plus sign (+).') . ' ' .
                 t('Must start with a + or a digit.');
-                
+
             case 'INTEGER':
                 return t('Must be a whole number (without fractions).');
-                
+
             case 'NOHTML':
                 return t('May not contain HTML.');
-                
+
             case 'FLOAT':
                 return t('Must be a number with or without fractions.');
-                
+
             case 'HEXCOLOR':
                 return  t('Must be a hexadecimal color code with 3 or 6 characters.').' '.
                         t('Accepts lowercase and uppercase letters.');
         }
-        
+
         throw new FormException(
             'Unknown regex hint',
             sprintf(
                 'The regex hint name [%s] was not recognized.',
-                $name    
+                $name
             ),
             self::ERROR_UNKNOWN_REGEX_HINT
         );
@@ -971,11 +982,11 @@ class UI_Form extends UI_Renderable
             if($element->getType() === 'hidden') {
                 continue;
             }
-            
+
             if ($this->isDummyElement($element)) {
                 continue;
             }
-            
+
             if ($element instanceof HTML_QuickForm2_Container) {
                 $result = $this->walkElements($element);
                 if ($result) {
@@ -992,7 +1003,7 @@ class UI_Form extends UI_Renderable
     }
 
 
-    
+
     public function handle_validateMinMax($value, ?int $min, ?int $max) : bool
     {
         if(!is_numeric($value)) {
@@ -1000,22 +1011,22 @@ class UI_Form extends UI_Renderable
         }
 
         $value = (int)$value;
-        
+
         if($min !== null && $value < $min) {
             return false;
         }
-        
+
         if($max !== null && $value > $max) {
             return false;
         }
-        
+
         return true;
     }
 
    /**
     * Sets the onsubmit attribute of the form tag to the specified
     * javascript statement string.
-    * 
+    *
     * @param string $statement
     * @return $this
     */
@@ -1035,14 +1046,14 @@ class UI_Form extends UI_Renderable
      * so that clientside scripts can access them easily as well.
      *
      * @param string $jsid
-     * @param string $elementName
+     * @param string|NULL $elementName
      * @return string
      * @throws FormException
      */
-    public function createElementID(string $jsid, string $elementName) : string
+    public function createElementID(string $jsid, ?string $elementName) : string
     {
         $elementID = $jsid.'_field_'.str_replace(array('[', ']'), array('_', ''), $elementName);
-        
+
         if(isset($this->elementIDs[$elementID])) {
             throw new FormException(
                 'Duplicate form element ID',
@@ -1056,17 +1067,17 @@ class UI_Form extends UI_Renderable
                 self::ERROR_DUPLICATE_ELEMENT_ID
             );
         }
-        
+
         // we do it this way to avoid having to use in_array for performance reasons.
         $this->elementIDs[$elementID] = true;
-        
+
         return $elementID;
     }
-    
+
    /**
-    * Validates the specified string with the regex for 
+    * Validates the specified string with the regex for
     * regular item labels.
-    * 
+    *
     * @param string|NULL $label
     * @return boolean
     */
@@ -1074,11 +1085,11 @@ class UI_Form extends UI_Renderable
     {
         return preg_match(RegexHelper::REGEX_LABEL, (string)$label) === 1;
     }
-    
+
    /**
     * Validates the specified string with the regex for
     * item aliases.
-    * 
+    *
     * @param string|NULL $alias
     * @return boolean
     */
@@ -1086,11 +1097,11 @@ class UI_Form extends UI_Renderable
     {
         return preg_match(RegexHelper::REGEX_ALIAS, $alias) === 1;
     }
-    
+
    /**
     * Validates the specified string with the regex for
     * email addresses.
-    * 
+    *
     * @param string|NULL $email
     * @return boolean
     */
@@ -1098,7 +1109,7 @@ class UI_Form extends UI_Renderable
     {
         return preg_match(RegexHelper::REGEX_EMAIL, (string)$email);
     }
-    
+
     protected array $eventHandlers = array(
         'rendered' => array()
     );
@@ -1129,19 +1140,19 @@ class UI_Form extends UI_Renderable
                 sprintf(
                     'The form has no event [%s]. The available events are: [%s].',
                     $name,
-                    implode(', ', array_keys($this->eventHandlers))    
+                    implode(', ', array_keys($this->eventHandlers))
                 ),
-                self::ERROR_UNKNOWN_EVENT_HANDLER  
+                self::ERROR_UNKNOWN_EVENT_HANDLER
             );
         }
-        
+
         Application::requireCallableValid($handler, self::ERROR_INVALID_EVENT_HANDLER);
-        
+
         $this->eventHandlers[$name][] = $handler;
-        
+
         return $this;
     }
-    
+
     protected function triggerEvent(string $name, array $data=array()) : self
     {
         foreach($this->eventHandlers[$name] as $handler) {
@@ -1186,7 +1197,8 @@ class UI_Form extends UI_Renderable
             HTML_QuickForm2_Element_Textarea::class,
             $this->addElement('textarea', $name, $container)
         )
-            ->setLabel($label);
+            ->setLabel($label)
+            ->addClass('input-xxlarge');
     }
 
     /**
@@ -1288,12 +1300,22 @@ class UI_Form extends UI_Renderable
 
     /**
      * @param string $name
+     * @param string $label
      * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_VisualSelect
+     * @return HTML_QuickForm2_Element_InputFile
      *
      * @throws BaseClassHelperException
      * @throws FormException
      */
+    public function addFile(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputFile
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputFile::class,
+            $this->addElement('file', $name, $container)
+        )
+            ->setLabel($label);
+    }
+
     public function addVisualSelect(string $name, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_VisualSelect
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -1382,6 +1404,48 @@ class UI_Form extends UI_Renderable
         }
 
         return $el;
+    }
+
+    /**
+     * Adds an element for entering a hexadecimal color code.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws BaseClassHelperException
+     * @throws FormException
+     * @throws HTML_QuickForm2_Exception
+     * @throws UI_Exception
+     */
+    public function addHexColor(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        $el = $this->addText($name, $label, $container);
+        $el->addFilterTrim();
+        $el->addClass('input-small');
+        $el->addClass('monospace');
+        $el->setAttribute('data-type', 'hexcolor');
+
+        $this->setElementPrepend($el, '#');
+        $this->addRuleCallback(
+            $el,
+            function($value)
+            {
+                // this is handled by the field's required status
+                if(empty($value)) {
+                    return true;
+                }
+
+                return preg_match(RegexHelper::REGEX_HEX_COLOR_CODE, $value);
+            },
+            t('Not a valid hexadecimal color code.')
+        );
+
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_InputText::class,
+            $el
+        );
     }
 
     public function addStatic(string $label, string $content, ?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Element_InputText
@@ -1658,9 +1722,35 @@ class UI_Form extends UI_Renderable
      */
     public function addSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
+        $element = $this->resolveContainer($container)->addElement(HTML_QuickForm2_Element_Switch::ELEMENT_TYPE, $name);
+        $element->setLabel($label);
+
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $this->resolveContainer($container)->addElement('switch', $name)
+        )
+            ->setLabel($label);
+    }
+
+    /**
+     * Adds a tree selection element that uses a {@see \UI\Tree\TreeRenderer}
+     * to display the item tree.
+     *
+     * @param string $name
+     * @param string $label
+     * @param HTML_QuickForm2_Container|NULL $container
+     * @return HTML_QuickForm2_Element_TreeSelect
+     *
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     */
+    public function addTreeSelect(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_TreeSelect
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            HTML_QuickForm2_Element_TreeSelect::class,
+            $this
+                ->resolveContainer($container)
+                ->addElement(HTML_QuickForm2_Element_TreeSelect::ELEMENT_TYPE, $name)
         )
             ->setLabel($label);
     }
@@ -1727,12 +1817,12 @@ class UI_Form extends UI_Renderable
         {
             $name = 'alias';
         }
-        
+
         if(empty($label))
         {
             $label = t('Alias');
         }
-        
+
         $el = $this->addText($name, $label);
         $el->addFilterTrim();
         $this->makeRequired($el);
@@ -1749,8 +1839,28 @@ class UI_Form extends UI_Renderable
         {
             $this->makeStructural($el);
         }
-        
+
         return $el;
+    }
+
+    /**
+     * Adds an abstract text to the form.
+     *
+     * @param string $abstract
+     * @param string[] $classes
+     * @param HTML_QuickForm2_Container|null $container
+     * @return HTML_QuickForm2_Element_InputText
+     *
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     * @throws UI_Exception
+     */
+    public function addAbstract(string $abstract, array $classes=array(), ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    {
+        return $this->addHTML(
+            '<p class="abstract form-abstract '.implode(' ', $classes).'">'.$abstract.'</p>',
+            $container
+        );
     }
 
     /**
@@ -1768,12 +1878,12 @@ class UI_Form extends UI_Renderable
     public function addDatepicker(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_HTMLDateTimePicker
     {
         $this->registerCustomElement(self::ELEMENT_TYPE_DATE_PICKER, ClassHelper::getClassTypeName(HTML_QuickForm2_Element_HTMLDateTimePicker::class));
-        
+
         $element = ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_HTMLDateTimePicker::class,
             $this->addElement(self::ELEMENT_TYPE_DATE_PICKER, $name, $container)
         );
-        
+
         $element->setLabel($label);
 
         return $element;
@@ -1825,15 +1935,15 @@ class UI_Form extends UI_Renderable
     {
         $regex = RegexHelper::REGEX_ALIAS;
         $dataType = 'alias';
-        
-        if($allowCapitalLetters) 
+
+        if($allowCapitalLetters)
         {
             $regex = RegexHelper::REGEX_ALIAS_CAPITALS;
             $dataType = 'alias_capitals';
         }
-        
+
         $this->makeLengthLimited($element, 1, 80);
-        
+
         $element->addRule('regex', t('Must be a valid alias.'), $regex);
         $element->setAttribute('data-type', $dataType);
         return $element;
@@ -1871,9 +1981,9 @@ class UI_Form extends UI_Renderable
             // empty check here before, which caused issues).
             $arguments = array($arguments);
         }
-        
+
         $arguments[] = $rule;
-        
+
         $rule->setConfig(array(
             'callback' => $callback,
             'arguments' => $arguments
@@ -1893,9 +2003,9 @@ class UI_Form extends UI_Renderable
     public function addRuleFilename(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
         $element->addRule('regex', t('Please enter a valid name.'), RegexHelper::REGEX_FILENAME);
-        
+
         $element->setAttribute('data-type', 'filename');
-        
+
         return $element;
     }
 
@@ -1913,7 +2023,7 @@ class UI_Form extends UI_Renderable
     public function addRuleInteger(HTML_QuickForm2_Node $element, int $min=0, int $max=0) : HTML_QuickForm2_Node
     {
         new UI_Form_Validator_Integer($this, $element, $min, $max);
-        
+
         return $element;
     }
 
@@ -1947,7 +2057,7 @@ class UI_Form extends UI_Renderable
     public function addRuleFloat(HTML_QuickForm2_Node $element, float $min=0.0, float $max=0.0) : HTML_QuickForm2_Node
     {
         $element->addFilter(array($this, 'callback_convertComma'));
-        
+
         new UI_Form_Validator_Float($this, $element, $min, $max);
 
         return $element;
@@ -1973,7 +2083,7 @@ class UI_Form extends UI_Renderable
         {
             $value = str_replace(array(' ', ','), '.', $value);
         }
-        
+
         return $value;
     }
 
@@ -1991,7 +2101,7 @@ class UI_Form extends UI_Renderable
     public function addRuleDate(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
         new UI_Form_Validator_Date($this, $element);
-        
+
         return $element;
     }
 
@@ -2032,7 +2142,7 @@ class UI_Form extends UI_Renderable
             $this->makeMarkupEditor('Redactor', $element, $country)
         );
     }
-    
+
     public function makeCKEditor(HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor_CKEditor
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -2040,25 +2150,25 @@ class UI_Form extends UI_Renderable
             $this->makeMarkupEditor('CKEditor', $element, $country)
         );
     }
-    
+
     public function makeMarkupEditor(string $editorID, HTML_QuickForm2_Element $element, Application_Countries_Country $country) : UI_MarkupEditor
     {
         $editor = $this->ui->addMarkupEditor($editorID, $element, $country);
-        
+
         $element->setAttribute('data-type', 'markup-editor');
         $element->setAttribute('data-editor-id', $editorID);
-        
+
         $element->setRuntimeProperty('markup-editor', $editor);
-        
+
         return $editor;
     }
-    
+
    /**
     * Post-validation routine: gives elements the time to post-process
     * a valid form. This is used, for example, for the image elements so
     * uploaded images can be automatically transformed into regular media
     * documents once the form is valid and will be processed.
-    * 
+    *
     * @see HTML_QuickForm2_Element_ImageUploader::upgradeMedia()
     */
     protected function postValidation() : void
@@ -2142,6 +2252,8 @@ class UI_Form extends UI_Renderable
      */
     public function makeRequired(HTML_QuickForm2_Node $el, $message=null) : HTML_QuickForm2_Node
     {
+        $message = toString($message);
+
         if(empty($message))
         {
             if($el instanceof HTML_QuickForm2_Element_Select) {
@@ -2273,10 +2385,12 @@ class UI_Form extends UI_Renderable
 
     /**
      * Appends the related units for the element's values to the
-     * element in the UI, for example, "Centimetres".
+     * element in the UI.
+     *
+     * Example: "Centimetres".
      *
      * @param HTML_QuickForm2_Node $element
-     * @param string|StringableInterface $units
+     * @param string|number|StringableInterface|NULL $units
      * @return HTML_QuickForm2_Node
      *
      * @throws UI_Exception
@@ -2294,11 +2408,11 @@ class UI_Form extends UI_Renderable
     }
 
     /**
-     * Adds a string to append to an element. For example
-     * for units, like "Centimetres".
+     * Adds a string to append to an element.
+     * For example for units, like "Centimetres".
      *
      * @param HTML_QuickForm2_Node $element
-     * @param string|StringableInterface $appendString
+     * @param string|number|StringableInterface|NULL $appendString
      * @return HTML_QuickForm2_Node
      *
      * @throws UI_Exception
@@ -2349,7 +2463,7 @@ class UI_Form extends UI_Renderable
    /**
     * Adds custom HTML after the element's form input element.
     * Not to mistake with {@link self::setElementAppend()}.
-    * 
+    *
     * @param HTML_QuickForm2_Node $element
     * @param string|number|StringableInterface $html
     * @param boolean $whenFrozen Whether to display this even when the element is frozen.
@@ -2362,10 +2476,10 @@ class UI_Form extends UI_Renderable
     {
         return $this->addElementHTML('append', $element, $html, $whenFrozen);
     }
-    
+
    /**
     * Appends a button after the element's input.
-    * 
+    *
     * @param HTML_QuickForm2_Node $element
     * @param UI_Button|UI_Bootstrap $button
     * @param boolean $whenFrozen Whether to display this even when the element is frozen.
@@ -2478,15 +2592,15 @@ class UI_Form extends UI_Renderable
     public function addRuleRegex(HTML_QuickForm2_Node $element, string $regex, string $message) : HTML_QuickForm2_Node
     {
         $element->addRule('regex', $message, $regex);
-        
+
         return $element;
     }
-    
+
    /**
     * Parses a date string into a date object. The date must have
     * a format matching the  {@see RegexHelper::REGEX_DATE} regular
     * expression.
-    * 
+    *
     * @param string|NULL $dateString
     * @return NULL|DateTime
     */
@@ -2494,57 +2608,59 @@ class UI_Form extends UI_Renderable
     {
         $matches = null;
         preg_match_all('%([0-9]{1,2})/([0-9]{1,2})/([0-9]{2,4}) ([0-9]{1,2}):([0-9]{1,2})|([0-9]{1,2})/([0-9]{1,2})/([0-9]{2,4})%', (string)$dateString, $matches, PREG_PATTERN_ORDER);
-        
+
         if(empty($matches[0])) {
             return null;
         }
-        
+
         try{
             $date = new DateTime($matches[0][0]);
         } catch(Exception $e) {
             return null;
         }
-        
+
         return $date;
     }
-    
+
     protected string $title = '';
-    
-   /**
-    * Sets the title of the form. This is typically used 
-    * in the form rendering template as title for the content
-    * section in which the form is shown.
-    * 
-    * @param string|number|StringableInterface|NULL $title
-    * @return $this
-    */
+
+    /**
+     * Sets the title of the form. This is typically used
+     * in the form rendering template as title for the content
+     * section in which the form is shown.
+     *
+     * @param string|number|StringableInterface|NULL $title
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setTitle($title) : self
     {
         $this->title = toString($title);
         return $this;
     }
-    
+
     public function getTitle() : string
     {
         return $this->title;
     }
-    
+
     protected string $abstract = '';
-    
-   /**
-    * Sets the abstract of the form. This is typically used 
-    * in the form rendering template as title for the content
-    * section in which the form is shown.
-    * 
-    * @param string|number|StringableInterface|NULL $abstract
-    * @return $this
-    */
+
+    /**
+     * Sets the abstract of the form. This is typically used
+     * in the form rendering template as title for the content
+     * section in which the form is shown.
+     *
+     * @param string|number|StringableInterface|NULL $abstract
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setAbstract($abstract) : self
     {
         $this->abstract = toString($abstract);
         return $this;
     }
-    
+
     public function getAbstract() : string
     {
         return $this->abstract;
@@ -2571,18 +2687,18 @@ class UI_Form extends UI_Renderable
                 self::ERROR_ELEMENT_HAS_NO_ID
             );
         }
-        
+
         foreach(self::$instances as $instance) {
             $element = $instance->getForm()->getElementById($id);
-        
+
             if($element) {
                 return $instance;
             }
         }
-        
+
         return null;
     }
-    
+
     public function hasElements(bool $includeHiddens=false) : bool
     {
         $elements = $this->getForm()->getElements();
@@ -2591,30 +2707,33 @@ class UI_Form extends UI_Renderable
             if(!$includeHiddens && $element->getType() === 'hidden') {
                 continue;
             }
-            
+
             return true;
         }
 
         return false;
     }
-    
+
     public function getName() : string
     {
         $name = $this->form->getName();
         if(empty($name)) {
             $name = $this->form->getId();
         }
-        
+
         return str_replace(self::FORM_PREFIX, '', $name);
     }
-    
-   /**
-    * Gets the javascript statement that can be used to submit
-    * the form, optionally in simulation mode.
-    * 
-    * @param bool $simulate
-    * @return string
-    */
+
+    /**
+     * Gets the javascript statement that can be used to submit
+     * the form, optionally in simulation mode.
+     *
+     * @param bool $simulate
+     * @return string
+     * @throws Application_Formable_Exception
+     * @throws ConvertHelper_Exception
+     * @throws FormException
+     */
     public function getJSSubmitHandler(bool $simulate=false) : string
     {
         return self::renderJSSubmitHandler($this, $simulate);
@@ -2623,6 +2742,7 @@ class UI_Form extends UI_Renderable
     /**
      * @param class-string|UI_DataGrid|UI_Form|Application_Formable|Application_Interfaces_Formable|mixed $subject
      * @return string
+     * @throws Application_Formable_Exception
      */
     public static function resolveFormName($subject) : string
     {
@@ -2630,22 +2750,22 @@ class UI_Form extends UI_Renderable
         {
             return $subject->getFormID();
         }
-        
+
         if($subject instanceof self)
         {
             return $subject->getName();
         }
-        
+
         if($subject instanceof Application_Interfaces_Formable)
         {
             return $subject->getFormableName();
         }
-        
+
         if(is_string($subject))
         {
             return $subject;
         }
-        
+
         return '';
     }
 
@@ -2657,6 +2777,7 @@ class UI_Form extends UI_Renderable
      * @param boolean $simulate
      * @return string
      *
+     * @throws Application_Formable_Exception
      * @throws ConvertHelper_Exception
      * @throws FormException
      */
@@ -2672,7 +2793,7 @@ class UI_Form extends UI_Renderable
                 ConvertHelper::bool2string($simulate)
             );
         }
-        
+
         throw new FormException(
             'Unhandled submit subject',
             sprintf(
@@ -2681,29 +2802,29 @@ class UI_Form extends UI_Renderable
             ),
             self::ERROR_UNHANDLED_SUBMIT_HANDLER_SUBJECT
         );
-    
+
     }
-  
+
     protected bool $clientRegistryEnabled = false;
-    
+
    /**
     * Enables or disables the clientside form elements registry: this
     * is an easy way to access information on the form on the client
     * side, from sections to individual elements. By default, this is
     * disabled.
-    * 
+    *
     * @param bool $enabled
     * @return $this
     */
     public function enableClientRegistry(bool $enabled=true) : self
     {
-        if(isset($this->formRenderer)) 
+        if(isset($this->formRenderer))
         {
             $this->formRenderer->setRegistryEnabled($enabled);
         }
-        
+
         $this->clientRegistryEnabled = $enabled;
-        
+
         return $this;
     }
 
@@ -2723,7 +2844,7 @@ class UI_Form extends UI_Renderable
         if(empty($id)) {
             $id = nextJSID();
         }
-        
+
         return
         '<div style="width:1px;height:1px;overflow:hidden;">'.
             '<input id="'.$id.'" type="submit" name="dummySubmit_'.$id.'" value="true" tabindex="-1"/>'.
@@ -2754,7 +2875,7 @@ class UI_Form extends UI_Renderable
         {
             return $container;
         }
-        
+
         return $this->form;
     }
 

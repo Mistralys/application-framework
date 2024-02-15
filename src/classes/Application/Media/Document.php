@@ -2,8 +2,14 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
+use Application\Media\Collection\MediaRecord;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Taggables\TagConnector;
+use Application\Tags\Taggables\TaggableInterface;
+use Application\Tags\Taggables\TaggableTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -15,10 +21,14 @@ use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
 
-abstract class Application_Media_Document implements Application_Media_DocumentInterface
+abstract class Application_Media_Document
+    implements
+    Application_Media_DocumentInterface,
+    TaggableInterface
 {
     use Application_Traits_Loggable;
     use DocumentTrait;
+    use TaggableTrait;
 
     public const ERROR_CONFIGURATION_TYPE_MISMATCH = 650001;
     public const ERROR_CANNOT_CHECK_PROCESSING_REQUIREMENTS = 650002;
@@ -506,9 +516,9 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
             "DELETE FROM
                 `media`
             WHERE
-                `media_id`=:media_id",
+                `media_id`=:primary",
             array(
-                'media_id' => $this->id
+                'primary' => $this->id
             )    
         );
         
@@ -553,4 +563,28 @@ abstract class Application_Media_Document implements Application_Media_DocumentI
     }
 
     abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
+
+    // region: Tagging
+
+    public function getTagCollection(): TagCollectionInterface
+    {
+        return $this->media;
+    }
+
+    public function getTagRecordPrimaryValue(): int
+    {
+        return $this->getID();
+    }
+
+    public function getAdminTaggingURL(array $params = array()) : string
+    {
+        return $this->getRecord()->getAdminTaggingURL($params);
+    }
+
+    // endregion
+
+    public function getRecord() : MediaRecord
+    {
+        return AppFactory::createMediaCollection()->getByID($this->getID());
+    }
 }

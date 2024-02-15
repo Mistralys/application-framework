@@ -772,6 +772,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function tags() : self { return $this->setType('tag', 'fas'); }
+    /**
+     * @return $this
+     */
     public function tariffMatrix() : self { return $this->setType('table'); }
     /**
      * @return $this
@@ -809,6 +813,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      * @return $this
      */
     public function transmission() : self { return $this->setType('satellite-dish'); }
+    /**
+     * @return $this
+     */
+    public function tree() : self { return $this->setType('sitemap', 'fas'); }
     /**
      * @return $this
      */
