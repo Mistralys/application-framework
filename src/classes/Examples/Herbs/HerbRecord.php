@@ -40,4 +40,9 @@ class HerbRecord implements IntegerPrimaryRecordInterface
     {
         return $this->local;
     }
+
+    public function dryAndStore() : void
+    {
+        // Process the item
+    }
 }

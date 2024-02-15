@@ -8,29 +8,30 @@ $grid = UI::getInstance()->createDataGrid('redirect-message');
 
 // (Configure data grid and entries here)
 
-$grid->addAction('process', t('Process...'))
-    ->setCallback('process_items');
+$grid->addAction('dry-herbs', t('Dry herbs...'))
+    ->setCallback('dry_herbs');
 
-function process_items(UI_DataGrid_Action $action) : void
+function dry_herbs(UI_DataGrid_Action $action) : void
 {
     // Create the redirect message with the URL to redirect to,
     // and the text to use for the different scenarios.
     $message = $action->createRedirectMessage('https://mistralys.eu')
-        ->none(t('No items were selected that could be processed.'))
-        ->single(t('The item %1$s has been processed successfully at %2$s.', '$label', '$time'))
-        ->multiple(t('%1$s items have been processed successfully at %2$s.', '$amount', '$time'));
+        ->none(t('No herbs were selected that need to be dried.'))
+        ->single(t('The herb %1$s has been dried successfully at %2$s.', '$label', '$time'))
+        ->multiple(t('%1$s herbs have been dried successfully at %2$s.', '$amount', '$time'));
 
     $herbs = HerbsCollection::getInstance();
 
-    // Process items (pseudo code)
+    // Process items
     foreach ($action->getSelectedValues() as $recordID)
     {
-        $item = $herbs->getByID($recordID);
+        $herb = $herbs->getByID($recordID);
 
-        if ($item->canBeProcessed()) {
-            $item->process();
+        // Let's say only locally sourced herbs need to be dried.
+        if ($herb->isLocal()) {
+            $herb->dryAndStore();
 
-            $message->addAffected($item->getName());
+            $message->addAffected($herb->getName());
         }
     }
 
