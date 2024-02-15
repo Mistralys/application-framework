@@ -280,7 +280,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         $this->filters = $filters;
 
         foreach($this->definitions as $def) {
-            $def->configure();
+            $def->configure($filters);
         }
 
         $this->_configureFilters();

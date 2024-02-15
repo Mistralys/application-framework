@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Application\FilterSettings\SettingDef;
+use Application\Revisionable\RevisionableException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 
 /**
  * @property Application_RevisionableCollection_FilterSettings $settings
@@ -34,7 +37,7 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
         
         $this->addPreset('any', t('Any state'));
     }
-    
+
     /**
      * Add a preset to add to the dropdown element: each defines a set
      * of states that will be included/excluded when selecting the filter.
@@ -44,6 +47,7 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
      * @param string[] $includeStates State names to limit the list to. Leave empty to select all states.
      * @param string[] $excludeStates
      * @return $this
+     * @throws RevisionableException
      */
     public function addPreset(string $presetName, string $presetLabel, array $includeStates=array(), array $excludeStates=array()) : self
     {
@@ -59,14 +63,19 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
         
         return $this;
     }
-    
+
+    /**
+     * @param string $stateName
+     * @return void
+     * @throws RevisionableException
+     */
     protected function requireState(string $stateName) : void
     {
         if(isset($this->states[$stateName])) {
             return;
         }
         
-        throw new Application_Exception(
+        throw new RevisionableException(
             'Invalid state for preset',
             sprintf(
                 'The revisionable of type [%s] does not have the state [%s]. Available states are [%s].',
@@ -78,8 +87,13 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
             );
     }
     
-    public function configure() : self
+    public function configure(Application_FilterCriteria $filterCriteria) : self
     {
+        $filterCriteria = ClassHelper::requireObjectInstanceOf(
+            Application_RevisionableCollection_FilterCriteria::class,
+            $filterCriteria
+        );
+
         $value = $this->settings->getSetting('state');
         
         // it's a preset
@@ -102,12 +116,13 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
 
         return $this;
     }
-    
+
     /**
      * Adds the state filter selection element to the specified form container.
      *
-     * @param HTML_QuickForm2_Container $container
      * @return HTML_QuickForm2_Element_Select
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
      */
     public function injectElement() : HTML_QuickForm2_Element_Select
     {

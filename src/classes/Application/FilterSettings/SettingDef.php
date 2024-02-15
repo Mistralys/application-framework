@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\FilterSettings;
 
+use Application_FilterCriteria;
 use Application_FilterSettings;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\TypeFilter\BaseTypeFilter;
@@ -132,7 +133,7 @@ class SettingDef
     /**
      * @return $this
      */
-    public function configure() : self
+    public function configure(Application_FilterCriteria $filterCriteria) : self
     {
         if($this->configured) {
             return $this;
@@ -141,7 +142,7 @@ class SettingDef
         $this->configured = true;
 
         if($this->configureCallback !== null) {
-            call_user_func($this->configureCallback, $this);
+            call_user_func($this->configureCallback, $this, $filterCriteria);
         }
 
         return $this;
