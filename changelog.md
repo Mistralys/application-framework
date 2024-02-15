@@ -11,11 +11,13 @@
 - Forms: Moved some element creation methods to `UI_Form`.
 - Forms: Code modernization and quality improvements.
 - Formables: Added some interface methods.
+- Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes
 
 The SQL update file `docs/sql/2024-01-17-tags.sql` must be imported
-for the tagging management.  
+for the tagging management. As long as the tagging admin area is not
+enabled in the application driver, this does not affect the application.
 
 ## v3.1.8 - Revisionable update
 - RevisionCopy: `getParts()` can now return callables.
