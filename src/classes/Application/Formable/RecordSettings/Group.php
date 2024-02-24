@@ -31,9 +31,9 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
     protected $label;
 
    /**
-    * @var Application_Formable_RecordSettings_Setting[]
+    * @var array<string,Application_Formable_RecordSettings_Setting>
     */
-    protected $settings = array();
+    protected array $settings = array();
     
    /**
     * @var Application_Formable_RecordSettings
@@ -107,9 +107,12 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
         return !empty($this->settings);
     }
 
+    /**
+     * @return Application_Formable_RecordSettings_Setting[]
+     */
     public function getSettings()  : array
     {
-        return $this->settings;
+        return array_values($this->settings);
     }
 
     /**
