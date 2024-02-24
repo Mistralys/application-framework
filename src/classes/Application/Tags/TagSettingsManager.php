@@ -19,8 +19,10 @@ use UI;
  */
 class TagSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    const SETTING_LABEL = 'label';
+    public const SETTING_LABEL = 'label';
     public const SETTING_PARENT = 'parent';
+    public const SETTING_SORT_TYPE = 'sort_type';
+
     private ?TagRecord $parentTag = null;
 
     public function __construct(Application_Formable $formable, TagCollection $collection, ?TagRecord $record = null)
@@ -72,6 +74,24 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
                 return null;
             })
             ->setCallback(Closure::fromCallable(array($this, 'injectParentTag')));
+
+        $group = $this->addGroup(t('Sorting'))
+            ->setIcon(UI::icon()->sort());
+
+        $group->registerSetting(self::SETTING_SORT_TYPE)
+            ->makeRequired()
+            ->setStorageName(TagCollection::COL_SORT_TYPE)
+            ->setDefaultValue($this->resolveDefaultSortType())
+            ->setCallback(Closure::fromCallable(array($this, 'injectSortType')));
+    }
+
+    private function resolveDefaultSortType() : string
+    {
+        if($this->isRoot()) {
+            return TagSortTypes::getInstance()->getDefaultForRoot()->getID();
+        }
+
+        return TagSortTypes::getInstance()->getDefaultID();
     }
 
     public function getTagID() : ?int
@@ -81,6 +101,32 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
         }
 
         return null;
+    }
+
+    public function isRoot() : bool
+    {
+        return isset($this->parentTag) || (isset($this->record) && $this->record->isRootTag());
+    }
+
+    private function injectSortType() : HTML_QuickForm2_Element_Select
+    {
+        $el = $this->addElementSelect(self::SETTING_SORT_TYPE, t('Sort type'));
+        $el->setComment(sb()
+            ->t('Determines how the tag\'s subtags are sorted (if it has any).')
+            ->t('If you choose to sort by weight, the tags will be sortable manually in the tag tree.')
+        );
+
+        if($this->isRoot()) {
+            $sortTypes = TagSortTypes::getInstance()->getForRoot();
+        } else {
+            $sortTypes = TagSortTypes::getInstance()->getAll();
+        }
+
+        foreach($sortTypes as $sortType) {
+            $el->addOption($sortType->getLabel(), $sortType->getID());
+        }
+
+        return $el;
     }
 
     private function injectParentTag() : HTML_QuickForm2_Element_Select

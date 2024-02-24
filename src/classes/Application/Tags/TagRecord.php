@@ -232,6 +232,45 @@ class TagRecord extends DBHelper_BaseRecord
         return $node;
     }
 
+    public function getSortTypeID() : string
+    {
+        return $this->getRecordStringKey(TagCollection::COL_SORT_TYPE);
+    }
+
+    public function getSortType() : TagSortType
+    {
+        return TagSortTypes::getInstance()->getByID($this->getSortTypeID());
+    }
+
+    public function getRecordKey($name, $default = null)
+    {
+        $value = parent::getRecordKey($name, $default);
+
+        if($name === TagCollection::COL_SORT_TYPE && empty($value)) {
+            if($this->isRootTag()) {
+                return TagSortTypes::getInstance()->getDefaultForRootID();
+            }
+
+            return TagSortTypes::getInstance()->getDefaultID();
+        }
+
+        return $value;
+    }
+
+    public function getFormValues(): array
+    {
+        $values = parent::getFormValues();
+
+        // Force the settings manager to use the default sort type
+        // value: Since values can be empty strings, the manager
+        // will use the default value only if the form value is not set.
+        if(empty($values[TagCollection::COL_SORT_TYPE])) {
+            $values[TagCollection::COL_SORT_TYPE] = null;
+        }
+
+        return $values;
+    }
+
     private function configureTreeNode(TreeNode $node) : void
     {
         $node->setValue($this->getID());
