@@ -318,6 +318,11 @@ class TreeRenderer extends UI_Renderable
         return $this->rootNode->getSelectedNodes();
     }
 
+    public function getRootNode() : TreeNode
+    {
+        return $this->rootNode;
+    }
+
 
     /**
      * Attempts to find a node by its value.
