@@ -111,13 +111,13 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         foreach ($this->groups as $group)
         {
-            $result = array_merge($result, $group->getSettingKeyNames($includeVirtual));
+            array_push($result, ...$group->getSettingKeyNames($includeVirtual));
         }
 
         return $result;
     }
     
-    public final function isEditMode() : bool
+    final public function isEditMode() : bool
     {
         return isset($this->record);
     }
@@ -345,7 +345,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      *
      * @return Application_Formable_RecordSettings_Setting[]
      */
-    public final function getSettings() : array
+    final public function getSettings() : array
     {
         $this->handleSettings();
         
@@ -353,7 +353,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         foreach ($this->groups as $group)
         {
-            $result = array_merge($result, $group->getSettings());
+            array_push($result, ...$group->getSettings());
         }
 
         return $result;
