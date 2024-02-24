@@ -33,6 +33,8 @@ class TagCollection extends DBHelper_BaseCollection
     public const PRIMARY_NAME = 'tag_id';
     public const COL_LABEL = 'label';
     public const COL_PARENT_TAG_ID = 'parent_tag_id';
+    public const COL_SORT_TYPE = 'sort_type';
+    public const COL_WEIGHT = 'weight';
 
     // region: X - Interface methods
 
@@ -123,6 +125,9 @@ class TagCollection extends DBHelper_BaseCollection
     protected function _registerKeys(): void
     {
         $this->keys->register(self::COL_LABEL)
+            ->makeRequired();
+
+        $this->keys->register(self::COL_SORT_TYPE)
             ->makeRequired();
     }
 
