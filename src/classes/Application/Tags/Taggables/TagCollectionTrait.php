@@ -56,7 +56,11 @@ trait TagCollectionTrait
 
     public function createTreeRenderer(?UI $ui=null) : TreeRenderer
     {
-        return new TreeRenderer($ui, $this->createTagTree($ui));
+        if($ui === null) {
+            $ui = UI::getInstance();
+        }
+
+        return $ui->createTreeRenderer($this->createTagTree($ui));
     }
 
     public function createTagTree(?UI $ui=null) : TreeNode
