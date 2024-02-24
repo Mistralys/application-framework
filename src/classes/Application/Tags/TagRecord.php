@@ -226,7 +226,7 @@ class TagRecord extends DBHelper_BaseRecord
 
         $subTags = $this->getSubTags();
         foreach($subTags as $subTag) {
-            $subTag->createNodeTree($parent);
+            $subTag->createNodeTree($node);
         }
 
         return $node;
