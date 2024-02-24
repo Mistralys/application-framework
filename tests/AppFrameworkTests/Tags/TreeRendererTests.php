@@ -24,6 +24,18 @@ final class TreeRendererTests extends TaggingTestCase
     {
         $root = $this->tagsCollection->createNewTag('Root');
 
-        $root->addSubTag('A');
+        $A = $root->addSubTag('A');
+        $A->addSubTag('A.1');
+        $A2 = $A->addSubTag('A.2');
+        $A2->addSubTag('A.2.1');
+
+        $renderer = $root->createTreeRenderer();
+
+        $rootTree = $renderer->getRootNode();
+        $rootChildren = $rootTree->getChildNodes();
+        $this->assertSame('Root', $rootTree->getLabel());
+        $this->assertCount(1, $rootChildren);
+        $this->assertSame('A', $rootChildren[0]->getLabel());
+        $this->assertCount(2, $rootChildren[0]->getChildNodes());
     }
 }

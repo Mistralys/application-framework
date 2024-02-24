@@ -46,6 +46,7 @@ class SubTagTests extends TaggingTestCase
         $rootTag->addSubTag('Sub tag 2');
 
         $this->assertSame(2, $rootTag->getSubTagCriteria()->countItems());
+        $this->assertCount(2, $rootTag->getSubTags());
     }
 
     public function test_getIDChain() : void
