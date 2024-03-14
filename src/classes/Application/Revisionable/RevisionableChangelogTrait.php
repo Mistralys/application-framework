@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application;
+use Application\Interfaces\ChangelogableInterface;
 use Application_Changelog;
 use Application_User;
 
 /**
- * @see Application_Changelogable_Interface
+ * @see ChangelogableInterface
  * @see \Application_RevisionableStateless
  */
 trait RevisionableChangelogTrait
@@ -58,7 +59,7 @@ trait RevisionableChangelogTrait
      *     ...
      * )
      *
-     * @see Application_Changelogable_Interface::getChangelogQueue()
+     * @see ChangelogableInterface::getChangelogQueue()
      */
     public function getChangelogQueue() : array
     {

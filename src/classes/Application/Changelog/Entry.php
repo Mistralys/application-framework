@@ -1,10 +1,11 @@
 <?php
 
+use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ConvertHelper;
 
 class Application_Changelog_Entry
 {
-    protected Application_Changelogable_Interface $owner;
+    protected ChangelogableInterface $owner;
     protected int $id;
     protected int $authorID;
     protected string $date;
@@ -17,7 +18,7 @@ class Application_Changelog_Entry
     */
     protected ?array $dataDecoded = null;
     
-    public function __construct(Application_Changelogable_Interface $owner, int $id, int $authorID, string $type, string $date, string $data)
+    public function __construct(ChangelogableInterface $owner, int $id, int $authorID, string $type, string $date, string $data)
     {
         $this->owner = $owner;
         $this->id = $id;

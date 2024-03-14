@@ -3,16 +3,18 @@
 declare(strict_types=1);
 
 namespace Application\Revisionable;
+
+use Application\Interfaces\ChangelogableInterface;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
-use Application_StateHandler_State;
 
 interface RevisionableStatelessInterface
     extends
     Application_LockableRecord_Interface,
     Application_Interfaces_Disposable,
-    Application_Interfaces_Simulatable
+    Application_Interfaces_Simulatable,
+    ChangelogableInterface
 {
     /**
      * Locks the currently selected revision, so that any

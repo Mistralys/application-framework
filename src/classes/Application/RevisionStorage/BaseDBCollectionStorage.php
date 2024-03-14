@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * @property Application_RevisionableCollection_DBRevisionable $revisionable
  */
-abstract class Application_RevisionStorage_CollectionDB extends Application_RevisionStorage_DBStandardized
+abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
 { 
     public const ERROR_INVALID_REVISIONABLE_TYPE = 14601;
     
@@ -21,7 +21,7 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
                 'Invalid revisionable type',
                 sprintf(
                     'The [%s] revision storage requires the revisionable to be of the [%s] type.',
-                    'Application_RevisionStorage_CollectionDB',
+                    'BaseDBCollectionStorage',
                     'Application_RevisionableCollection_DBRevisionable'
                 ),
                 self::ERROR_INVALID_REVISIONABLE_TYPE

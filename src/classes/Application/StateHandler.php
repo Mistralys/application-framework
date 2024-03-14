@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\BaseException;
 use function AppUtils\parseVariable;
@@ -18,11 +18,11 @@ class Application_StateHandler
      */
     protected array $states = array();
 
-    protected ?RevisionableStatelessInterface $item = null;
+    protected ?RevisionableInterface $item = null;
 
     protected ?Application_StateHandler_State $initial = null;
     
-    public function __construct(RevisionableStatelessInterface $item)
+    public function __construct(RevisionableInterface $item)
     {
         $this->item = $item;
     }

@@ -74,15 +74,15 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
 
     /**
      * @throws RevisionableException
-     * @see Application_RevisionStorage_CollectionDB
+     * @see BaseDBCollectionStorage
      */
-    protected function createRevisionStorage(): Application_RevisionStorage_CollectionDB
+    protected function createRevisionStorage(): BaseDBCollectionStorage
     {
         try {
             $className = $this->collection->getRevisionsStorageClass();
 
             return ClassHelper::requireObjectInstanceOf(
-                Application_RevisionStorage_CollectionDB::class,
+                BaseDBCollectionStorage::class,
                 new $className($this)
             );
         } catch (BaseClassHelperException $e) {
@@ -91,7 +91,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
                 sprintf(
                     'The revision storage for [%s] must extend the base [%s] class.',
                     get_class($this),
-                    'Application_RevisionStorage_CollectionDB'
+                    'BaseDBCollectionStorage'
                 ),
                 self::ERROR_INVALID_REVISION_STORAGE,
                 $e

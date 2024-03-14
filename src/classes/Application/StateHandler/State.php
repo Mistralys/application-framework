@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\Interfaces\StringableInterface;
@@ -22,7 +23,7 @@ class Application_StateHandler_State implements StringableInterface
     protected Application_StateHandler $handler;
     protected ?Application_StateHandler_State $timedState = null;
     protected int $timedDelay = 0;
-    protected ?RevisionableStatelessInterface $item = null;
+    protected ?RevisionableInterface $item = null;
     protected string $uiType;
     protected bool $changesAllowed = false;
     protected bool $isInitial = false;
@@ -32,7 +33,7 @@ class Application_StateHandler_State implements StringableInterface
      */
     protected array $dependencies = array();
 
-    public function __construct(string $name, string $label, string $uiType, bool $changesAllowed, bool $isInitial, Application_StateHandler $handler, RevisionableStatelessInterface $item)
+    public function __construct(string $name, string $label, string $uiType, bool $changesAllowed, bool $isInitial, Application_StateHandler $handler, RevisionableInterface $item)
     {
         $this->name = $name;
         $this->label = $label;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables\Storage;
 
-use Application_RevisionStorage_DB_CopyRevision;
+use Application\RevisionStorage\Copy\BaseDBRevisionCopy;
 
-class RevisionCopy extends Application_RevisionStorage_DB_CopyRevision
+class RevisionCopy extends BaseDBRevisionCopy
 {
     protected function getParts() : array
     {

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMethod
 {
-    public function processJSON()
+    public function processJSON() : void
     {
         $revisionableTypes = $this->driver->getRevisionableTypes();
         
@@ -47,11 +49,11 @@ class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMeth
                 'comments' => $revisionable->getRevisionComments(),
                 'owner_name' => $revisionable->getOwnerName(),
                 'owner_id' => $revisionable->getOwnerID(),
-                'amount_changes' => $revisionable->countChangelogEntries()                
             );
             
             if($revisionable instanceof Application_Revisionable) 
             {
+                $data['amount_changes'] = $revisionable->countChangelogEntries();
                 $data['state'] = $revisionable->getStateName();
                 $data['state_label_pretty'] = $revisionable->getCurrentPrettyStateLabel();
                 $data['state_label'] = $revisionable->getCurrentStateLabel();

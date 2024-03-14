@@ -10,6 +10,11 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
+use Application\RevisionStorage\Copy\BaseRevisionCopy;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\TypeFilter\StrictType;
 
 /**
@@ -831,7 +836,18 @@ abstract class Application_RevisionStorage
     * @return Application_FilterCriteria_RevisionableRevisions
     */
     abstract public function getFilterCriteria() : Application_FilterCriteria_RevisionableRevisions;
-    
+
+    /**
+     * Must be implemented if the revisionable is to allow copying
+     * to another revisionable of the same type. The target class
+     * has to extend the <code>Application_RevisionStorage_TYPE_CopyRevision</code>
+     * class, where <code>TYPE</code> is the storage type ID, e.g. <code>DB</code>.
+     *
+     * @return class-string
+     * @throws RevisionableException
+     */
+    abstract protected function getRevisionCopyClass() : string;
+
    /**
     * @throws RevisionableException
     * @return integer
@@ -932,27 +948,26 @@ abstract class Application_RevisionStorage
         return $this;
     }
 
-   /**
-    * Creates the class instance of the object that will handle
-    * copying the revisions. 
-    *
-    * @param int $sourceRevision
-    * @param int $targetRevision
-    * @param int $targetOwnerID
-    * @param string $targetOwnerName
-    * @param string|NULL $targetComments
-    * @param DateTime|NULL $targetDate
-    * @throws RevisionableException
-    * @return Application_RevisionStorage_CopyRevision
-    */    
-    protected function createCopyRevision(int $sourceRevision, int $targetRevision, int $targetOwnerID, string $targetOwnerName, ?string $targetComments=null, ?DateTime $targetDate=null) : Application_RevisionStorage_CopyRevision
+    /**
+     * Creates the class instance of the object that will handle
+     * copying the revisions.
+     *
+     * @param int $sourceRevision
+     * @param int $targetRevision
+     * @param int $targetOwnerID
+     * @param string $targetOwnerName
+     * @param string|NULL $targetComments
+     * @param DateTime|NULL $targetDate
+     * @return BaseRevisionCopy
+     * @throws BaseClassHelperException
+     * @throws RevisionableException
+     */
+    protected function createCopyRevision(int $sourceRevision, int $targetRevision, int $targetOwnerID, string $targetOwnerName, ?string $targetComments=null, ?DateTime $targetDate=null) : BaseRevisionCopy
     {
         if(!$targetDate) 
         {
             $targetDate = new DateTime();
         }
-        
-        $baseClass = 'Application_RevisionStorage_'.$this->getTypeID().'_CopyRevision';
         
         $class = $this->getRevisionCopyClass();
         
@@ -961,30 +976,20 @@ abstract class Application_RevisionStorage
         $this->log(sprintf('Comments: [%s]', $targetComments));
         $this->log(sprintf('Date: [%s]', $targetDate->format('d.m.Y H:i:s')));
         
-        $copy = new $class(
-            $this,
-            $this->revisionable,
-            $sourceRevision,
-            $targetRevision,
-            $targetOwnerID,
-            $targetOwnerName,
-            $targetComments,
-            $targetDate
+        return ClassHelper::requireObjectInstanceOf(
+            BaseRevisionCopy::class,
+            new $class(
+                $this,
+                $this->revisionable,
+                $sourceRevision,
+                $targetRevision,
+                $targetOwnerID,
+                $targetOwnerName,
+                $targetComments,
+                $targetDate
+            ),
+            self::ERROR_INVALID_COPY_REVISION_CLASS
         );
-        
-        if(!$copy instanceof $baseClass) {
-            throw new RevisionableException(
-                'Invalid copy revision instance',
-                sprintf(
-                    'The class [%s] is not an instance of [%s].',
-                    get_class($copy),
-                    $baseClass
-                ),
-                self::ERROR_INVALID_COPY_REVISION_CLASS    
-            );
-        }
-    
-        return $copy;
     }
 
    /**

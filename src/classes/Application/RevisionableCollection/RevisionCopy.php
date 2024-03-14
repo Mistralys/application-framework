@@ -1,9 +1,11 @@
 <?php
 
+use Application\RevisionStorage\Copy\BaseDBRevisionCopy;
+
 /**
  * @property Application_RevisionableCollection_DBRevisionable $revisionable
  */
-abstract class Application_RevisionableCollection_RevisionCopy extends Application_RevisionStorage_DB_CopyRevision
+abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRevisionCopy
 {
     public const ERROR_REVISION_DOES_NOT_EXIST = 15401;
     

@@ -1,13 +1,17 @@
 <?php
 /**
- * File containing the {@link Application_RevisionStorage_DBStandardized} class.
+ * File containing the {@link BaseDBStandardizedStorage} class.
  * 
  * @package Application
  * @subpackage Revisionable
- * @see Application_RevisionStorage_DBStandardized
+ * @see BaseDBStandardizedStorage
  */
 
+declare(strict_types=1);
+
+use Application\RevisionStorage\BaseDBRevisionStorage;
 use Application\RevisionStorage\RevisionStorageException;
+use TestDriver\Revisionables\RevisionableCollection;
 
 /**
  * Standardized implementation for database revision storage: generic
@@ -20,11 +24,14 @@ use Application\RevisionStorage\RevisionStorageException;
  * - A single ID column for the revisionable
  * - An autoincrement column for the revision ID
  * - A revision data table with the usual keys:
- *      - state
- *      - date
- *      - author
- *      - comments
- * 
+ *      - {@see Application_RevisionableCollection::COL_REV_LABEL}
+ *      - {@see Application_RevisionableCollection::COL_REV_STATE}
+ *      - {@see Application_RevisionableCollection::COL_REV_DATE}
+ *      - {@see Application_RevisionableCollection::COL_REV_AUTHOR}
+ *      - {@see Application_RevisionableCollection::COL_REV_COMMENTS}
+ *      - {@see Application_RevisionableCollection::COL_REV_PRETTY_REVISION}
+ *      - Any additional custom columns
+ *
  * If these conditions are met, to use this class only the abstract
  * methods need to be implemented.
  * 
@@ -32,7 +39,7 @@ use Application\RevisionStorage\RevisionStorageException;
  * @subpackage Revisionable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_RevisionStorage_DBStandardized extends Application_RevisionStorage_DB
+abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
 {
     public const ERROR_LOADING_REVISION = 534001;
     public const ERROR_LOADING_REVISION_USER = 534002;
@@ -143,8 +150,8 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             $number,
             $author->getID(),
             $author->getName(),
-            strtotime($data['date']),
-            $data['comments']
+            strtotime($data[Application_RevisionableCollection::COL_REV_DATE]),
+            $data[Application_RevisionableCollection::COL_REV_COMMENTS]
         );
 
         $this->setKeys($data);
@@ -386,12 +393,13 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     public function nextPrettyRevision() : int
     {
         $query = sprintf(
-            "SELECT
-                MAX(`pretty_revision`) + 1 AS `pretty_revision`
+            'SELECT
+                MAX(`%1$s`) + 1 AS `%1$s`
             FROM
-                `%s`
+                `%2$s`
             WHERE
-                %s",
+                %3$s',
+            Application_RevisionableCollection::COL_REV_PRETTY_REVISION,
             $this->revisionTable,
             $this->buildColumnsWhere()
         );
@@ -449,13 +457,13 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             self::COL_DATA_VALUE,
             sprintf(
                 "SELECT
-                    `data_value`
+                    `".self::COL_DATA_VALUE."`
                 FROM
                     `%s`
                 WHERE
                     `%s`=:%s
                 AND
-                    `data_key`=:data_key",
+                    `".self::COL_DATA_KEY."`=:data_key",
                 $this->revDataTable,
                 $this->revisionColumn,
                 $this->revisionColumn
@@ -491,7 +499,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         $data[$this->revisionColumn] = $this->getRevision();
 
         DBHelper::insertOrUpdate(
-            $this->collection->getRevisionsTableName(),
+            $this->getRevisionsTable(),
             $data,
             array($this->revisionColumn)
         );

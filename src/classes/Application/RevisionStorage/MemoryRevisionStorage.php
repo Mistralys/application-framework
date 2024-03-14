@@ -1,15 +1,16 @@
 <?php
 /**
- * File containing the {@link Application_RevisionStorage_Memory} class.
+ * File containing the {@link MemoryRevisionStorage} class.
  *
  * @package Application
  * @subpackage Revisionable
- * @see Application_RevisionStorage_Memory
+ * @see MemoryRevisionStorage
  */
 
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
+use Application\RevisionStorage\Copy\MemoryCopyRevision;
 
 /**
  * Utility class for storing revision data: stores data sets
@@ -20,7 +21,7 @@ use Application\Revisionable\RevisionableException;
  * @subpackage Revisionable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_RevisionStorage_Memory extends Application_RevisionStorage
+class MemoryRevisionStorage extends Application_RevisionStorage
 {
     /**
      * @var array<int, array<string, mixed>>
@@ -183,5 +184,10 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
     protected function _writeRevisionKeys(array $data): void
     {
         $this->setKeys($data);
+    }
+
+    protected function getRevisionCopyClass(): string
+    {
+        return MemoryCopyRevision::class;
     }
 }

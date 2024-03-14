@@ -274,7 +274,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
             $author = Application::getUser();
         }
         
-        /* @var $storage Application_RevisionStorage_CollectionDB */
+        /* @var $storage BaseDBCollectionStorage */
         
         $this->log(sprintf('Creating new record | Inserted with ID [%s].', $revisionable_id));
         

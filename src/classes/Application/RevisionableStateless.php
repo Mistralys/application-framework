@@ -32,6 +32,13 @@ abstract class Application_RevisionableStateless
     RevisionableStatelessInterface,
     Application_CollectionItemInterface
 {
+    use Application_Traits_LockableWithManager;
+    use Application_Traits_Disposable;
+    use Application_Traits_Eventable;
+    use Application_Traits_Loggable;
+    use Application_Traits_Simulatable;
+    use RevisionableChangelogTrait;
+
     public const ERROR_CANNOT_START_TRANSACTION = 68437001;
     public const ERROR_INVALID_REVISION_STORAGE = 68437002;
     public const ERROR_CANNOT_END_TRANSACTION =  68437003;
@@ -44,13 +51,6 @@ abstract class Application_RevisionableStateless
 
     public const KEY_TYPE_DATA_KEYS = 'data_keys';
     public const KEY_TYPE_REGULAR = 'standard';
-
-    use Application_Traits_LockableWithManager;
-    use Application_Traits_Disposable;
-    use Application_Traits_Eventable;
-    use Application_Traits_Loggable;
-    use RevisionableChangelogTrait;
-    use Application_Traits_Simulatable;
 
     protected Application_RevisionStorage $revisions;
     protected bool $requiresNewRevision = false;
@@ -115,7 +115,7 @@ abstract class Application_RevisionableStateless
      */
     protected function createRevisionStorage() : Application_RevisionStorage
     {
-        return new Application_RevisionStorage_Memory($this);
+        return new MemoryRevisionStorage($this);
     }
 
     /**

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\StateHandler\StateHandlerException;

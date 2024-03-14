@@ -21,13 +21,13 @@
 class Application_FilterCriteria_RevisionableRevisions extends Application_FilterCriteria_Database
 {
    /**
-    * @var Application_RevisionStorage_DBStandardized
+    * @var BaseDBStandardizedStorage
     */
     protected $storage;
     
     protected $stateless = true;
     
-    public function __construct(Application_RevisionStorage_DBStandardized $storage)
+    public function __construct(BaseDBStandardizedStorage $storage)
     {
         parent::__construct($storage);
 

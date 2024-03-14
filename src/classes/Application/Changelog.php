@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\ConvertHelper_Exception;
@@ -11,9 +12,9 @@ class Application_Changelog
     public const ERROR_MISSING_CHANGELOG_KEY = 599601;
     public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
     
-    protected Application_Changelogable_Interface $owner;
+    protected ChangelogableInterface $owner;
     
-    public function __construct(Application_Changelogable_Interface $owner)
+    public function __construct(ChangelogableInterface $owner)
     {
         $this->owner = $owner;
     }
@@ -115,7 +116,7 @@ class Application_Changelog
      * @throws Application_Exception
      * @throws JSONConverterException
      */
-    protected function commitQueueEntry(string $type, array $data) : string
+    protected function commitQueueEntry(string $type, $data) : string
     {
         $this->log(sprintf('Committing entry of type [%s].', $type));
         
@@ -161,7 +162,7 @@ class Application_Changelog
         return $this->cachedFilters;
     }
     
-    public function getOwner() : Application_Changelogable_Interface
+    public function getOwner() : ChangelogableInterface
     {
         return $this->owner;
     }

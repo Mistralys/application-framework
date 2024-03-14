@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\StateHandler\StateHandlerException;
-use Application_Changelogable_Interface;
+use Application\Interfaces\ChangelogableInterface;
 use Application_Revisionable;
 use Application_StateHandler;
 use Application_StateHandler_State;
@@ -24,8 +24,7 @@ use Application_StateHandler_State;
  */
 interface RevisionableInterface
     extends
-    RevisionableStatelessInterface,
-    Application_Changelogable_Interface
+    RevisionableStatelessInterface
 {
     public function getStateHandler() : Application_StateHandler;
 
