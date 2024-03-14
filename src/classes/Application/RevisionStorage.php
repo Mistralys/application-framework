@@ -1225,7 +1225,14 @@ abstract class Application_RevisionStorage
 
     public function writeCustomKeys() : self
     {
-        $this->_writeRevisionKeys($this->revisionable->getCustomKeyValues());
+        $data = $this->revisionable->getCustomKeyValues();
+
+        // We have to add the label here, because it is not part
+        // of the essential revision keys handled by the storage.
+        $data[Application_RevisionableCollection::COL_REV_LABEL] = $this->revisionable->getLabel();
+
+        $this->_writeRevisionKeys($data);
+
         return $this;
     }
 
