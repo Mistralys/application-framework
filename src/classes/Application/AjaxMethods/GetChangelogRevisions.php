@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Application/Media.php';
+use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMethod
 {
@@ -42,7 +42,7 @@ class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMeth
             $data = array(
                 'revision' => $revision,
                 'pretty_revision' => $revisionable->getPrettyRevision(),
-                'date' => AppUtils\ConvertHelper::date2listLabel($revisionable->getRevisionDate(), true, true),
+                'date' => ConvertHelper::date2listLabel($revisionable->getRevisionDate(), true, true),
                 'timestamp' => $revisionable->getRevisionTimestamp(),
                 'comments' => $revisionable->getRevisionComments(),
                 'owner_name' => $revisionable->getOwnerName(),
