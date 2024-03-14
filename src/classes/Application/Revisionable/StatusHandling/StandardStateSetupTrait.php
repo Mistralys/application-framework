@@ -6,7 +6,7 @@ namespace Application\Revisionable\StatusHandling;
 
 use Application_StateHandler_State;
 
-trait DefaultStateSetupTrait
+trait StandardStateSetupTrait
 {
     protected function buildStateDefs() : array
     {
