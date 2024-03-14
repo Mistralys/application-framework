@@ -39,7 +39,7 @@ class TestRevisionableMemory extends Application_RevisionableStateless
         return (string)$this->revisions->getKey($name);
     }
 
-    protected function _save()
+    protected function _save() : void
     {
         // nothing to do here
     }
@@ -99,5 +99,14 @@ class TestRevisionableMemory extends Application_RevisionableStateless
     public function getLogIdentifier() : string
     {
         return $this->getIdentification();
+    }
+
+    protected function initStorageParts(): void
+    {
+    }
+
+    public function getCustomKeyValues(): array
+    {
+        return array();
     }
 }

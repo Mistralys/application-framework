@@ -1,34 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\RevisionStorage\RevisionStorageException;
+
 abstract class Application_RevisionStorage_CopyRevision
+    implements Application_Interfaces_Loggable
 {
+    use Application_Traits_Loggable;
+
     public const ERROR_CLASS_MISMATCH_FOR_TARGET_REVISIONABLE = 720001;
     
-    protected $sourceRevision;
-    
-    protected $targetRevision;
-    
-    protected $ownerID;
-    
-    protected $ownerName;
-    
-    protected $comments;
-    
-    /**
-     * @var Application_RevisionableStateless
-     */
-    protected $revisionable;
-    
+    protected int $sourceRevision;
+    protected int $targetRevision;
+    protected int $ownerID;
+    protected string $ownerName;
+    protected string $comments;
+    protected Application_RevisionableStateless $revisionable;
     protected ?Application_RevisionableStateless $targetRevisionable = null;
     
-    protected $date;
+    protected DateTime $date;
+    protected Application_RevisionStorage $storage;
     
-   /**
-    * @var Application_RevisionStorage
-    */
-    protected $storage;
-    
-    public function __construct(Application_RevisionStorage $storage, Application_RevisionableStateless $revisionable, $sourceRevision, $targetRevision, $ownerID, $ownerName, $comments, DateTime $date=null)
+    public function __construct(Application_RevisionStorage $storage, Application_RevisionableStateless $revisionable, int $sourceRevision, int $targetRevision, int $ownerID, string $ownerName, ?string $comments, DateTime $date=null)
     {
         if(!$date) {
             $date = new DateTime();
@@ -40,20 +34,21 @@ abstract class Application_RevisionStorage_CopyRevision
         $this->targetRevision = $targetRevision;
         $this->ownerID = $ownerID;
         $this->ownerName = $ownerName;
-        $this->comments = $comments;
+        $this->comments = (string)$comments;
         $this->date = $date;
         
         $this->init();
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }
-    
+
     /**
      * Sets a target revisionable to copy the revision to.
      * @param Application_RevisionableStateless $revisionable
+     * @throws RevisionStorageException
      */
     public function setTarget(Application_RevisionableStateless $revisionable) : void
     {
@@ -61,7 +56,7 @@ abstract class Application_RevisionStorage_CopyRevision
         $targetType = $revisionable->getRevisionableTypeName();
         
         if($sourceType !== $targetType) {
-            throw new Application_Exception(
+            throw new RevisionStorageException(
                 'Not a valid revisionable',
                 sprintf(
                     'The target revisionable type [%s] does not match that of the revisionable to copy from: [%s].',
@@ -75,11 +70,11 @@ abstract class Application_RevisionStorage_CopyRevision
         $this->targetRevisionable = $revisionable;
         $this->targetRevision = $revisionable->getRevision();
     
-        $this->log(sprintf(
+        $this->log(
             'Set the target revisionable to [%s] in revision [%s].',
             get_class($revisionable),
             $this->targetRevision
-        ));
+        );
     }
 
     /**
@@ -99,8 +94,8 @@ abstract class Application_RevisionStorage_CopyRevision
         // store it for anyone accessing the property
         $this->targetRevisionable = $target;
 
-        if($this->storage->hasRevdata()) {
-            $this->processRevdata($target);
+        if($this->storage->hasDataKeys()) {
+            $this->processDataKeys($target);
         }
         
         $this->processParts($target);
@@ -124,34 +119,33 @@ abstract class Application_RevisionStorage_CopyRevision
         }
     }
     
-    protected function processRevdata(Application_RevisionableStateless $targetRevisionable) : void
+    protected function processDataKeys(Application_RevisionableStateless $targetRevisionable) : void
     {
-        if(!$this->storage->hasRevdata()) {
-            $this->log('The revisionable has no revdata, skipping.');
+        if(!$this->storage->hasDataKeys()) {
+            $this->log('The revisionable has no data keys, skipping.');
             return;
         }
         
-        $this->log('Processing the revisionable\'s revdata.');
+        $this->log('Processing the revisionable\'s data keys.');
         
-        $this->_processRevdata($targetRevisionable);
+        $this->_processDataKeys($targetRevisionable);
     }
     
-    abstract protected function _processRevdata(Application_RevisionableStateless $targetRevisionable) : void;
+    abstract protected function _processDataKeys(Application_RevisionableStateless $targetRevisionable) : void;
 
-    protected function log($message)
+    public function getLogIdentifier(): string
     {
-        Application::log(sprintf(
-            '%4$s RevisionCopy | [v%1$s] to [v%2$s] | %3$s',
+        return sprintf(
+            '%3$s RevisionCopy | [v%1$s] to [v%2$s]',
             $this->sourceRevision,
             $this->targetRevision,
-            $message,
             $this->revisionable->getRevisionableTypeName()
-        ));
+        );
     }
 
-    protected $debug = false;
+    protected bool $debug = false;
     
-    protected function enableDebug($enable=true)
+    protected function enableDebug(bool $enable=true) : self
     {
         $this->debug = $enable;
         return $this;

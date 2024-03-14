@@ -13,7 +13,14 @@ abstract class Application_RevisionableCollection implements Application_Collect
 
     public const DUMMY_ID = -1;
 
-   /**
+    public const COL_REV_DATE = 'date';
+    public const COL_REV_LABEL = 'label';
+    public const COL_REV_STATE = 'state';
+    public const COL_REV_COMMENTS = 'comments';
+    public const COL_REV_AUTHOR = 'author';
+    public const COL_REV_PRETTY_REVISION = 'pretty_revision';
+
+    /**
     * @return string
     */
     abstract public function getRecordTableName() : string;
@@ -140,7 +147,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
 
     /**
-     * @return class-string
+     * @return string
      */
     public function getRecordExportRevisionsTableName() : string
     {
@@ -162,7 +169,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
     
    /**
-    * @return class-string
+    * @return string
     */
     public function getCurrentRevisionsTableName() : string
     {
@@ -186,7 +193,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
 
    /**
-    * @return class-string
+    * @return string
     */
     public function getRevisionsTableName() : string
     {
@@ -202,7 +209,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
 
    /**
-    * @return class-string
+    * @return string
     */
     public function getRecordChangelogTableName() : string
     {

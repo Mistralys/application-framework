@@ -7,6 +7,8 @@
  * @see Application_RevisionStorage_Memory
  */
 
+declare(strict_types=1);
+
 use Application\Revisionable\RevisionableException;
 
 /**
@@ -20,6 +22,11 @@ use Application\Revisionable\RevisionableException;
  */
 class Application_RevisionStorage_Memory extends Application_RevisionStorage
 {
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    private array $revData = array();
+
     public function getTypeID() : string
     {
         return 'Memory';
@@ -148,18 +155,33 @@ class Application_RevisionStorage_Memory extends Application_RevisionStorage
         );
     }
     
-    public function _hasRevdata() : bool
+    public function _hasDataKeys() : bool
     {
-        return false;
+        return true;
     }
     
-    protected function _loadRevdataKey(string $name) : string
+    protected function _loadDataKey(string $name) : string
     {
-        return '';
+        $revision = $this->getRevision();
+
+        if($revision === null) {
+            return '';
+        }
+
+        return $this->revData[$revision][$name] ?? '';
     }
     
-    protected function _writeRevdataKey(string $key, $value) : void
+    protected function _writeDataKey(string $key, $value) : void
     {
-        
+        $revision = $this->getRevision();
+
+        if($revision !== null) {
+            $this->revData[$revision][$key] = $value;
+        }
+    }
+
+    protected function _writeRevisionKeys(array $data): void
+    {
+        $this->setKeys($data);
     }
 }

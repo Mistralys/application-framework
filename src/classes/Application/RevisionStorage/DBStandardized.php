@@ -7,6 +7,8 @@
  * @see Application_RevisionStorage_DBStandardized
  */
 
+use Application\RevisionStorage\RevisionStorageException;
+
 /**
  * Standardized implementation for database revision storage: generic
  * implementation using the common revision storage setup. Handles
@@ -36,39 +38,22 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     public const ERROR_LOADING_REVISION_USER = 534002;
 
     public const FREEFORM_KEY_PREFIX = 'freeform_';
+    public const COL_DATA_KEY = 'data_key';
+    public const COL_DATA_VALUE = 'data_value';
 
-    /**
-     * @var int
-     */
-    protected $revisionableID;
-
-    /**
-     * @var string
-     */
-    protected $revisionsTable;
-
-    /**
-     * @var string
-     */
-    protected $idColumn;
-
-    /**
-     * @var string
-     */
-    protected $revisionColumn;
-
-    /**
-     * @var string
-     */
-    protected $revdataTable;
+    protected int $revisionableID;
+    protected string $revisionTable;
+    protected string $idColumn;
+    protected string $revisionColumn;
+    protected string $revDataTable;
     
     public function __construct(Application_RevisionableStateless $revisionable)
     {
         parent::__construct($revisionable);
         
         $this->revisionableID = $this->getRevisionableID();
-        $this->revisionsTable = $this->getRevisionsTable();
-        $this->revdataTable = $this->revisionsTable.'_data';
+        $this->revisionTable = $this->getRevisionsTable();
+        $this->revDataTable = $this->revisionTable.'_data';
         $this->idColumn = $this->getIDColumn();
         $this->revisionColumn = $this->getRevisionColumn();
     }
@@ -99,7 +84,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
 
     /**
      * @param int $number
-     * @throws Application_Exception
+     * @throws RevisionStorageException
      * @throws DBHelper_Exception
      */
     protected function _loadRevision(int $number) : void
@@ -114,7 +99,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                     `%s`=:revisionable_id
                 AND
                     `%s`=:revision",
-                $this->revisionsTable,
+                $this->revisionTable,
                 $this->idColumn,
                 $this->revisionColumn
             ),
@@ -125,7 +110,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         );
 
         if (!is_array($data) || !isset($data[$this->idColumn])) {
-             throw new Application_Exception(
+             throw new RevisionStorageException(
                 'Could not load revision',
                 sprintf(
                     'Tried loading revision [%1$s] for revisionable [%2$s].',
@@ -136,15 +121,15 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             );
         }
 
-        $userID = intval($data['author']);
+        $userID = (int)$data[Application_RevisionableCollection::COL_REV_AUTHOR];
 
         if (!Application::userIDExists($userID))
         {
-            throw new Application_Exception(
+            throw new RevisionStorageException(
                 'Revisioning error',
                 sprintf(
                     'Author [%1$s] for revision [%2$s] of revisionable [%3$s] does not exist.',
-                    $data['author'],
+                    $data[Application_RevisionableCollection::COL_REV_AUTHOR],
                     $number,
                     $this->revisionableID
                 ),
@@ -165,14 +150,14 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         $this->setKeys($data);
 
         if($this->revisionable instanceof Application_Revisionable) {
-            $this->setKey('state', $this->revisionable->getStateHandler()->getStateByName($data['state']));
+            $this->setKey(
+                Application_RevisionableCollection::COL_REV_STATE,
+                $this->revisionable->getStateHandler()->getStateByName($data[Application_RevisionableCollection::COL_REV_STATE])
+            );
         }
     }
 
-    /**
-     * @var int|null
-     */
-    protected $cacheRevisionCount = null;
+    protected ?int $cacheRevisionCount = null;
 
     /**
      * @return int
@@ -192,7 +177,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                 WHERE
                     `%s`=:revisionable_id",
                 $this->revisionColumn,
-                $this->revisionsTable,
+                $this->revisionTable,
                 $this->idColumn
             ),
             array(
@@ -222,7 +207,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                 WHERE
                     `%s`=:revision",
                 $this->revisionColumn,
-                $this->revisionsTable,
+                $this->revisionTable,
                 $this->revisionColumn
             ),
             array(
@@ -268,7 +253,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                     `%s`
                 WHERE
                     `%s`=:revision",
-                $this->revisionsTable,
+                $this->revisionTable,
                 $this->revisionColumn
             ),
             array(
@@ -314,18 +299,18 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         // to any required static column values.
         $data = $this->getColumns($customFields);
         
-        $data['author'] = $user->getID();
-        $data['date'] = date('Y-m-d H:i:s');
-        $data['state'] = '';
-        $data['comments'] = '';
-        $data['pretty_revision'] = $this->nextPrettyRevision();
+        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $user->getID();
+        $data[Application_RevisionableCollection::COL_REV_DATE] = date('Y-m-d H:i:s');
+        $data[Application_RevisionableCollection::COL_REV_STATE] = '';
+        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = '';
+        $data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION] = $this->nextPrettyRevision();
         
         if($this->revisionable instanceof Application_Revisionable)
         {
-            $data['state'] = $this->revisionable->getStateName();
+            $data[Application_RevisionableCollection::COL_REV_STATE] = $this->revisionable->getStateName();
         }
         
-        $number = (int)DBHelper::insertDynamic($this->revisionsTable, $data);
+        $number = (int)DBHelper::insertDynamic($this->revisionTable, $data);
         
         $this->cacheKnownRevisions[$number] = true;
         $this->cacheRevisionsList[] = $number;
@@ -334,7 +319,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
         $this->log(sprintf(
             'Next revision [%1$s] inserted, with pretty revision [%2$s].',
             $number,
-            $data['pretty_revision']
+            $data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION]
         ));
 
         return $number;
@@ -363,7 +348,7 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
             ORDER BY
                 `date` ASC",
             $this->revisionColumn,
-            $this->revisionsTable,
+            $this->revisionTable,
             $this->buildColumnsWhere()
         );
         
@@ -407,11 +392,11 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                 `%s`
             WHERE
                 %s",
-            $this->revisionsTable,
+            $this->revisionTable,
             $this->buildColumnsWhere()
         );
         
-        $rev = DBHelper::fetchKeyInt('pretty_revision', $query, $this->getColumns());
+        $rev = DBHelper::fetchKeyInt(Application_RevisionableCollection::COL_REV_PRETTY_REVISION, $query, $this->getColumns());
         if($rev > 0) {
             return $rev;
         }
@@ -450,18 +435,18 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     
     public function getRevdataTable() : string
     {
-        return $this->revdataTable;
+        return $this->revDataTable;
     }
     
-    protected function _hasRevdata() : bool
+    protected function _hasDataKeys() : bool
     {
-        return DBHelper::tableExists($this->revdataTable);
+        return DBHelper::tableExists($this->revDataTable);
     }
     
-    protected function _loadRevdataKey(string $name) : string
+    protected function _loadDataKey(string $name) : string
     {
         return (string)DBHelper::fetchKey(
-            'data_value', 
+            self::COL_DATA_VALUE,
             sprintf(
                 "SELECT
                     `data_value`
@@ -471,33 +456,44 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
                     `%s`=:%s
                 AND
                     `data_key`=:data_key",
-                $this->revdataTable,
+                $this->revDataTable,
                 $this->revisionColumn,
                 $this->revisionColumn
             ),
             array(
                 $this->revisionColumn => $this->revision,
-                'data_key' => $name
+                self::COL_DATA_KEY => $name
             )
         );
     }
     
-    protected function _writeRevdataKey(string $name, $value) : void
+    protected function _writeDataKey(string $key, $value) : void
     {
-        $this->log('Write revdata key: '.$name);
+        $this->log('Write data key: '.$key);
         
         DBHelper::insertOrUpdate(
-            $this->revdataTable,
+            $this->revDataTable,
             array(
                 $this->revisionColumn => $this->revision,
                 $this->idColumn => $this->getRevisionableID(),
-                'data_key' => $name,
-                'data_value' => $value
+                self::COL_DATA_KEY => $key,
+                self::COL_DATA_VALUE => $value
             ),
             array(
-                $this->revisionColumn, 
-                'data_key'
+                $this->revisionColumn,
+                self::COL_DATA_KEY
             )
+        );
+    }
+
+    protected function _writeRevisionKeys(array $data) : void
+    {
+        $data[$this->revisionColumn] = $this->getRevision();
+
+        DBHelper::insertOrUpdate(
+            $this->collection->getRevisionsTableName(),
+            $data,
+            array($this->revisionColumn)
         );
     }
 
@@ -517,11 +513,11 @@ abstract class Application_RevisionStorage_DBStandardized extends Application_Re
     
     public function setFreeformKey(string $name, string $value) : void
     {
-        $this->_writeRevdataKey(self::getFreeformKeyName($name), $value);
+        $this->_writeDataKey(self::getFreeformKeyName($name), $value);
     }
     
     public function getFreeformKey(string $name) : string
     {
-        return (string)$this->_loadRevdataKey(self::getFreeformKeyName($name));
+        return $this->_loadDataKey(self::getFreeformKeyName($name));
     }
 }

@@ -270,11 +270,11 @@ trait Application_Traits_Admin_RevisionableChangelog
         $filters = $changelog->getFilters();
         
         $config = $this->getFiltersConfig();
-        if($config['author'] != 'all') {
+        if($config['author'] !== 'all') {
             $filters->limitByAuthorID($config['author']);
         }
         
-        if($config['type'] != 'all') {
+        if($config['type'] !== 'all') {
             $filters->limitByType($config['type']);
         }
         

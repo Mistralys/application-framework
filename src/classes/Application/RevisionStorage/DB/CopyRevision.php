@@ -1,23 +1,25 @@
 <?php
 /**
- * File containing the {@link Application_RevisionStorage_DB_CopyRevision} class.
- *
  * @package Application
  * @subpackage Pages
  * @see Application_RevisionStorage_DB_CopyRevision
  */
 
+use Application\RevisionStorage\RevisionStorageException;
+use AppUtils\ConvertHelper_Exception;
+
 /**
- * Handles copying entire feature table revisions, including categories
- * and fields. This is used by the FeatureTable revisioning class when
- * a new revision needs to be created, or an existing revision has to be
- * overwritten. As such, it only requires the target revision record to
- * exist (for the revision number). This is done by the revisions handler.
+ * Handles copying entire revisions.
+ *
+ * It only requires the target revision record to exist (for the revision number).
+ * This is done by the revision handler.
  *
  * @package Application
- * @subpackage Pages
+ * @subpackage Revisionables
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see Application_RevisionStorage_CopyRevision
+ *
+ * @property Application_RevisionStorage_DBStandardized $storage
  */
 abstract class Application_RevisionStorage_DB_CopyRevision extends Application_RevisionStorage_CopyRevision
 {
@@ -26,24 +28,27 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
     public const ERROR_NON_UNIQUE_AUTO_INCREMENT = 620003;
     
     public const ERROR_MISSING_TARGET_DATA_FOR_COPY = 620004;
-    
-   /**
-    * @var Application_RevisionStorage_DBStandardized
-    */
-    protected $storage;
-    
-    protected $autoincrements = array();
-    
-   /**
-    * Copies all records from a table from the source revision to the
-    * target revision.
-    * 
-    * @param string $table 
-    * @param string $revisionKey The name of the db field containing the revision number
-    * @param string[] $primaryKeys Indexed array with primary field key names in the table
-    * @param array<string,mixed> $values Associative array with specific values for fields (overwrites data from records)
-    * @param array<string,mixed> $targetValues
-    */
+
+    /**
+     * @var array<string,array<string,string|int>>
+     */
+    protected array $autoIncrements = array();
+
+    /**
+     * Copies all records from a table from the source revision to the
+     * target revision.
+     *
+     * @param string $table
+     * @param string $revisionKey The name of the db field containing the revision number
+     * @param string[] $primaryKeys Indexed array with primary field key names in the table
+     * @param array<string,mixed> $values Associative array with specific values for fields (overwrites data from records)
+     * @param array<string,mixed> $targetValues
+     * @throws DBHelper_Exception
+     *
+     * @throws JsonException
+     * @throws RevisionStorageException
+     * @throws ConvertHelper_Exception
+     */
     protected function copyRecords(string $table, string $revisionKey, array $primaryKeys, array $values=array(), array $targetValues=array()) : void
     {
         $this->log(sprintf('Copying records from table [%s].', $table));
@@ -51,7 +56,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         // when values are set, it means the revision key is not enough to
         // uniquely identify a record. In this case, the additional keys
         // are set with the values. This also means that the values should
-        // be set separately for the target revisionable object, if this is
+        // be set separately for the target revisionable object if this is
         // not the same as the source object.
         if(!empty($values)) 
         {
@@ -60,12 +65,10 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
                 $targetValues = $values;
                 
                 if($this->revisionable !== $this->targetRevisionable) {
-                    throw new Application_Exception(
+                    throw new RevisionStorageException(
                         'Missing data for revision copy',
-                        sprintf(
-                            'When setting another revisionable as target for a copy, the [$targetValues] parameter has to be set.'        
-                        ),
-                        self::ERROR_MISSING_TARGET_DATA_FOR_COPY        
+                        'When setting another revisionable as target for a copy, the [$targetValues] parameter has to be set.',
+                        self::ERROR_MISSING_TARGET_DATA_FOR_COPY
                     );
                 }
             }
@@ -73,7 +76,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             // make sure that the values and target values have exactly the same keys.
             $diff = array_diff(array_keys($values), array_keys($targetValues));
             if(!empty($diff)) {
-                throw new Application_Exception(
+                throw new RevisionStorageException(
                     'Mismatching data sets',
                     'The data sets for the source and target revisionables do not have the same keys.',
                     self::ERROR_KEYS_MISMATCH_FOR_TARGET_DATA_SET        
@@ -153,11 +156,11 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         foreach($primaryKeys as $name) 
         {
             $path = $table.'.'.$name;
-            if(isset($this->autoincrements[$path])) {
+            if(isset($this->autoIncrements[$path])) {
                 continue;
             }
             
-            $this->autoincrements[$path] = false;
+            $this->autoIncrements[$path] = false;
             
             if(!DBHelper::isAutoIncrementColumn($table, $name)) {
                 continue;
@@ -165,7 +168,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             
             // already found an auto increment column?
             if($autoColumn !== null) {
-                throw new Application_Exception(
+                throw new RevisionStorageException(
                     'Unsupported DB configuration',
                     sprintf(
                         'The table [%s] seems to have more than one auto increment column. This is not supported.',
@@ -175,7 +178,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
                 );
             }
             
-            $this->autoincrements[$path] = array();
+            $this->autoIncrements[$path] = array();
             $autoColumn = $name;
         }
         
@@ -187,7 +190,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         foreach($columns as $name) {
             $path = $table.'.'.$name;
             foreach($this->incrementMappings as $source => $targets) {
-                if(in_array($path, $targets)) {
+                if(in_array($path, $targets, true)) {
                     $mapped[$name] = $source;
                 }
             }
@@ -217,10 +220,10 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             // IDs with the new ones.
             foreach($mapped as $name => $source) {
                 $oldValue = $entry[$name];
-                if(!isset($this->autoincrements[$source][$oldValue])) {
+                if(!isset($this->autoIncrements[$source][$oldValue])) {
                     continue;
                 }
-                $newValue = $this->autoincrements[$source][$oldValue];
+                $newValue = $this->autoIncrements[$source][$oldValue];
                 $entry[$name] = $newValue;
 
                 //$this->log(sprintf('Converted auto column [%s] value from [%s] to [%s].', $name, $oldValue, $newValue));
@@ -242,10 +245,10 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             );
             
             // if this operation was an insert into a table with an auto 
-            // increment column, store the old and new new values so we can
-            // use them afterwards wherever needed.
+            // increment column, store the old and new values, so we can
+            // use them afterward wherever needed.
             if($autoColumn !== null) {
-                $this->autoincrements[$table.'.'.$autoColumn][$autoValue] = $insertID;
+                $this->autoIncrements[$table.'.'.$autoColumn][$autoValue] = $insertID;
                 $autoValuecount++;
             }
         }
@@ -266,7 +269,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         }
     }
     
-    protected $incrementMappings = array();
+    protected array $incrementMappings = array();
     
    /**
     * Maps the auto increment value from the source column to the
@@ -274,7 +277,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
     * its available values populated automatically when copying
     * the records from that table. 
     * 
-    * Afterwards, this ID collection can be used to map the IDs from
+    * Afterward, this ID collection can be used to map the IDs from
     * the source table to the new IDs that were created, to ensure
     * that any other table records depending on these IDs get the
     * correct new IDs assigned.
@@ -282,7 +285,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
     * @param string $source Must be specified in the notation <code>tablename.columnname</code>
     * @param string $target Must be specified in the notation <code>tablename.columnname</code>
     */
-    protected function mapIncrementColumns($source, $target)
+    protected function mapIncrementColumns(string $source, string $target) : void
     {
         if(!isset($this->incrementMappings[$source])) {
             $this->incrementMappings[$source] = array();
@@ -290,29 +293,34 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         
         $this->incrementMappings[$source][] = $target;   
     }
-    
-   /**
-    * Copies all records within a table, using the specified auto increment
-    * table mappings: The target path is the table and auto increment column
-    * for the table in which to copy records, and the source path is the 
-    * table to use the auto increment values from. 
-    * 
-    * Note that the source increment values have to be present already.
-    * 
-    * @param string $targetPath Path to the target auto increment column
-    * @param string $sourcePath Path to the source auto increment column
-    */
-    protected function copyByIncrements($targetPath, $sourcePath, $primaryColumns, $targetValues=array())
+
+    /**
+     * Copies all records within a table, using the specified auto increment
+     * table mappings: The target path is the table and auto increment column
+     * for the table in which to copy records, and the source path is the
+     * table to use the auto increment values from.
+     *
+     * Note that the source increment values have to be present already.
+     *
+     * @param string $targetPath Path to the target auto increment column
+     * @param string $sourcePath Path to the source auto increment column
+     * @param string[] $primaryColumns
+     * @param array<string,mixed> $targetValues
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    protected function copyByIncrements(string $targetPath, string $sourcePath, array $primaryColumns, array $targetValues=array()) : void
     {
-        if(!isset($this->autoincrements[$sourcePath])) {
+        if(!isset($this->autoIncrements[$sourcePath])) {
             return;
         }
         
         $tokens = explode('.', $targetPath);
         $column = array_pop($tokens);
         $table = array_pop($tokens);        
-        $newValues = array_values($this->autoincrements[$sourcePath]);
-        $oldValues = array_keys($this->autoincrements[$sourcePath]);
+        $newValues = array_values($this->autoIncrements[$sourcePath]);
+        $oldValues = array_keys($this->autoIncrements[$sourcePath]);
         
         $this->log(sprintf('Copying records from table [%s].', $table));
         
@@ -346,7 +354,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
             
             // convert the auto increment column value
             $oldValue = $entry[$column];
-            $newValue = $this->autoincrements[$sourcePath][$oldValue];
+            $newValue = $this->autoIncrements[$sourcePath][$oldValue];
             $entry[$column] = $newValue;
             
             DBHelper::insertOrUpdate(
@@ -359,7 +367,7 @@ abstract class Application_RevisionStorage_DB_CopyRevision extends Application_R
         $this->log(sprintf('Copied [%s] records.', count($data)));
     }
 
-    protected function _processRevdata(Application_RevisionableStateless $targetRevisionable) : void
+    protected function _processDataKeys(Application_RevisionableStateless $targetRevisionable) : void
     {
         $revCol = $this->storage->getRevisionColumn();
         

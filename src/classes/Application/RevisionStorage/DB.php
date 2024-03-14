@@ -7,11 +7,9 @@
  * @see Application_RevisionStorage_DB
  */
 
-/**
- * The base class for revision storage types
- * @see Application_RevisionStorage
- */
-require_once 'Application/RevisionStorage.php';
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableException;
 
 /**
  * Base utility class for database-based revision storage.
@@ -26,4 +24,15 @@ abstract class Application_RevisionStorage_DB extends Application_RevisionStorag
     {
         return 'DB';
     }
+
+    /**
+     * Must be implemented if the revisionable is to allow copying
+     * to another revisionable of the same type. The target class
+     * has to extend the <code>Application_RevisionStorage_TYPE_CopyRevision</code>
+     * class, where <code>TYPE</code> is the storage type ID, e.g. <code>DB</code>.
+     *
+     * @return class-string
+     * @throws RevisionableException
+     */
+    abstract protected function getRevisionCopyClass() : string;
 }

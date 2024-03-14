@@ -1,28 +1,18 @@
 <?php
 
-require_once 'Application/RevisionStorage/DB/CopyRevision.php';
-
+/**
+ * @property Application_RevisionableCollection_DBRevisionable $revisionable
+ */
 abstract class Application_RevisionableCollection_RevisionCopy extends Application_RevisionStorage_DB_CopyRevision
 {
     public const ERROR_REVISION_DOES_NOT_EXIST = 15401;
     
-   /**
-    * @var Application_RevisionableCollection_DBRevisionable
-    */
-    protected $revisionable;
+    protected Application_RevisionableCollection $collection;
+    protected string $primaryKey;
+    protected string $revisionKey;
+    protected string $revisionTable;
     
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
-    
-    protected $primaryKey;
-    
-    protected $revisionKey;
-    
-    protected $revisionTable; 
-    
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->revisionable->getCollection();
         $this->primaryKey = $this->collection->getPrimaryKeyName();
@@ -66,7 +56,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends Applicati
             )
         );
         
-        unset($data['pretty_revision']);
+        unset($data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION]);
         
         $keys = $this->storage->getStaticColumns();
         foreach($keys as $key => $value) {
@@ -74,9 +64,9 @@ abstract class Application_RevisionableCollection_RevisionCopy extends Applicati
         }
         
         // overwrite the required keys with the target information
-        $data['comments'] = $this->comments;
-        $data['date'] = $this->date->format('Y-m-d H:i:s');
-        $data['author'] = $this->ownerID; 
+        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = $this->comments;
+        $data[Application_RevisionableCollection::COL_REV_DATE] = $this->date->format('Y-m-d H:i:s');
+        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $this->ownerID;
         $data[$this->revisionKey] = $this->targetRevision;
         $data[$this->primaryKey] = $targetRevisionable->getID();
         

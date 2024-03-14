@@ -22,12 +22,15 @@ use AppUtils\TypeFilter\StrictType;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @implements ArrayAccess<string,mixed>
  */
-abstract class Application_RevisionStorage implements ArrayAccess, Application_Interfaces_Eventable
+abstract class Application_RevisionStorage
+    implements
+    ArrayAccess,
+    Application_Interfaces_Eventable
 {
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    public const REVDATA_KEY_MAX_LENGTH = 180;
+    public const DATA_KEY_MAX_LENGTH = 180;
     
     public const ERROR_REVISION_DOES_NOT_EXIST = 15557001;
     public const ERROR_COPYTO_NOT_IMPLEMENTED = 15557002;
@@ -39,6 +42,9 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     public const ERROR_REVISION_REQUIRED = 15557008;
     public const ERROR_NO_REVISION_REMEMBERED = 15557009;
     public const ERROR_KEY_REVISION_UNKNOWN = 15557010;
+
+    public const KEY_OWNER_ID = '__ownerID';
+    public const KEY_OWNER_NAME = '__ownerName';
 
     /**
     * @var array<int,array<string,mixed>>
@@ -78,7 +84,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
    /**
     * @var array<int,array<string,mixed>>
     */
-    protected array $revdata = array();
+    protected array $dataKeys = array();
     
     public function __construct(Application_RevisionableStateless $revisionable)
     {
@@ -128,8 +134,8 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
 
         $this->data[$number] = array(
             '__timestamp' => $timestamp, // the time the revision was created
-            '__ownerID' => $ownerID,
-            '__ownerName' => $ownerName,
+            self::KEY_OWNER_ID => $ownerID,
+            self::KEY_OWNER_NAME => $ownerName,
             '__comments' => (string)$comments
         );
 
@@ -260,25 +266,24 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
    /**
     * @var bool|NULL
     */
-    protected ?bool $hasRevdata = null;
+    protected ?bool $hasDataKeys = null;
     
    /**
     * @return boolean
     */
-    public function hasRevdata() : bool
+    public function hasDataKeys() : bool
     {
-        if(!isset($this->hasRevdata)) 
-        {
-            $this->hasRevdata = $this->_hasRevdata();
+        if(!isset($this->hasDataKeys)) {
+            $this->hasDataKeys = $this->_hasDataKeys();
         }
         
-        return $this->hasRevdata;
+        return $this->hasDataKeys;
     }
     
    /**
     * @return bool
     */
-    abstract protected function _hasRevdata() : bool;
+    abstract protected function _hasDataKeys() : bool;
     
    /**
     * @param int $number
@@ -581,9 +586,9 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
             }
         }
 
-        if(isset($this->revdata[$number]))
+        if(isset($this->dataKeys[$number]))
         {
-            unset($this->revdata[$number]);
+            unset($this->dataKeys[$number]);
         }
 
         return $this;
@@ -660,7 +665,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
      */
     public function setOwnerName(string $name) : self
     {
-        return $this->setKey('__ownerName', $name);
+        return $this->setKey(self::KEY_OWNER_NAME, $name);
     }
 
    /**
@@ -668,7 +673,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     */
     public function getOwnerName() : string
     {
-        return StrictType::createStrict($this->getKey('__ownerName'))->getString();
+        return StrictType::createStrict($this->getKey(self::KEY_OWNER_NAME))->getString();
     }
 
     /**
@@ -678,7 +683,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
      */
     public function setOwnerID(int $id) : self
     {
-        return $this->setKey('__ownerID', $id);
+        return $this->setKey(self::KEY_OWNER_ID, $id);
     }
 
    /**
@@ -686,7 +691,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     */
     public function getOwnerID() : int
     {
-        return StrictType::createStrict($this->getKey('__ownerID'))->getInt();
+        return StrictType::createStrict($this->getKey(self::KEY_OWNER_ID))->getInt();
     }
 
    /**
@@ -882,24 +887,6 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
         }
         
         return $this->logFormat[$this->revision];
-    }
-
-    /**
-     * Must be implemented if the revisionable is to allow copying
-     * to another revisionable of the same type. The target class
-     * has to extend the <code>Application_RevisionStorage_TYPE_CopyRevision</code>
-     * class, where <code>TYPE</code> is the storage type ID, e.g. <code>DB</code>.
-     *
-     * @return class-string
-     * @throws RevisionableException
-     */
-    protected function getRevisionCopyClass() : string
-    {
-        throw new RevisionableException(
-            'Revision copy not implemented',
-            'To enable copying revisions between revisionables, the [getRevisionCopyClass] method has to be implemented.',
-            self::ERROR_COPYTO_NOT_IMPLEMENTED    
-        );
     }
 
     /**
@@ -1113,9 +1100,9 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
      * @return mixed
      * @throws RevisionableException
      */
-    public function getRevdataKey(string $name, $default=null)
+    public function getDataKey(string $name, $default=null)
     {
-        if(!$this->hasRevdata()) 
+        if(!$this->hasDataKeys())
         {
             return $default;
         }
@@ -1124,19 +1111,19 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
         
         $revision = $this->getRevision();
 
-        if(!isset($this->revdata[$revision]) || !$this->isLoaded($revision)) {
-            $this->revdata[$revision] = array();
+        if(!isset($this->dataKeys[$revision]) || !$this->isLoaded($revision)) {
+            $this->dataKeys[$revision] = array();
         }
         
-        $adjusted = $this->adjustRevdataKeyName($name);
+        $adjusted = $this->adjustDataKeyName($name);
 
         // load the data key on demand
-        if(!array_key_exists($adjusted, $this->revdata[$revision])) {
-            $this->revdata[$revision][$adjusted] = $this->_loadRevdataKey($adjusted);
+        if(!array_key_exists($adjusted, $this->dataKeys[$revision])) {
+            $this->dataKeys[$revision][$adjusted] = $this->_loadDataKey($adjusted);
         }
         
-        if(isset($this->revdata[$revision][$adjusted])) {
-            return $this->revdata[$revision][$adjusted];
+        if(isset($this->dataKeys[$revision][$adjusted])) {
+            return $this->dataKeys[$revision][$adjusted];
         }
         
         return $default;
@@ -1148,7 +1135,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     * @param string $name
     * @return string
     */
-    abstract protected function _loadRevdataKey(string $name) : string;
+    abstract protected function _loadDataKey(string $name) : string;
 
     /**
      * Sets a revision data key.
@@ -1158,9 +1145,9 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
      * @return $this
      * @throws RevisionableException
      */
-    public function setRevdataKey(string $name, $value) : self
+    public function setDataKey(string $name, $value) : self
     {
-        if(!$this->hasRevdata()) {
+        if(!$this->hasDataKeys()) {
             return $this;
         }
         
@@ -1168,13 +1155,13 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
         
         $revision = $this->getRevision();
         
-        if(!isset($this->revdata[$revision]) || !$this->isLoaded($revision)) {
-            $this->revdata[$revision] = array();
+        if(!isset($this->dataKeys[$revision]) || !$this->isLoaded($revision)) {
+            $this->dataKeys[$revision] = array();
         }
         
-        $adjusted = $this->adjustRevdataKeyName($name);
+        $adjusted = $this->adjustDataKeyName($name);
         
-        $this->revdata[$revision][$adjusted] = $value;
+        $this->dataKeys[$revision][$adjusted] = $value;
 
         return $this;
     }
@@ -1187,9 +1174,9 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     * @param string $name
     * @return string
     */
-    protected function adjustRevdataKeyName(string $name) : string
+    protected function adjustDataKeyName(string $name) : string
     {
-        if(strlen($name) > self::REVDATA_KEY_MAX_LENGTH) {
+        if(strlen($name) > self::DATA_KEY_MAX_LENGTH) {
             return md5($name);
         }
         
@@ -1204,36 +1191,50 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
      * @return $this
      * @throws RevisionableException
      */
-    public function writeRevdata() : self
+    public function writeDataKeys() : self
     {
         $this->requireRevision();
         
         $revision = $this->getRevision();
         
-        if(!isset($this->revdata[$revision])) {
+        if(!isset($this->dataKeys[$revision])) {
             return $this;
         }
         
-        foreach($this->revdata[$revision] as $key => $value) 
+        foreach($this->dataKeys[$revision] as $key => $value)
         {
             if($value !== null)
             {
-                $this->_writeRevdataKey($key, $value);
+                $this->_writeDataKey($key, $value);
             }
         }
 
         return $this;
     }
 
+    public function writeRevisionKeys(array $data) : self
+    {
+        $this->_writeRevisionKeys($data);
+        return $this;
+    }
+
+    public function writeCustomKeys() : self
+    {
+        $this->_writeRevisionKeys($this->revisionable->getCustomKeyValues());
+        return $this;
+    }
+
+    abstract protected function _writeRevisionKeys(array $data) : void;
+
     /**
      * @return array<string,mixed>
      */
-    public function getRevdata() : array
+    public function getDataKeys() : array
     {
         $revision = $this->getRevision();
 
-        if(isset($this->revdata[$revision])) {
-            return $this->revdata[$revision];
+        if(isset($this->dataKeys[$revision])) {
+            return $this->dataKeys[$revision];
         }
 
         return array();
@@ -1245,7 +1246,7 @@ abstract class Application_RevisionStorage implements ArrayAccess, Application_I
     * @param string $key
     * @param mixed $value
     */
-    abstract protected function _writeRevdataKey(string $key, $value) : void;
+    abstract protected function _writeDataKey(string $key, $value) : void;
 
     // region: Event handling
 

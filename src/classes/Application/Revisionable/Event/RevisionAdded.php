@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableStatelessInterface;
+
 class Application_Revisionable_Event_RevisionAdded
 {
     /**
-     * @var Application_Revisionable_Interface
+     * @var RevisionableStatelessInterface
      */
     private $revisionable;
 
@@ -14,16 +16,16 @@ class Application_Revisionable_Event_RevisionAdded
      */
     private $originalEvent;
 
-    public function __construct(Application_Revisionable_Interface $revisionable, Application_RevisionStorage_Event_RevisionAdded $originalEvent)
+    public function __construct(RevisionableStatelessInterface $revisionable, Application_RevisionStorage_Event_RevisionAdded $originalEvent)
     {
         $this->revisionable = $revisionable;
         $this->originalEvent = $originalEvent;
     }
 
     /**
-     * @return Application_Revisionable_Interface
+     * @return RevisionableStatelessInterface
      */
-    public function getRevisionable() : Application_Revisionable_Interface
+    public function getRevisionable() : RevisionableStatelessInterface
     {
         return $this->revisionable;
     }

@@ -7,7 +7,10 @@
  * @see Application_Revisionable
  */
 
+declare(strict_types=1);
+
 use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionableInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\BaseException;
 use AppUtils\ConvertHelper;
@@ -22,12 +25,15 @@ use AppUtils\ConvertHelper;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see Application_RevisionableStateless
  */
-abstract class Application_Revisionable extends Application_RevisionableStateless
+abstract class Application_Revisionable
+    extends Application_RevisionableStateless
+    implements RevisionableInterface
 {
     public const ERROR_SAVING_WITHOUT_TRANSACTION = 149301;
     public const ERROR_INVALID_STATE_CHANGE = 149303;
     public const ERROR_NO_STATE_AVAILABLE = 149304;
     public const ERROR_STUB_OBJECT_METHOD_NOT_IMPLEMENTED = 149305;
+    public const STUB_OBJECT_ID = -9999;
 
     protected Application_StateHandler $stateHandler;
 
@@ -209,7 +215,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
      */
     public function getState() : ?Application_StateHandler_State
     {
-        $state = $this->revisions->getKey('state');
+        $state = $this->revisions->getKey(Application_RevisionableCollection::COL_REV_STATE);
 
         if($state instanceof Application_StateHandler_State) {
             return $state;
@@ -301,7 +307,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
 
         $this->log('Setting state to [%1$s].', $newState->getName());
 
-        $this->revisions->setKey('state', $newState);
+        $this->revisions->setKey(Application_RevisionableCollection::COL_REV_STATE, $newState);
         
         $this->structureChanged('State has changed');
         $this->stateChanged = true;
@@ -416,26 +422,6 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     public function getStateByName($nameOrInstance) : Application_StateHandler_State
     {
         return $this->stateHandler->getStateByName($nameOrInstance);
-    }
-
-    /**
-     * Creates a stub object of this item's type,
-     * which is used to access all the object's static
-     * functions, for example, for the state information.
-     *
-     * @throws Application_Exception
-     * @return Application_Revisionable
-     */
-    public static function createDummyObject() : Application_Revisionable
-    {
-        throw new RevisionableException(
-            'Method must be implemented',
-            sprintf(
-                'The method [%s] must be implemented to use it.',
-                array(self::class, 'createDummyObject')[1].'()'
-            ),
-            self::ERROR_STUB_OBJECT_METHOD_NOT_IMPLEMENTED
-        );
     }
 
     /**
@@ -619,21 +605,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     abstract protected function _saveWithStateChange() : void;
 
     /**
-     * Changes the state of the item to the specified new state.
-     *
-     * NOTE: This starts a transaction. It should be done outside regular
-     * transactions to allow the internal changes that are necessary for
-     * a state change.
-     *
-     * Returns a boolean flag indicating whether the state has been changed.
-     * For example, this will return false if you try to set the state to
-     * the same state.
-     *
-     * @param Application_StateHandler_State $state
-     * @param string $comments
-     * @return boolean
-     * @throws RevisionableException
-     * @throws StateHandlerException
+     * @inheritDoc
      */
     public function makeState(Application_StateHandler_State $state, ?string $comments=null) : bool
     {
@@ -701,9 +673,7 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     }
 
     /**
-     * Checks whether the revisionable has a state by this name.
-     * @param string $stateName
-     * @return bool
+     * @inheritDoc
      */
     public function hasState(string $stateName) : bool
     {
@@ -738,5 +708,10 @@ abstract class Application_Revisionable extends Application_RevisionableStateles
     public function getInitialState() : Application_StateHandler_State
     {
         return $this->stateHandler->getInitialState();
+    }
+
+    public function isStub() : bool
+    {
+        return $this->getID() === self::STUB_OBJECT_ID;
     }
 }

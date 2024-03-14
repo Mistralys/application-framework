@@ -9,13 +9,9 @@ use TestDriver\Revisionables\RevisionableRecord;
 
 /**
  * @see RevisionCopy
- *
  * @property RevisionableRecord $revisionable
  */
 class RevisionableStorage extends Application_RevisionStorage_CollectionDB
 {
-    public function getNextRevisionData(): array
-    {
-        return $this->revisionable->getCustomRevisionData();
-    }
+
 }

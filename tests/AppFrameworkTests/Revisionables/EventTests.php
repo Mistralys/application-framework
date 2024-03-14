@@ -2,9 +2,15 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\Revisionables;
 
-class Revisionables_EventsTests extends ApplicationTestCase
+use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\Revisionable\RevisionableStatelessInterface;
+use Application_Revisionable_Event_RevisionAdded;
+use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
+use TestRevisionableMemory;
+
+final class EventTests extends RevisionableTestCase
 {
 
     // region: _Tests
@@ -13,7 +19,7 @@ class Revisionables_EventsTests extends ApplicationTestCase
      * Events must be revision-specific, so they are only
      * executed when the revision is active.
      */
-    public function test_revisionSpecific() : void
+    public function test_revisionSpecific(): void
     {
         $this->createRevisionable();
 
@@ -33,9 +39,9 @@ class Revisionables_EventsTests extends ApplicationTestCase
     }
 
     /**
-     * Ignoring events by name must be revision specific.
+     * Ignoring events by name must be revision-specific.
      */
-    public function test_ignoreRevisionSpecific() : void
+    public function test_ignoreRevisionSpecific(): void
     {
         $this->createRevisionable();
 
@@ -53,10 +59,10 @@ class Revisionables_EventsTests extends ApplicationTestCase
     }
 
     /**
-     * If the event to ignore is not revision specific,
+     * If the event to ignore is not revision-specific,
      * it must be ignored independently of the selected revision.
      */
-    public function test_ignoreNonRevisionSpecific() : void
+    public function test_ignoreNonRevisionSpecific(): void
     {
         $this->createRevisionable();
 
@@ -70,10 +76,10 @@ class Revisionables_EventsTests extends ApplicationTestCase
     }
 
     /**
-     * Some events are not revision specific. These must
+     * Some events are not revision-specific. These must
      * be triggered regardless of the selected revision.
      */
-    public function test_revisionlessEvent() : void
+    public function test_revisionlessEvent(): void
     {
         $this->createRevisionable();
 
@@ -122,7 +128,7 @@ class Revisionables_EventsTests extends ApplicationTestCase
      */
     private $revisionAdded;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -132,7 +138,7 @@ class Revisionables_EventsTests extends ApplicationTestCase
     /**
      * @return TestRevisionableMemory
      */
-    private function createRevisionable() : TestRevisionableMemory
+    private function createRevisionable(): TestRevisionableMemory
     {
         $this->revisionable = new TestRevisionableMemory();
 
@@ -151,22 +157,22 @@ class Revisionables_EventsTests extends ApplicationTestCase
         return $this->revisionable;
     }
 
-    public function callback_revisionAdded(Application_Revisionable_Interface $revisionable, Application_Revisionable_Event_RevisionAdded $event) : void
+    public function callback_revisionAdded(RevisionableStatelessInterface $revisionable, Application_Revisionable_Event_RevisionAdded $event): void
     {
         $this->revisionAdded = $event;
     }
 
-    public function callback_revision1() : void
+    public function callback_revision1(): void
     {
         $this->revision1Event = true;
     }
 
-    public function callback_revision2() : void
+    public function callback_revision2(): void
     {
         $this->revision2Event = true;
     }
 
-    private function resetEvents() : void
+    private function resetEvents(): void
     {
         $this->revision1Event = false;
         $this->revision2Event = false;

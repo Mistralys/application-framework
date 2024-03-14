@@ -6,6 +6,7 @@
  * @see UI_page
  */
 
+use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -491,10 +492,10 @@ class UI_Page extends UI_Renderable
      * intelligently, for example adding a state badge if the
      * revisionable supports states.
      *
-     * @param Application_Revisionable_Interface $revisionable
+     * @param RevisionableStatelessInterface $revisionable
      * @return UI_Page_RevisionableTitle
      */
-    public function createRevisionableTitle(Application_Revisionable_Interface $revisionable) : UI_Page_RevisionableTitle
+    public function createRevisionableTitle(RevisionableStatelessInterface $revisionable) : UI_Page_RevisionableTitle
     {
         return new UI_Page_RevisionableTitle($this, $revisionable);
     }

@@ -79,12 +79,12 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
 
         $data = $customColumns;
         $data[$this->idColumn] = $revisionable_id;
-        $data['label'] = $label;
-        $data['state'] = $state->getName();
-        $data['date'] = $date->format('Y-m-d H:i:s');
-        $data['author'] = $author->getID();
-        $data['comments'] = $comments;
-        $data['pretty_revision'] = $prettyRevision;
+        $data[Application_RevisionableCollection::COL_REV_LABEL] = $label;
+        $data[Application_RevisionableCollection::COL_REV_STATE] = $state->getName();
+        $data[Application_RevisionableCollection::COL_REV_DATE] = $date->format('Y-m-d H:i:s');
+        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $author->getID();
+        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = $comments;
+        $data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION] = $prettyRevision;
         
         $campaignKeys = $this->getStaticColumns();
         foreach($campaignKeys as $keyName => $keyValue) {
@@ -92,7 +92,7 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
         }
         
         return (int)DBHelper::insertDynamic(
-            $this->revisionsTable, 
+            $this->revisionTable,
             $data
         );
     }
@@ -100,5 +100,10 @@ abstract class Application_RevisionStorage_CollectionDB extends Application_Revi
     protected function getRevisionCopyClass() : string
     {
         return $this->collection->getRecordCopyRevisionClass();
+    }
+
+    public function getNextRevisionData(): array
+    {
+        return $this->revisionable->getCustomKeyValues();
     }
 }

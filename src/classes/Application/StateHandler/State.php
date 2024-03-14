@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
+use AppUtils\Interfaces\StringableInterface;
 
-class Application_StateHandler_State
+class Application_StateHandler_State implements StringableInterface
 {
     public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14101;
     public const ERROR_INVALID_TIMED_CHANGE = 14102;
@@ -20,7 +22,7 @@ class Application_StateHandler_State
     protected Application_StateHandler $handler;
     protected ?Application_StateHandler_State $timedState = null;
     protected int $timedDelay = 0;
-    protected ?Application_Revisionable_Interface $item = null;
+    protected ?RevisionableStatelessInterface $item = null;
     protected string $uiType;
     protected bool $changesAllowed = false;
     protected bool $isInitial = false;
@@ -30,7 +32,7 @@ class Application_StateHandler_State
      */
     protected array $dependencies = array();
 
-    public function __construct(string $name, string $label, string $uiType, bool $changesAllowed, bool $isInitial, Application_StateHandler $handler, Application_Revisionable_Interface $item)
+    public function __construct(string $name, string $label, string $uiType, bool $changesAllowed, bool $isInitial, Application_StateHandler $handler, RevisionableStatelessInterface $item)
     {
         $this->name = $name;
         $this->label = $label;

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\Interfaces\StringableInterface;
 
 /**
@@ -22,10 +23,10 @@ use AppUtils\Interfaces\StringableInterface;
  */
 class UI_Page_RevisionableTitle extends UI_Renderable
 {
-    protected Application_Revisionable_Interface $revisionable;
+    protected RevisionableStatelessInterface $revisionable;
     protected bool $configured = false;
     
-    public function __construct(UI_Page $page, Application_Revisionable_Interface $revisionable)
+    public function __construct(UI_Page $page, RevisionableStatelessInterface $revisionable)
     {
         parent::__construct($page);
 

@@ -1,107 +1,91 @@
 <?php
 
+declare(strict_types=1);
+
 use Application\Revisionable\RevisionableException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ConvertHelper\JSONConverter;
+use TestDriver\Revisionables\RevisionableCollection;
 
 abstract class Application_RevisionableCollection_DBRevisionable extends Application_Revisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const ERROR_INVALID_REVISION_STORAGE = 14702;
-    public const COL_REV_STATE = 'state';
-    public const COL_REV_DATE = 'date';
-    public const COL_REV_AUTHOR = 'author';
 
     protected Application_RevisionableCollection $collection;
     protected int $id;
-    protected array $customKeys;
     protected int $currentRevision;
-    
-    public function __construct(Application_RevisionableCollection $collection, int $id, $customColumnValues=array())
+
+    public function __construct(Application_RevisionableCollection $collection, int $id)
     {
         $this->collection = $collection;
         $this->id = $id;
-        $this->customKeys = $customColumnValues;
-        
+
         parent::__construct();
-        
-        if($this->isDummy()) {
+
+        if ($this->isDummy()) {
             return;
         }
-        
+
         $this->currentRevision = $this->collection->getCurrentRevision($id);
-        if(!$this->currentRevision) {
+
+        if (!$this->currentRevision) {
             throw new Application_Exception(
                 'Error loading current revision',
                 sprintf(
-                    'Could not load %s [%s] from database, no current revision found. Custom column values: [%s]',
+                    'Could not load %s [%s] from database, no current revision found.',
                     $this->getRevisionableTypeName(),
-                    $this->id,
-                    json_encode($this->customKeys)
+                    $this->id
                 ),
                 self::ERROR_NO_CURRENT_REVISION_FOUND
             );
         }
-        
+
         $this->selectCurrentRevision();
     }
-    
-   /**
-    * Selects the revisionable's current revision.
-    * @return Application_RevisionableCollection_DBRevisionable
-    */
-    public function selectCurrentRevision()
+
+    /**
+     * Selects the revisionable's current revision.
+     * @return $this
+     */
+    public function selectCurrentRevision() : self
     {
-        $this->selectRevision($this->currentRevision);
-        return $this;
+        return $this->selectRevision($this->currentRevision);
     }
-    
-   /**
-    * Whether this is a dummy object instance.
-    * @return boolean
-    */
-    public function isDummy() : bool
+
+    /**
+     * Whether this is a stub object instance.
+     * @return boolean
+     */
+    public function isDummy(): bool
     {
         return $this->id === Application_RevisionableCollection::DUMMY_ID;
     }
-    
-   /**
-    * Retrieves any custom column values to limit the revisionable table to.
-    * This is set on instantiation.
-    * 
-    * @return array
-    */
-     public function getCustomColumnValues()
-     {
-         return $this->customKeys;
-     }
-    
-   /**
-    * Retrieves the revisionable's collection instance.
-    * @return Application_RevisionableCollection
-    */
-    public function getCollection()
+
+    /**
+     * Retrieves the revisionable's collection instance.
+     * @return Application_RevisionableCollection
+     */
+    public function getCollection() : Application_RevisionableCollection
     {
         return $this->collection;
     }
-    
-   /**
-    * @see Application_RevisionStorage_CollectionDB
-    * @throws RevisionableException
-    */
-    protected function createRevisionStorage() : Application_RevisionStorage_CollectionDB
+
+    /**
+     * @throws RevisionableException
+     * @see Application_RevisionStorage_CollectionDB
+     */
+    protected function createRevisionStorage(): Application_RevisionStorage_CollectionDB
     {
-        try
-        {
+        try {
             $className = $this->collection->getRevisionsStorageClass();
 
             return ClassHelper::requireObjectInstanceOf(
                 Application_RevisionStorage_CollectionDB::class,
                 new $className($this)
             );
-        }
-        catch (BaseClassHelperException $e)
-        {
+        } catch (BaseClassHelperException $e) {
             throw new RevisionableException(
                 'Invalid revision storage',
                 sprintf(
@@ -114,117 +98,73 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
             );
         }
     }
-    
-    public function getID() : int
+
+    public function getID(): int
     {
         return $this->id;
     }
 
-    protected function _saveWithStateChange() : void
+    protected function _saveWithStateChange(): void
     {
-        $this->saveRevisionData(array(self::COL_REV_STATE));
+        $this->revisions->writeRevisionKeys(array(
+            Application_RevisionableCollection::COL_REV_STATE => $this->getStateName()
+        ));
     }
 
-    protected function _save() : void
+    protected function _save(): void
     {
     }
-    
-   /**
-    * Saves the current values of the specified data keys to
-    * the revision table for the current revision.
-    * 
-    * @param string[] $columnNames
-    */
-    protected function saveRevisionData(array $columnNames) : void
+
+    /**
+     * Saves the current values of the specified data keys to
+     * the revision table for the current revision.
+     *
+     * @param string[] $columnNames
+     * @deprecated Not used anymore.
+     */
+    protected function saveRevisionData(array $columnNames): void
     {
-        $this->log(sprintf('Saving revision data for keys [%s].', implode(', ', $columnNames)));
-        
-        $revKey = $this->collection->getRevisionKeyName();
-        $primaryKey = $this->collection->getPrimaryKeyName();
-        
-        $data = $this->collection->getCampaignKeys();
-        
-        foreach($columnNames as $columnName) 
-        {
-            $value = null;
-            
-            switch($columnName) 
-            {
-                // these may not be set
-                case $primaryKey:
-                case $revKey:
-                    $value = '__ignore_key';
-                    break;
-                    
-                case self::COL_REV_STATE:
-                    $value = $this->getStateName();
-                    break;
-                    
-                case self::COL_REV_DATE:
-                    $value = $this->getRevisionDate()->format('Y-m-d H:i:s');
-                    break;
-                    
-                case self::COL_REV_AUTHOR:
-                    $value = $this->getOwnerID();
-                    break;
-                
-                default:
-                    $value = $this->revisions->getKey($columnName);
-                    break;
-            }
 
-            if($value !== '__ignore_key') {
-                $data[$columnName] = $value; 
-            }
-        }
-
-        $data[$revKey] = $this->getRevision();
-        
-        DBHelper::updateDynamic(
-            $this->collection->getRevisionsTableName(),
-            $data,
-            array($revKey)
-        );
     }
-    
-   /**
-    * Retrieves the base URL parameters collection used to
-    * administrate this revisionable. Presupposes that an
-    * administration interface exists for it.
-    * 
-    * @return array
-    */
-    public function getAdminURLParams() : array
+
+    /**
+     * Retrieves the base URL parameters collection used to
+     * administrate this revisionable. Presupposes that an
+     * administration interface exists for it.
+     *
+     * @return array
+     */
+    public function getAdminURLParams(): array
     {
         $params = $this->collection->getAdminURLParams();
         $params[$this->collection->getPrimaryKeyName()] = $this->getID();
         return $params;
     }
-    
-    protected function getAdminURL(array $params=array()) : string
+
+    protected function getAdminURL(array $params = array()): string
     {
         $params = array_merge($params, $this->getAdminURLParams());
         return Application_Driver::getInstance()->getRequest()->buildURL($params);
     }
-    
+
     protected bool $handleDBTransaction = false;
 
-    public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
+    public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null): self
     {
         // to allow this transaction to be wrapped in an 
         // existing transaction, we check if we have to 
         // start one automatically or not.
         $this->handleDBTransaction = false;
 
-        if(!DBHelper::isTransactionStarted()) {
+        if (!DBHelper::isTransactionStarted()) {
             $this->handleDBTransaction = true;
             DBHelper::startTransaction();
         }
-        
+
         return parent::startTransaction($newOwnerID, $newOwnerName, $comments);
     }
 
-    public function endTransaction() : bool
+    public function endTransaction(): bool
     {
         $this->save();
 
@@ -236,7 +176,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
 
         // we need to do this, because we want to trigger it later
         $this->ignoreEvent('TransactionEnded');
-        
+
         $result = parent::endTransaction();
 
         // now make sure the current revision is set correctly, regardless
@@ -244,7 +184,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         $this->collection->setCurrentRevision($this->id, $this->getRevision());
 
         // do we handle the DB transaction here? 
-        if($this->handleDBTransaction) {
+        if ($this->handleDBTransaction) {
             if ($this->simulation) {
                 $this->log('Simulation mode, transaction will not be committed.');
                 DBHelper::rollbackTransaction();
@@ -253,16 +193,16 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
 
             DBHelper::commitTransaction();
         }
-        
+
         $this->log('Reloading the revision data.');
         $this->revisions->reload();
 
         // now that everything's through, we can trigger the event.
         $this->unignoreEvent('TransactionEnded');
         $this->triggerEvent('TransactionEnded');
-        
-        $this->log('Comments: '.$this->getRevisionComments());
-        
+
+        $this->log('Comments: ' . $this->getRevisionComments());
+
         return $result;
     }
 
@@ -270,7 +210,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
      * @return $this
      * @throws DBHelper_Exception
      */
-    public function rollBackTransaction() : self
+    public function rollBackTransaction(): self
     {
         parent::rollBackTransaction();
 
@@ -279,12 +219,12 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         return $this;
     }
 
-    public function getChangelogTable()
+    public function getChangelogTable() : string
     {
         return $this->collection->getRecordChangelogTableName();
     }
 
-    public function getChangelogItemPrimary()
+    public function getChangelogItemPrimary() : array
     {
         return array(
             $this->collection->getPrimaryKeyName() => $this->getID(),
@@ -296,31 +236,31 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
      * @param array<string,string|number> $params
      * @return string
      */
-    abstract public function getAdminStatusURL(array $params=array()) : string;
+    abstract public function getAdminStatusURL(array $params = array()): string;
 
     /**
      * @param array<string,string|number> $params
      * @return string
      */
-    abstract public function getAdminChangelogURL(array $params=array()) : string;
-    
-   /**
-    * Selects the last revision of the record by a specific state.
-    * 
-    * @param Application_StateHandler_State $state
-    * @return integer|boolean The revision number, or false if no revision matches.
-    */
+    abstract public function getAdminChangelogURL(array $params = array()): string;
+
+    /**
+     * Selects the last revision of the record by a specific state.
+     *
+     * @param Application_StateHandler_State $state
+     * @return integer|boolean The revision number, or false if no revision matches.
+     */
     public function selectLastRevisionByState(Application_StateHandler_State $state)
     {
         $revision = $this->getLastRevisionByState($state);
-        if($revision) {
+        if ($revision) {
             $this->selectRevision($revision);
             return $revision;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Retrieves the last revision of the record by a specific state.
      *
@@ -331,11 +271,11 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     {
         $revisionKey = $this->collection->getRevisionKeyName();
         $primaryKey = $this->collection->getPrimaryKeyName();
-        
+
         $where = $this->collection->getCampaignKeys();
         $where[$primaryKey] = $this->getID();
-        $where[self::COL_REV_STATE] = $state->getName();
-        
+        $where[Application_RevisionableCollection::COL_REV_STATE] = $state->getName();
+
         $query = sprintf(
             "SELECT
                 `%s`
@@ -350,30 +290,47 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
             $this->collection->getRevisionsTableName(),
             DBHelper::buildWhereFieldsStatement($where)
         );
-        
+
         $revision = DBHelper::fetchKeyInt($revisionKey, $query, $where);
-        
-        if(!empty($revision)) {
+
+        if (!empty($revision)) {
             return $revision;
         }
-        
+
         return false;
     }
-    
-   /**
-    * Retrieves the revision currently in use. This is tracked in
-    * a dedicated table, and namespaced to any campaign keys that
-    * may have been defined.
-    * 
-    * @return integer|NULL
-    */
-    public function getCurrentRevision() : ?int
+
+    /**
+     * Retrieves the revision currently in use. This is tracked in
+     * a dedicated table, and namespaced to any campaign keys that
+     * may have been defined.
+     *
+     * @return integer|NULL
+     */
+    public function getCurrentRevision(): ?int
     {
         return $this->collection->getCurrentRevision($this->getID());
     }
 
-    public function getPrettyRevision() : int
+    public function getPrettyRevision(): int
     {
-        return (int)$this->revisions->getKey('pretty_revision');
+        return (int)$this->revisions->getKey(Application_RevisionableCollection::COL_REV_PRETTY_REVISION);
+    }
+
+    public function getLabel(): string
+    {
+        return (string)$this->revisions->getKey(Application_RevisionableCollection::COL_REV_LABEL);
+    }
+
+    public function setLabel(string $label) : self
+    {
+        $this->setRevisionKey(
+            Application_RevisionableCollection::COL_REV_LABEL,
+            $label,
+            self::STORAGE_PART_CUSTOM_KEYS,
+            false
+        );
+
+        return $this;
     }
 }

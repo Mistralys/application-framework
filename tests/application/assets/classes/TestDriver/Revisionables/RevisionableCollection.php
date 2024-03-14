@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use Application_RevisionableCollection;
-use Application_RevisionableCollection_DBRevisionable;
 use Application_Traits_Disposable;
 use Application_Traits_Eventable;
 use Application_User;
@@ -21,11 +20,8 @@ class RevisionableCollection extends Application_RevisionableCollection
     public const TABLE_REVISIONS = 'revisionables_revisions';
     public const PRIMARY_NAME = 'revisionable_id';
     public const COL_REV_ID = 'revisionable_revision';
-    public const COL_REV_LABEL = 'label';
-    public const COL_REV_STATE = 'state';
-    public const COL_REV_DATE = 'date';
-    public const COL_REV_COMMENTS = 'comments';
-     public const COL_REV_STRUCTURAL = 'structural';
+    public const COL_REV_STRUCTURAL = 'structural';
+    public const COL_REV_ALIAS = 'alias';
 
     use Application_Traits_Eventable;
     use Application_Traits_Disposable;
@@ -41,9 +37,15 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::$instance;
     }
 
-    public function createNewRevisionable(string $label) : RevisionableRecord
+    public function createNewRevisionable(string $label, string $alias) : RevisionableRecord
     {
-        return $this->createNewRecord($label);
+        return $this->createNewRecord(
+            $label,
+            null,
+            array(
+                self::COL_REV_ALIAS => $alias
+            )
+        );
     }
 
     // region: X - Interface methods
@@ -119,7 +121,8 @@ class RevisionableCollection extends Application_RevisionableCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            self::COL_REV_LABEL => t('Label')
+            self::COL_REV_LABEL => t('Label'),
+            self::COL_REV_ALIAS => t('Alias')
         );
     }
 
