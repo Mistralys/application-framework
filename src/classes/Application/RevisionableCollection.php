@@ -162,13 +162,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
         return array_keys($columns);
     }
     
-   /**
-    * @return string
-    */
-    public function getCurrentRevisionsTableName() : string
-    {
-        return $this->currentRevisionsTableName;
-    }
+    abstract public function getCurrentRevisionsTableName() : string;
 
    /**
     * @return string
