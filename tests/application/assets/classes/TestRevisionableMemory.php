@@ -6,12 +6,12 @@ class TestRevisionableMemory extends Application_RevisionableStateless
 {
     use Application_Traits_Loggable;
 
-    const EVENT_TEST_EVENT = 'TestEvent';
+    public const EVENT_TEST_EVENT = 'TestEvent';
 
     /**
      * @var int
      */
-    private $revisionCounter = 0;
+    private int $revisionCounter = 0;
 
     public function getIdentification() : string
     {
@@ -108,5 +108,34 @@ class TestRevisionableMemory extends Application_RevisionableStateless
     public function getCustomKeyValues(): array
     {
         return array();
+    }
+
+    public function getChangelogTable(): string
+    {
+        return '';
+    }
+
+    public function configureChangelogFilters(Application_Changelog_FilterCriteria $filters): void
+    {
+    }
+
+    public function getChangelogItemPrimary(): array
+    {
+        return array('primary');
+    }
+
+    public function getChangelogEntryText(string $type, array $data = array()): string
+    {
+        return '';
+    }
+
+    public function getChangelogEntryDiff(string $type, array $data = array()): ?array
+    {
+        return null;
+    }
+
+    public function getChangelogTypeLabel(string $type): string
+    {
+        return $type;
     }
 }
