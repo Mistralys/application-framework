@@ -18,6 +18,9 @@ class RevisionableCollection extends Application_RevisionableCollection
 {
     public const TABLE_NAME = 'revisionables';
     public const TABLE_REVISIONS = 'revisionables_revisions';
+    public const TABLE_CURRENT_REVISIONS = 'revisionables_current_revisions';
+    public const TABLE_CHANGELOG = 'revisionables_changelog';
+
     public const PRIMARY_NAME = 'revisionable_id';
     public const COL_REV_ID = 'revisionable_revision';
     public const COL_REV_STRUCTURAL = 'structural';
@@ -76,7 +79,7 @@ class RevisionableCollection extends Application_RevisionableCollection
 
     public function getRecordTypeName() : string
     {
-        return 'revisionable';
+        return 'Revisionable';
     }
 
     public function getRecordFiltersClassName() : string
@@ -124,6 +127,36 @@ class RevisionableCollection extends Application_RevisionableCollection
             self::COL_REV_LABEL => t('Label'),
             self::COL_REV_ALIAS => t('Alias')
         );
+    }
+
+    public function getCurrentRevisionsTableName(): string
+    {
+        return self::TABLE_CURRENT_REVISIONS;
+    }
+
+    public function getPrimaryKeyName(): string
+    {
+        return self::PRIMARY_NAME;
+    }
+
+    public function getTableName(): string
+    {
+        return self::TABLE_NAME;
+    }
+
+    public function getRevisionsTableName(): string
+    {
+        return self::TABLE_REVISIONS;
+    }
+
+    public function getRevisionKeyName(): string
+    {
+        return self::COL_REV_ID;
+    }
+
+    public function getRecordChangelogTableName(): string
+    {
+        return self::TABLE_CHANGELOG;
     }
 
     // endregion
