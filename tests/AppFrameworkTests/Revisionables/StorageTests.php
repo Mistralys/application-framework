@@ -35,73 +35,56 @@ final class StorageTests extends RevisionableTestCase
         $this->assertSame('freeform value', $this->storage->getKey($key));
     }
 
+    public function test_setLabel() : void
+    {
+        $this->assertKeyIsNotStructural(
+            'FooBar',
+            function () {
+                return $this->revisionable->getLabel();
+            },
+            function () {
+                $this->revisionable->setLabel('FooBar');
+            }
+        );
+    }
+
     public function test_setStructuralKey() : void
     {
-        $this->revisionable->makeFinalized();
-
-        $this->assertNotSame('FooBar', $this->revisionable->getStructuralKey());
-
-        $revision = $this->revisionable->getRevision();
-
-        $this->revisionable->startCurrentUserTransaction();
-
-            $this->assertFalse($this->revisionable->hasStructuralChanges());
-
-            $this->revisionable->setStructuralKey('FooBar');
-
-            $this->assertTrue($this->revisionable->hasStructuralChanges());
-
-        $this->revisionable->endTransaction();
-
-        $this->assertTrue($this->revisionable->isDraft());
-        $this->assertSame('FooBar', $this->revisionable->getStructuralKey());
-        $this->assertNotSame($revision, $this->revisionable->getRevision());
+        $this->assertKeyIsStructural(
+            'FooBar',
+            function () {
+                return $this->revisionable->getStructuralKey();
+            },
+            function () {
+                $this->revisionable->setStructuralKey('FooBar');
+            }
+        );
     }
 
     public function test_setStructuralDataKey() : void
     {
-        $this->revisionable->makeFinalized();
-
-        $this->assertEmpty($this->revisionable->getStructuralKey());
-
-        $revision = $this->revisionable->getRevision();
-
-        $this->revisionable->startCurrentUserTransaction();
-
-            $this->assertFalse($this->revisionable->hasStructuralChanges());
-
-            $this->revisionable->setStructuralDataKey('FooBar');
-
-            $this->assertTrue($this->revisionable->hasStructuralChanges());
-
-        $this->revisionable->endTransaction();
-
-        $this->assertTrue($this->revisionable->isDraft());
-        $this->assertSame('FooBar', $this->revisionable->getStructuralDataKey());
-        $this->assertNotSame($revision, $this->revisionable->getRevision());
+        $this->assertKeyIsStructural(
+            'FooBar',
+            function () {
+                return $this->revisionable->getStructuralDataKey();
+            },
+            function () {
+                $this->revisionable->setStructuralDataKey('FooBar');
+            }
+        );
     }
 
     public function test_setNonStructuralDataKey() : void
     {
-        $this->revisionable->makeFinalized();
-
-        $this->assertEmpty($this->revisionable->getNonStructuralDataKey());
-
-        $revision = $this->revisionable->getRevision();
-
-        $this->revisionable->startCurrentUserTransaction();
-
-            $this->assertFalse($this->revisionable->hasStructuralChanges());
-
-            $this->revisionable->setNonStructuralDataKey('FooBar');
-
-            $this->assertFalse($this->revisionable->hasStructuralChanges());
-
-        $this->revisionable->endTransaction();
-
-        $this->assertTrue($this->revisionable->isFinalized());
-        $this->assertSame('FooBar', $this->revisionable->getNonStructuralDataKey());
-        $this->assertNotSame($revision, $this->revisionable->getRevision());
+        $this->assertKeyIsNotStructural(
+            'FooBar',
+            function () {
+                return $this->revisionable->getNonStructuralDataKey();
+            },
+            function () {
+                $this->revisionable->setNonStructuralDataKey('FooBar');
+            }
+        );
     }
 
     // endregion
@@ -117,6 +100,54 @@ final class StorageTests extends RevisionableTestCase
 
         $this->revisionable = $this->createTestRevisionable();
         $this->storage = new RevisionableStorage($this->revisionable);
+    }
+
+    public function assertKeyIsStructural($expected, callable $getter, callable $setter) : void
+    {
+        $this->revisionable->makeFinalized();
+
+        $this->assertNotSame($expected, $getter());
+
+        $revision = $this->revisionable->getRevision();
+
+        $this->revisionable->startCurrentUserTransaction();
+
+        $this->assertFalse($this->revisionable->hasStructuralChanges());
+
+        $setter();
+
+        $this->assertSame($expected, $getter());
+        $this->assertTrue($this->revisionable->hasStructuralChanges());
+
+        $this->revisionable->endTransaction();
+
+        $this->assertTrue($this->revisionable->isDraft());
+        $this->assertSame($expected, $getter());
+        $this->assertNotSame($revision, $this->revisionable->getRevision());
+    }
+
+    public function assertKeyIsNotStructural($expected, callable $getter, callable $setter) : void
+    {
+        $this->revisionable->makeFinalized();
+
+        $this->assertNotSame($expected, $getter());
+
+        $revision = $this->revisionable->getRevision();
+
+        $this->revisionable->startCurrentUserTransaction();
+
+        $this->assertFalse($this->revisionable->hasStructuralChanges());
+
+        $setter();
+
+        $this->assertSame($expected, $getter());
+        $this->assertFalse($this->revisionable->hasStructuralChanges());
+
+        $this->revisionable->endTransaction();
+
+        $this->assertTrue($this->revisionable->isFinalized());
+        $this->assertSame($expected, $getter());
+        $this->assertNotSame($revision, $this->revisionable->getRevision());
     }
 
     // endregion
