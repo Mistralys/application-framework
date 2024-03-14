@@ -127,9 +127,9 @@ interface RevisionableStatelessInterface
 
     /**
      * Returns the currently selected revision number of the item.
-     * @return int
+     * @return int|NULL
      */
-    public function getRevision(): int;
+    public function getRevision(): ?int;
 
     /**
      * Returns the pretty revision number as relevant for humans.

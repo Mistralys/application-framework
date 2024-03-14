@@ -153,7 +153,7 @@ abstract class Application_RevisionableStateless
         return $this->revisions->getRevisions();
     }
     
-    public function getRevision() : int
+    public function getRevision() : ?int
     {
         return $this->revisions->getRevision();
     }
