@@ -18,6 +18,10 @@
 - FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
+- Revisionables: Modernized classes and strict typing.
+- Revisionables: Automated the saving of custom revision table keys.
+- Revisionables: Added an interface for the revisionable with state.
+- Revisionables: Added a trait to implement the typical state setup.
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)
@@ -34,6 +38,8 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 
 ### Breaking changes (M)
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
+- Revisionables: Renamed all `revdataXXX`-methods to make it easier to understand.
+- Revisionables: Renamed and namespaced interfaces.
 - Renderables: Added strict `string` return type for `_render()` methods.
 
 ### Deprecations
