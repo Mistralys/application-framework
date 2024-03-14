@@ -11,7 +11,10 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
     public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
 
-    public const DUMMY_ID = -1;
+    /**
+     * @deprecated Use {@see Application_RevisionableCollection::STUB_OBJECT_ID} instead.
+     */
+    public const DUMMY_ID = self::STUB_OBJECT_ID;
 
     public const COL_REV_DATE = 'date';
     public const COL_REV_LABEL = 'label';
@@ -19,6 +22,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public const COL_REV_COMMENTS = 'comments';
     public const COL_REV_AUTHOR = 'author';
     public const COL_REV_PRETTY_REVISION = 'pretty_revision';
+    public const STUB_OBJECT_ID = -9999;
 
     /**
     * @return string
@@ -243,7 +247,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
      */
     public function createDummyRecord() : Application_RevisionableCollection_DBRevisionable
     {
-        return $this->getByID(self::DUMMY_ID);
+        return $this->getByID(self::STUB_OBJECT_ID);
     }
     
    /**

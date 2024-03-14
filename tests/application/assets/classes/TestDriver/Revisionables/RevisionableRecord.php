@@ -171,6 +171,6 @@ class RevisionableRecord
 
     public static function createStubObject(): Application_Revisionable
     {
-        return new self(RevisionableCollection::getInstance(), Application_Revisionable::STUB_OBJECT_ID);
+        return new self(RevisionableCollection::getInstance(), Application_RevisionableCollection::STUB_OBJECT_ID);
     }
 }

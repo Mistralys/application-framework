@@ -49,7 +49,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
      * Selects the revisionable's current revision.
      * @return $this
      */
-    public function selectCurrentRevision() : self
+    public function selectCurrentRevision(): self
     {
         return $this->selectRevision($this->currentRevision);
     }
@@ -57,17 +57,18 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     /**
      * Whether this is a stub object instance.
      * @return boolean
+     * @deprecated Use {@see Application_Revisionable::isStub()} instead.
      */
     public function isDummy(): bool
     {
-        return $this->id === Application_RevisionableCollection::DUMMY_ID;
+        return $this->isStub();
     }
 
     /**
      * Retrieves the revisionable's collection instance.
      * @return Application_RevisionableCollection
      */
-    public function getCollection() : Application_RevisionableCollection
+    public function getCollection(): Application_RevisionableCollection
     {
         return $this->collection;
     }
@@ -219,12 +220,12 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         return $this;
     }
 
-    public function getChangelogTable() : string
+    public function getChangelogTable(): string
     {
         return $this->collection->getRecordChangelogTableName();
     }
 
-    public function getChangelogItemPrimary() : array
+    public function getChangelogItemPrimary(): array
     {
         return array(
             $this->collection->getPrimaryKeyName() => $this->getID(),
@@ -322,7 +323,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
         return (string)$this->revisions->getKey(Application_RevisionableCollection::COL_REV_LABEL);
     }
 
-    public function setLabel(string $label) : self
+    public function setLabel(string $label): self
     {
         $this->setRevisionKey(
             Application_RevisionableCollection::COL_REV_LABEL,

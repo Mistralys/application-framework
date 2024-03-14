@@ -33,8 +33,6 @@ abstract class Application_Revisionable
     public const ERROR_SAVING_WITHOUT_TRANSACTION = 149301;
     public const ERROR_INVALID_STATE_CHANGE = 149303;
     public const ERROR_NO_STATE_AVAILABLE = 149304;
-    public const ERROR_STUB_OBJECT_METHOD_NOT_IMPLEMENTED = 149305;
-    public const STUB_OBJECT_ID = -9999;
 
     protected Application_StateHandler $stateHandler;
 
@@ -713,6 +711,6 @@ abstract class Application_Revisionable
 
     public function isStub() : bool
     {
-        return $this->getID() === self::STUB_OBJECT_ID;
+        return $this->getID() === Application_RevisionableCollection::STUB_OBJECT_ID;
     }
 }
