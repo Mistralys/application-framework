@@ -305,7 +305,8 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         // retrieves revisionable-specific data in addition
         // to any required static column values.
         $data = $this->getColumns($customFields);
-        
+
+        $data[Application_RevisionableCollection::COL_REV_LABEL] = $this->revisionable->getLabel();
         $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $user->getID();
         $data[Application_RevisionableCollection::COL_REV_DATE] = date('Y-m-d H:i:s');
         $data[Application_RevisionableCollection::COL_REV_STATE] = '';
