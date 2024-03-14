@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
+use AppUtils\ConvertHelper_Exception;
+
 class Application_Changelog
 {
     public const ERROR_MISSING_CHANGELOG_KEY = 599601;
-    
     public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
     
-   /**
-    * @var Application_Changelogable_Interface
-    */
-    protected $owner;
+    protected Application_Changelogable_Interface $owner;
     
     public function __construct(Application_Changelogable_Interface $owner)
     {
@@ -20,16 +22,14 @@ class Application_Changelog
     * Retrieves all existing changelog entries.
     * @return Application_Changelog_Entry[]
     */
-    public function getEntries()
+    public function getEntries() : array
     {
-        $filters = $this->getFilters();
-        return $filters->getItemsObjects();
+        return $this->getFilters()->getItemsObjects();
     }
     
-    public function countEntries()
+    public function countEntries() : int
     {
-        $filters = $this->getFilters();
-        return $filters->countItems();
+        return $this->getFilters()->countItems();
     }
     
    /**
@@ -38,10 +38,8 @@ class Application_Changelog
     * @param integer $id
     * @return Application_Changelog_Entry
     */
-    public function getByID($id)
+    public function getByID(int $id) : Application_Changelog_Entry
     {
-        require_once 'Application/Changelog/Entry.php';
-        
         $entry = DBHelper::fetch(
             "SELECT
                 *
@@ -74,13 +72,13 @@ class Application_Changelog
             (string)$entry['changelog_data']
         );
     }
-    
+
    /**
     * Commits the current changelog queue of the owner
     * of this changelog, by inserting all entries into
     * the according changelog table.
     */
-    public function commitQueue()
+    public function commitQueue() : void
     {
         $entries = $this->owner->getChangelogQueue();
         if(empty($entries)) {
@@ -106,46 +104,31 @@ class Application_Changelog
             $this->commitQueueEntry($entry['type'], $entry['data']);
         }
     }
-    
-   /**
-    * Commits a single changelog entry. The data is automatically serialized
-    * using <code>json_encode</code>.
-    * 
-    * @param string $type
-    * @param mixed $data
-    * @return string
-    */
-    protected function commitQueueEntry($type, $data)
+
+    /**
+     * Commits a single changelog entry.
+     * The data is automatically serialized to JSON.
+     *
+     * @param string $type
+     * @param mixed $data
+     * @return string
+     * @throws Application_Exception
+     * @throws JSONConverterException
+     */
+    protected function commitQueueEntry(string $type, array $data) : string
     {
         $this->log(sprintf('Committing entry of type [%s].', $type));
         
-        $primary = $this->owner->getChangelogItemPrimary();
-        $record = $primary;
+        $record = $this->getPrimary();
         $record['changelog_author'] = Application::getUser()->getID();
         $record['changelog_type'] = $type;
         $record['changelog_date'] = date('Y-m-d H:i:s');
-        $record['changelog_data'] = json_encode($data);
+        $record['changelog_data'] = JSONConverter::var2json($data);
         
-        $fields = array();
-        $placeholders = array();
-        
-        foreach($record as $varName => $value) {
-            $fields[] = sprintf(
-                "`%s`=:%s",
-                $varName,
-                $varName
-            );
-            
-            $placeholders[':'.$varName] = $value; 
-        }
-        
-        $statement = 
-        "INSERT INTO
-                `".$this->owner->getChangelogTable()."`
-        SET 
-            ".implode(", ", $fields);
-        
-        return DBHelper::insert($statement, $placeholders);
+        return DBHelper::insertDynamic(
+            $this->owner->getChangelogTable(),
+            $record
+        );
     }
     
    /**
@@ -161,14 +144,14 @@ class Application_Changelog
         ));
     }
     
-    public function getTableName()
+    public function getTableName() : string
     {
         return $this->owner->getChangelogTable();
     }
     
     protected ?Application_Changelog_FilterCriteria $cachedFilters = null;
     
-    public function getFilters()
+    public function getFilters() : Application_Changelog_FilterCriteria
     {
         if(!isset($this->cachedFilters))
         {
@@ -178,12 +161,12 @@ class Application_Changelog
         return $this->cachedFilters;
     }
     
-    public function getOwner()
+    public function getOwner() : Application_Changelogable_Interface
     {
         return $this->owner;
     }
     
-    public function getPrimary()
+    public function getPrimary() : array
     {
         return $this->owner->getChangelogItemPrimary();
     }
@@ -194,7 +177,7 @@ class Application_Changelog
     * 
     * @return Application_User[]
     */
-    public function getAuthors()
+    public function getAuthors() : array
     {
         $query =
         "SELECT
@@ -222,19 +205,24 @@ class Application_Changelog
         
         $query .= " GROUP BY changelog_author";
         
-        $user_ids = DBHelper::fetchAllKey('changelog_author', $query, $placeholders);
+        $user_ids = DBHelper::fetchAllKeyInt('changelog_author', $query, $placeholders);
         $users = array();
+
         foreach($user_ids as $user_id) {
-            $user = Application::createUser((int)$user_id);
-            if($user instanceof Application_User) {
-                $users[] = $user;
+            if(Application::userIDExists($user_id)) {
+                $users[] = Application::createUser($user_id);
             }
         }
         
         return $users;
     }
-    
-    public function getTypes()
+
+    /**
+     * @return array<string,string> Type ID => Human-readable label pairs.
+     * @throws DBHelper_Exception
+     * @throws ConvertHelper_Exception
+     */
+    public function getTypes() : array
     {
         $query =
         "SELECT
@@ -273,7 +261,7 @@ class Application_Changelog
         return $items;
     }
     
-    public function getTypeLabel($type)
+    public function getTypeLabel(string $type) : string
     {
         return $this->owner->getChangelogTypeLabel($type);
     }

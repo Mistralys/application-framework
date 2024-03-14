@@ -1,8 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableChangelogTrait;
+
+/**
+ * @see RevisionableChangelogTrait
+ */
 interface Application_Changelogable_Interface
 {
-    public function getChangelogTable();
+    /**
+     * @return string
+     */
+    public function getChangelogTable() : string;
 
    /**
     * Gives the item the possibility to adjust the changelog
@@ -11,7 +21,7 @@ interface Application_Changelogable_Interface
     * 
     * @param Application_Changelog_FilterCriteria $filters
      */
-    public function configureChangelogFilters(Application_Changelog_FilterCriteria $filters);
+    public function configureChangelogFilters(Application_Changelog_FilterCriteria $filters) : void;
     
    /**
     * Retrieves the values for the item's primary key in the
@@ -20,10 +30,10 @@ interface Application_Changelogable_Interface
     * 
     * @return array
     */
-    public function getChangelogItemPrimary();
+    public function getChangelogItemPrimary() : array;
 
    /**
-    * Retrieves the human readable text to sum up the 
+    * Retrieves the human-readable text to sum up the
     * change made with this changelog entry.
     * 
     * @param string $type
@@ -33,7 +43,7 @@ interface Application_Changelogable_Interface
     public function getChangelogEntryText(string $type, array $data=array()) : string;
     
    /**
-    * Retrieves a human readable comparison of the before
+    * Retrieves a human-readable comparison of the before
     * and after values of the change. Must return an array
     * with two keys, or null if it is not applicable.
     * 
@@ -66,7 +76,7 @@ interface Application_Changelogable_Interface
     * 
     * @return array<int,array<string,mixed>>
     */
-    public function getChangelogQueue();
+    public function getChangelogQueue() : array;
 
     /**
      * @return string[]
@@ -80,13 +90,13 @@ interface Application_Changelogable_Interface
     * 
     * @return Application_User
     */
-    public function getChangelogOwner();
+    public function getChangelogOwner() : Application_User;
     
    /**
-    * Retrieves a human readable label for the specified changelog type.
+    * Retrieves a human-readable label for the specified changelog type.
     * 
     * @param string $type
     * @return string
     */
-    public function getChangelogTypeLabel($type);
+    public function getChangelogTypeLabel(string $type) : string;
 }
