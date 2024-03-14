@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
-use Application\Revisionable\StatusHandling\DefaultStateSetupTrait;
+use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
 use Application_Changelog_FilterCriteria;
 use Application_Revisionable;
 use Application_RevisionableCollection;
@@ -19,7 +19,7 @@ class RevisionableRecord
     extends Application_RevisionableCollection_DBRevisionable
     implements StandardStateSetupInterface
 {
-    use DefaultStateSetupTrait;
+    use StandardStateSetupTrait;
 
     public const DATA_KEY_NON_STRUCTURAL = 'non_structural_data_key';
     public const DATA_KEY_STRUCTURAL = 'structural_data_key';
