@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * @see Application_Traits_Simulatable
+ */
 interface Application_Interfaces_Simulatable
 {
    /**
     * @param bool $simulate
     * @return $this
     */
-    function setSimulation(bool $simulate=true);
+    public function setSimulation(bool $simulate=true) : self;
     
-    function isSimulationEnabled() : bool;
+    public function isSimulationEnabled() : bool;
 }
