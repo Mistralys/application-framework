@@ -101,7 +101,6 @@ class RevisionableRecord
     public function getCustomKeyValues() : array
     {
         return array(
-            Application_RevisionableCollection::COL_REV_LABEL => $this->getLabel(),
             RevisionableCollection::COL_REV_STRUCTURAL => $this->getStructuralKey(),
             RevisionableCollection::COL_REV_ALIAS => $this->getAlias()
         );
