@@ -164,32 +164,14 @@ abstract class Application_RevisionableCollection implements Application_Collect
     
     abstract public function getCurrentRevisionsTableName() : string;
 
-   /**
-    * @return string
-    */
-    public function getPrimaryKeyName() : string
-    {
-        return $this->primaryKeyName;
-    }
+    abstract public function getPrimaryKeyName() : string;
 
-   /**
-    * @return string
-    */
     abstract public function getTableName() : string;
 
-   /**
-    * @return string
-    */
     abstract public function getRevisionsTableName() : string;
 
-   /**
-    * @return string
-    */
     abstract public function getRevisionKeyName() : string;
 
-   /**
-    * @return string
-    */
     abstract public function getRecordChangelogTableName() : string;
 
    /**
