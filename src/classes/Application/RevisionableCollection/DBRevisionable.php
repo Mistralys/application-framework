@@ -13,6 +13,8 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const ERROR_INVALID_REVISION_STORAGE = 14702;
 
+    public const CHANGELOG_SET_LABEL = 'set_label';
+
     protected Application_RevisionableCollection $collection;
     protected int $id;
     protected int $currentRevision;
@@ -320,16 +322,16 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
 
     public function getLabel(): string
     {
-        return (string)$this->revisions->getKey(Application_RevisionableCollection::COL_REV_LABEL);
+        return (string)$this->getRevisionKey(Application_RevisionableCollection::COL_REV_LABEL);
     }
 
     public function setLabel(string $label): self
     {
-        $this->setRevisionKey(
+        $this->setCustomKey(
             Application_RevisionableCollection::COL_REV_LABEL,
             $label,
-            self::STORAGE_PART_CUSTOM_KEYS,
-            false
+            false,
+            self::CHANGELOG_SET_LABEL
         );
 
         return $this;
