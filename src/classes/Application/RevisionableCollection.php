@@ -101,7 +101,6 @@ abstract class Application_RevisionableCollection implements Application_Collect
     protected string $currentRevisionsTableName;
     protected string $primaryKeyName;
     protected string $changelogTableName;
-    protected string $exportRevisionsTableName;
     protected string $instanceID;
     
    /**
@@ -111,12 +110,11 @@ abstract class Application_RevisionableCollection implements Application_Collect
     {
         $this->recordTypeName = $this->getRecordTypeName();
         $this->tableName = $this->getRecordTableName();
-        $this->revisionsTableName = $this->tableName.'_revisions';
-        $this->currentRevisionsTableName = $this->tableName.'_current_revisions';
-        $this->primaryKeyName = $this->recordTypeName.'_id';
-        $this->revisionKeyName = $this->recordTypeName.'_revision';
-        $this->changelogTableName = $this->tableName.'_changelog';
-        $this->exportRevisionsTableName = $this->tableName.'_export_revisions';
+        $this->revisionsTableName = $this->getRevisionsTableName();
+        $this->currentRevisionsTableName = $this->getCurrentRevisionsTableName();
+        $this->primaryKeyName = $this->getPrimaryKeyName();
+        $this->revisionKeyName = $this->getRevisionKeyName();
+        $this->changelogTableName = $this->getRecordChangelogTableName();
         $this->instanceID = nextJSID();
         
         $this->initCustomArguments($customArguments);
@@ -150,14 +148,6 @@ abstract class Application_RevisionableCollection implements Application_Collect
         
     }
 
-    /**
-     * @return string
-     */
-    public function getRecordExportRevisionsTableName() : string
-    {
-        return $this->exportRevisionsTableName;
-    }
-    
     public function getInstanceID() : string
     {
         return $this->instanceID;
