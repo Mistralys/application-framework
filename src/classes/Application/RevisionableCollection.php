@@ -181,35 +181,23 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @return string
     */
-    public function getTableName() : string
-    {
-        return $this->tableName;
-    }
+    abstract public function getTableName() : string;
 
    /**
     * @return string
     */
-    public function getRevisionsTableName() : string
-    {
-        return $this->revisionsTableName;
-    }
-    
-   /**
-    * @return string
-    */
-    public function getRevisionKeyName() : string
-    {
-        return $this->revisionKeyName;
-    }
+    abstract public function getRevisionsTableName() : string;
 
    /**
     * @return string
     */
-    public function getRecordChangelogTableName() : string
-    {
-        return $this->changelogTableName;
-    }
-    
+    abstract public function getRevisionKeyName() : string;
+
+   /**
+    * @return string
+    */
+    abstract public function getRecordChangelogTableName() : string;
+
    /**
     * @return Application_RevisionableCollection_FilterCriteria
     */
