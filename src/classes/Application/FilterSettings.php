@@ -513,6 +513,23 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this;
     }
 
+    /**
+     * @param array<string,mixed>|null $settings
+     * @return $this
+     */
+    public function setSettings(?array $settings) : self
+    {
+        if($settings === null) {
+            return $this;
+        }
+
+        $this->loadSettings();
+
+        $this->settings = array_merge($this->settings, $settings);
+
+        return $this;
+    }
+
     public function setSettingEnabled(string $name, bool $enabled) : self
     {
         $this->requireSetting($name)->setEnabled($enabled);
