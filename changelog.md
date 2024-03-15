@@ -7,6 +7,7 @@
 - ButtonGroup: Added `addButtons()`.
 - TreeRenderer: Added the `TreeRenderer` UI helper class.
 - UI: Added `createTreeRenderer()`.
+- DataGrid: Added `BaseListBuilder` class to handle filtered lists.
 - Formables: Unified form element creation methods to use `UI_Form` methods.
 - Formables: Added the `$id` parameter to `addHiddenVar()`.
 - Forms: Moved some element creation methods to `UI_Form`.
