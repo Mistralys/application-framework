@@ -1722,9 +1722,6 @@ class UI_Form extends UI_Renderable
      */
     public function addSwitch(string $name, string $label, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
-        $element = $this->resolveContainer($container)->addElement(HTML_QuickForm2_Element_Switch::ELEMENT_TYPE, $name);
-        $element->setLabel($label);
-
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_Switch::class,
             $this->resolveContainer($container)->addElement('switch', $name)
