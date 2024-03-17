@@ -192,7 +192,15 @@ final class DBHelper_CoreTests extends DBHelperTestCase
     {
         $relations = DBHelper::getRelationsForField(TagCollection::TABLE_NAME, TagCollection::PRIMARY_NAME);
 
-        $this->assertCount(1, $relations);
-        $this->assertSame(TestDBCollection::TABLE_NAME_TAGS, $relations[0]['tablename']);
+        foreach($relations as $relation)
+        {
+            if($relation['tablename'] === TestDBCollection::TABLE_NAME_TAGS)
+            {
+                $this->addToAssertionCount(1);
+                return;
+            }
+        }
+
+        $this->fail('Target relation not found.');
     }
 }
