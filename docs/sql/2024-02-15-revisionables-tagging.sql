@@ -52,6 +52,7 @@ CREATE TABLE `revisionables_changelog` (
     `changelog_data` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `revisionables_current_revisions`
@@ -79,6 +80,19 @@ CREATE TABLE `revisionables_revisions` (
     `author` int(11) UNSIGNED NOT NULL,
     `comments` text NOT NULL,
     `structural` varchar(400) NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `revisionables_revisions_data`
+--
+
+CREATE TABLE `revisionables_revisions_data` (
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `revisionable_revision` int(11) UNSIGNED NOT NULL,
+    `data_key` varchar(300) NOT NULL,
+    `data_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -179,6 +193,15 @@ ALTER TABLE `revisionables_revisions`
   ADD KEY `pretty_revision` (`pretty_revision`);
 
 --
+-- Indexes for table `revisionables_revisions_data`
+--
+ALTER TABLE `revisionables_revisions_data`
+  ADD PRIMARY KEY (`revisionable_id`,`revisionable_revision`,`data_key`),
+  ADD KEY `revisionable_id` (`revisionable_id`),
+  ADD KEY `revision` (`revisionable_revision`),
+  ADD KEY `data_key` (`data_key`);
+
+--
 -- Indexes for table `tags`
 --
 ALTER TABLE `tags`
@@ -269,6 +292,13 @@ ALTER TABLE `revisionables_current_revisions`
 ALTER TABLE `revisionables_revisions`
   ADD CONSTRAINT `revisionables_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `revisionables_revisions_ibfk_2` FOREIGN KEY (`author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `revisionables_revisions_data`
+--
+ALTER TABLE `revisionables_revisions_data`
+  ADD CONSTRAINT `revisionables_revisions_data_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `revisionables_revisions_data_ibfk_2` FOREIGN KEY (`revisionable_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tags_translations`
