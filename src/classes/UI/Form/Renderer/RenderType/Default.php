@@ -45,7 +45,7 @@ class UI_Form_Renderer_RenderType_Default extends UI_Form_Renderer_RenderType im
         $callbacks = $this->renderDef->getElement()->getRuntimeProperty('render-callbacks', array());
         foreach($callbacks as $callback)
         {
-            call_user_func($callback, $renderer);
+            $callback($renderer);
         }
         
         return sprintf(
