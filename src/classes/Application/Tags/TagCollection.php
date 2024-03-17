@@ -11,23 +11,28 @@ namespace Application\Tags;
 use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
 use Application_Admin_ScreenInterface;
+use Application_Exception_DisposableDisposed;
 use Application_Formable;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use DBHelper;
 use DBHelper_BaseCollection;
+use DBHelper_Exception;
 
 /**
  * @package Application
  * @subpackage Tags
  *
- * @method TagRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  * @method TagCriteria getFilterCriteria()
  * @method TagFilterSettings getFilterSettings()
  * @method TagRecord getByID(int $record_id)
  */
 class TagCollection extends DBHelper_BaseCollection
 {
+    public const ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING = 152201;
+
     public const TABLE_NAME = 'tags';
     public const TABLE_REGISTRY = 'tags_registry';
     public const PRIMARY_NAME = 'tag_id';
@@ -96,6 +101,50 @@ class TagCollection extends DBHelper_BaseCollection
     }
 
     // endregion
+
+    /**
+     * @param array<string,mixed> $data
+     * @param bool $silent
+     * @param array<string,mixed> $options
+     * @return TagRecord
+     *
+     * @throws BaseClassHelperException
+     * @throws Application_Exception_DisposableDisposed
+     * @throws DBHelper_Exception
+     */
+    public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()) : TagRecord
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            TagRecord::class,
+            parent::createNewRecord($this->injectSortingDefault($data), $silent, $options)
+        );
+    }
+
+    private function injectSortingDefault(array $data) : array
+    {
+        $root = empty($data[self::COL_PARENT_TAG_ID]);
+
+        if($root) {
+            $sortDefault = TagSortTypes::getInstance()->getDefaultForRootID();
+        } else {
+            $sortDefault = TagSortTypes::getInstance()->getDefaultID();
+        }
+
+        if(empty($data[self::COL_SORT_TYPE])) {
+            $data[self::COL_SORT_TYPE] = $sortDefault;
+            return $data;
+        }
+
+        if($data[self::COL_SORT_TYPE] !== TagSortTypes::SORT_INHERIT) {
+            return $data;
+        }
+
+        throw new TaggingException(
+            'Cannot create a root tag set to inherit sorting options.',
+            '',
+            self::ERROR_CANNOT_CREATE_ROOT_WITH_INHERIT_SORTING
+        );
+    }
 
     public function createNewTag(string $name, ?TagRecord $parent=null) : TagRecord
     {

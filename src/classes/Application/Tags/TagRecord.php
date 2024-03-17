@@ -27,8 +27,57 @@ use UI\Tree\TreeRenderer;
  */
 class TagRecord extends DBHelper_BaseRecord
 {
+    public const ERROR_CANNOT_INHERIT_SORTING_WITHOUT_PARENT = 152101;
+
+    public function setSortType(TagSortType $sortType) : self
+    {
+        $this->setRecordKey(TagCollection::COL_SORT_TYPE, $sortType->getID());
+        return $this;
+    }
+
     protected function init() : void
     {
+    }
+
+    // region Utility methods
+
+    public function getSortTypeID() : string
+    {
+        return $this->getRecordStringKey(TagCollection::COL_SORT_TYPE);
+    }
+
+    public function getSortType() : TagSortType
+    {
+        $type = TagSortTypes::getInstance()->getByID($this->getSortTypeID());
+
+        if(!$type->isInherited()) {
+            return $type;
+        }
+
+        $parent = $this->getParentTag();
+        if($parent !== null) {
+            return $parent->getSortType();
+        }
+
+        throw new TaggingException(
+            'A tag without parent cannot inherit sorting settings.',
+            sprintf(
+                'Tag [%s] is set to inherit sorting from its parent.',
+                $this->getIdentification()
+            ),
+            self::ERROR_CANNOT_INHERIT_SORTING_WITHOUT_PARENT
+        );
+    }
+
+    public function setWeight(int $weight) : self
+    {
+        $this->setRecordKey(TagCollection::COL_WEIGHT, $weight);
+        return $this;
+    }
+
+    public function getWeight() : int
+    {
+        return $this->getRecordIntKey(TagCollection::COL_WEIGHT);
     }
 
     /**
@@ -41,9 +90,12 @@ class TagRecord extends DBHelper_BaseRecord
 
     public function getSubTagCriteria() : TagCriteria
     {
+        $sortType = $this->getSortType();
+
         return AppFactory::createTags()
             ->getFilterCriteria()
-            ->selectParentTag($this);
+            ->selectParentTag($this)
+            ->setOrderBy($sortType->getSortColumn(), $sortType->getSortDirection());
     }
 
     public function hasSubTags() : bool
@@ -54,6 +106,8 @@ class TagRecord extends DBHelper_BaseRecord
     /**
      * Fetches all sub tags recursively, in a flat list
      * sorted alphabetically.
+     *
+     * WARNING: This does NOT use the tag's sorting settings.
      *
      * @return TagRecord[]
      */
@@ -146,9 +200,28 @@ class TagRecord extends DBHelper_BaseRecord
         return null;
     }
 
+    public function getRootTag() : TagRecord
+    {
+        $parentTag = $this->getParentTag();
+        if($parentTag === null) {
+            return $this;
+        }
+
+        return $parentTag->getRootTag();
+    }
+
+    public function isRootTag() : bool
+    {
+        return $this->getParentTag() === null;
+    }
+
+    // endregion
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
     }
+
+    // region Admin URLs
 
     public function getAdminURL(array $params=array()) : string
     {
@@ -178,21 +251,6 @@ class TagRecord extends DBHelper_BaseRecord
             ->getAdminCreateSubTagURL($this, $params);
     }
 
-    public function getRootTag() : TagRecord
-    {
-        $parentTag = $this->getParentTag();
-        if($parentTag === null) {
-            return $this;
-        }
-
-        return $parentTag->getRootTag();
-    }
-
-    public function isRootTag() : bool
-    {
-        return $this->getParentTag() === null;
-    }
-
     public function getAdminDeleteURL(?int $tagID=null, array $params=array()) : string
     {
         if($tagID === null) {
@@ -207,6 +265,8 @@ class TagRecord extends DBHelper_BaseRecord
 
         return $this->getAdminTagTreeURL($params);
     }
+
+    // endregion
 
     public function createTreeRenderer() : TreeRenderer
     {
@@ -230,31 +290,6 @@ class TagRecord extends DBHelper_BaseRecord
         }
 
         return $node;
-    }
-
-    public function getSortTypeID() : string
-    {
-        return $this->getRecordStringKey(TagCollection::COL_SORT_TYPE);
-    }
-
-    public function getSortType() : TagSortType
-    {
-        return TagSortTypes::getInstance()->getByID($this->getSortTypeID());
-    }
-
-    public function getRecordKey($name, $default = null)
-    {
-        $value = parent::getRecordKey($name, $default);
-
-        if($name === TagCollection::COL_SORT_TYPE && empty($value)) {
-            if($this->isRootTag()) {
-                return TagSortTypes::getInstance()->getDefaultForRootID();
-            }
-
-            return TagSortTypes::getInstance()->getDefaultID();
-        }
-
-        return $value;
     }
 
     public function getFormValues(): array

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use AppUtils\Collections\BaseStringPrimaryCollection;
+use DBHelper;
 
 /**
  * @package Application
@@ -16,12 +17,14 @@ use AppUtils\Collections\BaseStringPrimaryCollection;
  */
 class TagSortTypes extends BaseStringPrimaryCollection
 {
-    public const SORT_ALPHA = 'alpha';
-    public const SORT_WEIGHT = 'weight';
+    public const SORT_ALPHA_ASC = 'alpha_asc';
+    public const SORT_ALPHA_DESC = 'alpha_desc';
+    public const SORT_WEIGHT_ASC = 'weight_asc';
+    public const SORT_WEIGHT_DESC = 'weight_desc';
     public const SORT_INHERIT = 'inherit';
 
     public const SORT_DEFAULT = self::SORT_INHERIT;
-    public const SORT_DEFAULT_ROOT = self::SORT_ALPHA;
+    public const SORT_DEFAULT_ROOT = self::SORT_ALPHA_ASC;
 
     public static ?TagSortTypes $instance = null;
 
@@ -38,11 +41,36 @@ class TagSortTypes extends BaseStringPrimaryCollection
         return self::SORT_DEFAULT;
     }
 
+    public function getWeightASC() : TagSortType
+    {
+        return $this->getByID(self::SORT_WEIGHT_ASC);
+    }
+
+    public function getWeightDESC() : TagSortType
+    {
+        return $this->getByID(self::SORT_WEIGHT_DESC);
+    }
+
+    public function getAlphaASC() : TagSortType
+    {
+        return $this->getByID(self::SORT_ALPHA_ASC);
+    }
+
+    public function getAlphaDESC() : TagSortType
+    {
+        return $this->getByID(self::SORT_ALPHA_DESC);
+    }
+
     protected function registerItems(): void
     {
-        $this->registerItem(new TagSortType(self::SORT_ALPHA, t('Alphabetical')));
-        $this->registerItem(new TagSortType(self::SORT_WEIGHT, t('By weight')));
-        $this->registerItem(new TagSortType(self::SORT_INHERIT, t('Inherit from parent')));
+        $colLabel = DBHelper::escapeTableColumn(TagCollection::TABLE_NAME, TagCollection::COL_LABEL);
+        $colWeight = DBHelper::escapeTableColumn(TagCollection::TABLE_NAME, TagCollection::COL_WEIGHT);
+
+        $this->registerItem(new TagSortType(self::SORT_ALPHA_ASC, $colLabel, t('Alphabetical, ascending')));
+        $this->registerItem(new TagSortType(self::SORT_ALPHA_DESC, $colLabel, t('Alphabetical, descending'), false));
+        $this->registerItem(new TagSortType(self::SORT_WEIGHT_ASC, $colWeight, t('By weight, ascending')));
+        $this->registerItem(new TagSortType(self::SORT_WEIGHT_DESC, $colWeight, t('By weight, descending'), false));
+        $this->registerItem(new TagSortType(self::SORT_INHERIT, null, t('Inherit from parent')));
     }
 
     public function getDefaultForRootID() : string
