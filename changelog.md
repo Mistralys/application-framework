@@ -13,6 +13,7 @@
 - Forms: Moved some element creation methods to `UI_Form`.
 - Forms: Code modernization and quality improvements.
 - Forms: Modernized the `UI_Form` class, now with strict typing.
+- Forms: Fixed switch elements appearing in duplicate.
 - Formables: Added some interface methods.
 - RevisionCopy: `getParts()` can now return callables.
 - FilterSettings: Settings are now class-based.
