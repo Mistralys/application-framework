@@ -549,7 +549,7 @@ class DBHelper
         {
             $entries = array();
             foreach($columnNames as $name) {
-                $entries[] = '`'.$name.'`';
+                $entries[] = self::escapeName($name);
             } 
             
             $select = implode(', ', $entries);
@@ -822,7 +822,7 @@ class DBHelper
      */
     public static function truncate(string $tableName) : bool
     {
-        $query = 'TRUNCATE TABLE `' . $tableName . '`';
+        $query = 'TRUNCATE TABLE ' . self::escapeName($tableName);
         return self::executeAndRegister(DBHelper_OperationTypes::TYPE_TRUNCATE, $query);
     }
 
@@ -1286,7 +1286,7 @@ class DBHelper
                 );
             }
             
-            $whereTokens[] = "`$fieldName`=:$fieldName";
+            $whereTokens[] = self::escapeName($fieldName).'=:'.$fieldName;
             $checkVariables[':' . $fieldName] = $data[$fieldName];
         }
         $where = implode(" AND ", $whereTokens);
@@ -1295,7 +1295,7 @@ class DBHelper
         $setTokens = array(); // set statements for the update or insert statements
         foreach ($data as $fieldName => $value) {
             $variables[':' . $fieldName] = $value;
-            $setTokens[] = "`$fieldName`=:$fieldName";
+            $setTokens[] = self::escapeName($fieldName).'=:'.$fieldName;
         }
         $set = implode(', ', $setTokens);
 
@@ -2144,5 +2144,19 @@ SQL;
         self::$fieldRelations[$cacheKey] = $result;
 
         return $result;
+    }
+
+    public static function escapeName(string $name) : string
+    {
+        if(strpos($name, '`') !== false) {
+            return $name;
+        }
+
+        return '`'.$name.'`';
+    }
+
+    public static function escapeTableColumn(string $table, string $name) : string
+    {
+        return self::escapeName($table).'.'.self::escapeName($name);
     }
 }
