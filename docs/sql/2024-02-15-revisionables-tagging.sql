@@ -47,6 +47,15 @@ CREATE TABLE `revisionables_changelog` (
     `revisionable_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Table structure for table `revisionables_current_revisions`
+--
+
+CREATE TABLE `revisionables_current_revisions` (
+    `revisionable_id` int(11) UNSIGNED NOT NULL,
+    `current_revision` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- --------------------------------------------------------
 
 --
@@ -75,7 +84,9 @@ CREATE TABLE `revisionables_revisions` (
 CREATE TABLE `tags` (
     `tag_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
-    `parent_tag_id` int(11) DEFAULT NULL
+    `parent_tag_id` int(11) DEFAULT NULL,
+    `sort_type` varchar(60) NOT NULL,
+    `weight` INT(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -138,6 +149,13 @@ ALTER TABLE `revisionables_changelog`
   ADD KEY `revisionable_id` (`revisionable_id`);
 
 --
+-- Indexes for table `revisionables_current_revisions`
+--
+ALTER TABLE `revisionables_current_revisions`
+  ADD PRIMARY KEY (`revisionable_id`),
+  ADD KEY `current_revision` (`current_revision`);
+
+--
 -- Indexes for table `revisionables_revisions`
 --
 ALTER TABLE `revisionables_revisions`
@@ -156,7 +174,9 @@ ALTER TABLE `revisionables_revisions`
 ALTER TABLE `tags`
   ADD PRIMARY KEY (`tag_id`),
   ADD KEY `label` (`label`),
-  ADD KEY `parent_tag_id` (`parent_tag_id`);
+  ADD KEY `parent_tag_id` (`parent_tag_id`),
+  ADD KEY `sort_type` (`sort_type`),
+  ADD KEY `weight` (`weight`);
 
 --
 -- Indexes for table `tags_registry`
@@ -219,6 +239,12 @@ ALTER TABLE `tags`
 ALTER TABLE `media_tags`
   ADD CONSTRAINT `media_tags_ibfk_1` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `media_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- Constraints for table `revisionables_current_revisions`
+--
+ALTER TABLE `revisionables_current_revisions`
+  ADD CONSTRAINT `revisionables_current_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `revisionables_current_revisions_ibfk_2` FOREIGN KEY (`current_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `revisionables_revisions`
