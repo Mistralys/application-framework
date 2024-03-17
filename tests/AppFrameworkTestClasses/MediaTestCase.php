@@ -13,6 +13,7 @@ use Application_Media_Document_Image;
 use Application_Uploads;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
+use DBHelper;
 
 abstract class MediaTestCase extends ApplicationTestCase
 {
@@ -27,6 +28,8 @@ abstract class MediaTestCase extends ApplicationTestCase
         $this->media = AppFactory::createMedia();
         $this->uploads = AppFactory::createUploads();
         $this->storageFolder = $this->getMediaStoragePath();
+
+        DBHelper::deleteRecords(Application_Media::TABLE_NAME);
 
         $this->startTransaction();
     }
