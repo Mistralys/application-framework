@@ -24,6 +24,8 @@
 - Revisionables: Automated the saving of custom revision table keys.
 - Revisionables: Added an interface for the revisionable with state.
 - Revisionables: Added a trait to implement the typical state setup.
+- Revisionables: Added `RevisionableDependentInterface`.
+- Revisionables: Added `requireRevisionableMatch()` and `requireRevisionMatch()`. 
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)
