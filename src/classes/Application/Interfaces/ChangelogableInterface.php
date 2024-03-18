@@ -41,15 +41,15 @@ interface ChangelogableInterface
      * change made with this changelog entry.
      *
      * @param string $type
-     * @param array<string,mixed> $data
+     * @param array<mixed> $data
      * @return string
      */
     public function getChangelogEntryText(string $type, array $data = array()): string;
 
     /**
      * Retrieves a human-readable comparison of the before
-     * and after values of the change. Must return an array
-     * with two keys, or null if it is not applicable.
+     * and after values. Must return an array with two keys,
+     * or null if it is not applicable.
      *
      * <pre>
      * array(
@@ -59,8 +59,8 @@ interface ChangelogableInterface
      * </pre>
      *
      * @param string $type
-     * @param array<string,mixed> $data
-     * @return array|null
+     * @param array<mixed> $data
+     * @return array{before:string,after:string}|null
      */
     public function getChangelogEntryDiff(string $type, array $data = array()): ?array;
 
