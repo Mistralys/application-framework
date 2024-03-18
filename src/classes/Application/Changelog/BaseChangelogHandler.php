@@ -52,19 +52,19 @@ abstract class BaseChangelogHandler implements ChangelogHandlerInterface
 
     public static function getTypeLabels() : array
     {
-        if(isset(self::$changelogTypeLabels)) {
-            return self::$changelogTypeLabels;
+        if(isset(static::$changelogTypeLabels)) {
+            return static::$changelogTypeLabels;
         }
 
         $callback = array(static::class, '_getTypeLabels');
 
-        self::$changelogTypeLabels = $callback();
+        static::$changelogTypeLabels = $callback();
 
-        return self::$changelogTypeLabels;
+        return static::$changelogTypeLabels;
     }
 
     /**
      * @return array<string,string> Changelog type => Human-readable label pairs.
      */
-    abstract protected function _getTypeLabels() : array;
+    abstract protected static function _getTypeLabels() : array;
 }
