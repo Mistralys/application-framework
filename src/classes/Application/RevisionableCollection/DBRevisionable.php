@@ -6,10 +6,9 @@ use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\ConvertHelper\JSONConverter;
-use TestDriver\Revisionables\RevisionableCollection;
 
-abstract class Application_RevisionableCollection_DBRevisionable extends Application_Revisionable
+abstract class Application_RevisionableCollection_DBRevisionable
+    extends Application_Revisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
 
