@@ -8,9 +8,11 @@ use Application\Interfaces\ChangelogableInterface;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
+use TestDriver\Revisionables\RevisionableCollection;
 
 interface RevisionableStatelessInterface
     extends
+    RevisionDependentInterface,
     Application_LockableRecord_Interface,
     Application_Interfaces_Disposable,
     Application_Interfaces_Simulatable,
@@ -126,12 +128,6 @@ interface RevisionableStatelessInterface
     public function endTransaction(): bool;
 
     /**
-     * Returns the currently selected revision number of the item.
-     * @return int|NULL
-     */
-    public function getRevision(): ?int;
-
-    /**
      * Returns the pretty revision number as relevant for humans.
      * @return int
      */
@@ -164,6 +160,13 @@ interface RevisionableStatelessInterface
     public function getRevisionableTypeName(): string;
 
     /**
+     * Retrieves key => value pairs of all non-standard revision fields
+     * that must be stored in the revision history.
+     *
+     * In practice, this means all fields beyond the automatically
+     * handled ones like {@see RevisionableCollection::COL_REV_AUTHOR}
+     * or {@see RevisionableCollection::COL_REV_COMMENTS}.
+     *
      * @return array<string, mixed>
      */
     public function getCustomKeyValues(): array;

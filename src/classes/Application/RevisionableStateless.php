@@ -157,7 +157,12 @@ abstract class Application_RevisionableStateless
     {
         return $this->revisions->getRevision();
     }
-    
+
+    public function getRevisionable() : RevisionableStatelessInterface
+    {
+        return $this;
+    }
+
    /**
     * Creates a filter criteria instance for accessing the
     * revisionable's available revisions list.
