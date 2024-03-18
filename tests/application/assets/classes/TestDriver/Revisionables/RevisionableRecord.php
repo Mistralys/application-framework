@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use TestDriver\Revisionables\ChangelogHandler;
+use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
-use Application_Changelog_FilterCriteria;
+use Application\Traits\ChangelogViaHandlerTrait;
 use Application_Revisionable;
 use Application_RevisionableCollection;
 use Application_RevisionableCollection_DBRevisionable;
@@ -17,14 +19,15 @@ use TestDriver\Revisionables\Storage\RevisionableStorage;
  */
 class RevisionableRecord
     extends Application_RevisionableCollection_DBRevisionable
-    implements StandardStateSetupInterface
+    implements
+    StandardStateSetupInterface,
+    ChangeLogViaHandlerInterface
 {
     use StandardStateSetupTrait;
+    use ChangelogViaHandlerTrait;
 
     public const DATA_KEY_NON_STRUCTURAL = 'non_structural_data_key';
     public const DATA_KEY_STRUCTURAL = 'structural_data_key';
-
-    public const CHANGELOG_SET_ALIAS = 'set_alias';
 
 
     public function setAlias(string $alias) : self
@@ -33,7 +36,7 @@ class RevisionableRecord
             RevisionableCollection::COL_REV_ALIAS,
             $alias,
             true,
-            self::CHANGELOG_SET_ALIAS
+            ChangelogHandler::CHANGELOG_SET_ALIAS
         );
 
         return $this;
@@ -149,23 +152,9 @@ class RevisionableRecord
 
     // endregion
 
-    public function configureChangelogFilters(Application_Changelog_FilterCriteria $filters) : void
+    public function getChangelogHandlerClass(): string
     {
-    }
-
-    public function getChangelogEntryText(string $type, array $data = array()): string
-    {
-        return '';
-    }
-
-    public function getChangelogEntryDiff(string $type, array $data = array()): ?array
-    {
-        return null;
-    }
-
-    public function getChangelogTypeLabel(string $type): string
-    {
-        return $type;
+        return ChangelogHandler::class;
     }
 
     public static function createStubObject(): Application_Revisionable
