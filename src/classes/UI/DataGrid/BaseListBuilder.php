@@ -6,11 +6,24 @@
 
 declare(strict_types=1);
 
+namespace UI\DataGrid;
+
 use Application\Driver\DriverException;
+use Application_Admin_ScreenInterface;
+use Application_Driver;
+use Application_Exception;
+use Application_FilterCriteria;
+use Application_FilterSettings;
+use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
+use UI;
+use UI_DataGrid;
+use UI_DataGrid_Exception;
+use UI_Exception;
+use UI_Page_Sidebar;
 
 /**
  * Helper class that is used to create a list of records
@@ -28,33 +41,43 @@ abstract class BaseListBuilder implements OptionableInterface
 
     // region Z - Abstract methods
 
-    abstract protected function createFilterCriteria() : Application_FilterCriteria;
-    abstract protected function configureFilters() : void;
-    abstract public function getFullViewTitle() : string;
-    abstract public function getEmptyMessage() : string;
-    abstract public function getRecordTypeLabelSingular() : string;
-    abstract public function getRecordTypeLabelPlural() : string;
-    abstract protected function configureColumns(UI_DataGrid $grid) : void;
-    abstract public function getPrimaryColumnName() : string;
-    abstract protected function configureActions(UI_DataGrid $grid) : void;
-    abstract protected function resolveRecord(array $itemData) : object;
-    abstract protected function createFilterSettings() : Application_FilterSettings;
-    abstract protected function preRender() : void;
+    abstract protected function createFilterCriteria(): Application_FilterCriteria;
+
+    abstract protected function configureFilters(): void;
+
+    abstract public function getFullViewTitle(): string;
+
+    abstract public function getEmptyMessage(): string;
+
+    abstract public function getRecordTypeLabelSingular(): string;
+
+    abstract public function getRecordTypeLabelPlural(): string;
+
+    abstract protected function configureColumns(UI_DataGrid $grid): void;
+
+    abstract public function getPrimaryColumnName(): string;
+
+    abstract protected function configureActions(UI_DataGrid $grid): void;
+
+    abstract protected function resolveRecord(array $itemData): object;
+
+    abstract protected function createFilterSettings(): Application_FilterSettings;
+
+    abstract protected function preRender(): void;
 
     /**
      * @param object $record
      * @return array<string,mixed>
      */
-    abstract protected function collectEntry(object $record) : array;
-    
+    abstract protected function collectEntry(object $record): array;
+
     // endregion
 
     // region A - Utility methods
 
-    public function getDataGrid() : UI_DataGrid
+    public function getDataGrid(): UI_DataGrid
     {
-        if (isset($this->dataGrid))
-        {
+        if (isset($this->dataGrid)) {
             return $this->dataGrid;
         }
 
@@ -66,8 +89,7 @@ abstract class BaseListBuilder implements OptionableInterface
 
         $grid->setEmptyMessage($this->getEmptyMessage());
 
-        if (isset($this->filterSettings) && $this->filterSettings->isActive())
-        {
+        if (isset($this->filterSettings) && $this->filterSettings->isActive()) {
             $grid->setEmptyMessage(t('No %1$s found matching the selected filter criteria.', $this->getRecordTypeLabelPlural()));
         }
 
@@ -79,14 +101,14 @@ abstract class BaseListBuilder implements OptionableInterface
         return $grid;
     }
 
-    public function isColumnEnabled(string $colName) : bool
+    public function isColumnEnabled(string $colName): bool
     {
         return !in_array($colName, $this->hiddenColumns, true);
     }
 
-    public function disableColumn(string $colName) : BaseListBuilder
+    public function disableColumn(string $colName): BaseListBuilder
     {
-        if(!in_array($colName, $this->hiddenColumns, true)) {
+        if (!in_array($colName, $this->hiddenColumns, true)) {
             $this->hiddenColumns[] = $colName;
         }
 
@@ -97,9 +119,9 @@ abstract class BaseListBuilder implements OptionableInterface
      * @return Application_FilterCriteria
      * @throws Application_Exception
      */
-    public function getFilterCriteria() : Application_FilterCriteria
+    public function getFilterCriteria(): Application_FilterCriteria
     {
-        if(isset($this->filters)) {
+        if (isset($this->filters)) {
             return $this->filters;
         }
 
@@ -119,13 +141,13 @@ abstract class BaseListBuilder implements OptionableInterface
      * @throws UI_Exception
      * @throws DriverException
      */
-    public function getFilterSettings(?array $settingValues=null) : ?Application_FilterSettings
+    public function getFilterSettings(?array $settingValues = null): ?Application_FilterSettings
     {
-        if(!$this->hasRecords) {
+        if (!$this->hasRecords) {
             return null;
         }
 
-        if(!isset($this->filterSettings)) {
+        if (!isset($this->filterSettings)) {
             $this->filterSettings = $this->createFilterSettings()
                 ->setID($this->listID)
                 ->setSettings($settingValues);
@@ -134,32 +156,30 @@ abstract class BaseListBuilder implements OptionableInterface
         return $this->filterSettings;
     }
 
-    public function getFilteredCriteria() : Application_FilterCriteria
+    public function getFilteredCriteria(): Application_FilterCriteria
     {
         $filters = $this->getFilterCriteria();
         $settings = $this->getFilterSettings();
 
-        if($settings)
-        {
+        if ($settings) {
             $settings->configureFilters($filters);
         }
 
         return $filters;
     }
 
-    public function debug(bool $enabled=true) : BaseListBuilder
+    public function debug(bool $enabled = true): BaseListBuilder
     {
         $this->debug = $enabled;
 
-        if(isset($this->filters))
-        {
+        if (isset($this->filters)) {
             $this->filters->debugQuery($enabled);
         }
 
         return $this;
     }
 
-    public function enableAdvancedMode(bool $enabled) : self
+    public function enableAdvancedMode(bool $enabled): self
     {
         $this->advancedMode = $enabled;
         return $this;
@@ -169,9 +189,9 @@ abstract class BaseListBuilder implements OptionableInterface
      * @param array<string,string> $vars
      * @return $this
      */
-    public function addHiddenVars(array $vars) : BaseListBuilder
+    public function addHiddenVars(array $vars): BaseListBuilder
     {
-        foreach($vars as $name => $value) {
+        foreach ($vars as $name => $value) {
             $this->addHiddenVar($name, $value);
         }
 
@@ -183,19 +203,19 @@ abstract class BaseListBuilder implements OptionableInterface
      * @param string|int|float $value
      * @return $this
      */
-    public function addHiddenVar(string $name, $value) : BaseListBuilder
+    public function addHiddenVar(string $name, $value): BaseListBuilder
     {
         $this->hiddenVars[$name] = (string)$value;
         return $this;
     }
 
-    public function disableEntryActions() : BaseListBuilder
+    public function disableEntryActions(): BaseListBuilder
     {
         $this->setOption('disable-entry-actions', true);
         return $this;
     }
 
-    public function disableMultiActions() : BaseListBuilder
+    public function disableMultiActions(): BaseListBuilder
     {
         $this->setOption('disable-multi-actions', true);
         return $this;
@@ -227,7 +247,7 @@ abstract class BaseListBuilder implements OptionableInterface
     protected array $hiddenVars = array();
 
 
-    public function __construct(Application_Admin_ScreenInterface $screen, string $listID='')
+    public function __construct(Application_Admin_ScreenInterface $screen, string $listID = '')
     {
         $this->screen = $screen;
         $this->ui = $screen->getRenderer()->getUI();
@@ -244,7 +264,7 @@ abstract class BaseListBuilder implements OptionableInterface
         );
     }
 
-    public function render() : string
+    public function render(): string
     {
         $grid = $this->getDataGrid();
 
@@ -253,9 +273,9 @@ abstract class BaseListBuilder implements OptionableInterface
         return $grid->render($this->collectEntries());
     }
 
-    protected function configureDataGridActions() : void
+    protected function configureDataGridActions(): void
     {
-        if($this->getBoolOption('disable-multi-actions')) {
+        if ($this->getBoolOption('disable-multi-actions')) {
             return;
         }
 
@@ -266,7 +286,7 @@ abstract class BaseListBuilder implements OptionableInterface
         $this->configureActions($grid);
     }
 
-    protected function collectEntries() : array
+    protected function collectEntries(): array
     {
         $settings = $this->getFilterSettings();
 
@@ -286,8 +306,7 @@ abstract class BaseListBuilder implements OptionableInterface
         $items = $filters->getItems();
         $entries = array();
 
-        foreach ($items as $item)
-        {
+        foreach ($items as $item) {
             $entries[] = $this->collectEntry($this->resolveRecord($item));
         }
 
@@ -303,9 +322,9 @@ abstract class BaseListBuilder implements OptionableInterface
      * @throws UI_DataGrid_Exception
      * @see BaseListBuilder::ERROR_LIST_ALREADY_INITIALIZED
      */
-    public function setListID(string $id) : BaseListBuilder
+    public function setListID(string $id): BaseListBuilder
     {
-        if(isset($this->dataGrid)) {
+        if (isset($this->dataGrid)) {
             throw new UI_DataGrid_Exception(
                 'Cannot set list ID after initializing the grid',
                 'The method may only be called before the grid has been configured.',
@@ -317,7 +336,7 @@ abstract class BaseListBuilder implements OptionableInterface
         return $this;
     }
 
-    public function handleActions() : BaseListBuilder
+    public function handleActions(): BaseListBuilder
     {
         $this->getDataGrid()->executeCallbacks();
 
@@ -328,15 +347,15 @@ abstract class BaseListBuilder implements OptionableInterface
 
     // region B - Helper methods
 
-    public function addFilterSettings(UI_Page_Sidebar $sidebar) : self
+    public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {
         $sidebar->addFilterSettings($this->getFilterSettings());
         return $this;
     }
 
-    protected function renderDate(?DateTime $date=null) : string
+    protected function renderDate(?DateTime $date = null): string
     {
-        if($date === null) {
+        if ($date === null) {
             return UI::icon()->minus()
                 ->makeMuted()
                 ->setTooltip(t('No date available.'))
@@ -350,7 +369,7 @@ abstract class BaseListBuilder implements OptionableInterface
         );
     }
 
-    protected function adjustLabel(string $label) : string
+    protected function adjustLabel(string $label): string
     {
         return str_replace('_', '_<wbr>', $label);
     }
