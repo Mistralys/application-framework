@@ -18,6 +18,8 @@
 - RevisionCopy: `getParts()` can now return callables.
 - FilterSettings: Settings are now class-based.
 - FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
+- Changelogable: Introduced the `ChangelogHandler` class structure.
+- Changelogable: Added a trait to implement the changelog methods with a handler instance.
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
 - Revisionables: Modernized classes and strict typing.
