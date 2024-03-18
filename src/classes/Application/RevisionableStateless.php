@@ -13,6 +13,7 @@ use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionableStorageException;
+use Application\Revisionable\RevisionDependentInterface;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\NamedClosure;
@@ -38,13 +39,6 @@ abstract class Application_RevisionableStateless
     use Application_Traits_Loggable;
     use Application_Traits_Simulatable;
     use RevisionableChangelogTrait;
-
-    public const ERROR_CANNOT_START_TRANSACTION = 68437001;
-    public const ERROR_INVALID_REVISION_STORAGE = 68437002;
-    public const ERROR_CANNOT_END_TRANSACTION =  68437003;
-    public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
-    public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
-    public const ERROR_STORAGE_PART_ALREADY_REGISTERED = 68437007;
 
     public const STORAGE_PART_CUSTOM_KEYS = 'customKeys';
     public const STORAGE_PART_DATA_KEYS = 'revdata';
@@ -315,7 +309,7 @@ abstract class Application_RevisionableStateless
             throw new RevisionableException(
                 'Cannot start new transaction',
                 'A transaction has been run previously, changes have to be saved or discarded to start a new one.',
-                self::ERROR_CANNOT_START_TRANSACTION
+                RevisionableStatelessInterface::ERROR_CANNOT_START_TRANSACTION
             );
         }
         
@@ -389,7 +383,7 @@ abstract class Application_RevisionableStateless
             throw new RevisionableException(
                 'Cannot end transaction',
                 'Cannot end a transaction, no transaction has been started.',
-                self::ERROR_CANNOT_END_TRANSACTION
+                RevisionableStatelessInterface::ERROR_CANNOT_END_TRANSACTION
             );
         }
 
@@ -647,7 +641,7 @@ abstract class Application_RevisionableStateless
                     'The storage part [%s] has already been registered, and may not be overwritten.',
                     $name
                 ),
-                self::ERROR_STORAGE_PART_ALREADY_REGISTERED
+                RevisionableStatelessInterface::ERROR_STORAGE_PART_ALREADY_REGISTERED
             );
         }
 
@@ -695,7 +689,7 @@ abstract class Application_RevisionableStateless
                 $name,
                 array($this, 'registerStoragePart')[1].'()'
             ),
-            self::ERROR_MISSING_PART_SAVE_METHOD
+            RevisionableStatelessInterface::ERROR_MISSING_PART_SAVE_METHOD
         );
     }
 
@@ -789,7 +783,7 @@ abstract class Application_RevisionableStateless
                     $this->getInstanceID(),
                     $part
                 ),
-                self::ERROR_OPERATION_REQUIRES_TRANSACTION
+                RevisionableStatelessInterface::ERROR_OPERATION_REQUIRES_TRANSACTION
             );
         }
         
@@ -1313,6 +1307,52 @@ abstract class Application_RevisionableStateless
 
         $this->revisions->setKey(self::REVISION_KEY_EVENT_HANDLERS, $handlers);
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function requireRevisionableMatch(RevisionDependentInterface $dependent) : self
+    {
+        if(get_class($dependent->getRevisionable()) === get_class($this)) {
+            return $this;
+        }
+
+        throw new RevisionableException(
+            'Revisionable class mismatch',
+            sprintf(
+                'The revisionable class [%s] of the dependency does not match the current revisionable\'s class [%s].',
+                get_class($dependent->getRevisionable()),
+                get_class($this)
+            ),
+            RevisionableStatelessInterface::ERROR_DEPENDENT_CLASS_MISMATCH
+        );
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function requireRevisionMatch(RevisionDependentInterface $dependent) : self
+    {
+        $this->requireRevisionableMatch($dependent);
+
+        if($dependent->getRevision() === $this->getRevision()) {
+            return $this;
+        }
+
+        throw new RevisionableException(
+            'Revision mismatch',
+            sprintf(
+                'The revision [%s] of the dependency [%s] does not match the current revision [%s] in revisionable [%s].',
+                $dependent->getRevision(),
+                get_class($dependent),
+                $this->getRevision(),
+                $this->getIdentification()
+            ),
+            RevisionableStatelessInterface::ERROR_DEPENDENT_REVISION_MISMATCH
+        );
     }
 
     // endregion

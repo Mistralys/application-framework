@@ -18,6 +18,15 @@ interface RevisionableStatelessInterface
     Application_Interfaces_Simulatable,
     ChangelogableInterface
 {
+    public const ERROR_STORAGE_PART_ALREADY_REGISTERED = 68437007;
+    public const ERROR_DEPENDENT_REVISION_MISMATCH = 68437008;
+    public const ERROR_DEPENDENT_CLASS_MISMATCH = 68437009;
+    public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
+    public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
+    public const ERROR_CANNOT_END_TRANSACTION = 68437003;
+    public const ERROR_INVALID_REVISION_STORAGE = 68437002;
+    public const ERROR_CANNOT_START_TRANSACTION = 68437001;
+
     /**
      * Locks the currently selected revision, so that any
      * calls to {@see self::selectRevision()} will not be honored.
@@ -172,4 +181,26 @@ interface RevisionableStatelessInterface
     public function getCustomKeyValues(): array;
 
     public function handle_revisionLoaded(int $number): void;
+
+    /**
+     * Verifies that the revisionable connected to the revision-dependent
+     * object is of the same class.
+     *
+     * @param RevisionDependentInterface $dependent
+     * @return self
+     * @throws RevisionableException {@see self::ERROR_DEPENDENT_CLASS_MISMATCH}
+     */
+    public function requireRevisionableMatch(RevisionDependentInterface $dependent) : self;
+
+    /**
+     * Verifies that the revision-dependent object has the same
+     * revision number as the revisionable.
+     *
+     * NOTE: Also checks that the revisionable matches using {@see self::requireRevisionableMatch()}.
+     *
+     * @param RevisionDependentInterface $dependent
+     * @return $this
+     * @throws RevisionableException {@see self::ERROR_DEPENDENT_REVISION_MISMATCH} and {@see self::ERROR_DEPENDENT_CLASS_MISMATCH}
+     */
+    public function requireRevisionMatch(RevisionDependentInterface $dependent) : self;
 }

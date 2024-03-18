@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -11,7 +12,6 @@ use TestDriver\Revisionables\RevisionableCollection;
 abstract class Application_RevisionableCollection_DBRevisionable extends Application_Revisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
-    public const ERROR_INVALID_REVISION_STORAGE = 14702;
 
     public const CHANGELOG_SET_LABEL = 'set_label';
 
@@ -96,7 +96,7 @@ abstract class Application_RevisionableCollection_DBRevisionable extends Applica
                     get_class($this),
                     'BaseDBCollectionStorage'
                 ),
-                self::ERROR_INVALID_REVISION_STORAGE,
+                RevisionableStatelessInterface::ERROR_INVALID_REVISION_STORAGE,
                 $e
             );
         }
