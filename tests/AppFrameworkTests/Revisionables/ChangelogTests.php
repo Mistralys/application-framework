@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
+use TestDriver\Revisionables\ChangelogHandler;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
-use TestDriver\Revisionables\RevisionableRecord;
 
 final class ChangelogTests extends RevisionableTestCase
 {
@@ -17,6 +17,6 @@ final class ChangelogTests extends RevisionableTestCase
 
         $record->setAlias('foo_bar');
 
-        $this->assertRecordHasChangelogType($record, RevisionableRecord::CHANGELOG_SET_ALIAS);
+        $this->assertRecordHasChangelogType($record, ChangelogHandler::CHANGELOG_SET_ALIAS);
     }
 }
