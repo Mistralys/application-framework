@@ -2,28 +2,19 @@
 
 declare(strict_types=1);
 
+use Application\Countries\CountryException;
+
 class Application_Countries_LocaleCode
 {
     public const ERROR_CODE_CANNOT_BE_PARSED = 87701;
 
-    /**
-     * @var string
-     */
-    private $code;
-
-    /**
-     * @var string
-     */
-    private $countryISO;
-
-    /**
-     * @var string
-     */
-    private $languageCode;
+    private string $code;
+    private string $countryISO;
+    private string $languageCode;
 
     /**
      * @param string $code Locale code, e.g. "de_DE"
-     * @throws Application_Countries_Exception
+     * @throws CountryException
      *
      * @see Application_Countries_LocaleCode::ERROR_CODE_CANNOT_BE_PARSED
      */
@@ -35,7 +26,7 @@ class Application_Countries_LocaleCode
     }
 
     /**
-     * @throws Application_Countries_Exception
+     * @throws CountryException
      */
     private function parse() : void
     {
@@ -47,7 +38,7 @@ class Application_Countries_LocaleCode
             return;
         }
 
-        throw new Application_Countries_Exception(
+        throw new CountryException(
             'Invalid locale code',
             sprintf(
                 'The locale code [%s] cannot be parsed.',
