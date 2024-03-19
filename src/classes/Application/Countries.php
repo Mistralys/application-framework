@@ -6,7 +6,11 @@
  */
 
 use Application\Countries\CountriesCollection;
+use Application\Countries\CountryException;
+use Application\Countries\Event\IgnoredCountriesUpdatedEvent;
 use Application\Exception\UnexpectedInstanceException;
+use Application\Languages;
+use Application\Languages\Language;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
@@ -34,7 +38,21 @@ class Application_Countries extends DBHelper_BaseCollection
     public const PRIMARY_NAME = 'country_id';
     public const TABLE_NAME = 'countries';
     public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
+
     protected static ?Application_Countries $instance = null;
+
+    public const COUNTRY_DE = 'de';
+    public const COUNTRY_AT = 'at';
+    public const COUNTRY_UK = 'uk';
+    public const COUNTRY_GB = 'gb';
+    public const COUNTRY_CA = 'ca';
+    public const COUNTRY_FR = 'fr';
+    public const COUNTRY_IT = 'it';
+    public const COUNTRY_ES = 'es';
+    public const COUNTRY_PL = 'pl';
+    public const COUNTRY_RO = 'ro';
+    public const COUNTRY_MX = 'mx';
+    public const COUNTRY_US = 'us';
 
     public function getRecordDefaultSortKey() : string
     {
@@ -183,18 +201,20 @@ class Application_Countries extends DBHelper_BaseCollection
             )
         );
 
-        if($includeInvariant)
-        {
-            return $countries;
-        }
-
         $result = array();
+        $filter = !empty(self::$ignoreCountries);
 
         foreach($countries as $country)
         {
-            if(!$country->isCountryIndependent()) {
-                $result[] = $country;
+            if($includeInvariant === false && $country->isCountryIndependent()) {
+                continue;
             }
+
+            if($filter === true && isset(self::$ignoreCountries[$country->getISO()])) {
+                continue;
+            }
+
+            $result[] = $country;
         }
 
         return $result;
@@ -204,7 +224,6 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         return CountriesCollection::create($this->getFilterCriteria()->getItemsObjects());
     }
-
 
     /**
      * @param bool $includeInvariant
@@ -223,8 +242,25 @@ class Application_Countries extends DBHelper_BaseCollection
 
         return $result;
     }
-    
-    private function handle_sortCountries(Application_Countries_Country $a, Application_Countries_Country $b)
+
+    public function getByLanguage(Language $language) : array
+    {
+        $countries = $this->getAll();
+        $iso = $language->getISO();
+        $result = array();
+
+        foreach($countries as $country) {
+            if($country->getLanguageCode() === $iso) {
+                $result[] = $country;
+            }
+        }
+
+        usort($result, Closure::fromCallable(array($this, 'handle_sortCountries')));
+
+        return $result;
+    }
+
+    private function handle_sortCountries(Application_Countries_Country $a, Application_Countries_Country $b): int
     {
         if($a->isCountryIndependent()) {
             return -1;
@@ -233,16 +269,7 @@ class Application_Countries extends DBHelper_BaseCollection
         return strnatcasecmp($a->getLocalizedLabel(), $b->getLocalizedLabel());
     }
     
-   /**
-    * @deprecated
-    * @param boolean $simulation
-    */
-    public function refreshCache($simulation)
-    {
-        // obsolete
-    }
-    
-    public function injectJS()
+    public function injectJS() : void
     {
         $ui = UI::getInstance();
         $ui->addJavascript('countries.js');
@@ -300,28 +327,16 @@ class Application_Countries extends DBHelper_BaseCollection
         return array_unique($result);
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getCollectionLabel()
-     */
     public function getCollectionLabel() : string
     {
         return t('Countries');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordLabel()
-     */
     public function getRecordLabel() : string
     {
         return t('Country');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordProperties()
-     */
     public function getRecordProperties() : array
     {
         return array();
@@ -331,7 +346,7 @@ class Application_Countries extends DBHelper_BaseCollection
     * Retrieves a country by its two-letter ISO code, e.g. "de".
     * 
     * @param string $iso
-    * @throws Application_Exception
+    * @throws CountryException
     * @return Application_Countries_Country
     * 
     * @see Application_Countries::ERROR_UNKNOWN_ISO_CODE
@@ -349,7 +364,7 @@ class Application_Countries extends DBHelper_BaseCollection
             }
         }
         
-        throw new Application_Exception(
+        throw new CountryException(
             'Unknown country ISO code',
             sprintf(
                 'The ISO code [%s] does not match any valid countries.',
@@ -362,7 +377,7 @@ class Application_Countries extends DBHelper_BaseCollection
     /**
      * @param string $code The locale code, e.g. "de_DE"
      * @return Application_Countries_Country
-     * @throws Application_Countries_Exception
+     * @throws CountryException
      */
     public function getByLocaleCode(string $code) : Application_Countries_Country
     {
@@ -375,7 +390,7 @@ class Application_Countries extends DBHelper_BaseCollection
      *
      * @param string $code The locale code, e.g. "de_DE"
      * @return Application_Countries_LocaleCode
-     * @throws Application_Countries_Exception
+     * @throws CountryException
      */
     public function parseLocaleCode(string $code) : Application_Countries_LocaleCode
     {
@@ -398,7 +413,7 @@ class Application_Countries extends DBHelper_BaseCollection
     * all matching countries by their ID.
     * 
     * @param string[]|int[] $ids
-    * @throws Application_Countries_Exception
+    * @throws CountryException
     * @return Application_Countries_Country[]
     */
     public function getInstancesByIDs(array $ids) : array
@@ -411,7 +426,7 @@ class Application_Countries extends DBHelper_BaseCollection
             
             if($countryID === 0 || !$this->idExists($countryID)) 
             {
-                throw new Application_Countries_Exception(
+                throw new CountryException(
                     'Invalid or unknown country ID.',
                     sprintf(
                         'The country ID [%s] is not a valid ID, or could not be found in the database.',
@@ -457,7 +472,7 @@ class Application_Countries extends DBHelper_BaseCollection
     public function createNewCountry(string $iso, string $label) : Application_Countries_Country
     {
         if($this->isoExists($iso)) {
-            throw new Application_Countries_Exception(
+            throw new CountryException(
                 sprintf('Cannot add country [%s], it already exists.', $iso),
                 '',
                 self::ERROR_ISO_ALREADY_EXISTS
@@ -490,7 +505,7 @@ class Application_Countries extends DBHelper_BaseCollection
             return;
         }
 
-        throw new Application_Countries_Exception(
+        throw new CountryException(
             'Cannot use specified ISO code for a country.',
             sprintf(
                 'Use the code [%s] instead, which supports being accessed as [%s] as well.',
@@ -504,8 +519,8 @@ class Application_Countries extends DBHelper_BaseCollection
     /**
      * @var array<string,string>
      */
-    private $isoConversions = array(
-        'gb' => 'uk'
+    private array $isoConversions = array(
+        self::COUNTRY_GB => self::COUNTRY_UK
     );
 
     public function convertISO(string $iso) : string
@@ -522,4 +537,58 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         return strlen($iso) === 2 && ctype_alpha($iso);
     }
+
+    // region: Ignoring countries
+
+    public const EVENT_IGNORED_COUNTRIES_UPDATED = 'IgnoredCountriesUpdated';
+
+    /**
+     * @var array<string,bool>
+     */
+    private static array $ignoreCountries = array();
+
+    public function setCountryIgnored(string $iso, bool $ignored=true) : void
+    {
+        if(!$ignored && isset(self::$ignoreCountries[$iso]))
+        {
+            unset(self::$ignoreCountries[$iso]);
+            $this->triggerCountryIgnoreUpdated();
+        }
+        else if($ignored && !isset(self::$ignoreCountries[$iso]))
+        {
+            self::$ignoreCountries[$iso] = true;
+            $this->triggerCountryIgnoreUpdated();
+        }
+    }
+
+    public function clearIgnored() : void
+    {
+        if(!empty(self::$ignoreCountries)) {
+            self::$ignoreCountries = array();
+            $this->triggerCountryIgnoreUpdated();
+        }
+    }
+
+    public static function isCountryIgnored(string $iso) : bool
+    {
+        return isset(self::$ignoreCountries[$iso]);
+    }
+
+    private function triggerCountryIgnoreUpdated() : void
+    {
+        $this->triggerEvent(
+            self::EVENT_IGNORED_COUNTRIES_UPDATED,
+            array(
+                $this
+            ),
+            IgnoredCountriesUpdatedEvent::class
+        );
+    }
+
+    public function onIgnoredCountriesUpdated(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_IGNORED_COUNTRIES_UPDATED, $listener);
+    }
+
+    // endregion
 }
