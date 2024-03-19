@@ -13,7 +13,6 @@ namespace Application\Countries;
 
 use Application_Countries;
 use Application_Countries_Country;
-use Application_Countries_Exception;
 
 /**
  * Utility class for working with collections of countries,
@@ -171,7 +170,7 @@ class CountriesCollection
             return $this->getByISO(array_shift($ISOs));
         }
 
-        throw new Application_Countries_Exception(
+        throw new CountryException(
             'Cannot get first country, there no countries in the collection.',
             '',
             self::ERROR_CANNOT_GET_FIRST_COUNTRY
@@ -190,7 +189,7 @@ class CountriesCollection
             }
         }
 
-        throw new Application_Countries_Exception(
+        throw new CountryException(
             'Cannot find country in collection by ISO.',
             sprintf(
                 'Tried finding ISO [%s], available are [%s].',
@@ -208,7 +207,7 @@ class CountriesCollection
             return $this->countries[$id];
         }
 
-        throw new Application_Countries_Exception(
+        throw new CountryException(
             'Cannot find country in collection by ID.',
             sprintf(
                 'Tried finding ID [%s], available are [%s].',
