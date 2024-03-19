@@ -13,6 +13,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
+use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
 
 /**
@@ -993,6 +994,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     public const EVENT_BEFORE_CREATE_RECORD = 'BeforeCreateRecord';
     public const EVENT_AFTER_CREATE_RECORD = 'AfterCreateRecord';
+    public const EVENT_AFTER_DELETE_RECORD = 'AfterDeleteRecord';
 
     /**
      * Listens to any new records being created, and allows
@@ -1027,6 +1029,34 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     final public function onAfterCreateRecord(callable $callback) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(self::EVENT_AFTER_CREATE_RECORD, $callback);
+    }
+
+    /**
+     * Listens to any records deleted from the collection.
+     *
+     * The callback gets an instance of the event:
+     * {@see AfterDeleteRecordEvent}
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     * @see AfterDeleteRecordEvent
+     */
+    final public function onAfterDeleteRecord(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_AFTER_DELETE_RECORD, $callback);
+    }
+
+    protected function triggerAfterDeleteRecord(DBHelper_BaseRecord $record, DBHelper_BaseCollection_OperationContext_Delete $context) : void
+    {
+        $this->triggerEvent(
+            self::EVENT_AFTER_DELETE_RECORD,
+            array(
+                $this,
+                $record,
+                $context
+            ),
+            AfterDeleteRecordEvent::class
+        );
     }
 
     /**
@@ -1228,6 +1258,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         }
         
         $record->onDeleted($context);
+
+        $this->triggerAfterDeleteRecord($record, $context);
     }
 
     /**
@@ -1290,4 +1322,6 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
          return $disposables;
      }
+
+
 }
