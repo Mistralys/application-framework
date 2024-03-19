@@ -5,6 +5,10 @@
  * @subpackage Countries
  */
 
+use Application\AppFactory;
+use Application\Languages;
+use Application\Languages\Language;
+use Application\Languages\LanguageException;
 use AppLocalize\Localization;
 use AppLocalize\Localization_Country;
 use AppLocalize\Localization_Currency;
@@ -12,26 +16,22 @@ use AppLocalize\Localization_Currency;
 /**
  * Country data type; handles an individual country and its information.
  *
- * @package Maileditor
+ * @package Application
  * @subpackage Countries
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class Application_Countries_Country extends DBHelper_BaseRecord
 {
     public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
-    public const ERROR_UNKNOWN_LANGUAGE_LABEL = 37802;
-    
+
     public const COUNTRY_INDEPENDENT_ID = 9999;
     public const COUNTRY_INDEPENDENT_ISO = 'zz';
     public const COL_ISO = 'iso';
-    const COL_LABEL = 'label';
+    public const COL_LABEL = 'label';
 
-    /**
-    * @var Localization_Country
-    */
-    protected $country;
+    protected Localization_Country $country;
 
-    protected function init()
+    protected function init() : void
     {
         $this->country = Localization::createCountry($this->getISO());
     }
@@ -94,8 +94,8 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     /**
      * @var array<string,string>
      */
-    private $isoToAlpha2 = array(
-        'uk' => 'gb'
+    private array $isoToAlpha2 = array(
+        Application_Countries::COUNTRY_UK => Application_Countries::COUNTRY_GB
     );
 
    /**
@@ -120,47 +120,21 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * @var array<string,string>
     * @see https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
     */
-    protected array $languages = array(
-        'at' => 'de',
-        'ca' => 'en',
-        'de' => 'de',
-        'es' => 'es',
-        'fr' => 'fr',
-        'it' => 'it',
-        'mx' => 'es', 
-        'pl' => 'pl',
-        'ro' => 'ro',
-        'uk' => 'en',
-        'us' => 'en'
+    public const COUNTRY_LANGUAGES = array(
+        Application_Countries::COUNTRY_AT => Languages::LANG_DE,
+        Application_Countries::COUNTRY_CA => Languages::LANG_EN,
+        Application_Countries::COUNTRY_DE => Languages::LANG_DE,
+        Application_Countries::COUNTRY_ES => Languages::LANG_ES,
+        Application_Countries::COUNTRY_FR => Languages::LANG_FR,
+        Application_Countries::COUNTRY_IT => Languages::LANG_IT,
+        Application_Countries::COUNTRY_MX => Languages::LANG_ES,
+        Application_Countries::COUNTRY_PL => Languages::LANG_PL,
+        Application_Countries::COUNTRY_RO => Languages::LANG_RO,
+        Application_Countries::COUNTRY_UK => Languages::LANG_EN,
+        Application_Countries::COUNTRY_GB => Languages::LANG_EN,
+        Application_Countries::COUNTRY_US => Languages::LANG_EN
     );
 
-    /**
-     * @var array<string,string>|NULL
-     */
-    protected ?array $languageLabels = null;
-
-    /**
-     * @return array<string,string>
-     */
-    protected function getLanguageLabels() : array
-    {
-        if(isset($this->languageLabels)) {
-            return $this->languageLabels;
-        }
-        
-        $this->languageLabels = array(
-            'de' => t('German'),
-            'en' => t('English'),
-            'fr' => t('French'),
-            'it' => t('Italian'),
-            'es' => t('Spanish'),
-            'pl' => t('Polish'),
-            'ro' => t('Romanian')
-        );
-
-        return $this->languageLabels;
-    }
-    
    /**
     * Retrieves the lowercase two-letter language code for
     * the country. Note that this only returns the main 
@@ -173,8 +147,8 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public function getLanguageCode() : string
     {
         $iso = $this->getISO();
-        if(isset($this->languages[$iso])) {
-            return $this->languages[$iso];
+        if(isset(self::COUNTRY_LANGUAGES[$iso])) {
+            return self::COUNTRY_LANGUAGES[$iso];
         }
         
         throw new Application_Exception(
@@ -198,23 +172,17 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     * Retrieves the human-readable label of the country's
     * main language (translated to the current app locale).
     *  
-    * @throws Application_Exception
+    * @throws LanguageException
     * @return string
     */
     public function getLanguageLabel() : string
     {
-        $labels = $this->getLanguageLabels();
-        
-        $iso = $this->getLanguageCode();
-        if(isset($labels[$iso])) {
-            return $labels[$iso];
-        }
-        
-        throw new Application_Exception(
-            sprintf('Unknown language label for language [%s]', $iso),
-            '',
-            self::ERROR_UNKNOWN_LANGUAGE_LABEL
-        );
+        return $this->getLanguage()->getLabel();
+    }
+
+    public function getLanguage() : Language
+    {
+        return AppFactory::createLanguages()->getByISO($this->getLanguageCode());
     }
     
    /**
@@ -235,8 +203,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     }
     
    /**
-    * Whether this is the country independent special country.
+    * Whether this is the country-independent country.
     * Alias for the {@link isInvariant()} method.
+    *
     * @return boolean
     */
     public function isInvariant() : bool
@@ -245,11 +214,11 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     }
     
    /**
-    * Whether this is the country independent special country.
+    * Whether this is the country-independent country.
     * @return boolean
     */
     public function isCountryIndependent() : bool
     {
         return $this->isInvariant();
     }
-} 
+}
