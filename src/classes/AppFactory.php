@@ -117,6 +117,16 @@ class AppFactory
         return Application_Countries::getInstance();
     }
 
+    public static function createLanguages() : Languages
+    {
+        return Languages::getInstance();
+    }
+
+    public static function createLocales() : Locales
+    {
+        return Locales::getInstance();
+    }
+
     public static function createDeeplHelper() : DeeplHelper
     {
         return self::createClassInstance(DeeplHelper::class);
