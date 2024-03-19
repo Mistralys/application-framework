@@ -167,6 +167,11 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     {
         return $this->getLanguageCode().'_'.strtoupper($this->getAlpha2());
     }
+
+    public function getLocale() : \Application\Locales\Locale
+    {
+        return AppFactory::createLocales()->getByID($this->getLocaleCode());
+    }
     
    /**
     * Retrieves the human-readable label of the country's
