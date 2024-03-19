@@ -20,6 +20,11 @@
 - FilterSettings: Preferred way to inject is via the setting's `setInjectCallback()`.
 - Changelogable: Introduced the `ChangelogHandler` class structure.
 - Changelogable: Added a trait to implement the changelog methods with a handler instance.
+- DBHelper: Added the `AfterDeleteRecord` event in the base collection class.
+- Countries: Added the `Languages` collection to fetch language information.
+- Countries: Added the `Locales` collection to handle locale information.
+- Countries: Added the possibility to ignore specific countries.
+- Countries: Added the `IgnoredCountriesUpdated` event.
 - Revisionables: Added a test revisionable collection to the test application.
 - Revisionables: Added first unit tests.
 - Revisionables: Modernized classes and strict typing.
@@ -46,13 +51,14 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
 - Revisionables: Renamed all `revdataXXX`-methods to make it easier to understand.
 - Revisionables: Renamed and namespaced interfaces.
+- Revisionables: Strict typing for all interface methods.
 - Renderables: Added strict `string` return type for `_render()` methods.
 
 ### Deprecations
 
-- FilterSettings: Deprecated `addAutoConfigure()`, replaced by `SettingDef::setConfigureCallback()`.
-- FilterSettings: Deprecated `getArraySetting()`, replaced by `getSettingArray()`.
-
+- FilterSettings: Deprecated `addAutoConfigure()`.
+- FilterSettings: Deprecated `getArraySetting()`.
+- Countries: Deprecated the `Application_Countries_Exception` class.
 
 ---
 Older changelog entries can be found in the `docs/changelog-history` folder.
