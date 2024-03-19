@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
-class Application_Countries_Exception extends Application_Exception
+use Application\Countries\CountryException;
+
+/**
+ * @deprecated Use {@see CountryException} instead.
+ */
+class Application_Countries_Exception extends CountryException
 {
 
 }
