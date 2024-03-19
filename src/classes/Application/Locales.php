@@ -88,7 +88,7 @@ class Locales extends BaseStringPrimaryCollection
 
     protected function registerItems(): void
     {
-        $countries = AppFactory::createCountries()->getAll();
+        $countries = AppFactory::createCountries()->getAll(false);
 
         foreach($countries as $country) {
             $this->registerItem(new Locale($country->getLocaleCode()));
