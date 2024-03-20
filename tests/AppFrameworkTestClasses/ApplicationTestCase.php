@@ -6,6 +6,7 @@ namespace AppFrameworkTestClasses;
 
 use Application;
 use Application\AppFactory;
+use Application\Interfaces\ChangelogableInterface;
 use Application\Tags\TagCollection;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
@@ -220,6 +221,20 @@ abstract class ApplicationTestCase extends TestCase
         return $document;
     }
 
+    // region Custom assertions
+
+    /**
+     * Checks if the changelogable has the specified changelog entry type in its queue.
+     *
+     * @param ChangelogableInterface $changelogable
+     * @param string $changelogType
+     * @return void
+     */
+    public function assertChangelogableHasTypeEnqueued(ChangelogableInterface $changelogable, string $changelogType) : void
+    {
+        $this->assertContains($changelogType, $changelogable->getChangelog()->getTypes());
+    }
+
     /**
      * @param TestDBRecord[] $records
      * @param string[] $names
@@ -244,6 +259,8 @@ abstract class ApplicationTestCase extends TestCase
             }
         }
     }
+
+    // endregion
 
     /**
      * Empties the given tables by deleting all existing records from them.
