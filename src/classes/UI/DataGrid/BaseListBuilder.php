@@ -341,7 +341,12 @@ abstract class BaseListBuilder
 
     public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {
-        $sidebar->addFilterSettings($this->getFilterSettings());
+        $settings = $this->getFilterSettings();
+
+        if($settings !== null) {
+            $sidebar->addFilterSettings($settings);
+        }
+        
         return $this;
     }
 
