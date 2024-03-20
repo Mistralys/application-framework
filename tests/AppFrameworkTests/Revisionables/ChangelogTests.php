@@ -17,6 +17,6 @@ final class ChangelogTests extends RevisionableTestCase
 
         $record->setAlias('foo_bar');
 
-        $this->assertRecordHasChangelogType($record, ChangelogHandler::CHANGELOG_SET_ALIAS);
+        $this->assertChangelogableHasTypeEnqueued($record, ChangelogHandler::CHANGELOG_SET_ALIAS);
     }
 }
