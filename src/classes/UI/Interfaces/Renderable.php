@@ -7,6 +7,7 @@
  * @see UI_Renderable_Interface
  */
 
+use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\StringBuilder_Interface;
 
 /**
@@ -19,7 +20,7 @@ use AppUtils\StringBuilder_Interface;
  * @see UI_Renderable
  * @see UI_Traits_RenderableGeneric
  */
-interface UI_Renderable_Interface extends StringBuilder_Interface
+interface UI_Renderable_Interface extends RenderableInterface
 {
     public function getPage() : UI_Page;
     
