@@ -232,7 +232,7 @@ abstract class ApplicationTestCase extends TestCase
      */
     public function assertChangelogableHasTypeEnqueued(ChangelogableInterface $changelogable, string $changelogType) : void
     {
-        $this->assertContains($changelogType, $changelogable->getChangelog()->getTypes());
+        $this->assertContains($changelogType, $changelogable->getChangelogQueueTypes());
     }
 
     /**
