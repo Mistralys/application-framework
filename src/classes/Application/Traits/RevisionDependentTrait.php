@@ -40,8 +40,6 @@ trait RevisionDependentTrait
      */
     public function requireRevisionMatch(RevisionDependentInterface $dependent) : self
     {
-        $this->requireRevisionableMatch($dependent);
-
         if($dependent->getRevision() === $this->getRevision()) {
             return $this;
         }
