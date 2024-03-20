@@ -17,9 +17,13 @@ use Application_FilterSettings;
 use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
+use AppUtils\Traits\RenderableTrait;
+use DateTime;
 use UI;
+use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
 use UI_DataGrid_Exception;
 use UI_Exception;
@@ -33,36 +37,25 @@ use UI_Page_Sidebar;
  * @package User Interface
  * @subpackage DataGrids
  */
-abstract class BaseListBuilder implements OptionableInterface
+abstract class BaseListBuilder
+    implements
+    OptionableInterface,
+    RenderableInterface,
+    ListBuilderInterface
 {
     use OptionableTrait;
+    use RenderableTrait;
 
     public const ERROR_LIST_ALREADY_INITIALIZED = 86001;
 
     // region Z - Abstract methods
 
     abstract protected function createFilterCriteria(): Application_FilterCriteria;
-
     abstract protected function configureFilters(): void;
-
-    abstract public function getFullViewTitle(): string;
-
-    abstract public function getEmptyMessage(): string;
-
-    abstract public function getRecordTypeLabelSingular(): string;
-
-    abstract public function getRecordTypeLabelPlural(): string;
-
     abstract protected function configureColumns(UI_DataGrid $grid): void;
-
-    abstract public function getPrimaryColumnName(): string;
-
     abstract protected function configureActions(UI_DataGrid $grid): void;
-
     abstract protected function resolveRecord(array $itemData): object;
-
     abstract protected function createFilterSettings(): Application_FilterSettings;
-
     abstract protected function preRender(): void;
 
     /**
@@ -106,7 +99,7 @@ abstract class BaseListBuilder implements OptionableInterface
         return !in_array($colName, $this->hiddenColumns, true);
     }
 
-    public function disableColumn(string $colName): BaseListBuilder
+    public function disableColumn(string $colName): self
     {
         if (!in_array($colName, $this->hiddenColumns, true)) {
             $this->hiddenColumns[] = $colName;
@@ -117,7 +110,6 @@ abstract class BaseListBuilder implements OptionableInterface
 
     /**
      * @return Application_FilterCriteria
-     * @throws Application_Exception
      */
     public function getFilterCriteria(): Application_FilterCriteria
     {
@@ -168,7 +160,7 @@ abstract class BaseListBuilder implements OptionableInterface
         return $filters;
     }
 
-    public function debug(bool $enabled = true): BaseListBuilder
+    public function debug(bool $enabled = true): self
     {
         $this->debug = $enabled;
 
@@ -189,7 +181,7 @@ abstract class BaseListBuilder implements OptionableInterface
      * @param array<string,string> $vars
      * @return $this
      */
-    public function addHiddenVars(array $vars): BaseListBuilder
+    public function addHiddenVars(array $vars): self
     {
         foreach ($vars as $name => $value) {
             $this->addHiddenVar($name, $value);
@@ -203,19 +195,19 @@ abstract class BaseListBuilder implements OptionableInterface
      * @param string|int|float $value
      * @return $this
      */
-    public function addHiddenVar(string $name, $value): BaseListBuilder
+    public function addHiddenVar(string $name, $value): self
     {
         $this->hiddenVars[$name] = (string)$value;
         return $this;
     }
 
-    public function disableEntryActions(): BaseListBuilder
+    public function disableEntryActions(): self
     {
         $this->setOption('disable-entry-actions', true);
         return $this;
     }
 
-    public function disableMultiActions(): BaseListBuilder
+    public function disableMultiActions(): self
     {
         $this->setOption('disable-multi-actions', true);
         return $this;
@@ -322,7 +314,7 @@ abstract class BaseListBuilder implements OptionableInterface
      * @throws UI_DataGrid_Exception
      * @see BaseListBuilder::ERROR_LIST_ALREADY_INITIALIZED
      */
-    public function setListID(string $id): BaseListBuilder
+    public function setListID(string $id): self
     {
         if (isset($this->dataGrid)) {
             throw new UI_DataGrid_Exception(
@@ -336,7 +328,7 @@ abstract class BaseListBuilder implements OptionableInterface
         return $this;
     }
 
-    public function handleActions(): BaseListBuilder
+    public function handleActions(): self
     {
         $this->getDataGrid()->executeCallbacks();
 
@@ -353,7 +345,7 @@ abstract class BaseListBuilder implements OptionableInterface
         return $this;
     }
 
-    protected function renderDate(?DateTime $date = null): string
+    public function renderDate(?DateTime $date = null): string
     {
         if ($date === null) {
             return UI::icon()->minus()
@@ -369,7 +361,7 @@ abstract class BaseListBuilder implements OptionableInterface
         );
     }
 
-    protected function adjustLabel(string $label): string
+    public function adjustLabel(string $label): string
     {
         return str_replace('_', '_<wbr>', $label);
     }
