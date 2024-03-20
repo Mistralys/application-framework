@@ -26,8 +26,8 @@ interface RevisionDependentInterface
     public function getRevisionable() : RevisionableStatelessInterface;
 
     /**
-     * Verifies that the revisionable connected to the revision-dependent
-     * object is of the same class.
+     * Verifies that the revision-dependent object is of the same class
+     * as the subject.
      *
      * @param RevisionDependentInterface $dependent
      * @return self
@@ -37,13 +37,11 @@ interface RevisionDependentInterface
 
     /**
      * Verifies that the revision-dependent object has the same
-     * revision number as the revisionable.
-     *
-     * NOTE: Also checks that the revisionable matches using {@see self::requireRevisionableMatch()}.
+     * revision number as the subject.
      *
      * @param RevisionDependentInterface $dependent
      * @return $this
-     * @throws RevisionableException {@see self::ERROR_DEPENDENT_REVISION_MISMATCH} and {@see self::ERROR_DEPENDENT_CLASS_MISMATCH}
+     * @throws RevisionableException {@see self::ERROR_DEPENDENT_REVISION_MISMATCH}
      */
     public function requireRevisionMatch(RevisionDependentInterface $dependent) : self;
 }
