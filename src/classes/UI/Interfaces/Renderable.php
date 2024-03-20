@@ -7,8 +7,9 @@
  * @see UI_Renderable_Interface
  */
 
+declare(strict_types=1);
+
 use AppUtils\Interfaces\RenderableInterface;
-use AppUtils\StringBuilder_Interface;
 
 /**
  * Interface for renderable elements, which can generate HTML.
