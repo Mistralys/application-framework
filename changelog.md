@@ -33,6 +33,8 @@
 - Revisionables: Added a trait to implement the typical state setup.
 - Revisionables: Added `RevisionableDependentInterface`.
 - Revisionables: Added `requireRevisionableMatch()` and `requireRevisionMatch()`. 
+- Revisionables: `requireTransaction()` now accepts a reason string.
+- Revisionables: Added `isPartChanged()`.
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)

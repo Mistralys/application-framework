@@ -41,12 +41,6 @@ abstract class Application_RevisionableStateless
     use RevisionableChangelogTrait;
     use RevisionDependentTrait;
 
-    public const STORAGE_PART_CUSTOM_KEYS = 'customKeys';
-    public const STORAGE_PART_DATA_KEYS = 'revdata';
-
-    public const KEY_TYPE_DATA_KEYS = 'data_keys';
-    public const KEY_TYPE_REGULAR = 'standard';
-
     protected Application_RevisionStorage $revisions;
     protected bool $requiresNewRevision = false;
     protected ?int $transactionSourceRevision = null;
@@ -470,50 +464,6 @@ abstract class Application_RevisionableStateless
     }
 
     /**
-     * Utility method to keep track of internal changes when
-     * using transactions. Sets the {@see self::$requiresNewRevision}
-     * property to true to trigger a new revision when ending
-     * the current transaction.
-     *
-     * Call this method every time you have made changes for
-     * which a new revision should be triggered.
-     *
-     * @see self::hasChanges()
-     * @see self::resetChanges()
-     */
-    protected function changesMade() : void
-    {
-        $this->setRequiresNewRevision('A change was made.');
-    }
-
-    /**
-     * Checks whether this item has structural changes.
-     * @return boolean
-     * @see self::resetChanges()
-     * @see self::changesMade()
-     */
-    public function hasChanges() : bool
-    {
-        return $this->requiresNewRevision;
-    }
-
-    /**
-     * Resets the internal changes tracking, for example, after
-     * a save operation.
-     *
-     * @see self::hasChanges()
-     * @see self::changesMade()
-     */
-    protected function resetChanges() : void
-    {
-        $this->log('Resetting all internal changes.');
-        
-        $this->setRequiresNewRevision('Reset internal changes');
-
-        $this->changedParts = array();
-    }
-
-    /**
      * Selects the most recent revision of the item.
      */
     public function selectLatestRevision() : self
@@ -569,6 +519,60 @@ abstract class Application_RevisionableStateless
     }
 
     // region Data handling
+
+    public const STORAGE_PART_CUSTOM_KEYS = 'customKeys';
+    public const STORAGE_PART_DATA_KEYS = 'revdata';
+
+    public const KEY_TYPE_DATA_KEYS = 'data_keys';
+    public const KEY_TYPE_REGULAR = 'standard';
+
+    /**
+     * Utility method to keep track of internal changes when
+     * using transactions. Sets the {@see self::$requiresNewRevision}
+     * property to true to trigger a new revision when ending
+     * the current transaction.
+     *
+     * Call this method every time you have made changes for
+     * which a new revision should be triggered.
+     *
+     * @see self::hasChanges()
+     * @see self::resetChanges()
+     */
+    protected function changesMade(string $reason ='') : void
+    {
+        if(empty($reason)) {
+            $reason = 'n/a';
+        }
+
+        $this->setRequiresNewRevision('A change was made. Reason: ['.$reason.'].');
+    }
+
+    /**
+     * Checks whether this item has structural changes.
+     * @return boolean
+     * @see self::resetChanges()
+     * @see self::changesMade()
+     */
+    public function hasChanges() : bool
+    {
+        return $this->requiresNewRevision;
+    }
+
+    /**
+     * Resets the internal changes tracking, for example, after
+     * a save operation.
+     *
+     * @see self::hasChanges()
+     * @see self::changesMade()
+     */
+    protected function resetChanges() : void
+    {
+        $this->log('Resetting all internal changes.');
+
+        $this->setRequiresNewRevision('Reset internal changes');
+
+        $this->changedParts = array();
+    }
 
     /**
      * Basic save implementation: checks whether any changes
@@ -738,8 +742,6 @@ abstract class Application_RevisionableStateless
         
     }
 
-    // endregion
-    
     protected array $changedParts = array();
 
     /**
@@ -773,34 +775,62 @@ abstract class Application_RevisionableStateless
      */
     protected function setPartChanged(string $part, bool $structural=false) : self
     {
-        if (!$this->isTransactionStarted()) {
-            throw new RevisionableException(
-                'No transaction started',
-                sprintf(
-                    '%s [%s v%s] instance [%s]: Tried to set part [%s] as modified without starting a transaction.',
-                    get_class($this),
-                    $this->getID(),
-                    $this->getRevision(),
-                    $this->getInstanceID(),
-                    $part
-                ),
-                RevisionableStatelessInterface::ERROR_OPERATION_REQUIRES_TRANSACTION
-            );
-        }
-        
-        if(isset($this->changedParts[$part]) && $this->changedParts[$part]===true) {
+        $this->requirePartExists($part);
+
+        $this->requireTransaction(sprintf(
+            '%s [%s v%s] instance [%s]: Tried to set part [%s] as modified without starting a transaction.',
+            get_class($this),
+            $this->getID(),
+            $this->getRevision(),
+            $this->getInstanceID(),
+            $part
+        ));
+
+        if($this->isPartChanged($part)) {
             return $this;
         }
-        
-        $this->changesMade();
-        
+
+        $this->changesMade('Part ['.$part.'] modified.');
+
         $this->changedParts[$part] = true;
 
         $this->log('Transaction | Part [%s] has changed.', $part);
 
         return $this;
     }
-    
+
+    /**
+     * Checks whether the specified storage part has been modified.
+     *
+     * @param string $part
+     * @return bool
+     * @throws RevisionableException
+     */
+    public function isPartChanged(string $part) : bool
+    {
+        $this->requirePartExists($part);
+
+        return isset($this->changedParts[$part]) && $this->changedParts[$part]===true;
+    }
+
+    private function requirePartExists(string $part) : void
+    {
+        if(isset($this->storageParts[$part])) {
+            return;
+        }
+
+        throw new RevisionableException(
+            'Unknown revisionable storage part.',
+            sprintf(
+                'The revisionable part [%s] is not known.',
+                $part
+            ),
+            RevisionableStatelessInterface::ERROR_UNKNOWN_STORAGE_PART
+        );
+    }
+
+    // endregion
+
     protected ?string $revisionableTypeName = null;
     
     public function getRevisionableTypeName() : string
@@ -1022,12 +1052,10 @@ abstract class Application_RevisionableStateless
     }
     
    /**
-    * Ensures that a transaction is active for operations that
-    * may only be done within a transaction.
-    *
+    * @inheritDoc
     * @return $this
     */
-    public function requireTransaction() : self
+    public function requireTransaction(string $developerDetails='') : self
     {
         return $this;
     }

@@ -18,14 +18,15 @@ interface RevisionableStatelessInterface
     Application_Interfaces_Simulatable,
     ChangelogableInterface
 {
+    public const ERROR_CANNOT_START_TRANSACTION = 68437001;
+    public const ERROR_INVALID_REVISION_STORAGE = 68437002;
+    public const ERROR_CANNOT_END_TRANSACTION = 68437003;
+    public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
+    public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
     public const ERROR_STORAGE_PART_ALREADY_REGISTERED = 68437007;
     public const ERROR_DEPENDENT_REVISION_MISMATCH = 68437008;
     public const ERROR_DEPENDENT_CLASS_MISMATCH = 68437009;
-    public const ERROR_OPERATION_REQUIRES_TRANSACTION = 68437004;
-    public const ERROR_MISSING_PART_SAVE_METHOD = 68437005;
-    public const ERROR_CANNOT_END_TRANSACTION = 68437003;
-    public const ERROR_INVALID_REVISION_STORAGE = 68437002;
-    public const ERROR_CANNOT_START_TRANSACTION = 68437001;
+    public const ERROR_UNKNOWN_STORAGE_PART = 68437010;
 
     /**
      * Locks the currently selected revision, so that any
@@ -83,6 +84,15 @@ interface RevisionableStatelessInterface
      * @param int $number
      */
     public function revisionExists(int $number): bool;
+
+    /**
+     * Ensures that a transaction is active for operations that
+     * may only be done within a transaction.
+     *
+     * @param string $developerDetails Optional details for the exception.
+     * @throws RevisionableException
+     */
+    public function requireTransaction(string $developerDetails='') : self;
 
     /**
      * @return int|null Can return NULL if no revision is selected or available.

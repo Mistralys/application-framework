@@ -12,6 +12,7 @@ declare(strict_types=1);
 use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
+use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\BaseException;
 use AppUtils\ConvertHelper;
@@ -470,7 +471,7 @@ abstract class Application_Revisionable
         }
 
         if ($this->requiresNewRevision === false) {
-            $this->changesMade();
+            $this->changesMade('Structural change: ['.$reason.'].');
         }
 
         $this->structuralChanges = true;
@@ -575,13 +576,11 @@ abstract class Application_Revisionable
         return true;
     }
 
-   /**
-    * Ensures that a transaction is active for operations that
-    * may only be done within a transaction.
-    * 
-    * @throws RevisionableException
-    */
-    public function requireTransaction() : self
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function requireTransaction(string $developerDetails='') : self
     {
         if($this->transactionActive) {
             return $this;
@@ -590,7 +589,7 @@ abstract class Application_Revisionable
         throw new RevisionableException(
             'No transaction active',
             'The current operation requires a transaction to be started.',
-            self::ERROR_SAVING_WITHOUT_TRANSACTION
+            RevisionableStatelessInterface::ERROR_OPERATION_REQUIRES_TRANSACTION
         );
     }
 
