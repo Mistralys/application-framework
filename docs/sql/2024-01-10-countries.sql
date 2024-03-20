@@ -2,5 +2,4 @@
 -- and keep only the unique index.
 
 ALTER TABLE `countries` DROP INDEX `iso`;
-ALTER TABLE `countries` DROP INDEX `iso_2`;
 ALTER TABLE `countries` ADD UNIQUE(`iso`);
