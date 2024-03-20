@@ -28,6 +28,8 @@ use UI_DataGrid;
 use UI_DataGrid_Exception;
 use UI_Exception;
 use UI_Page_Sidebar;
+use UI_Renderable_Interface;
+use UI_Traits_RenderableGeneric;
 
 /**
  * Helper class that is used to create a list of records
@@ -40,11 +42,11 @@ use UI_Page_Sidebar;
 abstract class BaseListBuilder
     implements
     OptionableInterface,
-    RenderableInterface,
+    UI_Renderable_Interface,
     ListBuilderInterface
 {
     use OptionableTrait;
-    use RenderableTrait;
+    use UI_Traits_RenderableGeneric;
 
     public const ERROR_LIST_ALREADY_INITIALIZED = 86001;
 
@@ -248,6 +250,11 @@ abstract class BaseListBuilder
         $this->listID = $listID;
     }
 
+    public function getUI(): UI
+    {
+        return $this->screen->getUI();
+    }
+
     public function getDefaultOptions(): array
     {
         return array(
@@ -346,7 +353,7 @@ abstract class BaseListBuilder
         if($settings !== null) {
             $sidebar->addFilterSettings($settings);
         }
-        
+
         return $this;
     }
 
