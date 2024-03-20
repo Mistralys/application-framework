@@ -813,6 +813,18 @@ abstract class Application_RevisionableStateless
         return isset($this->changedParts[$part]) && $this->changedParts[$part]===true;
     }
 
+    public function getChangedParts() : array
+    {
+        $result = array();
+        foreach($this->changedParts as $part => $state) {
+            if($state === true) {
+                $result[] = $part;
+            }
+        }
+
+        return $result;
+    }
+
     private function requirePartExists(string $part) : void
     {
         if(isset($this->storageParts[$part])) {
