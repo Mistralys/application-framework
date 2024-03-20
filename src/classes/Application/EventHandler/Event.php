@@ -143,7 +143,7 @@ class Application_EventHandler_Event
 
     public function getArgumentBool(int $index) : bool
     {
-        return ConvertHelper::string2bool($index);
+        return ConvertHelper::string2bool($this->getArgument($index));
     }
 
     /**
