@@ -48,6 +48,11 @@ class Locale implements StringPrimaryRecordInterface
         return $this->localeID;
     }
 
+     public function getCode() : string
+     {
+         return $this->getID();
+     }
+
     public function getLabel(): string
     {
         if (!isset($this->label)) {

@@ -68,6 +68,11 @@ class Locales extends BaseStringPrimaryCollection
         return self::LOCALE_EN_US;
     }
 
+    public function getByCode(string $localeCode) : Locale
+    {
+        return $this->getByID($localeCode);
+    }
+
     /**
      * @param Language $language
      * @return Locale[]
