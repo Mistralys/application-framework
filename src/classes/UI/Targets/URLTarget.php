@@ -5,18 +5,27 @@ declare(strict_types=1);
 namespace UI\Targets;
 
 use AppUtils\HTMLTag;
+use UI\AdminURLs\AdminURL;
 
 class URLTarget extends BaseTarget
 {
     private string $url;
     private ?string $target = null;
 
-    public function __construct(string $url)
+    /**
+     * @param string|AdminURL $url
+     */
+    public function __construct($url)
     {
-        $this->url = $url;
+        $this->url = (string)$url;
     }
 
-    public static function create(string $url, bool $newTab) : self
+    /**
+     * @param string|AdminURL $url
+     * @param bool $newTab
+     * @return self
+     */
+    public static function create($url, bool $newTab) : self
     {
         $target = new self($url);
 

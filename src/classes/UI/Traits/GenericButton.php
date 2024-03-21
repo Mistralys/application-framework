@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * Trait that can be used to add all button interface methods,
  * without extending the {@see UI_Button} class. Instead, all
@@ -117,11 +119,11 @@ trait UI_Traits_GenericButton
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string $target
      * @return $this
      */
-    public function link(string $url, string $target = '') : self
+    public function link($url, string $target = '') : self
     {
         $this->getButtonInstance()->link($url, $target);
         return $this;

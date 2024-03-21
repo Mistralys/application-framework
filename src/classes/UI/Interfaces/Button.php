@@ -2,6 +2,7 @@
 
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
 
 interface UI_Interfaces_Button
     extends
@@ -63,11 +64,11 @@ interface UI_Interfaces_Button
     public function click(string $statement) : self;
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string $target
      * @return $this
      */
-    public function link(string $url, string $target='') : self;
+    public function link($url, string $target='') : self;
 
     /**
      * @param string|number|UI_Renderable_Interface $tooltip

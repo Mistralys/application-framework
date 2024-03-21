@@ -9,6 +9,7 @@
 
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits_Classable;
+use UI\AdminURLs\AdminURL;
 
 /**
  * A configurable HTML `button` element. Use the
@@ -642,10 +643,15 @@ class UI_Button
     {
         echo $this->render();
     }
-    
-    public function link(string $url, string $target='') : self
+
+    /**
+     * @param string|AdminURL $url
+     * @param string $target
+     * @return $this
+     */
+    public function link($url, string $target='') : self
     {
-        $this->url = $url;
+        $this->url = (string)$url;
         $this->urlTarget = $target;
         $this->mode = self::MODE_LINKED;
         

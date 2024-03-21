@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
 
 /**
  * Container for individual steps in the navigator.
@@ -107,12 +108,12 @@ class UI_Page_StepsNavigator_Step
     
    /**
     * Turns the step into a linked text.
-    * @param string $url
+    * @param string|AdminURL $url
     * @return $this
     */
-    public function link(string $url) : self
+    public function link($url) : self
     {
-        $this->link = $url;
+        $this->link = (string)$url;
         return $this;
     }
     

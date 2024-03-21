@@ -36,7 +36,7 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
     /**
      * Makes the item link to the specified URL.
      *
-     * @param string|array<string,mixed> $urlOrParams
+     * @param string|AdminURL|array<string,mixed> $urlOrParams
      * @return $this
      *
      * @throws ClassNotExistsException
@@ -50,7 +50,7 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
         }
 
         $this->mode = 'linked';
-        $this->url = $url;
+        $this->url = (string)$url;
 
         return $this;
     }

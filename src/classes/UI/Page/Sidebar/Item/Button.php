@@ -7,7 +7,11 @@
  * @see UI_Page_Sidebar_Item_Button
  */
 
+use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Traits_Classable;
+use UI\AdminURLs\AdminURL;
 use function AppUtils\parseVariable;
 
 /**
@@ -78,12 +82,12 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string $target
      * @return $this
      * @see UI_Page_Sidebar_Item_Button::makeLinked()
      */
-    public function link(string $url, string $target = '') : self
+    public function link($url, string $target = '') : self
     {
         return $this->makeLinked($url, !empty($target));
     }
@@ -91,9 +95,10 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     /**
      * Makes the button link to the specified URL.
      *
-     * @param string|array<string,string> $urlOrParams
+     * @param string|AdminURL|array<string,string> $urlOrParams
      * @param boolean $newWindow Whether to open the link in a new tab/window
      * @return $this
+     * @throws BaseClassHelperException
      */
     public function makeLinked($urlOrParams, bool $newWindow=false) : self
     {

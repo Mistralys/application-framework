@@ -7,6 +7,8 @@
  * @see UI_Bootstrap_Tabs
  */
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * Handles individual tabs in a tab container.
  * 
@@ -196,14 +198,14 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
    /**
     * Turns the tab into a static link that does not have any content.
     * 
-    * @param string $url
+    * @param string|AdminURL $url
     * @param bool $newTab
     * @return UI_Bootstrap_Tab
     */
-    public function makeLinked(string $url, bool $newTab=false) : UI_Bootstrap_Tab
+    public function makeLinked($url, bool $newTab=false) : UI_Bootstrap_Tab
     {
         $this->type = self::TYPE_LINK;
-        $this->url = $url;
+        $this->url = (string)$url;
 
         if($newTab) {
             $this->setURLTarget('_blank');

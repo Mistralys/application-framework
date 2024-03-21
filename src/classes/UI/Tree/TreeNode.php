@@ -10,6 +10,7 @@ use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use UI;
+use UI\AdminURLs\AdminURL;
 use UI\Targets\BaseTarget;
 use UI\Targets\ClickTarget;
 use UI\Targets\URLTarget;
@@ -175,7 +176,12 @@ class TreeNode implements Application_Interfaces_Iconizable
         return $this->childNodes;
     }
 
-    public function link(string $url, bool $newTab=false) : self
+    /**
+     * @param string|AdminURL $url
+     * @param bool $newTab
+     * @return $this
+     */
+    public function link($url, bool $newTab=false) : self
     {
         return $this->setTarget(URLTarget::create($url, $newTab));
     }

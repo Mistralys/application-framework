@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * Twitter Bootstrap-based switch element that acts like a checkbox.
  *
@@ -152,11 +154,11 @@ class HTML_QuickForm2_Element_UIButton extends HTML_QuickForm2_Element_Button
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string $target
      * @return $this
      */
-    public function link(string $url, string $target = '') : self
+    public function link($url, string $target = '') : self
     {
         $this->getButtonInstance()->link($url, $target);
         return $this;

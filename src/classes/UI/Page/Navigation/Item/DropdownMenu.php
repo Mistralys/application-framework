@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
+use UI\AdminURLs\AdminURL;
 use function AppUtils\parseURL;
 
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
@@ -68,13 +69,13 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * turns the button into a split button with the caret
     * used to access the menu.
     * 
-    * @param string $url
+    * @param string|AdminURL $url
     * @return UI_Page_Navigation_Item_DropdownMenu
     */
-    public function link(string $url) : UI_Page_Navigation_Item_DropdownMenu
+    public function link($url) : UI_Page_Navigation_Item_DropdownMenu
     {
         $this->makeSplit();
-        $this->link = $url;
+        $this->link = (string)$url;
         return $this;
     }
 
