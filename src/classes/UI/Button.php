@@ -9,7 +9,7 @@
 
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\JSHelper;
-use AppUtils\Traits_Classable;
+use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURL;
 
 /**
@@ -29,7 +29,7 @@ class UI_Button
 {
     use Application_Traits_Iconizable;
     use UI_Traits_RenderableGeneric;
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_Conditional;
     use UI_Traits_ClientConfirmable;
  
@@ -498,7 +498,7 @@ class UI_Button
             
             if($tooltip) {
                 $title = $tooltip;
-                JSHelper::tooltipify($this->id);
+                \JSHelper::tooltipify($this->id);
             }
         }
     
