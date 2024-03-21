@@ -192,4 +192,12 @@ class AdminURL implements RenderableInterface
     {
         return $this->get();
     }
+
+    /**
+     * @return array<string,string>
+     */
+    public function getParams() : array
+    {
+        return $this->params;
+    }
 }
