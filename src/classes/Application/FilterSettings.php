@@ -186,14 +186,14 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     private bool $searchConfigured = false;
 
-   /**
-    * Automatically configures search terms in the filters
-    * if a search setting is present. Meant to be used during
-    * the <code>_configureFilters()</code> method.
-    * 
-    * @param string|NULL $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
-    */
-    protected function configureSearch(?string $setting=null) : void
+    /**
+     * Automatically configures search terms in the filters
+     * if a search setting is present. Meant to be used during
+     * the <code>_configureFilters()</code> method.
+     *
+     * @param string|SettingDef|NULL $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
+     */
+    protected function configureSearch($setting=null) : void
     {
         if($this->searchConfigured) {
             return;
@@ -236,10 +236,19 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this->addElementSearch(array('Full text'));
     }
 
-    public function getSearchSetting(?string $name=null) : SettingDef
+    /**
+     * @param string|SettingDef $name
+     * @return SettingDef
+     * @throws Application_Exception
+     */
+    public function getSearchSetting($name=null) : SettingDef
     {
         if(empty($name)) {
             $name = self::SETTING_DEFAULT_SEARCH;
+        }
+
+        if($name instanceof SettingDef) {
+            $name = $name->getName();
         }
 
         return $this->requireSetting($name);
