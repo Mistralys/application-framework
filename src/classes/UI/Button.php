@@ -8,6 +8,7 @@
  */
 
 use AppUtils\Interfaces\StringableInterface;
+use AppUtils\JSHelper;
 use AppUtils\Traits_Classable;
 use UI\AdminURLs\AdminURL;
 
@@ -707,16 +708,16 @@ class UI_Button
     * Makes the button redirect to the target URL, displaying
     * a clientside loader while the target page loads. 
     * 
-    * @param string $url
+    * @param string|AdminURL $url
     * @param string $loaderText
     * @return $this
     */
-    public function loaderRedirect(string $url, string $loaderText='') : self
+    public function loaderRedirect($url, string $loaderText='') : self
     {
         return $this->click(sprintf(
-            "application.redirect('%s', %s)", 
+            "application.redirect('%s', %s)",
             $url,
-            JSHelper::phpVariable2JS($loaderText, AppUtils\JSHelper::QUOTE_STYLE_SINGLE)
+            JSHelper::phpVariable2JS($loaderText, JSHelper::QUOTE_STYLE_SINGLE)
         ));
     }
 
@@ -837,7 +838,12 @@ class UI_Button
         return $this;
     }
 
-    public function presetView(string $url, string $target='') : self
+    /**
+     * @param string|AdminURL $url
+     * @param string $target
+     * @return self
+     */
+    public function presetView($url, string $target='') : self
     {
         return $this
             ->setLabel(t('View'))

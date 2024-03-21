@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\QuickNavigation\Items;
 
+use UI\AdminURLs\AdminURL;
 use UI\Page\Navigation\QuickNavigation;
 use UI\Page\Navigation\QuickNavigation\BaseQuickNavItem;
 use UI_Exception;
@@ -32,15 +33,15 @@ class URLNavItem extends BaseQuickNavItem
     /**
      * @param QuickNavigation $quickNavigation
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @throws UI_Exception
      */
-    public function __construct(QuickNavigation $quickNavigation, $label, string $url)
+    public function __construct(QuickNavigation $quickNavigation, $label, $url)
     {
         parent::__construct($quickNavigation);
 
         $this->label = toString($label);
-        $this->url = $url;
+        $this->url = (string)$url;
     }
 
     public function injectNavigation(UI_Page_Navigation $navigation) : void

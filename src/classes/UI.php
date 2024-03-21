@@ -965,10 +965,10 @@ class UI
     
    /**
     * @param string $label
-    * @param string $url
+    * @param string|AdminURL $url
     * @return UI_Bootstrap_Anchor
     */
-    public function createAnchor(string $label='', string $url='') : UI_Bootstrap_Anchor
+    public function createAnchor(string $label='', $url='') : UI_Bootstrap_Anchor
     {
         $anchor = new UI_Bootstrap_Anchor($this);
         $anchor->setLabel($label);

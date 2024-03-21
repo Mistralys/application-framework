@@ -7,6 +7,8 @@
  * @see UI_Bootstrap_Anchor
  */
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * Bootstrap anchor element.
  * 
@@ -18,14 +20,15 @@ class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces
 {
     use Application_Traits_Iconizable;
     
-   /**
-    * @var string
-    */
-    protected $label = '';
-    
+    protected string $label = '';
+
+    /**
+     * @param string|AdminURL $href
+     * @return UI_Bootstrap|UI_Bootstrap_Anchor
+     */
     public function setHref($href)
     {
-        return $this->setAttribute('href', $href);
+        return $this->setAttribute('href', (string)$href);
     }
     
     public function setClick($statement)
@@ -59,7 +62,7 @@ class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces
         return $this;
     }
     
-    public function getLabel()
+    public function getLabel() : string
     {
         return $this->label;
     }

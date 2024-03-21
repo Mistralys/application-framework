@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
+
 class UI_ItemsSelector extends UI_Renderable
 {
    /**
     * @var array
     */
-    protected $items = array();
-
-   /**
-    * @var string
-    */
-    protected $id;
+    protected array $items = array();
+    protected string $id;
     
     protected function initRenderable() : void
     {
@@ -18,35 +19,36 @@ class UI_ItemsSelector extends UI_Renderable
     }
     
    /**
-    * Sets the ID of the main HTML wrapping element of the selector.
+    * Sets the ID of the selector's HTML wrapping element.
     * @param string $id
-    * @return UI_ItemsSelector
+    * @return $this
     */
-    public function setID($id)
+    public function setID(string $id) : self
     {
         $this->id = $id;
         return $this;
     }
     
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
-    
-   /**
-    * Adds a new item to link to.
-    * 
-    * @param string $label
-    * @param string $url
-    * @param string $description Optional description text to show as help.
-    * @return UI_ItemsSelector
-    */
-    public function addItem($label, $url, $description=null)
+
+    /**
+     * Adds a new item to link to.
+     *
+     * @param string|int|float|StringableInterface|NULL $label
+     * @param string|AdminURL $url
+     * @param string|int|float|StringableInterface|NULL $description Optional description text to show as help.
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function addItem($label, $url, $description=null) : self
     {
         $this->items[] = array(
-            'label' => $label,
-            'url' => $url,
-            'description' => $description
+            'label' => toString($label),
+            'url' => (string)$url,
+            'description' => toString($description)
         );
         
         return $this;

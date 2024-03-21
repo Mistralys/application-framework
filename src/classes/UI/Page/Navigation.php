@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Traits\ClassableTrait;
+use UI\AdminURLs\AdminURL;
 
 /**
  * Navigation handling class: used for the main navigation
@@ -266,7 +267,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     * the page variables to the parameters (mode, submode, etc.).
     * 
     * @param string|number|UI_Renderable_Interface|NULL $title
-    * @param array<string,string>|string $paramsOrURL If a URL is given, it is parsed to extract the query parameters.
+    * @param array<string,string>|AdminURL|string $paramsOrURL If a URL is given, it is parsed to extract the query parameters.
     * @return UI_Page_Navigation_Item_InternalLink
     */
     public function addSubnavLink($title, $paramsOrURL=array()) : UI_Page_Navigation_Item_InternalLink
@@ -294,10 +295,10 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     * its parameters.
     * 
     * @param string|number|UI_Renderable_Interface|NULL $title
-    * @param string $url
+    * @param string|AdminURL $url
     * @return UI_Page_Navigation_Item_InternalLink|UI_Page_Navigation_Item_ExternalLink
     */
-    public function addURL($title, string $url) : UI_Page_Navigation_Item
+    public function addURL($title, $url) : UI_Page_Navigation_Item
     {
         $params = Application_Request::resolveParams($url);
 

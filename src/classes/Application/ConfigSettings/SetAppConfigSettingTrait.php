@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Application\ConfigSettings;
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * Trait with setter methods for all application configuration settings.
  * Meant to be used in tandem with the {@see SetConfigSettingInterface}
@@ -332,12 +334,12 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @return $this
      */
-    public function setURL(string $url) : self
+    public function setURL($url) : self
     {
-        return $this->setBootDefine(BaseConfigRegistry::URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::URL, (string)$url);
     }
 
     /**
@@ -345,12 +347,12 @@ trait SetAppConfigSettingTrait
      * automatically from the {@see BaseConfigRegistry::URL} setting, but can be
      * overridden here if the application setup is different.
      *
-     * @param string $url
+     * @param string|AdminURL $url
      * @return $this
      */
-    public function setVendorURL(string $url) : self
+    public function setVendorURL($url) : self
     {
-        return $this->setBootDefine(BaseConfigRegistry::VENDOR_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::VENDOR_URL, (string)$url);
     }
 
     /**
@@ -381,12 +383,12 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @return $this
      */
-    public function setInstallURL(string $url) : self
+    public function setInstallURL($url) : self
     {
-        return $this->setBootDefine(BaseConfigRegistry::INSTALL_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::INSTALL_URL, (string)$url);
     }
 
     /**
@@ -399,12 +401,12 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @return $this
      */
-    public function setDeeplProxyURL(string $url) : self
+    public function setDeeplProxyURL($url) : self
     {
-        return $this->setBootDefine(BaseConfigRegistry::DEEPL_PROXY_URL, $url);
+        return $this->setBootDefine(BaseConfigRegistry::DEEPL_PROXY_URL, (string)$url);
     }
 
     /**

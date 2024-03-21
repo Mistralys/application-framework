@@ -19,6 +19,7 @@ use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
+use UI\AdminURLs\AdminURL;
 use UI\Page\Navigation\NavConfigurator;
 
 /**
@@ -345,7 +346,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * // redirect to an application internal URL by specifying parameters
      * redirectTo(array('page' => 'home'));
      *
-     * @param array<string,string|number>|string|NULL $paramsOrURL
+     * @param array<string,string|number>|AdminURL|string|NULL $paramsOrURL
      * @return never
      * @throws DriverException
      */
@@ -357,7 +358,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
         else
         {
-            $url = $paramsOrURL;
+            $url = (string)$paramsOrURL;
             if (empty($url))
             {
                 $url = APP_URL;
@@ -1692,10 +1693,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Parses the specified application request URL to access
      * information about it.
      *
-     * @param string $url
+     * @param string|AdminURL $url
      * @return Application_URL
      */
-    public function parseURL(string $url) : Application_URL
+    public function parseURL($url) : Application_URL
     {
         return new Application_URL($url);
     }

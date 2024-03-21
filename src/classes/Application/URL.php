@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use UI\AdminURLs\AdminURL;
 use function AppUtils\parseURL;
 use AppUtils\URLInfo;
 
@@ -46,9 +47,13 @@ class Application_URL
      */
     protected URLInfo $info;
 
-    public function __construct(string $url)
+    /**
+     * @param string|AdminURL $url
+     * @throws Application_Exception
+     */
+    public function __construct($url)
     {
-        $this->rawURL = $url;
+        $this->rawURL = (string)$url;
         $this->info = parseURL($this->rawURL);
 
         $this->parse();

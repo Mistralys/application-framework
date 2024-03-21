@@ -19,6 +19,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use UI\AdminURLs\AdminURL;
 use function AppUtils\parseVariable;
 
 /**
@@ -984,14 +985,16 @@ class Application
     }
 
     /**
-     * @param string $url
+     * @param string|AdminURL $url
      * @return never
      *
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect(string $url)
+    public static function redirect($url)
     {
+        $url = (string)$url;
+
         try
         {
             Application_EventHandler::trigger(
