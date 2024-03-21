@@ -5,7 +5,7 @@
 
 declare(strict_types=1);
 
-namespace Maileditor\UI\AdminURLs;
+namespace UI\AdminURLs;
 
 use Application\AppFactory;
 use Application_Admin_ScreenInterface;
