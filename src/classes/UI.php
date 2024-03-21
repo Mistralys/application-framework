@@ -15,6 +15,7 @@ use AppUtils\FileHelper;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
+use UI\AdminURLs\AdminURL;
 use UI\ClientResourceCollection;
 use UI\SystemHint;
 use UI\PaginationRenderer;
@@ -716,6 +717,15 @@ class UI
     }
 
     // region: Create UI helpers
+
+    /**
+     * @param array<string,string|int|float|bool|null> $params
+     * @return AdminURL
+     */
+    public static function adminURL(array $params=array()) : AdminURL
+    {
+        return AdminURL::create($params);
+    }
 
     public static function createNavigation(string $navigationID) : UI_Page_Navigation
     {
