@@ -97,4 +97,18 @@ class RevisionSelectionTests extends RevisionableTestCase
 
         $this->assertSame($draftRevision, $latest);
     }
+
+    public function test_getDateLastFinalized() : void
+    {
+        $record = $this->createTestRevisionable();
+
+        $record->makeFinalized();
+        $finalizedDate = $record->getRevisionDate();
+
+        $record->startCurrentUserTransaction();
+        $record->setStructuralKey('Structural change');
+        $record->endTransaction();
+
+        $this->assertEquals($finalizedDate, $record->getDateLastFinalized());
+    }
 }

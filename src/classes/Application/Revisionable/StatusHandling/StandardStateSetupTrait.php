@@ -11,6 +11,7 @@ namespace Application\Revisionable\StatusHandling;
 use Application\Revisionable\RevisionableException;
 use Application\StateHandler\StateHandlerException;
 use Application_StateHandler_State;
+use DateTime;
 
 /**
  * Trait used to implement the standard state setup
@@ -214,5 +215,27 @@ trait StandardStateSetupTrait
             ),
             StandardStateSetupInterface::ERROR_NO_FINALIZED_REVISION
         );
+    }
+
+    /**
+     * Retrieves the date the mailing has been published last,
+     * if ever. Will return null if it has never been published
+     * so far.
+     *
+     * @return DateTime|null
+     */
+    public function getDateLastFinalized() : ?DateTime
+    {
+        $rev = $this->getLatestFinalizedRevision();
+
+        if($rev === null) {
+            return null;
+        }
+
+        $this->rememberRevision();
+        $date = $this->getRevisionDate();
+        $this->restoreRevision();
+
+        return $date;
     }
 }

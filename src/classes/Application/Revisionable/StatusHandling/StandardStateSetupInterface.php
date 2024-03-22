@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable\StatusHandling;
 
 use Application\Revisionable\RevisionableInterface;
+use DateTime;
 
 /**
  * For details, see {@see StandardStateSetupTrait}.
@@ -88,4 +89,5 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public function getLatestFinalizedRevision() : ?int;
     public function hasFinalizedRevision() : bool;
     public function selectLatestFinalizedRevision() : self;
+    public function getDateLastFinalized() : ?DateTime;
 }
