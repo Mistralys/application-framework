@@ -153,6 +153,10 @@ abstract class DBHelper_FetchBase
     
     protected function escapeColumn(string $column) : string
     {
+        if(strpos($column, '`')) {
+            return $column;
+        }
+
         $parts = explode('.', $column);
         
         $keep = array();
