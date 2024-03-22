@@ -696,12 +696,6 @@ abstract class Application_Revisionable
         return $this->isChangingAllowed();
     }
 
-    /**
-     * Retrieves the state the revisionable is initially created with.
-     * @return Application_StateHandler_State
-     * @throws StateHandlerException
-     * @throws BaseException
-     */
     public function getInitialState() : Application_StateHandler_State
     {
         return $this->stateHandler->getInitialState();
@@ -710,5 +704,10 @@ abstract class Application_Revisionable
     public function isStub() : bool
     {
         return $this->getID() === Application_RevisionableCollection::STUB_OBJECT_ID;
+    }
+
+    public function getLatestRevisionByState(Application_StateHandler_State $state) : ?int
+    {
+        return $this->getCollection()->getLatestRevisionByState($this->getID(), $state);
     }
 }

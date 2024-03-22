@@ -80,11 +80,24 @@ interface RevisionableInterface
     public function hasState(string $stateName) : bool;
 
     /**
-     * Retrieves the state the revisionable is initially created with.
+     * Retrieves the state the revisionable is initially created with,
+     * as defined by the revisionable's state setup.
+     *
      * @return Application_StateHandler_State
      * @throws StateHandlerException
      */
     public function getInitialState() : Application_StateHandler_State;
+
+    /**
+     * Attempts to find the most recent revision number that
+     * matches the given state.
+     *
+     * @param Application_StateHandler_State $state
+     * @return int|null
+     */
+    public function getLatestRevisionByState(Application_StateHandler_State $state) : ?int;
+
+    public function isStub() : bool;
 
     /**
      * A list of all available states for the item, as an indexed

@@ -7,6 +7,7 @@ namespace Application\Revisionable;
 use Application_CollectionInterface;
 use Application_RevisionableCollection_FilterCriteria;
 use Application_RevisionableCollection_FilterSettings;
+use Application_StateHandler_State;
 use Application_User;
 
 interface RevisionableCollectionInterface extends Application_CollectionInterface
@@ -107,6 +108,7 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
     public function getByRequest() : ?RevisionableInterface;
     public function revisionExists(int $revision) : bool;
     public function getCurrentRevision(int $revisionableID) : ?int;
+    public function getLatestRevisionByState(int $revisionableID, Application_StateHandler_State $state) : ?int;
 
     /**
      * @return array<string,string>

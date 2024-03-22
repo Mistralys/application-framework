@@ -383,6 +383,30 @@ abstract class Application_RevisionableCollection
         
         return null;
     }
+
+    /**
+     * Attempts to find the most recent revision number for the
+     * target revisionable ID that matches the given state.
+     *
+     * @param int $revisionableID
+     * @param Application_StateHandler_State $state
+     * @return int|null
+     */
+    public function getLatestRevisionByState(int $revisionableID, Application_StateHandler_State $state) : ?int
+    {
+        $revision = DBHelper::createFetchOne($this->getRevisionsTableName())
+            ->selectColumn('MAX(`'.$this->getRevisionKeyName().'`) as `rev`')
+            ->whereValue($this->getPrimaryKeyName(), $revisionableID)
+            ->whereValue(self::COL_REV_STATE, $state->getName())
+            ->whereValues($this->getCampaignKeys())
+            ->fetch();
+
+        if (isset($revision['rev'])) {
+            return (int)$revision['rev'];
+        }
+
+        return null;
+    }
     
    /**
     * Checks whether the specified column value exists in the
