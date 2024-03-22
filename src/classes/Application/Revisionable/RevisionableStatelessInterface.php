@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Interfaces\ChangelogableInterface;
+use Application_CollectionItemInterface;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
@@ -13,6 +14,7 @@ use TestDriver\Revisionables\RevisionableCollection;
 
 interface RevisionableStatelessInterface
     extends
+    Application_CollectionItemInterface,
     RevisionDependentInterface,
     Application_LockableRecord_Interface,
     Application_Interfaces_Disposable,
