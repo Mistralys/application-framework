@@ -2866,7 +2866,7 @@ class UI_Form extends UI_Renderable
         '</span>';
     }
 
-    protected function resolveContainer(?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Container
+    public function resolveContainer(?HTML_QuickForm2_Container $container = null) : HTML_QuickForm2_Container
     {
         if($container)
         {
