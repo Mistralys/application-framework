@@ -239,6 +239,10 @@ abstract class Application_RevisionableCollection
         return $this->cachedItems[$record_id];
     }
 
+    /**
+     * @inheritDoc
+     * @return $this
+     */
     public function unloadRecord(RevisionableInterface $revisionable) : self
     {
         $record_id = $revisionable->getID();
@@ -248,6 +252,19 @@ abstract class Application_RevisionableCollection
         }
 
         $revisionable->dispose();
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function resetRecordCache() : self
+    {
+        foreach($this->cachedItems as $revisionable) {
+            $this->unloadRecord($revisionable);
+        }
 
         return $this;
     }
@@ -262,7 +279,6 @@ abstract class Application_RevisionableCollection
         );
     }
 
-    
    /**
     * Retrieves a revisionable by its revision.
     *

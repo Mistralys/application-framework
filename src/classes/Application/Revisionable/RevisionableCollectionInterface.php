@@ -27,6 +27,14 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
      * @return $this
      */
     public function unloadRecord(RevisionableInterface $revisionable) : self;
+
+    /**
+     * Resets the internal object instance cache, and disposes
+     * of all existing instances.
+     *
+     * @return $this
+     */
+    public function resetRecordCache() : self;
     public function getRecordTableName() : string;
     /**
      * @return class-string
