@@ -31,7 +31,6 @@ abstract class Application_Revisionable
     extends Application_RevisionableStateless
     implements RevisionableInterface
 {
-    public const ERROR_SAVING_WITHOUT_TRANSACTION = 149301;
     public const ERROR_INVALID_STATE_CHANGE = 149303;
     public const ERROR_NO_STATE_AVAILABLE = 149304;
 
