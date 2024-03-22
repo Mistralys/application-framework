@@ -1,6 +1,8 @@
 <?php
 
 use Application\AppFactory;
+use Application\Revisionable\RevisionableInterface;
+use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 
@@ -210,9 +212,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * @param string $label
     * @param Application_User|NULL $author If empty, the current user is used.
     * @param array<string,mixed> $data 
-    * @return Application_RevisionableCollection_DBRevisionable
+    * @return RevisionableInterface
     */
-    public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : Application_RevisionableCollection_DBRevisionable
+    public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : RevisionableInterface
     {
         DBHelper::requireTransaction(sprintf('Create a new %s record.', $this->getRecordReadableNameSingular()));
         
@@ -285,27 +287,36 @@ abstract class Application_RevisionableCollection implements Application_Collect
     }
     
    /**
-    * @var Application_RevisionableCollection_DBRevisionable[]|NULL
+    * @var RevisionableInterface[]|NULL
     */
     protected ?array $cachedItems = null;
     
    /**
-    * @return Application_RevisionableCollection_DBRevisionable
+    * @return RevisionableInterface
     */
-    public function getByID(int $revisionableID)
+    public function getByID(int $record_id)
     {
-        $class = $this->getRecordClassName();
-        
         if(!isset($this->cachedItems)) {
             $this->cachedItems = array();
         }
         
-        if(!isset($this->cachedItems[$revisionableID])) {
-            $this->cachedItems[$revisionableID] = new $class($this, $revisionableID);
+        if(!isset($this->cachedItems[$record_id])) {
+            $this->cachedItems[$record_id] = $this->createRecordInstance($record_id);
         }
         
-        return $this->cachedItems[$revisionableID];
+        return $this->cachedItems[$record_id];
     }
+
+    protected function createRecordInstance(int $record_id) : RevisionableInterface
+    {
+        $class = $this->getRecordClassName();
+
+        return ClassHelper::requireObjectInstanceOf(
+            RevisionableInterface::class,
+            new $class($this, $record_id)
+        );
+    }
+
     
    /**
     * Retrieves a revisionable by its revision.
