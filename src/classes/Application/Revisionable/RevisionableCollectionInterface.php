@@ -18,7 +18,15 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
     public function createDummyRecord() : RevisionableInterface;
     public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : RevisionableInterface;
     public function getInstanceID() : string;
-    public function unloadRecord(RevisionableInterface $revisionable) : void;
+
+    /**
+     * Unloads the record from the internal object instance cache,
+     * and calls the record's {@see \Application_Interfaces_Disposable::dispose()} method.
+     *
+     * @param RevisionableInterface $revisionable
+     * @return $this
+     */
+    public function unloadRecord(RevisionableInterface $revisionable) : self;
     public function getRecordTableName() : string;
     /**
      * @return class-string
