@@ -1,12 +1,16 @@
 <?php
 
 use Application\AppFactory;
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ConvertHelper_Exception;
 
-abstract class Application_RevisionableCollection implements Application_CollectionInterface
+abstract class Application_RevisionableCollection
+    implements
+    RevisionableCollectionInterface
 {
     use Application_Traits_Loggable;
 
@@ -27,56 +31,6 @@ abstract class Application_RevisionableCollection implements Application_Collect
     public const STUB_OBJECT_ID = -9999;
 
     /**
-    * @return string
-    */
-    abstract public function getRecordTableName() : string;
-    
-   /**
-    * @return class-string
-    */
-    abstract public function getRecordClassName() : string;
-    
-   /**
-    * @return string
-    */
-    abstract public function getRecordTypeName() : string;
-    
-   /**
-    * @return class-string
-    */
-    abstract public function getRecordFiltersClassName() : string;
-    
-   /**
-    * @return class-string
-    */
-    abstract public function getRecordFilterSettingsClassName() : string;
-    
-   /**
-    * @return class-string
-    */
-    abstract public function getRevisionsStorageClass() : string;
-    
-   /**
-    * @return array<string,string|number>
-    */
-    abstract public function getAdminURLParams() : array;
-    
-   /**
-    * @return string
-    */
-    abstract public function getRecordReadableNameSingular() : string;
-    
-   /**
-    * @return string
-    */
-    abstract public function getRecordReadableNamePlural() : string;
-    
-   /**
-    * @return class-string
-    */
-    abstract public function getRecordCopyRevisionClass() : string;
-    
-    /**
      * This is called right after the collection's constructor:
      * it is used to process any custom arguments that may have
      * been specified in the {@link create()} method call.
@@ -87,14 +41,6 @@ abstract class Application_RevisionableCollection implements Application_Collect
      * @param array<mixed> $arguments
      */
     abstract protected function initCustomArguments(array $arguments=array()) : void;
-    
-    /**
-     * Retrieves the column names and human-readable labels for
-     * all columns that are relevant for a search.
-     *
-     * @return array<string,string> Associative array with column name => readable label pairs.
-     */
-    abstract public function getRecordSearchableColumns() : array;
 
     protected string $recordTypeName;
     protected string $tableName;
@@ -163,18 +109,6 @@ abstract class Application_RevisionableCollection implements Application_Collect
         $columns = $this->getRecordSearchableColumns();
         return array_keys($columns);
     }
-    
-    abstract public function getCurrentRevisionsTableName() : string;
-
-    abstract public function getPrimaryKeyName() : string;
-
-    abstract public function getTableName() : string;
-
-    abstract public function getRevisionsTableName() : string;
-
-    abstract public function getRevisionKeyName() : string;
-
-    abstract public function getRecordChangelogTableName() : string;
 
    /**
     * @return Application_RevisionableCollection_FilterCriteria
@@ -199,9 +133,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
      * information that only instances can provide, like
      * the available revisionable states.
      *
-     * @return Application_RevisionableCollection_DBRevisionable
+     * @return RevisionableInterface
      */
-    public function createDummyRecord() : Application_RevisionableCollection_DBRevisionable
+    public function createDummyRecord() : RevisionableInterface
     {
         return $this->getByID(self::STUB_OBJECT_ID);
     }
@@ -291,10 +225,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     */
     protected ?array $cachedItems = null;
     
-   /**
-    * @return RevisionableInterface
-    */
-    public function getByID(int $record_id)
+    public function getByID(int $record_id) : RevisionableInterface
     {
         if(!isset($this->cachedItems)) {
             $this->cachedItems = array();
@@ -305,6 +236,17 @@ abstract class Application_RevisionableCollection implements Application_Collect
         }
         
         return $this->cachedItems[$record_id];
+    }
+
+    public function unloadRecord(RevisionableInterface $revisionable) : void
+    {
+        $record_id = $revisionable->getID();
+
+        if(isset($this->cachedItems[$record_id])) {
+            unset($this->cachedItems[$record_id]);
+        }
+
+        $revisionable->dispose();
     }
 
     protected function createRecordInstance(int $record_id) : RevisionableInterface
@@ -323,9 +265,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
     *
     * @param integer $revision
     * @throws Application_Exception
-    * @return Application_RevisionableCollection_DBRevisionable
+    * @return RevisionableInterface
     */
-    public function getByRevision($revision)
+    public function getByRevision(int $revision) : RevisionableInterface
     {
         $id = $this->revisionExists($revision);
         
@@ -352,9 +294,9 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * for a request parameter named like the primary key of
     * the revisionable.
     *
-    * @return Application_RevisionableCollection_DBRevisionable|NULL
+    * @return RevisionableInterface|NULL
     */
-    public function getByRequest() : ?Application_RevisionableCollection_DBRevisionable
+    public function getByRequest() : ?RevisionableInterface
     {
         $id = (int)Application_Request::getInstance()->registerParam($this->getPrimaryKeyName())->setInteger()->get();
         if(!empty($id) && $this->idExists($id)) {
@@ -370,7 +312,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * @param integer $revision
     * @return integer|boolean The record ID if found, false otherwise
     */
-    public function revisionExists(int $revision)
+    public function revisionExists(int $revision) : bool
     {
         // since we're tied to the campaign keys, we
         // need to ensure that we look for the revision
@@ -422,7 +364,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
         
         if(isset($entry['current_revision'])) 
         {
-            return intval($entry['current_revision']);
+            return (int)$entry['current_revision'];
         }
         
         return null;
@@ -475,7 +417,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
    /**
     * @var array<string,string>
     */
-    protected $campaignKeys = array();
+    protected array $campaignKeys = array();
     
    /**
     * Sets the collection to use a campaign key: this is used as a namespace
@@ -490,7 +432,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * @param string $keyName
     * @param string $keyValue
     */
-    protected function setCampaignKey($keyName, $keyValue)
+    protected function setCampaignKey(string $keyName, string $keyValue) : void
     {
         $this->campaignKeys[$keyName] = $keyValue;
     }
@@ -502,14 +444,15 @@ abstract class Application_RevisionableCollection implements Application_Collect
     {
         return $this->campaignKeys;
     }
-    
+
     /**
-     * Sets the revisionable's current revision.
+     * @inheritDoc
      *
-     * @param integer $revisionableID
-     * @param integer $revision
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     * @throws ConvertHelper_Exception
      */
-    public function setCurrentRevision($revisionableID, $revision)
+    public function setCurrentRevision(int $revisionableID, int $revision) : void
     {
         $this->log(sprintf(
             'Revisionable [%s] | Setting current revision to [%s].',
@@ -560,13 +503,7 @@ abstract class Application_RevisionableCollection implements Application_Collect
         return AppFactory::createRequest()->buildURL($params);
     }
     
-   /**
-    * Destroys the target revisionable permanently by deleting it
-    * from the database.
-    *
-    * @param Application_RevisionableCollection_DBRevisionable $revisionable
-    */
-    public function destroy(Application_RevisionableCollection_DBRevisionable $revisionable) : void
+    public function destroy(RevisionableInterface $revisionable) : void
     {
         DBHelper::requireTransaction('Destroy a revisionable');
         
