@@ -30,8 +30,7 @@ use AppUtils\NamedClosure;
  */
 abstract class Application_RevisionableStateless
     implements
-    RevisionableStatelessInterface,
-    Application_CollectionItemInterface
+    RevisionableStatelessInterface
 {
     use Application_Traits_LockableWithManager;
     use Application_Traits_Disposable;
