@@ -1,11 +1,31 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Revisionables
+ */
 
 declare(strict_types=1);
 
 namespace Application\Revisionable\StatusHandling;
 
+use Application\Revisionable\RevisionableException;
+use Application\StateHandler\StateHandlerException;
 use Application_StateHandler_State;
 
+/**
+ * Trait used to implement the standard state setup
+ * for revisionables, using four states:
+ *
+ * 1. Draft - Being edited / not published yet.
+ * 2. Finalized - Published or ready to publish.
+ * 3. Inactive - Not in use, but not deleted, can be recovered as a draft.
+ * 4. Deleted - Deleted, can be destroyed at the earliest convenience.
+ *
+ * @package Application
+ * @subpackage Revisionables
+ *
+ * @see StandardStateSetupInterface
+ */
 trait StandardStateSetupTrait
 {
     protected function buildStateDefs() : array
@@ -55,27 +75,69 @@ trait StandardStateSetupTrait
         );
     }
 
-    public function makeFinalized() : self
+    /**
+     * @inheritDoc
+     * @return $this
+     * @throws RevisionableException
+     * @throws StateHandlerException
+     */
+    public function makeFinalized(?string $comments=null) : self
     {
-        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED));
+        if (empty($comments)) {
+            $comments = t('Finalized the %1$s.', $this->getCollection()->getRecordReadableNameSingular());
+        }
+
+        $this->makeState($this->stateHandler->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED), $comments);
         return $this;
     }
 
-    public function makeInactive() : self
+    /**
+     * @inheritDoc
+     * @return $this
+     * @throws RevisionableException
+     * @throws StateHandlerException
+     */
+    public function makeInactive(?string $comments=null) : self
     {
-        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_INACTIVE));
+        if (empty($comments)) {
+            $comments = t('Marked the %1$s as inactive.', $this->getCollection()->getRecordReadableNameSingular());
+        }
+
+        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_INACTIVE), $comments);
         return $this;
     }
 
-    public function makeDeleted() : self
+    /**
+     * @inheritDoc
+     * @param string|null $comments
+     * @return $this
+     * @throws RevisionableException
+     * @throws StateHandlerException
+     */
+    public function makeDeleted(?string $comments=null) : self
     {
-        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_DELETED));
+        if (empty($comments)) {
+            $comments = t('Marked the %1$s as deleted.', $this->getCollection()->getRecordReadableNameSingular());
+        }
+
+        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_DELETED), $comments);
         return $this;
     }
 
-    public function makeDraft() : self
+    /**
+     * @inheritDoc
+     * @param string|null $comments
+     * @return $this
+     * @throws RevisionableException
+     * @throws StateHandlerException
+     */
+    public function makeDraft(?string $comments=null) : self
     {
-        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_DRAFT));
+        if (empty($comments)) {
+            $comments = t('Turned the %1$s into a draft.', $this->getCollection()->getRecordReadableNameSingular());
+        }
+
+        $this->makeState($this->getStateByName(StandardStateSetupInterface::STATUS_DRAFT), $comments);
         return $this;
     }
 

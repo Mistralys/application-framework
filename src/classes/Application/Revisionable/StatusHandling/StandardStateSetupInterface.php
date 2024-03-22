@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Revisionables
+ */
 
 declare(strict_types=1);
 
@@ -6,6 +10,14 @@ namespace Application\Revisionable\StatusHandling;
 
 use Application\Revisionable\RevisionableInterface;
 
+/**
+ * For details, see {@see StandardStateSetupTrait}.
+ *
+ * @package Application
+ * @subpackage Revisionables
+ *
+ * @see StandardStateSetupTrait
+ */
 interface StandardStateSetupInterface extends RevisionableInterface
 {
     public const STATUS_FINALIZED = 'finalized';
@@ -13,10 +25,53 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public const STATUS_INACTIVE = 'inactive';
     public const STATUS_DELETED = 'deleted';
 
-    public function makeFinalized() : self;
-    public function makeInactive() : self;
-    public function makeDeleted() : self;
-    public function makeDraft() : self;
+    /**
+     * Sets the state of the record to "Finalized" in a transaction, and
+     * saves the state change.
+     *
+     * NOTE: This method is made to be used standalone,
+     * outside a transaction since it uses its own transaction.
+     *
+     * @param string|NULL $comments
+     * @return $this
+     */
+    public function makeFinalized(?string $comments=null) : self;
+
+    /**
+     * Sets the state of the record to "Inactive" in a transaction, and
+     * saves the state change.
+     *
+     * NOTE: This method is made to be used standalone,
+     * outside a transaction since it uses its own transaction.
+     *
+     * @param string|NULL $comments
+     * @return $this
+     */
+    public function makeInactive(?string $comments=null) : self;
+
+    /**
+     * Sets the state of the record to "Deleted" in a transaction, and
+     * saves the state change.
+     *
+     * NOTE: This method is made to be used standalone,
+     * outside a transaction since it uses its own transaction.
+     *
+     * @param string|NULL $comments
+     * @return $this
+     */
+    public function makeDeleted(?string $comments=null) : self;
+
+    /**
+     * Sets the state of the record to "Draft" in a transaction, and
+     * saves the state change.
+     *
+     * NOTE: This method is made to be used standalone,
+     * outside a transaction since it uses its own transaction.
+     *
+     * @param string|NULL $comments
+     * @return $this
+     */
+    public function makeDraft(?string $comments=null) : self;
 
     public function isFinalized() : bool;
     public function isInactive() : bool;
