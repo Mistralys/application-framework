@@ -31,8 +31,7 @@ abstract class Application_Revisionable
     extends Application_RevisionableStateless
     implements RevisionableInterface
 {
-    public const ERROR_INVALID_STATE_CHANGE = 149303;
-    public const ERROR_NO_STATE_AVAILABLE = 149304;
+
 
     protected Application_StateHandler $stateHandler;
 
@@ -245,7 +244,7 @@ abstract class Application_Revisionable
                 'No state available in the revisionable [%s].',
                 $this->getIdentification()
             ),
-            self::ERROR_NO_STATE_AVAILABLE
+            RevisionableInterface::ERROR_NO_STATE_AVAILABLE
         );
     }
 
@@ -300,7 +299,7 @@ abstract class Application_Revisionable
                     $newState,
                     $state
                 ),
-                self::ERROR_INVALID_STATE_CHANGE
+                RevisionableInterface::ERROR_INVALID_STATE_CHANGE
             );
         }
 
@@ -709,5 +708,43 @@ abstract class Application_Revisionable
     public function getLatestRevisionByState(Application_StateHandler_State $state) : ?int
     {
         return $this->getCollection()->getLatestRevisionByState($this->getID(), $state);
+    }
+
+    /**
+     * Deletes the latest revision of the mail, and
+     * sets the previous one as active.
+     *
+     * @throws RevisionableException {@see RevisionableInterface::ERROR_CANNOT_UNDO_REVISION}
+     * @return int
+     */
+    public function undoRevision() : int
+    {
+        // get the last two revisions
+        $filters = $this->getRevisionsFilterCriteria();
+        $filters->setOrderBy(Application_RevisionableCollection::COL_REV_DATE, 'DESC');
+        $filters->setLimit(2, 0);
+        $items = $filters->getItems();
+
+        if(count($items) !== 2) {
+            throw new RevisionableException(
+                'Cannot undo revision, no revisions left to undo',
+                '',
+                RevisionableInterface::ERROR_CANNOT_UNDO_REVISION
+            );
+        }
+
+        $collection = $this->getCollection();
+        $revColumn = $collection->getRevisionKeyName();
+
+        $deleteRev = (int)$items[0][$revColumn];
+        $replaceRev = (int)$items[1][$revColumn];
+
+        $this->revisions->removeRevision($deleteRev);
+
+        $collection->setCurrentRevision($this->getID(), $replaceRev);
+
+        $this->selectRevision($replaceRev);
+
+        return $replaceRev;
     }
 }
