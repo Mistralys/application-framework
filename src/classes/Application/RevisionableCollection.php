@@ -239,7 +239,7 @@ abstract class Application_RevisionableCollection
         return $this->cachedItems[$record_id];
     }
 
-    public function unloadRecord(RevisionableInterface $revisionable) : void
+    public function unloadRecord(RevisionableInterface $revisionable) : self
     {
         $record_id = $revisionable->getID();
 
@@ -248,6 +248,8 @@ abstract class Application_RevisionableCollection
         }
 
         $revisionable->dispose();
+
+        return $this;
     }
 
     protected function createRecordInstance(int $record_id) : RevisionableInterface
