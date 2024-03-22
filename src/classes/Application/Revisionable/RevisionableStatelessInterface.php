@@ -8,6 +8,7 @@ use Application\Interfaces\ChangelogableInterface;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
+use Application_RevisionableCollection;
 use TestDriver\Revisionables\RevisionableCollection;
 
 interface RevisionableStatelessInterface
@@ -191,4 +192,10 @@ interface RevisionableStatelessInterface
     public function getCustomKeyValues(): array;
 
     public function handle_revisionLoaded(int $number): void;
+
+    /**
+     * Gets an instance of the revisionable's collection instance.
+     * @return Application_RevisionableCollection
+     */
+    public function getCollection() : Application_RevisionableCollection;
 }
