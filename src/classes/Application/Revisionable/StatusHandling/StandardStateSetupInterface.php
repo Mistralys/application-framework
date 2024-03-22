@@ -22,4 +22,9 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public function isInactive() : bool;
     public function isDeleted() : bool;
     public function isDraft() : bool;
+
+    public function canBeMadeInactive() : bool;
+    public function canBeDeleted() : bool;
+    public function canBeFinalized() : bool;
+    public function canBeDestroyed() : bool;
 }

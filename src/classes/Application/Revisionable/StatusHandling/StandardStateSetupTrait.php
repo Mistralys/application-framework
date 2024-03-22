@@ -98,4 +98,28 @@ trait StandardStateSetupTrait
     {
         return $this->isState(StandardStateSetupInterface::STATUS_DRAFT);
     }
+
+    public function canBeMadeInactive() : bool
+    {
+        return $this
+            ->requireState()
+            ->hasDependency($this->getStateByName(StandardStateSetupInterface::STATUS_INACTIVE));
+    }
+
+    public function canBeFinalized() : bool
+    {
+        return $this
+            ->requireState()
+            ->hasDependency($this->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED));
+    }
+
+    public function canBeDeleted() : bool
+    {
+        return true;
+    }
+
+    public function canBeDestroyed() : bool
+    {
+        return $this->isDeleted();
+    }
 }
