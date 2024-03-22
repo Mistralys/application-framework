@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use Application\Revisionable\RevisionableInterface;
+use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application_RevisionableCollection;
 use Application_Traits_Disposable;
 use Application_Traits_Eventable;
 use Application_User;
+use AppUtils\ClassHelper;
 use TestDriver\Revisionables\Storage\RevisionableStorage;
 use TestDriver\Revisionables\Storage\RevisionCopy;
 
@@ -157,6 +160,15 @@ class RevisionableCollection extends Application_RevisionableCollection
     public function getRecordChangelogTableName(): string
     {
         return self::TABLE_CHANGELOG;
+    }
+
+    public function canRecordBeDestroyed(RevisionableInterface $revisionable): bool
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            RevisionableRecord::class,
+            $revisionable
+        )
+            ->canBeDestroyed();
     }
 
     // endregion

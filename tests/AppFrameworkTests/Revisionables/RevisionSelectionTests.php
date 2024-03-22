@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
+use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application_Revisionable;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDriver\Revisionables\RevisionableCollection;
@@ -80,5 +81,20 @@ class RevisionSelectionTests extends RevisionableTestCase
         $this->assertTrue($record->getRevision() > $rev);
         $this->assertRecordIsDraft($record, 'A structural change must switch to draft.');
         $this->assertSame('New freeform value', $record->getStructuralKey());
+    }
+
+    public function test_getLatestRevisionByState() : void
+    {
+        $record = $this->createTestRevisionable();
+        $draftRevision = $record->getRevision();
+        $draftState = $record->getStateByName(StandardStateSetupInterface::STATUS_DRAFT);
+
+        $record->makeFinalized();
+
+        $collection = $record->getCollection();
+
+        $latest = $collection->getLatestRevisionByState($record->getID(), $draftState);
+
+        $this->assertSame($draftRevision, $latest);
     }
 }
