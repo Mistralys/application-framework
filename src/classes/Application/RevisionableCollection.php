@@ -538,6 +538,10 @@ abstract class Application_RevisionableCollection
                 'revisionable_id' => $revisionable->getID()
             )
         );
+
+        $revisionable->dispose();
+
+        $this->unloadRecord($revisionable);
     }
     
    /**
