@@ -543,19 +543,19 @@ abstract class Application_RevisionableCollection implements Application_Collect
     * @param array<string,string|number> $params
     * @return string
     */
-    protected function getAdminURL($params=array())
+    protected function getAdminURL(array $params=array()) : string
     {
         $params = array_merge($params, $this->getAdminURLParams());
-        return Application_Driver::getInstance()->getRequest()->buildURL($params);
+        return AppFactory::createRequest()->buildURL($params);
     }
     
    /**
-    * Destroys the  target revisionable permanently by deleting it
+    * Destroys the target revisionable permanently by deleting it
     * from the database.
     *
     * @param Application_RevisionableCollection_DBRevisionable $revisionable
     */
-    public function destroy(Application_RevisionableCollection_DBRevisionable $revisionable)
+    public function destroy(Application_RevisionableCollection_DBRevisionable $revisionable) : void
     {
         DBHelper::requireTransaction('Destroy a revisionable');
         
