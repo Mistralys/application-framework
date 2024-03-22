@@ -105,9 +105,17 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
      * @return void
      */
     public function setCurrentRevision(int $revisionableID, int $revision) : void;
+
     /**
      * Destroys the target revisionable permanently by deleting it
      * from the database.
+     *
+     * This does the following things:
+     *
+     * 1. Delete the record from the database.
+     * 2. Add an entry in the application message log.
+     * 3. Call the record's {@see \Application_Interfaces_Disposable::dispose()} method.
+     * 4. Unload the record instance from the collection.
      *
      * @param RevisionableInterface $revisionable
      */
