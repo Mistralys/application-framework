@@ -20,6 +20,8 @@ use Application\Revisionable\RevisionableInterface;
  */
 interface StandardStateSetupInterface extends RevisionableInterface
 {
+    public const ERROR_NO_FINALIZED_REVISION = 153101;
+
     public const STATUS_FINALIZED = 'finalized';
     public const STATUS_DRAFT = 'draft';
     public const STATUS_INACTIVE = 'inactive';
@@ -84,4 +86,6 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public function canBeDestroyed() : bool;
 
     public function getLatestFinalizedRevision() : ?int;
+    public function hasFinalizedRevision() : bool;
+    public function selectLatestFinalizedRevision() : self;
 }

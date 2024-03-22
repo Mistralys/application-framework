@@ -189,4 +189,30 @@ trait StandardStateSetupTrait
     {
         return $this->getLatestRevisionByState($this->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED));
     }
+
+    public function hasFinalizedRevision() : bool
+    {
+        return $this->getLatestFinalizedRevision() !== null;
+    }
+
+    /**
+     * @return $this
+     * @throws RevisionableException
+     */
+    public function selectLatestFinalizedRevision() : self
+    {
+        $rev = $this->getLatestFinalizedRevision();
+        if($rev !== null) {
+            return $this->selectRevision($rev);
+        }
+
+        throw new RevisionableException(
+            'The record has no finalized revision.',
+            sprintf(
+                'The record [%s] has no revisions in finalized state.',
+                $this->getIdentification()
+            ),
+            StandardStateSetupInterface::ERROR_NO_FINALIZED_REVISION
+        );
+    }
 }
