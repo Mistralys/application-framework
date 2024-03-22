@@ -233,7 +233,8 @@ trait StandardStateSetupTrait
         }
 
         $this->rememberRevision();
-        $date = $this->getRevisionDate();
+            $this->selectRevision($rev);
+            $date = $this->getRevisionDate();
         $this->restoreRevision();
 
         return $date;
