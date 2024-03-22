@@ -82,4 +82,6 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public function canBeDeleted() : bool;
     public function canBeFinalized() : bool;
     public function canBeDestroyed() : bool;
+
+    public function getLatestFinalizedRevision() : ?int;
 }

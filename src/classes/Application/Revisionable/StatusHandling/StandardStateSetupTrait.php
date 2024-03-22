@@ -184,4 +184,9 @@ trait StandardStateSetupTrait
     {
         return $this->isDeleted();
     }
+
+    public function getLatestFinalizedRevision() : ?int
+    {
+        return $this->getLatestRevisionByState($this->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED));
+    }
 }
