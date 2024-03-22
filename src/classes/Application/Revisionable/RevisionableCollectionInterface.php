@@ -98,6 +98,10 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
 
     public function getRevisionsTableName() : string;
 
+    /**
+     * The name of the revision ID column.
+     * @return string
+     */
     public function getRevisionKeyName() : string;
 
     public function getRecordChangelogTableName() : string;
