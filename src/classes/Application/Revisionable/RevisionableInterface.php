@@ -26,6 +26,10 @@ interface RevisionableInterface
     extends
     RevisionableStatelessInterface
 {
+    public const ERROR_INVALID_STATE_CHANGE = 149303;
+    public const ERROR_NO_STATE_AVAILABLE = 149304;
+    public const ERROR_CANNOT_UNDO_REVISION = 149305;
+
     public function getStateHandler() : Application_StateHandler;
 
     public function setState(Application_StateHandler_State $newState): self;
