@@ -1032,20 +1032,20 @@ abstract class Application_RevisionableStateless
             $this->revisions->setKey($name, $value);
         }
         
-        if(!empty($changelogID))
-        {
-            $this->enqueueChangelog(
-                $changelogID,
-                array_merge(
-                    $changelogData,
-                    array(
-                        'old' => $old,
-                        'new' => $value
-                    )
-                )
-            );
+        if(empty($changelogID)) {
+            return true;
         }
-        
+
+        if(!isset($changelogData['old'])) {
+            $changelogData['old'] = $old;
+        }
+
+        if(!isset($changelogData['new'])) {
+            $changelogData['new'] = $value;
+        }
+
+        $this->enqueueChangelog($changelogID, $changelogData);
+
         return true;
     }
 
