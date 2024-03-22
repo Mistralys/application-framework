@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
+use Application\Revisionable\RevisionableCollectionInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application_Revisionable;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
@@ -43,7 +45,7 @@ class RevisionSelectionTests extends RevisionableTestCase
 
         $record->makeDeleted();
 
-        $this->expectExceptionCode(Application_Revisionable::ERROR_INVALID_STATE_CHANGE);
+        $this->expectExceptionCode(RevisionableInterface::ERROR_INVALID_STATE_CHANGE);
 
         $record->makeFinalized();
     }
@@ -110,5 +112,26 @@ class RevisionSelectionTests extends RevisionableTestCase
         $record->endTransaction();
 
         $this->assertEquals($finalizedDate, $record->getDateLastFinalized());
+    }
+
+    public function test_undoRevision() : void
+    {
+        $record = $this->createTestRevisionable();
+        $draftRevision = $record->getRevision();
+
+        $record->makeFinalized();
+
+        $record->undoRevision();
+
+        $this->assertSame($draftRevision, $record->getRevision());
+    }
+
+    public function test_undoRevisionCannotDeleteAllRevisions() : void
+    {
+        $record = $this->createTestRevisionable();
+
+        $this->expectExceptionCode(RevisionableInterface::ERROR_CANNOT_UNDO_REVISION);
+
+        $record->undoRevision();
     }
 }
