@@ -1,5 +1,7 @@
 <?php
 
+use Application\Revisionable\RevisionableInterface;
+
 interface Application_CollectionInterface extends Application_Interfaces_Disposable
 {
    /**
@@ -30,5 +32,5 @@ interface Application_CollectionInterface extends Application_Interfaces_Disposa
     * @param integer $record_id
     * @return Application_CollectionItemInterface
     */
-    public function getByID(int $record_id);
+    public function getByID(int $record_id) : Application_CollectionItemInterface;
 }
