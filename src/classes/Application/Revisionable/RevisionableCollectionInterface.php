@@ -11,6 +11,10 @@ use Application_User;
 
 interface RevisionableCollectionInterface extends Application_CollectionInterface
 {
+    public const ERROR_CANNOT_DESTROY_RECORD = 16103;
+    public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
+    public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
+
     public function createDummyRecord() : RevisionableInterface;
     public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : RevisionableInterface;
     public function getInstanceID() : string;
@@ -89,6 +93,11 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
     public function getCurrentRevision(int $revisionableID) : ?int;
 
     /**
+     * @return array<string,string>
+     */
+    public function getCampaignKeys() : array;
+
+    /**
      * Sets the revisionable's current revision.
      *
      * @param integer $revisionableID
@@ -110,4 +119,12 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
      * @see self::getRecordSearchableColumns()
      */
     public function getRecordSearchableKeys() : array;
+
+    /**
+     * Checks whether the target revisionable fills the conditions
+     * to be destroyed permanently.
+     *
+     * @return bool
+     */
+    public function canRecordBeDestroyed(RevisionableInterface $revisionable) : bool;
 }

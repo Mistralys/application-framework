@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Application\AppFactory;
 use Application\Revisionable\RevisionableCollectionInterface;
+use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper_Exception;
 
 abstract class Application_RevisionableCollection
@@ -13,9 +16,6 @@ abstract class Application_RevisionableCollection
     RevisionableCollectionInterface
 {
     use Application_Traits_Loggable;
-
-    public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
-    public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
 
     /**
      * @deprecated Use {@see Application_RevisionableCollection::STUB_OBJECT_ID} instead.
@@ -29,6 +29,7 @@ abstract class Application_RevisionableCollection
     public const COL_REV_AUTHOR = 'author';
     public const COL_REV_PRETTY_REVISION = 'pretty_revision';
     public const STUB_OBJECT_ID = -9999;
+
 
     /**
      * This is called right after the collection's constructor:
@@ -283,9 +284,9 @@ abstract class Application_RevisionableCollection
                 $this->getRecordReadableNameSingular(),
                 $revision,
                 $this->revisionsTableName,
-                json_encode($this->getCampaignKeys())
+                JSONConverter::var2json($this->getCampaignKeys())
             ),
-            self::ERROR_REVISION_DOES_NOT_EXIST
+            RevisionableCollectionInterface::ERROR_REVISION_DOES_NOT_EXIST
         );
     }
     
@@ -336,12 +337,7 @@ abstract class Application_RevisionableCollection
             $where
         );
         
-        if($id > 0) 
-        {
-            return $id;
-        }
-        
-        return false;
+        return $id > 0;
     }
     
     public function getCurrentRevision(int $revisionableID) : ?int
@@ -502,9 +498,22 @@ abstract class Application_RevisionableCollection
         $params = array_merge($params, $this->getAdminURLParams());
         return AppFactory::createRequest()->buildURL($params);
     }
-    
+
     public function destroy(RevisionableInterface $revisionable) : void
     {
+        if(!$this->canRecordBeDestroyed($revisionable))
+        {
+            throw new RevisionableException(
+                'Cannot destroy record',
+                sprintf(
+                    'The %s [%s] cannot be destroyed.',
+                    $this->getRecordReadableNameSingular(),
+                    $revisionable->getIdentification()
+                ),
+                RevisionableCollectionInterface::ERROR_CANNOT_DESTROY_RECORD
+            );
+        }
+
         DBHelper::requireTransaction('Destroy a revisionable');
         
         AppFactory::createMessageLog()->addInfo(
@@ -536,7 +545,7 @@ abstract class Application_RevisionableCollection
     * revisionable tasks like publishing, deleting etc. via the multi-action
     * datagrid feature.
     *
-    * @param string $className The name of the multi action class to use. Must extend the base class.
+    * @param class-string $className The name of the multi action class to use. Must extend the base class.
     * @param Application_Admin_Skeleton $adminScreen The administration screen in which the grid is used.
     * @param UI_DataGrid $grid The grid to apply the action to.
     * @param string $label The label of the item.
@@ -544,7 +553,7 @@ abstract class Application_RevisionableCollection
     * @param boolean $confirm Whether this is an action that displays a confirmation message.
     * @return Application_RevisionableCollection_DataGridMultiAction
     */
-    public function createListMultiAction($className, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, $label, $redirectURL, $confirm=false)
+    public function createListMultiAction(string $className, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, $label, $redirectURL, bool $confirm=false): Application_RevisionableCollection_DataGridMultiAction
     {
         $obj = new $className($this, $adminScreen, $grid, $label, $redirectURL, $confirm);
         
@@ -557,7 +566,7 @@ abstract class Application_RevisionableCollection
                     get_class($obj),
                     'Application_RevisionableCollection_DataGridMultiAction'
                 ),
-                self::ERROR_INVALID_MULTI_ACTION_CLASS
+                RevisionableCollectionInterface::ERROR_INVALID_MULTI_ACTION_CLASS
             );
         }
         
