@@ -31,6 +31,6 @@ class CollectionTests extends RevisionableTestCase
 
         $record = $this->createTestRevisionable();
 
-        $this->assertNotFalse($this->revCollection->revisionExists($record->getRevision()));
+        $this->assertTrue($this->revCollection->revisionExists($record->getRevision()));
     }
 }
