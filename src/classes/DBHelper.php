@@ -634,10 +634,10 @@ class DBHelper
     private static function renderErrorMessage(?PDOException $e=null, ?string $errorMessage=null) : string
     {
         if(!isCLI()) {
-            return (string)(new CLIErrorRenderer($e, $errorMessage));
+            return (string)(new HTMLErrorRenderer($e, $errorMessage));
         }
 
-        return (string)(new HTMLErrorRenderer($e, $errorMessage));
+        return (string)(new CLIErrorRenderer($e, $errorMessage));
     }
 
 
