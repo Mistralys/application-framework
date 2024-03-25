@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use UI\AdminURLs\AdminURL;
 
 class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
 {

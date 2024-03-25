@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Tags;
 
-use Application_FilterCriteria;
+use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
-use function PhpParser\defineCompatibilityTokens;
 
 class TagSortType implements StringPrimaryRecordInterface
 {
@@ -41,10 +40,10 @@ class TagSortType implements StringPrimaryRecordInterface
     public function getSortDirection() : string
     {
         if($this->isAscending()) {
-            return Application_FilterCriteria::ORDER_DIR_ASCENDING;
+            return FilterCriteriaInterface::ORDER_DIR_ASCENDING;
         }
 
-        return Application_FilterCriteria::ORDER_DIR_DESCENDING;
+        return FilterCriteriaInterface::ORDER_DIR_DESCENDING;
     }
 
     public function isAscending() : bool

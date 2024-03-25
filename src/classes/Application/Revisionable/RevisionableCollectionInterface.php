@@ -62,6 +62,8 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
      */
     public function getRevisionsStorageClass() : string;
 
+    public function getAdminListURL(array $params=array()) : string;
+
     /**
      * @return array<string,string|number>
      */

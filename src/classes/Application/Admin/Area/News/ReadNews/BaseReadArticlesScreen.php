@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Admin\Area\News\ReadNews;
 
 use Application\AppFactory;
+use Application\Interfaces\FilterCriteriaInterface;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
@@ -75,7 +76,7 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
             ->selectArticles()
             ->selectPublished()
             ->setLimitByPagination($this->paginator)
-            ->setOrderBy(NewsCollection::COL_DATE_CREATED, Application_FilterCriteria::ORDER_DIR_DESCENDING)
+            ->setOrderBy(NewsCollection::COL_DATE_CREATED, FilterCriteriaInterface::ORDER_DIR_DESCENDING)
             ->getItemsObjects();
 
         foreach($items as $item) {

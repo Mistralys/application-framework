@@ -1,7 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableInterface;
+
 /**
- * @property Application_RevisionableCollection_DBRevisionable $revisionable
+ * @property RevisionableInterface $revisionable
  */
 abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends Application_Admin_Area_Mode_Submode_Action
 {
@@ -12,20 +16,9 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
     */
     abstract protected function createCollection();
     
-    /**
-     * @var Application_RevisionableCollection
-     */
-    protected $collection;
-
-    /**
-     * @var string
-     */
-    protected $recordTypeName;
-
-    /**
-     * @var int
-     */
-    protected $revisionableID;
+    protected Application_RevisionableCollection $collection;
+    protected string $recordTypeName;
+    protected int $revisionableID;
     
     protected function _handleBeforeActions() : void
     {
@@ -38,14 +31,14 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
     * on success.
     * 
     * @throws Application_Exception
-    * @return Application_RevisionableCollection_DBRevisionable
+    * @return RevisionableInterface
     */
-    protected function requireRevisionable() : Application_RevisionableCollection_DBRevisionable
+    protected function requireRevisionable() : RevisionableInterface
     {   
         $this->collection = $this->createCollection();
         $this->recordTypeName = $this->collection->getRecordTypeName();
         
-        $this->revisionableID = intval(Application_Driver::getInstance()->getRequest()->registerParam($this->collection->getPrimaryKeyName())->setInteger()->get());
+        $this->revisionableID = (int)Application_Driver::getInstance()->getRequest()->registerParam($this->collection->getPrimaryKeyName())->setInteger()->get();
         if(empty($this->revisionableID) || !$this->collection->idExists($this->revisionableID)) {
             throw new Application_Exception(
                 'Invalid or missing record ID',

@@ -92,16 +92,31 @@ class AdminURL implements RenderableInterface
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param int $value
+     * @return $this
+     */
     public function int(string $name, int $value) : self
     {
         return $this->string($name, (string)$value);
     }
 
+    /**
+     * @param string $name
+     * @param float $value
+     * @return $this
+     */
     public function float(string $name, float $value) : self
     {
         return $this->string($name, (string)$value);
     }
 
+    /**
+     * @param string $name
+     * @param string|null $value
+     * @return $this
+     */
     public function string(string $name, ?string $value) : self
     {
         if(!empty($value)) {
@@ -111,6 +126,12 @@ class AdminURL implements RenderableInterface
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param bool $value
+     * @param bool $yesNo
+     * @return $this
+     */
     public function bool(string $name, bool $value, bool $yesNo=false) : self
     {
         return $this->string($name, bool2string($value, $yesNo));

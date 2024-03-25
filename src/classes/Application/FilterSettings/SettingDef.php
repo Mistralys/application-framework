@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\FilterSettings;
 
+use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterCriteria;
 use Application_FilterSettings;
 use AppUtils\Interfaces\StringableInterface;
@@ -133,7 +134,7 @@ class SettingDef
     /**
      * @return $this
      */
-    public function configure(Application_FilterCriteria $filterCriteria) : self
+    public function configure(FilterCriteriaInterface $filterCriteria) : self
     {
         if($this->configured) {
             return $this;

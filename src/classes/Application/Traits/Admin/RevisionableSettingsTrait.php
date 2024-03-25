@@ -1,56 +1,47 @@
 <?php
 
+use Application\Revisionable\RevisionableInterface;
+
 /**
  * @property UI_Page_Sidebar $sidebar
  *
  */
-trait Application_Admin_RevisionableSettings
+trait RevisionableSettingsTrait
 {
-    protected $formName;
+    protected string $formName;
     
-    protected $changed = array(
+    protected array $changed = array(
         'initialState' => null,
         'changes' => false,
         'structural' => false,
     );
     
-    public function callback_beforeSave(Application_RevisionableCollection_DBRevisionable $revisionable)
+    public function callback_beforeSave(Application_RevisionableCollection_DBRevisionable $revisionable) : void
     {
         $this->changed['changes'] = $revisionable->hasChanges();
         $this->changed['structural'] = $revisionable->hasStructuralChanges();
     }
     
-    protected function hasChanges()
+    protected function hasChanges() : bool
     {
         return $this->changed['changes'];
     }
     
-    protected function hasStructuralChanges()
+    protected function hasStructuralChanges() : bool
     {
         return $this->changed['structural'];
     }
     
-    protected function stateChanged()
+    protected function stateChanged() : bool
     {
-        if($this->revisionable->getStateName() != $this->changed['initialState']->getName()) {
-            return true;
-        }
-        
-        return false;
+        return $this->revisionable->getStateName() !== $this->changed['initialState']->getName();
     }
-    
-    /**
-     * The state of the revisionable before any changes are made.
-     * @var Application_StateHandler_State
-     */
-    protected $initialState;
     
     protected function _handleActions() : bool
     {
         $this->formName = $this->recordTypeName.'-settings';
         
         if($this->isEditMode()) {
-            $this->revisionable->onBeforeSave(array($this, 'callback_beforeSave'));
             $this->changed['initialState'] = $this->revisionable->getState();
         }
         
@@ -62,18 +53,8 @@ trait Application_Admin_RevisionableSettings
         
         $this->startTransaction();
         
-        $revisionable = $this->processSettings($this->getFormValues());
-        if(!$revisionable instanceof Application_RevisionableCollection_DBRevisionable) {
-            throw new Application_Exception(
-                'No revisionable instance returned',
-                sprintf(
-                    'The [processSettings] method did not return a revisionable instance in the [%s] screen.',
-                    get_class($this)
-                ),
-                15801
-            );
-        }
-        
+            $revisionable = $this->processSettings($this->getFormValues());
+
         $this->endTransaction();
         
         if($this->isEditMode()) {
@@ -124,17 +105,17 @@ trait Application_Admin_RevisionableSettings
      * revisionable. Returns the revisionable instance.
      *
      * @param array $formValues
-     * @return Application_RevisionableCollection_DBRevisionable
+     * @return RevisionableInterface
      */
-    abstract protected function processSettings($formValues);
+    abstract protected function processSettings(array $formValues) : RevisionableInterface;
     
-    abstract protected function injectFormElements();
+    abstract protected function injectFormElements() : void;
     
-    abstract protected function getDefaultFormData();
+    abstract protected function getDefaultFormData() : array;
     
     protected function createSettingsForm() : void
     {
-        $this->createFormableForm($this->getDefaultFormData(), $this->formName);
+        $this->createFormableForm($this->formName, $this->getDefaultFormData());
         
         $this->injectFormElements();
         
@@ -197,13 +178,10 @@ trait Application_Admin_RevisionableSettings
         );
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
-        $title = $this->getTitle();
-        if($this->isEditMode()) {
-            $title = $this->revisionable->renderTitle();
-        }
-        
-        return $this->renderForm($title, $this->formableForm);
+        return $this->renderer
+            ->appendFormable($this)
+            ->makeWithSidebar();
     }
 }

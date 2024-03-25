@@ -1,37 +1,29 @@
 <?php
 /**
- * File containing the class {@see Application_FilterCriteria}.
- *
  * @package Application
  * @subpackage FilterCriteria
- * @see Application_FilterCriteria
  */
 
+declare(strict_types=1);
+
 use Application\FilterCriteria\Events\ApplyFiltersEvent;
-use AppUtils\PaginationHelper;
+use Application\FilterCriteria\FilterCriteriaException;
+use Application\Interfaces\FilterCriteriaInterface;
+use AppUtils\BaseException;
 use UI\PaginationRenderer;
 use function AppUtils\parseVariable;
 
 /**
- * Base class for filtering record collections: allows
- * selecting criteria to filter the records with, and
- * fetch the matching records.
- *
- * This is means to be extended. For database-related
- * filtering, use the specialized class {@see Application_FilterCriteria_Database}.
- *
  * @package Application
  * @subpackage FilterCriteria
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- *
- * @see Application_FilterCriteria_Database
- * @see Application_FilterCriteria_DatabaseExtended
+ * @see FilterCriteriaInterface
  */
 abstract class Application_FilterCriteria
     implements
     Application_Interfaces_Loggable,
     Application_Interfaces_Instanceable,
-    Application_Interfaces_Eventable
+    Application_Interfaces_Eventable,
+    FilterCriteriaInterface
 {
     use Application_Traits_Loggable;
     use Application_Traits_Instanceable;
@@ -39,78 +31,40 @@ abstract class Application_FilterCriteria
 
     public const ERROR_INVALID_SORTING_ORDER = 710003;
     public const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
-    public const ERROR_FILTER_CRITERIA_FINALIZED = 710006;
 
-    const MESSAGE_TYPE_INFO = 'info';
-    const MESSAGE_TYPE_WARNING = 'warning';
-    const ORDER_DIR_ASCENDING = 'ASC';
-    const ORDER_DIR_DESCENDING = 'DESC';
     public const EVENT_APPLY_FILTERS = 'ApplyFilters';
 
-    /**
-     * @var string|NULL
-     */
-    protected $orderField = null;
-
-    /**
-     * @var string
-     */
-    protected $orderDir = self::ORDER_DIR_ASCENDING;
-
-    /**
-     * @var string
-     */
-    protected $search = '';
-    
-    /**
-     * The offset to start retrieving from
-     * @var int
-     */
-    protected $offset = 0;
-    
-    /**
-     * The limit of entries to fetch
-     * @var int
-     */
-    protected $limit = 0;
-
-    /**
-     * @var int|NULL
-     */
-    protected $totalUnfiltered = null;
-
-    /**
-     * @var bool
-     */
-    protected $isCount = false;
-
-    /**
-     * @var bool
-     */
-    protected $dumpQuery = false;
+    protected ?string $orderField = null;
+    protected string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING;
+    protected string $search = '';
+    protected int $offset = 0;
+    protected int $limit = 0;
+    protected ?int $totalUnfiltered = null;
+    protected bool $isCount = false;
+    protected bool $dumpQuery = false;
 
     /**
      * @var array<array<string,string>>
      */
-    protected $messages = array();
+    protected array $messages = array();
 
     /**
      * @var array<string,mixed[]>
      */
-    protected $criteriaItems = array();
+    protected array $criteriaItems = array();
 
     /**
      * @var array<string,string>
      */
-    protected $connectors;
+    protected array $connectors;
 
     /**
      * @var array<int,mixed>
      */
-    private $constructorArguments;
+    private array $constructorArguments;
 
     /**
-     * The arguments are free, and are stored internally:
+     * The arguments are free and are stored internally:
      * When using the {@see Application_FilterCriteria::createPristine()}
      * method, the same arguments are passed on the new
      * instance.
@@ -126,34 +80,17 @@ abstract class Application_FilterCriteria
 
     protected function init() : void {}
 
-    /**
-     * Sets the sorting order to ascending.
-     *
-     * @return $this
-     */
-    public function orderAscending()
+    public function orderAscending() : self
     {
-        return $this->setOrderDir(self::ORDER_DIR_ASCENDING);
+        return $this->setOrderDir(FilterCriteriaInterface::ORDER_DIR_ASCENDING);
     }
 
-    /**
-     * Sets the sorting order to descending.
-     *
-     * @return $this
-     */
-    public function orderDescending()
+    public function orderDescending() : self
     {
-        return $this->setOrderDir(self::ORDER_DIR_DESCENDING);
+        return $this->setOrderDir(FilterCriteriaInterface::ORDER_DIR_DESCENDING);
     }
 
-    /**
-     * @param string $orderDir
-     * @return $this
-     *
-     * @throws Application_Exception
-     * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
-     */
-    public function setOrderDir(string $orderDir)
+    public function setOrderDir(string $orderDir) : self
     {
         $this->requireValidOrderDir($orderDir);
 
@@ -162,12 +99,6 @@ abstract class Application_FilterCriteria
         return $this;
     }
 
-    /**
-     * Sets the search terms string.
-     *
-     * @param string|NULL $search
-     * @return $this
-     */
     public function setSearch(?string $search) : self
     {
         $search = trim((string)$search);
@@ -181,23 +112,12 @@ abstract class Application_FilterCriteria
         return $this;
     }
 
-    /**
-     * @param PaginationRenderer $paginator
-     * @return $this
-     */
     public function setLimitByPagination(PaginationRenderer $paginator) : self
     {
         $paginator->configureFilters($this);
         return $this;
     }
 
-    /**
-     * Sets the limit for the list.
-     *
-     * @param int $limit
-     * @param int $offset
-     * @return $this
-     */
     public function setLimit(int $limit = 0, int $offset = 0) : self
     {
         $this->offset = $limit;
@@ -206,14 +126,7 @@ abstract class Application_FilterCriteria
         return $this;
     }
 
-    /**
-     * Sets the limit for the list by using an existing data
-     * grid object, which contains the current pagination details.
-     *
-     * @param UI_DataGrid $datagrid
-     * @return $this
-     */
-    public function setLimitFromDatagrid(UI_DataGrid $datagrid)
+    public function setLimitFromDatagrid(UI_DataGrid $datagrid) : self
     {
         $this->setLimit(
             $datagrid->getLimit(),
@@ -224,37 +137,14 @@ abstract class Application_FilterCriteria
     }
 
     // region: Abstract methods
-    
-   /**
-    * Counts the amount of matching records, 
-    * according to the current filter criteria.
-    * 
-    * NOTE: use the <code>countUnfiltered()</code>
-    * method to count all records, without matching
-    * the current criteria.
-    * 
-    * @return int
-    * @see Application_FilterCriteria::countUnfiltered()
-    */
+
     abstract public function countItems() : int;
 
-    /**
-     * Retrieves all matching items as an indexed array containing
-     * associative array entries with the item data.
-     *
-     * @return array
-     * @throws Application_Exception
-     * @see getItem()
-     */
-    abstract public function getItems();
+    abstract public function getItems() : array;
 
     // endregion
 
-    /**
-     * Counts the total, unfiltered amount of entries.
-     * @return integer
-     */
-    public final function countUnfiltered() : int
+    final public function countUnfiltered() : int
     {
         if(isset($this->totalUnfiltered))
         {
@@ -266,16 +156,16 @@ abstract class Application_FilterCriteria
 
         return $this->totalUnfiltered;
     }
-    
+
     /**
      * Creates a pristine filter instance that uses the
      * default filtering settings. This is used among
-     * other things to count the total amount of records
+     * other things to count the total number of records
      * when not using any filters.
      *
-     * @return Application_FilterCriteria
+     * @return self
      */
-    protected function createPristine() : Application_FilterCriteria
+    protected function createPristine() : self
     {
         $class = get_class($this);
         return new $class(...$this->constructorArguments);
@@ -298,7 +188,7 @@ abstract class Application_FilterCriteria
         
         return null;
     }
-    
+
     /**
      * Whether to dump the final filter query. Can be used in the
      * getQuery method to show the resulting query in the UI.
@@ -306,22 +196,13 @@ abstract class Application_FilterCriteria
      * @param boolean $debug
      * @return $this
      */
-    public function debugQuery(bool $debug=true)
+    public function debugQuery(bool $debug=true) : self
     {
         $this->dumpQuery = $debug;
         return $this;
     }
-    
-    /**
-     * Sets the field to order the results by.
-     *
-     * @param string $fieldName
-     * @param string $orderDir
-     * @return $this
-     *
-     * @see Application_FilterCriteria::ERROR_INVALID_SORTING_ORDER
-     */
-    public function setOrderBy(string $fieldName, string $orderDir = self::ORDER_DIR_ASCENDING) : self
+
+    public function setOrderBy(string $fieldName, string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING) : self
     {
         if($this->orderField !== $fieldName)
         {
@@ -354,7 +235,7 @@ abstract class Application_FilterCriteria
     {
         $orderDir = strtoupper($orderDir);
 
-        if ($orderDir === self::ORDER_DIR_ASCENDING || $orderDir === self::ORDER_DIR_DESCENDING) {
+        if ($orderDir === FilterCriteriaInterface::ORDER_DIR_ASCENDING || $orderDir === FilterCriteriaInterface::ORDER_DIR_DESCENDING) {
             return $orderDir;
         }
 
@@ -368,9 +249,6 @@ abstract class Application_FilterCriteria
         );
     }
 
-    /**
-     * @return string[]
-     */
     public function getSearchTerms() : array
     {
         if (empty($this->search)) {
@@ -383,8 +261,8 @@ abstract class Application_FilterCriteria
         $search = $this->search;
         $tokens = array();
         $literals = array();
-        preg_match_all('/"([^"]+)"/i', $search, $tokens, PREG_PATTERN_ORDER);
-        for ($i = 0; $i < count($tokens[0]); $i++) {
+        preg_match_all('/"([^"]+)"/', $search, $tokens, PREG_PATTERN_ORDER);
+        for ($i = 0, $iMax = count($tokens[0]); $i < $iMax; $i++) {
             $replace = '_LIT'.$i.'_';
             $search = str_replace($tokens[$i][0], $replace, $search);
             $literals[$replace] = $tokens[($i+1)][0];
@@ -421,58 +299,37 @@ abstract class Application_FilterCriteria
         return $result;
     }
 
-    /**
-     * Configures both the data grid and the filters using
-     * the current settings, from the limit to the column
-     * to order by and the order direction.
-     *
-     * @param UI_DataGrid $grid
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function configure(UI_DataGrid $grid)
+    public function configure(UI_DataGrid $grid) : self
     {
         $total = $this->countItems();
         
         $grid->setTotal($total);
         $this->setLimitFromDatagrid($grid);
         
-        // does the datagrid have a specific order column,
-        // and if yes, can it be sorted via query? If it has
-        // a sorting callback, we have to let it order manually.
+        // does the data grid have a specific order column,
+        // and if yes, can it be sorted via a query?
+        // If it has a sorting callback, we have to let it order manually.
         $column = $grid->getOrderColumn();
-        if(!$column || $column->hasSortingCallback()) {
+        if($column === null || $column->hasSortingCallback()) {
             return $this;
         }
         
         $this->setOrderBy(
-            $grid->getOrderColumn()->getOrderKey(),
+            $column->getOrderKey(),
             $grid->getOrderDir()
         );
 
         return $this;
     }
 
-    /**
-     * Adds an information message.
-     *
-     * @param string $message
-     * @return $this
-     */
-    public function addInfo(string $message)
+    public function addInfo(string $message) : self
     {
-        return $this->addMessage($message, self::MESSAGE_TYPE_INFO);
+        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_INFO);
     }
 
-    /**
-     * Adds a warning message.
-     *
-     * @param string $message
-     * @return $this
-     */
-    public function addWarning(string $message)
+    public function addWarning(string $message) : self
     {
-        return $this->addMessage($message, self::MESSAGE_TYPE_WARNING);
+        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_WARNING);
     }
 
     /**
@@ -480,7 +337,7 @@ abstract class Application_FilterCriteria
      * @param string $type
      * @return $this
      */
-    protected function addMessage(string $message, string $type)
+    protected function addMessage(string $message, string $type) : self
     {
         $this->messages[] = array(
             'message' => $message,
@@ -500,10 +357,7 @@ abstract class Application_FilterCriteria
         return $this->messages;
     }
 
-    /**
-     * @return $this
-     */
-    public function resetMessages()
+    public function resetMessages() : self
     {
         $this->messages = array();
         return $this;
@@ -533,12 +387,13 @@ abstract class Application_FilterCriteria
      * @param string $type
      * @param mixed $value
      * @return $this
+     * @throws FilterCriteriaException
+     * @throws BaseException
      * @see Application_FilterCriteria::selectCriteriaValues()
      *
-     * @throws Application_Exception
      * @see Application_FilterCriteria::ERROR_NON_SCALAR_CRITERIA_VALUE
      */
-    protected function selectCriteriaValue(string $type, $value)
+    protected function selectCriteriaValue(string $type, $value) : self
     {
         if(empty($value)) {
             return $this;
@@ -546,7 +401,7 @@ abstract class Application_FilterCriteria
         
         if(!is_scalar($value)) 
         {
-            throw new Application_Exception(
+            throw new FilterCriteriaException(
                 'Invalid criteria value.',
                 sprintf(
                     'Non-scalar values are not allowed as criteria values for criteria [%s], [%s] given.',
@@ -562,7 +417,7 @@ abstract class Application_FilterCriteria
             $this->criteriaItems[$type] = array();
         }
         
-        if(!in_array($value, $this->criteriaItems[$type]))
+        if(!in_array($value, $this->criteriaItems[$type], true))
         {
             $this->criteriaItems[$type][] = $value;
             $this->handleCriteriaChanged();
@@ -575,12 +430,13 @@ abstract class Application_FilterCriteria
      * Selects several values at once.
      *
      * @param string $type
-     * @param array $values
+     * @param array<mixed> $values
      * @return $this
-     * @throws Application_Exception
-     * @see selectCriteriaValue()
+     * @throws BaseException
+     * @throws FilterCriteriaException
+     * @see self::selectCriteriaValue()
      */
-    protected function selectCriteriaValues(string $type, array $values)
+    protected function selectCriteriaValues(string $type, array $values) : self
     {
         if(!empty($values)) {
             foreach($values as $value) {
@@ -629,11 +485,7 @@ abstract class Application_FilterCriteria
 
     // region: Applying the filters
 
-    /**
-     * Applies all filter criteria and determines the exact
-     * composition needed for the filters.
-     */
-    public final function applyFilters() : void
+    final public function applyFilters() : void
     {
         $this->_applyFilters();
 

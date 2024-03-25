@@ -10,9 +10,11 @@ namespace Application\Revisionable;
 
 use Application\StateHandler\StateHandlerException;
 use Application\Interfaces\ChangelogableInterface;
+use Application_FilterCriteria_RevisionableRevisions;
 use Application_Revisionable;
 use Application_StateHandler;
 use Application_StateHandler_State;
+use DateTime;
 
 /**
  * Interface for revisionable objects that can be in different states.
@@ -48,6 +50,8 @@ interface RevisionableInterface
 
     public function getState() : ?Application_StateHandler_State;
 
+    public function getStateName() : string;
+
     /**
      * Like {@see self::getState()}, but the method does not
      * return <code>NULL</code>. An exception is thrown instead
@@ -57,6 +61,18 @@ interface RevisionableInterface
      * @throws RevisionableException
      */
     public function requireState() : Application_StateHandler_State;
+
+    /**
+     * Whether the record's current state allows it to be modified.
+     * @return bool
+     */
+    public function isChangingAllowed() : bool;
+
+    public function getRevisionDate() : DateTime;
+
+    public function getOwnerName() : string;
+
+    public function getRevisionsFilterCriteria() : Application_FilterCriteria_RevisionableRevisions;
 
     /**
      * Changes the state of the item to the specified new state.
@@ -138,4 +154,10 @@ interface RevisionableInterface
      * @return Application_Revisionable
      */
     public static function createStubObject() : Application_Revisionable;
+
+    public function getAdminChangelogURL(array $params = array()): string;
+
+    public function getAdminStatusURL(array $params = array()): string;
+
+    public function getLastModifiedDate() : ?DateTime;
 }

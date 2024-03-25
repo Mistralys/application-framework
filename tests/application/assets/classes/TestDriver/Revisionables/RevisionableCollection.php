@@ -16,6 +16,7 @@ use TestDriver\Revisionables\Storage\RevisionCopy;
 
 /**
  * @method RevisionableRecord createNewRecord(string $label, ?Application_User $author = null, array $data = array())
+ * @method RevisionableRecord createDummyRecord()
  */
 class RevisionableCollection extends Application_RevisionableCollection
 {
@@ -172,4 +173,8 @@ class RevisionableCollection extends Application_RevisionableCollection
     }
 
     // endregion
+    public function getAdminListURL(array $params = array()): string
+    {
+        return '';
+    }
 }

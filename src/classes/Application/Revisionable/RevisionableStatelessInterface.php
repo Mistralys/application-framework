@@ -144,6 +144,8 @@ interface RevisionableStatelessInterface
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null): self;
 
+    public function startCurrentUserTransaction(?string $comments = null) : self;
+
     /**
      * Ends the transaction.
      */
@@ -159,6 +161,8 @@ interface RevisionableStatelessInterface
      * Saves the item using whatever storage the item uses.
      */
     public function save(): bool;
+
+    public function hasChanges() : bool;
 
     /**
      * Retrieves the item's primary ID.

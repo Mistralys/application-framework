@@ -1,31 +1,25 @@
 <?php
 
-require_once 'Application/Admin/Area/Mode/Submode.php';
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableInterface;
 
 abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Application_Admin_Area_Mode_Submode
 {
-    public const ERROR_INVALID_REVISIONABLE_ID = 15901;
-    
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
-    
-    protected $recordTypeName;
-
-    protected $revisionableID;
-    
-    /**
-     * @var Application_RevisionableCollection_DBRevisionable
-     */
-    protected $revisionable;
+    protected Application_RevisionableCollection $collection;
+    protected string $recordTypeName;
+    protected int $revisionableID;
+    protected RevisionableInterface $revisionable;
     
     protected function init() : void
     {
         $this->collection = $this->createCollection();
         $this->recordTypeName = $this->collection->getRecordTypeName();
     }
-    
+
+    /**
+     * @return Application_RevisionableCollection
+     */
     abstract protected function createCollection();
 
     /**
@@ -34,23 +28,19 @@ abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Applicat
      * on success.
      *
      * @throws Application_Exception
-     * @return Application_RevisionableCollection_DBRevisionable
+     * @return RevisionableInterface
      */
-    protected function requireRevisionable()
+    protected function requireRevisionable() : RevisionableInterface
     {
-        $this->revisionableID = intval($this->request->registerParam($this->collection->getPrimaryKeyName())->setInteger()->get());
-        if(empty($this->revisionableID) || !$this->collection->idExists($this->revisionableID)) {
-            throw new Application_Exception(
-                'Invalid or missing record ID',
-                sprintf(
-                    'The ID specified to edit the settings of the revisionable [%s] was not valid or empty.',
-                    $this->collection->getRecordTypeName()
-                ),
-                self::ERROR_INVALID_REVISIONABLE_ID
-            );
+        $collection = $this->createCollection();
+        $revisionable = $collection->getByRequest();
+
+        if($revisionable === null) {
+            $this->redirectTo($collection->getAdminListURL());
         }
-        
-        $this->revisionable = $this->collection->getByID($this->revisionableID);
+
+        $this->revisionable = $revisionable;
+        $this->revisionableID = $revisionable->getID();
         return $this->revisionable;
     }
 }

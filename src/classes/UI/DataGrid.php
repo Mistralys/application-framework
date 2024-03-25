@@ -8,6 +8,7 @@
  */
 
 use Application\Driver\DriverException;
+use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\Interfaces\StringableInterface;
 use function AppLocalize\tex;
 
@@ -1385,17 +1386,17 @@ class UI_DataGrid
         );
     }
 
-    protected ?Application_FilterCriteria $filterCriteria = null;
+    protected ?FilterCriteriaInterface $filterCriteria = null;
     protected ?Application_FilterSettings $filterSettings = null;
 
     /**
      * Configures the data grid using the specified filter settings and filter criteria.
      *
      * @param Application_FilterSettings $settings
-     * @param Application_FilterCriteria $criteria
+     * @param FilterCriteriaInterface $criteria
      * @return UI_DataGrid
      */
-    public function configure(Application_FilterSettings $settings, Application_FilterCriteria $criteria) : UI_DataGrid
+    public function configure(Application_FilterSettings $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
     {
         $this->filterSettings = $settings;
         $settings->configureFilters($criteria);
@@ -2049,7 +2050,7 @@ class UI_DataGrid
         return $this;
     }
 
-    public function configureFromFilters(Application_FilterCriteria $criteria) : UI_DataGrid
+    public function configureFromFilters(FilterCriteriaInterface $criteria) : UI_DataGrid
     {
         $this->filterCriteria = $criteria;
 

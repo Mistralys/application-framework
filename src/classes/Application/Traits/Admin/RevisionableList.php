@@ -1,5 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableInterface;
+use AppUtils\ConvertHelper;
+
 /**
  * @see Application_Interfaces_Admin_RevisionableList
  * 
@@ -8,21 +13,11 @@
  */
 trait Application_Traits_Admin_RevisionableList
 {
-    /**
-     * @var string
-     */
-    protected $gridName = '';
-    
-    /**
-     * @var UI_DataGrid
-     */
-    protected $grid;
-    
-    /**
-     * @var Application_RevisionableCollection_FilterSettings
-     */
-    protected $filterSettings;
-    
+    protected string $gridName = '';
+    protected UI_DataGrid $grid;
+    protected Application_RevisionableCollection_FilterSettings $filterSettings;
+    protected bool $filtersAdded = false;
+
     public function getURLName() : string
     {
         return 'list';
@@ -39,7 +34,7 @@ trait Application_Traits_Admin_RevisionableList
         return true;
     }
 
-    abstract protected function getEntryData(Application_RevisionableCollection_DBRevisionable $revisionable);
+    abstract protected function getEntryData(RevisionableInterface $revisionable) : array;
     
     protected function _renderContent() : string
     {
@@ -61,11 +56,11 @@ trait Application_Traits_Admin_RevisionableList
             $entry[$primaryKey] = $item->getID();
             
             if($hasState) {
-                $entry['state'] = $item->getState()->getPrettyLabel();
+                $entry['state'] = $item->requireState()->getPrettyLabel();
             }
             
             if($hasLastModified) {
-                $entry['last_modified'] = AppUtils\ConvertHelper::date2listLabel($item->getLastModifiedDate());
+                $entry['last_modified'] = ConvertHelper::date2listLabel($item->getLastModifiedDate());
             }
             
             $entries[] = $entry;
@@ -83,12 +78,12 @@ trait Application_Traits_Admin_RevisionableList
         $grid->enableMultiSelect($this->collection->getPrimaryKeyName());
         $grid->enableLimitOptionsDefault();
         
-        $this->configureGrid($grid);
+        $this->configureGrid();
         
         $grid->executeCallbacks();
     }
     
-    protected function configureGrid(UI_DataGrid $grid) : void
+    protected function configureGrid() : void
     {
         $this->configureColumns();
         $this->configureActions();
@@ -119,11 +114,7 @@ trait Application_Traits_Admin_RevisionableList
         $this->addFilterSettings();
     }
 
-    /**
-     * @var bool
-     */
-    protected $filtersAdded = false;
-    
+
     protected function addFilterSettings() : void
     {
         if($this->filtersAdded) {

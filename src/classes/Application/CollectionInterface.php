@@ -1,11 +1,12 @@
 <?php
 
+use Application\Interfaces\FilterCriteriaInterface;
 use Application\Revisionable\RevisionableInterface;
 
 interface Application_CollectionInterface extends Application_Interfaces_Disposable
 {
    /**
-    * @return Application_FilterCriteria
+    * @return FilterCriteriaInterface
     */
     public function getFilterCriteria();
     

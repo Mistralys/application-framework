@@ -29,10 +29,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_RevisionableStatus ext
         
         $table->injectRevisionDetails($this->revisionable, $this->revisionable->getAdminChangelogURL());
         
-        return $this->renderContentWithSidebar(
-            $table->render(),
-            $this->revisionable->renderTitle()
-        );
+        return $this->renderContentWithSidebar($table->render());
     }
     
     abstract protected function injectProperties(UI_PropertiesGrid $grid);

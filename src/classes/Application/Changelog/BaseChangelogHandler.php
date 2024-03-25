@@ -48,7 +48,7 @@ abstract class BaseChangelogHandler implements ChangelogHandlerInterface
     /**
      * @var array<string,string>|null
      */
-    private static ?array $changelogTypeLabels = null;
+    protected static ?array $changelogTypeLabels = null;
 
     public static function getTypeLabels() : array
     {

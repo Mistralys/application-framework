@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace UI\Interfaces;
 
+use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterCriteria;
 use Application_FilterSettings;
 use DateTime;
@@ -26,9 +27,9 @@ interface ListBuilderInterface
     public function getDataGrid(): UI_DataGrid;
     public function isColumnEnabled(string $colName): bool;
     public function disableColumn(string $colName): self;
-    public function getFilterCriteria(): Application_FilterCriteria;
+    public function getFilterCriteria(): FilterCriteriaInterface;
     public function getFilterSettings(?array $settingValues = null): ?Application_FilterSettings;
-    public function getFilteredCriteria(): Application_FilterCriteria;
+    public function getFilteredCriteria(): FilterCriteriaInterface;
     public function getFullViewTitle(): string;
     public function getEmptyMessage(): string;
     public function enableAdvancedMode(bool $enabled): self;

@@ -9,18 +9,16 @@ declare(strict_types=1);
 namespace UI\DataGrid;
 
 use Application\Driver\DriverException;
+use Application\Interfaces\FilterCriteriaInterface;
 use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
-use Application_FilterCriteria;
 use Application_FilterSettings;
 use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
-use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
-use AppUtils\Traits\RenderableTrait;
 use DateTime;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
@@ -52,7 +50,7 @@ abstract class BaseListBuilder
 
     // region Z - Abstract methods
 
-    abstract protected function createFilterCriteria(): Application_FilterCriteria;
+    abstract protected function createFilterCriteria(): FilterCriteriaInterface;
     abstract protected function configureFilters(): void;
     abstract protected function configureColumns(UI_DataGrid $grid): void;
     abstract protected function configureActions(UI_DataGrid $grid): void;
@@ -111,9 +109,9 @@ abstract class BaseListBuilder
     }
 
     /**
-     * @return Application_FilterCriteria
+     * @return FilterCriteriaInterface
      */
-    public function getFilterCriteria(): Application_FilterCriteria
+    public function getFilterCriteria(): FilterCriteriaInterface
     {
         if (isset($this->filters)) {
             return $this->filters;
@@ -150,7 +148,7 @@ abstract class BaseListBuilder
         return $this->filterSettings;
     }
 
-    public function getFilteredCriteria(): Application_FilterCriteria
+    public function getFilteredCriteria(): FilterCriteriaInterface
     {
         $filters = $this->getFilterCriteria();
         $settings = $this->getFilterSettings();
@@ -166,7 +164,7 @@ abstract class BaseListBuilder
     {
         $this->debug = $enabled;
 
-        if (isset($this->filters)) {
+        if (isset($this->filters) && method_exists($this->filters, 'debugQuery')) {
             $this->filters->debugQuery($enabled);
         }
 
@@ -225,7 +223,7 @@ abstract class BaseListBuilder
     protected bool $hasRecords;
     protected ?UI_DataGrid $dataGrid = null;
     protected string $listID;
-    protected ?Application_FilterCriteria $filters = null;
+    protected ?FilterCriteriaInterface $filters = null;
     protected Application_Admin_ScreenInterface $screen;
     protected bool $debug = false;
     protected bool $advancedMode = false;

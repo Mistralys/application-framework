@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace UI;
 
+use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterCriteria;
 use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\PaginationHelper;
@@ -44,7 +45,7 @@ class PaginationRenderer implements RenderableInterface
         $this->url = parseURL($baseURL);
     }
 
-    public function configureFilters(Application_FilterCriteria $filters) : self
+    public function configureFilters(FilterCriteriaInterface $filters) : self
     {
         $filters->setLimit($this->paginator->getItemsPerPage(), $this->paginator->getOffsetStart());
         return $this;

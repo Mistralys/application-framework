@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\FilterSettings\SettingDef;
+use Application\Interfaces\FilterCriteriaInterface;
 use Application\Revisionable\RevisionableException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -87,7 +88,7 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
             );
     }
     
-    public function configure(Application_FilterCriteria $filterCriteria) : self
+    public function configure(FilterCriteriaInterface $filterCriteria) : self
     {
         $filterCriteria = ClassHelper::requireObjectInstanceOf(
             Application_RevisionableCollection_FilterCriteria::class,

@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableInterface;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
@@ -241,7 +242,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Adds all relevant revision information for revisionable items.
      *
-     * @param Application_Revisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @param string|NULL $changelogURL Optional URL to the changelog; Adds a button to view the changelog.
      * @return $this
      *
@@ -250,7 +251,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
      * @throws UI_Exception
      * @throws ConvertHelper_Exception
      */
-    public function injectRevisionDetails(Application_Revisionable $revisionable, ?string $changelogURL = null) : self
+    public function injectRevisionDetails(RevisionableInterface $revisionable, ?string $changelogURL = null) : self
     {
         $user = Application::getUser();
 

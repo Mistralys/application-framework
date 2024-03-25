@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableInterface;
+
 trait UI_Traits_Conditional
 {
     protected bool $conditionalValid = true;
@@ -81,10 +83,10 @@ trait UI_Traits_Conditional
     
     /**
      * Requires the revisionable to be in a state that allows changes.
-     * @param Application_Revisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @return $this
      */
-    public function requireChanging(Application_Revisionable $revisionable) : self
+    public function requireChanging(RevisionableInterface $revisionable) : self
     {
         if(!$revisionable->isChangingAllowed()) 
         {

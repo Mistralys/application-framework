@@ -186,11 +186,19 @@ class TreeNode implements Application_Interfaces_Iconizable
         return $this->setTarget(URLTarget::create($url, $newTab));
     }
 
+    /**
+     * @param string $statement
+     * @return $this
+     */
     public function click(string $statement) : self
     {
         return $this->setTarget(ClickTarget::create($statement));
     }
 
+    /**
+     * @param BaseTarget $target
+     * @return $this
+     */
     public function setTarget(BaseTarget $target) : self
     {
         $this->target = $target;

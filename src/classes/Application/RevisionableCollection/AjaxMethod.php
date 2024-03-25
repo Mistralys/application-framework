@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Revisionable\RevisionableInterface;
+
 abstract class Application_RevisionableCollection_AjaxMethod extends Application_AjaxMethod
 {
    /**
@@ -8,15 +12,10 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
     abstract protected function getCollection();
     
     protected Application_RevisionableCollection $collection;
+    protected ?RevisionableInterface $revisionable = null;
+    protected int $revisionableID;
     
-    protected ?Application_RevisionableCollection_DBRevisionable $revisionable = null;
-    
-   /**
-    * @var int
-    */
-    protected $revisionableID;
-    
-    protected function init()
+    protected function init() : void
     {
         $this->collection = $this->getCollection();
     }
@@ -26,28 +25,28 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
     * and that it matches a valid revisionable. Stores the object instance
     * in the {@link $revisionable} property.
     * 
-    * @return Application_RevisionableCollection_DBRevisionable
+    * @return RevisionableInterface
     */
-    protected function requireRevisionable() : Application_RevisionableCollection_DBRevisionable
+    protected function requireRevisionable() : RevisionableInterface
     {
         if(isset($this->revisionable)) {
             return $this->revisionable;
         }
-        
-        $revisionableID = $this->request->registerParam($this->collection->getPrimaryKeyName())->setInteger()->setCallback(array($this->collection, 'idExists'))->get();
-        if(empty($revisionableID)) {
+
+        $revisionable = $this->collection->getByRequest();
+        if($revisionable === null) {
             $this->sendErrorUnknownElement(t('%1$s ID', $this->collection->getRecordReadableNameSingular()));
         }
         
-        $this->revisionable = $this->collection->getByID($revisionableID);
-        $this->revisionableID = $revisionableID;
+        $this->revisionable = $revisionable;
+        $this->revisionableID = $revisionable->getID();
         
         return $this->revisionable;
     }
     
-    protected $initialRevisionableState;
+    protected string $initialRevisionableState;
     
-    protected function startRevisionableTransaction($comments=null)
+    protected function startRevisionableTransaction(?string $comments=null) : void
     {
         $revisionable = $this->requireRevisionable();
         $this->startTransaction();
@@ -58,18 +57,14 @@ abstract class Application_RevisionableCollection_AjaxMethod extends Application
         $revisionable->startCurrentUserTransaction($comments);
     }
     
-    protected function endRevisionableTransaction()
+    protected function endRevisionableTransaction() : void
     {
         $this->requireRevisionable()->endTransaction();
         $this->endTransaction();
     }
     
-    protected function hasStateChanged()
+    protected function hasStateChanged() : bool
     {
-        if($this->requireRevisionable()->getStateName() != $this->initialRevisionableState) {
-            return true;
-        }
-        
-        return false;
+        return $this->requireRevisionable()->getStateName() !== $this->initialRevisionableState;
     }
 }

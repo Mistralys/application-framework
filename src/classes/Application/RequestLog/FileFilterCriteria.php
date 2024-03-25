@@ -26,7 +26,7 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
     /**
      * @return Application_RequestLog_LogFile[]
      */
-    public function getItems()
+    public function getItems() : array
     {
         return $this->filterItems($this->hour->getFiles());
     }

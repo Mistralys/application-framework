@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableInterface;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\OptionableTrait;
@@ -66,20 +67,25 @@ abstract class Application_RevisionableCollection_DataGridMultiAction implements
         );
     }
     
-    abstract protected function getSingleMessage(Application_RevisionableCollection_DBRevisionable $revisionable);
+    abstract protected function getSingleMessage(RevisionableInterface $revisionable) : string;
+
+    /**
+     * @param int $amount
+     * @param RevisionableInterface[] $processed
+     * @return string
+     */
+    abstract protected function getMultipleMessage(int $amount, array $processed) : string;
     
-    abstract protected function getMultipleMessage($amount, $processed);
+    abstract protected function processEntry(RevisionableInterface $revisionable) : void;
     
-    abstract protected function processEntry(Application_RevisionableCollection_DBRevisionable $revisionable);
-    
-    public function callback_process(UI_DataGrid_Action $action, $ids): void
+    public function callback_process(UI_DataGrid_Action $action): void
     {
         $this->adminScreen->startTransaction();
         
         $processed = array();
-        foreach($ids as $revisionable_id) 
+        foreach($action->getSelectedValues() as $revisionable_id)
         {
-            $record = $this->collection->getByID($revisionable_id);
+            $record = $this->collection->getByID((int)$revisionable_id);
             
             $record->startCurrentUserTransaction();
             

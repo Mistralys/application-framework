@@ -228,18 +228,6 @@ abstract class Application_RevisionableCollection_DBRevisionable
     }
 
     /**
-     * @param array<string,string|number> $params
-     * @return string
-     */
-    abstract public function getAdminStatusURL(array $params = array()): string;
-
-    /**
-     * @param array<string,string|number> $params
-     * @return string
-     */
-    abstract public function getAdminChangelogURL(array $params = array()): string;
-
-    /**
      * Selects the last revision of the record by a specific state.
      *
      * @param Application_StateHandler_State $state

@@ -7,6 +7,8 @@
  * @see UI_Page_Sidebar
  */
 
+use Application\Revisionable\RevisionableInterface;
+
 /**
  * Handles the sidebar in the application's UI. Provides an API to easily
  * add items in the sidebar.
@@ -245,10 +247,10 @@ class UI_Page_Sidebar implements
     * made to the revisionable if it is in a state that does
     * not allow modifying it.
     * 
-    * @param Application_RevisionableCollection_DBRevisionable $revisionable
+    * @param RevisionableInterface $revisionable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addRevisionableStateInfo(Application_RevisionableCollection_DBRevisionable $revisionable) : UI_Page_Sidebar_Item_Message
+    public function addRevisionableStateInfo(RevisionableInterface $revisionable) : UI_Page_Sidebar_Item_Message
     {
         $message = $this->addInfoMessage(
             UI::icon()->information().' '.
@@ -262,7 +264,7 @@ class UI_Page_Sidebar implements
             t('No changes may be made.')
         );
         
-        $message->requireFalse($revisionable->getState()->isChangingAllowed());
+        $message->requireFalse($revisionable->requireState()->isChangingAllowed());
         
         return $message;
     }

@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
-abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_DatabaseExtended
+use Application\Revisionable\RevisionableInterface;
+use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
+
+abstract class Application_RevisionableCollection_FilterCriteria
+    extends Application_FilterCriteria_DatabaseExtended
+    implements RevisionableFilterCriteriaInterface
 {
     // region: X - Interface methods
 
@@ -71,7 +76,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
     }
     
    /**
-    * @return Application_RevisionableCollection_DBRevisionable[]
+    * @return RevisionableInterface[]
     */
     public function getItemsObjects() : array
     {
@@ -165,12 +170,12 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
 
     protected function applyExcludeStates() : void
     {
-        $this->addWhereColumnNOT_IN('`revs`.`state`', $this->getCriteriaValues(self::FILTER_EXCLUDE_STATES));
+        $this->addWhereColumnNOT_IN('`revs`.`state`', $this->getExcludedStates());
     }
 
     protected function applyIncludeStates() : void
     {
-        $this->addWhereColumnIN('`revs`.`state`', $this->getCriteriaValues(self::FILTER_INCLUDE_STATES));
+        $this->addWhereColumnIN('`revs`.`state`', $this->getIncludedStates());
     }
 
     // endregion
@@ -196,6 +201,32 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         }
 
         return $this->selectCriteriaValue($name, $stateName);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getIncludedStates() : array
+    {
+        return $this->getCriteriaValues(self::FILTER_INCLUDE_STATES);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getExcludedStates() : array
+    {
+        return $this->getCriteriaValues(self::FILTER_EXCLUDE_STATES);
+    }
+
+    public function isStateExcluded(string $state) : bool
+    {
+        return in_array($state, $this->getExcludedStates());
+    }
+
+    public function isStateIncluded(string $state) : bool
+    {
+        return in_array($state, $this->getIncludedStates());
     }
 
     // endregion

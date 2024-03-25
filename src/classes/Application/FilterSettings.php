@@ -11,6 +11,7 @@ use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
 use Application\FilterSettings\SettingDef;
+use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -276,15 +277,15 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         }
     }
     
-    protected Application_FilterCriteria $filters;
-    
+    protected FilterCriteriaInterface $filters;
+
     /**
      * Configures the provided filter criteria instance with the
      * current filtering settings.
-     * 
-     * @param Application_FilterCriteria $filters
+     *
+     * @param FilterCriteriaInterface $filters
      */
-    public function configureFilters(Application_FilterCriteria $filters) : void
+    public function configureFilters(FilterCriteriaInterface $filters) : void
     {
         $this->filters = $filters;
 
