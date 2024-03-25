@@ -1,31 +1,14 @@
 <?php
 
-abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_Database
+declare(strict_types=1);
+
+abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_DatabaseExtended
 {
-   /**
-    * @var Application_RevisionableCollection
-    */
-    protected $collection;
-
-    /**
-     * @var string
-     */
-    protected $primaryKeyName;
-
-    /**
-     * @var string
-     */
-    protected $revisionsTable;
-
-    /**
-     * @var string
-     */
-    protected $revisionKeyName;
-
-    /**
-     * @var string
-     */
-    protected $currentRevisionsTable;
+    protected Application_RevisionableCollection $collection;
+    protected string $primaryKeyName;
+    protected string $revisionsTable;
+    protected string $revisionKeyName;
+    protected string $currentRevisionsTable;
     
     public function __construct(Application_RevisionableCollection $collection)
     {
@@ -38,10 +21,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         $this->revisionKeyName = $collection->getRevisionKeyName();
     }
     
-   /**
-    * @return Application_RevisionableCollection
-    */
-    public function getCollection()
+    public function getCollection() : Application_RevisionableCollection
     {
         return $this->collection;
     }
@@ -64,7 +44,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         );
     }
     
-    protected function getSelect()
+    protected function getSelect() : array
     {
         return array(
             sprintf("`revs`.`%s`", $this->primaryKeyName),
@@ -111,7 +91,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         }
     }
     
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
         $keys = $this->collection->getRecordSearchableKeys();
         $result = array();
@@ -142,10 +122,10 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
      *
      * @param string $stateName
      * @param boolean $exclude Whether to exclude this state. Defaults to including it.
-     * @return Application_FilterCriteria
+     * @return $this
      * @throws Application_Exception
      */
-    public function selectState(string $stateName, bool $exclude=false)
+    public function selectState(string $stateName, bool $exclude=false) : self
     {
         $name = 'include_state';
         if($exclude) {
