@@ -14,6 +14,9 @@ abstract class Application_RevisionableCollection_FilterCriteria
 
     // region: X - Interface methods
 
+    public const ALIAS_REVISION_TABLE = 'record_revs';
+    public const ALIAS_CURRENT_REVISION_TABLE = 'current_revs';
+
     protected Application_RevisionableCollection $collection;
     protected string $primaryKeyName;
     protected string $revisionsTable;
@@ -44,37 +47,50 @@ abstract class Application_RevisionableCollection_FilterCriteria
             "SELECT 
                 {WHAT} 
             FROM 
-                `%s` AS `revs` 
+                `%s` AS `%s` 
             {JOINS} 
             {WHERE} 
             {GROUPBY} 
             {ORDERBY} 
             {LIMIT}",
-            $this->revisionsTable
+            $this->revisionsTable,
+            self::ALIAS_REVISION_TABLE
         );
     }
 
     protected function getSelect() : array
     {
         return array(
-            sprintf("`revs`.`%s`", $this->primaryKeyName),
-            sprintf("`revs`.`%s`", $this->revisionKeyName)
+            sprintf("`%s`.`%s`", self::ALIAS_REVISION_TABLE, $this->primaryKeyName),
+            sprintf("`%s`.`%s`", self::ALIAS_REVISION_TABLE, $this->revisionKeyName)
         );
     }
 
     public function getRevisionColumn() : string
     {
-        return '`revs`.`'.$this->revisionKeyName.'`';
+        return sprintf(
+            '`%s`.`%s`',
+            self::ALIAS_REVISION_TABLE,
+            $this->revisionKeyName
+        );
     }
 
     public function getStatusColumn() : string
     {
-        return '`revs`.`'.Application_RevisionableCollection::COL_REV_STATE.'`';
+        return sprintf(
+            '`%s`.`%s`',
+            self::ALIAS_REVISION_TABLE,
+            Application_RevisionableCollection::COL_REV_STATE
+        );
     }
     
     protected function getCountColumn() : string
     {
-        return sprintf('`revs`.`%s`', $this->revisionKeyName);
+        return sprintf(
+            '`%s`.`%s`',
+            self::ALIAS_REVISION_TABLE,
+            $this->revisionKeyName
+        );
     }
 
     protected function getSearchFields() : array
@@ -82,7 +98,11 @@ abstract class Application_RevisionableCollection_FilterCriteria
         $keys = $this->collection->getRecordSearchableKeys();
         $result = array();
         foreach($keys as $key) {
-            $result[] = sprintf('`revs`.`%s`', $key);
+            $result[] = sprintf(
+                '`%s`.`%s`',
+                self::ALIAS_REVISION_TABLE,
+                $key
+            );
         }
         
         return $result;
@@ -152,7 +172,8 @@ abstract class Application_RevisionableCollection_FilterCriteria
         $campaignKeys = $this->collection->getCampaignKeys();
         foreach($campaignKeys as $keyName => $keyValue) {
             $this->addWhere(sprintf(
-                "`revs`.`%s`=:%s",
+                "`%s`.`%s`=:%s",
+                self::ALIAS_REVISION_TABLE,
                 $keyName,
                 $keyName
             ));
@@ -163,21 +184,29 @@ abstract class Application_RevisionableCollection_FilterCriteria
 
     protected function applyCurrentRevision() : void
     {
+        $query = <<<'EOT'
+LEFT JOIN
+    `%1$s` AS `%2$s`
+ON
+`%3$s`.`%4$s`=`%2$s`.`%4$s`
+EOT;
+
         $this->addJoin(
             sprintf(
-                "LEFT JOIN
-                    `%s` AS `current`
-                ON
-                    `revs`.`%s`=`current`.`%s`",
+                $query,
                 $this->currentRevisionsTable,
-                $this->primaryKeyName,
+                self::ALIAS_CURRENT_REVISION_TABLE,
+                self::ALIAS_REVISION_TABLE,
                 $this->primaryKeyName
             )
         );
 
         $this->addWhere(sprintf(
-            "`revs`.`%s`=`current`.`current_revision`",
-            $this->revisionKeyName
+            "`%s`.`%s`=`%s`.`%s`",
+            self::ALIAS_REVISION_TABLE,
+            $this->revisionKeyName,
+            self::ALIAS_CURRENT_REVISION_TABLE,
+            Application_RevisionableCollection::COL_CURRENT_REVISION
         ));
     }
 

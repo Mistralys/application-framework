@@ -29,6 +29,7 @@ abstract class Application_RevisionableCollection
     public const COL_REV_COMMENTS = 'comments';
     public const COL_REV_AUTHOR = 'author';
     public const COL_REV_PRETTY_REVISION = 'pretty_revision';
+    public const COL_CURRENT_REVISION = 'current_revision';
     public const STUB_OBJECT_ID = -9999;
 
 
@@ -377,20 +378,21 @@ abstract class Application_RevisionableCollection
         
         $query = sprintf(
             "SELECT
-                `current_revision`
+                `%s`
             FROM
                 `%s`
             WHERE
                 %s",
+            self::COL_CURRENT_REVISION,
             $this->getCurrentRevisionsTableName(),
             DBHelper::buildWhereFieldsStatement($params)
         );
         
         $entry = DBHelper::fetch($query, $params);
         
-        if(isset($entry['current_revision'])) 
+        if(isset($entry[self::COL_CURRENT_REVISION]))
         {
-            return (int)$entry['current_revision'];
+            return (int)$entry[self::COL_CURRENT_REVISION];
         }
         
         return null;
@@ -446,7 +448,7 @@ abstract class Application_RevisionableCollection
         ON
         revs.`$primaryKey` = current.`$primaryKey`
         WHERE
-        revs.`$revisionKey` = current.current_revision";
+        revs.`$revisionKey` = current.".self::COL_CURRENT_REVISION;
         
         $where = $this->getCampaignKeys();
         $where[$key] = $value;
@@ -514,7 +516,7 @@ abstract class Application_RevisionableCollection
         
         $data = $foreignKeys;
         $data[$this->primaryKeyName] = $revisionableID;
-        $data['current_revision'] = $revision;
+        $data[self::COL_CURRENT_REVISION] = $revision;
         
         // Primary keys are the campaign keys + the revisionable ID.
         // Without campaign keys, it's just the revisionable ID.
