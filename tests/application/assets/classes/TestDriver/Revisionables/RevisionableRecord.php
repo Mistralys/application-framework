@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use BaseDBCollectionStorage;
 use TestDriver\Revisionables\ChangelogHandler;
 use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
@@ -40,6 +41,11 @@ class RevisionableRecord
         );
 
         return $this;
+    }
+
+    public function getRevisionStorage() : BaseDBCollectionStorage
+    {
+        return $this->revisions;
     }
 
     public function getStructuralKey() : string

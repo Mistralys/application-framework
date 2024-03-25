@@ -29,6 +29,7 @@ interface RevisionableInterface
     public const ERROR_INVALID_STATE_CHANGE = 149303;
     public const ERROR_NO_STATE_AVAILABLE = 149304;
     public const ERROR_CANNOT_UNDO_REVISION = 149305;
+    public const ERROR_OPERATION_NOT_ALLOWED_ON_STUB = 149306;
 
     public function getStateHandler() : Application_StateHandler;
 

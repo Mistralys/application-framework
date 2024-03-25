@@ -633,6 +633,8 @@ abstract class Application_Revisionable
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
+        $this->requireNotStub('Start a revision transaction');
+
         parent::startTransaction($newOwnerID, $newOwnerName, $comments);
 
         $this->log('Current state is [%1$s].', $this->getStateName());
@@ -644,6 +646,8 @@ abstract class Application_Revisionable
 
     public function endTransaction() : bool
     {
+        $this->requireNotStub('End a revision transaction');
+
         if ($this->stateChanged) {
             $this->setRequiresNewRevision('State has changed');
         }
@@ -653,6 +657,22 @@ abstract class Application_Revisionable
         $this->triggerEvent('TransactionEnded');
 
         return $result;
+    }
+
+    protected function requireNotStub(string $operation) : void
+    {
+        if(!$this->isStub()) {
+            return;
+        }
+
+        throw new RevisionableException(
+            'Operation not allowed on stub objects.',
+            sprintf(
+                'Target operation [%s] is not allowed on stub objects.',
+                $operation
+            ),
+            RevisionableInterface::ERROR_OPERATION_NOT_ALLOWED_ON_STUB
+        );
     }
 
     /**

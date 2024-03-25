@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
+use Application\RevisionStorage\StubDBRevisionStorage;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 
@@ -25,7 +26,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
         parent::__construct();
 
-        if ($this->isDummy()) {
+        if ($this->isStub()) {
             return;
         }
 
@@ -80,6 +81,10 @@ abstract class Application_RevisionableCollection_DBRevisionable
      */
     protected function createRevisionStorage(): BaseDBCollectionStorage
     {
+        if($this->isStub()) {
+            return new StubDBRevisionStorage($this);
+        }
+
         try {
             $className = $this->collection->getRevisionsStorageClass();
 
@@ -115,18 +120,6 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
     protected function _save(): void
     {
-    }
-
-    /**
-     * Saves the current values of the specified data keys to
-     * the revision table for the current revision.
-     *
-     * @param string[] $columnNames
-     * @deprecated Not used anymore.
-     */
-    protected function saveRevisionData(array $columnNames): void
-    {
-
     }
 
     /**
