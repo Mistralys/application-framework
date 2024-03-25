@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 abstract class Application_RevisionableCollection_FilterCriteria extends Application_FilterCriteria_DatabaseExtended
 {
+    // region: X - Interface methods
+
     protected Application_RevisionableCollection $collection;
     protected string $primaryKeyName;
     protected string $revisionsTable;
@@ -43,7 +45,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
             $this->revisionsTable
         );
     }
-    
+
     protected function getSelect() : array
     {
         return array(
@@ -56,41 +58,7 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
     {
         return sprintf('`revs`.`%s`', $this->revisionKeyName);
     }
-    
-    protected function prepareFilters() : void
-    {
-        $this->addJoin(
-            sprintf(
-                "LEFT JOIN
-                    `%s` AS `current`
-                ON
-                    `revs`.`%s`=`current`.`%s`",
-                $this->currentRevisionsTable,
-                $this->primaryKeyName,
-                $this->primaryKeyName
-            )
-        );
-        
-        $this->addWhere(sprintf(
-            "`revs`.`%s`=`current`.`current_revision`",
-            $this->revisionKeyName
-        ));
-        
-        $this->addWhereColumnIN('`revs`.`state`', $this->getCriteriaValues('include_state'));
-        $this->addWhereColumnNOT_IN('`revs`.`state`', $this->getCriteriaValues('exclude_state'));
-        
-        $campaignKeys = $this->collection->getCampaignKeys();
-        foreach($campaignKeys as $keyName => $keyValue) {
-            $this->addWhere(sprintf(
-                "`revs`.`%s`=:%s",
-                $keyName,
-                $keyName
-            ));
-            
-            $this->addPlaceholder($keyName, $keyValue);
-        }
-    }
-    
+
     protected function getSearchFields() : array
     {
         $keys = $this->collection->getRecordSearchableKeys();
@@ -117,24 +85,6 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         return $result;
     }
 
-    /**
-     * Selects only lists with or without the specified state.
-     *
-     * @param string $stateName
-     * @param boolean $exclude Whether to exclude this state. Defaults to including it.
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function selectState(string $stateName, bool $exclude=false) : self
-    {
-        $name = 'include_state';
-        if($exclude) {
-            $name = 'exclude_state';
-        }
-        
-        return $this->selectCriteriaValue($name, $stateName);
-    }
-    
    /**
     * Retrieves all revisionable IDs for the current filters.
     * @return integer[]
@@ -166,4 +116,87 @@ abstract class Application_RevisionableCollection_FilterCriteria extends Applica
         
         return $revs;
     }
+
+    // endregion
+
+    // region: Applying filters
+
+    protected function prepareFilters() : void
+    {
+        $this->applyCurrentRevision();
+        $this->applyIncludeStates();
+        $this->applyExcludeStates();
+        $this->applyCampaignKeys();
+    }
+
+    protected function applyCampaignKeys() : void
+    {
+        $campaignKeys = $this->collection->getCampaignKeys();
+        foreach($campaignKeys as $keyName => $keyValue) {
+            $this->addWhere(sprintf(
+                "`revs`.`%s`=:%s",
+                $keyName,
+                $keyName
+            ));
+
+            $this->addPlaceholder($keyName, $keyValue);
+        }
+    }
+
+    protected function applyCurrentRevision() : void
+    {
+        $this->addJoin(
+            sprintf(
+                "LEFT JOIN
+                    `%s` AS `current`
+                ON
+                    `revs`.`%s`=`current`.`%s`",
+                $this->currentRevisionsTable,
+                $this->primaryKeyName,
+                $this->primaryKeyName
+            )
+        );
+
+        $this->addWhere(sprintf(
+            "`revs`.`%s`=`current`.`current_revision`",
+            $this->revisionKeyName
+        ));
+    }
+
+    protected function applyExcludeStates() : void
+    {
+        $this->addWhereColumnNOT_IN('`revs`.`state`', $this->getCriteriaValues(self::FILTER_EXCLUDE_STATES));
+    }
+
+    protected function applyIncludeStates() : void
+    {
+        $this->addWhereColumnIN('`revs`.`state`', $this->getCriteriaValues(self::FILTER_INCLUDE_STATES));
+    }
+
+    // endregion
+
+    // region: Selecting filters
+
+    public const FILTER_INCLUDE_STATES = 'include_state';
+    public const FILTER_EXCLUDE_STATES = 'exclude_state';
+
+    /**
+     * Selects only lists with or without the specified state.
+     *
+     * @param string $stateName
+     * @param boolean $exclude Whether to exclude this state. Defaults to including it.
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function selectState(string $stateName, bool $exclude=false) : self
+    {
+        $name = self::FILTER_INCLUDE_STATES;
+        if($exclude) {
+            $name = self::FILTER_EXCLUDE_STATES;
+        }
+
+        return $this->selectCriteriaValue($name, $stateName);
+    }
+
+    // endregion
 }
