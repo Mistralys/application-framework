@@ -9,6 +9,7 @@ use Application\Revisionable\RevisionableInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\ConvertHelper_Exception;
 
 abstract class Application_RevisionableCollection
@@ -279,23 +280,25 @@ abstract class Application_RevisionableCollection
         );
     }
 
-   /**
-    * Retrieves a revisionable by its revision.
-    *
-    * @param integer $revision
-    * @throws Application_Exception
-    * @return RevisionableInterface
-    */
+    /**
+     * Retrieves a revisionable by its revision.
+     *
+     * @param integer $revision
+     * @return RevisionableInterface
+     *
+     * @throws JSONConverterException
+     * @throws RevisionableException
+     */
     public function getByRevision(int $revision) : RevisionableInterface
     {
-        $id = $this->revisionExists($revision);
+        $id = $this->getIDByRevision($revision);
         
-        if($id) 
+        if($id !== null)
         {
             return $this->getByID($id);
         }
         
-        throw new Application_Exception(
+        throw new RevisionableException(
             'Revision does not exist',
             sprintf(
                 'Cannot find %s by revision [%s]: it cannot be found in the [%s] table. Campaign keys used: [%s]',
@@ -324,21 +327,15 @@ abstract class Application_RevisionableCollection
         
         return null;
     }
-    
-   /**
-    * Checks if the specified revision exists.
-    *
-    * @param integer $revision
-    * @return integer|boolean The record ID if found, false otherwise
-    */
-    public function revisionExists(int $revision) : bool
+
+    public function getIDByRevision(int $revision) : ?int
     {
         // since we're tied to the campaign keys, we
         // need to ensure that we look for the revision
         // in the correct place.
         $where = $this->getCampaignKeys();
         $where[$this->revisionKeyName] = $revision;
-        
+
         $id = DBHelper::fetchKeyInt(
             $this->primaryKeyName,
             sprintf(
@@ -354,8 +351,23 @@ abstract class Application_RevisionableCollection
             ),
             $where
         );
-        
-        return $id > 0;
+
+        if($id > 0) {
+            return $id;
+        }
+
+        return null;
+    }
+
+   /**
+    * Checks if the specified revision exists.
+    *
+    * @param integer $revision
+    * @return boolean
+    */
+    public function revisionExists(int $revision) : bool
+    {
+        return $this->getIDByRevision($revision) !== null;
     }
     
     public function getCurrentRevision(int $revisionableID) : ?int
