@@ -13,6 +13,8 @@ use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper\Exception\CLIErrorRenderer;
+use DBHelper\Exception\HTMLErrorRenderer;
 use function AppUtils\parseVariable;
 
 /**
@@ -425,7 +427,15 @@ class DBHelper
             return '';
         }
 
-        return self::formatQuery(self::$activeQuery[0], self::$activeQuery[1]);
+        return ConvertHelper::normalizeTabs(self::formatQuery(self::$activeQuery[0], self::$activeQuery[1]), true);
+    }
+
+    /**
+     * @return array{0:string,1:array<string,mixed>}|null
+     */
+    public static function getActiveQuery() : ?array
+    {
+        return self::$activeQuery;
     }
 
     /**
@@ -453,7 +463,7 @@ class DBHelper
     {
         $sql = self::getSQL();
         if(!empty($sql)) {
-            return Highlighter::sql(ConvertHelper::normalizeTabs($sql, true));
+            return Highlighter::sql($sql);
         }
         
         return '';
@@ -607,99 +617,29 @@ class DBHelper
      * @throws DBHelper_Exception
      * @throws JsonException
      */
-    private static function createException(int $code, ?string $title=null, ?string $errorMessage=null, PDOException $e=null) : DBHelper_Exception
+    private static function createException(int $code, ?string $title=null, ?string $errorMessage=null, ?PDOException $e=null) : DBHelper_Exception
     {
         if(empty($title)) {
             $title = 'Query failed';
         }
         
-        if(empty($errorMessage)) {
-            $errorMessage = self::getErrorMessage();
-        }
-        
-        if(empty($errorMessage)) {
-            $errorMessage = '<i>No message specified</i>';
-        }
-
-        if($e) {
-            $errorMessage .= 'Native message: '.$e->getMessage();
-        }
-        
-        $info = '';
-        $placeholderInfo = '';
-        $paramNames = array();
-        
-        if(!empty(self::$activeQuery)) 
-        {
-            // retrieve a list of all placeholders used in the query
-            $params = array();
-            preg_match_all('/[:]([a-zA-Z0-9_]+)/', self::$activeQuery[0], $params, PREG_PATTERN_ORDER);
-            
-            if(isset($params[1][0])) {
-                $paramNames = array_unique($params[1]);
-            }
-            
-            $tokens = array();
-            $errors = false;
-            foreach($paramNames as $name)
-            {
-                $foundName = null;
-                if(array_key_exists($name, self::$activeQuery[1])) {
-                    $foundName = $name;
-                }
-                
-                if(array_key_exists(':'.$name, self::$activeQuery[1])) {
-                    $foundName = ':'.$name;    
-                } 
-                
-                if($foundName) {
-                    $tokenInfo = json_encode(self::$activeQuery[1][$foundName], JSON_THROW_ON_ERROR);
-                } else {
-                    $errors = true;
-                    $tokenInfo = '<i class="text-error">Placeholder has not been specified in the value list</i>';
-                }
-                
-                $tokens[] = $name . ' = ' . $tokenInfo;
-            }
-            
-            if(isset(self::$activeQuery[1])) {
-                foreach(self::$activeQuery[1] as $name => $value) {
-                    if(!in_array(ltrim($name, ':'), $paramNames, true)) {
-                        $errors = true;
-                        $tokens[] = $name . ' = <i class="text-error">No matching placeholder found in the query</i>';
-                    }
-                }
-            }
-                
-            if($errors) {
-                $placeholderInfo = 'Analysis: Placeholders have inconsistencies, see detail below.<br/>';
-            }
-        }
-        
-        $message = 
-        'DB error message: [' . $errorMessage . ']<br/>' .
-        'Database: '.APP_DB_USER . '@' .APP_DB_NAME . ' on '.APP_DB_HOST.'<br/>';
-        
-        $sql = self::getSQLHighlighted();
-        if(!empty($sql)) {
-            $info .=
-            '<br>SQL (with simulated variable values):<br>' . 
-            $sql .
-            $placeholderInfo.
-            'Placeholders: '.count($paramNames);
-
-            if(!empty($tokens)) {
-                $message .= $info.'<br/><ul class="unstyled"><li>'.implode('</li><li>', $tokens).'</li></ul>';
-            }
-        }
-
         throw new DBHelper_Exception(
             $title,
-            $message,
+            self::renderErrorMessage($e, $errorMessage),
             $code,
             $e
         );
     }
+
+    private static function renderErrorMessage(?PDOException $e=null, ?string $errorMessage=null) : string
+    {
+        if(!isCLI()) {
+            return (string)(new CLIErrorRenderer($e, $errorMessage));
+        }
+
+        return (string)(new HTMLErrorRenderer($e, $errorMessage));
+    }
+
 
     /**
      * Retrieves the current query count. This has to be
