@@ -111,6 +111,7 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
     public function getByRevision(int $revision) : RevisionableInterface;
     public function getByRequest() : ?RevisionableInterface;
     public function revisionExists(int $revision) : bool;
+    public function getIDByRevision(int $revision) : ?int;
     public function getCurrentRevision(int $revisionableID) : ?int;
     public function getLatestRevisionByState(int $revisionableID, Application_StateHandler_State $state) : ?int;
 
