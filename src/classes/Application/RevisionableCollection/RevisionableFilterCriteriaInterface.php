@@ -1,23 +1,46 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Revisionables
+ */
 
 declare(strict_types=1);
 
 namespace Application\RevisionableCollection;
 
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_RevisionableCollection_DBRevisionable;
+use Application\Revisionable\RevisionableInterface;
 
+/**
+ * Interface for filter criteria that support revisionable objects,
+ * with methods to filter by record status.
+ *
+ * @package Application
+ * @subpackage Revisionables
+ */
 interface RevisionableFilterCriteriaInterface extends FilterCriteriaInterface
 {
+    public const FILTER_INCLUDE_STATES = 'include_state';
+    public const FILTER_EXCLUDE_STATES = 'exclude_state';
+
     /**
-     * @return Application_RevisionableCollection_DBRevisionable[]
+     * The name of the column in which the revision number is stored.
+     * @return string
+     */
+    public function getRevisionColumn() : string;
+
+    public function getStatusColumn() : string;
+
+    /**
+     * @return RevisionableInterface[]
      */
     public function getItemsObjects() : array;
 
-    public function getIDs() : array;
-
     /**
-     * @return int[]
+     * Retrieves all revisionable revisions for the current filters.
+     * These revisions are always the current revisions for the records.
+     *
+     * @return integer[]
      */
     public function getRevisions() : array;
 

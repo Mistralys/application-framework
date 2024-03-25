@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 use Application\Revisionable\RevisionableInterface;
 use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
+use Application\RevisionableCollection\RevisionableStateFilterTrait;
 
 abstract class Application_RevisionableCollection_FilterCriteria
     extends Application_FilterCriteria_DatabaseExtended
     implements RevisionableFilterCriteriaInterface
 {
+    use RevisionableStateFilterTrait;
+
     // region: X - Interface methods
 
     protected Application_RevisionableCollection $collection;
@@ -58,6 +61,16 @@ abstract class Application_RevisionableCollection_FilterCriteria
             sprintf("`revs`.`%s`", $this->revisionKeyName)
         );
     }
+
+    public function getRevisionColumn() : string
+    {
+        return '`revs`.`'.$this->revisionKeyName.'`';
+    }
+
+    public function getStatusColumn() : string
+    {
+        return '`revs`.`'.Application_RevisionableCollection::COL_REV_STATE.'`';
+    }
     
     protected function getCountColumn() : string
     {
@@ -74,26 +87,25 @@ abstract class Application_RevisionableCollection_FilterCriteria
         
         return $result;
     }
-    
-   /**
-    * @return RevisionableInterface[]
-    */
+
+    /**
+     * @return RevisionableInterface[]
+     */
     public function getItemsObjects() : array
     {
-        $entries = $this->getItems();
         $result = array();
-        $total = count($entries);
-        for($i=0; $i<$total; $i++) {
-            $result[] = $this->collection->getByID((int)$entries[$i][$this->primaryKeyName]);
+
+        foreach($this->getIDs() as $id) {
+            $result[] = $this->collection->getByID($id);
         }
-        
+
         return $result;
     }
 
-   /**
-    * Retrieves all revisionable IDs for the current filters.
-    * @return integer[]
-    */
+    /**
+     * Retrieves all revisionable IDs for the current filters.
+     * @return integer[]
+     */
     public function getIDs() : array
     {
         $items = $this->getItems();
@@ -101,27 +113,28 @@ abstract class Application_RevisionableCollection_FilterCriteria
         foreach($items as $item) {
             $ids[] = (int)$item[$this->primaryKeyName];
         }
-        
+
         return $ids;
     }
 
-   /**
-    * Retrieves all revisionable revisions for the current filters.
-    * These revisions are always the current revisions for the records.
-    * 
-    * @return integer[]
-    */
+    /**
+     * Retrieves all revisionable revisions for the current filters.
+     * These revisions are always the current revisions for the records.
+     *
+     * @return integer[]
+     */
     public function getRevisions() : array
     {
+        $revKey = $this->getRevisionColumn();
         $items = $this->getItems();
         $revs = array();
         foreach($items as $item) {
-            $revs[] = (int)$item[$this->revisionKeyName];
+            $revs[] = (int)$item[$revKey];
         }
-        
+
         return $revs;
     }
-
+    
     // endregion
 
     // region: Applying filters
@@ -166,67 +179,6 @@ abstract class Application_RevisionableCollection_FilterCriteria
             "`revs`.`%s`=`current`.`current_revision`",
             $this->revisionKeyName
         ));
-    }
-
-    protected function applyExcludeStates() : void
-    {
-        $this->addWhereColumnNOT_IN('`revs`.`state`', $this->getExcludedStates());
-    }
-
-    protected function applyIncludeStates() : void
-    {
-        $this->addWhereColumnIN('`revs`.`state`', $this->getIncludedStates());
-    }
-
-    // endregion
-
-    // region: Selecting filters
-
-    public const FILTER_INCLUDE_STATES = 'include_state';
-    public const FILTER_EXCLUDE_STATES = 'exclude_state';
-
-    /**
-     * Selects only lists with or without the specified state.
-     *
-     * @param string $stateName
-     * @param boolean $exclude Whether to exclude this state. Defaults to including it.
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function selectState(string $stateName, bool $exclude=false) : self
-    {
-        $name = self::FILTER_INCLUDE_STATES;
-        if($exclude) {
-            $name = self::FILTER_EXCLUDE_STATES;
-        }
-
-        return $this->selectCriteriaValue($name, $stateName);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getIncludedStates() : array
-    {
-        return $this->getCriteriaValues(self::FILTER_INCLUDE_STATES);
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getExcludedStates() : array
-    {
-        return $this->getCriteriaValues(self::FILTER_EXCLUDE_STATES);
-    }
-
-    public function isStateExcluded(string $state) : bool
-    {
-        return in_array($state, $this->getExcludedStates());
-    }
-
-    public function isStateIncluded(string $state) : bool
-    {
-        return in_array($state, $this->getIncludedStates());
     }
 
     // endregion
