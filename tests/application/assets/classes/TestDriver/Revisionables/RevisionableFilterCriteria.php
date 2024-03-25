@@ -16,4 +16,8 @@ class RevisionableFilterCriteria extends Application_RevisionableCollection_Filt
     protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container): void
     {
     }
+
+    protected function _initCustomColumns(): void
+    {
+    }
 }
