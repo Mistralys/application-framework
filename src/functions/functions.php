@@ -782,7 +782,7 @@ function displayExceptionXML(Exception $e, $code, string $title, bool $debug=fal
     
     $request = Application_Request::getInstance();
     
-    if($request->getBool('debug') || $request->getBool('debug_output') || $request->getBool('simulate_only')) {
+    if($request->getBool('debug') || $request->getBool('debug_output') || $request->getBool(Application::REQUEST_VAR_SIMULATION)) {
         $customInfo['trace'] = $e->getTraceAsString();
     }
     

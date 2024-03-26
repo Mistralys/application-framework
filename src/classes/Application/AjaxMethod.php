@@ -407,7 +407,7 @@ abstract class Application_AjaxMethod
     */
     protected function forceStartSimulation() : bool
     {
-        $this->request->setParam('simulate_only', 'yes');
+        $this->request->setParam(Application::REQUEST_VAR_SIMULATION, 'yes');
         return $this->startSimulation();
     }
 
