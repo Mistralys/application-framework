@@ -12,6 +12,7 @@ use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper_Exception;
+use UI\AdminURLs\AdminURL;
 
 /**
  * Base class for administration screens. This has all the 
@@ -55,7 +56,7 @@ abstract class Application_Admin_Skeleton
     protected Application_Request $request;
     protected ?UI_Page $page = null;
     protected UI $ui;
-    protected ?UI_Page_Breadcrumb $breadcrumb = null;
+    protected UI_Page_Breadcrumb $breadcrumb;
     protected Application_Session $session;
     protected ?Application_LockManager $lockManager = null;
     protected ?Application_Admin_ScreenInterface $parentScreen = null;
@@ -189,7 +190,7 @@ abstract class Application_Admin_Skeleton
     */
     protected $renderer;
     
-    public function startUI()
+    public function startUI() : void
     {
         if($this->uiStarted) {
             return;
@@ -217,7 +218,7 @@ abstract class Application_Admin_Skeleton
    /**
     * @return UI_Page_Breadcrumb
     */
-    public function getBreadcrumb()
+    public function getBreadcrumb() : UI_Page_Breadcrumb
     {
         return $this->breadcrumb;
     }
@@ -226,7 +227,7 @@ abstract class Application_Admin_Skeleton
     * 
     * @param string $redirectType
     * @param string|number|UI_Renderable_Interface $message
-    * @param string|array $paramsOrURL
+    * @param string|array<string,string|number>|AdminURL $paramsOrURL
     */
     protected function simulationRedirect(string $redirectType, $message, $paramsOrURL) : void
     {
@@ -239,9 +240,10 @@ abstract class Application_Admin_Skeleton
             $url = $this->request->buildURL($paramsOrURL);
         }
 
+        $url = (string)$url;
+
         $sep = '&';
-        if(!strstr($url, '?'))
-        {
+        if(strpos($url, '?') === false) {
             $sep = '?';
         }
 
@@ -261,7 +263,7 @@ abstract class Application_Admin_Skeleton
     * Adds a success message, and redirects to the target URL.
     * 
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string $paramsOrURL
+    * @param array<string,string|number>|string|AdminURL $paramsOrURL
     * @return never
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL)
@@ -281,7 +283,7 @@ abstract class Application_Admin_Skeleton
     * Adds an error message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string $paramsOrURL
+    * @param array<string,string|number>|string|AdminURL $paramsOrURL
     * @return never
     */
     public function redirectWithErrorMessage($message, $paramsOrURL)
@@ -301,7 +303,7 @@ abstract class Application_Admin_Skeleton
     * Adds an informational message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string $paramsOrURL
+    * @param array<string,string|number>|string|AdminURL $paramsOrURL
     * @return never
     */
     public function redirectWithInfoMessage($message, $paramsOrURL)
@@ -318,7 +320,7 @@ abstract class Application_Admin_Skeleton
     }
 
     /**
-     * @param string|array<string,string|int|float> $paramsOrURL
+     * @param string|array<string,string|int|float>|AdminURL $paramsOrURL
      * @return never
      * @throws Application_Exception
      */

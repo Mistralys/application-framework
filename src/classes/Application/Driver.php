@@ -626,7 +626,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws DriverException
@@ -644,7 +644,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws UI_Exception
@@ -661,7 +661,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws UI_Exception
