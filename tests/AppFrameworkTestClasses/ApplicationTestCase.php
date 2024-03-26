@@ -13,12 +13,14 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
 use Application_Media_Document;
 use Application_Media_Document_Image;
+use Application_User;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
+use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
 use UI_Page;
@@ -101,18 +103,6 @@ abstract class ApplicationTestCase extends TestCase
         AppFactory::createLogger()->logModeNone();
     }
 
-    protected function createTestLocale(string $name = ''): Localization_Locale
-    {
-        if (empty($name)) {
-            $names = DBHelper::createFetchMany('locales_application')
-                ->fetchColumn('locale_name');
-
-            $name = $names[array_rand($names)];
-        }
-
-        return Localization::getAppLocaleByName($name);
-    }
-
     protected function isRunViaApplication(): bool
     {
         return boot_defined(BaseConfigRegistry::FRAMEWORK_TESTS) !== true;
@@ -169,6 +159,48 @@ abstract class ApplicationTestCase extends TestCase
         ));
     }
 
+    // region: Create test records
+
+    public function createTestUser() : Application_User
+    {
+        $number = $this->getTestCounter();
+
+        $newUser = ClassFactory::createUsers()->createNewUser(
+            'test-user-'.$number.'@mistralys.eu',
+            'Test',
+            'User '.$number,
+            'foreign-user-id-'.$number
+        );
+
+        return Application::createUser($newUser->getID());
+    }
+
+    protected function createTestLocale(string $name = ''): Localization_Locale
+    {
+        if (empty($name)) {
+            $names = DBHelper::createFetchMany('locales_application')
+                ->fetchColumn('locale_name');
+
+            $name = $names[array_rand($names)];
+        }
+
+        return Localization::getAppLocaleByName($name);
+    }
+
+    public function createTestImage(string $name='example-image') : Application_Media_Document_Image
+    {
+        $file = $this->getExampleImagePath();
+
+        $document = AppFactory::createMedia()->createImageFromFile($name, FileInfo::factory($file));
+        $documentPath = $document->getPath();
+
+        $this->assertFileExists($documentPath);
+
+        $this->testMedia[] = $document;
+
+        return $document;
+    }
+
     protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
     {
         $countries = AppFactory::createCountries();
@@ -185,6 +217,8 @@ abstract class ApplicationTestCase extends TestCase
 
         return $countries->createNewCountry($iso, $label);
     }
+
+    // endregion
 
     protected function setUp(): void
     {
@@ -205,20 +239,6 @@ abstract class ApplicationTestCase extends TestCase
         $this->assertFileExists($file);
 
         return $file;
-    }
-
-    public function createTestImage(string $name='example-image') : Application_Media_Document_Image
-    {
-        $file = $this->getExampleImagePath();
-
-        $document = AppFactory::createMedia()->createImageFromFile($name, FileInfo::factory($file));
-        $documentPath = $document->getPath();
-
-        $this->assertFileExists($documentPath);
-
-        $this->testMedia[] = $document;
-
-        return $document;
     }
 
     // region Custom assertions
