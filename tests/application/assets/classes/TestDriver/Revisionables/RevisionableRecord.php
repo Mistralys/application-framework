@@ -33,6 +33,8 @@ class RevisionableRecord
 
     public function setAlias(string $alias) : self
     {
+        $this->getLogIdentifier();
+
         $this->setCustomKey(
             RevisionableCollection::COL_REV_ALIAS,
             $alias,
@@ -121,7 +123,7 @@ class RevisionableRecord
 
     public function getIdentification(): string
     {
-        return sprintf('Revisionable [#%s]', $this->getID());
+        return sprintf('Revisionable [#%s v%s]', $this->getID(), $this->getRevision());
     }
 
     public function getChildDisposables(): array

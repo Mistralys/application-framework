@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+use application\assets\classes\TestDriver\Revisionables\RevisionableMemory;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application_Revisionable_Event_RevisionAdded;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
-use TestRevisionableMemory;
 
 final class EventTests extends RevisionableTestCase
 {
@@ -109,7 +108,7 @@ final class EventTests extends RevisionableTestCase
     private $revision2Event = false;
 
     /**
-     * @var TestRevisionableMemory
+     * @var RevisionableMemory
      */
     private $revisionable;
 
@@ -136,11 +135,11 @@ final class EventTests extends RevisionableTestCase
     }
 
     /**
-     * @return TestRevisionableMemory
+     * @return RevisionableMemory
      */
-    private function createRevisionable(): TestRevisionableMemory
+    private function createRevisionable(): RevisionableMemory
     {
-        $this->revisionable = new TestRevisionableMemory();
+        $this->revisionable = new RevisionableMemory();
 
         $this->assertSame(0, $this->revisionable->countRevisions());
 

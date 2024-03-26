@@ -71,7 +71,7 @@ class StubDBRevisionStorage extends BaseDBCollectionStorage
         return isset($this->data[$number]);
     }
 
-    public function nextRevision(): int
+    public function nextRevision(int $ownerID, string $ownerName, ?string $comments): int
     {
         return max(array_keys($this->data)) + 1;
     }

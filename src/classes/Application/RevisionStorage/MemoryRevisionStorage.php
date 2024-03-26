@@ -125,7 +125,7 @@ class MemoryRevisionStorage extends Application_RevisionStorage
         return $value;
     }
 
-    public function nextRevision() : int
+    public function nextRevision(int $ownerID, string $ownerName, ?string $comments) : int
     {
         return $this->getLatestRevision() + 1;
     }

@@ -33,7 +33,7 @@ class ChangelogHandler extends BaseChangelogHandler
         return null;
     }
 
-    protected function _getTypeLabels(): array
+    protected static function _getTypeLabels(): array
     {
         return array(
             self::CHANGELOG_SET_ALIAS => t('Set alias')

@@ -286,7 +286,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
     */
     abstract public function getNextRevisionData() : array;
     
-    public function nextRevision() : int
+    public function nextRevision(int $ownerID, string $ownerName, ?string $comments) : int
     {
         $this->log('Creating the next revision.');
         
@@ -294,8 +294,6 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
             $this->log(sprintf('Using static column [%s] with value [%s].', $column, $value));
         }
         
-        $user = Application::getUser();
-
         $customFields = $this->getNextRevisionData();
 
         if(!empty($customFields)) {
@@ -307,10 +305,10 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         $data = $this->getColumns($customFields);
 
         $data[Application_RevisionableCollection::COL_REV_LABEL] = $this->revisionable->getLabel();
-        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $user->getID();
+        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $ownerID;
         $data[Application_RevisionableCollection::COL_REV_DATE] = date('Y-m-d H:i:s');
         $data[Application_RevisionableCollection::COL_REV_STATE] = '';
-        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = '';
+        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = (string)$comments;
         $data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION] = $this->nextPrettyRevision();
         
         if($this->revisionable instanceof Application_Revisionable)
@@ -497,6 +495,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
 
     protected function _writeRevisionKeys(array $data) : void
     {
+        $data[$this->idColumn] = $this->getRevisionableID();
         $data[$this->revisionColumn] = $this->getRevision();
 
         DBHelper::insertOrUpdate(

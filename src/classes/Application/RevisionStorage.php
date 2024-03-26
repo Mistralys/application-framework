@@ -485,8 +485,8 @@ abstract class Application_RevisionStorage
     {
         $this->log('Adding revision by copy.');
 
-        $newRev = $this->nextRevision();
-        $this->addRevision($newRev, $ownerID, $ownerName, null, $comments);
+        $newRev = $this->nextRevision($ownerID, $ownerName, $comments);
+
         $this->selectRevision($sourceRevision);
         $this->copy($sourceRevision, $newRev, $ownerID, $ownerName, $comments);
 
@@ -651,7 +651,7 @@ abstract class Application_RevisionStorage
         return $this->revision;
     }
 
-    abstract public function nextRevision() : int;
+    abstract public function nextRevision(int $ownerID, string $ownerName, ?string $comments) : int;
 
    /**
     * Retrieves the revision's timestamp.
@@ -1198,21 +1198,28 @@ abstract class Application_RevisionStorage
      */
     public function writeDataKeys() : self
     {
+        $this->log('Writing data keys.');
+
         $this->requireRevision();
         
         $revision = $this->getRevision();
         
         if(!isset($this->dataKeys[$revision])) {
+            $this->log('No data keys to write in the revision.');
             return $this;
         }
-        
+
+        $written = 0;
         foreach($this->dataKeys[$revision] as $key => $value)
         {
             if($value !== null)
             {
+                $written++;
                 $this->_writeDataKey($key, $value);
             }
         }
+
+        $this->log('Wrote [%s] data keys.', $written);
 
         return $this;
     }

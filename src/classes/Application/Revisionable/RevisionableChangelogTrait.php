@@ -217,4 +217,9 @@ trait RevisionableChangelogTrait
     {
         return $this->changelogEnabled;
     }
+
+    public function clearChangelogQueue() : void
+    {
+        $this->changelogQueue = array();
+    }
 }

@@ -446,13 +446,17 @@ abstract class Application_Revisionable
     /**
      * Resets the tracking of structural changes before a
      * transaction.
-     *
-     * @return $this
      */
-    public function resetStructuralChanges() : self
+    private function resetStructuralChanges() : void
     {
         $this->structuralChanges = false;
-        return $this;
+    }
+
+    protected function resetChanges(): void
+    {
+        parent::resetChanges();
+
+        $this->resetStructuralChanges();
     }
 
     /**
@@ -512,38 +516,8 @@ abstract class Application_Revisionable
         return $this;
     }
 
-    /**
-     * Saves all changes after a transaction. The actual saving mechanism
-     * is implemented in the extended class in the {@link _save} and {@link _saveWithStateChange()}
-     * methods. These are called according to the kind of changes that
-     * were made and the state configuration.
-     *
-     * @see Application_RevisionableStateless::save()
-     * @see _save()
-     * @see _saveWithStateChange()
-     */
-    public function save() : bool
+    protected function _save(): void
     {
-        $this->triggerEvent(self::EVENT_BEFORE_SAVE);
-
-        $this->log(sprintf(
-            'Saving | Has changes: [%s] | Revision added in last transaction: [%s]',
-            ConvertHelper::bool2string($this->hasChanges()),
-            $this->lastTransactionAddedRevision
-        ));
-
-        if (!isset($this->lastTransactionAddedRevision) && !$this->hasChanges()) {
-            $this->log('Saving | No changes were made, skipping save.');
-            $this->resetChanges();
-            $this->resetStructuralChanges();
-            return false;
-        }
-
-        // enforce that saving changes always has to be done in a transaction.
-        if ($this->hasChanges()) {
-            $this->requireTransaction();
-        }
-
         $state = $this->requireState();
 
         // automatically change the state if any structural changes were made
@@ -562,34 +536,11 @@ abstract class Application_Revisionable
             $this->_saveWithStateChange();
         } else {
             $this->log('Saving | Calling the item\'s save implementation (without state change).');
-            $this->_save();
+            $this->_saveWithoutStateChange();
         }
-        
-        $this->saveParts();
-
-        $this->log('Saving | Complete.');
-        $this->resetChanges();
-        $this->resetStructuralChanges();
-
-        return true;
     }
 
-    /**
-     * @inheritDoc
-     * @return $this
-     */
-    public function requireTransaction(string $developerDetails='') : self
-    {
-        if($this->transactionActive) {
-            return $this;
-        }
-        
-        throw new RevisionableException(
-            'No transaction active',
-            'The current operation requires a transaction to be started.',
-            RevisionableStatelessInterface::ERROR_OPERATION_REQUIRES_TRANSACTION
-        );
-    }
+    abstract protected function _saveWithoutStateChange() : void;
 
     /**
      * The item's custom save implementation that is called when the item
@@ -637,7 +588,7 @@ abstract class Application_Revisionable
 
         parent::startTransaction($newOwnerID, $newOwnerName, $comments);
 
-        $this->log('Current state is [%1$s].', $this->getStateName());
+        $this->log('Transaction | Current state is [%1$s].', $this->getStateName());
 
         $this->stateChanged = false;
 
@@ -652,11 +603,7 @@ abstract class Application_Revisionable
             $this->setRequiresNewRevision('State has changed');
         }
 
-        $result = parent::endTransaction();
-        
-        $this->triggerEvent('TransactionEnded');
-
-        return $result;
+        return parent::endTransaction();
     }
 
     protected function requireNotStub(string $operation) : void

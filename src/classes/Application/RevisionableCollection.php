@@ -522,7 +522,7 @@ abstract class Application_RevisionableCollection
         // Without campaign keys, it's just the revisionable ID.
         $primaries = array_keys($foreignKeys);
         $primaries[] = $this->primaryKeyName;
-        
+
         DBHelper::insertOrUpdate(
             $this->currentRevisionsTableName,
             $data,

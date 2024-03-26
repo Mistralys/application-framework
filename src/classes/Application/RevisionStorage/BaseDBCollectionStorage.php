@@ -73,6 +73,8 @@ abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
      */
     public function createRevision(int $revisionable_id, string $label, Application_StateHandler_State $state, DateTime $date, ?Application_User $author=null, int $prettyRevision=1, ?string $comments=null, array $customColumns=array()): int
     {
+        $this->log('Revisionable [#%s] | Create new revision.', $revisionable_id);
+
         if($author === null) {
             $author = Application::getUser();
         }
@@ -90,11 +92,15 @@ abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
         foreach($campaignKeys as $keyName => $keyValue) {
             $data[$keyName] = $keyValue; 
         }
-        
-        return (int)DBHelper::insertDynamic(
+
+        $revision = (int)DBHelper::insertDynamic(
             $this->revisionTable,
             $data
         );
+
+        $this->log('Revisionable [#%s] | Created revision [v%s]', $revisionable_id, $revision);
+
+        return $revision;
     }
 
     protected function getRevisionCopyClass() : string

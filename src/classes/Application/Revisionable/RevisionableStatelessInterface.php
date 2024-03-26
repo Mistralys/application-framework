@@ -30,6 +30,9 @@ interface RevisionableStatelessInterface
     public const ERROR_DEPENDENT_REVISION_MISMATCH = 68437008;
     public const ERROR_DEPENDENT_CLASS_MISMATCH = 68437009;
     public const ERROR_UNKNOWN_STORAGE_PART = 68437010;
+    public const ERROR_TRANSACTION_CHANGELOG_NOT_EMPTY = 68437011;
+    public const ERROR_NO_REVISION_SELECTED = 68437012;
+    public const ERROR_CANNOT_GET_ADDED_REVISION_DURING_TRANSACTION = 68437013;
 
     /**
      * Locks the currently selected revision, so that any
@@ -69,6 +72,16 @@ interface RevisionableStatelessInterface
     public function getRevisionComments(): ?string;
 
     /**
+     * Like {@see self::getRevision()}, but never returns null.
+     * If no revision has been selected or is available, an
+     * exception will be thrown.
+     *
+     * @return int
+     * @throws RevisionableException {@see self::ERROR_NO_REVISION_SELECTED}
+     */
+    public function requireRevision() : int;
+
+    /**
      * Retrieves an indexed array with revision numbers in the
      * order they were added, from earliest to latest.
      *
@@ -96,6 +109,20 @@ interface RevisionableStatelessInterface
      * @throws RevisionableException
      */
     public function requireTransaction(string $developerDetails='') : self;
+
+    /**
+     * Whether the last transaction added a new revision.
+     * @return bool
+     * @see self::getLastAddedRevision()
+     */
+    public function hasLastTransactionAddedARevision() : bool;
+
+    /**
+     * Retrieves the revision number of the revision added by the last transaction, if any.
+     * @return int|null
+     * @see self::hasLastTransactionAddedARevision()
+     */
+    public function getLastAddedRevision() : ?int;
 
     /**
      * @return int|null Can return NULL if no revision is selected or available.

@@ -146,6 +146,20 @@ abstract class Application_RevisionableStateless
         return $this->revisions->getRevision();
     }
 
+    public function requireRevision() : int
+    {
+        $revision = $this->getRevision();
+        if($revision !== null) {
+            return $revision;
+        }
+
+        throw new RevisionableException(
+            'No revision selected',
+            'No revision has been selected, but one is required for this operation.',
+            RevisionableStatelessInterface::ERROR_NO_REVISION_SELECTED
+        );
+    }
+
     public function getRevisionable() : RevisionableStatelessInterface
     {
         return $this;
@@ -277,13 +291,10 @@ abstract class Application_RevisionableStateless
         return $this->revisions->revisionExists($number);
     }
 
+    // region: Transactions
+
     protected bool $transactionActive = false;
 
-    /**
-     * @var array<string,mixed>|null
-     */
-    protected ?array $transactionSource = null;
-    
     /**
      * Starts a modification transaction: does all modifications
      * in a new revision, and only commits the changes if all
@@ -297,7 +308,9 @@ abstract class Application_RevisionableStateless
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
-        $this->log('Starting new transaction.');
+        $this->log('Transaction | Starting new transaction.');
+        $this->log('Transaction | Author: [#%s %s]', $newOwnerID, $newOwnerName);
+        $this->log('Transaction | Comments: [%s]', $comments);
 
         if ($this->transactionActive) {
             throw new RevisionableException(
@@ -306,34 +319,24 @@ abstract class Application_RevisionableStateless
                 RevisionableStatelessInterface::ERROR_CANNOT_START_TRANSACTION
             );
         }
-        
-        // store the current revision details, in case we need
-        // to restore them later. This is necessary, for example,
-        // for revisionables with states, since a new revision
-        // is automatically created for the current user. In some
-        //  cases, though, when no state change is needed, the owner
-        // needs to stay the same. 
-        $this->transactionSource = array(
-            'author' => $this->getOwnerID(),
-            'author_name' => $this->getOwnerName(),
-            'comments' => $this->getRevisionComments(),
-            'date' => $this->getRevisionDate(),
-            'pretty_revision' => $this->getPrettyRevision()
-        );
-        
-        $this->log('Original author: ['.$this->transactionSource['author'].'], ['.$this->transactionSource['author_name'].']');
-        $this->log('Original comments: ['.$this->transactionSource['comments'].']');
-        $this->log('Original created on: ['.$this->transactionSource['date']->format('d.m.Y H:i:s').']');
-        $this->log('Original pretty revision: ['.$this->transactionSource['pretty_revision'].']');
-        
+
+        $this->clearChangelogQueue();
+
+        $this->lastTransactionAddedRevision = null;
         $this->transactionActive = true;
         $this->requiresNewRevision = false;
         $this->transactionSourceRevision = $this->getRevision();
-        $this->transactionTargetRevision = $this->revisions->addByCopy($this->transactionSourceRevision, $newOwnerID, $newOwnerName, $comments);
+
+        $this->transactionTargetRevision = $this->revisions->addByCopy(
+            $this->transactionSourceRevision,
+            $newOwnerID,
+            $newOwnerName,
+            $comments
+        );
         
         $this->revisions->selectRevision($this->transactionTargetRevision);
 
-        $this->log('New transaction initialized.');
+        $this->log('Transaction | Transaction initialized.');
 
         return $this;
     }
@@ -373,6 +376,8 @@ abstract class Application_RevisionableStateless
      */
     public function endTransaction() : bool
     {
+        $this->log('Transaction | Ending the transaction.');
+
         if(!$this->transactionActive) {
             throw new RevisionableException(
                 'Cannot end transaction',
@@ -381,63 +386,111 @@ abstract class Application_RevisionableStateless
             );
         }
 
-        $this->log('Ending the transaction.');
+        if(!$this->requiresNewRevision)
+        {
+            $this->log('Transaction | No new revision required, ignoring.');
 
-        if($this->isSimulationEnabled()) {
-            $this->log('Simulation enabled, not committing changes.');
-            $this->rollBackTransaction();
+            $this->requireEmptyChangelogQueue();
+            $this->selectRevision($this->transactionSourceRevision);
+            $this->resetTransactionData();
+
             return false;
         }
 
-        // Save the revision data manually here, since there may have
-        // been non-structural changes that are not handled automatically.
-        $this->revisions->writeDataKeys();
-
-        $requiresNewRevision = $this->requiresNewRevision;
-
-        if (!$requiresNewRevision)
+        if($this->isSimulationEnabled())
         {
-            $this->log('No new revision was required in the transaction.');
-            $this->log('Replacing the existing revision with the temporary revision, keeping the original revision author.');
-            $this->revisions->copy(
-                $this->transactionTargetRevision, 
-                $this->transactionSourceRevision, 
-                $this->transactionSource['author'], 
-                $this->transactionSource['author_name'], 
-                $this->transactionSource['comments'],
-                $this->transactionSource['date']
+            $this->log('Transaction | Simulation enabled, not committing changes.');
+
+            $this->rollBackTransaction();
+            $this->resetTransactionData();
+
+            return false;
+        }
+
+        $this->lastTransactionAddedRevision = $this->transactionTargetRevision;
+
+        $this->log('Transaction | Saving data.');
+        $this->save();
+
+        $this->log('Transaction | Committing changelog');
+        $this->commitChangelog();
+
+        $this->log('Transaction | Done.');
+        
+        $this->log('Transaction | Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName());
+        $this->log('Transaction | Pretty revision: [%s].', $this->getPrettyRevision());
+        $this->log('Transaction | Comments: [%s].', $this->getRevisionComments());
+        $this->log('Transaction | Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s'));
+
+        $this->resetTransactionData();
+
+        $this->triggerEvent('TransactionEnded');
+
+        return true;
+    }
+
+    public function hasLastTransactionAddedARevision() : bool
+    {
+        return $this->getLastAddedRevision() !== null;
+    }
+
+    public function getLastAddedRevision() : ?int
+    {
+        if($this->isTransactionStarted()) {
+            throw new RevisionableException(
+                'Cannot check for added revision',
+                'Cannot check for an added revision while a transaction is still active.',
+                RevisionableStatelessInterface::ERROR_CANNOT_GET_ADDED_REVISION_DURING_TRANSACTION
             );
-
-            // Ensure that the revision data is refreshed from the
-            // database, now that it has been stored.
-            $this->revisions->reload();
-
-            $this->lastTransactionAddedRevision = null;
-        }
-        else
-        {
-            $this->log('A new revision was required in the transaction.');
-            $this->lastTransactionAddedRevision = $this->transactionTargetRevision;
-            $this->revisions->selectRevision($this->transactionTargetRevision);
         }
 
+        return $this->lastTransactionAddedRevision;
+    }
+
+    protected function resetTransactionData() : void
+    {
         $this->requiresNewRevision = false;
         $this->transactionSourceRevision = null;
         $this->transactionTargetRevision = null;
-        $this->transactionSource = null;
         $this->transactionActive = false;
+    }
 
-        $this->log('Committing changelog');
-        $this->commitChangelog();
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function requireTransaction(string $developerDetails='') : self
+    {
+        if($this->transactionActive) {
+            return $this;
+        }
 
-        $this->log('Transaction ended successfully.');
-        
-        $this->log(sprintf('Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName()));
-        $this->log(sprintf('Pretty revision: [%s].', $this->getPrettyRevision()));
-        $this->log(sprintf('Comments: [%s].', $this->getRevisionComments()));
-        $this->log(sprintf('Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s')));
-        
-        return $requiresNewRevision;
+        throw new RevisionableException(
+            'No transaction active',
+            'The current operation requires a transaction to be started.',
+            RevisionableStatelessInterface::ERROR_OPERATION_REQUIRES_TRANSACTION
+        );
+    }
+
+    // endregion
+
+    protected function requireEmptyChangelogQueue() : void
+    {
+        if(empty($this->changelogQueue)) {
+            return;
+        }
+
+        throw new RevisionableException(
+            'Transaction changelog is not empty.',
+            sprintf(
+                'The transaction is ending without requiring a new transaction, but the changelog queue is not empty. '.
+                'This can point to a problem with the transaction handling, where the revisionable is not made aware of some changes. '.
+                'The changelog queue contains the following change types: '.
+                '- %s',
+                implode('- '.PHP_EOL, $this->getChangelogQueueTypes())
+            ),
+            RevisionableStatelessInterface::ERROR_TRANSACTION_CHANGELOG_NOT_EMPTY
+        );
     }
 
     /**
@@ -448,7 +501,7 @@ abstract class Application_RevisionableStateless
      */
     public function rollBackTransaction() : self
     {
-        if (!$this->transactionActive || !isset($this->lastTransactionAddedRevision)) {
+        if (!$this->transactionActive) {
             return $this;
         }
 
@@ -568,8 +621,6 @@ abstract class Application_RevisionableStateless
     {
         $this->log('Resetting all internal changes.');
 
-        $this->setRequiresNewRevision('Reset internal changes');
-
         $this->changedParts = array();
     }
 
@@ -587,14 +638,25 @@ abstract class Application_RevisionableStateless
      */
     public function save() : bool
     {
-        $this->log('SAVE!');
-        
+        $this->requireTransaction('Cannot save without starting a transaction.');
+
+        $this->triggerEvent(self::EVENT_BEFORE_SAVE);
+
+        $this->log(
+            'Saving | Has changes: [%s]',
+            ConvertHelper::bool2string($this->hasChanges()),
+        );
+
         if (!$this->hasChanges()) {
+            $this->log('Saving | No changes were made, skipping save.');
             return false;
         }
 
         $this->_save();
         $this->saveParts();
+
+        $this->log('Saving | Done.');
+
         $this->resetChanges();
 
         return true;
@@ -847,8 +909,7 @@ abstract class Application_RevisionableStateless
     public function getRevisionableTypeName() : string
     {
         if(!isset($this->revisionableTypeName)) {
-            $tokens = explode('_', get_class($this));
-            $this->revisionableTypeName = array_pop($tokens);
+            $this->revisionableTypeName = getClassTypeName($this);
         }
         
         return $this->revisionableTypeName;
@@ -1060,15 +1121,6 @@ abstract class Application_RevisionableStateless
     public function getDataKey(string $name, $default=null)
     {
         return $this->revisions->getDataKey($name, $default);
-    }
-    
-   /**
-    * @inheritDoc
-    * @return $this
-    */
-    public function requireTransaction(string $developerDetails='') : self
-    {
-        return $this;
     }
 
     // region: Event handling

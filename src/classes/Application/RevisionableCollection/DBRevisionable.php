@@ -118,8 +118,9 @@ abstract class Application_RevisionableCollection_DBRevisionable
         ));
     }
 
-    protected function _save(): void
+    protected function _saveWithoutStateChange() : void
     {
+
     }
 
     /**
@@ -161,22 +162,14 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
     public function endTransaction(): bool
     {
-        $this->save();
-
-        // avoid creating a new revision if the structure has not been changed.
-        if (!$this->hasStructuralChanges()) {
-            $this->log('No structural changes made, no new revision will be created.');
-            $this->requiresNewRevision = false;
-        }
-
         // we need to do this, because we want to trigger it later
         $this->ignoreEvent('TransactionEnded');
 
         $result = parent::endTransaction();
 
-        // now make sure the current revision is set correctly, regardless
-        // of whether we added a new revision or not.
-        $this->collection->setCurrentRevision($this->id, $this->getRevision());
+        if($result) {
+            $this->collection->setCurrentRevision($this->id, $this->getRevision());
+        }
 
         // do we handle the DB transaction here? 
         if ($this->handleDBTransaction) {
@@ -189,14 +182,12 @@ abstract class Application_RevisionableCollection_DBRevisionable
             DBHelper::commitTransaction();
         }
 
-        $this->log('Reloading the revision data.');
-        $this->revisions->reload();
+        //$this->log('Reloading the revision data.');
+        //$this->revisions->reload();
 
         // now that everything's through, we can trigger the event.
         $this->unignoreEvent('TransactionEnded');
         $this->triggerEvent('TransactionEnded');
-
-        $this->log('Comments: ' . $this->getRevisionComments());
 
         return $result;
     }

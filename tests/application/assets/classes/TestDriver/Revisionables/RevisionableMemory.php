@@ -2,7 +2,16 @@
 
 declare(strict_types=1);
 
-class TestRevisionableMemory extends Application_RevisionableStateless
+namespace application\assets\classes\TestDriver\Revisionables;
+
+use Application;
+use Application_Changelog_FilterCriteria;
+use Application_RevisionableCollection;
+use Application_RevisionableStateless;
+use Application_Traits_Loggable;
+use TestDriver\Revisionables\RevisionableMemoryCollection;
+
+class RevisionableMemory extends Application_RevisionableStateless
 {
     use Application_Traits_Loggable;
 
@@ -13,50 +22,50 @@ class TestRevisionableMemory extends Application_RevisionableStateless
      */
     private int $revisionCounter = 0;
 
-    public function getIdentification() : string
+    public function getIdentification(): string
     {
         return 'Test revisionable (memory)';
     }
 
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return 'Test revisionable (memory)';
     }
 
-    public function getID() : int
+    public function getID(): int
     {
         return 111;
     }
 
-    public function setData(string $name, string $value) : TestRevisionableMemory
+    public function setData(string $name, string $value): RevisionableMemory
     {
         $this->revisions->setKey($name, $value);
         return $this;
     }
 
-    public function getData(string $name) : string
+    public function getData(string $name): string
     {
         return (string)$this->revisions->getKey($name);
     }
 
-    protected function _save() : void
+    protected function _save(): void
     {
         // nothing to do here
     }
 
-    public function onTriggerEvent(callable $callback) : TestRevisionableMemory
+    public function onTriggerEvent(callable $callback): RevisionableMemory
     {
         $this->addEventHandler(self::EVENT_TEST_EVENT, $callback);
         return $this;
     }
 
-    public function triggerTheEvent() : TestRevisionableMemory
+    public function triggerTheEvent(): RevisionableMemory
     {
         $this->triggerEvent(self::EVENT_TEST_EVENT);
         return $this;
     }
 
-    public function createRevision() : int
+    public function createRevision(): int
     {
         $this->revisionCounter++;
 
@@ -71,32 +80,32 @@ class TestRevisionableMemory extends Application_RevisionableStateless
         return $this->revisionCounter;
     }
 
-    public function ignoreTestEvent() : void
+    public function ignoreTestEvent(): void
     {
         $this->ignoreEvent(self::EVENT_TEST_EVENT);
     }
 
-    public function ignoreRevisionAddedEvent() : void
+    public function ignoreRevisionAddedEvent(): void
     {
         $this->ignoreEvent(self::EVENT_REVISION_ADDED);
     }
 
-    protected function _registerEvents() : void
+    protected function _registerEvents(): void
     {
 
     }
 
-    public function getChildDisposables() : array
+    public function getChildDisposables(): array
     {
         return array();
     }
 
-    protected function _dispose() : void
+    protected function _dispose(): void
     {
 
     }
 
-    public function getLogIdentifier() : string
+    public function getLogIdentifier(): string
     {
         return $this->getIdentification();
     }
@@ -137,5 +146,10 @@ class TestRevisionableMemory extends Application_RevisionableStateless
     public function getChangelogTypeLabel(string $type): string
     {
         return $type;
+    }
+
+    public function getCollection(): Application_RevisionableCollection
+    {
+        return RevisionableMemoryCollection::create();
     }
 }
