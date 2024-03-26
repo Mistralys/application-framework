@@ -500,7 +500,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 echo 'Query built by the filters';
                 echo PHP_EOL;
                 echo PHP_EOL;
-                print_r($this->buildInitialQuery);
+                echo print_r($this->buildInitialQuery, true);
 
                 if($different)
                 {
@@ -510,7 +510,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                     echo 'Query after adding required custom columns';
                     echo PHP_EOL;
                     echo PHP_EOL;
-                    print_r($query);
+                    echo print_r($query, true);
                 }
 
                 echo '</pre>';
