@@ -1,5 +1,7 @@
 <?php
 
+use UI\AdminURLs\AdminURL;
+
 /**
  * A dropdown button with a submenu.
  *
@@ -22,11 +24,11 @@ class UI_Page_Sidebar_Item_DropdownButton extends UI_Page_Sidebar_Item_Button
      * Adds a link to the dropdown menu.
      *
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */
-    public function addLink($label, string $url) : UI_Bootstrap_DropdownAnchor
+    public function addLink($label, $url) : UI_Bootstrap_DropdownAnchor
     {
         return $this->menu->addLink($label, $url);
     }

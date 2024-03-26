@@ -7,6 +7,7 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
+use UI\AdminURLs\AdminURL;
 
 class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
 {
@@ -89,16 +90,16 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
      * Adds a menu item that links to a regular URL.
      *
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */
-    public function addLink($label, string $url) : UI_Bootstrap_DropdownAnchor
+    public function addLink($label, $url) : UI_Bootstrap_DropdownAnchor
     {
         $link = $this->ui
             ->createDropdownAnchor($label)
             ->addClass('menu-link')
-            ->setHref($url);
+            ->setHref((string)$url);
 
         $this->addItem($link);
 

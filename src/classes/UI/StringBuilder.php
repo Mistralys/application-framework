@@ -7,7 +7,9 @@
  * @see UI_StringBuilder
  */
 
+use AppUtils\AttributeCollection;
 use AppUtils\StringBuilder;
+use UI\AdminURLs\AdminURL;
 
 /**
  * Extension to the app utils StringBuilder class, with
@@ -168,20 +170,32 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Otherwise, the link label is used.
      *
      * @param string $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string $right
      * @param bool $newTab
      * @return UI_StringBuilder
      * @throws Application_Exception
      */
-    public function linkRight(string $label, string $url, string $right='', bool $newTab=false) : UI_StringBuilder
+    public function linkRight(string $label, $url, string $right='', bool $newTab=false) : UI_StringBuilder
     {
         if(!empty($right) && !Application::getUser()->can($right))
         {
             return sb()->add($label);
         }
 
-        return $this->link($label, $url, $newTab);
+        return $this->link($label, (string)$url, $newTab);
+    }
+
+    /**
+     * @param string $label
+     * @param string|AdminURL $url
+     * @param bool $newTab
+     * @param AttributeCollection|null $attributes
+     * @return self
+     */
+    public function adminLink(string $label, $url, bool $newTab=false, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->link($label, $url, $newTab, $attributes);
     }
 
     /**

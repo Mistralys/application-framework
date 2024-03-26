@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
 use UI\Interfaces\TooltipableInterface;
 use UI\Traits\TooltipableTrait;
 
@@ -73,12 +74,12 @@ abstract class UI_Bootstrap_BaseDropdown
     /**
      * Creates and adds a new anchor menu item.
      * @param string|int|float|StringableInterface|NULL $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @return UI_Bootstrap_DropdownAnchor
      *
      * @throws UI_Exception
      */
-    public function addLink($label, string $url) : UI_Bootstrap_DropdownAnchor
+    public function addLink($label, $url) : UI_Bootstrap_DropdownAnchor
     {
         return $this->menu->addLink($label, $url);
     }

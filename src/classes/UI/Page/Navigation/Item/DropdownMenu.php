@@ -189,12 +189,14 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * Adds a menu item that links to a regular URL.
      *
      * @param string $label
-     * @param string $url
+     * @param string|AdminURL $url
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */
-    public function addLink(string $label, string $url) : UI_Bootstrap_DropdownAnchor
+    public function addLink(string $label, $url) : UI_Bootstrap_DropdownAnchor
     {
+        $url = (string)$url;
+
         $this->registerURL($url);
 
         return $this->menu->addLink($label, $url);

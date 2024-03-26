@@ -19,6 +19,7 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\JSHelper;
 use AppUtils\RegexHelper;
 use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
+use UI\AdminURLs\AdminURL;
 use UI\Form\FormException;
 
 /**
@@ -1614,7 +1615,7 @@ class UI_Form extends UI_Renderable
     /**
      * Adds a clickable button to the form that links to the specified URL.
      *
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
      * @return HTML_QuickForm2_Element_UIButton
@@ -1623,7 +1624,7 @@ class UI_Form extends UI_Renderable
      * @throws BaseClassHelperException
      * @throws UI_Exception
      */
-    public function addLinkButton(string $url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
+    public function addLinkButton($url, $label, $tooltip='') : HTML_QuickForm2_Element_UIButton
     {
         return $this->addButton($this->generateDummyName())
             ->setTooltip($tooltip)

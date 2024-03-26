@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\AttributeCollection;
+use UI\AdminURLs\AdminURL;
 use UI\Page\Navigation\LinkItemBase;
 
 class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
@@ -12,15 +13,15 @@ class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
     /**
      * @param UI_Page_Navigation $nav
      * @param string $id
-     * @param string $url
+     * @param string|AdminURL $url
      * @param string|number|UI_Renderable_Interface $title
      * @throws Application_Exception
      * @throws UI_Exception
      */
-    public function __construct(UI_Page_Navigation $nav, string $id, string $url, $title)
+    public function __construct(UI_Page_Navigation $nav, string $id, $url, $title)
     {
         parent::__construct($nav, $id);
-        $this->url = $url;
+        $this->url = (string)$url;
 
         $this->setTitle($title);
     }

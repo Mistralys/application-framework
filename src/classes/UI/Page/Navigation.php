@@ -238,6 +238,13 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
         return $item;
     }
 
+    /**
+     * @param string $title
+     * @param string|AdminURL $url
+     * @return UI_Page_Navigation_Item_ExternalLink
+     * @throws Application_Exception
+     * @throws UI_Exception
+     */
     public function addExternalLink(string $title, $url) : UI_Page_Navigation_Item_ExternalLink
     {
         $this->counter++;
