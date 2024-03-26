@@ -2,28 +2,31 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
+
 class Application_LookupItems_Result
 {
-   /**
-    * @var Application_LookupItems_Item
-    */
-    private $item;
-    
-   /**
-    * @var string
-    */
-    private $label;
-    
-   /**
-    * @var string
-    */
-    private $url;
-    
-    public function __construct(Application_LookupItems_Item $item, string $label, string $url)
+    private Application_LookupItems_Item $item;
+    private string $label;
+    private string $url;
+
+    /**
+     * @param Application_LookupItems_Item $item
+     * @param string|number|StringableInterface $label
+     * @param string|AdminURL $url
+     * @throws UI_Exception
+     */
+    public function __construct(Application_LookupItems_Item $item, $label, $url)
     {
         $this->item = $item;
-        $this->label = $label;
-        $this->url = $url;
+        $this->label = toString($label);
+        $this->url = (string)$url;
+    }
+
+    public function getItem(): Application_LookupItems_Item
+    {
+        return $this->item;
     }
     
     public function toArray() : array

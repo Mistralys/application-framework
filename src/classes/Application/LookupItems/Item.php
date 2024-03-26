@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
+use UI\AdminURLs\AdminURL;
+
 abstract class Application_LookupItems_Item
 {
     /**
@@ -17,23 +20,19 @@ abstract class Application_LookupItems_Item
     /**
      * @param string[] $terms
      */
-    abstract public function findMatches($terms);
+    abstract public function findMatches(array $terms);
 
-    /**
-     * @var string
-     */
-    protected $id;
+    protected string $id;
 
     /**
      * @var Application_LookupItems_Result[]
      */
-    protected $results = array();
+    protected array $results = array();
 
     public function getID() : string
     {
         if(!isset($this->id)) {
-            $parts = explode('_', get_class($this));
-            $this->id = array_pop($parts);
+            $this->id = getClassTypeName($this);
         }
         
         return $this->id;
@@ -50,8 +49,14 @@ abstract class Application_LookupItems_Item
             'field_description' => $this->getFieldDescription()
         );
     }
-    
-    protected function addResult($label, $url)
+
+    /**
+     * @param string|number|StringableInterface $label
+     * @param string|AdminURL $url
+     * @return void
+     * @throws UI_Exception
+     */
+    protected function addResult($label, $url) : void
     {
         $result = new Application_LookupItems_Result($this, $label, $url);
         $this->results[] = $result;
@@ -60,7 +65,7 @@ abstract class Application_LookupItems_Item
    /**
     * @return Application_LookupItems_Result[]
     */
-    public function getResults()
+    public function getResults() : array
     {
         return $this->results;
     }
