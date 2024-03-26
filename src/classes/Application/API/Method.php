@@ -386,7 +386,7 @@ abstract class Application_API_Method
     
     protected function sendResponse($format, $data = null)
     {
-        if($this->processMode == self::PROCESS_MODE_RETURN) {
+        if($this->processMode === self::PROCESS_MODE_RETURN) {
             $this->responseData = $data;
             return;
         }
@@ -396,7 +396,7 @@ abstract class Application_API_Method
             $this->log(sprintf('Response format: [%s]', $format));
             $this->log('Data to send:');
             echo '<pre>';
-            print_r($data);
+            echo print_r($data, true);
             echo '</pre>';
             exit;
         }
