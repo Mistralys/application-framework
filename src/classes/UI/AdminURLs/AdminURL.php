@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace UI\AdminURLs;
 
+use Application;
 use Application\AppFactory;
 use Application_Admin_ScreenInterface;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -187,6 +188,16 @@ class AdminURL implements RenderableInterface
     public function action(string $name) : self
     {
         return $this->string(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION, $name);
+    }
+
+    /**
+     * Add the parameter to enable the application simulation mode.
+     * @param bool $enabled
+     * @return $this
+     */
+    public function simulation(bool $enabled=true) : self
+    {
+        return $this->bool(Application::REQUEST_VAR_SIMULATION, $enabled, true);
     }
 
     /**
