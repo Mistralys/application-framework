@@ -1197,7 +1197,7 @@ class DBHelper
      * Utility method that either inserts or updates an existing record.
      *
      * @param string $table
-     * @param array $data
+     * @param array<string,mixed> $data
      * @param string[] $primaryFieldNames
      * @return string The insert ID in case of an insert operation, or the update status code.
      * @throws ConvertHelper_Exception
@@ -1207,10 +1207,8 @@ class DBHelper
      */
     public static function insertOrUpdate(string $table, array $data, array $primaryFieldNames) : string
     {
-        $checkField = $primaryFieldNames[0]; // used in the query to check if a record exists
+        $where = array();
 
-        $whereTokens = array();
-        $checkVariables = array(); // variables set for the fetch query
         foreach ($primaryFieldNames as $fieldName)
         {
             if (!array_key_exists($fieldName, $data)) 
@@ -1225,50 +1223,22 @@ class DBHelper
                     self::ERROR_INSERTING
                 );
             }
-            
-            $whereTokens[] = self::escapeName($fieldName).'=:'.$fieldName;
-            $checkVariables[':' . $fieldName] = $data[$fieldName];
-        }
-        $where = implode(" AND ", $whereTokens);
 
-        $variables = array();
-        $setTokens = array(); // set statements for the update or insert statements
-        foreach ($data as $fieldName => $value) {
-            $variables[':' . $fieldName] = $value;
-            $setTokens[] = self::escapeName($fieldName).'=:'.$fieldName;
+            $where[$fieldName] = $data[$fieldName];
         }
-        $set = implode(', ', $setTokens);
 
-        $entry = self::fetch(
-            "SELECT
-				`$checkField`
-			FROM
-				`$table`
-			WHERE
-				$where",
-            $checkVariables
-        );
-        
-        if (is_array($entry) && isset($entry[$checkField])) {
-            self::update(
-                "UPDATE
-					`$table`
-				SET
-					$set
-				WHERE
-					$where",
-                $variables
-            );
+        $col = current($primaryFieldNames);
+
+        $key = self::createFetchKey($col, $table)
+            ->whereValues($where)
+            ->fetchString();
+
+        if ($key !== '') {
+            self::updateDynamic($table, $data, $primaryFieldNames);
             return self::INSERTORUPDATE_UPDATE;
         }
 
-        return self::insert(
-            "INSERT INTO
-                `$table`
-            SET
-                $set",
-            $variables
-        );
+        return self::insertDynamic($table, $data);
     }
     
    /**
