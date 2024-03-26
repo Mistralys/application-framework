@@ -9,6 +9,9 @@
 
 declare(strict_types=1);
 
+use Application\Driver\DriverException;
+use UI\AdminURLs\AdminURL;
+
 /**
  * Class used to handle messages after a datagrid action:
  * Chooses the right message to display according to the
@@ -56,9 +59,14 @@ class UI_DataGrid_RedirectMessage
      */
     protected $deletableCallback = null;
 
-    public function __construct(UI_DataGrid_Action $action, string $redirectURL)
+    /**
+     * @param UI_DataGrid_Action $action
+     * @param string|AdminURL $redirectURL
+     * @throws DriverException
+     */
+    public function __construct(UI_DataGrid_Action $action, $redirectURL)
     {
-        $this->redirectURL = $redirectURL;
+        $this->redirectURL = (string)$redirectURL;
         $this->action = $action;
         $this->screen = Application_Driver::getInstance()->getActiveScreen();
         

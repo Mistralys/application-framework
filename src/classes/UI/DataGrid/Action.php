@@ -5,6 +5,7 @@ use AppUtils\NamedClosure;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits\ClassableTrait;
+use UI\AdminURLs\AdminURL;
 
 abstract class UI_DataGrid_Action
     implements
@@ -511,13 +512,13 @@ abstract class UI_DataGrid_Action
     
    /**
     * Creates a configurable redirect message for the specified
-    * amount of affected records: determines the message that needs
+    * number of affected records: determines the message that needs
     * to be added, and redirects to the target URL. 
     * 
-    * @param string $redirectURL
+    * @param string|AdminURL $redirectURL
     * @return UI_DataGrid_RedirectMessage
     */
-    public function createRedirectMessage(string $redirectURL) : UI_DataGrid_RedirectMessage
+    public function createRedirectMessage($redirectURL) : UI_DataGrid_RedirectMessage
     {
         return new UI_DataGrid_RedirectMessage($this, $redirectURL);
     }
