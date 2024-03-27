@@ -315,7 +315,7 @@ abstract class BaseListBuilder
      * Lists that use the same ID share the same filter settings.
      *
      * @param string $id
-     * @return BaseListBuilder
+     * @return $this
      * @throws UI_DataGrid_Exception
      * @see BaseListBuilder::ERROR_LIST_ALREADY_INITIALIZED
      */
