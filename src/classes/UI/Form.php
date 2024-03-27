@@ -1225,14 +1225,14 @@ class UI_Form extends UI_Renderable
      * NOTE: The ID of the generated elements can only be
      * specified when using the {@see self::addHiddenVar()} method.
      *
-     * @param array<string,string|NULL> $vars Name => value pairs
+     * @param array<string,string|number|NULL> $vars Name => value pairs
      * @return $this
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
     public function addHiddenVars(array $vars) : self
     {
         foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
+            $this->addHiddenVar($name, (string)$value);
         }
 
         return $this;
