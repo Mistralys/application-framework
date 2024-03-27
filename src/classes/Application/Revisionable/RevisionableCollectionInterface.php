@@ -35,7 +35,7 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
      *
      * @return $this
      */
-    public function resetRecordCache() : self;
+    public function resetCollection() : self;
     public function getRecordTableName() : string;
     /**
      * @return class-string
