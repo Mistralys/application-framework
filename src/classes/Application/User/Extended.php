@@ -102,6 +102,7 @@ abstract class Application_User_Extended extends Application_User
             self::RIGHT_EDIT_MEDIA,
             self::RIGHT_DELETE_MEDIA,
             self::RIGHT_VIEW_MEDIA,
+            self::RIGHT_ADMIN_MEDIA
         );
 
         foreach($coreRights as $coreRight)
@@ -153,15 +154,33 @@ abstract class Application_User_Extended extends Application_User
     protected function registerMedia(Application_User_Rights_Group $group) : void
     {
         $group->registerRight(self::RIGHT_CREATE_MEDIA, t('Add media'))
-            ->setDescription(t('Add media files.'));
+            ->setDescription(t('Add media files.'))
+            ->grantRights(
+                self::RIGHT_VIEW_MEDIA,
+                self::RIGHT_EDIT_MEDIA
+            );
 
         $group->registerRight(self::RIGHT_EDIT_MEDIA, t('Edit media'))
-            ->setDescription(t('Modify media files.'));
+            ->setDescription(t('Modify media files.'))
+            ->grantRight(self::RIGHT_VIEW_MEDIA);
 
         $group->registerRight(self::RIGHT_DELETE_MEDIA, t('Delete media'))
-            ->setDescription(t('Delete media files.'));
+            ->setDescription(t('Delete media files.'))
+            ->grantRights(
+                self::RIGHT_CREATE_MEDIA,
+                self::RIGHT_EDIT_MEDIA
+            );
 
         $group->registerRight(self::RIGHT_VIEW_MEDIA, t('View media'))
             ->setDescription(t('View media files.'));
+
+        $group->registerRight(self::RIGHT_ADMIN_MEDIA, t('Administrate media'))
+            ->setDescription(t('Administrate global media settings.'))
+            ->grantRights(
+                self::RIGHT_CREATE_MEDIA,
+                self::RIGHT_EDIT_MEDIA,
+                self::RIGHT_DELETE_MEDIA,
+                self::RIGHT_VIEW_MEDIA
+            );
     }
 }
