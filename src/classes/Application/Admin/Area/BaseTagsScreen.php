@@ -44,16 +44,6 @@ abstract class BaseTagsScreen extends Application_Admin_Area
         return true;
     }
 
-    protected function _handleActions(): bool
-    {
-        // To force the creation of the root tag
-        $this->startTransaction();
-        AppFactory::createMedia()->getRootTag();
-        $this->endTransaction();
-
-        return true;
-    }
-
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendArea($this);
