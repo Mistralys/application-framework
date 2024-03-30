@@ -10,6 +10,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\Collection\MediaFilterSettings;
 use Application_Admin_Area;
+use Application_User;
 use UI;
 use UI_Icon;
 
@@ -79,14 +80,21 @@ class BaseMediaLibraryScreen extends Application_Admin_Area
     {
         $this->subnav->addURL(
             t('Media library'),
-            $this->media->getAdminListURL()
+            $this->media->adminURL()->list()
         )
             ->setIcon(UI::icon()->media());
 
         $this->subnav->addURL(
             t('Image gallery'),
-            $this->media->getAdminImageGalleryURL()
+            $this->media->adminURL()->gallery()
         )
             ->setIcon(UI::icon()->image());
+
+        $this->subnav->addURL(
+            t('Settings'),
+            $this->media->adminURL()->settings()
+        )
+            ->setIcon(UI::icon()->settings())
+            ->requireRight(Application_User::RIGHT_ADMIN_MEDIA);
     }
 }
