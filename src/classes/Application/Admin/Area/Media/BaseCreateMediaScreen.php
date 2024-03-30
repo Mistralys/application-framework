@@ -34,6 +34,19 @@ abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
         return AppFactory::createMediaCollection();
     }
 
+    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    {
+        if($record instanceof MediaRecord) {
+            if($record->isTaggingEnabled()) {
+                return (string)$record->adminURL()->tagging();
+            }
+
+            return (string)$record->adminURL()->status();
+        }
+
+        return parent::getSuccessURL($record);
+    }
+
     public function getSuccessMessage(DBHelper_BaseRecord $record): string
     {
         return t(
@@ -56,5 +69,33 @@ abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
     public function getTitle(): string
     {
         return t('Add a media file');
+    }
+
+    public function getNavigationTitle(): string
+    {
+        return t('Add media');
+    }
+
+    protected function _handleSubnavigation(): void
+    {
+        $this->subnav->clearItems();
+    }
+
+    protected function _handleSidebar(): void
+    {
+        parent::_handleSidebar();
+
+        if($this->collection->isTaggingEnabled())
+        {
+            $this->sidebar->addSeparator();
+
+            $this->sidebar->addInfoMessage(
+                sb()
+                    ->note()
+                    ->t('Once the document has been added, you can assign it tags.'),
+                true,
+                false
+            );
+        }
     }
 }
