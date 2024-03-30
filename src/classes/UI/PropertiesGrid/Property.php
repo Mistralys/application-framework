@@ -8,30 +8,19 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
 {
     use UI_Traits_Conditional;
 
-   /**
-    * @var UI_PropertiesGrid
-    */
-    protected $grid;
-    
-   /**
-    * @var string
-    */
-    protected $label;
-    
+    protected UI_PropertiesGrid $grid;
+    protected string $label;
+    protected string $emptyText;
+
    /**
     * @var mixed
     */
     protected $text;
     
-   /**
-    * @var string
-    */
-    protected $emptyText = '';
-
     /**
      * @var UI_Button[]
      */
-    protected $buttons = array();
+    protected array $buttons = array();
 
     /**
      * @param UI_PropertiesGrid $grid
@@ -44,6 +33,7 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
         $this->grid = $grid;
         $this->label = toString($label);
         $this->text = $value;
+        $this->emptyText = t('Empty');
         
         $this->init();
     }
@@ -60,9 +50,14 @@ abstract class UI_PropertiesGrid_Property implements UI_Interfaces_Conditional
             return $this->filterValue($this->text);
         }
         
+        return $this->resolveEmptyText();
+    }
+
+    protected function resolveEmptyText() : UI_StringBuilder
+    {
         return sb()->muted($this->emptyText);
     }
-    
+
     public function render() : string
     {
         if(!$this->isValid())
