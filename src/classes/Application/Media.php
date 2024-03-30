@@ -348,15 +348,6 @@ class Application_Media implements TagCollectionInterface
         return self::TAG_REGISTRY_KEY;
     }
 
-    public function getRootTagLabelInvariant(): string
-    {
-        return 'Media Documents';
-    }
-
-    protected function handleTaggingInitialized(TagConnector $connector): void
-    {
-    }
-
     // endregion: Tagging
 
     public function getFilterCriteria() : MediaFilterCriteria
