@@ -35,6 +35,16 @@ class MediaFilterCriteria extends DBHelper_BaseFilterCriteria implements Taggabl
         return $this->selectCriteriaValue(self::FILTER_EXTENSIONS, $extension);
     }
 
+    protected function getCountColumn(): string
+    {
+        return $this->getColPrimary();
+    }
+
+    public function getColPrimary() : string
+    {
+        return $this->resolveTableSelector().'.'.MediaCollection::PRIMARY_NAME;
+    }
+
     protected function prepareQuery(): void
     {
         $this->addWhereColumnIN(MediaCollection::COL_EXTENSION, $this->getCriteriaValues(self::FILTER_EXTENSIONS));
