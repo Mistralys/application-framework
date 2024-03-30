@@ -493,7 +493,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
      */
     public function can(string $role) : bool
     {
-        if(!in_array($role, $this->requestedRoles)) {
+        if(!in_array($role, $this->requestedRoles, true)) {
             $this->requestedRoles[] = $role;
         }
 
@@ -516,11 +516,11 @@ abstract class Application_User implements Application_User_Interface, Applicati
         // the user may be allowed for.
         foreach (self::$roles as $roleName => $roleDef)
         {
-            if($roleName == $role) {
+            if($roleName === $role) {
                 continue;
             }
 
-            if (in_array($role, $roleDef['grants']) && $this->hasRight($roleName)) {
+            if (in_array($role, $roleDef['grants'], true) && $this->hasRight($roleName)) {
                 return true;
             }
         }
@@ -931,11 +931,13 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public const RIGHT_EDIT_MEDIA = 'EditMedia';
     public const RIGHT_DELETE_MEDIA = 'DeleteMedia';
     public const RIGHT_VIEW_MEDIA = 'ViewMedia';
+    public const RIGHT_ADMIN_MEDIA = 'AdminMedia';
 
     public function canViewMedia() : bool { return $this->can(self::RIGHT_VIEW_MEDIA); }
     public function canCreateMedia() : bool { return $this->can(self::RIGHT_CREATE_MEDIA); }
     public function canEditMedia() : bool { return $this->can(self::RIGHT_EDIT_MEDIA); }
     public function canDeleteMedia() : bool { return $this->can(self::RIGHT_DELETE_MEDIA); }
+    public function canAdministrateMedia() : bool { return $this->can(self::RIGHT_ADMIN_MEDIA); }
 
     // endregion
 
