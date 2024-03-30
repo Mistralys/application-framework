@@ -11,7 +11,9 @@ namespace Application\FilterSettings;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterCriteria;
 use Application_FilterSettings;
+use AppUtils\Interfaces\RuntimePropertizableInterface;
 use AppUtils\Interfaces\StringableInterface;
+use AppUtils\Traits\RuntimePropertizableTrait;
 use AppUtils\TypeFilter\BaseTypeFilter;
 use AppUtils\TypeFilter\LenientType;
 use UI_Exception;
@@ -22,8 +24,10 @@ use UI_Exception;
  * @package Application
  * @subpackage FilterSettings
  */
-class SettingDef
+class SettingDef implements RuntimePropertizableInterface
 {
+    use RuntimePropertizableTrait;
+
     public const ERROR_NO_INJECT_CALLBACK = 149201;
 
     private string $name;
