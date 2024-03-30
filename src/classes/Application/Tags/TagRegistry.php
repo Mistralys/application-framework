@@ -9,7 +9,10 @@ declare(strict_types=1);
 namespace Application\Tags;
 
 use Application\AppFactory;
+use AppUtils\ConvertHelper_Exception;
 use DBHelper;
+use DBHelper_Exception;
+use JsonException;
 
 /**
  * Helper class that is used to register root tags with
@@ -53,7 +56,7 @@ class TagRegistry
         return null;
     }
 
-    public static function getTagByKey(string $key) : TagRecord
+    public static function getTagByKey(string $key) : ?TagRecord
     {
         $id = self::getTagIDByKey($key);
 
@@ -61,40 +64,41 @@ class TagRegistry
             return AppFactory::createTags()->getByID($id);
         }
 
-        throw new TaggingException(
-            'Tag registry key not found.',
-            sprintf(
-                'Tag registry key [%s] not found.',
-                $key
-            ),
-            self::ERROR_KEY_NOT_REGISTERED
-        );
+        return null;
     }
 
-    public static function registerKey(string $key, string $tagLabel) : TagRecord
+    /**
+     * Registers the target tag in the registry.
+     *
+     * @param string $key
+     * @param TagRecord|NULL $tag
+     * @return void
+     *
+     * @throws ConvertHelper_Exception
+     * @throws DBHelper_Exception
+     * @throws JsonException
+     */
+    public static function setTagByKey(string $key, ?TagRecord $tag) : void
     {
-        if(self::isKeyRegistered($key))
-        {
-            throw new TaggingException(
-                'A tag registry key has already been registered.',
-                sprintf(
-                    'Key [%s] is already registered.',
-                    $key
-                ),
-                self::ERROR_KEY_ALREADY_REGISTERED
+        if($tag === null) {
+            DBHelper::deleteRecords(
+                TagCollection::TABLE_REGISTRY,
+                array(
+                    self::COL_KEY => $key
+                )
             );
+            return;
         }
 
-        $tag = AppFactory::createTags()->createNewTag($tagLabel);
-
-        DBHelper::insertDynamic(
+        DBHelper::insertOrUpdate(
             TagCollection::TABLE_REGISTRY,
             array(
                 TagCollection::PRIMARY_NAME => $tag->getID(),
                 self::COL_KEY => $key,
+            ),
+            array(
+                self::COL_KEY
             )
         );
-
-        return $tag;
     }
 }

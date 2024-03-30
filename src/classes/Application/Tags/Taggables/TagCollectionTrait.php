@@ -38,20 +38,47 @@ trait TagCollectionTrait
 
         $this->tagConnector = $connector;
 
-        $this->setUpTagging();
-
-        $this->handleTaggingInitialized($connector);
-
         return $connector;
     }
 
-    abstract protected function handleTaggingInitialized(TagConnector $connector) : void;
-
-    public function getRootTag(): TagRecord
+    public function isTaggingEnabled() : bool
     {
-        $this->setUpTagging();
+        return $this->getRootTag() !== null;
+    }
 
+    public function getRootTag(): ?TagRecord
+    {
         return TagRegistry::getTagByKey($this->getTagRegistryKey());
+    }
+
+    public function getRootTagID() : ?int
+    {
+        $tag = $this->getRootTag();
+        if($tag !== null) {
+            return $tag->getID();
+        }
+
+        return null;
+    }
+
+    public function requireRootTag() : TagRecord
+    {
+        $tag = $this->getRootTag();
+
+        if($tag !== null) {
+            return $tag;
+        }
+
+        throw new TaggingException(
+            'Root tag not set for tag collection',
+            '',
+            TaggingException::ERROR_ROOT_TAG_NOT_SET
+        );
+    }
+
+    public function setRootTag(?TagRecord $tag) : void
+    {
+        TagRegistry::setTagByKey($this->getTagRegistryKey(), $tag);
     }
 
     public function createTreeRenderer(?UI $ui=null) : TreeRenderer
@@ -65,7 +92,7 @@ trait TagCollectionTrait
 
     public function createTagTree(?UI $ui=null) : TreeNode
     {
-        $rootTag = AppFactory::createMedia()->getRootTag();
+        $rootTag = AppFactory::createMedia()->requireRootTag();
 
         $rootNode = new TreeNode($ui, $rootTag->getLabel());
 
@@ -93,39 +120,26 @@ trait TagCollectionTrait
      */
     public function getAvailableTags() : array
     {
-        return $this->getRootTag()->getSubTagsRecursive();
+        $root = $this->getRootTag();
+        if($root !== null) {
+            return $root->getSubTagsRecursive();
+        }
+
+        return array();
     }
 
     public function hasAvailableTags() : bool
     {
-        return $this->getRootTag()->hasSubTags();
-    }
-
-    /**
-     * Sets up tagging support for the media management in the current
-     * application. This creates the media root tag used to tag documents.
-     *
-     * NOTE: This is called automatically when the media tagging feature
-     * is accessed, so it is not necessary to call this manually. This
-     * method exists to trigger the setup when visiting the tagging screens,
-     * so the media tag is there when needed.
-     *
-     * @return void
-     * @throws TaggingException
-     */
-    private function setUpTagging() : void
-    {
-        $key = $this->getTagRegistryKey();
-
-        if(TagRegistry::isKeyRegistered($key)) {
-            return;
+        $root = $this->getRootTag();
+        if($root !== null) {
+            return $root->hasSubTags();
         }
 
-        TagRegistry::registerKey($key, $this->getRootTagLabelInvariant());
+        return false;
     }
 
     public function getAdminEditTagsURL(array $params=array()) : string
     {
-        return $this->getRootTag()->getAdminTagTreeURL($params);
+        return $this->requireRootTag()->getAdminTagTreeURL($params);
     }
 }
