@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Tags\Taggables;
 
+use Application\Tags\TaggingException;
 use Application\Tags\TagRecord;
 use UI;
 use UI\Tree\TreeNode;
@@ -48,9 +49,22 @@ interface TagCollectionInterface
      * matching root tag, but the same can be used for multiple
      * record types.
      *
-     * @return TagRecord
+     * @return TagRecord|NULL
      */
-    public function getRootTag() : TagRecord;
+    public function getRootTag() : ?TagRecord;
+    public function getRootTagID() : ?int;
+
+    public function setRootTag(?TagRecord $tag) : void;
+    public function isTaggingEnabled() : bool;
+
+    /**
+     * Like {@see getRootTag()}, but throws an exception if the
+     * root tag is not set.
+     *
+     * @return TagRecord
+     * @throws TaggingException {@see TaggingException::ERROR_ROOT_TAG_NOT_SET}
+     */
+    public function requireRootTag() : TagRecord;
 
     /**
      * Creates a tree of tags for use in the media tagging screens,
@@ -81,14 +95,6 @@ interface TagCollectionInterface
      * @return string
      */
     public function getTagRegistryKey() : string;
-
-    /**
-     * Gets the label of the root tag, invariant of the current
-     * language.
-     *
-     * @return string
-     */
-    public function getRootTagLabelInvariant() : string;
 
     public function getAdminEditTagsURL(array $params=array()) : string;
 }
