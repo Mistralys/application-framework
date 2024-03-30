@@ -7,6 +7,7 @@
  * @see Application_FilterCriteria_Database
  */
 
+use Application\FilterCriteria\FilterCriteriaException;
 use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\ConvertHelper;
 
@@ -32,8 +33,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public const ERROR_JOIN_ID_NOT_FOUND = 710006;
     public const ERROR_JOIN_ALREADY_REGISTERED = 710007;
     public const ERROR_JOIN_ALREADY_ADDED = 710008;
+    public const ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT = 710009;
 
     const DEFAULT_SELECT = 'SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
+
 
     /**
      * @var string
@@ -149,10 +152,21 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function getCountSelect() : string
     {
-        if($this->distinct) {
+        if($this->distinct)
+        {
+            $column = $this->getCountColumn();
+
+            if($column === '*') {
+                throw new FilterCriteriaException(
+                    'Cannot use DISTINCT with wildcard column',
+                    'When using a distinct query, the count column name must be more specific than a wildcard.',
+                    self::ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT
+                );
+            }
+
             return sprintf(
                 'COUNT(DISTINCT(%s)) AS `count`',
-                $this->getCountColumn()
+                $column
             );
         }
 
