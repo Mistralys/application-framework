@@ -12,11 +12,10 @@ class TagFilterSettings extends DBHelper_BaseFilterSettings
 
     protected function registerSettings(): void
     {
-        $this->registerSetting(self::SETTING_SEARCH, t('Search'));
+        $this->registerSearchSetting(self::SETTING_SEARCH);
     }
 
     protected function _configureFilters(): void
     {
-        $this->configureSearch(self::SETTING_SEARCH);
     }
 }
