@@ -58,7 +58,8 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
     protected function registerSettings(): void
     {
         $group = $this->addGroup(t('Settings'))
-            ->setIcon(UI::icon()->settings());
+            ->setIcon(UI::icon()->settings())
+            ->expand();
 
         $group->registerSetting(self::SETTING_LABEL)
             ->setStorageName(TagCollection::COL_LABEL)
