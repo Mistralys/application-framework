@@ -59,6 +59,8 @@ trait TaggableFilterCriteriaTrait
             return;
         }
 
+        $this->makeDistinct();
+
         $tagCollection = $this->getTagCollection();
 
         $values = statementValues()
