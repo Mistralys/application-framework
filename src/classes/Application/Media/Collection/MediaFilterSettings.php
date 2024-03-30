@@ -5,17 +5,33 @@ declare(strict_types=1);
 namespace Application\Media\Collection;
 
 use Application\AppFactory;
+use Application\Tags\Interfaces\TagFilterSettingsInterface;
+use Application\Tags\Taggables\FilterCriteria\TaggableFilterCriteriaInterface;
+use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\Traits\TagFilterSettingsTrait;
 use Application_Media_Document_Image;
+use Closure;
 use DBHelper_BaseFilterSettings;
 
 /**
  * @property MediaFilterCriteria $filters
+ * @property MediaCollection $collection
+ *
  */
-class MediaFilterSettings extends DBHelper_BaseFilterSettings
+class MediaFilterSettings extends DBHelper_BaseFilterSettings implements TagFilterSettingsInterface
 {
+    use TagFilterSettingsTrait;
+
     public const SETTING_SEARCH = 'search';
     public const SETTING_EXTENSIONS = 'extensions';
+    public const SETTING_TAGS = 'tags';
+
     private bool $isImageGallery = false;
+
+    public function getTagCollection(): TagCollectionInterface
+    {
+        return $this->collection;
+    }
 
     public function configureForImageGallery() : self
     {
@@ -26,8 +42,13 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
 
     protected function registerSettings(): void
     {
-        $this->registerSetting(self::SETTING_SEARCH, t('Search'));
-        $this->registerSetting(self::SETTING_EXTENSIONS, t('File extensions'));
+        $this->registerSearchSetting(self::SETTING_SEARCH);
+
+        $this->registerSetting(self::SETTING_EXTENSIONS, t('File extensions'))
+            ->setInjectCallback(Closure::fromCallable(array($this, 'inject_extensions')))
+            ->setConfigureCallback(Closure::fromCallable(array($this, 'configure_extensions')));
+
+        $this->registerTagSetting(self::SETTING_TAGS);
     }
 
     protected function inject_extensions() : void
@@ -54,8 +75,10 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
 
     protected function _configureFilters(): void
     {
-        $this->filters->setSearch($this->getSetting(self::SETTING_SEARCH));
+    }
 
+    protected function configure_extensions() : void
+    {
         $extensions = (array)$this->getSetting(self::SETTING_EXTENSIONS);
         if(empty($extensions) && $this->isImageGallery)
         {
@@ -63,5 +86,10 @@ class MediaFilterSettings extends DBHelper_BaseFilterSettings
         }
 
         $this->filters->selectExtensions($extensions);
+    }
+
+    public function getTaggableFilters(): TaggableFilterCriteriaInterface
+    {
+        return $this->filters;
     }
 }
