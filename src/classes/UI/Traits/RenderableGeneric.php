@@ -24,10 +24,7 @@ declare(strict_types=1);
  */
 trait UI_Traits_RenderableGeneric
 {
-   /**
-    * @var string
-    */
-    protected $renderableInstanceID = '';
+    protected string $renderableInstanceID = '';
     
     public function getUI(): UI
     {
