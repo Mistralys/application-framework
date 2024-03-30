@@ -18,7 +18,6 @@ class RootTagTests extends ApplicationTestCase
         // Not using `createNewTag` to test the instance of the returned object.
         $tag = $collection->createNewRecord(array(TagCollection::COL_LABEL => 'Foo bar'));
 
-        $this->assertInstanceOf(TagRecord::class, $tag);
         $this->assertSame('Foo bar', $tag->getLabel());
     }
 

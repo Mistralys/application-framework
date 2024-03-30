@@ -8,6 +8,7 @@ use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use DBHelper_BaseRecord;
+use UI\AdminURLs\AdminURL;
 
 /**
  * @property TestDBCollection $collection
@@ -68,8 +69,13 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
         return $this->collection;
     }
 
-    public function getAdminTaggingURL(array $params = array()): string
+    public function adminURLTagging(): AdminURL
     {
-        return '';
+        return new AdminURL();
+    }
+
+    public function isTaggingEnabled(): bool
+    {
+        return $this->getTagCollection()->isTaggingEnabled();
     }
 }

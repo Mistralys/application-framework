@@ -145,14 +145,5 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
         return self::TAG_REGISTRY_KEY;
     }
 
-    public function getRootTagLabelInvariant(): string
-    {
-        return 'Test records';
-    }
-
-    protected function handleTaggingInitialized(TagConnector $connector): void
-    {
-    }
-
     // endregion: Tagging
 }
