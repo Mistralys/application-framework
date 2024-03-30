@@ -75,7 +75,7 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
     
     private function serveMedia() : void
     {
-        $media_id = $this->request->getParam(MediaCollection::PRIMARY_NAME);
+        $media_id = (int)$this->request->getParam(MediaCollection::PRIMARY_NAME);
         
         $media = Application_Media::getInstance();
         
