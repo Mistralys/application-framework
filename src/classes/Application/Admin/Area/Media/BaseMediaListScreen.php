@@ -96,7 +96,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
             ->link($this->createCollection()->adminURL()->updateSizes())
         );
 
-        $dev->addButton(UI::button(t('Update file sizes (simulate)'))
+        $dev->addButton(UI::button(sb()->t('Update file sizes')->parentheses(t('Simulate')))
             ->requireTrue(MediaCollection::hasSizeColumn())
             ->setIcon(UI::icon()->refresh())
             ->link($this->createCollection()->adminURL()->updateSizes()->simulation())
@@ -124,7 +124,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
             ->setCallback(Closure::fromCallable(array($this, 'handleMultiDelete')))
             ->makeConfirm(sb()
                 ->para(sb()
-                    ->t('This will delete the media file from the database, and from the disk.')
+                    ->t('This will delete the media file from the database, and from the storage.')
                 )
                 ->para(sb()
                     ->bold(t(

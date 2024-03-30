@@ -174,7 +174,7 @@ HTML;
                 sb()
                     ->bold($item->getLabel())
                     ->nl()
-                    ->warning(sb()->bold(t('Not found on disk.')))
+                    ->warning(sb()->bold(t('Not found in the storage.')))
             );
         }
     }
