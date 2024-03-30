@@ -178,7 +178,9 @@ trait StandardStateSetupTrait
 
     public function canBeDeleted() : bool
     {
-        return true;
+        return $this
+            ->requireState()
+            ->hasDependency($this->getStateByName(StandardStateSetupInterface::STATUS_DELETED));
     }
 
     public function canBeDestroyed() : bool

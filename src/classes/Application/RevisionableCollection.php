@@ -262,10 +262,12 @@ abstract class Application_RevisionableCollection
      * @inheritDoc
      * @return $this
      */
-    public function resetRecordCache() : self
+    public function resetCollection() : self
     {
-        foreach($this->cachedItems as $revisionable) {
-            $this->unloadRecord($revisionable);
+        if(isset($this->cachedItems)) {
+            foreach ($this->cachedItems as $revisionable) {
+                $this->unloadRecord($revisionable);
+            }
         }
 
         return $this;

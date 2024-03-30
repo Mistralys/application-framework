@@ -99,6 +99,10 @@ abstract class BaseListBuilder
         return !in_array($colName, $this->hiddenColumns, true);
     }
 
+    /**
+     * @param string $colName
+     * @return $this
+     */
     public function disableColumn(string $colName): self
     {
         if (!in_array($colName, $this->hiddenColumns, true)) {
@@ -171,6 +175,10 @@ abstract class BaseListBuilder
         return $this;
     }
 
+    /**
+     * @param bool $enabled
+     * @return $this
+     */
     public function enableAdvancedMode(bool $enabled): self
     {
         $this->advancedMode = $enabled;
@@ -192,7 +200,7 @@ abstract class BaseListBuilder
 
     /**
      * @param string $name
-     * @param string|int|float $value
+     * @param string|int|float|NULL $value
      * @return $this
      */
     public function addHiddenVar(string $name, $value): self
@@ -201,12 +209,18 @@ abstract class BaseListBuilder
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function disableEntryActions(): self
     {
         $this->setOption('disable-entry-actions', true);
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function disableMultiActions(): self
     {
         $this->setOption('disable-multi-actions', true);
@@ -315,7 +329,7 @@ abstract class BaseListBuilder
      * Lists that use the same ID share the same filter settings.
      *
      * @param string $id
-     * @return BaseListBuilder
+     * @return $this
      * @throws UI_DataGrid_Exception
      * @see BaseListBuilder::ERROR_LIST_ALREADY_INITIALIZED
      */
@@ -333,6 +347,10 @@ abstract class BaseListBuilder
         return $this;
     }
 
+    /**
+     * @return $this
+     * @throws Application_Exception
+     */
     public function handleActions(): self
     {
         $this->getDataGrid()->executeCallbacks();
@@ -344,6 +362,13 @@ abstract class BaseListBuilder
 
     // region B - Helper methods
 
+    /**
+     * @param UI_Page_Sidebar $sidebar
+     * @return $this
+     * @throws Application_Exception
+     * @throws DriverException
+     * @throws UI_Exception#
+     */
     public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {
         $settings = $this->getFilterSettings();
