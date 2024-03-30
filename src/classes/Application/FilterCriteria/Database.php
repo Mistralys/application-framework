@@ -149,14 +149,15 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
     protected function getCountSelect() : string
     {
-        $distinct = '';
         if($this->distinct) {
-            $distinct = 'DISTINCT';
+            return sprintf(
+                'COUNT(DISTINCT(%s)) AS `count`',
+                $this->getCountColumn()
+            );
         }
 
         return sprintf(
-            'COUNT(%s %s) AS `count`',
-            $distinct,
+            'COUNT(%s) AS `count`',
             $this->getCountColumn()
         );
     }
