@@ -121,7 +121,7 @@ trait RecordTaggingScreenTrait
 
     public function getAdminClearAllURL() : string
     {
-        return $this->getTaggableRecord()->getAdminTaggingURL(array(self::REQUEST_VAR_CLEAR_ALL => 'yes'));
+        return (string)$this->getTaggableRecord()->adminURLTagging()->string(self::REQUEST_VAR_CLEAR_ALL, 'yes');
     }
 
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer
@@ -141,15 +141,7 @@ trait RecordTaggingScreenTrait
     {
         return (string)$this->getUI()->createMessage(sb()
             ->t('No tags are available for this record type.')
-            ->ifTrue(
-                $this->getUser()->canCreateTags(),
-                function () {
-                    return UI::button(t('Manage tags'))
-                        ->makeSmall()
-                        ->setIcon(UI::icon()->tags())
-                        ->link($this->getTaggableRecord()->getTagCollection()->getAdminEditTagsURL(), '_blank');
-                }
-            ))
+        )
             ->makeInfo()
             ->enableIcon()
             ->makeNotDismissable();
@@ -183,7 +175,7 @@ trait RecordTaggingScreenTrait
 
     public function getAdminSuccessURL(): string
     {
-        return $this->getTaggableRecord()->getAdminTaggingURL();
+        return (string)$this->getTaggableRecord()->adminURLTagging();
     }
 
     protected function injectTagTree() : void
