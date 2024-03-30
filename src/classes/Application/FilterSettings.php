@@ -7,10 +7,12 @@
  * @see Application_FilterSettings
  */
 
+declare(strict_types=1);
+
 use Application\AppFactory;
 use Application\Driver\DriverException;
-use Application\Exception\UnexpectedInstanceException;
 use Application\FilterSettings\SettingDef;
+use Application\FilterSettingsInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -19,26 +21,11 @@ use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
 
-/**
- * Base class for custom filter setting implementations. This can
- * be used to create a settings form intended to configure a filter
- * criteria instance. The storage of the settings is handled
- * automatically on a per-user basis.
- *
- * Usage:
- *
- * - Extend this class, and implement the abstract methods
- * - Instantiate an instance of the class
- * - Add it to a sidebar using the {@link UI_Page_Sidebar::addFilterSettings()} method
- * - Configure your filter criteria using the {@link Application_FilterSettings::configureFilters()} method
- *
- * @package Application
- * @subpackage Filtering
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- */
-abstract class Application_FilterSettings implements Application_Interfaces_Loggable
+abstract class Application_FilterSettings
+    implements FilterSettingsInterface
 {
     use Application_Traits_Loggable;
+    use UI_Traits_RenderableGeneric;
 
     public const ERROR_UNKNOWN_SETTING = 450001;
     public const ERROR_NO_SETTINGS_REGISTERED = 450002;
@@ -110,19 +97,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         $this->init();
     }
 
-    /**
-     * Sets the ID to use for saving settings (on a per-user basis).
-     * Using the same ID for different instances means they will
-     * share stored settings.
-     *
-     * NOTE: This should be called before the form is rendered, ideally
-     * before doing anything, so the settings do not get loaded several
-     * times. Settings use lazy loading, but this way the chance is
-     * minimized.
-     *
-     * @param string $id
-     * @return $this
-     */
     public function setID(string $id) : self
     {
         if(empty($id))
@@ -202,7 +176,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
         $this->searchConfigured = true;
 
-        $search = trim($this->getSearchSetting($setting)->getValue());
+        $search = trim($this->getSearchSetting($setting)->getValue()->getString());
         
         if(strlen($search) >= 2) 
         {
@@ -214,8 +188,9 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
      * Registers the generic search field that uses the collection's
      * configured search fields list in the UI.
      *
-     * See the {@link inject_search()} method to inject the
-     * matching element into the form where you want it.
+     * See the {@link inject_search()} method in case you wish to
+     * adjust the search field's appearance.
+     *
      * The rest is automatic.
      *
      * @param string|null $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
@@ -229,6 +204,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         }
 
         $this->registerSetting($setting, $label)
+            ->setInjectCallback(Closure::fromCallable(array($this, 'inject_search')))
             ->setConfigureCallback(Closure::fromCallable(array($this, 'configureSearch')));
     }
 
@@ -237,11 +213,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this->addElementSearch(array('Full text'));
     }
 
-    /**
-     * @param string|SettingDef $name
-     * @return SettingDef
-     * @throws Application_Exception
-     */
     public function getSearchSetting($name=null) : SettingDef
     {
         if(empty($name)) {
@@ -279,12 +250,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     
     protected FilterCriteriaInterface $filters;
 
-    /**
-     * Configures the provided filter criteria instance with the
-     * current filtering settings.
-     *
-     * @param FilterCriteriaInterface $filters
-     */
     public function configureFilters(FilterCriteriaInterface $filters) : void
     {
         $this->filters = $filters;
@@ -433,12 +398,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     // region: Access setting values
 
-    /**
-     * Retrieves all settings as an associative array with
-     * setting name > value pairs.
-     *
-     * @return array<string,string|number|array<mixed>|bool|NULL>
-     */
     public function getSettings() : array
     {
         $this->loadSettings();
@@ -451,14 +410,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         
         return $settings;
     }
-    
-    /**
-     * Retrieves a single setting's value. If no value
-     * has been explicitly set, returns the default value.
-     *
-     * @param string $name
-     * @return string|array<mixed>|number|bool|NULL
-     */
+
     public function getSetting(string $name)
     {
         $setting = $this->requireSetting($name);
@@ -472,11 +424,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $setting->getDefault();
     }
 
-    /**
-     * @param string $name
-     * @return array<mixed>
-     * @deprecated Use {@see getSettingArray()} instead.
-     */
     public function getArraySetting(string $name) : array
     {
         return $this->getSettingArray($name);
@@ -509,12 +456,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     // endregion
 
-    /**
-     * @param string $name
-     * @param string|number|array<mixed>|bool|NULL $value
-     * @return $this
-     * @throws JsonException
-     */
     public function setSetting(string $name, $value) : self
     {
         $this->loadSettings();
@@ -523,10 +464,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this;
     }
 
-    /**
-     * @param array<string,mixed>|null $settings
-     * @return $this
-     */
     public function setSettings(?array $settings) : self
     {
         if($settings === null) {
@@ -652,17 +589,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
     // region: Form elements
 
-    /**
-     * Adds a "More settings..." button in the form, and hides all
-     * elements added after it.
-     *
-     * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_InputText
-     * @throws Application_Exception
-     * @throws BaseClassHelperException
-     * @throws UI_Themes_Exception
-     * @throws FileHelper_Exception
-     */
     public function addMore(HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         if($this->hasMore) {
@@ -688,12 +614,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this->form->addHTML($tpl->render(), $container);
     }
 
-    /**
-     * Adds a multiselect element.
-     * @param string $setting
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Multiselect
-     */
     public function addMultiselect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Multiselect
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -702,22 +622,11 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         );
     }
 
-    /**
-     * Adds a regular select element.
-     * @param string $setting
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element_Select
-     * @deprecated
-     */
     public function addSelect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
     {
         return $this->addElementSelect($setting, $container);
     }
 
-    /**
-     * @param array<string,string|number|StringableInterface|NULL> $vars
-     * @return $this
-     */
     public function addHiddenVars(array $vars) : self
     {
         foreach($vars as $name => $value) {
@@ -727,12 +636,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this;
     }
 
-    /**
-     * Adds a hidden var to the filter form.
-     * @param string $name
-     * @param string|number|StringableInterface|NULL $value
-     * @return $this
-     */
     public function addHiddenVar(string $name, $value) : self
     {
         $this->hiddens[$name] = toString($value);
@@ -820,14 +723,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $el;
     }
 
-    /**
-     * Adds a country selector element.
-     *
-     * @param string $setting The name of the setting to which this should be tied
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @param array $options
-     * @return HTML_QuickForm2_Element_Select
-     */
     public function addElementCountry(string $setting, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_Select
     {
         if(!is_array($options)) {
@@ -866,16 +761,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $el;
     }
 
-    /**
-     * Creates and adds an element to the container for
-     * a setting, which automatically configures it, so
-     * it can be correctly registered clientside as well.
-     *
-     * @param string $setting
-     * @param string $type
-     * @param HTML_QuickForm2_Container|NULL $container
-     * @return HTML_QuickForm2_Element
-     */
     public function addElement(string $setting, string $type, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element
     {
         if($container === null) {
@@ -891,15 +776,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         
         return $el;
     }
-    
-   /**
-    * Adds a select element for the specified filter setting.
-    * 
-    * @param string $setting
-    * @param HTML_QuickForm2_Container|NULL $container
-    * @return HTML_QuickForm2_Element_Select
-    * @throws BaseClassHelperException
-    */
+
     public function addElementSelect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -908,12 +785,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         );
     }
 
-    /**
-     * @param string $setting
-     * @param HTML_QuickForm2_Container|null $container
-     * @return HTML_QuickForm2_Element_InputText
-     * @throws BaseClassHelperException
-     */
     public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -921,15 +792,7 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
             $this->addElement($setting, 'text', $container)
         );
     }
-    
-   /**
-    * Adds a switch (boolean) element.
-    * 
-    * @param string $setting
-    * @param HTML_QuickForm2_Container|NULL $container
-    * @return HTML_QuickForm2_Element_Switch
-    * @throws BaseClassHelperException
-    */
+
     public function addElementSwitch(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Switch
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -938,16 +801,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         );
     }
 
-    /**
-     * Adds a previously created form element that has not been
-     * created with the {@link addElement()} method, and configures
-     * it to work with the filters.
-     *
-     * @param HTML_QuickForm2_Element $element
-     * @return $this
-     * @throws Application_Exception
-     * @throws HTML_QuickForm2_InvalidArgumentException
-     */
     public function addCustomElement(HTML_QuickForm2_Element $element) : self
     {
         $setting = $this->requireSetting($element->getName());
@@ -1039,25 +892,12 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
     {
         return $this->jsID;
     }
-    
-    /**
-     * Retrieves the name of the clientside javascript variable in
-     * which the client object handling these filter settings will
-     * be available under.
-     *
-     * @return string
-     */
+
     public function getJSName() : string
     {
         return 'lf'.$this->jsID;
     }
-    
-    /**
-     * Checks whether the filter settings are active (if any of
-     * the registered settings are not the default value).
-     *
-     * @return boolean
-     */
+
     public function isActive() : bool
     {
         foreach($this->definitions as $name => $def)
@@ -1087,35 +927,18 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
 
         return $value;
     }
-    
-   /**
-    * Resets all filter settings to the default settings.
-    */
+
     public function reset() : void
     {
         $this->settingsLoaded = false;
     }
-    
-   /**
-    * Checks whether a setting with the specified name exists 
-    * within the settings configuration.
-    * 
-    * @param string $name
-    * @return boolean
-    */
+
     public function hasSetting(string $name) : bool
     {
         return isset($this->definitions[$name]) && $this->isSettingEnabled($name);
     }
 
-    
-   /**
-    * Attempts to retrieve the country selected in a country
-    * setting. Must have been added using {@link addElementCountry()}.
-    * 
-    * @param string $name The name of the setting 
-    * @return Application_Countries_Country|NULL
-    */
+
     public function getSettingCountry(string $name) : ?Application_Countries_Country
     {
         $countries = Application_Driver::createCountries();
@@ -1156,9 +979,6 @@ abstract class Application_FilterSettings implements Application_Interfaces_Logg
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getID() : string
     {
         return $this->id;
