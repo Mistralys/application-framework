@@ -8,13 +8,16 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableInterface;
+use Application\Tags\Taggables\TaggableInterface;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits\OptionableTrait;
 use UI\PropertiesGrid\Property\MarkdownGridProperty;
+use UI\PropertiesGrid\Property\TagsGridProperty;
 
 /**
  * Specialized table view used to display item
@@ -124,9 +127,27 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     {
         $prop = new UI_PropertiesGrid_Property_DateTime(
             $this,
-            toString($label),
+            $label,
             $date
         );
+
+        $this->addProperty($prop);
+
+        return $prop;
+    }
+
+    /**
+     * Displays a list of all tags associated with the taggable item.
+     * If tagging is disabled, the property will not be displayed.
+     *
+     * @param string|StringableInterface $label
+     * @param TaggableInterface|NULL $taggable The taggable item to display tags for.
+     * @return TagsGridProperty
+     * @throws UI_Exception
+     */
+    public function addTags($label, ?TaggableInterface $taggable) : TagsGridProperty
+    {
+        $prop = new TagsGridProperty($this, $label, $taggable);
 
         $this->addProperty($prop);
 
@@ -146,7 +167,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     {
         $prop = new UI_PropertiesGrid_Property_Amount(
             $this,
-            toString($label),
+            $label,
             $amount
         );
 
@@ -181,7 +202,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     {
         $prop = new UI_PropertiesGrid_Property_ByteSize(
             $this,
-            toString($label),
+            $label,
             $bytes
         );
 
