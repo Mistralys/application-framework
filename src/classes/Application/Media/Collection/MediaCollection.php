@@ -10,7 +10,9 @@ use Application\Admin\Area\Media\BaseCreateMediaScreen;
 use Application\Admin\Area\Media\BaseImageGalleryScreen;
 use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
+use Application\Media\MediaAdminURLs;
 use Application\Media\MediaTagConnector;
+use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\Taggables\TagConnector;
@@ -124,36 +126,15 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     // endregion: X - Interface methods
 
-    public function getAdminListURL(array $params=array()) : string
+    private static ?MediaAdminURLs $adminURLs = null;
+
+    public function adminURL() : MediaAdminURLs
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseMediaListScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminImageGalleryURL(array $params=array()) : string
-    {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseImageGalleryScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminUpdateSizesURL(array $params=array(), bool $simulate=false) : string
-    {
-        $params[BaseMediaListScreen::REQUEST_PARAM_UPDATE_SIZES] = 'yes';
-
-        if($simulate) {
-            $params[Application::REQUEST_VAR_SIMULATION] = 'yes';
+        if(!isset(self::$adminURLs)) {
+            self::$adminURLs = new MediaAdminURLs();
         }
 
-        return $this->getAdminURL($params);
-    }
-
-    public function getAdminCreateURL(array $params=array()) : string
-    {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateMediaScreen::URL_NAME;
-
-        return $this->getAdminURL($params);
+        return self::$adminURLs;
     }
 
     public function getAdminURL(array $params=array()) : string
@@ -167,6 +148,11 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public static function createSettingsManager(Application_Formable $formable, ?MediaRecord $record=null) : MediaSettingsManager
     {
         return new MediaSettingsManager($formable, $record);
+    }
+
+    public function isTaggingEnabled() : bool
+    {
+        return TagCollection::tableExists() && $this->getRootTag() !== null;
     }
 
     protected function _registerKeys(): void
@@ -243,7 +229,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
         return Application_Media::TABLE_NAME;
     }
 
-    public function getRootTag(): TagRecord
+    public function getRootTag(): ?TagRecord
     {
         return AppFactory::createMedia()->getRootTag();
     }
@@ -251,15 +237,6 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public function getTagRegistryKey(): string
     {
         return Application_Media::TAG_REGISTRY_KEY;
-    }
-
-    public function getRootTagLabelInvariant(): string
-    {
-        return AppFactory::createMedia()->getRootTagLabelInvariant();
-    }
-
-    protected function handleTaggingInitialized(TagConnector $connector): void
-    {
     }
 
     // endregion: Tagging

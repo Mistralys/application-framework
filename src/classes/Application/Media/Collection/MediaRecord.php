@@ -23,6 +23,7 @@ use AppUtils\FileHelper;
 use DateTime;
 use DBHelper_BaseCollection_OperationContext_Delete;
 use DBHelper_BaseRecord;
+use UI\AdminURLs\AdminURL;
 
 /**
  * @property MediaCollection $collection
@@ -40,46 +41,26 @@ class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
     public function getLabelLinked() : string
     {
         return (string)sb()
-            ->link(
+            ->adminLink(
                 $this->getLabel(),
-                $this->getAdminViewURL()
+                $this->adminURL()->view()
             );
     }
 
-    public function getAdminDownloadURL(array $params=array()) : string
-    {
-        $params[BaseMediaStatusScreen::REQUEST_PARAM_DOWNLOAD] = 'yes';
+    private ?MediaRecordAdminURLs $adminURLs = null;
 
-        return $this->getAdminStatusURL($params);
+    public function adminURL() : MediaRecordAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new MediaRecordAdminURLs($this->getID());
+        }
+
+        return $this->adminURLs;
     }
 
-    public function getAdminStatusURL(array $params=array()) : string
+    public function adminURLTagging() : AdminURL
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseMediaStatusScreen::URL_NAME;
-
-        return $this->getAdminViewURL($params);
-    }
-
-    public function getAdminTaggingURL(array $params=array()) : string
-    {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseMediaTagsScreen::URL_NAME;
-
-        return $this->getAdminViewURL($params);
-    }
-
-    public function getAdminSettingsURL(array $params=array()) : string
-    {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseMediaSettingsScreen::URL_NAME;
-
-        return $this->getAdminViewURL($params);
-    }
-
-    public function getAdminViewURL(array $params=array()) : string
-    {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewMediaScreen::URL_NAME;
-        $params[MediaCollection::PRIMARY_NAME] = $this->getID();
-
-        return $this->getCollection()->getAdminURL($params);
+        return $this->adminURL()->tagging();
     }
 
     public function getDateAdded() : DateTime
@@ -184,5 +165,10 @@ class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
     public function getTagCollection(): TagCollectionInterface
     {
         return $this->collection;
+    }
+
+    public function isTaggingEnabled(): bool
+    {
+        return $this->getTagCollection()->isTaggingEnabled();
     }
 }
