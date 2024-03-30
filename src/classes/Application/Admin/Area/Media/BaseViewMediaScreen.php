@@ -31,7 +31,7 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
 
     protected function getRecordMissingURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string
@@ -57,7 +57,7 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->record->getLabel())
-            ->makeLinked($this->record->getAdminViewURL());
+            ->makeLinked($this->record->adminURL()->view());
     }
 
     protected function _handleSubnavigation(): void
@@ -66,20 +66,20 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
 
         $this->subnav->addURL(
             t('Status'),
-            $this->record->getAdminStatusURL()
+            $this->record->adminURL()->status()
         )
             ->setIcon(UI::icon()->status());
 
         $this->subnav->addURL(
             t('Tagging'),
-            $this->record->getAdminTaggingURL()
+            $this->record->adminURLTagging()
         )
-            ->requireTrue(TagCollection::tableExists())
+            ->requireTrue(AppFactory::createMediaCollection()->isTaggingEnabled())
             ->setIcon(UI::icon()->tags());
 
         $this->subnav->addURL(
             t('Settings'),
-            $this->record->getAdminSettingsURL()
+            $this->record->adminURL()->settings()
         )
             ->setIcon(UI::icon()->settings());
     }

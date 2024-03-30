@@ -44,7 +44,7 @@ abstract class BaseMediaSettingsScreen extends BaseCollectionEditExtended
 
     public function getBackOrCancelURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function isUserAllowedEditing(): bool

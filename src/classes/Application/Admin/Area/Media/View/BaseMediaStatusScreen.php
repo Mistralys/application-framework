@@ -37,7 +37,7 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
 
     protected function getRecordMissingURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string
@@ -70,7 +70,7 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
     {
         $this->sidebar->addButton('download-file', t('Download file'))
             ->setIcon(UI::icon()->download())
-            ->link($this->record->getAdminDownloadURL())
+            ->link($this->record->adminURL()->download())
             ->setTooltip(t('Downloads the original media file.'));
     }
 
@@ -88,6 +88,8 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
         $grid->addByteSize(t('File size'), $this->document->getFilesize());
 
         $this->document->injectMetadata($grid);
+
+        $grid->addTags(t('Tags'), $this->record);
 
         $this->injectDescription($grid);
         $this->injectPreview($grid);

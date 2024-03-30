@@ -38,7 +38,7 @@ class BaseMediaTagsScreen
 
     protected function getRecordMissingURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string
@@ -80,6 +80,6 @@ class BaseMediaTagsScreen
 
     public function getAdminCancelURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 }

@@ -91,7 +91,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle())
-            ->makeLinked($this->media->getAdminImageGalleryURL());
+            ->makeLinked($this->media->adminURL()->gallery());
     }
 
     public function getCurrentPage() : int

@@ -20,6 +20,7 @@ use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
+use UI\AdminURLs\AdminURL;
 
 abstract class Application_Media_Document
     implements
@@ -576,9 +577,14 @@ abstract class Application_Media_Document
         return $this->getID();
     }
 
-    public function getAdminTaggingURL(array $params = array()) : string
+    public function adminURLTagging() : AdminURL
     {
-        return $this->getRecord()->getAdminTaggingURL($params);
+        return $this->getRecord()->adminURL()->tagging();
+    }
+
+    public function isTaggingEnabled(): bool
+    {
+        return $this->getTagCollection()->isTaggingEnabled();
     }
 
     // endregion

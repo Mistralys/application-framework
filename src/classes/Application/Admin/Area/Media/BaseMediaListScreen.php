@@ -70,7 +70,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
 
             $this->redirectWithSuccessMessage(
                 t('The file sizes have been updated successfully at %1$s.', sb()->time()),
-                $this->createCollection()->getAdminListURL()
+                $this->createCollection()->adminURL()->list()
             );
         }
 
@@ -81,7 +81,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
     {
         $this->sidebar->addButton('create-media', t('Add a file...'))
             ->setIcon(UI::icon()->add())
-            ->link($this->createCollection()->getAdminCreateURL());
+            ->link($this->createCollection()->adminURL()->create());
 
         parent::_handleSidebar();
 
@@ -93,13 +93,13 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
             ->setTooltip(t('Update the file size of all media files in the database.'))
             ->requireTrue(MediaCollection::hasSizeColumn())
             ->setIcon(UI::icon()->refresh())
-            ->link($this->createCollection()->getAdminUpdateSizesURL())
+            ->link($this->createCollection()->adminURL()->updateSizes())
         );
 
         $dev->addButton(UI::button(t('Update file sizes (simulate)'))
             ->requireTrue(MediaCollection::hasSizeColumn())
             ->setIcon(UI::icon()->refresh())
-            ->link($this->createCollection()->getAdminUpdateSizesURL(array(), true))
+            ->link($this->createCollection()->adminURL()->updateSizes()->simulation())
         );
     }
 
@@ -141,7 +141,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
 
     protected function handleMultiDelete(UI_DataGrid_Action $action): void
     {
-        $action->createRedirectMessage($this->createCollection()->getAdminListURL())
+        $action->createRedirectMessage($this->createCollection()->adminURL()->list())
             ->single(t('The media file %1$s has been deleted successfully at %2$s.', '$label', '$time'))
             ->multiple(t('%1$s media files have been deleted successfully at %2$s.', '$amount', '$time'))
             ->none(t('No media files selected that could be deleted.'))
@@ -151,7 +151,7 @@ abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_Collectio
 
     public function getBackOrCancelURL(): string
     {
-        return $this->createCollection()->getAdminURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function isUserAllowed(): bool

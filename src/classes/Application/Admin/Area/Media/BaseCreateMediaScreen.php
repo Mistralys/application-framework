@@ -45,7 +45,7 @@ abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
 
     public function getBackOrCancelURL(): string
     {
-        return $this->createCollection()->getAdminListURL();
+        return (string)$this->createCollection()->adminURL()->list();
     }
 
     public function isUserAllowed(): bool
