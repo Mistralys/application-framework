@@ -1770,8 +1770,12 @@ class DBHelper
     * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $data
     * @return string The insert ID, if any
     */
-    public static function insertDynamic(string $tableName, array $data) : string
+    public static function insertDynamic(string $tableName, array $data=array()) : string
     {
+        if(empty($data)) {
+            return self::insert(sprintf("INSERT INTO `%s` VALUES(NULL)", $tableName));
+        }
+
         $setTokens = array();
         foreach($data as $column => $value) {
             // special case for null values, which need a different syntax.
