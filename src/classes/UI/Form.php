@@ -2183,8 +2183,7 @@ class UI_Form extends UI_Renderable
      * Adds a callback function that will be called when the element is
      * rendered, to be able to influence how the element is rendered.
      *
-     * The callback function gets an instance of the element's renderer
-     * class, which provides an API to customize the element.
+     * The callback function gets an instance of {@see UI_Form_Renderer_Element}.
      *
      * @param HTML_QuickForm2_Node $element
      * @param callable $callback

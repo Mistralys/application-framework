@@ -667,6 +667,8 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * Adds a callback function that will be called when the element is
      * rendered, to be able to influence how the element is rendered.
      *
+     * The callback gets a {@see UI_Form_Renderer_Element} instance as parameter.
+     *
      * @param HTML_QuickForm2_Node $element
      * @param callable $callback
      * @return $this
