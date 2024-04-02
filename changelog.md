@@ -3,6 +3,7 @@
 - Media: Documents are now taggable.
 - Tests: The Test DB collection is now taggable.
 - DBHelper: Added `getRelationsForField()` to fetch all field relations.
+- DBHelper: `insertDynamic` now supports and empty columns array.
 - JS: Added the `Logger` utility class.
 - ButtonGroup: Added `addButtons()`.
 - TreeRenderer: Added the `TreeRenderer` UI helper class.
