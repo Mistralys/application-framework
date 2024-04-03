@@ -38,6 +38,7 @@
 - Revisionables: `requireTransaction()` now accepts a reason string.
 - Revisionables: Added `isPartChanged()`.
 - Revisionables: Fixed some discrepancies in the collection interface inheritances.
+- Revisionables: Added `getPrimaryRequestName()`. Request now uses both primary and secondary names.
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)
