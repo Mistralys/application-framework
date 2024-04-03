@@ -242,7 +242,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         if($this->isEditMode())
         {
             $this->addHiddenVar(
-                $this->collection->getRecordPrimaryName(), 
+                $this->collection->getRecordRequestPrimaryName(),
                 (string)$this->record->getID()
             );
         }
