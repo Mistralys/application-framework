@@ -6,6 +6,7 @@
  * @see DBHelper_BaseCollection
  */
 
+use Application\AppFactory;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -569,6 +570,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     /**
      * Attempts to retrieve a record by its ID as specified in the request.
+     *
+     * Uses the request parameter name as returned by {@see self::getRecordRequestPrimaryName()},
+     * with {@see self::getRecordPrimaryName()} as fallback.
+     *
      * @return DBHelper_BaseRecord|NULL
      * @throws Application_Exception_DisposableDisposed
      * @throws DBHelper_Exception
@@ -576,18 +581,43 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      */
     public function getByRequest() : ?DBHelper_BaseRecord
     {
-        $request = Application_Request::getInstance();
-        
-        $record_id = (int)$request->registerParam($this->getRecordRequestPrimaryName())
-            ->setInteger()
-            ->setCallback(array($this, 'idExists'))
-            ->get();
-        
+        $request = AppFactory::createRequest();
+
+        $this->registerRequestParams();
+
+        $record_id = (int)$request->getParam($this->getRecordRequestPrimaryName());
         if($record_id) {
             return $this->getByID($record_id);
         }
-        
+
+        $record_id = (int)$request->getParam($this->getRecordPrimaryName());
+        if($record_id) {
+            return $this->getByID($record_id);
+        }
+
         return null;
+    }
+
+    /**
+     * @return void
+     * @throws Request_Exception
+     */
+    public function registerRequestParams() : void
+    {
+        $request = AppFactory::createRequest();
+        $paramName = $this->getRecordRequestPrimaryName();
+
+        if($request->hasRegisteredParam($paramName)) {
+            return;
+        }
+
+        $request->registerParam($paramName)
+            ->setInteger()
+            ->setCallback(array($this, 'idExists'));
+
+        $request->registerParam($this->getRecordPrimaryName())
+            ->setInteger()
+            ->setCallback(array($this, 'idExists'));
     }
 
     /**
