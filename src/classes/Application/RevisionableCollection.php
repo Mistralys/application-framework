@@ -313,6 +313,8 @@ abstract class Application_RevisionableCollection
             RevisionableCollectionInterface::ERROR_REVISION_DOES_NOT_EXIST
         );
     }
+
+    private bool $paramRegistered = false;
     
    /**
     * Attempts to retrieve a revisionable instance by looking
@@ -320,16 +322,33 @@ abstract class Application_RevisionableCollection
     * the revisionable.
     *
     * @return RevisionableInterface|NULL
+    *
+    * @see self::getPrimaryRequestName()
     */
     public function getByRequest() : ?RevisionableInterface
     {
-        $id = (int)Application_Request::getInstance()->registerParam($this->getPrimaryKeyName())->setInteger()->get();
+        $request = AppFactory::createRequest();
+
+        if($this->paramRegistered === false) {
+            $this->paramRegistered = true;
+            $request->registerParam($this->getPrimaryRequestName())->setInteger();
+            $request->registerParam($this->getPrimaryKeyName())->setInteger();
+        }
+
+        $id = (int)$request->getParam($this->getPrimaryRequestName());
+        if(!empty($id) && $this->idExists($id)) {
+            return $this->getByID($id);
+        }
+
+        $id = (int)$request->getParam($this->getPrimaryKeyName());
         if(!empty($id) && $this->idExists($id)) {
             return $this->getByID($id);
         }
         
         return null;
     }
+
+    abstract public function getPrimaryRequestName() : string;
 
     public function getIDByRevision(int $revision) : ?int
     {
