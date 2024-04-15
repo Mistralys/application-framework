@@ -39,6 +39,9 @@
 - Revisionables: Added `isPartChanged()`.
 - Revisionables: Fixed some discrepancies in the collection interface inheritances.
 - Revisionables: Added `getPrimaryRequestName()`. Request now uses both primary and secondary names.
+- Connectors: `createConnector()` now accepts class names.
+- Connectors: `createMethod()` now accepts class names.
+- Connectors: Namespaced some classes.
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)
@@ -62,6 +65,7 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 
 ### Deprecations
 
+- Connectors: Deprecated the `Connectors_Connector_Method`.
 - FilterSettings: Deprecated `addAutoConfigure()`.
 - FilterSettings: Deprecated `getArraySetting()`.
 - Countries: Deprecated the `Application_Countries_Exception` class.
