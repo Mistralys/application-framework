@@ -6,6 +6,10 @@
  * @see Connectors_Connector
  */
 
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use Connectors\Connector\BaseConnectorMethod;
+
 /**
  * Base class for connector implementations: offers a number
  * of utility methods that can be used by the individual
@@ -240,17 +244,25 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     * 
     * <code>Connectors_Connector_(ConnectorName)_Method_(MethodName)</code>
     * 
-    * @param string $name
-    * @return Connectors_Connector_Method
+    * @param string|class-string $nameOrClass
+    * @return BaseConnectorMethod
+    * @throws BaseClassHelperException
     */
-    public function createMethod(string $name) : Connectors_Connector_Method
+    public function createMethod(string $nameOrClass) : BaseConnectorMethod
     {
-        $class = sprintf(
-            'Connectors_Connector_%s_Method_%s',
-            $this->getID(),
-            $name
-        );
+        if(class_exists($nameOrClass)) {
+            $class = $nameOrClass;
+        } else {
+            $class = sprintf(
+                'Connectors_Connector_%s_Method_%s',
+                $this->getID(),
+                $nameOrClass
+            );
+        }
         
-        return new $class($this);
+        return ClassHelper::requireObjectInstanceOf(
+            BaseConnectorMethod::class,
+            new $class($this)
+        );
     }
 }
