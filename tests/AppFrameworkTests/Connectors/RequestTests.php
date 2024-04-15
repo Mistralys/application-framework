@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace testsuites\Connectors;
+namespace AppFrameworkTests\Connectors;
 
 use Application_Exception;
 use Connectors\Response\ResponseEndpointError;
-use Connectors_Connector_Dummy;
+use Connectors\Connector\StubConnector;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
 use Connectors_Response;
@@ -428,7 +428,7 @@ EOT;
     public function createTestMethodRequest(?string $method = null, ?string $url = null) : Connectors_Request_Method
     {
         return new Connectors_Request_Method(
-            new Connectors_Connector_Dummy(),
+            new StubConnector(),
             $url ?? self::BASE_ENDPOINT_URL,
             $method ?? 'TestMethod'
         );
@@ -438,7 +438,7 @@ EOT;
 
     public function setUp() : void
     {
-        $connector = new Connectors_Connector_Dummy();
+        $connector = new StubConnector();
         $this->requestClass = new Connectors_Request_URL($connector, '');
     }
 
