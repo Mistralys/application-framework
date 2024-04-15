@@ -1,6 +1,7 @@
 <?php
 
 use Application\AppFactory;
+use AppUtils\BaseException;
 use AppUtils\FileHelper;
 
 class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_Mode_Submode
@@ -230,7 +231,7 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
         );
     }
 
-    protected function handle_triggerException()
+    protected function handle_triggerException() : void
     {
         try
         {
@@ -246,26 +247,25 @@ class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_
 
             if($this->request->getBool('base'))
             {
-                throw new \AppUtils\BaseException(
+                throw new BaseException(
                     'Errorlog test AppUtils base exception',
                     'This is an exception triggered on purpose in the errorlogs admin.',
                     42901,
                     $prev
                 );
             }
-            else if($this->request->getBool('connector'))
+
+            if($this->request->getBool('connector'))
             {
-                Connectors::createDummyConnector()->executeFailRequest();
+                Connectors::createStubConnector()->executeFailRequest();
             }
-            else
-            {
-                throw new Application_Exception(
-                    'Errorlog test exception',
-                    'This is an exception triggered on purpose in the errorlogs admin.',
-                    42904,
-                    $prev
-                );
-            }
+            
+            throw new Application_Exception(
+                'Errorlog test exception',
+                'This is an exception triggered on purpose in the errorlogs admin.',
+                42904,
+                $prev
+            );
         }
         catch(Exception $e)
         {
