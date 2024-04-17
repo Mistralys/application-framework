@@ -27,11 +27,8 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     public const ERROR_INVALID_AUTH_SCHEME = 339001;
     public const ERROR_REQUEST_FAILED = 339002;
-    public const ERROR_JSON_PARSE_ERROR = 339003;
-    public const ERROR_UNEXPECTED_DATA_FORMAT = 339004;
     public const ERROR_NO_REQUEST_SENT_YET = 339005;
     public const ERROR_INVALID_DATA_VALUE = 339006;
-    public const ERROR_URL_MAY_NOT_CONTAIN_QUERY = 339007;
     public const ERROR_INVALID_METHOD = 339008;
 
     protected string $url;
@@ -205,7 +202,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * @param string $user
     * @param string $password
     * @param string $authScheme
-    * @throws Application_Exception
+    * @throws Connectors_Exception
     * @return $this
     */
     public function useProxy(string $host, string $port, string $user, string $password, string $authScheme=HTTP_Request2::AUTH_DIGEST) : self
@@ -311,7 +308,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * POST or GET.
     * 
     * @param string $method
-    * @throws Application_Exception
+    * @throws Connectors_Exception
     * @return $this
     */
     public function setHTTPMethod(string $method) : self
@@ -346,7 +343,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
     /**
      * @return $this
-     * @throws Application_Exception
+     * @throws Connectors_Exception
      */
     public function makePOST() : self
     {
@@ -400,9 +397,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     * Sets the body of the request to send.
     * 
     * @param string $content
-    * @return Connectors_Request
+    * @return $this
     */
-    public function setBody(string $content) : Connectors_Request
+    public function setBody(string $content) : self
     {
         $this->body = $content;
         
