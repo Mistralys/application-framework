@@ -241,4 +241,28 @@ trait StandardStateSetupTrait
 
         return $date;
     }
+
+    /**
+     * @inheritDoc
+     * @throws RevisionableException
+     */
+    public function getFinalizedPrettyRevision() : int
+    {
+        if(!$this->hasFinalizedRevision())
+        {
+            return $this->getPrettyRevision();
+        }
+
+        $this->rememberRevision();
+
+        // switch to the latest cleared revision
+        // to fetch the pretty revision, since the
+        // current revision may be a draft or other.
+        $this->selectLatestFinalizedRevision();
+        $result = $this->getPrettyRevision();
+
+        $this->restoreRevision();
+
+        return $result;
+    }
 }

@@ -90,4 +90,12 @@ interface StandardStateSetupInterface extends RevisionableInterface
     public function hasFinalizedRevision() : bool;
     public function selectLatestFinalizedRevision() : self;
     public function getDateLastFinalized() : ?DateTime;
+
+    /**
+     * Gets the pretty revision number of the latest finalized revision,
+     * or the current pretty revision otherwise.
+     *
+     * @return int
+     */
+    public function getFinalizedPrettyRevision() : int;
 }
