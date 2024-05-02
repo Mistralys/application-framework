@@ -32,7 +32,7 @@
 - Revisionables: Modernized classes and strict typing.
 - Revisionables: Automated the saving of custom revision table keys.
 - Revisionables: Added an interface for the revisionable with state.
-- Revisionables: Added a trait to implement the typical state setup.
+- Revisionables: Added a trait to implement the standard state setup.
 - Revisionables: Added `RevisionableDependentInterface`.
 - Revisionables: Added `requireRevisionableMatch()` and `requireRevisionMatch()`. 
 - Revisionables: `requireTransaction()` now accepts a reason string.
