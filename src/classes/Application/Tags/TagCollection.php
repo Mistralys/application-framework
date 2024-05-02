@@ -39,6 +39,7 @@ class TagCollection extends DBHelper_BaseCollection
     public const COL_LABEL = 'label';
     public const COL_PARENT_TAG_ID = 'parent_tag_id';
     public const COL_SORT_TYPE = 'sort_type';
+    public const COL_SORT_WEIGHT = 'sort_weight';
     public const COL_WEIGHT = 'weight';
 
     // region: X - Interface methods

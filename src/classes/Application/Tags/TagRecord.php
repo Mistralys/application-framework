@@ -69,6 +69,17 @@ class TagRecord extends DBHelper_BaseRecord
         );
     }
 
+    public function setSortWeight(int $weight) : self
+    {
+        $this->setRecordKey(TagCollection::COL_SORT_WEIGHT, $weight);
+        return $this;
+    }
+
+    public function getSortWeight() : int
+    {
+        return $this->getRecordIntKey(TagCollection::COL_SORT_WEIGHT);
+    }
+
     public function setWeight(int $weight) : self
     {
         $this->setRecordKey(TagCollection::COL_WEIGHT, $weight);

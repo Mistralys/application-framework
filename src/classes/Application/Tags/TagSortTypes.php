@@ -64,12 +64,12 @@ class TagSortTypes extends BaseStringPrimaryCollection
     protected function registerItems(): void
     {
         $colLabel = DBHelper::escapeTableColumn(TagCollection::TABLE_NAME, TagCollection::COL_LABEL);
-        $colWeight = DBHelper::escapeTableColumn(TagCollection::TABLE_NAME, TagCollection::COL_WEIGHT);
+        $colSortWeight = DBHelper::escapeTableColumn(TagCollection::TABLE_NAME, TagCollection::COL_SORT_WEIGHT);
 
         $this->registerItem(new TagSortType(self::SORT_ALPHA_ASC, $colLabel, t('Alphabetical, ascending')));
         $this->registerItem(new TagSortType(self::SORT_ALPHA_DESC, $colLabel, t('Alphabetical, descending'), false));
-        $this->registerItem(new TagSortType(self::SORT_WEIGHT_ASC, $colWeight, t('By weight, ascending')));
-        $this->registerItem(new TagSortType(self::SORT_WEIGHT_DESC, $colWeight, t('By weight, descending'), false));
+        $this->registerItem(new TagSortType(self::SORT_WEIGHT_ASC, $colSortWeight, t('By weight, ascending')));
+        $this->registerItem(new TagSortType(self::SORT_WEIGHT_DESC, $colSortWeight, t('By weight, descending'), false));
         $this->registerItem(new TagSortType(self::SORT_INHERIT, null, t('Inherit from parent')));
     }
 

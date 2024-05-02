@@ -52,17 +52,17 @@ final class SortingTests extends TaggingTestCase
         $rootTag->setSortType(TagSortTypes::getInstance()->getWeightASC());
 
         // Add them in the wrong alphabetical order on purpose
-        $subA = $rootTag->addSubTag('Sub tag A')->setWeight(1)->saveChained();
-        $subB = $rootTag->addSubTag('Sub tag B')->setWeight(3)->saveChained();
-        $subC = $rootTag->addSubTag('Sub tag C')->setWeight(2)->saveChained();
+        $subA = $rootTag->addSubTag('Sub tag A')->setSortWeight(1)->saveChained();
+        $subB = $rootTag->addSubTag('Sub tag B')->setSortWeight(3)->saveChained();
+        $subC = $rootTag->addSubTag('Sub tag C')->setSortWeight(2)->saveChained();
 
         $subs = $rootTag->getSubTags();
 
         $this->assertCount(3, $subs);
 
         // Sorted by weight
-        $this->assertSame($subA->getID(), $subs[0]->getID(), 'Sub A, weight '.$subA->getWeight());
-        $this->assertSame($subB->getID(), $subs[2]->getID(), 'Sub A, weight '.$subA->getWeight());
-        $this->assertSame($subC->getID(), $subs[1]->getID(), 'Sub A, weight '.$subA->getWeight());
+        $this->assertSame($subA->getID(), $subs[0]->getID(), 'Sub A, weight '.$subA->getSortWeight());
+        $this->assertSame($subB->getID(), $subs[2]->getID(), 'Sub A, weight '.$subA->getSortWeight());
+        $this->assertSame($subC->getID(), $subs[1]->getID(), 'Sub A, weight '.$subA->getSortWeight());
     }
 }
