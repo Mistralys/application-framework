@@ -44,7 +44,7 @@
 - Connectors: Namespaced some classes.
 - Users: Streamlined the way right groups are registered.
 - Users: Fixed the developer right not being applied correctly.
-- Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
+- Dependencies: Updated AppUtils-Core to [v1.1.4](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.4).
 
 ### Database changes (L)
 
