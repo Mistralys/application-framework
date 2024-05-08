@@ -10,6 +10,7 @@ use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
 use Application_RevisionableCollection;
+use DateTime;
 use TestDriver\Revisionables\RevisionableCollection;
 
 interface RevisionableStatelessInterface
@@ -19,7 +20,7 @@ interface RevisionableStatelessInterface
     Application_LockableRecord_Interface,
     Application_Interfaces_Disposable,
     Application_Interfaces_Simulatable,
-    ChangelogableInterface
+    RevisionableChangelogInterface
 {
     public const ERROR_CANNOT_START_TRANSACTION = 68437001;
     public const ERROR_INVALID_REVISION_STORAGE = 68437002;
@@ -70,6 +71,10 @@ interface RevisionableStatelessInterface
      * @return string|NULL
      */
     public function getRevisionComments(): ?string;
+
+    public function getRevisionDate() : DateTime;
+
+    public function getOwnerName() : string;
 
     /**
      * Like {@see self::getRevision()}, but never returns null.

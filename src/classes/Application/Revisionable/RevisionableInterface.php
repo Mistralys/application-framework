@@ -68,9 +68,6 @@ interface RevisionableInterface
      */
     public function isChangingAllowed() : bool;
 
-    public function getRevisionDate() : DateTime;
-
-    public function getOwnerName() : string;
 
     public function getRevisionsFilterCriteria() : Application_FilterCriteria_RevisionableRevisions;
 
