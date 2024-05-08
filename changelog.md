@@ -42,6 +42,8 @@
 - Connectors: `createConnector()` now accepts class names.
 - Connectors: `createMethod()` now accepts class names.
 - Connectors: Namespaced some classes.
+- Users: Streamlined the way right groups are registered.
+- Users: Fixed the developer right not being applied correctly.
 - Dependencies: Updated AppUtils-Core to [v1.1.2](https://github.com/Mistralys/application-utils-core/releases/tag/1.1.2).
 
 ### Database changes (L)
@@ -62,6 +64,7 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 - Revisionables: Renamed and namespaced interfaces.
 - Revisionables: Strict typing for all interface methods.
 - Renderables: Added strict `string` return type for `_render()` methods.
+- Users: Changed the way right groups are registered. User classes must now implement a new method to do so.
 
 ### Deprecations
 
@@ -69,6 +72,8 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 - FilterSettings: Deprecated `addAutoConfigure()`.
 - FilterSettings: Deprecated `getArraySetting()`.
 - Countries: Deprecated the `Application_Countries_Exception` class.
+- Users: Deprecated the `Application_User_Extended` class.
+- Users: Deprecated the `Application_User::roleExists()` method.
 
 ---
 Older changelog entries can be found in the `docs/changelog-history` folder.
