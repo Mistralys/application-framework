@@ -142,4 +142,9 @@ class Application_User_Rights_Container
 
         return $leftover;
     }
+
+    public function idExists(string $name) : bool
+    {
+        return in_array($name, $this->getIDs());
+    }
 }

@@ -4,37 +4,26 @@ declare(strict_types=1);
 
 class Application_User_Rights_Group
 {
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
+    private string $label;
+    private Application_User_Rights_Container $rights;
+    private Application_User_Rights $manager;
+    private string $description = '';
+    private bool $rightsRegistered = false;
 
     /**
-     * @var string
+     * @var callable
      */
-    private $label;
+    private $rightsCallback;
 
-    /**
-     * @var Application_User_Rights_Container
-     */
-    private $rights;
-
-    /**
-     * @var Application_User_Rights
-     */
-    private $manager;
-
-    /**
-     * @var string
-     */
-    private $description = '';
-
-    public function __construct(Application_User_Rights $manager, string $id, string $label)
+    public function __construct(Application_User_Rights $manager, string $id, string $label, callable $rightsCallback)
     {
         $this->manager = $manager;
         $this->id = $id;
         $this->label = $label;
         $this->rights = new Application_User_Rights_Container();
+
+        $rightsCallback($this);
     }
 
     public function getManager() : Application_User_Rights
@@ -61,7 +50,7 @@ class Application_User_Rights_Group
      * @param string|int|float|UI_Renderable_Interface $description
      * @return $this
      */
-    public function setDescription($description) : Application_User_Rights_Group
+    public function setDescription($description) : self
     {
         $this->description = toString($description);
         return $this;

@@ -11,12 +11,12 @@ class Application_User_Rights
     /**
      * @var Application_User_Rights_Group[]
      */
-    private $groups = array();
+    private array $groups = array();
 
     /**
      * @var Application_User_Rights_Role[]
      */
-    private $roles = array();
+    private array $roles = array();
 
     public function __construct()
     {
@@ -32,9 +32,9 @@ class Application_User_Rights
         return $role;
     }
 
-    public function registerGroup(string $groupID, string $label) : Application_User_Rights_Group
+    public function registerGroup(string $groupID, string $label, callable $rightsCallback) : Application_User_Rights_Group
     {
-        $group = new Application_User_Rights_Group($this, $groupID, $label);
+        $group = new Application_User_Rights_Group($this, $groupID, $label, $rightsCallback);
 
         $this->groups[] = $group;
 
@@ -46,7 +46,7 @@ class Application_User_Rights
      */
     public function getGroups() : array
     {
-        uasort($this->groups, function (Application_User_Rights_Group $a, Application_User_Rights_Group $b) {
+        uasort($this->groups, static function (Application_User_Rights_Group $a, Application_User_Rights_Group $b) : int {
             return strnatcasecmp($a->getID(), $b->getID());
         });
 
@@ -142,5 +142,22 @@ class Application_User_Rights
             ),
             self::ERROR_UNKNOWN_ROLE
         );
+    }
+
+    public function getGroupNames() : array
+    {
+        $groups = array();
+        foreach ($this->groups as $group) {
+            $groups[] = $group->getLabel();
+        }
+
+        sort($groups);
+
+        return $groups;
+    }
+
+    public function rightIDExists(string $name) : bool
+    {
+        return $this->getRights()->idExists($name);
     }
 }

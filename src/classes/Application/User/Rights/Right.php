@@ -2,53 +2,39 @@
 
 declare(strict_types=1);
 
+use AppUtils\Interfaces\StringableInterface;
+use function PHPUnit\Framework\callback;
+
 class Application_User_Rights_Right
 {
-    const ACTION_VIEW = 'view';
-    const ACTION_EDIT = 'edit';
-    const ACTION_CREATE = 'create';
-    const ACTION_DELETE = 'delete';
-    const ACTION_ALL = 'all';
+    public const ACTION_VIEW = 'view';
+    public const ACTION_EDIT = 'edit';
+    public const ACTION_CREATE = 'create';
+    public const ACTION_DELETE = 'delete';
+    public const ACTION_ADMINISTRATE = 'administrate';
+    public const ACTION_AUTHENTICATE = 'authenticate';
+    public const ACTION_ALL = 'all';
 
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
-    /**
-     * @var string
-     */
-    private $label;
+    private string $label;
 
-    /**
-     * @var Application_User_Rights_Group
-     */
-    private $group;
+    private Application_User_Rights_Group $group;
 
-    /**
-     * @var string
-     */
-    private $description = '';
+    private string $description = '';
 
     /**
      * @var string[]
      */
-    private $rightGrants = array();
+    private array $rightGrants = array();
 
     /**
      * @var array<string,string[]>
      */
-    private $groupGrants = array();
+    private array $groupGrants = array();
 
-    /**
-     * @var string
-     */
-    private $action = '';
-
-    /**
-     * @var Application_User_Rights
-     */
-    private $manager;
+    private string $action = '';
+    private Application_User_Rights $manager;
 
     public function __construct(string $id, string $label, Application_User_Rights_Group $group)
     {
@@ -83,17 +69,23 @@ class Application_User_Rights_Right
         return $this->group;
     }
 
-    public function setDescription(string $description) : Application_User_Rights_Right
+    /**
+     * @param string|int|float|StringableInterface|NULL $description
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setDescription($description) : Application_User_Rights_Right
     {
-        $this->description = $description;
+        $this->description = toString($description);
         return $this;
     }
 
     public function grantRight(string $rightID) : Application_User_Rights_Right
     {
-        if(!in_array($rightID, $this->rightGrants))
+        if(!in_array($rightID, $this->rightGrants, true))
         {
             $this->rightGrants[] = $rightID;
+            $this->resetGrantCache();
         }
 
         return $this;
@@ -120,9 +112,10 @@ class Application_User_Rights_Right
             $this->groupGrants[$groupID] = array();
         }
 
-        if(!in_array($action, $this->groupGrants[$groupID]))
+        if(!in_array($action, $this->groupGrants[$groupID], true))
         {
             $this->groupGrants[$groupID][] = $action;
+            $this->resetGrantCache();
         }
 
         return $this;
@@ -229,6 +222,26 @@ class Application_User_Rights_Right
     }
 
     /**
+     * Specifies that this is an "Administration" right, for configuring
+     * application settings and other admin-only tasks.
+     *
+     * @return $this
+     */
+    public function actionAdministrate() : Application_User_Rights_Right
+    {
+        return $this->setAction(self::ACTION_ADMINISTRATE);
+    }
+
+    /**
+     * Special right action for the {@see Application_User::RIGHT_LOGIN} right.
+     * @return $this
+     */
+    public function actionAuthenticate() : Application_User_Rights_Right
+    {
+        return $this->setAction(self::ACTION_AUTHENTICATE);
+    }
+
+    /**
      * Specifies that this is an "EDIT" right, for editing existing records.
      *
      * @return Application_User_Rights_Right
@@ -266,15 +279,31 @@ class Application_User_Rights_Right
     }
 
     /**
+     * @var string[]|null
+     */
+    private ?array $cachedOwnGrantIDs = null;
+
+    private function resetGrantCache() : void
+    {
+        $this->cachedOwnGrantIDs = null;
+        $this->cachedGrants = null;
+    }
+
+    /**
      * Resolves a list of right IDs that this right grants directly, non-recursive.
      * Checks single rights that were added, as well as group rights.
      *
      * @return string[]
      * @throws Application_Exception
      */
-    private function resolveGrantIDs() : array
+    private function resolveOwnGrantIDs() : array
     {
-        $result = $this->rightGrants;
+        if(isset($this->cachedOwnGrantIDs))
+        {
+            return $this->cachedOwnGrantIDs;
+        }
+
+        $this->cachedOwnGrantIDs = $this->rightGrants;
 
         foreach($this->groupGrants as $groupID => $actions)
         {
@@ -286,27 +315,27 @@ class Application_User_Rights_Right
 
                 foreach($rights as $right)
                 {
-                    $result[] = $right->getID();
+                    $this->cachedOwnGrantIDs[] = $right->getID();
                 }
             }
         }
 
-        $result = array_unique($result);
+        $this->cachedOwnGrantIDs = array_unique($this->cachedOwnGrantIDs);
 
-        sort($result);
+        sort($this->cachedOwnGrantIDs);
 
-        return $result;
+        return $this->cachedOwnGrantIDs;
     }
 
     /**
-     * Retrieves a list of the rights that this right grants directly (non recursive).
+     * Retrieves a list of the rights that this right grants directly (non-recursive).
      *
      * @return Application_User_Rights_Container
      * @throws Application_Exception
      */
     public function getGrants() : Application_User_Rights_Container
     {
-        $ids = $this->resolveGrantIDs();
+        $ids = $this->resolveOwnGrantIDs();
         $result = new Application_User_Rights_Container();
 
         foreach($ids as $id)
@@ -317,6 +346,8 @@ class Application_User_Rights_Right
         return $result;
     }
 
+    private ?Application_User_Rights_Container $cachedGrants = null;
+
     /**
      * Retrieves a list of all rights that this right grants, recursively checking
      * any rights that the granted rights may grant.
@@ -325,11 +356,15 @@ class Application_User_Rights_Right
      */
     public function resolveGrants() : Application_User_Rights_Container
     {
-        $collection = new Application_User_Rights_Container();
+        if(isset($this->cachedGrants)) {
+            return $this->cachedGrants;
+        }
 
-        $this->findGrantsRecursive($this, $this, $collection);
+        $this->cachedGrants = new Application_User_Rights_Container();
 
-        return $collection;
+        $this->findGrantsRecursive($this, $this, $this->cachedGrants);
+
+        return $this->cachedGrants;
     }
 
     private function findGrantsRecursive(Application_User_Rights_Right $subject, Application_User_Rights_Right $origin, Application_User_Rights_Container $collection) : void
@@ -370,6 +405,8 @@ class Application_User_Rights_Right
             case self::ACTION_CREATE: return (string)UI::icon()->add();
             case self::ACTION_VIEW: return (string)UI::icon()->view();
             case self::ACTION_DELETE: return (string)UI::icon()->delete();
+            case self::ACTION_ADMINISTRATE: return (string)UI::icon()->developer();
+            case self::ACTION_AUTHENTICATE: return (string)UI::icon()->logIn();
         }
 
         return '';
@@ -386,5 +423,10 @@ class Application_User_Rights_Right
         return (string)sb()
             ->add($this->getActionIcon())
             ->tooltip($this->getLabel(), $this->getDescription());
+    }
+
+    public function hasGrant(string $rightName) : bool
+    {
+        return $this->getGrants()->idExists($rightName);
     }
 }

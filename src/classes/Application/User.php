@@ -934,8 +934,6 @@ abstract class Application_User
             Closure::fromCallable(array($this, 'registerRights_system_core'))
         );
 
-        self::$rightsManager->registerRights();
-
         // Give the developer all rights.
         self::$rightsManager
             ->getRightByID(self::RIGHT_DEVELOPER)
