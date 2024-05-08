@@ -74,13 +74,17 @@ class Application_User_Rights_Right
      * @return $this
      * @throws UI_Exception
      */
-    public function setDescription($description) : Application_User_Rights_Right
+    public function setDescription($description) : self
     {
         $this->description = toString($description);
         return $this;
     }
 
-    public function grantRight(string $rightID) : Application_User_Rights_Right
+    /**
+     * @param string $rightID
+     * @return $this
+     */
+    public function grantRight(string $rightID) : self
     {
         if(!in_array($rightID, $this->rightGrants, true))
         {
@@ -93,9 +97,9 @@ class Application_User_Rights_Right
 
     /**
      * @param string ...$rightIDs
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantRights(...$rightIDs) : Application_User_Rights_Right
+    public function grantRights(...$rightIDs) : self
     {
         foreach($rightIDs as $rightID)
         {
@@ -105,7 +109,12 @@ class Application_User_Rights_Right
         return $this;
     }
 
-    protected function grantGroup(string $groupID, string $action) : Application_User_Rights_Right
+    /**
+     * @param string $groupID
+     * @param string $action
+     * @return $this
+     */
+    protected function grantGroup(string $groupID, string $action) : self
     {
         if(!isset($this->groupGrants[$groupID]))
         {
@@ -125,9 +134,9 @@ class Application_User_Rights_Right
      * Grants all rights available in the target group.
      *
      * @param string $groupID
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantGroupAll(string $groupID) : Application_User_Rights_Right
+    public function grantGroupAll(string $groupID) : self
     {
         return $this->grantGroup($groupID, self::ACTION_ALL);
     }
@@ -136,9 +145,9 @@ class Application_User_Rights_Right
      * Grants all "VIEW" rights of the target group.
      *
      * @param string $groupID
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantGroupView(string $groupID) : Application_User_Rights_Right
+    public function grantGroupView(string $groupID) : self
     {
         return $this->grantGroup($groupID, self::ACTION_VIEW);
     }
@@ -147,9 +156,9 @@ class Application_User_Rights_Right
      * Grants all "EDIT" rights of the target group.
      *
      * @param string $groupID
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantGroupEdit(string $groupID) : Application_User_Rights_Right
+    public function grantGroupEdit(string $groupID) : self
     {
         return $this->grantGroup($groupID, self::ACTION_EDIT);
     }
@@ -158,9 +167,9 @@ class Application_User_Rights_Right
      * Grants all "CREATE" rights of the target group.
      *
      * @param string $groupID
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantGroupCreate(string $groupID) : Application_User_Rights_Right
+    public function grantGroupCreate(string $groupID) : self
     {
         return $this->grantGroup($groupID, self::ACTION_CREATE);
     }
@@ -169,43 +178,68 @@ class Application_User_Rights_Right
      * Grants all "DELETE" rights of the target group.
      *
      * @param string $groupID
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function grantGroupDelete(string $groupID) : Application_User_Rights_Right
+    public function grantGroupDelete(string $groupID) : self
     {
         return $this->grantGroup($groupID, self::ACTION_DELETE);
     }
 
-    public function grantGroupsView(array $groupIDs) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @return $this
+     */
+    public function grantGroupsView(array $groupIDs) : self
     {
         return $this->grantGroupsAction($groupIDs,self::ACTION_VIEW);
     }
 
-    public function grantGroupsEdit(array $groupIDs) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @return $this
+     */
+    public function grantGroupsEdit(array $groupIDs) : self
     {
         return $this->grantGroupsAction($groupIDs,self::ACTION_EDIT);
     }
 
-    public function grantGroupsCreate(array $groupIDs) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @return $this
+     */
+    public function grantGroupsCreate(array $groupIDs) : self
     {
         return $this->grantGroupsAction($groupIDs,self::ACTION_CREATE);
     }
 
-    public function grantGroupsDelete(array $groupIDs) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @return $this
+     */
+    public function grantGroupsDelete(array $groupIDs) : self
     {
         return $this->grantGroupsAction($groupIDs,self::ACTION_DELETE);
     }
 
-    public function grantGroupsAll(array $groupIDs) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @return $this
+     */
+    public function grantGroupsAll(array $groupIDs) : self
     {
         return $this->grantGroupsAction($groupIDs,self::ACTION_ALL);
     }
 
-    public function grantGroupsAction(array $groupIDs, $action) : Application_User_Rights_Right
+    /**
+     * @param string[] $groupIDs
+     * @param string $action
+     * @return $this
+     */
+    public function grantGroupsAction(array $groupIDs, string $action) : self
     {
         foreach($groupIDs as $groupID)
         {
-            $this->grantGroupsAction($groupID, $action);
+            $this->grantGroup($groupID, $action);
         }
 
         return $this;
@@ -214,9 +248,9 @@ class Application_User_Rights_Right
     /**
      * Specifies that this is a "VIEW" right, for viewing things in readonly mode.
      *
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function actionView() : Application_User_Rights_Right
+    public function actionView() : self
     {
         return $this->setAction(self::ACTION_VIEW);
     }
@@ -227,7 +261,7 @@ class Application_User_Rights_Right
      *
      * @return $this
      */
-    public function actionAdministrate() : Application_User_Rights_Right
+    public function actionAdministrate() : self
     {
         return $this->setAction(self::ACTION_ADMINISTRATE);
     }
@@ -236,7 +270,7 @@ class Application_User_Rights_Right
      * Special right action for the {@see Application_User::RIGHT_LOGIN} right.
      * @return $this
      */
-    public function actionAuthenticate() : Application_User_Rights_Right
+    public function actionAuthenticate() : self
     {
         return $this->setAction(self::ACTION_AUTHENTICATE);
     }
@@ -244,9 +278,9 @@ class Application_User_Rights_Right
     /**
      * Specifies that this is an "EDIT" right, for editing existing records.
      *
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function actionEdit() : Application_User_Rights_Right
+    public function actionEdit() : self
     {
         return $this->setAction(self::ACTION_EDIT);
     }
@@ -254,9 +288,9 @@ class Application_User_Rights_Right
     /**
      * Specifies that this is a "CREATE" right, for adding new records.
      *
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function actionCreate() : Application_User_Rights_Right
+    public function actionCreate() : self
     {
         return $this->setAction(self::ACTION_CREATE);
     }
@@ -264,14 +298,18 @@ class Application_User_Rights_Right
     /**
      * Specified that this is a "DELETE" right, for deleting existing records.
      *
-     * @return Application_User_Rights_Right
+     * @return $this
      */
-    public function actionDelete() : Application_User_Rights_Right
+    public function actionDelete() : self
     {
         return $this->setAction(self::ACTION_DELETE);
     }
 
-    public function setAction(string $action) : Application_User_Rights_Right
+    /**
+     * @param string $action
+     * @return $this
+     */
+    public function setAction(string $action) : self
     {
         $this->action = $action;
 
