@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Connectors\Connector;
 
+use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use Connectors_Connector;
 use Connectors\Connector\Stub\Method\StubFailureMethod;
@@ -36,7 +37,11 @@ class StubConnector extends Connectors_Connector
      */
     public function executeFailRequest()
     {
-        $method = $this->createMethod(StubFailureMethod::class);
+        $method = ClassHelper::requireObjectInstanceOf(
+            StubFailureMethod::class,
+            $this->createMethod(StubFailureMethod::class)
+        );
+
         $method->failFetchData();
     }
 }
