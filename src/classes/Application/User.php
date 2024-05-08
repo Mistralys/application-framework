@@ -8,6 +8,12 @@
  */
 
 use Application\Driver\DriverException;
+use Application\Media\MediaRightsInterface;
+use Application\Media\MediaRightsTrait;
+use Application\NewsCentral\NewsRightsInterface;
+use Application\NewsCentral\NewsRightsTrait;
+use Application\Tags\TagsRightsInterface;
+use Application\Tags\TagsRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
 use Application\User\UserException;
@@ -17,6 +23,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 
 /**
  * Base user class that handles the user that is currently
@@ -30,9 +38,18 @@ use AppUtils\ConvertHelper;
  * @subpackage User
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_User implements Application_User_Interface, Application_Interfaces_Loggable
+abstract class Application_User
+    implements
+    Application_User_Interface,
+    Application_Interfaces_Loggable,
+    MediaRightsInterface,
+    NewsRightsInterface,
+    TagsRightsInterface
 {
     use Application_Traits_Loggable;
+    use MediaRightsTrait;
+    use NewsRightsTrait;
+    use TagsRightsTrait;
 
     public const ERROR_CREATE_METHOD_NOT_IMPLEMENTED = 20001;
     public const ERROR_CREATE_SYSTEMUSER_METHOD_NOT_IMPLEMENTED = 20002;
@@ -46,9 +63,6 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public const STORAGE_TYPE_DB = 'DB';
     public const STORAGE_TYPE_FILE = 'File';
 
-    /**
-     * @see Application_User_Extended::registerRights_system_core()
-     */
     public const RIGHTS_CORE = 'system_core';
 
     public const RIGHT_LOGIN = 'Login';
@@ -58,20 +72,16 @@ abstract class Application_User implements Application_User_Interface, Applicati
     /**
     * Stores user right definitions.
     * @var array
-    * @see Application_User::initRoles()
     */
-    protected $rights = array();
+    protected array $rights = array();
 
    /**
     * Stores the user setting values
     * @var array
     */
-    protected $settings = array();
+    protected array $settings = array();
 
-   /**
-    * @var bool
-    */
-    protected $settingsLoaded = false;
+    protected bool $settingsLoaded = false;
 
    /**
     * @var Application_User_Storage
@@ -98,6 +108,8 @@ abstract class Application_User implements Application_User_Interface, Applicati
     protected $data;
 
     private ?Application_User_Notepad $notepad = null;
+    private static ?Application_User_Rights $rightsManager = null;
+    private Application_User_Rights $manager;
 
     /**
      * Application_User constructor.
@@ -111,6 +123,7 @@ abstract class Application_User implements Application_User_Interface, Applicati
     {
         $this->id = $userID;
         $this->data = $data;
+        $this->manager = $this->initRightsManager();
 
         $typeClass = ClassHelper::requireResolvedClass(sprintf(
             '%s_%s',
@@ -162,26 +175,27 @@ abstract class Application_User implements Application_User_Interface, Applicati
             return array();
         }
 
-        $decoded = json_decode($json, true);
-
-        if(is_array($decoded))
+        try
         {
-            return $decoded;
+            return JSONConverter::json2array($json);
         }
+        catch (JSONConverterException $e)
+        {
+            $ex = new Application_Exception(
+                'Could not decode stored array setting',
+                sprintf(
+                    'The setting [%s] for user [%s #%s] dit not decode into an array. Raw value: %s',
+                    $name,
+                    $this->getName(),
+                    $this->getID(),
+                    $json
+                ),
+                self::ERROR_CANNOT_DECODE_ARRAY_VALUE,
+                $e
+            );
 
-        $ex = new Application_Exception(
-            'Could not decode stored array setting',
-            sprintf(
-                'The setting [%s] for user [%s #%s] dit not decode into an array. Raw value: %s',
-                $name,
-                $this->getName(),
-                $this->getID(),
-                $json
-            ),
-            self::ERROR_CANNOT_DECODE_ARRAY_VALUE
-        );
-
-        $ex->log();
+            $ex->log();
+        }
 
         return array();
     }
@@ -337,6 +351,20 @@ abstract class Application_User implements Application_User_Interface, Applicati
         return $this->rights;
     }
 
+    /**
+     * @return Application_User_Rights_Right[]
+     * @throws Application_Exception
+     */
+    public function getRightObjects() : array
+    {
+        $result = array();
+        foreach($this->rights as $rightName) {
+            $result[] = $this->manager->getRightByID($rightName);
+        }
+
+        return $result;
+    }
+
     public function saveSettings() : void
     {
         if(empty($this->changedSettings)) {
@@ -424,16 +452,22 @@ abstract class Application_User implements Application_User_Interface, Applicati
      */
     public function getGrantableRoles() : array
     {
-        self::initRoles();
-
-        return self::$roles;
+        return $this->manager->toArray();
     }
 
+    /**
+     * @param string $name
+     * @return bool
+     * @deprecated Use {@see self::rightExists()} instead.
+     */
     public function roleExists(string $name) : bool
     {
-        self::initRoles();
+        return $this->manager->roleIDExists($name);
+    }
 
-        return isset(self::$roles[$name]);
+    public function rightExists(string $rightName) : bool
+    {
+        return $this->manager->rightIDExists($rightName);
     }
 
     /**
@@ -443,45 +477,8 @@ abstract class Application_User implements Application_User_Interface, Applicati
      */
     public function getRoleGroups() : array
     {
-        self::initRoles();
-        $groups = array();
-        foreach (self::$roles as $def) {
-            if (!in_array($def['group'], $groups)) {
-                $groups[] = $def['group'];
-            }
-        }
-
-        sort($groups);
-
-        return $groups;
+        return $this->manager->getGroupNames();
     }
-
-    /**
-     * Used to cache the role definitions after initializing them
-     * @var array|NULL
-     * @see initRoles()
-     */
-    protected static ?array $roles = null;
-
-    protected function initRoles() : void
-    {
-        if (isset(self::$roles)) {
-            return;
-        }
-
-        self::$roles = $this->getRoleDefs();
-
-        if(empty(self::$roles))
-        {
-            throw new Application_Exception(
-                'No user roles defined',
-                'The user class\' [getRoleDefs] method did not return any roles.',
-                self::ERROR_NO_ROLES_DEFINED
-            );
-        }
-    }
-
-    abstract protected function getRoleDefs();
 
     /**
      * Checks if the user can use the specified role name. Uses the
@@ -489,38 +486,35 @@ abstract class Application_User implements Application_User_Interface, Applicati
      * For ease of use, there are alias methods for all roles that
      * you can use as well.
      *
-     * @param string $role
+     * @param string $rightName
      */
-    public function can(string $role) : bool
+    public function can(string $rightName) : bool
     {
-        if(!in_array($role, $this->requestedRoles, true)) {
-            $this->requestedRoles[] = $role;
+        if(!in_array($rightName, $this->requestedRoles, true)) {
+            $this->requestedRoles[] = $rightName;
         }
 
         if (!Application::isAuthenticationEnabled()) {
             return true;
         }
 
-        if(!$this->roleExists($role)) {
+        if(!$this->rightExists($rightName)) {
             return false;
         }
 
         // first off, check if there is a role by this
         // name that the user is authorized for
-        if ($this->hasRight($role)) {
+        if ($this->hasRight($rightName)) {
             return true;
         }
 
-        // next, we go through all roles and see if this
-        // role is granted along with another role that
-        // the user may be allowed for.
-        foreach (self::$roles as $roleName => $roleDef)
-        {
-            if($roleName === $role) {
-                continue;
-            }
+        return $this->hasRightGrant($rightName);
+    }
 
-            if (in_array($role, $roleDef['grants'], true) && $this->hasRight($roleName)) {
+    public function hasRightGrant(string $rightName) : bool
+    {
+        foreach($this->getRightObjects() as $activeRight) {
+            if($activeRight->hasGrant($rightName)) {
                 return true;
             }
         }
@@ -894,53 +888,6 @@ abstract class Application_User implements Application_User_Interface, Applicati
     public function canTranslateUI() : bool { return $this->can(self::RIGHT_TRANSLATE_UI); }
     public function canLogin() : bool { return $this->can(self::RIGHT_LOGIN); }
 
-
-    // region: News management
-
-    public const RIGHT_CREATE_NEWS = 'CreateNews';
-    public const RIGHT_CREATE_NEWS_ALERTS = 'CreateAlerts';
-    public const RIGHT_EDIT_NEWS = 'EditNews';
-    public const RIGHT_DELETE_NEWS = 'DeleteNews';
-    public const RIGHT_VIEW_NEWS = 'ViewNews';
-
-    public function canViewNews() : bool { return $this->can(self::RIGHT_VIEW_NEWS); }
-    public function canCreateNews() : bool { return $this->can(self::RIGHT_CREATE_NEWS); }
-    public function canCreateNewsAlerts() : bool { return $this->can(self::RIGHT_CREATE_NEWS_ALERTS); }
-    public function canEditNews() : bool { return $this->can(self::RIGHT_EDIT_NEWS); }
-    public function canDeleteNews() : bool { return $this->can(self::RIGHT_DELETE_NEWS); }
-
-    // endregion
-
-    // region: Tags management
-
-    public const RIGHT_CREATE_TAGS = 'CreateTags';
-    public const RIGHT_EDIT_TAGS = 'EditTags';
-    public const RIGHT_DELETE_TAGS = 'DeleteTags';
-    public const RIGHT_VIEW_TAGS = 'ViewTags';
-
-    public function canViewTags() : bool { return $this->can(self::RIGHT_VIEW_TAGS); }
-    public function canCreateTags() : bool { return $this->can(self::RIGHT_CREATE_TAGS); }
-    public function canEditTags() : bool { return $this->can(self::RIGHT_EDIT_TAGS); }
-    public function canDeleteTags() : bool { return $this->can(self::RIGHT_DELETE_TAGS); }
-
-    // endregion
-
-    // region: Media management
-
-    public const RIGHT_CREATE_MEDIA = 'CreateMedia';
-    public const RIGHT_EDIT_MEDIA = 'EditMedia';
-    public const RIGHT_DELETE_MEDIA = 'DeleteMedia';
-    public const RIGHT_VIEW_MEDIA = 'ViewMedia';
-    public const RIGHT_ADMIN_MEDIA = 'AdminMedia';
-
-    public function canViewMedia() : bool { return $this->can(self::RIGHT_VIEW_MEDIA); }
-    public function canCreateMedia() : bool { return $this->can(self::RIGHT_CREATE_MEDIA); }
-    public function canEditMedia() : bool { return $this->can(self::RIGHT_EDIT_MEDIA); }
-    public function canDeleteMedia() : bool { return $this->can(self::RIGHT_DELETE_MEDIA); }
-    public function canAdministrateMedia() : bool { return $this->can(self::RIGHT_ADMIN_MEDIA); }
-
-    // endregion
-
     public function isSystemUser() : bool
     {
         return Application::isSystemUserID($this->id);
@@ -963,5 +910,89 @@ abstract class Application_User implements Application_User_Interface, Applicati
         return Application_Driver::getInstance()
             ->getRequest()
             ->buildURL($params);
+    }
+
+    public function getRightsManager() : Application_User_Rights
+    {
+        return $this->manager;
+    }
+
+    private function initRightsManager() : Application_User_Rights
+    {
+        if(isset(self::$rightsManager))
+        {
+            return self::$rightsManager;
+        }
+
+        self::$rightsManager = new Application_User_Rights();
+
+        $this->registerRightGroups(self::$rightsManager);
+
+        self::$rightsManager->registerGroup(
+            self::RIGHTS_CORE,
+            t('System core'),
+            Closure::fromCallable(array($this, 'registerRights_system_core'))
+        );
+
+        self::$rightsManager->registerRights();
+
+        // Give the developer all rights.
+        self::$rightsManager
+            ->getRightByID(self::RIGHT_DEVELOPER)
+            ->grantRights(...self::$rightsManager->getRights()->getIDs());
+
+        $this->registerRoles(self::$rightsManager);
+
+        return self::$rightsManager;
+    }
+
+    /**
+     * Register available right groups using the rights manager instance.
+     * Use the method {@see Application_User_Rights::registerGroup()} to
+     * add groups.
+     *
+     * Right groups are used to bundle related rights together.
+     * Typically, all rights for a specific area of the application will
+     * be registered in a single group.
+     *
+     * @param Application_User_Rights $manager
+     * @return void
+     */
+    abstract protected function registerRightGroups(Application_User_Rights $manager) : void;
+
+    /**
+     * Register developer-testable user roles using the rights manager instance.
+     * These are used in local development only, to simulate user roles and
+     * check the according right setup.
+     *
+     * @param Application_User_Rights $manager
+     * @return void
+     */
+    abstract protected function registerRoles(Application_User_Rights $manager) : void;
+
+    private function registerRights_system_core(Application_User_Rights_Group $group) : void
+    {
+        $group->setDescription(t('Application framework core rights.'));
+
+        $group->registerRight(self::RIGHT_LOGIN, t('Log in'))
+            ->actionAuthenticate()
+            ->setDescription(t('Logging into the application.'));
+
+        $group->registerRight(self::RIGHT_TRANSLATE_UI, t('Translate UI'))
+            ->actionAdministrate()
+            ->setDescription(t('Handle translations of the user interface.'));
+
+        $this->registerNewsRights($group);
+        $this->registerTagRights($group);
+        $this->registerMediaRights($group);
+
+        $group->registerRight(self::RIGHT_DEVELOPER, t('Developer'))
+            ->actionAdministrate()
+            ->setDescription(sb()
+                ->t('Marks the user as a developer, giving access to developer-only functionality.')
+                ->t('It also allows enabling the application\'s developer mode for debugging purposes.')
+                ->noteBold()
+                ->t('This right automatically grants all other rights available in the application.')
+            );
     }
 }
