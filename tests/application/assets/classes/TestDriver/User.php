@@ -1,14 +1,14 @@
 <?php
 
-class TestDriver_User extends Application_User_Extended
+declare(strict_types=1);
+
+class TestDriver_User extends Application_User
 {
-    public function getRightGroups(): array
+    protected function registerRoles(Application_User_Rights $manager): void
     {
-        return array();
     }
 
-    protected function registerRoles(): void
+    protected function registerRightGroups(Application_User_Rights $manager): void
     {
-
     }
 }

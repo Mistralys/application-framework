@@ -8,7 +8,7 @@ final class User_RightsTest extends UserTestCase
     {
         $rights = new Application_User_Rights();
 
-        $group = $rights->registerGroup('foo', 'Foo');
+        $group = $rights->registerGroup('foo', 'Foo', function() {});
 
         $this->assertEquals('foo', $group->getID());
         $this->assertEquals('Foo', $group->getLabel());
@@ -19,9 +19,11 @@ final class User_RightsTest extends UserTestCase
     {
         $rights = new Application_User_Rights();
 
-        $group = $rights->registerGroup('foo', 'Foo');
+        $group = $rights->registerGroup('foo', 'Foo', function(Application_User_Rights_Group $group) {
+            $group->registerRight('FooRight', 'Foo right');
+        });
 
-        $right = $group->registerRight('FooRight', 'Foo right');
+        $right = $group->getRights()->getByID('FooRight');
 
         $this->assertEquals('FooRight', $right->getID());
         $this->assertEquals('Foo right', $right->getLabel());
@@ -36,13 +38,14 @@ final class User_RightsTest extends UserTestCase
     {
         $rights = new Application_User_Rights();
 
-        $group = $rights->registerGroup('foo', 'Foo');
-        $group->registerRight('Right1', 'Right 1');
-        $group->registerRight('Right2', 'Right 2');
+        $group = $rights->registerGroup('foo', 'Foo', function(Application_User_Rights_Group $group) {
+            $group->registerRight('Right1', 'Right 1');
+            $group->registerRight('Right2', 'Right 2');
+        });
 
         $groupRights = $group->getRights()->getAll();
 
-        $this->assertSame(2, count($groupRights));
+        $this->assertCount(2, $groupRights);
     }
 
     /**
@@ -94,16 +97,18 @@ final class User_RightsTest extends UserTestCase
     {
         $rights = new Application_User_Rights();
 
-        $cyclic = $rights->registerGroup('Cyclic', 'Cyclic rights');
-        $cyclic->registerRight('CyclicSource', 'Source')
-            ->grantRight('CyclicTarget')
-            ->grantRight('CyclicExtension');
+        $rights->registerGroup('Cyclic', 'Cyclic rights', function(Application_User_Rights_Group $group) {
+            $group->registerRight('CyclicSource', 'Source')
+                ->grantRight('CyclicTarget')
+                ->grantRight('CyclicExtension');
 
-        $cyclic->registerRight('CyclicExtension', '');
+            $group->registerRight('CyclicExtension', '');
+        });
 
-        $target = $rights->registerGroup('Target', 'Cyclic target');
-        $target->registerRight('CyclicTarget', 'target')
-            ->grantRight('CyclicSource');
+        $rights->registerGroup('Target', 'Cyclic target', function(Application_User_Rights_Group $group) {
+            $group->registerRight('CyclicTarget', 'target')
+                ->grantRight('CyclicSource');
+        });
 
         $right = $rights->getRightByID('CyclicSource');
 
@@ -118,63 +123,70 @@ final class User_RightsTest extends UserTestCase
     {
         $rights = new Application_User_Rights();
 
-        $products = $rights->registerGroup('Products', 'Products');
-        $products->registerRight('ViewProduct', 'Viewing')
-            ->actionView()
-            ->grantRight('ViewProperties');
+        $rights->registerGroup('Products', 'Products', function(Application_User_Rights_Group $group)
+        {
+            $group->registerRight('ViewProduct', 'Viewing')
+                ->actionView()
+                ->grantRight('ViewProperties');
 
-        $products->registerRight('EditProduct', 'Editing')
-            ->actionEdit()
-            ->grantRight('ViewProduct')
-            ->grantRight('EditProperties');
+            $group->registerRight('EditProduct', 'Editing')
+                ->actionEdit()
+                ->grantRight('ViewProduct')
+                ->grantRight('EditProperties');
 
-        $products->registerRight('CreateProduct', 'Creating')
-            ->actionCreate()
-            ->grantRight('EditProduct');
+            $group->registerRight('CreateProduct', 'Creating')
+                ->actionCreate()
+                ->grantRight('EditProduct');
 
-        $products->registerRight('DeleteProduct', 'Deleting')
-            ->actionDelete()
-            ->grantRight('EditProduct')
-            ->grantRight('CreateProduct');
+            $group->registerRight('DeleteProduct', 'Deleting')
+                ->actionDelete()
+                ->grantRight('EditProduct')
+                ->grantRight('CreateProduct');
+        });
 
         // PROPERTIES ------------------------------------------------------------
         // Properties grant access to the property types.
 
-        $properties = $rights->registerGroup('Properties', 'Properties');
-        $properties->registerRight('ViewProperties', 'Viewing')
-            ->actionView()
-            ->grantGroupView('PropertyTypes');
+        $rights->registerGroup('Properties', 'Properties', function(Application_User_Rights_Group $group)
+        {
+            $group->registerRight('ViewProperties', 'Viewing')
+                ->actionView()
+                ->grantGroupView('PropertyTypes');
 
-        $properties->registerRight('EditProperties', 'Edit properties')
-            ->actionEdit()
-            ->grantRight('ViewProperties')
-            ->grantGroupAll('PropertyTypes');
+            $group->registerRight('EditProperties', 'Edit properties')
+                ->actionEdit()
+                ->grantRight('ViewProperties')
+                ->grantGroupAll('PropertyTypes');
+        });
 
         // CATEGORIES ------------------------------------------------------------
 
-        $categories = $rights->registerGroup('Categories', 'Product categories');
-        $categories->registerRight('ViewCategory', 'Viewing')
-            ->actionView()
-            ->grantGroupView('Products');
+        $rights->registerGroup('Categories', 'Product categories', function(Application_User_Rights_Group $group)
+        {
+            $group->registerRight('ViewCategory', 'Viewing')
+                ->actionView()
+                ->grantGroupView('Products');
+        });
 
         // PROPERTY TYPES ------------------------------------------------------------
 
-        $properties = $rights->registerGroup('PropertyTypes', 'Property types');
+        $rights->registerGroup('PropertyTypes', 'Property types', function(Application_User_Rights_Group $group)
+        {
+            $group->registerRight('ViewPropertyType', 'Viewing')
+                ->actionView();
 
-        $properties->registerRight('ViewPropertyType', 'Viewing')
-            ->actionView();
+            $group->registerRight('EditPropertyType', 'Editing')
+                ->actionEdit()
+                ->grantRight('ViewPropertyType');
 
-        $properties->registerRight('EditPropertyType', 'Editing')
-            ->actionEdit()
-            ->grantRight('ViewPropertyType');
+            $group->registerRight('CreatePropertyType', 'Creating')
+                ->actionCreate()
+                ->grantRight('EditPropertyType');
 
-        $properties->registerRight('CreatePropertyType', 'Creating')
-            ->actionCreate()
-            ->grantRight('EditPropertyType');
-
-        $properties->registerRight('DeletePropertyType', 'Deleting')
-            ->actionDelete()
-            ->grantRight('EditPropertyType');
+            $group->registerRight('DeletePropertyType', 'Deleting')
+                ->actionDelete()
+                ->grantRight('EditPropertyType');
+        });
 
         return $rights;
     }
