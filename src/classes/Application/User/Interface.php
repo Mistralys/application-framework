@@ -27,6 +27,7 @@ interface Application_User_Interface
     public function getName() : string;
     
     public function hasRight(string $rightName) : bool;
+    public function rightExists(string $rightName) : bool;
     
     public function saveSettings() : void;
     
@@ -41,7 +42,7 @@ interface Application_User_Interface
     
     public function getGrantableRoles() : array;
     
-    public function can(string $role) : bool;
+    public function can(string $rightName) : bool;
     
     public function setSetting(string $name, string $value) : bool;
     public function getSetting(string $name, string $default='');
