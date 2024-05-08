@@ -204,8 +204,8 @@ ALTER TABLE `tags`
     ADD KEY `label` (`label`),
     ADD KEY `parent_tag_id` (`parent_tag_id`),
     ADD KEY `sort_type` (`sort_type`),
-    ADD KEY `weight` (`sort_weight`),
-    ADD KEY `weight_2` (`weight`);
+    ADD KEY `sort_weight` (`sort_weight`),
+    ADD KEY `weight` (`weight`);
 
 --
 -- Indexes for table `tags_registry`
