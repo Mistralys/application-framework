@@ -182,9 +182,6 @@ abstract class Application_RevisionableCollection_DBRevisionable
             DBHelper::commitTransaction();
         }
 
-        //$this->log('Reloading the revision data.');
-        //$this->revisions->reload();
-
         // now that everything's through, we can trigger the event.
         $this->unignoreEvent('TransactionEnded');
         $this->triggerEvent('TransactionEnded');
