@@ -14,6 +14,7 @@ use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
@@ -644,13 +645,13 @@ class Application
      * Creates the specified API connector and returns its instance.
      * The type is the filename of the connector minus the extension.
      *
-     * @param string $type
+     * @param string|class-string $typeOrClass
      * @return Connectors_Connector
-     * @throws UnexpectedInstanceException
+     * @throws BaseClassHelperException
      */
-    public static function createConnector(string $type) : Connectors_Connector
+    public static function createConnector(string $typeOrClass) : Connectors_Connector
     {
-        return Connectors::createConnector($type);
+        return Connectors::createConnector($typeOrClass);
     }
 
     protected static ?bool $isDevUser = null;
