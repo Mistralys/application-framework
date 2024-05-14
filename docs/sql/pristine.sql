@@ -3,17 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 17, 2024 at 11:45 AM
--- Server version: 10.3.10-MariaDB-log
--- PHP Version: 8.2.14
+-- Generation Time: May 14, 2024 at 02:01 PM
+-- Server version: 10.5.22-MariaDB
+-- PHP Version: 8.3.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
---
--- Database: `app_framework_testsuite`
---
 
 -- --------------------------------------------------------
 
@@ -465,6 +461,7 @@ CREATE TABLE `tags` (
     `label` varchar(160) NOT NULL,
     `parent_tag_id` int(11) DEFAULT NULL,
     `sort_type` varchar(60) NOT NULL,
+    `sort_weight` int(11) NOT NULL DEFAULT 0,
     `weight` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -573,145 +570,145 @@ CREATE TABLE `user_settings` (
 --
 ALTER TABLE `app_locking`
     ADD PRIMARY KEY (`lock_id`),
-  ADD UNIQUE KEY `screen_url_path` (`screen_url_path`,`item_primary`) USING BTREE,
-  ADD KEY `locked_by` (`locked_by`),
-  ADD KEY `locked_time` (`locked_time`),
-  ADD KEY `locked_until` (`locked_until`),
-  ADD KEY `last_activity` (`last_activity`);
+    ADD UNIQUE KEY `screen_url_path` (`screen_url_path`,`item_primary`) USING BTREE,
+    ADD KEY `locked_by` (`locked_by`),
+    ADD KEY `locked_time` (`locked_time`),
+    ADD KEY `locked_until` (`locked_until`),
+    ADD KEY `last_activity` (`last_activity`);
 
 --
 -- Indexes for table `app_locking_messages`
 --
 ALTER TABLE `app_locking_messages`
     ADD PRIMARY KEY (`lock_id`,`requested_by`),
-  ADD KEY `message_id` (`message_id`),
-  ADD KEY `lock_id` (`lock_id`),
-  ADD KEY `requested_by` (`requested_by`);
+    ADD KEY `message_id` (`message_id`),
+    ADD KEY `lock_id` (`lock_id`),
+    ADD KEY `requested_by` (`requested_by`);
 
 --
 -- Indexes for table `app_messagelog`
 --
 ALTER TABLE `app_messagelog`
     ADD PRIMARY KEY (`log_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `type` (`type`),
-  ADD KEY `user_id_2` (`user_id`),
-  ADD KEY `date` (`date`);
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `type` (`type`),
+    ADD KEY `user_id_2` (`user_id`),
+    ADD KEY `date` (`date`);
 
 --
 -- Indexes for table `app_messaging`
 --
 ALTER TABLE `app_messaging`
     ADD PRIMARY KEY (`message_id`),
-  ADD KEY `from_user` (`from_user`),
-  ADD KEY `to_user` (`to_user`),
-  ADD KEY `priority` (`priority`),
-  ADD KEY `date_sent` (`date_sent`),
-  ADD KEY `date_received` (`date_received`),
-  ADD KEY `date_responded` (`date_responded`),
-  ADD KEY `reply_to` (`in_reply_to`),
-  ADD KEY `lock_id` (`lock_id`);
+    ADD KEY `from_user` (`from_user`),
+    ADD KEY `to_user` (`to_user`),
+    ADD KEY `priority` (`priority`),
+    ADD KEY `date_sent` (`date_sent`),
+    ADD KEY `date_received` (`date_received`),
+    ADD KEY `date_responded` (`date_responded`),
+    ADD KEY `reply_to` (`in_reply_to`),
+    ADD KEY `lock_id` (`lock_id`);
 
 --
 -- Indexes for table `app_news`
 --
 ALTER TABLE `app_news`
     ADD PRIMARY KEY (`news_id`),
-  ADD KEY `label` (`label`),
-  ADD KEY `date_created` (`date_created`),
-  ADD KEY `criticality` (`criticality`),
-  ADD KEY `visible_from_date` (`scheduled_from_date`),
-  ADD KEY `visible_to_date` (`scheduled_to_date`),
-  ADD KEY `dismissable` (`requires_receipt`),
-  ADD KEY `author` (`author`),
-  ADD KEY `date_modified` (`date_modified`),
-  ADD KEY `parent_news_id` (`parent_news_id`),
-  ADD KEY `views` (`views`),
-  ADD KEY `status` (`status`),
-  ADD KEY `news_type` (`news_type`),
-  ADD KEY `locale` (`locale`);
+    ADD KEY `label` (`label`),
+    ADD KEY `date_created` (`date_created`),
+    ADD KEY `criticality` (`criticality`),
+    ADD KEY `visible_from_date` (`scheduled_from_date`),
+    ADD KEY `visible_to_date` (`scheduled_to_date`),
+    ADD KEY `dismissable` (`requires_receipt`),
+    ADD KEY `author` (`author`),
+    ADD KEY `date_modified` (`date_modified`),
+    ADD KEY `parent_news_id` (`parent_news_id`),
+    ADD KEY `views` (`views`),
+    ADD KEY `status` (`status`),
+    ADD KEY `news_type` (`news_type`),
+    ADD KEY `locale` (`locale`);
 
 --
 -- Indexes for table `app_news_categories`
 --
 ALTER TABLE `app_news_categories`
     ADD PRIMARY KEY (`news_category_id`),
-  ADD KEY `label` (`label`);
+    ADD KEY `label` (`label`);
 
 --
 -- Indexes for table `app_news_entry_categories`
 --
 ALTER TABLE `app_news_entry_categories`
     ADD PRIMARY KEY (`news_id`,`news_category_id`),
-  ADD KEY `news_id` (`news_id`),
-  ADD KEY `news_category_id` (`news_category_id`);
+    ADD KEY `news_id` (`news_id`),
+    ADD KEY `news_category_id` (`news_category_id`);
 
 --
 -- Indexes for table `app_news_reactions`
 --
 ALTER TABLE `app_news_reactions`
     ADD PRIMARY KEY (`reaction_id`),
-  ADD KEY `label` (`label`),
-  ADD KEY `emoji` (`emoji`);
+    ADD KEY `label` (`label`),
+    ADD KEY `emoji` (`emoji`);
 
 --
 -- Indexes for table `app_news_related`
 --
 ALTER TABLE `app_news_related`
     ADD PRIMARY KEY (`news_id`,`related_news_id`,`relation_type`),
-  ADD KEY `news_id` (`news_id`),
-  ADD KEY `related_news_id` (`related_news_id`),
-  ADD KEY `relation_type` (`relation_type`);
+    ADD KEY `news_id` (`news_id`),
+    ADD KEY `related_news_id` (`related_news_id`),
+    ADD KEY `relation_type` (`relation_type`);
 
 --
 -- Indexes for table `app_news_user_reactions`
 --
 ALTER TABLE `app_news_user_reactions`
     ADD PRIMARY KEY (`news_id`,`user_id`,`reaction_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `reaction_id` (`reaction_id`);
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `reaction_id` (`reaction_id`);
 
 --
 -- Indexes for table `app_news_user_receipts`
 --
 ALTER TABLE `app_news_user_receipts`
     ADD PRIMARY KEY (`news_id`,`user_id`),
-  ADD KEY `news_id` (`news_id`),
-  ADD KEY `user_id` (`user_id`);
+    ADD KEY `news_id` (`news_id`),
+    ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `app_ratings`
 --
 ALTER TABLE `app_ratings`
     ADD PRIMARY KEY (`rating_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `rating` (`rating`),
-  ADD KEY `date` (`date`),
-  ADD KEY `rating_screen_id` (`rating_screen_id`),
-  ADD KEY `app_version` (`app_version`);
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `rating` (`rating`),
+    ADD KEY `date` (`date`),
+    ADD KEY `rating_screen_id` (`rating_screen_id`),
+    ADD KEY `app_version` (`app_version`);
 
 --
 -- Indexes for table `app_ratings_screens`
 --
 ALTER TABLE `app_ratings_screens`
     ADD PRIMARY KEY (`rating_screen_id`),
-  ADD UNIQUE KEY `hash` (`hash`),
-  ADD KEY `dispatcher` (`dispatcher`),
-  ADD KEY `path` (`path`);
+    ADD UNIQUE KEY `hash` (`hash`),
+    ADD KEY `dispatcher` (`dispatcher`),
+    ADD KEY `path` (`path`);
 
 --
 -- Indexes for table `app_settings`
 --
 ALTER TABLE `app_settings`
     ADD PRIMARY KEY (`data_key`),
-  ADD KEY `data_role` (`data_role`);
+    ADD KEY `data_role` (`data_role`);
 
 --
 -- Indexes for table `countries`
 --
 ALTER TABLE `countries`
     ADD PRIMARY KEY (`country_id`),
-  ADD UNIQUE KEY `iso` (`iso`);
+    ADD UNIQUE KEY `iso` (`iso`);
 
 --
 -- Indexes for table `custom_properties`
@@ -724,36 +721,36 @@ ALTER TABLE `custom_properties`
 --
 ALTER TABLE `custom_properties_data`
     ADD PRIMARY KEY (`property_id`,`owner_type`,`owner_key`),
-  ADD KEY `is_structural` (`is_structural`),
-  ADD KEY `name` (`name`),
-  ADD KEY `product_id` (`owner_type`),
-  ADD KEY `featuretable_revision` (`owner_key`),
-  ADD KEY `preset_number` (`preset_id`);
+    ADD KEY `is_structural` (`is_structural`),
+    ADD KEY `name` (`name`),
+    ADD KEY `product_id` (`owner_type`),
+    ADD KEY `featuretable_revision` (`owner_key`),
+    ADD KEY `preset_number` (`preset_id`);
 
 --
 -- Indexes for table `custom_properties_presets`
 --
 ALTER TABLE `custom_properties_presets`
     ADD PRIMARY KEY (`preset_id`),
-  ADD KEY `editable` (`editable`),
-  ADD KEY `name` (`name`),
-  ADD KEY `is_structural` (`is_structural`),
-  ADD KEY `owner_type` (`owner_type`);
+    ADD KEY `editable` (`editable`),
+    ADD KEY `name` (`name`),
+    ADD KEY `is_structural` (`is_structural`),
+    ADD KEY `owner_type` (`owner_type`);
 
 --
 -- Indexes for table `feedback`
 --
 ALTER TABLE `feedback`
     ADD PRIMARY KEY (`feedback_id`),
-  ADD KEY `user_id` (`user_id`,`date`,`feedback_scope`),
-  ADD KEY `feedback_type` (`feedback_type`);
+    ADD KEY `user_id` (`user_id`,`date`,`feedback_scope`),
+    ADD KEY `feedback_type` (`feedback_type`);
 
 --
 -- Indexes for table `known_users`
 --
 ALTER TABLE `known_users`
     ADD PRIMARY KEY (`user_id`),
-  ADD KEY `foreign_id` (`foreign_id`);
+    ADD KEY `foreign_id` (`foreign_id`);
 
 --
 -- Indexes for table `locales_application`
@@ -772,23 +769,23 @@ ALTER TABLE `locales_content`
 --
 ALTER TABLE `media`
     ADD PRIMARY KEY (`media_id`),
-  ADD KEY `user_id` (`user_id`,`media_type`),
-  ADD KEY `file_size` (`file_size`);
+    ADD KEY `user_id` (`user_id`,`media_type`),
+    ADD KEY `file_size` (`file_size`);
 
 --
 -- Indexes for table `media_configurations`
 --
 ALTER TABLE `media_configurations`
     ADD PRIMARY KEY (`config_id`),
-  ADD KEY `type_id` (`type_id`,`config_key`);
+    ADD KEY `type_id` (`type_id`,`config_key`);
 
 --
 -- Indexes for table `media_tags`
 --
 ALTER TABLE `media_tags`
     ADD PRIMARY KEY (`media_id`,`tag_id`),
-  ADD KEY `media_id` (`media_id`),
-  ADD KEY `tag_id` (`tag_id`);
+    ADD KEY `media_id` (`media_id`),
+    ADD KEY `tag_id` (`tag_id`);
 
 --
 -- Indexes for table `revisionables`
@@ -801,106 +798,107 @@ ALTER TABLE `revisionables`
 --
 ALTER TABLE `revisionables_changelog`
     ADD PRIMARY KEY (`changelog_id`),
-  ADD KEY `revisionable_id` (`revisionable_id`),
-  ADD KEY `revisionable_revision` (`revisionable_revision`),
-  ADD KEY `changelog_date` (`changelog_date`),
-  ADD KEY `changelog_author` (`changelog_author`),
-  ADD KEY `changelog_type` (`changelog_type`);
+    ADD KEY `revisionable_id` (`revisionable_id`),
+    ADD KEY `revisionable_revision` (`revisionable_revision`),
+    ADD KEY `changelog_date` (`changelog_date`),
+    ADD KEY `changelog_author` (`changelog_author`),
+    ADD KEY `changelog_type` (`changelog_type`);
 
 --
 -- Indexes for table `revisionables_current_revisions`
 --
 ALTER TABLE `revisionables_current_revisions`
     ADD PRIMARY KEY (`revisionable_id`),
-  ADD KEY `current_revision` (`current_revision`);
+    ADD KEY `current_revision` (`current_revision`);
 
 --
 -- Indexes for table `revisionables_revisions`
 --
 ALTER TABLE `revisionables_revisions`
     ADD PRIMARY KEY (`revisionable_revision`),
-  ADD KEY `revisionable_id` (`revisionable_id`),
-  ADD KEY `label` (`label`),
-  ADD KEY `alias` (`alias`),
-  ADD KEY `state` (`state`),
-  ADD KEY `date` (`date`),
-  ADD KEY `author` (`author`),
-  ADD KEY `pretty_revision` (`pretty_revision`);
+    ADD KEY `revisionable_id` (`revisionable_id`),
+    ADD KEY `label` (`label`),
+    ADD KEY `alias` (`alias`),
+    ADD KEY `state` (`state`),
+    ADD KEY `date` (`date`),
+    ADD KEY `author` (`author`),
+    ADD KEY `pretty_revision` (`pretty_revision`);
 
 --
 -- Indexes for table `revisionables_revisions_data`
 --
 ALTER TABLE `revisionables_revisions_data`
     ADD PRIMARY KEY (`revisionable_id`,`revisionable_revision`,`data_key`),
-  ADD KEY `revisionable_id` (`revisionable_id`),
-  ADD KEY `revision` (`revisionable_revision`),
-  ADD KEY `data_key` (`data_key`);
+    ADD KEY `revisionable_id` (`revisionable_id`),
+    ADD KEY `revision` (`revisionable_revision`),
+    ADD KEY `data_key` (`data_key`);
 
 --
 -- Indexes for table `tags`
 --
 ALTER TABLE `tags`
     ADD PRIMARY KEY (`tag_id`),
-  ADD KEY `label` (`label`),
-  ADD KEY `parent_tag_id` (`parent_tag_id`),
-  ADD KEY `sort_type` (`sort_type`),
-  ADD KEY `weight` (`weight`);
+    ADD KEY `label` (`label`),
+    ADD KEY `parent_tag_id` (`parent_tag_id`),
+    ADD KEY `sort_type` (`sort_type`),
+    ADD KEY `sort_weight` (`sort_weight`),
+    ADD KEY `weight` (`weight`);
 
 --
 -- Indexes for table `tags_registry`
 --
 ALTER TABLE `tags_registry`
     ADD PRIMARY KEY (`registry_key`),
-  ADD KEY `tag_id` (`tag_id`);
+    ADD KEY `tag_id` (`tag_id`);
 
 --
 -- Indexes for table `tags_translations`
 --
 ALTER TABLE `tags_translations`
     ADD KEY `tag_id` (`tag_id`),
-  ADD KEY `locale_name` (`locale_name`),
-  ADD KEY `locale_label` (`locale_label`);
+    ADD KEY `locale_name` (`locale_name`),
+    ADD KEY `locale_label` (`locale_label`);
 
 --
 -- Indexes for table `test_records`
 --
 ALTER TABLE `test_records`
     ADD PRIMARY KEY (`record_id`),
-  ADD KEY `label` (`label`),
-  ADD KEY `alias` (`alias`);
+    ADD KEY `label` (`label`),
+    ADD KEY `alias` (`alias`);
 
 --
 -- Indexes for table `test_records_data`
 --
 ALTER TABLE `test_records_data`
     ADD PRIMARY KEY (`record_id`,`name`),
-  ADD KEY `record_id` (`record_id`),
-  ADD KEY `name` (`name`);
+    ADD KEY `record_id` (`record_id`),
+    ADD KEY `name` (`name`);
 
 --
 -- Indexes for table `test_records_tags`
 --
 ALTER TABLE `test_records_tags`
     ADD PRIMARY KEY (`record_id`,`tag_id`),
-  ADD KEY `record_id` (`record_id`),
-  ADD KEY `tag_id` (`tag_id`);
+    ADD KEY `record_id` (`record_id`),
+    ADD KEY `tag_id` (`tag_id`);
 
 --
 -- Indexes for table `uploads`
 --
 ALTER TABLE `uploads`
     ADD PRIMARY KEY (`upload_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `media_id` (`media_id`);
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `media_id` (`media_id`);
 
 --
 -- Indexes for table `user_emails`
 --
 ALTER TABLE `user_emails`
     ADD PRIMARY KEY (`user_id`,`email`),
-  ADD UNIQUE KEY `email_2` (`email`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `email` (`email`);
+    ADD UNIQUE KEY `email_2` (`email`),
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `email` (`email`);
 
 --
 -- Indexes for table `user_settings`
@@ -964,7 +962,7 @@ ALTER TABLE `app_ratings_screens`
 -- AUTO_INCREMENT for table `countries`
 --
 ALTER TABLE `countries`
-    MODIFY `country_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10060;
+    MODIFY `country_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `custom_properties`
@@ -1053,8 +1051,8 @@ ALTER TABLE `app_locking`
 --
 ALTER TABLE `app_locking_messages`
     ADD CONSTRAINT `app_locking_messages_ibfk_1` FOREIGN KEY (`lock_id`) REFERENCES `app_locking` (`lock_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_locking_messages_ibfk_2` FOREIGN KEY (`message_id`) REFERENCES `app_messaging` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_locking_messages_ibfk_3` FOREIGN KEY (`requested_by`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_locking_messages_ibfk_2` FOREIGN KEY (`message_id`) REFERENCES `app_messaging` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `app_locking_messages_ibfk_3` FOREIGN KEY (`requested_by`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_messagelog`
@@ -1067,52 +1065,52 @@ ALTER TABLE `app_messagelog`
 --
 ALTER TABLE `app_messaging`
     ADD CONSTRAINT `app_messaging_ibfk_1` FOREIGN KEY (`from_user`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_messaging_ibfk_2` FOREIGN KEY (`to_user`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_messaging_ibfk_3` FOREIGN KEY (`in_reply_to`) REFERENCES `app_messaging` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_messaging_ibfk_4` FOREIGN KEY (`lock_id`) REFERENCES `app_locking` (`lock_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_messaging_ibfk_2` FOREIGN KEY (`to_user`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `app_messaging_ibfk_3` FOREIGN KEY (`in_reply_to`) REFERENCES `app_messaging` (`message_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `app_messaging_ibfk_4` FOREIGN KEY (`lock_id`) REFERENCES `app_locking` (`lock_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_news`
 --
 ALTER TABLE `app_news`
     ADD CONSTRAINT `app_news_ibfk_1` FOREIGN KEY (`author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_ibfk_2` FOREIGN KEY (`parent_news_id`) REFERENCES `app_news` (`news_id`) ON DELETE SET NULL ON UPDATE SET NULL;
+    ADD CONSTRAINT `app_news_ibfk_2` FOREIGN KEY (`parent_news_id`) REFERENCES `app_news` (`news_id`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Constraints for table `app_news_entry_categories`
 --
 ALTER TABLE `app_news_entry_categories`
     ADD CONSTRAINT `app_news_entry_categories_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_entry_categories_ibfk_2` FOREIGN KEY (`news_category_id`) REFERENCES `app_news_categories` (`news_category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_news_entry_categories_ibfk_2` FOREIGN KEY (`news_category_id`) REFERENCES `app_news_categories` (`news_category_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_news_related`
 --
 ALTER TABLE `app_news_related`
     ADD CONSTRAINT `app_news_related_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_related_ibfk_2` FOREIGN KEY (`related_news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_news_related_ibfk_2` FOREIGN KEY (`related_news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_news_user_reactions`
 --
 ALTER TABLE `app_news_user_reactions`
     ADD CONSTRAINT `app_news_user_reactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_user_reactions_ibfk_2` FOREIGN KEY (`news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_user_reactions_ibfk_3` FOREIGN KEY (`reaction_id`) REFERENCES `app_news_reactions` (`reaction_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_news_user_reactions_ibfk_2` FOREIGN KEY (`news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `app_news_user_reactions_ibfk_3` FOREIGN KEY (`reaction_id`) REFERENCES `app_news_reactions` (`reaction_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_news_user_receipts`
 --
 ALTER TABLE `app_news_user_receipts`
     ADD CONSTRAINT `app_news_user_receipts_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `app_news` (`news_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_news_user_receipts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_news_user_receipts_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_ratings`
 --
 ALTER TABLE `app_ratings`
     ADD CONSTRAINT `app_ratings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `app_ratings_ibfk_2` FOREIGN KEY (`rating_screen_id`) REFERENCES `app_ratings_screens` (`rating_screen_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `app_ratings_ibfk_2` FOREIGN KEY (`rating_screen_id`) REFERENCES `app_ratings_screens` (`rating_screen_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `media`
@@ -1125,42 +1123,42 @@ ALTER TABLE `media`
 --
 ALTER TABLE `media_tags`
     ADD CONSTRAINT `media_tags_ibfk_1` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `media_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `media_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `revisionables_changelog`
 --
 ALTER TABLE `revisionables_changelog`
     ADD CONSTRAINT `revisionables_changelog_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `revisionables_changelog_ibfk_2` FOREIGN KEY (`revisionable_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `revisionables_changelog_ibfk_2` FOREIGN KEY (`revisionable_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `revisionables_current_revisions`
 --
 ALTER TABLE `revisionables_current_revisions`
     ADD CONSTRAINT `revisionables_current_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `revisionables_current_revisions_ibfk_2` FOREIGN KEY (`current_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `revisionables_current_revisions_ibfk_2` FOREIGN KEY (`current_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `revisionables_revisions`
 --
 ALTER TABLE `revisionables_revisions`
     ADD CONSTRAINT `revisionables_revisions_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `revisionables_revisions_ibfk_2` FOREIGN KEY (`author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `revisionables_revisions_ibfk_2` FOREIGN KEY (`author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `revisionables_revisions_data`
 --
 ALTER TABLE `revisionables_revisions_data`
     ADD CONSTRAINT `revisionables_revisions_data_ibfk_1` FOREIGN KEY (`revisionable_id`) REFERENCES `revisionables` (`revisionable_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `revisionables_revisions_data_ibfk_2` FOREIGN KEY (`revisionable_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `revisionables_revisions_data_ibfk_2` FOREIGN KEY (`revisionable_revision`) REFERENCES `revisionables_revisions` (`revisionable_revision`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `tags_translations`
 --
 ALTER TABLE `tags_translations`
     ADD CONSTRAINT `tags_translations_ibfk_1` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `tags_translations_ibfk_2` FOREIGN KEY (`locale_name`) REFERENCES `locales_application` (`locale_name`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `tags_translations_ibfk_2` FOREIGN KEY (`locale_name`) REFERENCES `locales_application` (`locale_name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `test_records_data`
@@ -1173,14 +1171,14 @@ ALTER TABLE `test_records_data`
 --
 ALTER TABLE `test_records_tags`
     ADD CONSTRAINT `test_records_tags_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `test_records` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `test_records_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+    ADD CONSTRAINT `test_records_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `uploads`
 --
 ALTER TABLE `uploads`
     ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `uploads_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE SET NULL ON UPDATE SET NULL;
+    ADD CONSTRAINT `uploads_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Constraints for table `user_emails`
