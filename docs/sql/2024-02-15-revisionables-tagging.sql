@@ -12,6 +12,16 @@ START TRANSACTION;
 SET time_zone = "+00:00";
 
 --
+-- Adjust table character sets
+--
+
+ALTER TABLE `locales_application`
+    CHANGE `locale_name` `locale_name` VARCHAR(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL;
+
+ALTER TABLE `locales_content`
+    CHANGE `locale_name` `locale_name` VARCHAR(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL;
+
+--
 -- Table structure for table `media_tags`
 --
 
@@ -123,7 +133,7 @@ CREATE TABLE `tags_registry` (
 
 CREATE TABLE `tags_translations` (
     `tag_id` int(11) UNSIGNED NOT NULL,
-    `locale_name` varchar(5) NOT NULL,
+    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `locale_label` varchar(160) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores tag label translations.';
 
