@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+namespace AppFrameworkTests\Eventables;
 
-final class Eventables_CoreTests extends ApplicationTestCase
+use AppFrameworkTestClasses\ApplicationTestCase;
+use TestApplication\TestEventable;
+
+final class CoreTests extends ApplicationTestCase
 {
-    public function test_removeListener() : void
+    public function test_removeListener(): void
     {
         $eventable = new TestEventable();
 
@@ -22,8 +25,7 @@ final class Eventables_CoreTests extends ApplicationTestCase
 
         $this->assertCount(2, $listeners);
 
-        foreach ($listeners as $listener)
-        {
+        foreach ($listeners as $listener) {
             $this->assertNotEquals($l1->getID(), $listener->getID(), 'The removed listener must not be in the list anymore.');
         }
     }

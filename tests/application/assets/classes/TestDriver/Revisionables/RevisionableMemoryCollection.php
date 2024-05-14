@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
-use application\assets\classes\TestDriver\Revisionables\RevisionableMemory;
+use TestApplication\TestDriver\Revisionables\RevisionableMemory;
 use Application\Revisionable\RevisionableInterface;
 use Application_RevisionableCollection;
 use Application_Traits_Disposable;
@@ -40,7 +40,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
 
     public function getRecordClassName(): string
     {
-        return RevisionableMemory::class;
+        return \TestApplication\TestDriver\Revisionables\RevisionableMemory::class;
     }
 
     public function getRecordTypeName(): string

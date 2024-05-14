@@ -6,6 +6,7 @@ namespace Mistralys\AppFrameworkTests\TestClasses\Traits;
 
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use DBHelper;
+use TestDriver\ClassFactory;
 use TestDriver\Revisionables\RevisionableCollection;
 use TestDriver\Revisionables\RevisionableRecord;
 
@@ -19,7 +20,7 @@ trait RevisionableTestTrait
 
         DBHelper::deleteRecords(RevisionableCollection::TABLE_NAME);
 
-        $this->revCollection = RevisionableCollection::getInstance();
+        $this->revCollection = ClassFactory::createRevisionableCollection();
     }
 
     protected function createTestRevisionable(?string $label = null, ?string $alias = null): RevisionableRecord

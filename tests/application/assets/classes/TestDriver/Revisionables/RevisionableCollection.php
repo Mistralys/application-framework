@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application_RevisionableCollection;
 use Application_Traits_Disposable;
 use Application_Traits_Eventable;
@@ -30,9 +29,6 @@ class RevisionableCollection extends Application_RevisionableCollection
     public const COL_REV_STRUCTURAL = 'structural';
     public const COL_REV_ALIAS = 'alias';
 
-    use Application_Traits_Eventable;
-    use Application_Traits_Disposable;
-
     private static ?RevisionableCollection $instance = null;
 
     public static function getInstance() : self
@@ -56,6 +52,11 @@ class RevisionableCollection extends Application_RevisionableCollection
     }
 
     // region: X - Interface methods
+
+    public function getPrimaryRequestName(): string
+    {
+        return self::PRIMARY_NAME;
+    }
 
     public function getIdentification(): string
     {
@@ -177,4 +178,5 @@ class RevisionableCollection extends Application_RevisionableCollection
     {
         return '';
     }
+
 }

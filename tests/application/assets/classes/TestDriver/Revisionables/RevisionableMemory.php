@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace application\assets\classes\TestDriver\Revisionables;
+namespace TestApplication\TestDriver\Revisionables;
 
 use Application;
+use Application\Revisionable\RevisionableException;
 use Application_Changelog_FilterCriteria;
+use Application_EventHandler_EventableListener;
 use Application_RevisionableCollection;
 use Application_RevisionableStateless;
 use Application_Traits_Loggable;
@@ -37,7 +39,13 @@ class RevisionableMemory extends Application_RevisionableStateless
         return 111;
     }
 
-    public function setData(string $name, string $value): RevisionableMemory
+    /**
+     * @param string $name
+     * @param string $value
+     * @return $this
+     * @throws RevisionableException
+     */
+    public function setData(string $name, string $value): self
     {
         $this->revisions->setKey($name, $value);
         return $this;
@@ -53,13 +61,19 @@ class RevisionableMemory extends Application_RevisionableStateless
         // nothing to do here
     }
 
-    public function onTriggerEvent(callable $callback): RevisionableMemory
+    /**
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onTriggerEvent(callable $callback): Application_EventHandler_EventableListener
     {
-        $this->addEventHandler(self::EVENT_TEST_EVENT, $callback);
-        return $this;
+        return $this->addEventListener(self::EVENT_TEST_EVENT, $callback);
     }
 
-    public function triggerTheEvent(): RevisionableMemory
+    /**
+     * @return $this
+     */
+    public function triggerTheEvent(): self
     {
         $this->triggerEvent(self::EVENT_TEST_EVENT);
         return $this;

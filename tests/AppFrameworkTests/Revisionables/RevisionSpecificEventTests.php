@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use application\assets\classes\TestDriver\Revisionables\RevisionableMemory;
+use TestApplication\TestDriver\Revisionables\RevisionableMemory;
 use Application\Revisionable\RevisionableStatelessInterface;
-use Application_Revisionable_Event_RevisionAdded;
+use Application\Revisionable\Event\RevisionAddedEvent;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 
-final class EventTests extends RevisionableTestCase
+final class RevisionSpecificEventTests extends RevisionableTestCase
 {
 
     // region: _Tests
@@ -90,42 +90,19 @@ final class EventTests extends RevisionableTestCase
 
         $this->revisionable->createRevision();
 
-        $this->assertInstanceOf(Application_Revisionable_Event_RevisionAdded::class, $this->revisionAdded);
+        $this->assertInstanceOf(RevisionAddedEvent::class, $this->revisionAdded);
     }
 
     // endregion
 
     // region: Support methods
 
-    /**
-     * @var bool
-     */
-    private $revision1Event = false;
-
-    /**
-     * @var bool
-     */
-    private $revision2Event = false;
-
-    /**
-     * @var RevisionableMemory
-     */
-    private $revisionable;
-
-    /**
-     * @var int
-     */
-    private $rev1ID;
-
-    /**
-     * @var int
-     */
-    private $rev2ID;
-
-    /**
-     * @var Application_Revisionable_Event_RevisionAdded|NULL
-     */
-    private $revisionAdded;
+    private bool $revision1Event = false;
+    private bool $revision2Event = false;
+    private RevisionableMemory $revisionable;
+    private int $rev1ID;
+    private int $rev2ID;
+    private ?RevisionAddedEvent $revisionAdded;
 
     protected function setUp(): void
     {
@@ -135,13 +112,14 @@ final class EventTests extends RevisionableTestCase
     }
 
     /**
-     * @return RevisionableMemory
+     * @return void
      */
-    private function createRevisionable(): RevisionableMemory
+    private function createRevisionable(): void
     {
         $this->revisionable = new RevisionableMemory();
 
         $this->assertSame(0, $this->revisionable->countRevisions());
+        $this->assertFalse($this->revisionable->isEventRevisionAgnostic(RevisionableMemory::EVENT_TEST_EVENT));
 
         $this->rev1ID = $this->revisionable->createRevision();
         $this->revisionable->selectRevision($this->rev1ID);
@@ -152,11 +130,9 @@ final class EventTests extends RevisionableTestCase
         $this->revisionable->onTriggerEvent(array($this, 'callback_revision2'));
 
         $this->assertSame(2, $this->revisionable->countRevisions());
-
-        return $this->revisionable;
     }
 
-    public function callback_revisionAdded(RevisionableStatelessInterface $revisionable, Application_Revisionable_Event_RevisionAdded $event): void
+    public function callback_revisionAdded(RevisionAddedEvent $event): void
     {
         $this->revisionAdded = $event;
     }
