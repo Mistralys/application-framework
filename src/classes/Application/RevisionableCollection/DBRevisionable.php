@@ -12,8 +12,10 @@ abstract class Application_RevisionableCollection_DBRevisionable
     extends Application_Revisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
+    public const ERROR_LAST_TRANSACTION_NOT_AVAILABLE = 14702;
 
     public const CHANGELOG_SET_LABEL = 'set_label';
+
 
     protected Application_RevisionableCollection $collection;
     protected int $id;
@@ -163,7 +165,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
     public function endTransaction(): bool
     {
         // we need to do this, because we want to trigger it later
-        $this->ignoreEvent('TransactionEnded');
+        $this->ignoreEvent(self::EVENT_TRANSACTION_ENDED);
 
         $result = parent::endTransaction();
 
@@ -173,20 +175,28 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
         // do we handle the DB transaction here? 
         if ($this->handleDBTransaction) {
-            if ($this->simulation) {
-                $this->log('Simulation mode, transaction will not be committed.');
+            if ($this->isSimulationEnabled()) {
+                $this->log('Transaction | END | Simulation mode, transaction will not be committed.');
                 DBHelper::rollbackTransaction();
-                return $result;
+            } else {
+                $this->log('Transaction | END | Committing transaction.');
+                DBHelper::commitTransaction();
             }
-
-            DBHelper::commitTransaction();
         }
 
         // now that everything's through, we can trigger the event.
-        $this->unignoreEvent('TransactionEnded');
-        $this->triggerEvent('TransactionEnded');
+        $this->unIgnoreEvent(self::EVENT_TRANSACTION_ENDED);
 
-        return $result;
+        if(isset($this->lastTransaction)) {
+            $this->triggerTransactionEnded($this->lastTransaction);
+            return $result;
+        }
+
+        throw new RevisionableException(
+            'No last transaction data stored.',
+            'The last transaction data is not available, and the transaction cannot be completed.',
+            self::ERROR_LAST_TRANSACTION_NOT_AVAILABLE
+        );
     }
 
     /**
@@ -197,7 +207,9 @@ abstract class Application_RevisionableCollection_DBRevisionable
     {
         parent::rollBackTransaction();
 
-        DBHelper::rollbackTransaction();
+        if($this->handleDBTransaction) {
+            DBHelper::rollbackTransaction();
+        }
 
         return $this;
     }
