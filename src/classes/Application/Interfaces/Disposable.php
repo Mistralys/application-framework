@@ -1,10 +1,26 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Disposables
+ */
 
 declare(strict_types=1);
 
+/**
+ * Interface for objects that can be disposed of, freeing up resources.
+ *
+ * Usage:
+ *
+ * 1) Use the trait {@see Application_Traits_Disposable}.
+ * 2) Implement this interface.
+ * 3) Implement all abstract methods.
+ *
+ * @package Application
+ * @subpackage Disposables
+ */
 interface Application_Interfaces_Disposable extends Application_Interfaces_Eventable
 {
-    const EVENT_DISPOSED = 'Disposed';
+    public const EVENT_DISPOSED = 'Disposed';
 
     public function dispose() : void;
 

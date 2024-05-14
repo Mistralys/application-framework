@@ -1,19 +1,21 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Disposables
+ */
 
 declare(strict_types=1);
 
 /**
+ * Trait used to implement the {@see Application_Interfaces_Disposable} interface.
  *
  * @package Application
- * @subpackage Traits
+ * @subpackage Disposables
  * @see Application_Interfaces_Disposable
  */
 trait Application_Traits_Disposable
 {
-    /**
-     * @var bool
-     */
-    private $disposableDisposed = false;
+    private bool $disposableDisposed = false;
 
     /**
      * Disposes of the object once it is not needed anymore.
@@ -36,7 +38,7 @@ trait Application_Traits_Disposable
             Application_Traits_Disposable_Event_Disposed::class
         );
 
-        // Disable all further event handling.
+        // Disable all further event handlings.
         $this->clearAllEventListeners();
         $this->disableEvents();
 
