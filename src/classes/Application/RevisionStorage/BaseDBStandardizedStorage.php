@@ -164,18 +164,9 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         }
     }
 
-    protected ?int $cacheRevisionCount = null;
-
-    /**
-     * @return int
-     */
     public function countRevisions() : int
     {
-        if ($this->cacheRevisionCount !== null) {
-            return $this->cacheRevisionCount;
-        }
-
-        $count = DBHelper::fetchCount(
+        return DBHelper::fetchCount(
             sprintf(
                 "SELECT
                     COUNT(`%s`) AS `count`
@@ -191,10 +182,6 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
                 'revisionable_id' => $this->revisionableID
             )
         );
-
-        $this->cacheRevisionCount = $count;
-
-        return $count;
     }
     
     protected array $cacheKnownRevisions = array();
@@ -237,7 +224,6 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
     {
         $this->cacheKnownRevisions = array();
         $this->cacheRevisionsList = null;
-        $this->cacheRevisionCount = null;
 
         $this->log('Internal cache reset.');
 
@@ -320,7 +306,6 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         
         $this->cacheKnownRevisions[$number] = true;
         $this->cacheRevisionsList[] = $number;
-        $this->cacheRevisionCount++;
 
         $this->log(sprintf(
             'Next revision [%1$s] inserted, with pretty revision [%2$s].',
