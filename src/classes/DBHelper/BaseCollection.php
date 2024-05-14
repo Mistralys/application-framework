@@ -1140,7 +1140,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
                 $this,
                 $record,
                 $context
-            )
+            ),
+            AfterCreateRecordEvent::class
         );
 
         if($event !== null)
