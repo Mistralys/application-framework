@@ -14,7 +14,14 @@ use AppUtils\ConvertHelper;
 /**
  * Trait used to enable any class to use event handling.
  *
- * Usage: use this trait, and implement the interface {@see Application_Interfaces_Eventable}.
+ * Usage:
+ *
+ * 1) Use this trait
+ * 2) Implement the interface {@see Application_Interfaces_Eventable}.
+ *
+ * Optional:
+ *
+ * - Override {@see self::getEventNamespace()} to handle event namespaces.
  *
  * @package Application
  * @subpackage EventHandler
@@ -28,8 +35,13 @@ trait Application_Traits_Eventable
      * @var array<string,array<int,Application_EventHandler_EventableListener>>
      */
     protected array $eventListeners = array();
-    protected int $eventListenerCounter = 0;
+    protected static int $eventListenerCounter = 0;
     protected bool $eventsDisabled = false;
+
+    /**
+     * @var array<string,bool>
+     */
+    protected array $ignoredEvents = array();
 
     /**
      * @param string $eventName
@@ -38,16 +50,19 @@ trait Application_Traits_Eventable
      */
     public function addEventListener(string $eventName, callable $callback) : Application_EventHandler_EventableListener
     {
-        $this->eventListenerCounter++;
+        self::$eventListenerCounter++;
+
+        $eventNameNS = $this->namespaceEventName($eventName);
 
         $listener = new Application_EventHandler_EventableListener(
-            $this->eventListenerCounter,
+            self::$eventListenerCounter,
             $eventName,
             $callback,
-            $this
+            $this,
+            $eventNameNS
         );
 
-        $this->eventListeners[$eventName][] = $listener;
+        $this->eventListeners[$eventNameNS][] = $listener;
 
         $this->logEvent(
             $eventName,
@@ -79,23 +94,18 @@ trait Application_Traits_Eventable
      */
     public function removeEventListener(Application_EventHandler_EventableListener $listener) : void
     {
-        $eventName = $listener->getEventName();
-
         $this->logEvent(
-            $eventName,
+            $listener->getEventName(),
             'Listener [#%s] | Removing listener | Callback [%s].',
             $listener->getID(),
             ConvertHelper::callback2string($listener->getCallback())
         );
 
-        if (!isset($this->eventListeners[$eventName]))
-        {
-            return;
-        }
-
-        $listenerID = $listener->getID();
         $keep = array();
-        foreach ($this->eventListeners[$eventName] as $check)
+        $eventNameNS = $listener->getEventNameNS();
+        $listenerID = $listener->getID();
+
+        foreach ($this->eventListeners[$eventNameNS] as $check)
         {
             if ($check->getID() !== $listenerID)
             {
@@ -103,7 +113,7 @@ trait Application_Traits_Eventable
             }
         }
 
-        $this->eventListeners[$eventName] = $keep;
+        $this->eventListeners[$eventNameNS] = $keep;
     }
 
     /**
@@ -114,23 +124,31 @@ trait Application_Traits_Eventable
      * have been disabled.
      *
      * @param string $eventName
-     * @param array $args
+     * @param mixed[] $args
      * @param string $eventClass
      * @return Application_EventHandler_EventableEvent|null
      * @throws Application_Exception
      */
-    protected function triggerEvent(string $eventName, array $args, string $eventClass = '') : ?Application_EventHandler_EventableEvent
+    protected function triggerEvent(string $eventName, array $args=array(), string $eventClass = '') : ?Application_EventHandler_EventableEvent
     {
         if($this->eventsDisabled === true)
         {
             return null;
         }
 
-        $this->logEventable('Triggering event.', $eventName);
+        $eventNameNS = $this->namespaceEventName($eventName);
+
+        if($this->isEventIgnored($eventName))
+        {
+            $this->logEventable('Event is on the ignore list, skipping.', $eventNameNS);
+            return null;
+        }
+
+        $this->logEventable('Triggering event.', $eventNameNS);
 
         if (!$this->hasEventListeners($eventName))
         {
-            $this->logEventable('Ignoring event, no listeners added.', $eventName);
+            $this->logEventable('Ignoring event, no listeners added.', $eventNameNS);
             return null;
         }
 
@@ -138,9 +156,9 @@ trait Application_Traits_Eventable
 
         $event->startTrigger();
 
-        $this->logEventable(sprintf('Trigger started, processing [%s] listeners.', $this->countEventListeners($eventName)), $eventName);
+        $this->logEventable(sprintf('Trigger started, processing [%s] listeners.', $this->countEventListeners($eventName)), $eventNameNS);
 
-        foreach ($this->eventListeners[$eventName] as $listener)
+        foreach ($this->getEventListeners($eventName) as $listener)
         {
             $event->selectListener($listener);
 
@@ -154,7 +172,7 @@ trait Application_Traits_Eventable
                     $listener->getID(),
                     $listener->getCallbackAsString()
                 ),
-                $eventName
+                $eventNameNS
             );
 
             call_user_func_array($callback, $args);
@@ -162,7 +180,7 @@ trait Application_Traits_Eventable
             if ($event->isCancelled())
             {
                 $this->logEvent(
-                    $eventName,
+                    $eventNameNS,
                     'Listener [#%s] | CANCEL | Callback [%s].',
                     $listener->getID(),
                     $listener->getCallbackAsString()
@@ -173,9 +191,28 @@ trait Application_Traits_Eventable
 
         $event->stopTrigger();
 
-        $this->logEventable('Trigger ended.', $eventName);
+        $this->logEventable('Trigger ended.', $eventNameNS);
 
         return $event;
+    }
+
+    protected function namespaceEventName(string $eventName) : string
+    {
+        $ns = $this->getEventNamespace($eventName);
+        if(!empty($ns)) {
+            return $eventName.'@'.$ns;
+        }
+
+        return $eventName;
+    }
+
+    /**
+     * @param string $eventName
+     * @return string|null
+     */
+    public function getEventNamespace(string $eventName) : ?string
+    {
+        return null;
     }
 
     /**
@@ -210,16 +247,55 @@ trait Application_Traits_Eventable
         );
     }
 
+    public function getIgnoredEvents() : array
+    {
+        $result = array();
+        foreach($this->ignoredEvents as $eventName => $ignored) {
+            if($ignored === true) {
+                $result[] = $eventName;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return $this
+     */
+    public function ignoreEvent(string $eventName) : self
+    {
+        $this->ignoredEvents[$this->namespaceEventName($eventName)] = true;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function unIgnoreEvent(string $eventName) : self
+    {
+        $this->ignoredEvents[$this->namespaceEventName($eventName)] = false;
+        return $this;
+    }
+
+    public function isEventIgnored(string $eventName) : bool
+    {
+        $eventName = $this->namespaceEventName($eventName);
+
+        return isset($this->ignoredEvents[$eventName]) && $this->ignoredEvents[$eventName] === true;
+    }
+
     public function hasEventListeners(string $eventName) : bool
     {
-        return isset($this->eventListeners[$eventName]) && !empty($this->eventListeners[$eventName]);
+        return !empty($this->eventListeners[$this->namespaceEventName($eventName)]);
     }
 
     public function countEventListeners(string $eventName) : int
     {
-        if (isset($this->eventListeners[$eventName]))
+        $eventNameNS = $this->namespaceEventName($eventName);
+
+        if(isset($this->eventListeners[$eventNameNS]))
         {
-            return count($this->eventListeners[$eventName]);
+            return count($this->eventListeners[$eventNameNS]);
         }
 
         return 0;
@@ -231,16 +307,13 @@ trait Application_Traits_Eventable
      */
     public function getEventListeners(string $eventName) : array
     {
-        if (isset($this->eventListeners[$eventName]))
-        {
-            return $this->eventListeners[$eventName];
-        }
-
-        return array();
+        return $this->eventListeners[$this->namespaceEventName($eventName)] ?? array();
     }
 
     public function clearEventListeners(string $eventName) : void
     {
+        $eventName = $this->namespaceEventName($eventName);
+
         if (isset($this->eventListeners[$eventName]))
         {
             unset($this->eventListeners[$eventName]);

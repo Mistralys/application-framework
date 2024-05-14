@@ -26,12 +26,19 @@ class Application_EventHandler_EventableListener extends Application_EventHandle
      * @var object
      */
     protected $subject;
+    protected string $eventNameNS;
 
-    public function __construct(int $id, string $eventName, $callback, object $subject)
+    public function __construct(int $id, string $eventName, $callback, object $subject, string $eventNameNS)
     {
         parent::__construct($id, $eventName, $callback, get_class($subject));
 
+        $this->eventNameNS = $eventNameNS;
         $this->subject = $subject;
+    }
+
+    public function getEventNameNS() : string
+    {
+        return $this->eventNameNS;
     }
 
     /**

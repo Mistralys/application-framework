@@ -67,4 +67,30 @@ interface Application_Interfaces_Eventable extends Application_Interfaces_Loggab
     public function clearEventListeners(string $eventName) : void;
 
     public function clearAllEventListeners() : void;
+
+    public function isEventIgnored(string $eventName) : bool;
+
+    /**
+     * Sets an event to be ignored: If triggered, it will not
+     * be processed by the event handler.
+     *
+     * @param string $eventName
+     * @return $this
+     */
+    public function ignoreEvent(string $eventName) : self;
+
+    /**
+     * Removes an event from the list of ignored events.
+     *
+     * NOTE: Has no effect if the event is not currently ignored.
+     *
+     * @param string $eventName
+     * @return $this
+     */
+    public function unIgnoreEvent(string $eventName) : self;
+
+    /**
+     * @return string[]
+     */
+    public function getIgnoredEvents() : array;
 }
