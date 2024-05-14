@@ -39,6 +39,15 @@
 - Revisionables: Added `isPartChanged()`.
 - Revisionables: Fixed some discrepancies in the collection interface inheritances.
 - Revisionables: Added `getPrimaryRequestName()`. Request now uses both primary and secondary names.
+- Revisionables: Fully integrated the Eventable trait.
+- Revisionables: Revision-specific events are now handled using event namespaces.
+- Revisionables: Added an event class for the `BeforeSave` event.
+- Revisionables: Added the `TransactionEnded` event.
+- Revisionables: Fixed transaction without changes not removing the copied revision.
+- Revisionables: Fixed transaction rollback committing the DB transaction even when not managed.
+- Eventables: Added the event namespace concept.
+- Eventables: Added the overridable `getEventNamespace()` method.
+- Eventables: Added the possibility to ignore events.
 - Connectors: `createConnector()` now accepts class names.
 - Connectors: `createMethod()` now accepts class names.
 - Connectors: Namespaced some classes.
@@ -64,6 +73,8 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 - Revisionables: Renamed and namespaced interfaces.
 - Revisionables: Strict typing for all interface methods.
 - Renderables: Added strict `string` return type for `_render()` methods.
+- Eventables: Removed the `addEventHandler()` method (use `addEventListener()` instead).
+- Eventables: Listener registration methods (for example `onBeforeSave()`) now return a listener instance.
 - Users: Changed the way right groups are registered. User classes must now implement a new method to do so.
 
 ### Deprecations
