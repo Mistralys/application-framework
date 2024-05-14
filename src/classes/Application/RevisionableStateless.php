@@ -9,10 +9,14 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\Event\BeforeSaveEvent;
+use Application\Revisionable\Event\RevisionAddedEvent;
+use Application\Revisionable\Event\TransactionEndedEvent;
 use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionableStorageException;
+use Application\Revisionable\TransactionInfo;
 use Application\Traits\RevisionDependentTrait;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
@@ -308,9 +312,9 @@ abstract class Application_RevisionableStateless
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
-        $this->log('Transaction | Starting new transaction.');
-        $this->log('Transaction | Author: [#%s %s]', $newOwnerID, $newOwnerName);
-        $this->log('Transaction | Comments: [%s]', $comments);
+        $this->log('Transaction | START | Starting new transaction.');
+
+        $this->logRevisionData();
 
         if ($this->transactionActive) {
             throw new RevisionableException(
@@ -322,10 +326,12 @@ abstract class Application_RevisionableStateless
 
         $this->clearChangelogQueue();
 
-        $this->lastTransactionAddedRevision = null;
+        $this->lastTransaction = null;
         $this->transactionActive = true;
         $this->requiresNewRevision = false;
         $this->transactionSourceRevision = $this->getRevision();
+
+        $this->log('Transaction | START | Copying revision [%s] to new revision.', $this->transactionSourceRevision);
 
         $this->transactionTargetRevision = $this->revisions->addByCopy(
             $this->transactionSourceRevision,
@@ -336,7 +342,7 @@ abstract class Application_RevisionableStateless
         
         $this->revisions->selectRevision($this->transactionTargetRevision);
 
-        $this->log('Transaction | Transaction initialized.');
+        $this->log('Transaction | START | Transaction initialized.');
 
         return $this;
     }
@@ -376,7 +382,7 @@ abstract class Application_RevisionableStateless
      */
     public function endTransaction() : bool
     {
-        $this->log('Transaction | Ending the transaction.');
+        $this->log('Transaction | END | Ending the transaction.');
 
         if(!$this->transactionActive) {
             throw new RevisionableException(
@@ -388,46 +394,117 @@ abstract class Application_RevisionableStateless
 
         if(!$this->requiresNewRevision)
         {
-            $this->log('Transaction | No new revision required, ignoring.');
-
-            $this->requireEmptyChangelogQueue();
-            $this->selectRevision($this->transactionSourceRevision);
-            $this->resetTransactionData();
-
-            return false;
+            return $this->endTransactionWithoutChanges();
         }
 
         if($this->isSimulationEnabled())
         {
-            $this->log('Transaction | Simulation enabled, not committing changes.');
-
-            $this->rollBackTransaction();
-            $this->resetTransactionData();
-
-            return false;
+            return $this->endTransactionSimulation();
         }
 
-        $this->lastTransactionAddedRevision = $this->transactionTargetRevision;
+        return $this->endTransactionWithChanges();
+    }
 
-        $this->log('Transaction | Saving data.');
+    private function endTransactionWithChanges() : bool
+    {
+        $this->log('Transaction | END | Saving data.');
         $this->save();
 
-        $this->log('Transaction | Committing changelog');
+        $this->log('Transaction | END | Committing changelog');
         $this->commitChangelog();
 
-        $this->log('Transaction | Done.');
-        
-        $this->log('Transaction | Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName());
-        $this->log('Transaction | Pretty revision: [%s].', $this->getPrettyRevision());
-        $this->log('Transaction | Comments: [%s].', $this->getRevisionComments());
-        $this->log('Transaction | Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s'));
+        $this->log('Transaction | END | Done.');
+
+        $this->logRevisionData();
+
+        $this->lastTransaction = new TransactionInfo(
+            $this,
+            TransactionInfo::TRANSACTION_CHANGED,
+            $this->isSimulationEnabled(),
+            (int)$this->transactionSourceRevision,
+            $this->transactionTargetRevision
+        );
 
         $this->resetTransactionData();
 
-        $this->triggerEvent('TransactionEnded');
+        $this->triggerTransactionEnded($this->lastTransaction);
 
         return true;
     }
+
+    private function endTransactionWithoutChanges() : bool
+    {
+        $this->log('Transaction | END | No changes made, ignoring.');
+
+        $this->requireEmptyChangelogQueue();
+
+        $this->revisions->removeRevision($this->transactionTargetRevision);
+        $this->selectRevision($this->transactionSourceRevision);
+
+        $this->lastTransaction = new TransactionInfo(
+            $this,
+            TransactionInfo::TRANSACTION_UNCHANGED,
+            $this->isSimulationEnabled(),
+            $this->transactionSourceRevision,
+            null
+        );
+
+        $this->resetTransactionData();
+
+        $this->triggerTransactionEnded($this->lastTransaction);
+        return false;
+    }
+
+    private function endTransactionSimulation() : bool
+    {
+        $this->log('Transaction | END | Simulation enabled, rolling back.');
+
+        $this->rollBackTransaction();
+
+        return false;
+    }
+
+    /**
+     * Rolls back any new revision added by a transaction. Has no
+     * effect if the transaction did not add a new revision.
+     *
+     * @return $this
+     */
+    public function rollBackTransaction() : self
+    {
+        if (!$this->transactionActive) {
+            return $this;
+        }
+
+        $this->log('Transaction | ROLLBACK | Rolling back the transaction.');
+
+        $this->revisions->removeRevision((int)$this->transactionTargetRevision);
+        $this->revisions->selectRevision((int)$this->transactionSourceRevision);
+
+        $this->lastTransaction = new TransactionInfo(
+            $this,
+            TransactionInfo::TRANSACTION_ROLLED_BACK,
+            $this->isSimulationEnabled(),
+            (int)$this->transactionSourceRevision,
+            null
+        );
+
+        $this->resetTransactionData();
+
+        $this->triggerTransactionEnded($this->lastTransaction);
+
+        return $this;
+    }
+
+    protected function logRevisionData() : void
+    {
+        $this->log('Revision | Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName());
+        $this->log('Revision | Pretty revision: [%s].', $this->getPrettyRevision());
+        $this->log('Revision | Comments: [%s].', $this->getRevisionComments());
+        $this->log('Revision | Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s'));
+    }
+
+    protected ?TransactionInfo $lastTransaction = null;
 
     public function hasLastTransactionAddedARevision() : bool
     {
@@ -444,7 +521,11 @@ abstract class Application_RevisionableStateless
             );
         }
 
-        return $this->lastTransactionAddedRevision;
+        if(isset($this->lastTransaction)) {
+            return $this->lastTransaction->getNewRevision();
+        }
+
+        return null;
     }
 
     protected function resetTransactionData() : void
@@ -491,28 +572,6 @@ abstract class Application_RevisionableStateless
             ),
             RevisionableStatelessInterface::ERROR_TRANSACTION_CHANGELOG_NOT_EMPTY
         );
-    }
-
-    /**
-     * Rolls back any new revision added by a transaction. Has no
-     * effect if the transaction did not add a new revision.
-     *
-     * @return $this
-     */
-    public function rollBackTransaction() : self
-    {
-        if (!$this->transactionActive) {
-            return $this;
-        }
-
-        $this->log('Rolling back the transaction.');
-
-        $this->revisions->removeRevision($this->lastTransactionAddedRevision);
-        $this->lastTransactionAddedRevision = null;
-        $this->transactionActive = false;
-        $this->revisions->selectLatest();
-
-        return $this;
     }
 
     /**
@@ -640,7 +699,11 @@ abstract class Application_RevisionableStateless
     {
         $this->requireTransaction('Cannot save without starting a transaction.');
 
-        $this->triggerEvent(self::EVENT_BEFORE_SAVE);
+        $this->triggerEvent(
+            self::EVENT_BEFORE_SAVE,
+            array($this),
+            BeforeSaveEvent::class
+        );
 
         $this->log(
             'Saving | Has changes: [%s]',
@@ -1125,31 +1188,24 @@ abstract class Application_RevisionableStateless
 
     // region: Event handling
 
-    public const REVISION_KEY_EVENT_HANDLERS = '__eventHandlers';
+    public const EVENT_TRANSACTION_ENDED = 'TransactionEnded';
     public const EVENT_BEFORE_SAVE = 'BeforeSave';
     public const EVENT_REVISION_ADDED = 'RevisionAdded';
-    public const REVISION_KEY_IGNORED_EVENTS = '__ignored_events';
 
     /**
      * @var array<string,true>
      */
     protected static array $revisionAgnosticEvents = array();
 
-    /**
-     * @var array<string,bool>
-     */
-    protected array $agnosticIgnores = array();
-
     private function initRevisionEvents() : void
     {
         self::registerRevisionAgnosticEvent(self::EVENT_BEFORE_SAVE);
         self::registerRevisionAgnosticEvent(self::EVENT_REVISION_ADDED);
-
-        $callback = array($this, 'callback_revisionAdded');
+        self::registerRevisionAgnosticEvent(self::EVENT_TRANSACTION_ENDED);
 
         $this->revisions->onRevisionAdded(NamedClosure::fromClosure(
-            Closure::fromCallable($callback),
-            ConvertHelper::callback2string($callback)
+            Closure::fromCallable(array($this, 'callback_revisionAdded')),
+            array($this, 'callback_revisionAdded')
         ));
 
         $this->_registerEvents();
@@ -1157,20 +1213,18 @@ abstract class Application_RevisionableStateless
 
     private function callback_revisionAdded(Application_RevisionStorage_Event_RevisionAdded $event) : void
     {
-        $event = new Application_Revisionable_Event_RevisionAdded($this, $event);
-
         $this->triggerEvent(
             self::EVENT_REVISION_ADDED,
-            array($event)
+            array($this, $event),
+            RevisionAddedEvent::class
         );
     }
 
     abstract protected function _registerEvents() : void;
 
     /**
-     * Registers the name of an event that is not revision-
-     * specific, and can be triggered regardless of the
-     * currently selected revision.
+     * Registers the name of an event that is not revision-specific,
+     * and can be triggered regardless of the currently selected revision.
      *
      * @param string $name
      */
@@ -1180,7 +1234,7 @@ abstract class Application_RevisionableStateless
     }
 
     /**
-     * Checks if the specified event name is not revision specific.
+     * Checks if the specified event name is not revision-specific.
      *
      * @param string $name
      * @return bool
@@ -1190,114 +1244,22 @@ abstract class Application_RevisionableStateless
         return isset(self::$revisionAgnosticEvents[$name]);
     }
 
-    /**
-     * @param string $name
-     * @param array $args Indexed array of arguments for the callback function/method.
-     */
-    protected function triggerEvent(string $name, array $args=array()) : void
+    protected function triggerTransactionEnded(TransactionInfo $info) : void
     {
-        $handlers = $this->getRevisionEventHandlers($name);
-
-        if(!isset($handlers[$name]))
-        {
-            $this->log(sprintf('Event [%s] | Ignoring, no listeners found.', $name));
-            return;
-        }
-
-        if($this->isEventIgnored($name))
-        {
-            $this->log(sprintf('Event [%s] | On the ignore list, ignoring.', $name));
-            return;
-        }
-
-        $this->log(sprintf('Event [%s] | Listeners found, calling them...', $name));
-
-        if(!is_array($args))
-        {
-            $args = array($args);
-        }
-
-        array_unshift($args, $this);
-
-        foreach($handlers[$name] as $handler)
-        {
-            call_user_func_array($handler, $args);
-        }
-
-        $this->log(sprintf('Event [%s] | Done', $name));
+        $this->triggerEvent(
+            self::EVENT_TRANSACTION_ENDED,
+            array($info),
+            TransactionEndedEvent::class
+        );
     }
 
-    /**
-     * @return array<string,bool>
-     */
-    private function getRevisionIgnoredEvents(string $name) : array
+    public function getEventNamespace(string $eventName) : ?string
     {
-        if($this->isEventRevisionAgnostic($name))
-        {
-            return $this->agnosticIgnores;
+        if(!$this->isEventRevisionAgnostic($eventName)) {
+            return (string)$this->getRevision();
         }
 
-        $events = $this->revisions->getKey(self::REVISION_KEY_IGNORED_EVENTS);
-        if(is_array($events)) {
-            return $events;
-        }
-
-        return array();
-    }
-
-    /**
-     * @param array<string,bool> $eventNames
-     * @return $this
-     * @throws Application_Exception
-     */
-    private function setRevisionIgnoredEvents(string $targetEvent, array $eventNames)
-    {
-        if($this->isEventRevisionAgnostic($targetEvent))
-        {
-            $this->agnosticIgnores = $eventNames;
-            return $this;
-        }
-
-        $this->revisions->setKey(self::REVISION_KEY_IGNORED_EVENTS, $eventNames);
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     * @throws Application_Exception
-     */
-    protected function ignoreEvent(string $name)
-    {
-        $events = $this->getRevisionIgnoredEvents($name);
-        $events[$name] = true;
-
-        $this->setRevisionIgnoredEvents($name, $events);
-
-        return $this;
-    }
-
-    /**
-     * @param string $name
-     * @return $this
-     * @throws Application_Exception
-     */
-    protected function unignoreEvent(string $name)
-    {
-        $events = $this->getRevisionIgnoredEvents($name);
-
-        if(isset($events[$name])) {
-            unset($events[$name]);
-        }
-
-        return $this->setRevisionIgnoredEvents($name, $events);
-    }
-
-    public function isEventIgnored(string $name) : bool
-    {
-        $events = $this->getRevisionIgnoredEvents($name);
-
-        return isset($events[$name]);
+        return null;
     }
 
     /**
@@ -1308,12 +1270,11 @@ abstract class Application_RevisionableStateless
      * - The revisionable instance {@see RevisionableStatelessInterface}.
      *
      * @param callable $callback
-     * @return $this
-     * @throws Application_Exception
+     * @return Application_EventHandler_EventableListener
      */
-    public function onBeforeSave(callable $callback)
+    public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener
     {
-        return $this->addEventHandler(self::EVENT_BEFORE_SAVE, $callback);
+        return $this->addEventListener(self::EVENT_BEFORE_SAVE, $callback);
     }
 
     /**
@@ -1322,83 +1283,31 @@ abstract class Application_RevisionableStateless
      * The callback gets the following parameters:
      *
      * 1) The revisionable instance {@see RevisionableStatelessInterface}.
-     * 2) The event instance {@see Application_Revisionable_Event_RevisionAdded}.
+     * 2) The event instance {@see RevisionAddedEvent}.
      *
      * @param callable $callback
-     * @return $this
-     * @throws Application_Exception
-     * @see Application_Revisionable_Event_RevisionAdded
+     * @return Application_EventHandler_EventableListener
+     * @see RevisionAddedEvent
      */
-    public function onRevisionAdded(callable $callback)
+    public function onRevisionAdded(callable $callback) : Application_EventHandler_EventableListener
     {
-        return $this->addEventHandler(self::EVENT_REVISION_ADDED, $callback);
+        return $this->addEventListener(self::EVENT_REVISION_ADDED, $callback);
     }
 
     /**
-     * Adds an event handler for the specified event. The callback
-     * always gets the revisionable instance as first parameter,
-     * and any additional custom event parameters afterwards.
+     * Adds a callback for when a revisionable change transaction has ended.
      *
-     * @param string $eventName
+     * The callback gets the following parameters:
+     *
+     * 1) The revisionable instance {@see RevisionableStatelessInterface}.
+     * 2) The event instance {@see Application_Revisionable_Event_TransactionEnded}.
+     *
      * @param callable $callback
-     * @throws Application_Exception
-     * @return $this
+     * @return Application_EventHandler_EventableListener
      */
-    protected function addEventHandler(string $eventName, callable $callback)
+    public function onTransactionEnded(callable $callback) : Application_EventHandler_EventableListener
     {
-        $handlers = $this->getRevisionEventHandlers($eventName);
-
-        if(!isset($handlers[$eventName])) {
-            $handlers[$eventName] = array();
-        }
-
-        $this->log(sprintf('Event [%s] | Added a handler.', $eventName));
-
-        $handlers[$eventName][] = $callback;
-
-        return $this->setRevisionEventHandlers($eventName, $handlers);
-    }
-
-    /**
-     * @var array<string,callable[]>
-     */
-    protected $revisionAgnosticHandlers = array();
-
-    /**
-     * @return array<string,callable[]>
-     */
-    private function getRevisionEventHandlers(string $eventName) : array
-    {
-        if($this->isEventRevisionAgnostic($eventName))
-        {
-            return $this->revisionAgnosticHandlers;
-        }
-
-        $handlers = $this->revisions->getKey(self::REVISION_KEY_EVENT_HANDLERS);
-
-        if(!empty($handlers)) {
-            return $handlers;
-        }
-
-        return array();
-    }
-
-    /**
-     * @param string $eventName
-     * @param array<string,callable[]> $handlers
-     * @return $this
-     * @throws Application_Exception
-     */
-    private function setRevisionEventHandlers(string $eventName, array $handlers)
-    {
-        if($this->isEventRevisionAgnostic($eventName))
-        {
-            $this->revisionAgnosticHandlers = $handlers;
-            return $this;
-        }
-
-        $this->revisions->setKey(self::REVISION_KEY_EVENT_HANDLERS, $handlers);
-        return $this;
+        return $this->addEventListener(self::EVENT_TRANSACTION_ENDED, $callback);
     }
 
     // endregion
