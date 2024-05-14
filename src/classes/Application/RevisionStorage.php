@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
 use Application\RevisionStorage\Copy\BaseRevisionCopy;
+use Application\RevisionStorage\RevisionStorageException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -47,6 +48,8 @@ abstract class Application_RevisionStorage
     public const ERROR_REVISION_REQUIRED = 15557008;
     public const ERROR_NO_REVISION_REMEMBERED = 15557009;
     public const ERROR_KEY_REVISION_UNKNOWN = 15557010;
+    public const ERROR_CANNOT_REMOVE_PRIOR_REVISION = 15557011;
+    public const ERROR_CANNOT_REMOVE_LAST_REVISION = 15557012;
 
     public const KEY_OWNER_ID = '__ownerID';
     public const KEY_OWNER_NAME = '__ownerName';
@@ -559,7 +562,23 @@ abstract class Application_RevisionStorage
         $this->log(sprintf('Removing revision [%1$s].', $number));
         
         if ($number !== $this->getLatestRevision()) {
-            throw new InvalidArgumentException('Cannot remove a revision prior to the latest revision.');
+            throw new RevisionStorageException(
+                'Cannot remove a revision prior to the latest revision.',
+                sprintf(
+                    'Tried removing revision [%s], but the latest revision is [%s].',
+                    $number,
+                    $this->getLatestRevision()
+                ),
+                self::ERROR_CANNOT_REMOVE_PRIOR_REVISION
+            );
+        }
+
+        if($this->countRevisions() === 1) {
+            throw new RevisionStorageException(
+                'Cannot remove the last available revision.',
+                'Tried removing the last available revision, which is not allowed.',
+                self::ERROR_CANNOT_REMOVE_LAST_REVISION
+            );
         }
 
         $this->_removeRevision($number);
