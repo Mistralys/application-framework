@@ -17,6 +17,8 @@ abstract class Application_RevisionableCollection
     RevisionableCollectionInterface
 {
     use Application_Traits_Loggable;
+    use Application_Traits_Eventable;
+    use Application_Traits_Disposable;
 
     /**
      * @deprecated Use {@see Application_RevisionableCollection::STUB_OBJECT_ID} instead.
