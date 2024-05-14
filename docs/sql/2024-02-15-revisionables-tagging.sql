@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `media_tags` (
     `media_id` int(11) UNSIGNED NOT NULL,
     `tag_id` int(11) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='Connects media documents with tags.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Connects media documents with tags.';
 
 -- --------------------------------------------------------
 
@@ -28,7 +28,7 @@ CREATE TABLE `media_tags` (
 
 CREATE TABLE `revisionables` (
     `revisionable_id` int(11) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -44,7 +44,7 @@ CREATE TABLE `revisionables_changelog` (
     `changelog_author` int(11) UNSIGNED NOT NULL,
     `changelog_type` varchar(160) NOT NULL,
     `changelog_data` mediumtext NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -55,7 +55,7 @@ CREATE TABLE `revisionables_changelog` (
 CREATE TABLE `revisionables_current_revisions` (
     `revisionable_id` int(11) UNSIGNED NOT NULL,
     `current_revision` int(11) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -74,7 +74,7 @@ CREATE TABLE `revisionables_revisions` (
     `author` int(11) UNSIGNED NOT NULL,
     `comments` text NOT NULL,
     `structural` varchar(400) NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -87,7 +87,7 @@ CREATE TABLE `revisionables_revisions_data` (
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
     `data_key` varchar(300) NOT NULL,
     `data_value` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -102,7 +102,7 @@ CREATE TABLE `tags` (
     `sort_type` varchar(60) NOT NULL,
     `sort_weight` int(11) NOT NULL DEFAULT 0,
     `weight` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -113,7 +113,7 @@ CREATE TABLE `tags` (
 CREATE TABLE `tags_registry` (
     `tag_id` int(11) UNSIGNED NOT NULL,
     `registry_key` varchar(180) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -125,7 +125,31 @@ CREATE TABLE `tags_translations` (
     `tag_id` int(11) UNSIGNED NOT NULL,
     `locale_name` varchar(5) NOT NULL,
     `locale_label` varchar(160) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci COMMENT='Stores tag label translations.';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores tag label translations.';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `test_records`
+--
+
+CREATE TABLE `test_records` (
+    `record_id` int(11) UNSIGNED NOT NULL,
+    `label` varchar(180) NOT NULL,
+    `alias` varchar(160) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `test_records_data`
+--
+
+CREATE TABLE `test_records_data` (
+    `record_id` int(11) UNSIGNED NOT NULL,
+    `name` varchar(250) NOT NULL,
+    `value` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -136,7 +160,7 @@ CREATE TABLE `tags_translations` (
 CREATE TABLE `test_records_tags` (
     `record_id` int(11) UNSIGNED NOT NULL,
     `tag_id` int(11) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
@@ -223,6 +247,22 @@ ALTER TABLE `tags_translations`
     ADD KEY `locale_label` (`locale_label`);
 
 --
+-- Indexes for table `test_records`
+--
+ALTER TABLE `test_records`
+    ADD PRIMARY KEY (`record_id`),
+    ADD KEY `label` (`label`),
+    ADD KEY `alias` (`alias`);
+
+--
+-- Indexes for table `test_records_data`
+--
+ALTER TABLE `test_records_data`
+    ADD PRIMARY KEY (`record_id`,`name`),
+    ADD KEY `record_id` (`record_id`),
+    ADD KEY `name` (`name`);
+
+--
 -- Indexes for table `test_records_tags`
 --
 ALTER TABLE `test_records_tags`
@@ -257,6 +297,12 @@ ALTER TABLE `revisionables_revisions`
 --
 ALTER TABLE `tags`
     MODIFY `tag_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `test_records`
+--
+ALTER TABLE `test_records`
+    MODIFY `record_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables
@@ -305,9 +351,16 @@ ALTER TABLE `tags_translations`
     ADD CONSTRAINT `tags_translations_ibfk_2` FOREIGN KEY (`locale_name`) REFERENCES `locales_application` (`locale_name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `test_records_data`
+--
+ALTER TABLE `test_records_data`
+    ADD CONSTRAINT `test_records_data_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `test_records` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `test_records_tags`
 --
 ALTER TABLE `test_records_tags`
     ADD CONSTRAINT `test_records_tags_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `test_records` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `test_records_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
 COMMIT;
