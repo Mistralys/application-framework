@@ -83,6 +83,7 @@ class StubDBRevisionStorage extends BaseDBCollectionStorage
 
     protected function _removeRevision(int $number): self
     {
+        unset($this->data[$number]);
         return $this;
     }
 
