@@ -28,22 +28,15 @@ class Application_EventHandler
    /**
     * @var array<int,Application_EventHandler_Listener>
     */
-    protected static $listeners = array();
+    protected static array $listeners = array();
 
    /**
     * @var array<string,array<int,int>>
     */
-    protected static $events = array();
+    protected static array $events = array();
 
-   /**
-    * @var integer
-    */
-    protected static $listenerIDCounter = 0;
-
-    /**
-     * @var Application_EventHandler_OfflineEvents|NULL
-     */
-    private static $offlineEvents;
+    protected static int $listenerIDCounter = 0;
+    private static ?Application_EventHandler_OfflineEvents $offlineEvents = null;
 
     /**
     * Adds a callback to the specified event.
