@@ -501,6 +501,11 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         foreach ($areas as $aid => $name)
         {
+            if(class_exists($name))
+            {
+                $name = getClassTypeName($name);
+            }
+
             if (!isset($this->areaIndex[$aid]))
             {
                 $this->areaIndex[$aid] = $name;
