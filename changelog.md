@@ -1,4 +1,20 @@
-## v4.0.0 - Tagging and Revisionables update (DB-update L)
+## v4.0.1 - Session handling update (Breaking-XS)
+- Session: Added event handling.
+- Session: Added `onSessionStarted()`.
+- Session: Added `onUserAuthenticated()`.
+- Session: Added `onBeforeLogOut()`.
+- Session: Fixed logging out not having any effect on the session.
+- Users: Fixed user login dates not being correctly registered.
+- OfflineEvents: Added the system event `SessionInstantiated`.
+- OfflineEvents: More robust event and listener loading.
+- OfflineEvents: Loading listeners and events from the framework and application.
+- AppFactory: Added `createOfflineEvents()`.
+
+### Breaking changes
+- Session: The `start()` method has been renamed to `_start()`. 
+  Any custom session implementations must be updated accordingly.
+
+## v4.0.0 - Tagging and Revisionables update (Breaking-XL, DB-update L)
 - Tags: Added the tagging management.
 - Media: Documents are now taggable.
 - Tests: The Test DB collection is now taggable.
@@ -67,7 +83,7 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 > the database update, as long as the tagging admin area is not enabled 
 > in the application driver.
 
-### Breaking changes (M)
+### Breaking changes (XL)
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
 - Revisionables: Renamed all `revdataXXX`-methods to make it easier to understand.
 - Revisionables: Renamed and namespaced interfaces.
