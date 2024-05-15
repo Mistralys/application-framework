@@ -90,6 +90,9 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        // start so we can capture the page's content
+        ob_start();
+
         self::init();
 
         self::$bootClass = $class;
@@ -111,32 +114,26 @@ class Application_Bootstrap
                 );
             }
             
-            // start so we can capture the page's content
-            ob_start();
-            
             $screen->boot();
             
             ob_end_flush();
         }
         catch(Exception $e)
         {
-            // Fetch the content generated up to this point,
-            // so we can use it and avoid text output outside 
-            // the error page.
-            $output = ob_get_clean();
-
             // Convert non-framework exceptions, so they can
             // be logged in the error log.
             $e = self::convertException($e);
 
             if($displayException)
             {
-                displayError($e, (string)$output);
+                displayError($e);
             }
             else 
             {
                 throw $e;
             }
+
+            ob_end_clean();
         }
     }
 
