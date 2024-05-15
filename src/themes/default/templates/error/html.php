@@ -57,7 +57,7 @@ $themeURL = $error->getThemeURL();
 				{
                     $sentContent = $error->getSentContent();
                     if(empty($sentContent)) {
-                        $sentContent = '<i style="color:#aaa">(no content sent)</i>';
+                        $sentContent = '(no content sent)';
                     }
 
                     ?>
@@ -67,7 +67,6 @@ $themeURL = $error->getThemeURL();
                         <h4 class="errorpage-header">Standard output</h4>
                         <p>The following content has been sent to standard output up to this point:</p>
                         <pre class="errorpage-sent-content"><?php echo htmlspecialchars($sentContent) ?></pre>
-
                     <?php
 
                     if($error->hasPreviousException())
