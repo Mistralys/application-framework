@@ -264,11 +264,13 @@ function isContentTypeHTML()
  * be switched to plain text.
  *
  * @param Throwable $e
- * @param string $output The output buffer up to this point, if available. 
+ * @param string|NULL $output The output buffer up to this point, if available.
  */
-function displayError(Throwable $e, string $output='') : void
+function displayError(Throwable $e, ?string $output=null) : void
 {
-    ob_clean();
+    if($output === null) {
+        $output = ob_get_clean();
+    }
 
     $develinfo = false;
 
