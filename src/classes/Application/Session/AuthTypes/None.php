@@ -29,7 +29,7 @@ trait Application_Session_AuthTypes_None
     /**
      * @var string[]
      */
-    private $fixedRights = array(
+    private array $fixedRights = array(
         Application_User::RIGHT_LOGIN,
         Application_User::RIGHT_DEVELOPER,
         Application_User::RIGHT_TRANSLATE_UI
@@ -54,11 +54,6 @@ trait Application_Session_AuthTypes_None
         );
     }
 
-    protected function getForeignID(Profile $profile): string
-    {
-        return '__none';
-    }
-
     public function isRegistrationEnabled(): bool
     {
         return false;
@@ -69,11 +64,13 @@ trait Application_Session_AuthTypes_None
         return $this->fixedRights;
     }
 
-    public function getCurrentRights() : string
+    public function fetchSimulatedRights() : array
     {
-        return implode(
-            ',',
-            $this->fixedRights
-        );
+        return $this->fixedRights;
+    }
+
+    public function getRightsString() : string
+    {
+        return implode(',', $this->fixedRights);
     }
 }

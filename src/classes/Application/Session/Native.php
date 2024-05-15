@@ -27,7 +27,7 @@ abstract class Application_Session_Native extends Application_Session_Base
      */
     private static array $options = array();
 
-    protected function start(): void
+    protected function _start(): void
     {
         $this->log('Starting session.');
 
