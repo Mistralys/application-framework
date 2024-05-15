@@ -70,9 +70,9 @@ abstract class Application_User
     public const RIGHT_DEVELOPER = 'Developer';
 
     /**
-    * Stores user right definitions.
-    * @var array
-    */
+     * Stores user right definitions.
+     * @var string[] List of right names.
+     */
     protected array $rights = array();
 
    /**
@@ -661,14 +661,14 @@ abstract class Application_User
 
     /**
      * This should be called when the user has been successfully logged in.
-     * It manages the statistics that are kept by user, like the amount of
-     * times they logged in.
+     * It manages the statistics that are kept on a per-user basis,
+     * like the number of times they logged in.
      *
      * @param DateTime|null $loginTime
      * @return $this
      * @throws Exception
      */
-    public final function handleLoggedIn(?DateTime $loginTime=null)
+    final public function handleLoggedIn(?DateTime $loginTime=null) : self
     {
         if($loginTime === null)
         {
@@ -724,7 +724,7 @@ abstract class Application_User
 
     /**
      * Sets the user's rights.
-     * @param string|array $rights Comma-separated rights list, or indexed array with right names.
+     * @param string|string[] $rights Comma-separated rights list, or indexed array with right names.
      */
     public function setRights($rights) : void
     {
@@ -732,8 +732,7 @@ abstract class Application_User
 
         if(is_string($rights))
         {
-            $result = explode(',', $rights);
-            array_map('trim', $result);
+            $result = ConvertHelper::explodeTrim(',', $rights);
         }
         else if(is_array($rights))
         {
@@ -743,7 +742,7 @@ abstract class Application_User
         $this->rights = $result;
     }
 
-    public function hasRight($rightName) : bool
+    public function hasRight(string $rightName) : bool
     {
         return in_array($rightName, $this->getRights());
     }
