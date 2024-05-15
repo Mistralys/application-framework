@@ -9,7 +9,10 @@
 - OfflineEvents: More robust event and listener loading.
 - OfflineEvents: Loading listeners and events from the framework and application.
 - AppFactory: Added `createOfflineEvents()`.
+- FilterSettings: Fixed error in `registerSearchSetting()` with default settings.
+- Driver: Added support for Area class names in `getAdminAreas()`.
 - UI: Fixed broken error page layout in some situations.
+- Core: Fixed wrong version number in the `VERSION` file.
 
 ### Breaking changes
 - Session: The `start()` method has been renamed to `_start()`. 
