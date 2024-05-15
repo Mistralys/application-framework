@@ -268,6 +268,8 @@ function isContentTypeHTML()
  */
 function displayError(Throwable $e, string $output='') : void
 {
+    ob_clean();
+
     $develinfo = false;
 
     try
