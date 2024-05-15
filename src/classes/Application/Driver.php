@@ -1169,10 +1169,10 @@ abstract class Application_Driver implements Application_Driver_Interface
     protected function configureStyleIncludes() : void
     {
         $counter = 6000;
+        $dark = $this->user->isDarkModeEnabled();
 
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-fonts.css', 'all', $counter--);
-        $this->ui->addStylesheet('ui-colors.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-dialogs.css', 'all', $counter--);
@@ -1180,14 +1180,20 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addStylesheet('ui-forms.css', 'all', $counter--);
         $this->ui->addStylesheet('ui/notepad.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-print.css', 'print', $counter--);
-        $this->ui->addStylesheet('driver.css', 'all', $counter--);
 
-        if($this->user->isDarkModeEnabled())
-        {
-            $this->ui->addStylesheet('ui/dark.css', 'all', $counter--);
-            $this->ui->addStylesheet('driver-dark.css', 'all', $counter--);
+        if($dark) {
+            $this->ui->addStylesheet('colors/dark.css', 'all', $counter--);
+        } else {
+            $this->ui->addStylesheet('colors/light.css', 'all', $counter--);
         }
 
+        $this->ui->addStylesheet('colors/colors.css', 'all', $counter--);
+
+        if($dark) {
+            $this->ui->addStylesheet('driver-dark.css', 'all', $counter--);
+        } else {
+            $this->ui->addStylesheet('driver.css', 'all', $counter--);
+        }
     }
 
     /**
