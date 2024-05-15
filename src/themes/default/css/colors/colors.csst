@@ -1,0 +1,273 @@
+/**
+ * Color definitions for the UI: Collection of CSS variables
+ * that can be used to define colors in the UI.
+ *
+ * @package User Interface
+ */
+
+:root
+{
+    --color-bg-document: var(--accent-base);
+    --color-bg-content: var(--accent-base);
+    --color-bg-inverted: var(--accent-secondary-xl);
+    --color-bg-highlight: var(--accent-secondary-xxs);
+    --color-bg-highlight-hover: var(--accent-secondary-xs);
+    --color-bg-highlight-info: var(--accent-info-xxs);
+    --color-bg-highlight-info-hover: var(--accent-info-xs);
+    --color-bg-danger: var(--accent-danger-xxs);
+    --color-bg-warning: var(--accent-warning-xxs);
+    --color-bg-warning-hover: var(--accent-warning-xs);
+    --color-bg-warning-xl: var(--accent-warning);
+    --color-bg-success: var(--accent-success-xxs);
+    --color-bg-success-xl: var(--accent-success);
+    --color-bg-code: var(--color-bg-highlight);
+    --color-bg-active: var(--accent-primary);
+    --color-border-code: var(--accent-borders-s);
+    --color-border-warning: var(--accent-warning-s);
+    --color-border-danger: var(--accent-danger);
+    --color-border-danger-xl: var(--accent-danger-xxl);
+    --color-border: var(--accent-borders);
+    --color-border-active: var(--accent-primary);
+
+    --color-text: var(--accent-text);
+    --color-text-inverted: var(--accent-text-inverted);
+    --color-text-inverted-muted: var(--accent-text-inverted-muted);
+    --color-text-muted: var(--accent-secondary-s);
+    --color-text-muted-l: var(--accent-secondary);
+    --color-text-muted-xl: var(--accent-secondary-xl);
+    --color-text-secondary: var(--accent-secondary);
+    --color-text-code: var(--accent-secondary-l);
+    --color-text-danger: var(--accent-danger);
+    --color-text-danger-hover: var(--accent-danger-xxl); /* used in dropdown menus for example */
+    --color-text-danger-xxl: var(--accent-danger-xxl);
+    --color-text-success: var(--accent-success);
+    --color-text-success-hover: var(--accent-success-s); /* used in dropdown menus for example */
+    --color-text-info: var(--accent-info);
+    --color-text-warning: var(--accent-warning);
+    --color-text-warning-xl: var(--color-text-inverted);
+    --color-text-tooltip: var(--accent-text-tooltip);
+    --color-text-developer: var(--accent-developer);
+    --color-text-developer-hover: var(--accent-developer-hover);
+
+    --color-link: var(--accent-primary);
+    --color-link-hover: var(--accent-text-link-hover);
+    --color-link-external: var(--accent-text-link-external);
+    --color-link-muted: var(--accent-inactive);
+
+    --color-rating-1star: var(--accent-rating-1star);
+    --color-rating-2star: var(--accent-rating-2star);
+    --color-rating-3star: var(--accent-rating-3star);
+    --color-rating-4star: var(--accent-rating-4star);
+    --color-rating-5star: var(--accent-rating-5star);
+
+    --color-badge-default-bg: var(--accent-inactive);
+    --color-badge-default-text: var(--color-text-inverted);
+    --color-badge-success-bg: var(--accent-success);
+    --color-badge-success-text: var(--color-text-inverted);
+    --color-badge-important-bg: var(--accent-danger);
+    --color-badge-important-text: var(--color-text-inverted);
+    --color-badge-warning-bg: var(--accent-warning);
+    --color-badge-warning-text: var(--color-text-inverted);
+    --color-badge-info-bg: var(--accent-info);
+    --color-badge-info-text: var(--color-text-inverted);
+    --color-badge-inverted-bg: var(--accent-inactive-xl);
+    --color-badge-inverted-text: var(--color-text-inverted);
+
+    --color-mainnav-bg: var(--accent-mainnav-bg);
+    --color-mainnav-shadow: var(--accent-shadow-75);
+    --color-mainnav-gradient-start: var(--accent-mainnav-gradient-start);
+    --color-mainnav-gradient-end: var(--color-mainnav-bg);
+    --color-mainnav-gradient: linear-gradient(180deg, var(--color-mainnav-gradient-start) 0%, var(--color-mainnav-gradient-end) 100%);
+    --color-mainnav-toolbar-shadow: var(--accent-shadow-25);
+    --color-mainnav-text-shadow: var(--accent-shadow);
+    --color-mainnav-text: var(--accent-mainnav-text);
+    --color-mainnav-active-text: var(--accent-mainnav-active-text);
+    --color-mainnav-active-bg: var(--accent-mainnav-active-bg);
+    --color-mainnav-active-gradient-start: var(--accent-mainnav-active-gradient-start);
+    --color-mainnav-active-gradient-end: var(--color-mainnav-active-bg);
+    --color-mainnav-active-gradient: linear-gradient(180deg, var(--color-mainnav-active-gradient-start) 0%, var(--color-mainnav-active-gradient-end) 80%);
+    --color-mainnav-active-border: var(--accent-highlight-20);
+    --color-mainnav-hover-bg: var(--accent-mainnav-hover-bg);
+    --color-mainnav-hover-text: var(--accent-mainnav-hover-text);
+    --color-mainnav-caret: var(--accent-highlight-60);
+    --color-mainnav-caret-hover: var(--accent-mainnav-hover-text);
+
+    --color-quicknav-bg: var(--accent-quicknav-bg);
+    --color-quicknav-gradient-start: var(--color-quicknav-bg);
+    --color-quicknav-gradient-end: var(--accent-quicknav-gradient-end);
+    --color-quicknav-gradient: linear-gradient(180deg, var(--color-quicknav-gradient-start) 10%, var(--color-quicknav-gradient-end) 100%);
+    --color-quicknav-text-shadow: var(--accent-quicknav-text-shadow);
+    --color-quicknav-text: var(--color-text-inverted);
+    --color-quicknav-hover-bg: var(--accent-quicknav-hover-bg);
+    --color-quicknav-active-bg: var(--accent-quicknav-active-bg);
+    --color-quicknav-active-text-shadow: var(--accent-quicknav-active-text-shadow);
+
+    --color-footer-gradient-start: var(--accent-footer-gradient-start);
+    --color-footer-gradient-end: var(--accent-footer-gradient-end);
+    --color-footer-gradient: linear-gradient(180deg, var(--color-footer-gradient-start) 30%, var(--color-footer-gradient-end) 100%);
+    --color-footer-border: var(--accent-footer-border);
+    --color-footer-shadow: var(--accent-footer-shadow);
+    --color-footer-text: var(--accent-footer-text);
+    --color-footer-separator: var(--accent-footer-separator);
+    --color-footer-column-header: var(--color-text-inverted);
+    --color-footer-link: var(--accent-footer-link);
+    --color-footer-link-hover: var(--accent-footer-link-hover);
+
+    --color-syshint-default-bg: var(--accent-syshint-default-bg);
+    --color-syshint-default-border: var(--accent-syshint-default-border);
+    --color-syshint-developer-bg: var(--accent-syshint-developer-bg);
+    --color-syshint-developer-border: var(--accent-syshint-developer-border);
+    --color-syshint-success-bg: var(--accent-syshint-success-bg);
+    --color-syshint-success-border: var(--accent-syshint-success-border);
+
+    --color-grid-bg: var(--accent-base);
+    --color-grid-row-bg-hover: var(--accent-grid-hover);
+    --color-grid-border: var(--accent-borders);
+    --color-grid-bg-sorted: var(--accent-grid-highlight);
+    --color-grid-icon-sort: var(--accent-secondary-s);
+    --color-grid-icon-sort-hover: var(--color-link-hover);
+    --color-grid-icon-sort-active: var(--color-text-warning);
+    --color-grid-properties-border: var(--color-grid-border);
+
+    --color-hseparator-top: var(--accent-hseparator-top);
+    --color-hseparator-bottom: var(--accent-hseparator-bottom);
+
+    --color-sidebar-toggler-border: var(--color-hseparator-top);
+    --color-sidebar-toggler-text: var(--accent-secondary-l);
+    --color-sidebar-toggler-bg-collapsed: var(--accent-primary);
+    --color-sidebar-toggler-text-collapsed: var(--color-text-inverted);
+
+    --color-menu-bg: var(--accent-menu-bg);
+    --color-menu-default-bg-hover: var(--accent-menu-default-bg-hover);
+    --color-menu-default-text: var(--color-text);
+    --color-menu-danger-text: var(--color-text-danger);
+    --color-menu-danger-text-hover: var(--color-text-inverted);
+    --color-menu-danger-bg-hover: var(--color-text-danger);
+    --color-menu-warning-text: var(--color-text-warning);
+    --color-menu-warning-text-hover: var(--color-text-inverted);
+    --color-menu-warning-bg-hover: var(--color-text-warning);
+    --color-menu-success-text: var(--color-text-success);
+    --color-menu-success-text-hover: var(--color-text-inverted);
+    --color-menu-developer-text: var(--color-text-developer);
+    --color-menu-developer-text-hover: var(--accent-developer-hover);
+    --color-menu-developer-bg-hover: var(--color-text-developer);
+    --color-menu-header-text: var(--color-text-secondary);
+    --color-menu-header-text-shadow: var(--accent-highlight-50);
+
+    --color-developer-gradient-a: var(--accent-developer-gradient-a);
+    --color-developer-gradient-b: var(--accent-developer-gradient-b);
+
+    --color-pills-subnav-bg: var(--accent-pills-subnav-bg);
+    --color-pills-subnav-border: var(--accent-pills-subnav-border);
+    --color-pills-bg-active: var(--accent-primary);
+    --color-pills-bg-hover: var(--accent-pills-bg-hover);
+
+    --color-steps-item-bg: var(--color-bg-content);
+    --color-steps-item-bg-hover: var(--color-bg-highlight);
+    --color-steps-item-bg-active: var(--accent-primary);
+    --color-steps-item-text: var(--color-text-muted);
+    --color-steps-item-text-enabled: var(--color-text-muted-l);
+    --color-steps-item-text-active: var(--color-text-inverted);
+    --color-steps-item-text-number-active: var(--color-text-inverted-muted);
+    --color-steps-item-number-sep: var(--color-border);
+    --color-steps-item-number-sep-active: var(--accent-highlight-50);
+
+    --color-tabs-active-bg: var(--accent-base);
+    --color-tabs-active-text: var(--color-text);
+    --color-tabs-active-border: var(--accent-borders);
+
+    --color-section-header-bg: var(--accent-section-header-bg);
+    --color-section-header-bg-hover: var(--accent-section-header-bg-hover);
+    --color-section-header-clickable: var(--color-link);
+    --color-section-header-text: var(--color-text);
+    --color-section-body-bg: var(--accent-base);
+    --color-section-form-error-text: var(--color-text-danger);
+    --color-section-form-error-bg: var(--color-section-header-bg);
+    --color-section-form-error-bg-collapsed: var(--color-bg-danger);
+
+    --color-form-element-text: var(--color-text);
+    --color-form-element-bg: var(--accent-form-element-bg);
+    --color-form-element-border: var(--accent-form-element-border);
+    --color-form-file-bg: var(--accent-form-file-bg);
+    --color-form-file-bg-hover: var(--accent-form-file-bg-hover);
+    --color-form-checkbox: auto;
+    --color-form-section-subheader-bg: var(--accent-form-section-subheader-bg);
+    --color-form-hints-separator: var(--accent-form-hints-separator);
+
+/** ----------------------------------------------------------
+     Buttons
+    ---------------------------------------------------------- **/
+
+    --color-btn-default-gradient-start: var(--accent-btn-default-gradient-start);
+    --color-btn-default-gradient-end: var(--accent-btn-default-gradient-end);
+    --color-btn-default-hover-gradient-start: var(--accent-btn-default-hover-gradient-start);
+    --color-btn-default-hover-gradient-end: var(--accent-btn-default-hover-gradient-end);
+    --color-btn-default-border-bottom: var(--accent-btn-default-border-bottom);
+    --color-btn-default-text: var(--accent-btn-default-text);
+
+    --color-btn-primary-gradient-start: var(--accent-btn-primary-gradient-start);
+    --color-btn-primary-gradient-end: var(--accent-btn-primary-gradient-end);
+    --color-btn-primary-hover-gradient-start: var(--accent-btn-primary-hover-gradient-start);
+    --color-btn-primary-hover-gradient-end: var(--accent-btn-primary-hover-gradient-end);
+    --color-btn-primary-border-bottom: var(--accent-btn-primary-border-bottom);
+    --color-btn-primary-text: var(--accent-btn-primary-text);
+
+    --color-btn-warning-gradient-start: var(--accent-btn-warning-gradient-start);
+    --color-btn-warning-gradient-end: var(--accent-btn-warning-gradient-end);
+    --color-btn-warning-hover-gradient-start: var(--accent-btn-warning-hover-gradient-start);
+    --color-btn-warning-hover-gradient-end: var(--accent-btn-warning-hover-gradient-end);
+    --color-btn-warning-border-bottom: var(--accent-btn-warning-border-bottom);
+    --color-btn-warning-text: var(--accent-btn-warning-text);
+
+    --color-btn-danger-gradient-start: var(--accent-btn-danger-gradient-start);
+    --color-btn-danger-gradient-end: var(--accent-btn-danger-gradient-end);
+    --color-btn-danger-hover-gradient-start: var(--accent-btn-danger-hover-gradient-start);
+    --color-btn-danger-hover-gradient-end: var(--accent-btn-danger-hover-gradient-end);
+    --color-btn-danger-border-bottom: var(--accent-btn-danger-border-bottom);
+    --color-btn-danger-text: var(--accent-btn-danger-text);
+
+    --color-btn-success-gradient-start: var(--accent-btn-success-gradient-start);
+    --color-btn-success-gradient-end: var(--accent-btn-success-gradient-end);
+    --color-btn-success-hover-gradient-start: var(--accent-btn-success-hover-gradient-start);
+    --color-btn-success-hover-gradient-end: var(--accent-btn-success-hover-gradient-end);
+    --color-btn-success-border-bottom: var(--accent-btn-success-border-bottom);
+    --color-btn-success-text: var(--accent-btn-success-text);
+
+    --color-btn-info-gradient-start: var(--accent-btn-info-gradient-start);
+    --color-btn-info-gradient-end: var(--accent-btn-info-gradient-end);
+    --color-btn-info-hover-gradient-start: var(--accent-btn-info-hover-gradient-start);
+    --color-btn-info-hover-gradient-end: var(--accent-btn-info-hover-gradient-end);
+    --color-btn-info-border-bottom: var(--accent-btn-info-border-bottom);
+    --color-btn-info-text: var(--accent-btn-info-text);
+
+    --color-btn-inverted-gradient-start: var(--accent-btn-inverted-gradient-start);
+    --color-btn-inverted-gradient-end: var(--accent-btn-inverted-gradient-end);
+    --color-btn-inverted-hover-gradient-start: var(--accent-btn-inverted-hover-gradient-start);
+    --color-btn-inverted-hover-gradient-end: var(--accent-btn-inverted-hover-gradient-end);
+    --color-btn-inverted-border-bottom: var(--accent-btn-inverted-border-bottom);
+    --color-btn-inverted-text: var(--accent-btn-inverted-text);
+
+    --color-btn-default-bg: linear-gradient(to bottom, var(--color-btn-default-gradient-start), var(--color-btn-default-gradient-end));
+    --color-btn-default-bg-hover: linear-gradient(to bottom, var(--color-btn-default-hover-gradient-start), var(--color-btn-default-hover-gradient-end));
+    --color-btn-default-border: var(--color-btn-default-gradient-end) var(--color-btn-default-gradient-end) var(--color-btn-default-border-bottom);
+    --color-btn-primary-bg: linear-gradient(to bottom, var(--color-btn-primary-gradient-start), var(--color-btn-primary-gradient-end));
+    --color-btn-primary-bg-hover: linear-gradient(to bottom, var(--color-btn-primary-hover-gradient-start), var(--color-btn-primary-hover-gradient-end));
+    --color-btn-primary-border: var(--color-btn-primary-gradient-end) var(--color-btn-primary-gradient-end) var(--color-btn-primary-border-bottom);
+    --color-btn-warning-bg: linear-gradient(to bottom, var(--color-btn-warning-gradient-start), var(--color-btn-warning-gradient-end));
+    --color-btn-warning-bg-hover: linear-gradient(to bottom, var(--color-btn-warning-hover-gradient-start), var(--color-btn-warning-hover-gradient-end));
+    --color-btn-warning-border: var(--color-btn-warning-gradient-end) var(--color-btn-warning-gradient-end) var(--color-btn-warning-border-bottom);
+    --color-btn-danger-bg: linear-gradient(to bottom, var(--color-btn-danger-gradient-start), var(--color-btn-danger-gradient-end));
+    --color-btn-danger-bg-hover: linear-gradient(to bottom, var(--color-btn-danger-hover-gradient-start), var(--color-btn-danger-hover-gradient-end));
+    --color-btn-danger-border: var(--color-btn-danger-gradient-end) var(--color-btn-danger-gradient-end) var(--color-btn-danger-border-bottom);
+    --color-btn-success-bg: linear-gradient(to bottom, var(--color-btn-success-gradient-start), var(--color-btn-success-gradient-end));
+    --color-btn-success-bg-hover: linear-gradient(to bottom, var(--color-btn-success-hover-gradient-start), var(--color-btn-success-hover-gradient-end));
+    --color-btn-success-border: var(--color-btn-success-gradient-end) var(--color-btn-success-gradient-end) var(--color-btn-success-border-bottom);
+    --color-btn-info-bg: linear-gradient(to bottom, var(--color-btn-info-gradient-start), var(--color-btn-info-gradient-end));
+    --color-btn-info-bg-hover: linear-gradient(to bottom, var(--color-btn-info-hover-gradient-start), var(--color-btn-info-hover-gradient-end));
+    --color-btn-info-border: var(--color-btn-info-gradient-end) var(--color-btn-info-gradient-end) var(--color-btn-info-border-bottom);
+    --color-btn-inverted-bg: linear-gradient(to bottom, var(--color-btn-inverted-gradient-start), var(--color-btn-inverted-gradient-end));
+    --color-btn-inverted-bg-hover: linear-gradient(to bottom, var(--color-btn-inverted-hover-gradient-start), var(--color-btn-inverted-hover-gradient-end));
+    --color-btn-inverted-border: var(--color-btn-inverted-gradient-end) var(--color-btn-inverted-gradient-end) var(--color-btn-inverted-border-bottom);
+}
+
+

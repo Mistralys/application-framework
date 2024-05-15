@@ -143,7 +143,7 @@ H3.form-header.form-header-first {
 }
 
 .radio.active {
-    background: var(--color-accent-primary);
+    background: var(--accent-primary);
     color: var(--color-text-inverted);
     border-radius: 3px;
 }

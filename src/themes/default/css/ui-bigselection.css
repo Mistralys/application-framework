@@ -35,7 +35,7 @@
 }
 
 .bigselection > LI.bigselection-entry {
-    border: solid 1px var(--color-accent-borders);
+    border: solid 1px var(--accent-borders);
     border-radius: var(--border-radius-normal);
     margin-bottom: 8px;
     cursor: pointer;
