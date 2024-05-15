@@ -7,6 +7,8 @@
 use Application\AppFactory;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
+use Application\OfflineEvents\SessionInstantiatedEvent;
+use Application\Session\Events\UserAuthenticatedEvent;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
@@ -192,6 +194,31 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
             Application_Session::class,
             new $class()
         );
+
+        $this->authListener = $this->session->onUserAuthenticated(Closure::fromCallable(array($this, 'handleEvent_userAuthenticated')));
+
+        self::triggerSessionInstantiated($this->session);
+
+        $this->session->start();
+    }
+
+    private static function triggerSessionInstantiated(Application_Session $session) : void
+    {
+        AppFactory::createOfflineEvents()->triggerEvent(
+            SessionInstantiatedEvent::EVENT_NAME,
+            array($session),
+            SessionInstantiatedEvent::class
+        );
+    }
+
+    private Application_EventHandler_EventableListener $authListener;
+
+    private function handleEvent_userAuthenticated(UserAuthenticatedEvent $event) : void
+    {
+        $event->getUser()->handleLoggedIn();
+
+        $this->session->removeEventListener($this->authListener);
+        unset($this->authListener);
     }
 
     private bool $dbInitialized = false;
