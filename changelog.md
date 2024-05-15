@@ -9,6 +9,7 @@
 - OfflineEvents: More robust event and listener loading.
 - OfflineEvents: Loading listeners and events from the framework and application.
 - AppFactory: Added `createOfflineEvents()`.
+- UI: Fixed broken error page layout in some situations.
 
 ### Breaking changes
 - Session: The `start()` method has been renamed to `_start()`. 
