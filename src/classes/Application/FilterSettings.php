@@ -203,6 +203,10 @@ abstract class Application_FilterSettings
             $label = t('Search');
         }
 
+        if(empty($setting)) {
+            $setting = self::SETTING_DEFAULT_SEARCH;
+        }
+
         $this->registerSetting($setting, $label)
             ->setInjectCallback(Closure::fromCallable(array($this, 'inject_search')))
             ->setConfigureCallback(Closure::fromCallable(array($this, 'configureSearch')));
