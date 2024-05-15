@@ -10,6 +10,10 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Session\Events\BeforeLogOutEvent;
+use Application\Session\Events\SessionStartedEvent;
+use Application\Session\Events\UserAuthenticatedEvent;
+use AppUtils\ConvertHelper;
 use function AppUtils\parseURL;
 
 /**
@@ -17,6 +21,9 @@ use function AppUtils\parseURL;
  * available session systems. Also included in the mechanism
  * is triggering the authentication, and storing the user
  * information in the session.
+ *
+ * NOTE: To add session event handlers, see the offline
+ * event class: {@see \Application\OfflineEvents\SessionInstantiatedEvent}.
  *
  * @package Application
  * @subpackage Sessions
@@ -27,6 +34,7 @@ use function AppUtils\parseURL;
 abstract class Application_Session_Base implements Application_Session
 {
     use Application_Traits_Loggable;
+    use Application_Traits_Eventable;
 
     public const ERROR_ADMIN_RIGHTS_PRESET_MISSING = 22201;
     public const ERROR_ONLY_FOR_SIMULATED_SESSION = 22202;
@@ -65,7 +73,19 @@ abstract class Application_Session_Base implements Application_Session
 
     protected ?Application_User $user = null;
 
-    abstract protected function start() : void;
+    final public function start() : self
+    {
+        $this->log('Starting the session.');
+        $this->_start();
+        $this->log('Session started with ID [%s].', $this->getID());
+
+        $this->triggerStarted();
+
+        return $this;
+    }
+
+    abstract protected function _start() : void;
+
     abstract protected function handleLogout(array $clearKeys=array()) : void;
 
     /**
@@ -83,14 +103,17 @@ abstract class Application_Session_Base implements Application_Session
      */
     public function __construct()
     {
-        $this->log('Starting the session.');
-        $this->start();
-        $this->log('Session started with ID [%s].', $this->getID());
     }
 
     public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
     {
+        if(!isset($this->user)) {
+            return;
+        }
+
         $this->log('Logout requested, logging the user out.');
+
+        $this->triggerBeforeLogOut($this->user, $reasonID);
 
         $this->handleLogout(array(
             self::KEY_NAME_AUTH_RETURN_URI,
@@ -115,12 +138,18 @@ abstract class Application_Session_Base implements Application_Session
 
     private function initAuthentication() : void
     {
+        $returnURI = $_SERVER['REQUEST_URI'] ?? '(none available)';
+
         $this->log('No user ID found in the session, initiating login sequence.');
-        $this->log('Return URI is [%s].', $_SERVER['REQUEST_URI']);
+        $this->log('Return URI is [%s].', $returnURI);
 
-        $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $_SERVER['REQUEST_URI']);
+        $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $returnURI);
 
-        $user = $this->handleLogin();
+        if(Application::isAuthenticationEnabled()) {
+            $user = $this->handleLogin();
+        } else {
+            $user = AppFactory::createUsers()->getByID(Application::USER_ID_SYSTEM);
+        }
 
         if($user !== null)
         {
@@ -130,7 +159,7 @@ abstract class Application_Session_Base implements Application_Session
 
         throw new Application_Exception(
             'Authentication layer failure',
-        'The authentication did not return a user. The authenticator should handle displaying a message to the user if the authentication fails.',
+            'The authentication did not return a user. The authenticator should handle displaying a message to the user if the authentication fails.',
             self::ERROR_AUTH_DID_NOT_RETURN_USER
         );
     }
@@ -147,7 +176,7 @@ abstract class Application_Session_Base implements Application_Session
 
     /**
      * Unpacks the user instance from the user ID stored in the session.
-     * Returns an application driver specific object, e.g. `DriverName_User`.
+     * Returns an application-driver-specific object, e.g. `DriverName_User`.
      *
      * @return Application_User
      * @throws Application_Exception
@@ -182,7 +211,7 @@ abstract class Application_Session_Base implements Application_Session
         }
         else
         {
-            $rights = explode(',', $this->getCurrentRights());
+            $rights = $this->fetchSimulatedRights();
         }
 
         $this->log(sprintf('User [%s] | Fetched [%s] rights.', $userID, count($rights)));
@@ -196,11 +225,15 @@ abstract class Application_Session_Base implements Application_Session
         // Unpack the user, as processes after this may need to access
         // the instance. The redirect, for example, needs to know whether
         // the user is a developer.
-        $this->unpackUser();
+        $unpacked = $this->unpackUser();
+
+        $this->triggerUserAuthenticated($unpacked);
 
         $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
 
-        Application::redirect($this->unpackTargetURL());
+        if(!isCLI()) {
+            Application::redirect($this->unpackTargetURL());
+        }
     }
 
     private function initRightPresets() : void
@@ -227,11 +260,11 @@ abstract class Application_Session_Base implements Application_Session
      * @param int $userID The currently authenticated user's ID
      * @throws Application_Exception
      */
-    private function initSimulatedSession(int $userID) : void
+    private function initSimulatedSession(int $userID) : int
     {
         // Ignore this if we are not in simulation mode.
         if (!Application::isSessionSimulated()) {
-            return;
+            return $userID;
         }
 
         $this->log('Session is in simulated mode.');
@@ -255,6 +288,8 @@ abstract class Application_Session_Base implements Application_Session
 
             $this->storeUser(AppFactory::createUsers()->getByID($simulateID));
         }
+
+        return $simulateID;
     }
 
     private function getSimulatedUserID() : int
@@ -272,14 +307,12 @@ abstract class Application_Session_Base implements Application_Session
 
     private function unpackRights() : array
     {
-        $rights = (string)$this->getValue(self::KEY_NAME_USER_RIGHTS);
-
         if(Application::isSessionSimulated())
         {
-            $rights = $this->getCurrentRights();
+            return $this->fetchSimulatedRights();
         }
 
-        return explode(',', $rights);
+        return ConvertHelper::explodeTrim(',', $this->getRightsString());
     }
 
     /**
@@ -412,18 +445,27 @@ abstract class Application_Session_Base implements Application_Session
     }
 
     /**
-     * @return string
+     * Gets the list of rights currently stored in the session.
+     * @return string Comma-separated list of right names.
+     */
+    public function getRightsString() : string
+    {
+        return (string)$this->getValue(self::KEY_NAME_USER_RIGHTS);
+    }
+
+    /**
+     * @return string[]
      * @throws Application_Exception
      * @throws Application_Session_Exception
      */
-    public function getCurrentRights() : string
+    public function fetchSimulatedRights() : array
     {
         $this->requireSimulatedSession();
 
         $presetID = $this->getRightPreset();
 
         if(isset($this->rightPresets[$presetID])) {
-            return implode(',', $this->rightPresets[$presetID]);
+            return $this->rightPresets[$presetID];
         }
 
         throw new Application_Session_Exception(
@@ -457,27 +499,19 @@ abstract class Application_Session_Base implements Application_Session
 
     final public function authenticate() : Application_User
     {
-        if(isset($this->user)) {
+        if(isset($this->user))
+        {
+            if (isset($_REQUEST['logout']) && string2bool($_REQUEST['logout']) === true)
+            {
+                $this->logOut();
+            }
+
             return $this->user;
         }
 
         $this->initRightPresets();
 
-        if (!Application::isAuthenticationEnabled())
-        {
-            $this->log('Authentication is disabled, using the system user.');
-            $this->user = Application::createSystemUser();
-            return $this->user;
-        }
-
-        if (isset($_REQUEST['logout']) && string2bool($_REQUEST['logout']) === true)
-        {
-            $this->logOut();
-        }
-
-        $userID = $this->getUserID();
-
-        $this->initSimulatedSession($userID);
+        $userID = $this->initSimulatedSession($this->getUserID());
 
         // Starts the authentication process. This ends either by
         // storing the user ID in the session via `storeUser()`,
@@ -595,4 +629,87 @@ abstract class Application_Session_Base implements Application_Session
 
         return $user;
     }
+
+    // region: Event handling
+
+    public const EVENT_USER_AUTHENTICATED = 'UserAuthenticated';
+    public const EVENT_BEFORE_LOG_OUT = 'BeforeLogOut';
+    public const EVENT_STARTED = 'SessionStarted';
+
+    /**
+     * Adds a listener for the {@see self::EVENT_USER_AUTHENTICATED} event,
+     * which is called when a user is freshly authenticated in the session.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see UserAuthenticatedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onUserAuthenticated(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_USER_AUTHENTICATED, $callback);
+    }
+
+    /**
+     * Adds a listener for the {@see self::EVENT_BEFORE_LOG_OUT} event,
+     * which is called right before the user is logged out.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see BeforeLogOutEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onBeforeLogOut(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_BEFORE_LOG_OUT, $callback);
+    }
+
+    /**
+     * Adds a listener for the {@see self::EVENT_STARTED} event,
+     * which is called when the session has been started.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see SessionStartedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_STARTED, $callback);
+    }
+
+    private function triggerUserAuthenticated(Application_User $user) : void
+    {
+        $this->triggerEvent(
+            self::EVENT_USER_AUTHENTICATED,
+            array($user),
+            UserAuthenticatedEvent::class
+        );
+    }
+
+    private function triggerBeforeLogOut(Application_User $user, int $reasonID) : void
+    {
+        $this->triggerEvent(
+            self::EVENT_BEFORE_LOG_OUT,
+            array($user, $reasonID),
+            BeforeLogOutEvent::class
+        );
+    }
+
+    private function triggerStarted() : void
+    {
+        $this->triggerEvent(
+            self::EVENT_STARTED,
+            array($this),
+            SessionStartedEvent::class
+        );
+    }
+
+    // endregion
 }
