@@ -14,7 +14,7 @@
 - UI: Fixed broken error page layout in some situations.
 - Core: Fixed wrong version number in the `VERSION` file.
 
-### Breaking changes
+### Breaking changes (XS)
 - Session: The `start()` method has been renamed to `_start()`. 
   Any custom session implementations must be updated accordingly.
 
