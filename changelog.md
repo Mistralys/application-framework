@@ -1,6 +1,8 @@
 ## v4.0.2 - Output buffering tweaks
 - UI: Fixed some timing issues with output buffering.
 - Core: The `Application_Exception` class can now hold page output.
+- DataGrid: Filter settings now inherit hidden variables when using `configure()`.
+- Traits: Added `HiddenVariablesTrait` and matching interface.
 
 ## v4.0.1 - Session handling update (Breaking-XS)
 - Session: Added event handling.
