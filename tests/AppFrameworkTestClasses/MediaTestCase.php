@@ -32,5 +32,7 @@ abstract class MediaTestCase extends ApplicationTestCase
         DBHelper::deleteRecords(Application_Media::TABLE_NAME);
 
         $this->startTransaction();
+
+        $this->media->setRootTag(AppFactory::createTags()->createNewTag('Media'));
     }
 }
