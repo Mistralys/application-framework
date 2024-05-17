@@ -115,16 +115,16 @@ class Application_Bootstrap
             }
             
             $screen->boot();
-            
+
+            // Display the page content
             ob_end_flush();
         }
-        catch(Exception $e)
+        catch(Throwable $e)
         {
-            ob_end_clean();
-
             // Convert non-framework exceptions, so they can
             // be logged in the error log.
             $e = self::convertException($e);
+            $e->setPageOutput(ob_get_clean());
 
             if($displayException)
             {
@@ -271,7 +271,7 @@ class Application_Bootstrap
         register_shutdown_function(array(self::class, 'handleShutDown'));
     }
 
-    public static function convertException(Exception $e) : Application_Exception
+    public static function convertException(Throwable $e) : Application_Exception
     {
         // Handle the case where the DB is not installed
         if($e instanceof DBHelper_Exception)
