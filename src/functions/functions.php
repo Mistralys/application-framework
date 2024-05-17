@@ -270,6 +270,10 @@ function displayError(Throwable $e) : void
     $develinfo = false;
     $output = ob_get_clean();
 
+    if($e instanceof Application_Exception) {
+        $output = $e->getPageOutput().$output;
+    }
+
     try
     {
         if(Application::isSessionReady()) {
