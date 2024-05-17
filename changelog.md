@@ -1,3 +1,7 @@
+## v4.0.2 - Output buffering tweaks
+- UI: Fixed some timing issues with output buffering.
+- Core: The `Application_Exception` class can now hold page output.
+
 ## v4.0.1 - Session handling update (Breaking-XS)
 - Session: Added event handling.
 - Session: Added `onSessionStarted()`.
