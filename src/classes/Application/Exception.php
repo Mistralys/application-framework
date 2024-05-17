@@ -43,6 +43,8 @@ class Application_Exception extends BaseException
 
     private static int $exceptionCounter = 0;
 
+    private ?string $pageOutput = null;
+
     /**
      * The additional developer information is only included in
      * error messages if the application is in developer mode.
@@ -162,5 +164,23 @@ class Application_Exception extends BaseException
             $e->getMessage(),
             $details
         );
+    }
+
+    /**
+     * Sets the output of the page that was being generated
+     * up to the point the exception was thrown.
+     *
+     * @param string $output
+     * @return $this
+     */
+    public function setPageOutput(string $output) : self
+    {
+        $this->pageOutput = $output;
+        return $this;
+    }
+
+    public function getPageOutput() : ?string
+    {
+        return $this->pageOutput;
     }
 }
