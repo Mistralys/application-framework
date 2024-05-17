@@ -3,6 +3,7 @@
 - Core: The `Application_Exception` class can now hold page output.
 - DataGrid: Filter settings now inherit hidden variables when using `configure()`.
 - Traits: Added `HiddenVariablesTrait` and matching interface.
+- DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
 
 ## v4.0.1 - Session handling update (Breaking-XS)
 - Session: Added event handling.
