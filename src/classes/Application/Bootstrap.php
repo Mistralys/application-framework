@@ -120,6 +120,8 @@ class Application_Bootstrap
         }
         catch(Exception $e)
         {
+            ob_end_clean();
+
             // Convert non-framework exceptions, so they can
             // be logged in the error log.
             $e = self::convertException($e);
@@ -132,8 +134,6 @@ class Application_Bootstrap
             {
                 throw $e;
             }
-
-            ob_end_clean();
         }
     }
 
