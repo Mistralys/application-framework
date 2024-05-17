@@ -9,6 +9,8 @@
 
 use Application\Driver\DriverException;
 use Application\Interfaces\FilterCriteriaInterface;
+use Application\Interfaces\HiddenVariablesInterface;
+use Application\Traits\HiddenVariablesTrait;
 use AppUtils\Interfaces\StringableInterface;
 use function AppLocalize\tex;
 
@@ -21,8 +23,10 @@ use function AppLocalize\tex;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_DataGrid
+class UI_DataGrid implements HiddenVariablesInterface
 {
+    use HiddenVariablesTrait;
+
     public const ERROR_MISSING_PRIMARY_KEY_NAME = 599901;
     public const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
     public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
@@ -490,52 +494,6 @@ class UI_DataGrid
     {
         $this->sumsRow = new UI_DataGrid_Row_Sums($this);
         return $this->sumsRow;
-    }
-
-    /**
-     * @var array<string,string>
-     */
-    protected array $hiddenVars = array();
-
-    /**
-     * @param string $name
-     * @param string|int|float|StringableInterface|NULL $value
-     * @return $this
-     */
-    public function addHiddenVar(string $name, $value) : self
-    {
-        $this->hiddenVars[$name] = (string)$value;
-        return $this;
-    }
-
-    /**
-     * @param array<string,int|string|float> $vars
-     * @return $this
-     */
-    public function addHiddenVars(array $vars) : self
-    {
-        foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Adds all page-related variables (page / mode / submode...) for
-     * the current admin screen.
-     *
-     * NOTE: Only possible when in admin mode.
-     *
-     * @return $this
-     * @throws DriverException
-     */
-    public function addHiddenScreenVars() : self
-    {
-        return $this->addHiddenVars(Application_Driver::getInstance()
-            ->getActiveScreen()
-            ->getPageParams()
-        );
     }
 
    /**
@@ -1301,27 +1259,18 @@ class UI_DataGrid
             $params = $action->getParams();
             $actionName = $action->getName();
             foreach($params as $name => $value) {
-                $this->addHiddenVar('action_'.$actionName.'['.$name.']', $value);
+                $this->addPrivateHiddenVar('action_'.$actionName.'['.$name.']', $value);
             }
         }
 
         $id = $this->getID();
 
-        $html =
-        '<div class="datagrid-hiddenvars">' .
-            '<input type="hidden" id="' . $this->getFormID('orderby') . '" name="datagrid_orderby" value="' . $this->getOrderBy() . '"/>' .
-            '<input type="hidden" id="' . $this->getFormID('orderdir') . '" name="datagrid_orderdir" value="' . $this->getOrderDir() . '"/>' .
-            '<input type="hidden" id="' . $this->getFormID('action') . '" name="datagrid_action" value="' . $id . '"/>'.
-            '<input type="hidden" name="datagrid_submitted" value="' . $id . '"/>';
+        $this->addPrivateHiddenVar('datagrid_orderby', $this->getOrderBy(), $this->getFormID('orderby'));
+        $this->addPrivateHiddenVar('datagrid_orderdir', $this->getOrderDir(), $this->getFormID('orderdir'));
+        $this->addPrivateHiddenVar('datagrid_action', $this->getPage(), $this->getFormID('action'));
+        $this->addPrivateHiddenVar('datagrid_submitted', $id);
 
-            foreach ($this->hiddenVars as $name => $value) {
-                $html .=
-                '<input type="hidden" name="' . $name . '" value="' . $value . '"/>';
-            }
-            $html .=
-        '</div>';
-
-        return $html;
+        return $this->renderHiddenInputs(array('datagrid-hiddenvars'));
     }
 
     protected function renderFilterMessages() : string
@@ -1399,6 +1348,9 @@ class UI_DataGrid
     public function configure(Application_FilterSettings $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
     {
         $this->filterSettings = $settings;
+        $settings->addHiddenVars($this->getHiddenVars());
+        $this->addHiddenVars($settings->getHiddenVars());
+
         $settings->configureFilters($criteria);
 
         $this->configureFromFilters($criteria);
