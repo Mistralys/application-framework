@@ -234,7 +234,6 @@ var UI_Datagrid =
 			this.DeselectAll();
 		}
 		
-		this.GetFormElement('action').val('perpage');
 		this.GetFormElement().submit();
 	},
 	
