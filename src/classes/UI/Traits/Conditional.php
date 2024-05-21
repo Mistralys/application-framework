@@ -37,12 +37,17 @@ trait UI_Traits_Conditional
     }
 
     /**
-     * @param string[] $rightNames
+     * @param string|string[] $rightNames
      * @return $this
      * @throws Application_Exception
      */
-    public function requireRights(array $rightNames) : self
+    public function requireRights($rightNames) : self
     {
+        if(is_string($rightNames))
+        {
+            $rightNames = array($rightNames);
+        }
+
         foreach($rightNames as $rightName)
         {
             $this->requireRight($rightName);
