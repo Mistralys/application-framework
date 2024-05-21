@@ -27,7 +27,10 @@ use Application\Interfaces\AllowableInterface;
  */
 trait AllowableMigrationTrait
 {
-    abstract public function getRequiredRights() : array;
+    /**
+     * @return string|string[] Single right name, or list of right names.
+     */
+    abstract public function getRequiredRights();
 
     public function getFeatureRights() : array
     {
@@ -37,8 +40,12 @@ trait AllowableMigrationTrait
     public function isUserAllowed() : bool
     {
         $user = $this->getUser();
+        $rights = $this->getRequiredRights();
+        if(is_string($rights)) {
+            $rights = array($rights);
+        }
 
-        foreach($this->getRequiredRights() as $right) {
+        foreach($rights as $right) {
             if(!$user->hasRight($right)) {
                 return false;
             }
