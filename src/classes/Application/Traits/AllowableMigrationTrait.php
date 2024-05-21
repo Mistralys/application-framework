@@ -30,7 +30,7 @@ trait AllowableMigrationTrait
     abstract public function getRequiredRights() : array;
     abstract public function getFeatureRights() : array;
 
-    protected function isUserAllowed() : bool
+    public function isUserAllowed() : bool
     {
         $user = $this->getUser();
 
