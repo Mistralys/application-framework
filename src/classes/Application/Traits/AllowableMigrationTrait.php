@@ -28,7 +28,11 @@ use Application\Interfaces\AllowableInterface;
 trait AllowableMigrationTrait
 {
     abstract public function getRequiredRights() : array;
-    abstract public function getFeatureRights() : array;
+
+    public function getFeatureRights() : array
+    {
+        return array();
+    }
 
     public function isUserAllowed() : bool
     {

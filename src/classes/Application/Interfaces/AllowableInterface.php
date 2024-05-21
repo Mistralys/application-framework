@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Interfaces;
 
+use Application\Traits\AllowableMigrationTrait;
 use Application_User;
 
+/**
+ * @see AllowableMigrationTrait
+ */
 interface AllowableInterface
 {
     /**
