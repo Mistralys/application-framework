@@ -1,8 +1,11 @@
 ## v4.0.2 - Output buffering tweaks
 - UI: Fixed some timing issues with output buffering.
 - Core: The `Application_Exception` class can now hold page output.
-- DataGrid: Filter settings now inherit hidden variables when using `configure()`.
+- DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).
+- DataGrid: Saving grid settings in the DB ([#27](https://github.com/Mistralys/application-framework/issues/27)).
+- DataGrid: Redirect after saving grid settings ([#26](https://github.com/Mistralys/application-framework/issues/26)).
 - Traits: Added `HiddenVariablesTrait` and matching interface.
+- Traits: Added `AllowableMigrationTrait` and matching interface ([#62](https://github.com/Mistralys/application-framework/issues/62)).
 - DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
 
 ## v4.0.1 - Session handling update (Breaking-XS)
