@@ -36,6 +36,21 @@ trait UI_Traits_Conditional
         return $this->requireTrue(Application::getUser()->can($rightName));
     }
 
+    /**
+     * @param string[] $rightNames
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function requireRights(array $rightNames) : self
+    {
+        foreach($rightNames as $rightName)
+        {
+            $this->requireRight($rightName);
+        }
+
+        return $this;
+    }
+
    /**
     * @param string $reason
     * @return $this
