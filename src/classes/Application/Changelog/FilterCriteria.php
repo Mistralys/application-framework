@@ -1,13 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Database
 {
-   /**
-    * @var Application_Changelog
-    */
-    protected $changelog;
-    
-    protected $objects = false;
+    protected Application_Changelog $changelog;
+    protected bool $objects = false;
     
     public function __construct(Application_Changelog $changelog)
     {
@@ -18,7 +16,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $this->changelog = $changelog;
     }
     
-    protected function getQuery()
+    protected function getQuery() : string
     {
         $primary = $this->changelog->getPrimary();
         foreach($primary as $name => $value) {
@@ -42,7 +40,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         return $query;
     }
     
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
         return array(
             'chlog.`changelog_data`',
@@ -50,7 +48,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         );
     }
     
-    protected function getSelect()
+    protected function getSelect() : array
     {
         if($this->objects) {
             return array('chlog.`changelog_id`');
@@ -58,22 +56,37 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         
         return array("chlog.*");
     }
-    
-    public function limitByType($type)
+
+    /**
+     * @param string $type
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function limitByType(string $type) : self
     {
         $this->addWhere('chlog.`changelog_type`=:type');
         $this->addPlaceholder('type', $type);
         return $this;
     }
-    
-    public function limitByAuthorID($author_id)
+
+    /**
+     * @param string|int $author_id
+     * @return $this
+     * @throws Application_Exception
+     */
+    public function limitByAuthorID($author_id) : self
     {
         $this->addWhere('chlog.`changelog_author`=:author_id');
         $this->addPlaceholder('author_id', $author_id);
         return $this;
     }
-    
-    public function getItemsObjects()
+
+    /**
+     * @return Application_Changelog_Entry[]
+     * @throws Application_Exception
+     * @throws DBHelper_Exception
+     */
+    public function getItemsObjects() : array
     {
         $this->objects = true;
 
@@ -85,6 +98,18 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         
         $this->objects = false;
         return $items;
+    }
+
+    public function getLatest() : ?Application_Changelog_Entry
+    {
+        $this->setLimit(1);
+        $items = $this->getItemsObjects();
+
+        if(!empty($items[0])) {
+            return $items[0];
+        }
+
+        return null;
     }
 
     protected function _registerJoins() : void
