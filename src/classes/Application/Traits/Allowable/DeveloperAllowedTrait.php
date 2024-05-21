@@ -12,9 +12,4 @@ trait DeveloperAllowedTrait
     {
         return DeveloperAllowedInterface::REQUIRED_RIGHTS;
     }
-
-    public function getFeatureRights(): array
-    {
-        return array();
-    }
 }
