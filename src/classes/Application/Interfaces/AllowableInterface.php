@@ -15,10 +15,14 @@ interface AllowableInterface
     /**
      * Returns a list of all rights required to access the resource.
      *
-     * @return string|string[] Single right name, or list of right names.
+     * @return string
      */
-    //public function getRequiredRights() : array;
+    //public function getRequiredRight() : string;
 
+    /**
+     * Whether the user is allowed to access the resource.
+     * @return bool
+     */
     public function isUserAllowed() : bool;
 
     /**

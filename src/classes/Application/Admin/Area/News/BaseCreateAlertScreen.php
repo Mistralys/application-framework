@@ -22,7 +22,7 @@ abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
         return self::URL_NAME;
     }
 
-    public function getRequiredRights(): string
+    public function getRequiredRight(): string
     {
         return NewsRightsInterface::RIGHT_CREATE_NEWS_ALERTS;
     }
