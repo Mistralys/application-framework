@@ -526,7 +526,7 @@ abstract class Application_User
     * Retrieves a list of all roles requested up to this point.
     * @return array
     */
-    public function getRequestedRoles() : array
+    public function getRequestedRights() : array
     {
         return $this->requestedRoles;
     }
