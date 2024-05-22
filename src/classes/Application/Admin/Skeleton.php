@@ -61,12 +61,11 @@ abstract class Application_Admin_Skeleton
     protected ?Application_LockManager $lockManager = null;
     protected ?Application_Admin_ScreenInterface $parentScreen = null;
     protected static bool $simulationStarted = false;
-    protected bool $outputToConsole = false;
 
-    protected UI_Page_Help $help;
-    protected UI_Page_Navigation $subnav;
-    protected UI_Bootstrap_Tabs $tabs;
-    protected UI_Page_Sidebar $sidebar;
+    protected ?UI_Page_Help $help = null;
+    protected ?UI_Page_Navigation $subnav = null;
+    protected ?UI_Bootstrap_Tabs $tabs = null;
+    protected ?UI_Page_Sidebar $sidebar = null;
     protected UI_Bootstrap_DropdownMenu $contextmenu;
     
    /**
