@@ -6,10 +6,13 @@ namespace Application\Traits\Allowable;
 
 use Application\Interfaces\Allowable\DeveloperAllowedInterface;
 
+/**
+ * @see DeveloperAllowedInterface
+ */
 trait DeveloperAllowedTrait
 {
-    public function getRequiredRights(): array
+    public function getRequiredRight(): string
     {
-        return DeveloperAllowedInterface::REQUIRED_RIGHTS;
+        return DeveloperAllowedInterface::REQUIRED_RIGHT;
     }
 }

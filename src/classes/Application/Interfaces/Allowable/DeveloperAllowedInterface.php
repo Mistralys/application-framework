@@ -9,7 +9,5 @@ use Application_User;
 
 interface DeveloperAllowedInterface extends AllowableInterface
 {
-    public const REQUIRED_RIGHTS = array(
-        Application_User::RIGHT_DEVELOPER
-    );
+    public const REQUIRED_RIGHT = Application_User::RIGHT_DEVELOPER;
 }
