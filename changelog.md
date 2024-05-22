@@ -7,6 +7,8 @@
 - Traits: Added `HiddenVariablesTrait` and matching interface.
 - Traits: Added `AllowableMigrationTrait` and matching interface ([#62](https://github.com/Mistralys/application-framework/issues/62)).
 - DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
+- UI: Added `requireRights()` to the conditionals.
+- UI: Added the `BaseScreenRights` utility class.
 
 ## v4.0.1 - Session handling update (Breaking-XS)
 - Session: Added event handling.
