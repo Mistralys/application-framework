@@ -19,4 +19,19 @@ final class ChangelogTests extends RevisionableTestCase
 
         $this->assertChangelogableHasTypeEnqueued($record, ChangelogHandler::CHANGELOG_SET_ALIAS);
     }
+
+    public function test_changelogEntriesAreAddedInCorrectRevision() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+
+        $record->startCurrentUserTransaction();
+            $record->setAlias('foo_bar');
+        $record->endTransaction();
+
+        $changelog = $record->getChangelog();
+        $latest = $changelog->getFilters()->getLatest();
+        $this->assertNotEmpty($changelog->getEntries());
+        $this->assertNotNull($latest);
+        $this->assertSame($latest->getType(), ChangelogHandler::CHANGELOG_SET_ALIAS);
+    }
 }
