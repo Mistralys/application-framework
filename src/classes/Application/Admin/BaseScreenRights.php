@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Admin;
 
+use Application_Admin_Exception;
 use Application_Admin_ScreenInterface;
 use Application_User;
 
@@ -30,15 +31,22 @@ use Application_User;
  * @package Application
  * @subpackage Admin
  */
-abstract class BaseScreenRights
+abstract class BaseScreenRights implements ScreenRightsInterface
 {
+    public const ERROR_SCREEN_CLASS_NOT_FOUND = 156701;
+    public const ERROR_SCREEN_CLASS_ALREADY_REGISTERED = 156702;
+
+    /**
+     * @var array<class-string,string>
+     */
     private static array $rights = array();
 
     /**
      * @param Application_Admin_ScreenInterface|class-string $screen
      * @return string
+     * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
-    public function getByClass($screen) : string
+    public function getByScreen($screen) : string
     {
         if($screen instanceof Application_Admin_ScreenInterface) {
             $screenClass = get_class($screen);
@@ -46,7 +54,23 @@ abstract class BaseScreenRights
             $screenClass = $screen;
         }
 
+        if(!class_exists($screenClass)) {
+            throw new Application_Admin_Exception(
+                'Screen class cannot be registered, it does not exist.',
+                sprintf('Screen class: %s', $screenClass),
+                self::ERROR_SCREEN_CLASS_NOT_FOUND
+            );
+        }
+
         return self::$rights[$screenClass] ?? Application_User::RIGHT_DEVELOPER;
+    }
+
+    /**
+     * @return array<class-string,string>
+     */
+    public function getAll() : array
+    {
+        return self::$rights;
     }
 
     public function __construct()
@@ -73,9 +97,19 @@ abstract class BaseScreenRights
      * @param class-string $screenClass
      * @param string $right
      * @return $this
+     * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_ALREADY_REGISTERED}
      */
     protected function register(string $screenClass, string $right) : self
     {
+        // Trying to re-register a screen class with a different right.
+        if(isset(self::$rights[$screenClass]) && self::$rights[$screenClass] !== $right) {
+            throw new Application_Admin_Exception(
+                'Screen class already registered with a different right.',
+                sprintf('Screen class: %s', $screenClass),
+                self::ERROR_SCREEN_CLASS_ALREADY_REGISTERED
+            );
+        }
+
         self::$rights[$screenClass] = $right;
         return $this;
     }
