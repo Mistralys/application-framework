@@ -36,6 +36,6 @@ trait AllowableMigrationTrait
 
     public function isUserAllowed() : bool
     {
-        return $this->getUser()->hasRight($this->getRequiredRight());
+        return $this->getUser()->can($this->getRequiredRight());
     }
 }
