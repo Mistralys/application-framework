@@ -12,15 +12,17 @@ abstract class BaseRevisionableChangelogHandler
     extends BaseChangelogHandler
     implements RevisionableChangelogHandlerInterface
 {
-    public static function getTypeLabels(): array
+    public static function _getTypeLabels(): array
     {
-        $array = parent::getTypeLabels();
+        $labels = call_user_func(array(static::class, '_collectTypeLabels'));
 
-        $array[self::CHANGELOG_SET_LABEL] = t('Changed label');
-        $array[self::CHANGELOG_SET_STATE] = t('Changed state');
+        $labels[self::CHANGELOG_SET_LABEL] = t('Changed label');
+        $labels[self::CHANGELOG_SET_STATE] = t('Changed state');
 
-        return $array;
+        return $labels;
     }
+
+    abstract protected static function _collectTypeLabels() : array;
 
     public static function resolveSetStateData(Application_StateHandler_State $previous, Application_StateHandler_State $new) : array
     {
@@ -34,8 +36,8 @@ abstract class BaseRevisionableChangelogHandler
     {
         return t(
             'Changed state from %1$s to %2$s.',
-            $data['old'],
-            $data['new']
+            sb()->bold($data['old']),
+            sb()->bold($data['new'])
         );
     }
 
@@ -43,8 +45,8 @@ abstract class BaseRevisionableChangelogHandler
     {
         return t(
             'Changed the label from %1$s to %2$s.',
-            '<b>' . $data['old'] . '</b>',
-            '<b>' . $data['new'] . '</b>'
+            sb()->bold($data['old']),
+            sb()->bold($data['new'])
         );
     }
 
