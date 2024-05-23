@@ -10,6 +10,9 @@
 - UI: Added `requireRights()` to the conditionals.
 - UI: Added the `BaseScreenRights` utility class.
 
+### Breaking changes (XS)
+- Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
+
 ## v4.0.1 - Session handling update (Breaking-XS)
 - Session: Added event handling.
 - Session: Added `onSessionStarted()`.
