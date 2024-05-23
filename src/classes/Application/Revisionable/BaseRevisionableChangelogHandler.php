@@ -12,6 +12,16 @@ abstract class BaseRevisionableChangelogHandler
     extends BaseChangelogHandler
     implements RevisionableChangelogHandlerInterface
 {
+    public static function getTypeLabels(): array
+    {
+        $array = parent::getTypeLabels();
+
+        $array[self::CHANGELOG_SET_LABEL] = t('Changed label');
+        $array[self::CHANGELOG_SET_STATE] = t('Changed state');
+
+        return $array;
+    }
+
     public static function resolveSetStateData(Application_StateHandler_State $previous, Application_StateHandler_State $new) : array
     {
         return array(
