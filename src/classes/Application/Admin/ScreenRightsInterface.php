@@ -24,6 +24,12 @@ interface ScreenRightsInterface
     public function getByScreen($screen) : string;
 
     /**
+     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @return bool
+     */
+    public function screenExists($screen) : bool;
+
+    /**
      * Fetches rights by admin screen class.
      * @return array<class-string,string>
      */

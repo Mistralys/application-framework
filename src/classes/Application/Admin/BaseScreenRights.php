@@ -42,27 +42,57 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     private static array $rights = array();
 
     /**
+     * Gets the right required for the target screen.
+     *
+     * NOTE: Will throw an exception if the screen has no
+     * right registered. Use {@see self::screenExists()} to
+     * check if a screen has a right registered.
+     *
      * @param Application_Admin_ScreenInterface|class-string $screen
      * @return string
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
     public function getByScreen($screen) : string
     {
-        if($screen instanceof Application_Admin_ScreenInterface) {
-            $screenClass = get_class($screen);
-        } else {
-            $screenClass = $screen;
-        }
-
-        if(!class_exists($screenClass)) {
-            throw new Application_Admin_Exception(
-                'Screen class cannot be registered, it does not exist.',
-                sprintf('Screen class: %s', $screenClass),
-                self::ERROR_SCREEN_CLASS_NOT_FOUND
-            );
-        }
+        $screenClass = $this->resolveScreenClass($screen);
 
         return self::$rights[$screenClass] ?? Application_User::RIGHT_DEVELOPER;
+    }
+
+    /**
+     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @return string
+     * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
+     */
+    private function resolveScreenClass($screen) : string
+    {
+        if($screen instanceof Application_Admin_ScreenInterface) {
+            return get_class($screen);
+        }
+
+        if(class_exists($screen)) {
+            return $screen;
+        }
+
+        throw new Application_Admin_Exception(
+            'Screen class cannot be registered, it does not exist.',
+            sprintf('Screen class: %s', $screen),
+            self::ERROR_SCREEN_CLASS_NOT_FOUND
+        );
+    }
+
+    /**
+     * Returns whether a screen class has a right registered.
+     *
+     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @return bool
+     * @throws Application_Admin_Exception
+     */
+    public function screenExists($screen) : bool
+    {
+        $screenClass = $this->resolveScreenClass($screen);
+
+        return isset(self::$rights[$screenClass]);
     }
 
     /**
