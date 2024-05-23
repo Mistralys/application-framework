@@ -9,6 +9,7 @@
 - DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
 - UI: Added `requireRights()` to the conditionals.
 - UI: Added the `BaseScreenRights` utility class.
+- Revisionables: Added the change type column in the changelog.
 
 ### Breaking changes (XS)
 - Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
