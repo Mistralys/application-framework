@@ -1108,7 +1108,7 @@ class UI_Form extends UI_Renderable
     */
     public static function validateEmail(?string $email) : bool
     {
-        return preg_match(RegexHelper::REGEX_EMAIL, (string)$email);
+        return preg_match(RegexHelper::REGEX_EMAIL, (string)$email) === 1;
     }
 
     protected array $eventHandlers = array(
