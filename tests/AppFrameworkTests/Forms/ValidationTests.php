@@ -1,12 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
+namespace AppFrameworkTests\Forms;
+
+use Application_Exception;
 use AppUtils\BaseException;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use HTML_QuickForm2;
+use HTML_QuickForm2_DataSource_Array;
+use UI;
+use UI_Form;
 use function AppUtils\parseVariable;
 
-final class Forms_ValidatorsTest extends ApplicationTestCase
+final class ValidationTests extends ApplicationTestCase
 {
-    public function test_percent() : void
+    // region: _Tests
+
+    public function test_validateEmail(): void
+    {
+        $this->assertTrue(UI_Form::validateEmail('foo@test.bar'));
+        $this->assertFalse(UI_Form::validateEmail('foo'));
+    }
+
+    public function test_percent(): void
     {
         $tests = array(
             array(
@@ -65,9 +82,8 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             )
         );
 
-        $this->runElementTests('Percent', $tests, function(UI_Form $form)
-        {
-            return $form->addPercent('element','Element');
+        $this->runElementTests('Percent', $tests, function (UI_Form $form) {
+            return $form->addPercent('element', 'Element');
         });
     }
 
@@ -75,13 +91,13 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
      * When an element is valid, it must return the validated,
      * and filtered element value.
      */
-    public function test_percent_submit_wrapper() : void
+    public function test_percent_submit_wrapper(): void
     {
-        $formName = 'testform'.$this->getTestCounter();
+        $formName = 'testform' . $this->getTestCounter();
 
         // The form tracking variable is only checked in the $_REQUEST array
         $_REQUEST = array(
-            '_qf__form-'.$formName => ''
+            '_qf__form-' . $formName => ''
         );
 
         // Form data is accessed only in POST data
@@ -93,7 +109,7 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             'element' => '89'
         ));
 
-        $this->assertEquals(UI_Form::FORM_PREFIX.$formName, $form->getForm()->getId());
+        $this->assertEquals(UI_Form::FORM_PREFIX . $formName, $form->getForm()->getId());
 
         $el = $form->addPercent('element', 'Label');
 
@@ -106,13 +122,13 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
      * When an element is not valid, it must leave the value
      * unchanged - except the conversion to string.
      */
-    public function test_percent_submit_invalid() : void
+    public function test_percent_submit_invalid(): void
     {
-        $formName = 'testform'.$this->getTestCounter();
+        $formName = 'testform' . $this->getTestCounter();
 
         // The form tracking variable is only checked in the $_REQUEST array
         $_REQUEST = array(
-            '_qf__form-'.$formName => ''
+            '_qf__form-' . $formName => ''
         );
 
         // Form data is accessed only in POST data
@@ -124,7 +140,7 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             'element' => '89'
         ));
 
-        $this->assertEquals(UI_Form::FORM_PREFIX.$formName, $form->getForm()->getId());
+        $this->assertEquals(UI_Form::FORM_PREFIX . $formName, $form->getForm()->getId());
 
         $el = $form->addPercent('element', 'Label');
 
@@ -137,12 +153,12 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
      * Ensure that submitting an element via a raw QuickForm
      * instance works analogous to the UI_Form wrapper variant.
      */
-    public function test_percent_submit() : void
+    public function test_percent_submit(): void
     {
-        $formName = 'testform'.$this->getTestCounter();
+        $formName = 'testform' . $this->getTestCounter();
 
         $_REQUEST = array(
-            '_qf__'.$formName => '',
+            '_qf__' . $formName => '',
         );
 
         $_POST = array(
@@ -171,7 +187,7 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
         $this->assertEquals('45', $el->getValue());
     }
 
-    public function test_integer() : void
+    public function test_integer(): void
     {
         $tests = array(
             array(
@@ -230,16 +246,13 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             )
         );
 
-        $this->runElementTests('Integer', $tests, function(UI_Form $form)
-        {
-            return $form->addInteger('element','Element', null, 0, 1000);
+        $this->runElementTests('Integer', $tests, function (UI_Form $form) {
+            return $form->addInteger('element', 'Element', null, 0, 1000);
         });
     }
 
-    public function test_isodate() : void
+    public function test_isodate(): void
     {
-        $date = date('Y/m/d');
-
         $tests = array(
             array(
                 'label' => 'NULL value',
@@ -285,32 +298,34 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             )
         );
 
-        $this->runElementTests('Date', $tests, function(UI_Form $form)
-        {
-            return $form->addISODate('element','Element');
+        $this->runElementTests('Date', $tests, function (UI_Form $form) {
+            return $form->addISODate('element', 'Element');
         });
     }
 
-    private function runElementTests(string $title, array $tests, callable $elementCallback) : void
+    // endregion
+
+    // region: Support methods
+
+    private function runElementTests(string $title, array $tests, callable $elementCallback): void
     {
-        foreach ($tests as $test)
-        {
+        foreach ($tests as $test) {
             $form = UI::getInstance()->createForm('test', array('element' => $test['value']));
 
-            try
-            {
+            try {
                 $el = $elementCallback($form);
-            }
-            catch (Application_Exception $e)
-            {
+            } catch (Application_Exception $e) {
                 $this->failException($e);
             }
 
             $validator = $form->getElementValidator($el);
+
+            $this->assertNotNull($validator);
+
             $result = $validator->validate($test['value']);
-            $testLabel =sprintf(
-                'Test: %s / %s'.PHP_EOL.
-                'Validation message: %s'.PHP_EOL.
+            $testLabel = sprintf(
+                'Test: %s / %s' . PHP_EOL .
+                'Validation message: %s' . PHP_EOL .
                 'Value: [%s]',
                 $title,
                 $test['label'],
@@ -338,11 +353,11 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
      * @param BaseException $e
      * @return never
      */
-    private function failException(BaseException $e)
+    private function failException(BaseException $e): void
     {
         $this->fail(sprintf(
-            'Exception #%s: %s'.PHP_EOL.
-            'Type: %s'.PHP_EOL.
+            'Exception #%s: %s' . PHP_EOL .
+            'Type: %s' . PHP_EOL .
             'Details: %s',
             $e->getCode(),
             $e->getMessage(),
@@ -350,4 +365,6 @@ final class Forms_ValidatorsTest extends ApplicationTestCase
             $e->getDetails()
         ));
     }
+
+    // endregion
 }
