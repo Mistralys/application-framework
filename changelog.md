@@ -11,6 +11,7 @@
 - UI: Added the `BaseScreenRights` utility class.
 - Forms: Fixed `validateEmail()` not always returning a boolean value.
 - Revisionables: Added the change type column in the changelog.
+- Revisionables: Fixed `setRevisionKey()` ignoring the changelog data.
 
 ### Breaking changes (XS)
 - Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
