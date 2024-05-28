@@ -59,8 +59,11 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
             return false;
         }
 
+        $oldValue = $this->custom[$name] ?? '';
+
         $this->custom[$name] = $value;
-        $this->setCustomModified($name);
+
+        $this->setCustomModified($name, false, $oldValue, $value);
         return true;
     }
 
