@@ -34,4 +34,12 @@ abstract class DBHelperTestCase extends ApplicationTestCase
         // Ensure we're always working with an empty tests table.
         DBHelper::deleteRecords(self::TEST_RECORDS_TABLE);
     }
+
+    protected function createTestRecord(?string $label=null, ?string $alias=null) : TestDBRecord
+    {
+        return TestDBCollection::getInstance()->createTestRecord(
+            $label ?? 'Test Record '.$this->getTestCounter('test-records'),
+            $alias ?? 'test-record-'.$this->getTestCounter('test-records')
+        );
+    }
 }
