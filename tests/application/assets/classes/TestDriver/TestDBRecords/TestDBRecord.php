@@ -19,6 +19,11 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
 
     private array $custom = array();
 
+    protected function init() : void
+    {
+        $this->registerRecordKey(TestDBCollection::COL_ALIAS, t('Alias'), true);
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
     }
