@@ -45,4 +45,9 @@ class KeyModifiedEvent extends Application_EventHandler_EventableEvent
     {
         return $this->getArgumentBool(5);
     }
+
+    public function isCustomField() : bool
+    {
+        return $this->getArgumentBool(6);
+    }
 }
