@@ -12,6 +12,8 @@
 - Forms: Fixed `validateEmail()` not always returning a boolean value.
 - Revisionables: Added the change type column in the changelog.
 - Revisionables: Fixed `setRevisionKey()` ignoring the changelog data.
+- DBHelper: Added the `KeyModified` event to listen to for records.
+- DBHelper: Added `isStructureModified()` in records.
 
 ### Breaking changes (XS)
 - Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
