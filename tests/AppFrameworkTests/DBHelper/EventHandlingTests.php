@@ -49,4 +49,25 @@ final class EventHandlingTests extends DBHelperTestCase
 
         $this->assertTrue($called);
     }
+
+    public function test_customKeyModified() : void
+    {
+        $record = $this->createTestRecord();
+        $called = false;
+
+        $record->onKeyModified(function (KeyModifiedEvent $event) use (&$called): void {
+            $called = true;
+
+            $this->assertSame('super-field', $event->getKeyName());
+            $this->assertFalse($event->isStructural(), 'The custom keys are not structural in the test class.');
+            $this->assertTrue($event->isCustomField(), 'The key is a custom field.');
+            $this->assertEmpty($event->getKeyLabel(), 'Key labels are not supported for custom keys.');
+            $this->assertSame('foobar', $event->getNewValue());
+            $this->assertSame('', $event->getOldValue());
+        });
+
+        $record->setCustomField('super-field', 'foobar');
+
+        $this->assertTrue($called);
+    }
 }
