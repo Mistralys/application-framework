@@ -14,6 +14,8 @@
 - Revisionables: Fixed `setRevisionKey()` ignoring the changelog data.
 - DBHelper: Added the `KeyModified` event to listen to for records.
 - DBHelper: Added `isStructureModified()` in records.
+- DBHelper: Custom record fields are included in the key modified event.
+- DBHelper: `setCustomModified()` now allows setting more arguments, like the structural flag.
 
 ### Breaking changes (XS)
 - Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
