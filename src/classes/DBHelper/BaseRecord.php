@@ -804,10 +804,10 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     */
     abstract protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue);
     
-    private function triggerKeyModified(string $name, $oldValue, $newValue) : void
+    private function triggerKeyModified(string $name, $oldValue, $newValue, bool $structural=false, bool $isCustom=false) : void
     {
         $label = null;
-        $isStructural = false;
+        $isStructural = $structural;
 
         if(isset($this->registeredKeys[$name])) {
             $label = $this->registeredKeys[$name]['label'];
@@ -830,7 +830,8 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
                 $oldValue,
                 $newValue,
                 $label,
-                $isStructural
+                $isStructural,
+                $isCustom
             ),
             KeyModifiedEvent::class
         );
@@ -899,7 +900,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     // endregion
 
-    protected function setCustomModified(string $name) : void
+    protected function setCustomModified(string $name, bool $structural=false, $oldValue=null, $newValue=null) : void
     {
         if(in_array($name, $this->customModified)) {
             return;
@@ -908,6 +909,14 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->log(sprintf('CustomFields | [%s] | Modified.', $name));
         
         $this->customModified[] = $name;
+
+        $this->triggerKeyModified(
+            $name,
+            $oldValue,
+            $newValue,
+            $structural,
+            true
+        );
     }
 
     /**
