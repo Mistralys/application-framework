@@ -300,7 +300,7 @@ final class DBHelper_DataTableTests extends DBHelperTestCase
         parent::setUp();
 
         $this->keysDeletedCalled = false;
-        $this->createTestRecord();
+        $this->createTestDBRecord();
         $this->dataTable = $this->createDataTable();
     }
 
@@ -315,7 +315,7 @@ final class DBHelper_DataTableTests extends DBHelperTestCase
         $this->keysDeletedCalled = true;
     }
 
-    private function createTestRecord() : void
+    private function createTestDBRecord() : void
     {
         $insertID = (int)DBHelper::insertDynamic(
             $this->recordTable,
