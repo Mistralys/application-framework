@@ -23,14 +23,11 @@ use UI_Form;
 /**
  * @package Application
  * @subpackage Revisionables
+ *
+ * @see RevisionableChangelogScreenInterface
  */
 trait RevisionableChangelogScreenTrait
 {
-    public const COL_DATE = 'date';
-    public const COL_AUTHOR = 'author';
-    public const COL_DETAILS = 'details';
-    public const COL_TYPE = 'type';
-    public const COL_ACTIONS = 'actions';
     protected RevisionableStatelessInterface $revisionable;
     protected UI_DataGrid $dataGrid;
     protected UI_Form $filterForm;
@@ -212,11 +209,11 @@ trait RevisionableChangelogScreenTrait
 
             $items[] = array(
                 'changelog_id' => $entry->getID(),
-                self::COL_AUTHOR => $entry->getAuthorName(),
-                self::COL_DATE => $entry->getDatePretty(true),
-                self::COL_DETAILS => $entry->getText(),
-                self::COL_ACTIONS => $actions,
-                self::COL_TYPE => $entry->getTypeLabel()
+                RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
+                RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
+                RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
+                RevisionableChangelogScreenInterface::COL_ACTIONS => $actions,
+                RevisionableChangelogScreenInterface::COL_TYPE => $entry->getTypeLabel()
             );
         }
 
@@ -231,11 +228,11 @@ trait RevisionableChangelogScreenTrait
     {
         $grid = $this->ui->createDataGrid($this->revisionable->getRevisionableTypeName() . '_changelog');
         $grid->enableCompactMode();
-        $grid->addColumn(self::COL_DATE, t('Date'))->setNowrap();
-        $grid->addColumn(self::COL_AUTHOR, t('Author'))->setNowrap();
-        $grid->addColumn(self::COL_DETAILS, t('Details'));
-        $grid->addColumn(self::COL_TYPE, t('Change type'));
-        $grid->addColumn(self::COL_ACTIONS, '')->setCompact()->roleActions();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))->setNowrap();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))->setNowrap();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_TYPE, t('Change type'));
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_ACTIONS, '')->setCompact()->roleActions();
 
         $grid->setEmptyMessage(
             t('No changes found in this revision.')

@@ -20,4 +20,9 @@ use Application_Admin_ScreenInterface;
 interface RevisionableChangelogScreenInterface extends Application_Admin_ScreenInterface
 {
     public const REVISIONABLE_CHANGELOG_ERROR_NOT_A_VALID_REVISIONABLE = 630001;
+    public const COL_TYPE = 'type';
+    public const COL_DATE = 'date';
+    public const COL_AUTHOR = 'author';
+    public const COL_DETAILS = 'details';
+    public const COL_ACTIONS = 'actions';
 }
