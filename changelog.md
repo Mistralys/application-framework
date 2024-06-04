@@ -1,7 +1,7 @@
 ## v4.0.2 - Output buffering tweaks
 - UI: Fixed some timing issues with output buffering.
 - UI: Added `requireRights()` to the conditionals.
-- UI: Added the `BaseScreenRights` utility class.
+- UI: Added the screen rights handling layer to formalize accessing this information.
 - AdminURL: Added the `AdminURLInterface` interface.
 - Core: The `Application_Exception` class can now hold page output.
 - DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).
