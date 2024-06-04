@@ -1,5 +1,8 @@
 ## v4.0.2 - Output buffering tweaks
 - UI: Fixed some timing issues with output buffering.
+- UI: Added `requireRights()` to the conditionals.
+- UI: Added the `BaseScreenRights` utility class.
+- AdminURL: Added the `AdminURLInterface` interface.
 - Core: The `Application_Exception` class can now hold page output.
 - DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).
 - DataGrid: Saving grid settings in the DB ([#27](https://github.com/Mistralys/application-framework/issues/27)).
@@ -7,8 +10,6 @@
 - Traits: Added `HiddenVariablesTrait` and matching interface.
 - Traits: Added `AllowableMigrationTrait` and matching interface ([#62](https://github.com/Mistralys/application-framework/issues/62)).
 - DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
-- UI: Added `requireRights()` to the conditionals.
-- UI: Added the `BaseScreenRights` utility class.
 - Forms: Fixed `validateEmail()` not always returning a boolean value.
 - Revisionables: Added the change type column in the changelog.
 - Revisionables: Fixed `setRevisionKey()` ignoring the changelog data.
