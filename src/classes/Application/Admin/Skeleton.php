@@ -10,9 +10,8 @@
 use Application\AppFactory;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\ConvertHelper;
 use AppUtils\FileHelper_Exception;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Base class for administration screens. This has all the 
@@ -226,7 +225,7 @@ abstract class Application_Admin_Skeleton
     * 
     * @param string $redirectType
     * @param string|number|UI_Renderable_Interface $message
-    * @param string|array<string,string|number>|AdminURL $paramsOrURL
+    * @param string|array<string,string|number>|AdminURLInterface $paramsOrURL
     */
     protected function simulationRedirect(string $redirectType, $message, $paramsOrURL) : void
     {
@@ -262,7 +261,7 @@ abstract class Application_Admin_Skeleton
     * Adds a success message, and redirects to the target URL.
     * 
     * @param string|number|UI_Renderable_Interface $message
-    * @param array<string,string|number>|string|AdminURL $paramsOrURL
+    * @param array<string,string|number>|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL)
@@ -282,7 +281,7 @@ abstract class Application_Admin_Skeleton
     * Adds an error message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array<string,string|number>|string|AdminURL $paramsOrURL
+    * @param array<string,string|number>|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithErrorMessage($message, $paramsOrURL)
@@ -302,7 +301,7 @@ abstract class Application_Admin_Skeleton
     * Adds an informational message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array<string,string|number>|string|AdminURL $paramsOrURL
+    * @param array<string,string|number>|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithInfoMessage($message, $paramsOrURL)
@@ -319,7 +318,7 @@ abstract class Application_Admin_Skeleton
     }
 
     /**
-     * @param string|array<string,string|int|float>|AdminURL $paramsOrURL
+     * @param string|array<string,string|int|float>|AdminURLInterface $paramsOrURL
      * @return never
      * @throws Application_Exception
      */

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 class UI_ItemsSelector extends UI_Renderable
 {
@@ -38,7 +38,7 @@ class UI_ItemsSelector extends UI_Renderable
      * Adds a new item to link to.
      *
      * @param string|int|float|StringableInterface|NULL $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string|int|float|StringableInterface|NULL $description Optional description text to show as help.
      * @return $this
      * @throws UI_Exception

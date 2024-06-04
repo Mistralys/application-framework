@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\OutputBuffering;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  */
@@ -113,7 +113,7 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return $this
      */
     public function makeLinked($url) : self

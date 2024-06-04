@@ -2,7 +2,7 @@
 
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 interface UI_Interfaces_Button
     extends
@@ -64,7 +64,7 @@ interface UI_Interfaces_Button
     public function click(string $statement) : self;
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $target
      * @return $this
      */

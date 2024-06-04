@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
 {
@@ -37,7 +37,7 @@ class UI_Page_Breadcrumb_Item implements UI_Renderable_Interface
     /**
      * Makes the item link to the specified URL.
      *
-     * @param string|AdminURL|array<string,mixed> $urlOrParams
+     * @param string|AdminURLInterface|array<string,mixed> $urlOrParams
      * @return $this
      *
      * @throws ClassNotExistsException

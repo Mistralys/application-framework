@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseURL;
 use AppUtils\URLInfo;
 
@@ -48,7 +48,7 @@ class Application_URL
     protected URLInfo $info;
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @throws Application_Exception
      */
     public function __construct($url)

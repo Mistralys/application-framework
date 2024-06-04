@@ -16,6 +16,7 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use AppUtils\PaginationHelper;
 use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\ClientResourceCollection;
 use UI\SystemHint;
 use UI\PaginationRenderer;
@@ -720,9 +721,9 @@ class UI
 
     /**
      * @param array<string,string|int|float|bool|null> $params
-     * @return AdminURL
+     * @return AdminURLInterface
      */
-    public static function adminURL(array $params=array()) : AdminURL
+    public static function adminURL(array $params=array()) : AdminURLInterface
     {
         return AdminURL::create($params);
     }
@@ -965,7 +966,7 @@ class UI
     
    /**
     * @param string $label
-    * @param string|AdminURL $url
+    * @param string|AdminURLInterface $url
     * @return UI_Bootstrap_Anchor
     */
     public function createAnchor(string $label='', $url='') : UI_Bootstrap_Anchor

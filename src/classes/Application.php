@@ -13,14 +13,11 @@ use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
-use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
 
 /**
@@ -986,7 +983,7 @@ class Application
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return never
      *
      * @throws Application_Exception

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 abstract class Application_LookupItems_Item
 {
@@ -52,7 +52,7 @@ abstract class Application_LookupItems_Item
 
     /**
      * @param string|number|StringableInterface $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return void
      * @throws UI_Exception
      */

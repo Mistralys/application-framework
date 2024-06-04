@@ -19,7 +19,7 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\JSHelper;
 use AppUtils\RegexHelper;
 use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Form\FormException;
 
 /**
@@ -1615,7 +1615,7 @@ class UI_Form extends UI_Renderable
     /**
      * Adds a clickable button to the form that links to the specified URL.
      *
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string|number|UI_Renderable_Interface|NULL $label
      * @param string|number|UI_Renderable_Interface|NULL $tooltip
      * @return HTML_QuickForm2_Element_UIButton

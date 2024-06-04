@@ -13,13 +13,11 @@ use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\NavConfigurator;
 
 /**
@@ -346,7 +344,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * // redirect to an application internal URL by specifying parameters
      * redirectTo(array('page' => 'home'));
      *
-     * @param array<string,string|number>|AdminURL|string|NULL $paramsOrURL
+     * @param array<string,string|number>|AdminURLInterface|string|NULL $paramsOrURL
      * @return never
      * @throws DriverException
      */
@@ -631,7 +629,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws DriverException
@@ -649,7 +647,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws UI_Exception
@@ -666,7 +664,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * The message is displayed on the target page.
      *
      * @param string|number|UI_Renderable_Interface $message
-     * @param string|array<string,string|number>|AdminURL|NULL $paramsOrURL Target URL or parameters for an internal page
+     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL Target URL or parameters for an internal page
      * @return never
      *
      * @throws UI_Exception
@@ -1698,7 +1696,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Parses the specified application request URL to access
      * information about it.
      *
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return Application_URL
      */
     public function parseURL($url) : Application_URL

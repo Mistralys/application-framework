@@ -10,7 +10,7 @@ use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use UI;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Targets\BaseTarget;
 use UI\Targets\ClickTarget;
 use UI\Targets\URLTarget;
@@ -177,7 +177,7 @@ class TreeNode implements Application_Interfaces_Iconizable
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param bool $newTab
      * @return $this
      */

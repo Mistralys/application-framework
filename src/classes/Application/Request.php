@@ -13,7 +13,7 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Request;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseURL;
 
 /**
@@ -109,7 +109,7 @@ class Application_Request extends Request
     }
 
     /**
-     * @param string|AdminURL|array<string,string|number>$urlOrParams
+     * @param string|AdminURLInterface|array<string,string|number>$urlOrParams
      * @return array
      */
     public static function resolveParams($urlOrParams) : array
@@ -119,7 +119,7 @@ class Application_Request extends Request
             return $urlOrParams;
         }
 
-        if($urlOrParams instanceof AdminURL)
+        if($urlOrParams instanceof AdminURLInterface)
         {
             return $urlOrParams->getParams();
         }

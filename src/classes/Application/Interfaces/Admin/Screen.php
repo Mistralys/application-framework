@@ -9,7 +9,7 @@
 
 use Application\Interfaces\Admin\ScreenAccessInterface;
 use Application\Interfaces\AllowableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -287,7 +287,7 @@ interface Application_Admin_ScreenInterface
     * Adds an error message, and redirects to the target URL.
     * 
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string|AdminURL $paramsOrURL
+    * @param array|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithErrorMessage($message, $paramsOrURL);
@@ -296,7 +296,7 @@ interface Application_Admin_ScreenInterface
     * Adds an error message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string|AdminURL $paramsOrURL
+    * @param array|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithSuccessMessage($message, $paramsOrURL);
@@ -305,13 +305,13 @@ interface Application_Admin_ScreenInterface
     * Adds an informational message, and redirects to the target URL.
     *
     * @param string|number|UI_Renderable_Interface $message
-    * @param array|string|AdminURL $paramsOrURL
+    * @param array|string|AdminURLInterface $paramsOrURL
     * @return never
     */
     public function redirectWithInfoMessage($message, $paramsOrURL);
 
     /**
-     * @param string|AdminURL|array<string,string|int|float> $paramsOrURL
+     * @param string|AdminURLInterface|array<string,string|int|float> $paramsOrURL
      * @return never
      */
     public function redirectTo($paramsOrURL);

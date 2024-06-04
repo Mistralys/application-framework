@@ -7,7 +7,6 @@ use Application\Media\Collection\MediaRecord;
 use Application\Media\DocumentTrait;
 use Application\Media\MediaException;
 use Application\Tags\Taggables\TagCollectionInterface;
-use Application\Tags\Taggables\TagConnector;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use AppUtils\ClassHelper;

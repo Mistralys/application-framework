@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 use Application\Driver\DriverException;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Class used to handle messages after a datagrid action:
@@ -61,7 +61,7 @@ class UI_DataGrid_RedirectMessage
 
     /**
      * @param UI_DataGrid_Action $action
-     * @param string|AdminURL $redirectURL
+     * @param string|AdminURLInterface $redirectURL
      * @throws DriverException
      */
     public function __construct(UI_DataGrid_Action $action, $redirectURL)
