@@ -1,4 +1,4 @@
-## v4.0.2 - Output buffering tweaks
+## v4.0.2 - QOL improvements (Breaking-XS)
 - UI: Fixed some timing issues with output buffering.
 - UI: Added `requireRights()` to the conditionals.
 - UI: Added the screen rights handling layer to formalize accessing this information.
