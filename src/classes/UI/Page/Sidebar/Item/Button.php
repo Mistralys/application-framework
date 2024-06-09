@@ -8,10 +8,8 @@
  */
 
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\Traits_Classable;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
 
 /**
@@ -82,7 +80,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $target
      * @return $this
      * @see UI_Page_Sidebar_Item_Button::makeLinked()
@@ -95,7 +93,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     /**
      * Makes the button link to the specified URL.
      *
-     * @param string|AdminURL|array<string,string> $urlOrParams
+     * @param string|AdminURLInterface|array<string,string> $urlOrParams
      * @param boolean $newWindow Whether to open the link in a new tab/window
      * @return $this
      * @throws BaseClassHelperException

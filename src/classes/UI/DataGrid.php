@@ -7,8 +7,11 @@
  * @see UI_DataGrid
  */
 
+use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\Interfaces\FilterCriteriaInterface;
+use Application\Interfaces\HiddenVariablesInterface;
+use Application\Traits\HiddenVariablesTrait;
 use AppUtils\Interfaces\StringableInterface;
 use function AppLocalize\tex;
 
@@ -21,13 +24,21 @@ use function AppLocalize\tex;
  * @subpackage UserInterface
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class UI_DataGrid
+class UI_DataGrid implements HiddenVariablesInterface
 {
+    use HiddenVariablesTrait;
+
     public const ERROR_MISSING_PRIMARY_KEY_NAME = 599901;
     public const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
     public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
     public const ERROR_DUPLICATE_DATAGRID_ID = 599905;
     public const ERROR_UNKNOWN_OPTION = 5999007;
+    public const REQUEST_PARAM_ORDERBY = 'datagrid_orderby';
+    public const REQUEST_PARAM_ORDERDIR = 'datagrid_orderdir';
+    public const REQUEST_PARAM_ACTION = 'datagrid_action';
+    public const REQUEST_PARAM_SUBMITTED = 'datagrid_submitted';
+    public const REQUEST_PARAM_PERPAGE = 'datagrid_perpage';
+    public const REQUEST_PARAM_PAGE = 'datagrid_page';
 
     protected string $id;
     protected UI $ui;
@@ -42,10 +53,10 @@ class UI_DataGrid
     protected array $persistRequestVars = array(
         'page',
         'mode',
-        'datagrid_perpage',
-        'datagrid_page',
-        'datagrid_orderby',
-        'datagrid_orderdir'
+        self::REQUEST_PARAM_PERPAGE,
+        self::REQUEST_PARAM_PAGE,
+        self::REQUEST_PARAM_ORDERBY,
+        self::REQUEST_PARAM_ORDERDIR
     );
 
     protected Application_Request $request;
@@ -188,7 +199,7 @@ class UI_DataGrid
         $found = false;
 
         // let's see if we can use a previously set column
-        $columnName = $this->getSetting('datagrid_orderby');
+        $columnName = $this->getSetting(self::REQUEST_PARAM_ORDERBY);
         if(!empty($columnName)) {
             $column = $this->getColumnByOrderKey($columnName);
             if($column) {
@@ -217,9 +228,6 @@ class UI_DataGrid
         if(!$found) {
             return null;
         }
-
-        // store the choice for later
-        $this->setCookie('datagrid_orderby', $found->getOrderKey());
 
         $this->orderColumn = $found;
 
@@ -492,52 +500,6 @@ class UI_DataGrid
         return $this->sumsRow;
     }
 
-    /**
-     * @var array<string,string>
-     */
-    protected array $hiddenVars = array();
-
-    /**
-     * @param string $name
-     * @param string|int|float|StringableInterface|NULL $value
-     * @return $this
-     */
-    public function addHiddenVar(string $name, $value) : self
-    {
-        $this->hiddenVars[$name] = (string)$value;
-        return $this;
-    }
-
-    /**
-     * @param array<string,int|string|float> $vars
-     * @return $this
-     */
-    public function addHiddenVars(array $vars) : self
-    {
-        foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Adds all page-related variables (page / mode / submode...) for
-     * the current admin screen.
-     *
-     * NOTE: Only possible when in admin mode.
-     *
-     * @return $this
-     * @throws DriverException
-     */
-    public function addHiddenScreenVars() : self
-    {
-        return $this->addHiddenVars(Application_Driver::getInstance()
-            ->getActiveScreen()
-            ->getPageParams()
-        );
-    }
-
    /**
     * Adds controls in the grid to select multiple entries and add
     * actions for them. Use the {@link addAction()} method to add
@@ -640,12 +602,15 @@ class UI_DataGrid
 
     protected bool $initDone = false;
 
-    protected function init() : void
+    protected function initRender() : void
     {
         if ($this->initDone) {
             return;
         }
 
+        $this->initDone = true;
+
+        $this->start();
         $actions = $this->getValidActions();
 
         // if there are no multiselect actions present,
@@ -704,7 +669,7 @@ class UI_DataGrid
             ));
         }
 
-        $props['BaseURL'] =  $this->buildURL(array('datagrid_page' => '_PGNR_'));
+        $props['BaseURL'] =  $this->buildURL(array(self::REQUEST_PARAM_PAGE => '_PGNR_'));
         $props['TotalEntries'] = $this->getTotal();
         $props['TotalEntriesUnfiltered'] = $this->getTotalUnfiltered();
 
@@ -963,12 +928,10 @@ class UI_DataGrid
             return $this;
         }
 
-        $currentChoice = (int)$this->getSetting('datagrid_perpage');
+        $currentChoice = (int)$this->getSetting(self::REQUEST_PARAM_PERPAGE);
         if (empty($currentChoice) || !in_array($currentChoice, $choices)) {
             $currentChoice = $choices[0];
         }
-
-        $this->setCookie('datagrid_perpage', $currentChoice);
 
         $this->limitOptions = true;
         $this->limitChoices = $choices;
@@ -984,41 +947,9 @@ class UI_DataGrid
 
     /**
      * @param string $name
-     * @param mixed $value
-     * @return bool
-     */
-    protected function setCookie(string $name, $value) : bool
-    {
-        if(headers_sent()) {
-            return false;
-        }
-
-        $cookieName = $this->getCookieName($name);
-        return setcookie($cookieName, (string)$value, time() + 60 * 60 * 24 * 360);
-    }
-
-    /**
-     * @param string $name
-     * @param null|string $default
-     * @return string|NULL
-     */
-    protected function getCookie(string $name, ?string $default = null) : ?string
-    {
-        $cookieName = $this->getCookieName($name);
-
-        if (isset($_COOKIE[$cookieName]))
-        {
-            return (string)$_COOKIE[$cookieName];
-        }
-
-        return $default;
-    }
-
-    /**
-     * @param string $name
      * @return string
      */
-    protected function getCookieName(string $name) : string
+    protected function resolveSettingName(string $name) : string
     {
         return $this->getID() . '_' . $name;
     }
@@ -1152,7 +1083,7 @@ class UI_DataGrid
      */
     public function render(array $entries) : string
     {
-        $this->init();
+        $this->initRender();
 
         $this->rendering = true;
 
@@ -1301,27 +1232,18 @@ class UI_DataGrid
             $params = $action->getParams();
             $actionName = $action->getName();
             foreach($params as $name => $value) {
-                $this->addHiddenVar('action_'.$actionName.'['.$name.']', $value);
+                $this->addPrivateHiddenVar('action_'.$actionName.'['.$name.']', $value);
             }
         }
 
         $id = $this->getID();
 
-        $html =
-        '<div class="datagrid-hiddenvars">' .
-            '<input type="hidden" id="' . $this->getFormID('orderby') . '" name="datagrid_orderby" value="' . $this->getOrderBy() . '"/>' .
-            '<input type="hidden" id="' . $this->getFormID('orderdir') . '" name="datagrid_orderdir" value="' . $this->getOrderDir() . '"/>' .
-            '<input type="hidden" id="' . $this->getFormID('action') . '" name="datagrid_action" value="' . $id . '"/>'.
-            '<input type="hidden" name="datagrid_submitted" value="' . $id . '"/>';
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_ORDERBY, $this->getOrderBy(), $this->getFormID('orderby'));
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_ORDERDIR, $this->getOrderDir(), $this->getFormID('orderdir'));
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_ACTION, $this->getPage(), $this->getFormID('action'));
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_SUBMITTED, $id);
 
-            foreach ($this->hiddenVars as $name => $value) {
-                $html .=
-                '<input type="hidden" name="' . $name . '" value="' . $value . '"/>';
-            }
-            $html .=
-        '</div>';
-
-        return $html;
+        return $this->renderHiddenInputs(array('datagrid-hiddenvars'));
     }
 
     protected function renderFilterMessages() : string
@@ -1398,7 +1320,12 @@ class UI_DataGrid
      */
     public function configure(Application_FilterSettings $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
     {
+        $this->start();
+
         $this->filterSettings = $settings;
+        $settings->addHiddenVars($this->getHiddenVars());
+        $this->addHiddenVars($settings->getHiddenVars());
+
         $settings->configureFilters($criteria);
 
         $this->configureFromFilters($criteria);
@@ -1475,7 +1402,7 @@ class UI_DataGrid
 
     public function getAction() : string
     {
-        $name = $this->request->getParam('datagrid_action');
+        $name = $this->request->getParam(self::REQUEST_PARAM_ACTION);
         if($this->isBatchComplete()) {
             $name = $this->request->getParam('datagrid_batch_complete');
         }
@@ -1507,7 +1434,7 @@ class UI_DataGrid
             return false;
         }
 
-        if ($this->request->getParam('datagrid_submitted') === $this->getID()) {
+        if ($this->request->getParam(self::REQUEST_PARAM_SUBMITTED) === $this->getID()) {
             return true;
         }
 
@@ -1806,7 +1733,7 @@ class UI_DataGrid
                 if($currentPage > 1) {
                     $html .=
                     '<li>' .
-                        '<a href="' . $this->buildURL(array('datagrid_page' => 1)) . '">'.
+                        '<a href="' . $this->buildURL(array(self::REQUEST_PARAM_PAGE => 1)) . '">'.
                             UI::icon()->first() . ' ' .
                             t('First page').
                         '</a>'.
@@ -1842,7 +1769,7 @@ class UI_DataGrid
                         $active = ' class="active"';
                     }
 
-                    $url = $this->buildURL(array('datagrid_page' => $i));
+                    $url = $this->buildURL(array(self::REQUEST_PARAM_PAGE => $i));
 
                     $html .=
                     '<li' . $active . '>'.
@@ -1856,7 +1783,7 @@ class UI_DataGrid
                     $html .=
                     '<li class="divider"></li>'.
                     '<li>'.
-                        '<a href="' . $this->buildURL(array('datagrid_page' => $totalPages)) . '">'.
+                        '<a href="' . $this->buildURL(array(self::REQUEST_PARAM_PAGE => $totalPages)) . '">'.
                             UI::icon()->last() . ' ' .
                             t('Last page'). ' ' .
                             '<span class="muted">' .
@@ -1890,7 +1817,7 @@ class UI_DataGrid
                         $active = ' class="active"';
                     }
 
-                    $url = $this->buildURL(array('datagrid_page' => $i));
+                    $url = $this->buildURL(array(self::REQUEST_PARAM_PAGE => $i));
 
                     $html .=
                         '<li' . $active . '><a href="' . $url . '">' . $i . '</a></li>';
@@ -1909,7 +1836,7 @@ class UI_DataGrid
         $disabled = ' disabled';
         if ($prevPage > 0) {
             $disabled = '';
-            $href = $this->buildURL(array('datagrid_page' => $prevPage));
+            $href = $this->buildURL(array(self::REQUEST_PARAM_PAGE => $prevPage));
         }
 
         return
@@ -1925,7 +1852,7 @@ class UI_DataGrid
         $disabled = ' disabled';
         if ($nextPage <= $this->countPages()) {
             $disabled = '';
-            $href = $this->buildURL(array('datagrid_page' => $nextPage));
+            $href = $this->buildURL(array(self::REQUEST_PARAM_PAGE => $nextPage));
         }
 
         return
@@ -1959,20 +1886,21 @@ class UI_DataGrid
 
     protected function getSetting(string $name) : ?string
     {
-        $value = $this->getCookie($name);
+        $value = Application::getUser()->getSetting($this->resolveSettingName($name));
 
-        $requestValue = (string)$this->request->getParam($name);
-        if ($requestValue !== '')
-        {
-            $value = $requestValue;
-        }
-
-        if (is_null($value))
+        if (empty($value))
         {
             $value = $this->getRequestDefault($name);
         }
 
         return $value;
+    }
+
+    protected function setSetting(string $name, $value) : void
+    {
+        $user = Application::getUser();
+        $user->setSetting($this->resolveSettingName($name), $value);
+        $user->saveSettings();
     }
 
     /**
@@ -1986,7 +1914,7 @@ class UI_DataGrid
     {
         switch ($name)
         {
-            case 'datagrid_perpage':
+            case self::REQUEST_PARAM_PERPAGE:
                 return (string)$this->limitCurrent;
         }
 
@@ -2007,7 +1935,7 @@ class UI_DataGrid
 
     public function getPage() : int
     {
-        $page = $this->request->getParam('datagrid_page', 1);
+        $page = $this->request->getParam(self::REQUEST_PARAM_PAGE, 1);
         $totalPages = $this->countPages();
         if ($page > $totalPages) {
             $page = $totalPages;
@@ -2180,18 +2108,12 @@ class UI_DataGrid
      */
     public function executeCallbacks() : UI_DataGrid
     {
-        if(!$this->isFormEnabled())
-        {
-            return $this;
-        }
-
-        if($this->callbacksExecuted) {
+        if($this->callbacksExecuted || !$this->isFormEnabled()) {
             return $this;
         }
 
         $action = $this->getActiveAction();
-        if(!$action)
-        {
+        if(!$action) {
             return $this;
         }
 
@@ -2310,6 +2232,8 @@ class UI_DataGrid
      */
     protected function processAllSelected(UI_DataGrid_Action $action)
     {
+        $this->start();
+
         if(!isset($this->filterCriteria)) {
             throw new UI_Exception(
                 'No filter criteria instance available.',
@@ -2537,7 +2461,7 @@ class UI_DataGrid
     {
         $found = false;
 
-        $dir = $this->getSetting('datagrid_orderdir');
+        $dir = $this->getSetting(self::REQUEST_PARAM_ORDERDIR);
         if(!empty($dir)) {
             $found = $dir;
         }
@@ -2545,8 +2469,6 @@ class UI_DataGrid
         if(!$found) {
             $found = $this->defaultOrderDir;
         }
-
-        $this->setCookie('datagrid_orderdir', $found);
 
         return $found;
     }
@@ -2681,5 +2603,67 @@ class UI_DataGrid
     {
         $this->dispatcher = $dispatcher;
         return $this;
+    }
+
+    private bool $started = false;
+
+    protected function start() : void
+    {
+        if($this->started) {
+            return;
+        }
+
+        $this->started = true;
+
+        if(!$this->isSubmitted()) {
+            return;
+        }
+
+        $perPage = $this->request
+            ->registerParam(self::REQUEST_PARAM_PERPAGE)
+            ->setInteger()
+            ->getInt();
+
+        if($perPage > 0) {
+            $this->setSetting(self::REQUEST_PARAM_PERPAGE, $perPage);
+        }
+
+        $orderBy = $this->request
+            ->registerParam(self::REQUEST_PARAM_ORDERBY)
+            ->getString();
+
+        if(!empty($orderBy)) {
+            $this->setSetting(self::REQUEST_PARAM_ORDERBY, $orderBy);
+        }
+
+        $orderDir = $this->request
+            ->registerParam(self::REQUEST_PARAM_ORDERDIR)
+            ->setEnum(array('asc', 'desc', 'ASC', 'DESC'))
+            ->getString();
+
+        if(!empty($orderDir)) {
+            $this->setSetting(self::REQUEST_PARAM_ORDERDIR, $orderDir);
+        }
+
+        if($this->getActiveAction() !== null) {
+            $this->executeCallbacks();
+            return;
+        }
+
+        AppFactory::createDriver()->redirectTo($this->getRefreshURL());
+    }
+
+    public function getRefreshURL(array $params=array()) : string
+    {
+        return $this->request->buildRefreshURL(
+            $params,
+            array(
+                self::REQUEST_PARAM_PERPAGE,
+                self::REQUEST_PARAM_ORDERBY,
+                self::REQUEST_PARAM_ORDERDIR,
+                self::REQUEST_PARAM_SUBMITTED,
+                self::REQUEST_PARAM_ACTION
+            )
+        );
     }
 }

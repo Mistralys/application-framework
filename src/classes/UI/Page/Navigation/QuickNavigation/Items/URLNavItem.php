@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\QuickNavigation\Items;
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\QuickNavigation;
 use UI\Page\Navigation\QuickNavigation\BaseQuickNavItem;
 use UI_Exception;
@@ -33,7 +33,7 @@ class URLNavItem extends BaseQuickNavItem
     /**
      * @param QuickNavigation $quickNavigation
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @throws UI_Exception
      */
     public function __construct(QuickNavigation $quickNavigation, $label, $url)

@@ -23,6 +23,8 @@ use UI_Form;
 /**
  * @package Application
  * @subpackage Revisionables
+ *
+ * @see RevisionableChangelogScreenInterface
  */
 trait RevisionableChangelogScreenTrait
 {
@@ -207,10 +209,11 @@ trait RevisionableChangelogScreenTrait
 
             $items[] = array(
                 'changelog_id' => $entry->getID(),
-                'author' => $entry->getAuthorName(),
-                'date' => $entry->getDatePretty(true),
-                'details' => $entry->getText(),
-                'actions' => $actions
+                RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
+                RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
+                RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
+                RevisionableChangelogScreenInterface::COL_ACTIONS => $actions,
+                RevisionableChangelogScreenInterface::COL_TYPE => $entry->getTypeLabel()
             );
         }
 
@@ -225,10 +228,11 @@ trait RevisionableChangelogScreenTrait
     {
         $grid = $this->ui->createDataGrid($this->revisionable->getRevisionableTypeName() . '_changelog');
         $grid->enableCompactMode();
-        $grid->addColumn('date', t('Date'))->setNowrap();
-        $grid->addColumn('author', t('Author'))->setNowrap();
-        $grid->addColumn('details', t('Details'));
-        $grid->addColumn('actions', '')->setCompact()->roleActions();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))->setNowrap();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))->setNowrap();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_TYPE, t('Change type'));
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_ACTIONS, '')->setCompact()->roleActions();
 
         $grid->setEmptyMessage(
             t('No changes found in this revision.')
@@ -242,6 +246,7 @@ trait RevisionableChangelogScreenTrait
         ));
 
         $grid->enableLimitOptionsDefault();
+        $grid->enableColumnControls(3);
 
         $grid->addHiddenVars($this->getPageParams());
         $grid->addHiddenVar('revision', $this->revisionable->getRevision());

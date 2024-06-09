@@ -1,4 +1,47 @@
-## v4.0.0 - Tagging and Revisionables update (DB-update L)
+## v4.0.2 - QOL improvements (Breaking-XS)
+- UI: Fixed some timing issues with output buffering.
+- UI: Added `requireRights()` to the conditionals.
+- UI: Added the screen rights handling layer to formalize accessing this information.
+- AdminURL: Added the `AdminURLInterface` interface.
+- Core: The `Application_Exception` class can now hold page output.
+- DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).
+- DataGrid: Saving grid settings in the DB ([#27](https://github.com/Mistralys/application-framework/issues/27)).
+- DataGrid: Redirect after saving grid settings ([#26](https://github.com/Mistralys/application-framework/issues/26)).
+- Traits: Added `HiddenVariablesTrait` and matching interface.
+- Traits: Added `AllowableMigrationTrait` and matching interface ([#62](https://github.com/Mistralys/application-framework/issues/62)).
+- DataGrid: Filter settings inherit hidden variables from the grid ([#35](https://github.com/Mistralys/application-framework/issues/35)).
+- Forms: Fixed `validateEmail()` not always returning a boolean value.
+- Revisionables: Added the change type column in the changelog.
+- Revisionables: Fixed `setRevisionKey()` ignoring the changelog data.
+- DBHelper: Added the `KeyModified` event to listen to for records.
+- DBHelper: Added `isStructureModified()` in records.
+- DBHelper: Custom record fields are included in the key modified event.
+- DBHelper: `setCustomModified()` now allows setting more arguments, like the structural flag.
+
+### Breaking changes (XS)
+- Users: Renamed `getRequestedRoles()` to `getRequestedRights()` for consistency.
+
+## v4.0.1 - Session handling update (Breaking-XS)
+- Session: Added event handling.
+- Session: Added `onSessionStarted()`.
+- Session: Added `onUserAuthenticated()`.
+- Session: Added `onBeforeLogOut()`.
+- Session: Fixed logging out not having any effect on the session.
+- Users: Fixed user login dates not being correctly registered.
+- OfflineEvents: Added the system event `SessionInstantiated`.
+- OfflineEvents: More robust event and listener loading.
+- OfflineEvents: Loading listeners and events from the framework and application.
+- AppFactory: Added `createOfflineEvents()`.
+- FilterSettings: Fixed error in `registerSearchSetting()` with default settings.
+- Driver: Added support for Area class names in `getAdminAreas()`.
+- UI: Fixed broken error page layout in some situations.
+- Core: Fixed wrong version number in the `VERSION` file.
+
+### Breaking changes (XS)
+- Session: The `start()` method has been renamed to `_start()`. 
+  Any custom session implementations must be updated accordingly.
+
+## v4.0.0 - Tagging and Revisionables update (Breaking-XL, DB-update L)
 - Tags: Added the tagging management.
 - Media: Documents are now taggable.
 - Tests: The Test DB collection is now taggable.
@@ -67,7 +110,7 @@ docs/sql/2024-02-15-revisionables-tagging.sql
 > the database update, as long as the tagging admin area is not enabled 
 > in the application driver.
 
-### Breaking changes (M)
+### Breaking changes (XL)
 - Revisionables: Added abstract `initStorageParts()` to formalize the saving of parts.
 - Revisionables: Renamed all `revdataXXX`-methods to make it easier to understand.
 - Revisionables: Renamed and namespaced interfaces.

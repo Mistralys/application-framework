@@ -10,6 +10,7 @@ namespace Application;
 
 use Application\FilterSettings\SettingDef;
 use Application\Interfaces\FilterCriteriaInterface;
+use Application\Interfaces\HiddenVariablesInterface;
 use Application_Countries_Country;
 use Application_Exception;
 use Application_FilterSettings;
@@ -48,7 +49,8 @@ use UI_Themes_Exception;
 interface FilterSettingsInterface
     extends
     Application_Interfaces_Loggable,
-    UI_Renderable_Interface
+    UI_Renderable_Interface,
+    HiddenVariablesInterface
 {
     /**
      * Sets the ID to use for saving settings (on a per-user basis).

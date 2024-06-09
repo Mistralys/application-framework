@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Application\ConfigSettings;
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Trait with setter methods for all application configuration settings.
@@ -334,7 +334,7 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return $this
      */
     public function setURL($url) : self
@@ -347,7 +347,7 @@ trait SetAppConfigSettingTrait
      * automatically from the {@see BaseConfigRegistry::URL} setting, but can be
      * overridden here if the application setup is different.
      *
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return $this
      */
     public function setVendorURL($url) : self
@@ -383,7 +383,7 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return $this
      */
     public function setInstallURL($url) : self
@@ -401,7 +401,7 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return $this
      */
     public function setDeeplProxyURL($url) : self

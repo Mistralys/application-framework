@@ -55,6 +55,11 @@ class Application_Changelog_Entry
     {
         return $this->type;
     }
+
+    public function getTypeLabel() : string
+    {
+        return $this->owner->getChangelogTypeLabel($this->type);
+    }
     
    /**
     * Retrieves the data set stored with the changelog entry.

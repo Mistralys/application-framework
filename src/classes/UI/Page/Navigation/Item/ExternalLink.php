@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\AttributeCollection;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\LinkItemBase;
 
 class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
@@ -13,7 +13,7 @@ class UI_Page_Navigation_Item_ExternalLink extends LinkItemBase
     /**
      * @param UI_Page_Navigation $nav
      * @param string $id
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string|number|UI_Renderable_Interface $title
      * @throws Application_Exception
      * @throws UI_Exception

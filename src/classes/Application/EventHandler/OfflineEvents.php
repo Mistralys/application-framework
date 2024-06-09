@@ -9,12 +9,14 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+
 /**
  * Class handling the management of offline events: These
  * are events that are stored on the disk instead of living
  * in memory.
  *
- * **What are offline events used for?**
+ * <h3>What are offline events used for?</h3>
  *
  * They allow for classes to listen to events even if the
  * class instance is not loaded at the time the event is
@@ -22,14 +24,14 @@ declare(strict_types=1);
  * to load the according class instance, and let it process
  * the event.
  *
- * **How do the offline events work?**
+ * <h3>How do the offline events work?</h3>
  *
  * When an offline event is triggered, it is converted to
  * a regular event. Listeners are equally converted to
  * regular listeners by "waking" the listening classes, and
  * adding them as listeners.
 
- * **Event classes folder structure**
+ * <h3>Event classes folder structure</h3>
  *
  * By default, offline events are stored in the driver's
  * `OfflineEvents` sub-folder under `assets/classes/{DriverName}/OfflineEvents`.
@@ -45,7 +47,7 @@ declare(strict_types=1);
  * `CriticalEvent.php` contains the event class, `Logger.php`
  * and `Notifier.php` are listeners of the event.
  *
- * **Class inheritance**
+ * <h3>Class inheritance</h3>
  *
  * - Offline events must extend the regular event class, {@see Application_EventHandler_Event}.
  * - Offline listeners must extend the class {@see Application_EventHandler_OfflineEvents_OfflineListener}.
@@ -59,7 +61,7 @@ class Application_EventHandler_OfflineEvents
     /**
      * @var string[]
      */
-    private $eventBaseNames = array();
+    private array $eventBaseNames = array();
 
     public function __construct()
     {
@@ -79,7 +81,7 @@ class Application_EventHandler_OfflineEvents
      */
     public function addEventsClassBase(string $baseName) : Application_EventHandler_OfflineEvents
     {
-        if(!in_array($baseName, $this->eventBaseNames))
+        if(!in_array($baseName, $this->eventBaseNames, true))
         {
             $this->eventBaseNames[] = $baseName;
         }
@@ -89,12 +91,13 @@ class Application_EventHandler_OfflineEvents
 
     /**
      * @param string $eventName
-     * @param array $args
+     * @param array<int,mixed> $args
+     * @param class-string|null $eventClassName
      * @return Application_EventHandler_OfflineEvents_OfflineEvent
      */
-    public function triggerEvent(string $eventName, array $args=array()) : Application_EventHandler_OfflineEvents_OfflineEvent
+    public function triggerEvent(string $eventName, array $args=array(), ?string $eventClassName=null) : ?Application_EventHandler_OfflineEvents_OfflineEvent
     {
-        $event = $this->createEvent($eventName, $args);
+        $event = $this->createEvent($eventName, $args, $eventClassName);
 
         if($event !== null)
         {
@@ -106,16 +109,19 @@ class Application_EventHandler_OfflineEvents
 
     /**
      * @param string $eventName
-     * @param array $args
+     * @param array<int,mixed> $args
+     * @param class-string|null $eventClassName
      * @return Application_EventHandler_OfflineEvents_OfflineEvent|null
      */
-    public function createEvent(string $eventName, array $args) : ?Application_EventHandler_OfflineEvents_OfflineEvent
+    public function createEvent(string $eventName, array $args, ?string $eventClassName=null) : ?Application_EventHandler_OfflineEvents_OfflineEvent
     {
-        $eventClass = $this->resolveEventClass($eventName);
-
-        if($eventClass === null)
+        if($eventClassName !== null)
         {
-            return null;
+            $eventClass = $eventClassName;
+        }
+        else
+        {
+            $eventClass = $this->resolveEventClass($eventName);
         }
 
         return new Application_EventHandler_OfflineEvents_OfflineEvent(
@@ -125,17 +131,17 @@ class Application_EventHandler_OfflineEvents
         );
     }
 
-    private function resolveEventClass(string $eventName) : ?string
+    public function resolveEventClass(string $eventName) : ?string
     {
         foreach($this->eventBaseNames as $baseName)
         {
-            $className = sprintf(
-                '%s_%s',
+            $className = ClassHelper::resolveClassName(sprintf(
+                '%s_%sEvent',
                 $baseName,
                 $eventName
-            );
+            ));
 
-            if(class_exists($className))
+            if($className !== null)
             {
                 return $className;
             }

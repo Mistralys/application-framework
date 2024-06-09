@@ -8,5 +8,4 @@ use Application\Admin\Area\News\BaseCreateAlertScreen;
 
 class CreateAlertScreen extends BaseCreateAlertScreen
 {
-
 }

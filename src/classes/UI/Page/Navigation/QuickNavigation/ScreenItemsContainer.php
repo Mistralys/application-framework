@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\QuickNavigation;
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\QuickNavigation;
 use UI\Page\Navigation\QuickNavigation\Items\ScreenNavItem;
 use UI\Page\Navigation\QuickNavigation\Items\URLNavItem;
@@ -74,7 +74,7 @@ class ScreenItemsContainer
 
     /**
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return URLNavItem
      *
      * @throws UI_Exception

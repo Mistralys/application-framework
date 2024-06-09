@@ -23,11 +23,6 @@ class ChangelogHandler extends BaseChangelogHandler
     {
     }
 
-    public function getEntryText(string $type, array $data): string
-    {
-        return '';
-    }
-
     public function getEntryDiff(string $type, array $data = array()): ?array
     {
         return null;
@@ -38,5 +33,9 @@ class ChangelogHandler extends BaseChangelogHandler
         return array(
             self::CHANGELOG_SET_ALIAS => t('Set alias')
         );
+    }
+
+    protected function registerTextCallbacks(): void
+    {
     }
 }

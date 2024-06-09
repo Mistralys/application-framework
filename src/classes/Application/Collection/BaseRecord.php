@@ -101,12 +101,12 @@ abstract class Application_Collection_BaseRecord implements Application_Interfac
 
     final protected function getDataKeyString(string $name) : string
     {
-        return strval($this->getDataKey($name));
+        return (string)$this->getDataKey($name);
     }
 
     final protected function getDataKeyInt(string $name) : int
     {
-        return intval($this->getDataKey($name));
+        return (int)$this->getDataKey($name);
     }
 
     final protected function getDataKeyBool(string $name) : bool

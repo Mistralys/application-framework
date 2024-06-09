@@ -7,7 +7,7 @@
  * @see UI_Bootstrap_Anchor
  */
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Bootstrap anchor element.
@@ -23,7 +23,7 @@ class UI_Bootstrap_Anchor extends UI_Bootstrap implements Application_Interfaces
     protected string $label = '';
 
     /**
-     * @param string|AdminURL $href
+     * @param string|AdminURLInterface $href
      * @return UI_Bootstrap|UI_Bootstrap_Anchor
      */
     public function setHref($href)

@@ -10,7 +10,7 @@
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\JSHelper;
 use AppUtils\Traits\ClassableTrait;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * A configurable HTML `button` element. Use the
@@ -646,7 +646,7 @@ class UI_Button
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $target
      * @return $this
      */
@@ -708,7 +708,7 @@ class UI_Button
     * Makes the button redirect to the target URL, displaying
     * a clientside loader while the target page loads. 
     * 
-    * @param string|AdminURL $url
+    * @param string|AdminURLInterface $url
     * @param string $loaderText
     * @return $this
     */
@@ -839,7 +839,7 @@ class UI_Button
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $target
      * @return self
      */

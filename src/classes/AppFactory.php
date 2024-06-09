@@ -20,6 +20,8 @@ use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
 use Application_ErrorLog;
+use Application_EventHandler;
+use Application_EventHandler_OfflineEvents;
 use Application_Logger;
 use Application_LookupItems;
 use Application_Maintenance;
@@ -214,6 +216,11 @@ class AppFactory
     public static function createLookupItems() : Application_LookupItems
     {
         return self::createClassInstance(Application_LookupItems::class, Application_Driver::getInstance());
+    }
+
+    public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
+    {
+        return Application_EventHandler::createOfflineEvents();
     }
 
     // endregion

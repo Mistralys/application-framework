@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace TestDriver\Session;
 
 use Application_Session_AuthTypes_None;
+use Application_Session_AuthTypes_NoneInterface;
 use Application_Session_Native;
 
 /**
@@ -18,7 +19,9 @@ use Application_Session_Native;
  *
  * @package TestDriver
  */
-class TestSessionNoAuth extends Application_Session_Native
+class TestSessionNoAuth
+    extends Application_Session_Native
+    implements Application_Session_AuthTypes_NoneInterface
 {
     use Application_Session_AuthTypes_None;
 

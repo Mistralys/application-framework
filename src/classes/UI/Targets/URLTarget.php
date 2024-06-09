@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace UI\Targets;
 
 use AppUtils\HTMLTag;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 class URLTarget extends BaseTarget
 {
@@ -13,7 +13,7 @@ class URLTarget extends BaseTarget
     private ?string $target = null;
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      */
     public function __construct($url)
     {
@@ -21,7 +21,7 @@ class URLTarget extends BaseTarget
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param bool $newTab
      * @return self
      */

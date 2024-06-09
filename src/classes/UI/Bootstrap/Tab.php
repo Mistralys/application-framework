@@ -7,7 +7,7 @@
  * @see UI_Bootstrap_Tabs
  */
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Handles individual tabs in a tab container.
@@ -198,7 +198,7 @@ class UI_Bootstrap_Tab extends UI_Bootstrap implements Application_Interfaces_Ic
    /**
     * Turns the tab into a static link that does not have any content.
     * 
-    * @param string|AdminURL $url
+    * @param string|AdminURLInterface $url
     * @param bool $newTab
     * @return UI_Bootstrap_Tab
     */

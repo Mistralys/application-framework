@@ -19,6 +19,11 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
 
     private array $custom = array();
 
+    protected function init() : void
+    {
+        $this->registerRecordKey(TestDBCollection::COL_ALIAS, t('Alias'), true);
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
     }
@@ -54,8 +59,11 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
             return false;
         }
 
+        $oldValue = $this->custom[$name] ?? '';
+
         $this->custom[$name] = $value;
-        $this->setCustomModified($name);
+
+        $this->setCustomModified($name, false, $oldValue, $value);
         return true;
     }
 

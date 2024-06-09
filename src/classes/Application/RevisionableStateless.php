@@ -1050,12 +1050,12 @@ abstract class Application_RevisionableStateless
      * @param string $part The part that the key is a member of. Will be set as changed if the value is different.
      * @param bool $structural Whether the key is structural and requires a state change.
      * @param string $changelogID The changelog ID to use for adding a standardized changelog entry
-     * @param array $changelogData Any data that should be stored alongside the changelog entry.
+     * @param array<string,string|number|bool|NULL> $changelogData Any data that should be stored alongside the changelog entry.
      * @return boolean Whether the value has changed, and a save will be needed.
      */
     protected function setRevisionKey(string $name, $value, string $part, bool $structural, string $changelogID='', array $changelogData=array()): bool
     {
-        return $this->_setRevisionKey(self::KEY_TYPE_REGULAR, $name, $value, $part, $structural, $changelogID);
+        return $this->_setRevisionKey(self::KEY_TYPE_REGULAR, $name, $value, $part, $structural, $changelogID, $changelogData);
     }
 
     /**
@@ -1067,7 +1067,7 @@ abstract class Application_RevisionableStateless
      * @param mixed $value
      * @param bool $structural
      * @param string $changelogID
-     * @param array<mixed> $changelogData
+     * @param array<string,string|number|bool|NULL> $changelogData
      * @return bool
      */
     protected function setCustomKey(string $name, $value, bool $structural, string $changelogID='', array $changelogData=array()) : bool
@@ -1121,7 +1121,7 @@ abstract class Application_RevisionableStateless
      * @param string $part The part that the key is a member of. Will be set as changed if the value is different.
      * @param bool $structural Whether the key is structural and requires a state change.
      * @param string $changelogID The changelog ID to use for adding a standardized changelog entry.
-     * @param array<mixed> $changelogData Any data that should be stored alongside the changelog entry.
+     * @param array<string,string|number|bool|NULL> $changelogData Any data that should be stored alongside the changelog entry.
      * @return boolean Whether the value has changed, and a save will be needed.
      * @throws RevisionableException
      * @throws ConvertHelper_Exception

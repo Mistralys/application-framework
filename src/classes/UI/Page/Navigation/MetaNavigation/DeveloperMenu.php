@@ -64,7 +64,7 @@ class DeveloperMenu
         {
             $session = Application::getSession();
             $current = $session->getRightPreset();
-            $currentRights = explode(',', $session->getCurrentRights());
+            $currentRights = $session->fetchSimulatedRights();
 
             sort($currentRights);
 

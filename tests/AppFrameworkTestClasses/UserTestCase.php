@@ -6,7 +6,9 @@ namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application;
+use Application\AppFactory;
 use Application_User;
+use TestDriver\ClassFactory;
 
 abstract class UserTestCase extends ApplicationTestCase
 {
@@ -16,12 +18,13 @@ abstract class UserTestCase extends ApplicationTestCase
     {
         parent::setUp();
 
-        //$this->enableLogging();
+        $this->assertFalse(Application::isAuthenticationEnabled());
 
         Application::log('Tests | Set up');
 
         $this->startTransaction();
 
+        // In CLI mode, this will always be the system user.
         $this->user = Application::getUser();
 
         // Ensure we start with a pristine user instance.

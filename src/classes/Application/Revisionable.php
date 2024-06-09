@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\BaseRevisionableChangelogHandler;
+use Application\Revisionable\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
@@ -313,6 +315,11 @@ abstract class Application_Revisionable
         $this->triggerEvent('StateChanged', array($newState));
         
         $this->log('State changed successfully.');
+
+        $this->enqueueChangelog(
+            RevisionableChangelogHandlerInterface::CHANGELOG_SET_STATE,
+            BaseRevisionableChangelogHandler::resolveSetStateData($state, $newState)
+        );
 
         return $this;
     }

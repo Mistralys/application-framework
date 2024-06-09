@@ -22,8 +22,9 @@ use AppUtils\Traits\RenderableTrait;
  * or the {@see AdminURL::create()} method.
  *
  * @package User Interface
+ * @see AdminURLInterface
  */
-class AdminURL implements RenderableInterface
+class AdminURL implements AdminURLInterface
 {
     use RenderableTrait;
 
@@ -76,6 +77,8 @@ class AdminURL implements RenderableInterface
     }
 
     /**
+     * Adds a parameter, automatically determining its type.
+     *
      * @param string $name
      * @param string|int|float|bool|null $value
      * @return $this
@@ -141,7 +144,7 @@ class AdminURL implements RenderableInterface
     /**
      * Adds an array as a JSON string.
      * @param string $name
-     * @param array<mixed> $data
+     * @param array<int|string,string|int|float|bool|NULL|array> $data
      * @return $this
      * @throws JSONConverterException
      */

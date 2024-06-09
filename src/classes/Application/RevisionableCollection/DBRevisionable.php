@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\RevisionStorage\StubDBRevisionStorage;
@@ -13,8 +14,6 @@ abstract class Application_RevisionableCollection_DBRevisionable
 {
     public const ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const ERROR_LAST_TRANSACTION_NOT_AVAILABLE = 14702;
-
-    public const CHANGELOG_SET_LABEL = 'set_label';
 
 
     protected Application_RevisionableCollection $collection;
@@ -311,7 +310,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
             Application_RevisionableCollection::COL_REV_LABEL,
             $label,
             false,
-            self::CHANGELOG_SET_LABEL
+            RevisionableChangelogHandlerInterface::CHANGELOG_SET_LABEL
         );
 
         return $this;

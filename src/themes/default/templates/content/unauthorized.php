@@ -6,12 +6,13 @@
     $this->ui->createMessage(
         '<b>'.t('You are not authorized to view this page.').'</b>'
     )
-    ->makeNotDismissable()
-    ->makeLargeLayout()
-    ->enableIcon()
-    ->display();
-    
-    $roles = $this->user->getRequestedRoles();
+        ->makeNotDismissable()
+        ->makeLargeLayout()
+        ->enableIcon()
+        ->display();
+
+    $roles = $this->user->getRequestedRights();
+
     $missing = array();
     foreach($roles as $role) {
         if(!$this->user->can($role)) {

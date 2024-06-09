@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use UI\Interfaces\TooltipableInterface;
 use UI\Traits\TooltipableTrait;
 
@@ -74,7 +74,7 @@ abstract class UI_Bootstrap_BaseDropdown
     /**
      * Creates and adds a new anchor menu item.
      * @param string|int|float|StringableInterface|NULL $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return UI_Bootstrap_DropdownAnchor
      *
      * @throws UI_Exception

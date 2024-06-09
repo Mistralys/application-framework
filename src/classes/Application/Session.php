@@ -12,13 +12,16 @@ declare(strict_types=1);
 /**
  * Interface for application session handling classes.
  *
+ * NOTE: To add session event handlers, see the offline
+ * event class: {@see \Application\OfflineEvents\SessionInstantiatedEvent}.
+ *
  * @package Application
  * @subpackage Sessions
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Bootstrap_Screen::initSession()
  */
-interface Application_Session extends Application_Interfaces_Loggable
+interface Application_Session extends Application_Interfaces_Eventable
 {
     public function getID() : string;
 
@@ -111,19 +114,15 @@ interface Application_Session extends Application_Interfaces_Loggable
      */
     public function getRightPreset() : string;
 
+    public function getRightsString() : string;
+
     /**
      * Retrieves the currently active simulated session rights preset.
      * By default, this is the Admin rights list.
      *
-     * Returns a string with role names, separated with commas.
-     *
-     * Example:
-     *
-     * AddRecord,DeleteRecord,PublishRecord
-     *
-     * @return string
+     * @return string[] List of right names.
      */
-    public function getCurrentRights() : string;
+    public function fetchSimulatedRights() : array;
 
     /**
      * Retrieves a list of all available right presets, as an associative
@@ -144,4 +143,48 @@ interface Application_Session extends Application_Interfaces_Loggable
      * @param int $reasonID
      */
     public function logOut(int $reasonID=0) : void;
+
+    /**
+     * Adds a listener for the {@see self::EVENT_USER_AUTHENTICATED} event,
+     * which is called when a user is freshly authenticated in the session.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see UserAuthenticatedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onUserAuthenticated(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a listener for the {@see self::EVENT_BEFORE_LOG_OUT} event,
+     * which is called right before the user is logged out.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see BeforeLogOutEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onBeforeLogOut(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a listener for the {@see self::EVENT_STARTED} event,
+     * which is called when the session has been started.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1) The event instance, {@see SessionStartedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * @return $this
+     */
+    public function start() : self;
 }

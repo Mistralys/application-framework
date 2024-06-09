@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 class Application_LookupItems_Result
 {
@@ -14,7 +14,7 @@ class Application_LookupItems_Result
     /**
      * @param Application_LookupItems_Item $item
      * @param string|number|StringableInterface $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @throws UI_Exception
      */
     public function __construct(Application_LookupItems_Item $item, $label, $url)

@@ -24,7 +24,8 @@ class InitExceptionTest extends ApplicationTestCase
         {
             // Attempt to start a new session, which must fail because
             // headers have already been sent at this point.
-            new TestDriver_Session();
+            $session = new TestDriver_Session();
+            $session->start();
         }
         catch (Application_Session_Exception $e)
         {

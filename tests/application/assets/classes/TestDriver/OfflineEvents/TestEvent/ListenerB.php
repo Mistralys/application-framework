@@ -2,11 +2,18 @@
 
 declare(strict_types=1);
 
-use AppUtils\NamedClosure;
+namespace TestDriver\OfflineEvents\TestEvent;
 
-class TestDriver_OfflineEvents_TestEvent_ListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
+use Application_EventHandler_OfflineEvents_OfflineListener;
+use AppUtils\NamedClosure;
+use Closure;
+use TestDriver\OfflineEvents\TestEvent;
+
+class ListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
 {
-    protected function wakeUp() : NamedClosure
+    public const CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_B_ARGUMENT';
+
+    protected function wakeUp(): NamedClosure
     {
         return NamedClosure::fromClosure(
             Closure::fromCallable(array($this, 'callback')),
@@ -14,8 +21,8 @@ class TestDriver_OfflineEvents_TestEvent_ListenerB extends Application_EventHand
         );
     }
 
-    private function callback(TestDriver_OfflineEvents_TestEvent $event, string $arg1) : void
+    private function callback(TestEvent $event, string $arg1): void
     {
-        define('OFFLINE_EVENTS_LISTENER_B_ARGUMENT', $arg1);
+        define(self::CONSTANT_NAME, $arg1);
     }
 }

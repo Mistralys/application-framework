@@ -28,9 +28,23 @@ abstract class BaseChangelogHandler implements ChangelogHandlerInterface
 {
     protected ChangelogableInterface $changelogable;
 
+    /**
+     * @var array<string,callable>
+     */
+    protected array $textCallbacks = array();
+
     public function __construct(ChangelogableInterface $changelogable)
     {
         $this->changelogable = $changelogable;
+
+        $this->registerTextCallbacks();
+    }
+
+    abstract protected function registerTextCallbacks() : void;
+
+    protected function registerTextCallback(string $type, callable $callback) : void
+    {
+        $this->textCallbacks[$type] = $callback;
     }
 
     public function getChangelogable() : ChangelogableInterface
@@ -67,4 +81,18 @@ abstract class BaseChangelogHandler implements ChangelogHandlerInterface
      * @return array<string,string> Changelog type => Human-readable label pairs.
      */
     abstract protected static function _getTypeLabels() : array;
+
+    public function getEntryText(string $type, array $data): string
+    {
+        if(isset($this->textCallbacks[$type])) {
+            return call_user_func($this->textCallbacks[$type], $data);
+        }
+
+        return $this->_getEntryText($type, $data);
+    }
+
+    protected function _getEntryText(string $type, array $data) : string
+    {
+        return '';
+    }
 }

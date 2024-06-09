@@ -9,7 +9,7 @@
 
 use AppUtils\AttributeCollection;
 use AppUtils\StringBuilder;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Extension to the app utils StringBuilder class, with
@@ -170,7 +170,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      * Otherwise, the link label is used.
      *
      * @param string $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $right
      * @param bool $newTab
      * @return UI_StringBuilder
@@ -188,7 +188,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
 
     /**
      * @param string $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param bool $newTab
      * @param AttributeCollection|null $attributes
      * @return self

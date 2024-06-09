@@ -7,6 +7,8 @@
  * @see Application_EventHandler_Event
  */
 
+declare(strict_types=1);
+
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -25,30 +27,15 @@ class Application_EventHandler_Event
 {
     public const ERROR_EVENT_NOT_CANCELLABLE = 13701;
 
-   /**
-    * @var Application_EventHandler_Listener|NULL
-    */
-    protected $selectedListener = null;
-    
-   /**
-    * @var boolean
-    */
-    protected $cancel = false;
-
-   /**
-    * @var string
-    */
-    protected $cancelReason = '';
-
-   /**
-    * @var string
-    */
-    protected $name;
+    protected ?Application_EventHandler_Listener $selectedListener = null;
+    protected bool $cancel = false;
+    protected string $cancelReason = '';
+    protected string $name;
 
    /**
     * @var array<int,mixed>
     */
-    protected $args;
+    protected array $args;
 
    /**
     * @param string $name

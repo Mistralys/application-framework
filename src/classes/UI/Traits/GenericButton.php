@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Trait that can be used to add all button interface methods,
@@ -119,7 +119,7 @@ trait UI_Traits_GenericButton
     }
 
     /**
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @param string $target
      * @return $this
      */

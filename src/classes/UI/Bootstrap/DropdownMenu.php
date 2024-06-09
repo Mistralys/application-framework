@@ -5,9 +5,8 @@ declare(strict_types=1);
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
-use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
 {
@@ -90,7 +89,7 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
      * Adds a menu item that links to a regular URL.
      *
      * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */

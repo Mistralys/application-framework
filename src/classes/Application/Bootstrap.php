@@ -90,6 +90,9 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        // start so we can capture the page's content
+        ob_start();
+
         self::init();
 
         self::$bootClass = $class;
@@ -111,27 +114,21 @@ class Application_Bootstrap
                 );
             }
             
-            // start so we can capture the page's content
-            ob_start();
-            
             $screen->boot();
-            
+
+            // Display the page content
             ob_end_flush();
         }
-        catch(Exception $e)
+        catch(Throwable $e)
         {
-            // Fetch the content generated up to this point,
-            // so we can use it and avoid text output outside 
-            // the error page.
-            $output = ob_get_clean();
-
             // Convert non-framework exceptions, so they can
             // be logged in the error log.
             $e = self::convertException($e);
+            $e->setPageOutput(ob_get_clean());
 
             if($displayException)
             {
-                displayError($e, (string)$output);
+                displayError($e);
             }
             else 
             {
@@ -274,7 +271,7 @@ class Application_Bootstrap
         register_shutdown_function(array(self::class, 'handleShutDown'));
     }
 
-    public static function convertException(Exception $e) : Application_Exception
+    public static function convertException(Throwable $e) : Application_Exception
     {
         // Handle the case where the DB is not installed
         if($e instanceof DBHelper_Exception)

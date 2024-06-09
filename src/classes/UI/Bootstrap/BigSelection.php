@@ -5,7 +5,7 @@ declare(strict_types=1);
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\NumberInfo;
 use AppUtils\Traits\OptionableTrait;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseNumber;
 
 /**
@@ -227,7 +227,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
     * Adds a link to the list. Shortcut for adding the item and setting the link.
     * 
     * @param string|number|UI_Renderable_Interface $label
-    * @param string|AdminURL $url
+    * @param string|AdminURLInterface $url
     * @return UI_Bootstrap_BigSelection_Item_Regular
     */
     public function addLink($label, $url) : UI_Bootstrap_BigSelection_Item_Regular

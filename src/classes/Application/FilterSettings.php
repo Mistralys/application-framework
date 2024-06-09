@@ -14,6 +14,7 @@ use Application\Driver\DriverException;
 use Application\FilterSettings\SettingDef;
 use Application\FilterSettingsInterface;
 use Application\Interfaces\FilterCriteriaInterface;
+use Application\Traits\HiddenVariablesTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -26,6 +27,7 @@ abstract class Application_FilterSettings
 {
     use Application_Traits_Loggable;
     use UI_Traits_RenderableGeneric;
+    use HiddenVariablesTrait;
 
     public const ERROR_UNKNOWN_SETTING = 450001;
     public const ERROR_NO_SETTINGS_REGISTERED = 450002;
@@ -58,11 +60,6 @@ abstract class Application_FilterSettings
     
     protected UI $ui;
     
-   /**
-    * @var array<string,string|number|bool>
-    */
-    protected array $hiddens = array();
-
     protected string $storageID;
     private bool $settingsLoaded = false;
 
@@ -201,6 +198,10 @@ abstract class Application_FilterSettings
     {
         if(empty($label)) {
             $label = t('Search');
+        }
+
+        if(empty($setting)) {
+            $setting = self::SETTING_DEFAULT_SEARCH;
         }
 
         $this->registerSetting($setting, $label)
@@ -516,7 +517,7 @@ abstract class Application_FilterSettings
             }
         }
         
-        foreach($this->hiddens as $name => $value) {
+        foreach($this->getHiddenVars() as $name => $value) {
             $this->form->addHiddenVar($name, $value);
         }
         
@@ -625,21 +626,6 @@ abstract class Application_FilterSettings
     public function addSelect(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_Select
     {
         return $this->addElementSelect($setting, $container);
-    }
-
-    public function addHiddenVars(array $vars) : self
-    {
-        foreach($vars as $name => $value) {
-            $this->addHiddenVar($name, $value);
-        }
-
-        return $this;
-    }
-
-    public function addHiddenVar(string $name, $value) : self
-    {
-        $this->hiddens[$name] = toString($value);
-        return $this;
     }
 
     /**

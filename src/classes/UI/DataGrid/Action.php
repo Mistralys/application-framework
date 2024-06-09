@@ -5,7 +5,7 @@ use AppUtils\NamedClosure;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
 use AppUtils\Traits\ClassableTrait;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 
 abstract class UI_DataGrid_Action
     implements
@@ -515,7 +515,7 @@ abstract class UI_DataGrid_Action
     * number of affected records: determines the message that needs
     * to be added, and redirects to the target URL. 
     * 
-    * @param string|AdminURL $redirectURL
+    * @param string|AdminURLInterface $redirectURL
     * @return UI_DataGrid_RedirectMessage
     */
     public function createRedirectMessage($redirectURL) : UI_DataGrid_RedirectMessage

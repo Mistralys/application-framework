@@ -18,7 +18,7 @@ use TestDriver\TestDBRecords\TestDBRecord;
  */
 class RecordTests extends DBHelperTestCase
 {
-    public function test_persistChanges() : void
+    public function test_persistChanges(): void
     {
         $collection = new TestDBCollection();
         $record = $collection->createTestRecord('My label', 'my-alias');
@@ -46,7 +46,7 @@ class RecordTests extends DBHelperTestCase
      *
      * @see \DBHelper_BaseRecord::saveDataKeys()
      */
-    public function test_saveModified() : void
+    public function test_saveOnlyCustomModified(): void
     {
         $collection = new TestDBCollection();
         $record = $collection->createTestRecord('My label', 'my-alias');
@@ -56,9 +56,25 @@ class RecordTests extends DBHelperTestCase
         $record->setCustomField('dummy', 'dummy');
 
         $this->assertTrue($record->isModified());
+        $this->assertFalse($record->isStructureModified(), 'The custom field is not structural.');
 
         $record->save();
 
         $this->addToAssertionCount(1);
+    }
+
+    public function test_structural(): void
+    {
+        $collection = new TestDBCollection();
+        $record = $collection->createTestRecord('My label', 'my-alias');
+
+        $record->setAlias('new-alias');
+
+        $this->assertTrue($record->isModified());
+        $this->assertTrue($record->isStructureModified(), 'The alias is a structural key.');
+
+        $record->save();
+
+        $this->assertFalse($record->isStructureModified());
     }
 }

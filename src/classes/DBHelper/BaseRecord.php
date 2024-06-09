@@ -8,6 +8,7 @@
 
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use DBHelper\BaseRecord\Event\KeyModifiedEvent;
 
 /**
  * Base container class for a single record in a database. 
@@ -183,10 +184,6 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         {
             $this->_onDataRefreshed();
         }
-    }
-
-    protected function _onDataRefreshed() : void
-    {
     }
 
     protected function init()
@@ -477,17 +474,15 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
         $this->log(sprintf('Data key [%s] has been modified.', $name));
 
-        if(!in_array($name, $this->modified)) {
+        if(!in_array($name, $this->modified))
+        {
             $this->modified[] = $name;
-            if(isset($this->registeredKeys[$name])) {
-                $this->recordRegisteredKeyModified(
-                    $name, 
-                    $this->registeredKeys[$name]['label'], 
-                    $this->registeredKeys[$name]['isStructural'], 
-                    $previous, 
-                    $value
-                );
-            }
+
+            $this->triggerKeyModified(
+                $name,
+                $previous,
+                $value
+            );
         }
         
         return true;
@@ -518,12 +513,12 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     
    /**
     * Whether the record has been modified since the last save, or
-    * the just the specified key.
+    * just the specified key.
     * 
-    * @param string $key A single data key to check
+    * @param string|NULL $key A single data key to check, or any key if NULL.
     * @return boolean
     */
-    public function isModified($key=null)
+    public function isModified(?string $key=null) : bool
     {
         if($this->isDummy) {
             return false;
@@ -534,6 +529,25 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         }
         
         return !empty($this->modified) || !empty($this->customModified);
+    }
+
+    /**
+     * Checks whether any structural data keys have been modified.
+     * @return bool
+     */
+    public function isStructureModified() : bool
+    {
+        if($this->isDummy) {
+            return false;
+        }
+
+        foreach($this->registeredKeys as $key => $info) {
+            if($info['isStructural'] && in_array($key, $this->modified)) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
    /**
@@ -571,20 +585,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->log('Saving the record.');
 
         $this->saveDataKeys();
-        
-        // are there any custom fields that were modified?
-        if(!empty($this->customModified))
-        {
-            $this->log('Custom fields were modified, saving.');
-
-            $this->saveCustomFields($this->customModified);
-            
-            $this->customModified = array();
-        }
-        else
-        {
-            $this->log('No custom fields were modified, skipping.');
-        }
+        $this->saveCustomKeys();
 
         $context = new DBHelper_BaseCollection_OperationContext_Save($this);
 
@@ -596,6 +597,23 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->postSave($context);
         
         return true;
+    }
+
+    private function saveCustomKeys() : void
+    {
+        // are there any custom fields that were modified?
+        if(!empty($this->customModified))
+        {
+            $this->log('Custom fields were modified, saving.');
+
+            $this->saveCustomFields($this->customModified);
+
+            $this->customModified = array();
+        }
+        else
+        {
+            $this->log('No custom fields were modified, skipping.');
+        }
     }
 
     private function saveDataKeys() : void
@@ -679,16 +697,6 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         
     }
     
-   /**
-    * Called right after successfully saving the 
-    * record. Can be extended to add any tasks that
-    * the record type may need after saving.
-    */
-    protected function postSave(DBHelper_BaseCollection_OperationContext_Save $context) : void
-    {
-        
-    }
-
     /**
      * @param string[] $columns
      */
@@ -713,9 +721,9 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     }
 
     /**
-     * @var array<string,array<string,string|bool>>
+     * @var array<string,array{label:string,isStructural:bool}>
      */
-    protected $registeredKeys = array();
+    protected array $registeredKeys = array();
     
    /**
     * Registers a record key, to enable tracking changes made to its value.
@@ -724,16 +732,44 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     * 
     * This is usually called in the record's {@link init()} method.
     * 
-    * @param string $name The name of the key (of the database column)
+    * @param string $name The key name (of the database column)
     * @param string $label Human-readable label of the key
     * @param boolean $isStructural Whether changing this key means it's a structural (critical) change
     */
-    protected function registerRecordKey($name, $label, $isStructural=false)
+    protected function registerRecordKey(string $name, string $label, bool $isStructural=false) : void
     {
         $this->registeredKeys[$name] = array(
             'label' => $label,
             'isStructural' => $isStructural
         );
+    }
+
+    /**
+     * Retrieves the record's parent record: this is only
+     * available if the record's collection has a parent
+     * collection.
+     *
+     * @return DBHelper_BaseRecord|NULL
+     */
+    public function getParentRecord()
+    {
+        return $this->collection->getParentRecord();
+    }
+
+    // region: Event handling
+
+    /**
+     * Called right after successfully saving the
+     * record. Can be extended to add any tasks that
+     * the record type may need after saving.
+     */
+    protected function postSave(DBHelper_BaseCollection_OperationContext_Save $context) : void
+    {
+
+    }
+
+    protected function _onDataRefreshed() : void
+    {
     }
 
     /**
@@ -768,18 +804,52 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     */
     abstract protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue);
     
-   /**
-    * Retrieves the record's parent record: this is only
-    * available if the record's collection has a parent
-    * collection.
-    * 
-    * @return DBHelper_BaseRecord|NULL
-    */
-    public function getParentRecord()
+    private function triggerKeyModified(string $name, $oldValue, $newValue, bool $structural=false, bool $isCustom=false) : void
     {
-        return $this->collection->getParentRecord();
+        $label = null;
+        $isStructural = $structural;
+
+        if(isset($this->registeredKeys[$name])) {
+            $label = $this->registeredKeys[$name]['label'];
+            $isStructural = $this->registeredKeys[$name]['isStructural'];
+
+            $this->recordRegisteredKeyModified(
+                $name,
+                $label,
+                $isStructural,
+                $oldValue,
+                $newValue
+            );
+        }
+
+        $this->triggerEvent(
+            KeyModifiedEvent::EVENT_NAME,
+            array(
+                $this,
+                $name,
+                $oldValue,
+                $newValue,
+                $label,
+                $isStructural,
+                $isCustom
+            ),
+            KeyModifiedEvent::class
+        );
     }
-    
+
+    /**
+     * Adds a listener for the event {@see KeyModifiedEvent}.
+     *
+     * NOTE: The callback gets the event instance as sole argument.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onKeyModified(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(KeyModifiedEvent::EVENT_NAME, $callback);
+    }
+
    /**
     * This is called once when the record has been created, 
     * and allows the record to run any additional initializations
@@ -787,7 +857,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     *
     * @param DBHelper_BaseCollection_OperationContext_Create $context
     */
-    public final function onCreated(DBHelper_BaseCollection_OperationContext_Create $context) : void
+    final public function onCreated(DBHelper_BaseCollection_OperationContext_Create $context) : void
     {
         $this->_onCreated($context);
     }
@@ -803,12 +873,12 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     * 
     * @param DBHelper_BaseCollection_OperationContext_Delete $context
     */
-    public final function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
+    final public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->_onDeleted($context);
     }
 
-    public final function onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context) : void
+    final public function onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->_onBeforeDelete($context);
     }
@@ -828,7 +898,9 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     }
 
-    protected function setCustomModified(string $name) : void
+    // endregion
+
+    protected function setCustomModified(string $name, bool $structural=false, $oldValue=null, $newValue=null) : void
     {
         if(in_array($name, $this->customModified)) {
             return;
@@ -837,6 +909,14 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->log(sprintf('CustomFields | [%s] | Modified.', $name));
         
         $this->customModified[] = $name;
+
+        $this->triggerKeyModified(
+            $name,
+            $oldValue,
+            $newValue,
+            $structural,
+            true
+        );
     }
 
     /**

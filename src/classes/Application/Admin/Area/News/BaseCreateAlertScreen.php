@@ -6,11 +6,15 @@ namespace Application\Admin\Area\News;
 
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
+use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsSettingsManager;
+use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
 
 abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'create-alert';
 
     public function getURLName(): string
@@ -18,9 +22,14 @@ abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canCreateNewsAlerts();
+        return NewsRightsInterface::RIGHT_CREATE_NEWS_ALERTS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array();
     }
 
     public function getSettingsManager() : NewsSettingsManager

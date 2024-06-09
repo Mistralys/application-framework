@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
-use UI\AdminURLs\AdminURL;
+use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseURL;
 
 class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
@@ -69,7 +69,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
     * turns the button into a split button with the caret
     * used to access the menu.
     * 
-    * @param string|AdminURL $url
+    * @param string|AdminURLInterface $url
     * @return UI_Page_Navigation_Item_DropdownMenu
     */
     public function link($url) : UI_Page_Navigation_Item_DropdownMenu
@@ -189,7 +189,7 @@ class UI_Page_Navigation_Item_DropdownMenu extends UI_Page_Navigation_Item
      * Adds a menu item that links to a regular URL.
      *
      * @param string $label
-     * @param string|AdminURL $url
+     * @param string|AdminURLInterface $url
      * @return UI_Bootstrap_DropdownAnchor
      * @throws UI_Exception
      */
