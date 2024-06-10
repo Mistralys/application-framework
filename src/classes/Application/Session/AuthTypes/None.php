@@ -32,7 +32,8 @@ trait Application_Session_AuthTypes_None
     private array $fixedRights = array(
         Application_User::RIGHT_LOGIN,
         Application_User::RIGHT_DEVELOPER,
-        Application_User::RIGHT_TRANSLATE_UI
+        Application_User::RIGHT_TRANSLATE_UI,
+        Application_User::RIGHT_QA_TESTER
     );
 
     protected function handleLogin() : Application_Users_User
@@ -51,6 +52,10 @@ trait Application_Session_AuthTypes_None
                 Application_User::RIGHT_LOGIN,
                 Application_User::RIGHT_DEVELOPER
             ),
+            self::QA_TESTING_PRESET_ID => array(
+                Application_User::RIGHT_LOGIN,
+                Application_User::RIGHT_QA_TESTER
+            )
         );
     }
 

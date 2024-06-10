@@ -68,6 +68,7 @@ abstract class Application_User
     public const RIGHT_LOGIN = 'Login';
     public const RIGHT_TRANSLATE_UI = 'TranslateUI';
     public const RIGHT_DEVELOPER = 'Developer';
+    public const RIGHT_QA_TESTER = 'QATester';
 
     /**
      * Stores user right definitions.
@@ -766,6 +767,11 @@ abstract class Application_User
         return $this;
     }
 
+    public function canLoginInMaintenanceMode() : bool
+    {
+        return $this->isDeveloper() || $this->isQATester();
+    }
+
     public function isDeveloper() : bool
     {
         if(Application::isDemoMode()) {
@@ -886,6 +892,7 @@ abstract class Application_User
 
     public function canTranslateUI() : bool { return $this->can(self::RIGHT_TRANSLATE_UI); }
     public function canLogin() : bool { return $this->can(self::RIGHT_LOGIN); }
+    public function isQATester() : bool { return $this->can(self::RIGHT_QA_TESTER); }
 
     public function isSystemUser() : bool
     {
@@ -978,6 +985,13 @@ abstract class Application_User
         $group->registerRight(self::RIGHT_TRANSLATE_UI, t('Translate UI'))
             ->actionAdministrate()
             ->setDescription(t('Handle translations of the user interface.'));
+
+        $group->registerRight(self::RIGHT_QA_TESTER, t('QA tester'))
+            ->actionAdministrate()
+            ->setDescription(sb()
+                ->t('Marks the user as a QA tester, giving access to QA testing functionality.')
+                ->t('This includes being able to access the interface when it is running in maintenance mode.')
+            );
 
         $this->registerNewsRights($group);
         $this->registerTagRights($group);
