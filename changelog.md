@@ -3,11 +3,13 @@
 - User: Added `canLoginInMaintenanceMode()`.
 - User: Both developers and QA testers can now access the UI during maintenance.
 - News: Upgraded screens to use the screen rights handling layer.
+- UI: Added docs for the screen rights method `getFeatureRights()`. 
 
 ## v4.0.2 - QOL improvements (Breaking-XS)
 - UI: Fixed some timing issues with output buffering.
 - UI: Added `requireRights()` to the conditionals.
 - UI: Added the screen rights handling layer to formalize accessing this information.
+- UI: Added the `AllowableMigrationTrait` to ease the migration of the screen rights handling.
 - AdminURL: Added the `AdminURLInterface` interface.
 - Core: The `Application_Exception` class can now hold page output.
 - DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).
