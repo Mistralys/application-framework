@@ -1,3 +1,9 @@
+## v4.0.3 - QA Testing role
+- User: Added the right `QATester` to formalize the role of application UI QA tester.
+- User: Added `canLoginInMaintenanceMode()`.
+- User: Both developers and QA testers can now access the UI during maintenance.
+- News: Upgraded screens to use the screen rights handling layer.
+
 ## v4.0.2 - QOL improvements (Breaking-XS)
 - UI: Fixed some timing issues with output buffering.
 - UI: Added `requireRights()` to the conditionals.
