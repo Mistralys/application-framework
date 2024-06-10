@@ -8,7 +8,9 @@ use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
+use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
 
 /**
@@ -17,6 +19,8 @@ use DBHelper_BaseRecord;
  */
 abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'create-article';
 
     public function getURLName(): string
@@ -24,9 +28,9 @@ abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canCreateNews();
+        return NewsScreenRights::SCREEN_CREATE_ARTICLE;
     }
 
     public function getSettingsManager() : NewsSettingsManager

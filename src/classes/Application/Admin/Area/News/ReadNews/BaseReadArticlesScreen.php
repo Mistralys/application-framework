@@ -9,14 +9,18 @@ use Application\Interfaces\FilterCriteriaInterface;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_Submode;
 use Application_FilterCriteria;
 use AppUtils\PaginationHelper;
 use UI;
 use UI\PaginationRenderer;
 
-class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'articles';
     public const REQUEST_PARAM_PAGE_NUMBER = 'news-page';
     private NewsFilterCriteria $filters;
@@ -30,6 +34,11 @@ class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
     public function getTitle(): string
     {
         return t('%1$s news', $this->driver->getAppNameShort());
+    }
+
+    public function getRequiredRight(): string
+    {
+        return NewsScreenRights::SCREEN_READ_ARTICLES;
     }
 
     protected function _handleHelp(): void

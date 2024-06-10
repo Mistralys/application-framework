@@ -6,10 +6,14 @@ namespace Application\Admin\Area\News;
 
 use Application\Admin\Area\News\ReadNews\BaseReadArticlesScreen;
 use Application\AppFactory;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode;
 
 abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'read';
 
     public function getURLName(): string
@@ -22,9 +26,9 @@ abstract class BaseReadNewsScreen extends Application_Admin_Area_Mode
         return BaseReadArticlesScreen::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return true;
+        return NewsScreenRights::SCREEN_READ_NEWS;
     }
 
     public function getNavigationTitle(): string

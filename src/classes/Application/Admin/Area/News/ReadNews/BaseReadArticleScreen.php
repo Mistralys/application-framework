@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace Application\Admin\Area\News\ReadNews;
 
 use Application\AppFactory;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_Submode;
 use NewsCentral\Entries\NewsArticle;
 use UI;
 
-class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'article';
     public const REQUEST_PARAM_ARTICLE = 'id';
     private NewsArticle $article;
@@ -28,6 +32,11 @@ class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
     public function getTitle(): string
     {
         return $this->article->getLabel();
+    }
+
+    public function getRequiredRight(): string
+    {
+        return NewsScreenRights::SCREEN_READ_ARTICLE;
     }
 
     public function getDefaultAction(): string

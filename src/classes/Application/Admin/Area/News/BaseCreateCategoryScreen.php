@@ -9,6 +9,8 @@ use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
 
 /**
@@ -17,6 +19,8 @@ use DBHelper_BaseRecord;
  */
 abstract class BaseCreateCategoryScreen extends BaseCollectionCreateExtended
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'create-category';
 
     public function getURLName(): string
@@ -24,9 +28,9 @@ abstract class BaseCreateCategoryScreen extends BaseCollectionCreateExtended
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canCreateNews();
+        return NewsScreenRights::SCREEN_CREATE_CATEGORY;
     }
 
     public function getSettingsManager() : CategorySettingsManager

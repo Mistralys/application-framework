@@ -8,6 +8,9 @@ use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application\NewsCentral\NewsRightsInterface;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionRecord;
 use UI;
 
@@ -16,6 +19,8 @@ use UI;
  */
 abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_CollectionRecord
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'view';
 
     public function getURLName(): string
@@ -23,9 +28,9 @@ abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Collect
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewNews();
+        return NewsScreenRights::SCREEN_VIEW_ARTICLE;
     }
 
     public function getDefaultSubmode(): string
