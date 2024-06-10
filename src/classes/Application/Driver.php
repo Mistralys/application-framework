@@ -755,7 +755,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             return;
         }
 
-        if (self::isMaintenanceMode() && !$this->user->isDeveloper())
+        if (self::isMaintenanceMode() && !$this->user->canLoginInMaintenanceMode())
         {
             echo AppFactory::createMaintenance()->renderScreen($this->getPage());
             Application::exit('Maintenance is enabled');
