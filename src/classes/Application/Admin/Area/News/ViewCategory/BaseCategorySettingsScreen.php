@@ -54,7 +54,7 @@ abstract class BaseCategorySettingsScreen extends BaseCollectionEditExtended
     public function getFeatureRights(): array
     {
         return array(
-            NewsScreenRights::SCREEN_CATEGORY_SETTINGS_EDIT => t('Modify the settings')
+            t('Modify the settings') => NewsScreenRights::SCREEN_CATEGORY_SETTINGS_EDIT
         );
     }
 
