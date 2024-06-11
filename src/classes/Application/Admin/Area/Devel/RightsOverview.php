@@ -1,11 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Development\DevScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 
 abstract class Application_Admin_Area_Devel_RightsOverview extends Application_Admin_Area_Mode
 {
+    use AllowableMigrationTrait;
+
+    public const URL_NAME = 'rightsoverview';
+
     public function getURLName() : string
     {
-        return 'rightsoverview';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string
@@ -23,21 +31,18 @@ abstract class Application_Admin_Area_Devel_RightsOverview extends Application_A
         return '';
     }
 
-    public function isUserAllowed() : bool
+    public function getRequiredRight(): string
     {
-        return $this->user->isDeveloper();
+        return DevScreenRights::SCREEN_RIGHTS_OVERVIEW;
     }
 
     public function _renderContent()
     {
         $user = Application::getUser();
 
-        if($user instanceof Application_User_Extended)
-        {
-            $this->renderDetails($user->getRightsManager()->getRights());
-            $this->renderRoles($user->getRightsManager()->getRoles());
-            $this->renderGroups($user->getRightsManager());
-        }
+        $this->renderDetails($user->getRightsManager()->getRights());
+        $this->renderRoles($user->getRightsManager()->getRoles());
+        $this->renderGroups($user->getRightsManager());
 
         return $this->renderer
         ->setTitle($this->getTitle())
