@@ -886,7 +886,8 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $default = $this->user->getSetting('startup_tab', $this->appset->getDefaultArea()->getURLName());
 
-        $areaID = $this->request->getParam('page');
+        $areaID = (string)$this->request->getParam('page');
+
         if (empty($areaID) || !isset($this->enabledAreas[$areaID]))
         {
             $this->log(sprintf('Requested page [%s] | Empty or not enabled, using default [%s].', $areaID, $default));
