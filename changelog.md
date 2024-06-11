@@ -1,3 +1,7 @@
+## v4.0.4 - DataGrid Bugfix
+- DataGrid: Fixed navigating to another page throwing a system error.
+- UI: Fixed header navbar overlapping contents ([#64](https://github.com/Mistralys/application-framework/issues/64)).
+
 ## v4.0.3 - QA Testing role
 - User: Added the right `QATester` to formalize the role of application UI QA tester.
 - User: Added `canLoginInMaintenanceMode()`.
