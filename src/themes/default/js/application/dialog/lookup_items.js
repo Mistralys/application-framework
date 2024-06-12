@@ -40,11 +40,11 @@ var Application_Dialog_LookupItems =
 		{
 			this.CreateForm();
 			this.ChangeBody(
+				'<div id="'+this.elementID('form-body')+'">'+
 				this.form.Render() +
 				this.RenderHints() +
-				'<hr>' +
-				'<div id="'+this.elementID('results')+'">'+
-					t('Search results will be shown here.') +
+				'</div>'+
+				'<div id="'+this.elementID('results')+'" style="display:none">'+
 				'</div>'
 			);
 
@@ -71,15 +71,15 @@ var Application_Dialog_LookupItems =
 	RenderHints:function()
 	{
 		return ''+
-		'<p>' +
+			'<p>' +
 			'<small>'+
-				'<strong>' + t('Search hints:') + '</strong> ' +
-				t('The search is case insensitive.') + ' ' +
-				t('Separator characters like underscores (_) and dashes (-) are ignored.') + ' ' +
-				t('Multiple search terms can be separated with commas.') + ' ' +
-				t('Items match if all search terms are found.') + ' ' +
+			'<strong>' + t('Search hints:') + '</strong> ' +
+			t('The search is case insensitive.') + ' ' +
+			t('Separator characters like underscores (_) and dashes (-) are ignored.') + ' ' +
+			t('Multiple search terms can be separated with commas.') + ' ' +
+			t('Items match if all search terms are found.') + ' ' +
 			'</small>' +
-		'</p>';
+			'</p>';
 	},
 
 	_RenderBody:function()
@@ -87,9 +87,31 @@ var Application_Dialog_LookupItems =
 		return application.renderSpinner(t('Please wait, loading data...'));
 	},
 
+	_PostRender:function()
+	{
+		this.GetNewSearchButton().Hide();
+	},
+
+	BTN_NEW_SEARCH: 'new_search',
+
+	GetNewSearchButton:function()
+	{
+		return this.GetButton(this.BTN_NEW_SEARCH);
+	},
+
 	_RenderFooter:function()
 	{
 		var dialog = this;
+
+		this.AddButton(
+			UI.Button(t('New search'))
+				.SetIcon(UI.Icon().Search())
+				.MakePrimary()
+				.Click(function() {
+					dialog.Handle_NewSearch();
+				}),
+			this.BTN_NEW_SEARCH
+		);
 
 		this.AddButtonPrimary(
 			t('Look up now'),
@@ -168,24 +190,27 @@ var Application_Dialog_LookupItems =
 		var payload = values;
 		var dialog = this;
 
+		this.element('form-body').hide();
+		elResults.show();
 		elResults.html(application.renderSpinner(t('Lookup running, please wait...')));
+		this.GetPrimaryButton().Hide();
 
 		application.createAJAX('LookupItems')
 			.SetPayload(payload)
 			.Failure(function() {
 				elResults.html(
 					'<p>'+
-						'<strong>' + UI.Text(t('The lookup failed, the server reported an error.')).MakeError() + '</strong>'+
+					'<strong>' + UI.Text(t('The lookup failed, the server reported an error.')).MakeError() + '</strong>'+
 					'</p>' +
 					'<p>' +
-						t('Please try again, and if the problem persists, contact the %1$s team.', application.appNameShort) +
+					t('Please try again, and if the problem persists, contact the %1$s team.', application.appNameShort) +
 					'</p>' +
 					'<p>'+
-						UI.Button(t('Try again'))
-							.SetIcon(UI.Icon().Refresh())
-							.Click(function() {
-								dialog.form.Submit();
-							})+
+					UI.Button(t('Try again'))
+						.SetIcon(UI.Icon().Refresh())
+						.Click(function() {
+							dialog.form.Submit();
+						})+
 					'</p>'
 				);
 			})
@@ -195,12 +220,30 @@ var Application_Dialog_LookupItems =
 			.Send();
 	},
 
+	Handle_NewSearch:function()
+	{
+		this.element('form-body').show();
+		this.element('results').hide();
+
+		this.GetPrimaryButton().Show();
+		this.GetNewSearchButton().Hide();
+
+		this.form.Reset();
+		this.focusElement.Focus();
+	},
+
 	/**
 	 * @param {Object} data
 	 * @constructor
 	 */
 	Handle_LookupSuccess:function(data)
 	{
+		this.element('form-body').hide();
+		this.element('results').show();
+
+		this.GetNewSearchButton().Show();
+		this.GetPrimaryButton().Hide();
+
 		var items = [];
 		var html = '';
 		$.each(this.lookupItems, function(idx, itemDef)
@@ -214,10 +257,10 @@ var Application_Dialog_LookupItems =
 			if(data[id].length===0) {
 				message = t('No matching items found.');
 			} if(data[id].length===1) {
-				message = t('1 item found.');
-			} else {
-				message = t('%1$s items found.', data[id].length);
-			}
+			message = t('1 item found.');
+		} else {
+			message = t('%1$s items found.', data[id].length);
+		}
 
 			html += ''+
 				'<b>' + itemDef.field_label + '</b> - ' + message + '<br>';
@@ -238,7 +281,7 @@ var Application_Dialog_LookupItems =
 
 		this.element('results').html(html);
 
-		application.ScrollToElement(this.element('results'));
+		UI.ScrollToElement(this.element('results'));
 	}
 };
 
