@@ -195,6 +195,10 @@ var Application_Dialog_LookupItems =
 			.Send();
 	},
 
+	/**
+	 * @param {Object} data
+	 * @constructor
+	 */
 	Handle_LookupSuccess:function(data)
 	{
 		var items = [];
@@ -207,13 +211,13 @@ var Application_Dialog_LookupItems =
 			}
 
 			var message;
-			if(data[id].length==0) {
+			if(data[id].length===0) {
 				message = t('No matching items found.');
-			} if(data[id].length==1) {
-			message = t('1 item found.');
-		} else {
-			message = t('%1$s items found.', data[id].length);
-		}
+			} if(data[id].length===1) {
+				message = t('1 item found.');
+			} else {
+				message = t('%1$s items found.', data[id].length);
+			}
 
 			html += ''+
 				'<b>' + itemDef.field_label + '</b> - ' + message + '<br>';
@@ -233,6 +237,8 @@ var Application_Dialog_LookupItems =
 		});
 
 		this.element('results').html(html);
+
+		application.ScrollToElement(this.element('results'));
 	}
 };
 
