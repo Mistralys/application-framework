@@ -1,3 +1,7 @@
+## v4.0.5 - Filter criteria messages
+- Filter Criteria: Upgraded the messages to use the `OperationResult` classes.
+- Item Lookup: Implemented an automatic scroll to the search results on success.
+
 ## v4.0.4 - DataGrid Bugfix
 - DataGrid: Fixed navigating to another page throwing a system error.
 - UI: Fixed header navbar overlapping contents ([#64](https://github.com/Mistralys/application-framework/issues/64)).
