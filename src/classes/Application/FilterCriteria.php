@@ -10,6 +10,8 @@ use Application\FilterCriteria\Events\ApplyFiltersEvent;
 use Application\FilterCriteria\FilterCriteriaException;
 use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\BaseException;
+use AppUtils\OperationResult;
+use AppUtils\OperationResult_Collection;
 use UI\PaginationRenderer;
 use function AppUtils\parseVariable;
 
@@ -43,10 +45,7 @@ abstract class Application_FilterCriteria
     protected bool $isCount = false;
     protected bool $dumpQuery = false;
 
-    /**
-     * @var array<array<string,string>>
-     */
-    protected array $messages = array();
+    protected OperationResult_Collection $messages;
 
     /**
      * @var array<string,mixed[]>
@@ -74,6 +73,7 @@ abstract class Application_FilterCriteria
     public function __construct(...$args)
     {
         $this->constructorArguments = $args;
+        $this->messages = new OperationResult_Collection($this);
 
         $this->init();
     }
@@ -322,44 +322,52 @@ abstract class Application_FilterCriteria
         return $this;
     }
 
-    public function addInfo(string $message) : self
+    public function addInfo(string $message, int $code=0) : self
     {
-        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_INFO);
+        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_INFO, $code);
     }
 
-    public function addWarning(string $message) : self
+    public function addWarning(string $message, int $code=0) : self
     {
-        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_WARNING);
+        return $this->addMessage($message, FilterCriteriaInterface::MESSAGE_TYPE_WARNING, $code);
+    }
+
+    public function addResultMessage(OperationResult $message) : self
+    {
+        $this->messages->addResult($message);
+        return $this;
     }
 
     /**
      * @param string $message
      * @param string $type
+     * @param int $code
      * @return $this
      */
-    protected function addMessage(string $message, string $type) : self
+    protected function addMessage(string $message, string $type, int $code=0) : self
     {
-        $this->messages[] = array(
-            'message' => $message,
-            'type' => $type
-        );
-        
+        if($type === FilterCriteriaInterface::MESSAGE_TYPE_INFO) {
+            $this->messages->makeNotice($message, $code);
+        } else if($type === FilterCriteriaInterface::MESSAGE_TYPE_WARNING) {
+            $this->messages->makeWarning($message, $code);
+        }
+
         return $this;
     }
-    
+
     public function hasMessages() : bool
     {
-        return !empty($this->messages);
+        return $this->messages->countResults() > 0;
     }
     
-    public function getMessages() : array
+    public function getMessages() : OperationResult_Collection
     {
         return $this->messages;
     }
 
     public function resetMessages() : self
     {
-        $this->messages = array();
+        $this->messages = new OperationResult_Collection($this);
         return $this;
     }
 
