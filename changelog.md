@@ -1,6 +1,6 @@
 ## v4.0.5 - Filter criteria messages
 - Filter Criteria: Upgraded the messages to use the `OperationResult` classes.
-- Item Lookup: Implemented an automatic scroll to the search results on success.
+- Item Lookup: Improved layout to focus on the search results.
 
 ## v4.0.4 - DataGrid Bugfix
 - DataGrid: Fixed navigating to another page throwing a system error.
