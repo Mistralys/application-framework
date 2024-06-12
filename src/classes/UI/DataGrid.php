@@ -1256,18 +1256,38 @@ class UI_DataGrid implements HiddenVariablesInterface
         }
 
         $messages = $this->filterCriteria->getMessages();
-        $texts = array();
-        foreach($messages as $msg) {
-            $texts[] = $msg['message'];
+        $output = '';
+
+        $warningMessages = array();
+        foreach($messages->getErrors() as $message) {
+            $warningMessages[] = $message->getMessage();
+        }
+        foreach($messages->getWarnings() as $message) {
+            $warningMessages[] = $message->getMessage();
         }
 
-        return $this->ui->getPage()->renderWarningMessage(
-            UI::icon()->warning() . ' ' .
-            '<b>'.t('Please review your filter settings:').'</b> '.
-            '<ul>'.
-                '<li>'.implode('</li><li>', $texts).'</li>'.
-            '</ul>'
-        );
+        if(!empty($warningMessages)) {
+            $output .= $this->ui->getPage()->renderWarningMessage(sb()
+                ->icon(UI::icon()->warning())
+                ->bold(t('Please review your filter settings:'))
+                ->ul($warningMessages)
+            );
+        }
+
+        $infoMessages = array();
+        foreach($messages->getNotices() as $message) {
+            $infoMessages[] = $message->getMessage();
+        }
+
+        if(!empty($infoMessages)) {
+            $output .= $this->ui->getPage()->renderInfoMessage(sb()
+                ->icon(UI::icon()->information())
+                ->bold(t('Please note:'))
+                ->ul($infoMessages)
+            );
+        }
+
+        return $output;
     }
 
     protected function renderEmptyMessage() : string
