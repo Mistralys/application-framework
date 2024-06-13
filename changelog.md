@@ -1,3 +1,13 @@
+## v4.0.6 - Lookup Item improvements
+- Item Lookup: Added getter methods in the result class.
+- Item Lookup: Driver lookup items now support namespaces.
+- Item Lookup: Added a base class for DBHelper collection items.
+- Item Lookup: Added a base class for Revisionable collection items.
+
+### Deprecations
+
+- Deprecated the `Application_LookupItems_Item` class.
+
 ## v4.0.5 - Filter criteria messages
 - Filter Criteria: Upgraded the messages to use the `OperationResult` classes.
 - Item Lookup: Improved layout to focus on the search results.
