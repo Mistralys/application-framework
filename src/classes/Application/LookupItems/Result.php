@@ -1,30 +1,41 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Lookup Items
+ */
 
 declare(strict_types=1);
 
+use Application\LookupItems\BaseLookupItem;
 use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
 
+/**
+ * Represents a result of a lookup item search.
+ *
+ * @package Application
+ * @subpackage Lookup Items
+ */
 class Application_LookupItems_Result
 {
-    private Application_LookupItems_Item $item;
+    private BaseLookupItem $item;
     private string $label;
     private string $url;
 
     /**
-     * @param Application_LookupItems_Item $item
+     * @param BaseLookupItem $item
      * @param string|number|StringableInterface $label
      * @param string|AdminURLInterface $url
      * @throws UI_Exception
      */
-    public function __construct(Application_LookupItems_Item $item, $label, $url)
+    public function __construct(BaseLookupItem $item, $label, $url)
     {
         $this->item = $item;
         $this->label = toString($label);
         $this->url = (string)$url;
     }
 
-    public function getItem(): Application_LookupItems_Item
+    public function getItem(): BaseLookupItem
     {
         return $this->item;
     }
