@@ -28,6 +28,16 @@ class Application_LookupItems_Result
     {
         return $this->item;
     }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function getURL(): string
+    {
+        return $this->url;
+    }
     
     public function toArray() : array
     {
