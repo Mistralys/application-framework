@@ -3,6 +3,7 @@
 - Item Lookup: Driver lookup items now support namespaces.
 - Item Lookup: Added a base class for DBHelper collection items.
 - Item Lookup: Added a base class for Revisionable collection items.
+- Revisionables: Added a missing NULL check when no current revision is found.
 
 ### Deprecations
 
