@@ -31,9 +31,9 @@ abstract class Application_RevisionableCollection_DBRevisionable
             return;
         }
 
-        $this->currentRevision = $this->collection->getCurrentRevision($id);
+        $current = $this->collection->getCurrentRevision($id);
 
-        if (!$this->currentRevision) {
+        if ($current === null) {
             throw new Application_Exception(
                 'Error loading current revision',
                 sprintf(
@@ -44,6 +44,8 @@ abstract class Application_RevisionableCollection_DBRevisionable
                 self::ERROR_NO_CURRENT_REVISION_FOUND
             );
         }
+
+        $this->currentRevision = $current;
 
         $this->selectCurrentRevision();
     }
