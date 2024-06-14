@@ -1,3 +1,6 @@
+## v4.0.7 - Layout tweak
+- UI: Moved the subnav context menu to the left (icon only).
+
 ## v4.0.6 - Lookup Item improvements
 - Item Lookup: Added getter methods in the result class.
 - Item Lookup: Driver lookup items now support namespaces.
