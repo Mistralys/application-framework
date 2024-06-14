@@ -121,7 +121,7 @@ abstract class BaseLookupItem
             }
             else
             {
-                array_push($ids, ...$this->findMatchesBySearch($name));
+                array_push($ids, ...$this->findMatchesBySearch((string)$name));
             }
         }
 
@@ -151,7 +151,7 @@ abstract class BaseLookupItem
      * Adds a custom WHERE statement to the query.
      * If multiple statements are added, they are joined
      * with AND.
-     * 
+     *
      * @param string $statement
      * @return $this
      */
