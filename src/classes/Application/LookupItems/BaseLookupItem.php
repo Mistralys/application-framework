@@ -142,13 +142,39 @@ abstract class BaseLookupItem
         }
     }
 
+    /**
+     * @var string[]
+     */
+    private array $where = array();
+
+    /**
+     * Adds a custom WHERE statement to the query.
+     * If multiple statements are added, they are joined
+     * with AND.
+     * 
+     * @param string $statement
+     * @return $this
+     */
+    protected function addWhere(string $statement) : self
+    {
+        $this->where[] = $statement;
+        return $this;
+    }
+
+    private function renderWhere() : string
+    {
+        return implode(' AND ', $this->where);
+    }
+
     private function findMatchesBySearch(string $name) : array
     {
         $split = self::splitSearchTerm($name, $this->getSearchColumns());
 
+        $this->addWhere($split['where']);
+
         $query = str_replace(
             '{WHERE}',
-            $split['where'],
+            $this->renderWhere(),
             $this->getQuerySQL()
         );
 
