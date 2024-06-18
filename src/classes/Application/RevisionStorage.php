@@ -10,13 +10,16 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionDependentInterface;
 use Application\RevisionStorage\Copy\BaseRevisionCopy;
 use Application\RevisionStorage\RevisionStorageException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\ConvertHelper;
 use AppUtils\TypeFilter\StrictType;
+use testsuites\Traits\RenderableTests;
 
 /**
  * Utility class for storing revision data: stores data sets
@@ -31,10 +34,12 @@ use AppUtils\TypeFilter\StrictType;
 abstract class Application_RevisionStorage
     implements
     ArrayAccess,
-    Application_Interfaces_Eventable
+    Application_Interfaces_Eventable,
+    Application_Interfaces_Disposable
 {
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
+    use Application_Traits_Disposable;
 
     public const DATA_KEY_MAX_LENGTH = 180;
     
@@ -51,8 +56,9 @@ abstract class Application_RevisionStorage
     public const ERROR_CANNOT_REMOVE_PRIOR_REVISION = 15557011;
     public const ERROR_CANNOT_REMOVE_LAST_REVISION = 15557012;
 
-    public const KEY_OWNER_ID = '__ownerID';
-    public const KEY_OWNER_NAME = '__ownerName';
+    public const KEY_OWNER_ID = 'ownerID';
+    public const KEY_OWNER_NAME = 'ownerName';
+    private const PRIVATE_KEY_PREFIX = '__';
 
     /**
     * @var array<int,array<string,mixed>>
@@ -689,7 +695,7 @@ abstract class Application_RevisionStorage
      */
     public function setOwnerName(string $name) : self
     {
-        return $this->setKey(self::KEY_OWNER_NAME, $name);
+        return $this->setPrivateKey(self::KEY_OWNER_NAME, $name);
     }
 
    /**
@@ -697,7 +703,7 @@ abstract class Application_RevisionStorage
     */
     public function getOwnerName() : string
     {
-        return StrictType::createStrict($this->getKey(self::KEY_OWNER_NAME))->getString();
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_OWNER_NAME))->getString();
     }
 
     /**
@@ -707,7 +713,7 @@ abstract class Application_RevisionStorage
      */
     public function setOwnerID(int $id) : self
     {
-        return $this->setKey(self::KEY_OWNER_ID, $id);
+        return $this->setPrivateKey(self::KEY_OWNER_ID, $id);
     }
 
    /**
@@ -715,7 +721,7 @@ abstract class Application_RevisionStorage
     */
     public function getOwnerID() : int
     {
-        return StrictType::createStrict($this->getKey(self::KEY_OWNER_ID))->getInt();
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_OWNER_ID))->getInt();
     }
 
    /**
@@ -1018,17 +1024,6 @@ abstract class Application_RevisionStorage
     */
     abstract public function getTypeID() : string;
     
-   /**
-    * Disposes of all internal session data.
-    */
-    public function dispose() : void
-    {
-        $this->data = array();
-        $this->loadedRevisions = array();
-        $this->revision = null;
-        $this->revisionsToRemember = array();
-    }
-
     /**
      * @return $this
      */
@@ -1312,4 +1307,83 @@ abstract class Application_RevisionStorage
     }
 
     // endregion
+
+    /**
+     * @param string $name
+     * @param mixed|NULL $value
+     * @return $this
+     * @throws RevisionableException
+     */
+    public function setPrivateKey(string $name, $value) : self
+    {
+
+        return $this->setKey(self::PRIVATE_KEY_PREFIX . $name, $value);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|NULL
+     * @throws RevisionableException
+     */
+    public function getPrivateKey(string $name)
+    {
+        return $this->getKey(self::PRIVATE_KEY_PREFIX . $name);
+    }
+
+    public function getIdentification(): string
+    {
+        return $this->getLogIdentifier();
+    }
+
+    public function getChildDisposables(): array
+    {
+        $disposables = $this->childDisposables;
+
+        unset($this->childDisposables);
+
+        return $disposables;
+    }
+
+    /**
+     * @var Application_Interfaces_Disposable[]
+     */
+    private array $childDisposables = array();
+
+    private function collectChildDisposables() : void
+    {
+        foreach($this->data as $data)
+        {
+            foreach($data as $value)
+            {
+                if(!$value instanceof Application_Interfaces_Disposable) {
+                    continue;
+                }
+
+                if(!$value instanceof RevisionDependentInterface) {
+                    continue;
+                }
+
+                if($value->getRevisionable() === $this->revisionable && $value->getRevision() === $this->revision) {
+                    $this->childDisposables[] = $value;
+                }
+            }
+        }
+    }
+
+    protected function _dispose(): void
+    {
+        // Child disposables are collected after _dispose() has been called.
+        // As we want to unset the data keys array, we have to temporarily
+        // store the children to be processed later.
+        $this->collectChildDisposables();
+
+        unset(
+            $this->revisionable,
+            $this->keyLoaders,
+            $this->loadedRevisions,
+            $this->data,
+            $this->dataKeys,
+            $this->staticColumns
+        );
+    }
 }
