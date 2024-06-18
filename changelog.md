@@ -1,5 +1,16 @@
+## v4.0.8 - Revisionable update
+- Revisionables: Added `getRevisionAuthorXXX()` methods for better comprehension.
+- Revisionables: Added some missing methods in the revisionable interface.
+- Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
+
+### Deprecations:
+
+- `RevisionableStatelessInterface::getOwnerID()`
+- `RevisionableStatelessInterface::getOwnerName()`
+
 ## v4.0.7 - Layout tweak
 - UI: Moved the subnav context menu to the left (icon only).
+- Properties Grid: Fixed `0` value not being displayed when using `addAmount()`.
 
 ## v4.0.6 - Lookup Item improvements
 - Item Lookup: Added getter methods in the result class.
