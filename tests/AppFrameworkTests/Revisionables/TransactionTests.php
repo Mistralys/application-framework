@@ -50,17 +50,17 @@ final class TransactionTests extends RevisionableTestCase
 
         $newUser = $this->createTestUser();
 
-        $this->assertNotSame($newUser->getID(), $revisionable->getOwnerID(), 'Prerequisite is two different users.');
+        $this->assertNotSame($newUser->getID(), $revisionable->getRevisionAuthorID(), 'Prerequisite is two different users.');
 
         $revisionable->startTransaction($newUser->getID(), $newUser->getName(), 'New revision comments');
 
-            $this->assertSame($newUser->getID(), $revisionable->getOwnerID());
+            $this->assertSame($newUser->getID(), $revisionable->getRevisionAuthorID());
             $revisionable->setStructuralKey('New value');
 
         $revisionable->endTransaction();
 
         $this->assertTrue($revisionable->hasLastTransactionAddedARevision());
-        $this->assertSame($newUser->getID(), $revisionable->getOwnerID());
+        $this->assertSame($newUser->getID(), $revisionable->getRevisionAuthorID());
         $this->assertSame('New revision comments', $revisionable->getRevisionComments());
     }
 
@@ -69,11 +69,11 @@ final class TransactionTests extends RevisionableTestCase
         $revisionable = $this->createTestRevisionable();
 
         $newUser = $this->createTestUser();
-        $initialOwnerID = $revisionable->getOwnerID();
+        $initialOwnerID = $revisionable->getRevisionAuthorID();
         $initialRevision = $revisionable->requireRevision();
         $initialComments = $revisionable->getRevisionComments();
 
-        $this->assertNotSame($newUser->getID(), $revisionable->getOwnerID(), 'Prerequisite is two different users.');
+        $this->assertNotSame($newUser->getID(), $revisionable->getRevisionAuthorID(), 'Prerequisite is two different users.');
 
         $revisionable->startTransaction($newUser->getID(), $newUser->getName());
             // Do nothing in the transaction
@@ -81,7 +81,7 @@ final class TransactionTests extends RevisionableTestCase
 
         $this->assertFalse($revisionable->hasLastTransactionAddedARevision());
         $this->assertSame($initialRevision, $revisionable->requireRevision(), 'The revision must not change.');
-        $this->assertSame($initialOwnerID, $revisionable->getOwnerID());
+        $this->assertSame($initialOwnerID, $revisionable->getRevisionAuthorID());
         $this->assertSame($initialComments, $revisionable->getRevisionComments());
     }
 

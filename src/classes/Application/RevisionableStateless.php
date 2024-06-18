@@ -110,21 +110,11 @@ abstract class Application_RevisionableStateless
         return new MemoryRevisionStorage($this);
     }
 
-    /**
-     * Returns the ID of the owner of the currently selected revision.
-     * @return int
-     * @see getOwnerName()
-     */
     public function getOwnerID() : int
     {
         return $this->revisions->getOwnerID();
     }
 
-    /**
-     * Returns the name of the currently selected revision's owner.
-     * @return string
-     * @see self::getOwnerID()
-     */
     public function getOwnerName() : string
     {
         return $this->revisions->getOwnerName();
@@ -498,7 +488,7 @@ abstract class Application_RevisionableStateless
 
     protected function logRevisionData() : void
     {
-        $this->log('Revision | Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName());
+        $this->log('Revision | Author: [%s %s]', $this->getRevisionAuthorID(), $this->getRevisionAuthorName());
         $this->log('Revision | Pretty revision: [%s].', $this->getPrettyRevision());
         $this->log('Revision | Comments: [%s].', $this->getRevisionComments());
         $this->log('Revision | Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s'));
@@ -1004,13 +994,11 @@ abstract class Application_RevisionableStateless
         return !$this->isLocked();
     }
 
-
-
    /**
     * Retrieves the revisionable's first revision date.
     * @return DateTime
     */
-    public function getCreationDate()
+    public function getCreationDate() : DateTime
     {
         $this->rememberRevision();
         $this->selectFirstRevision();
@@ -1024,7 +1012,7 @@ abstract class Application_RevisionableStateless
     * Retrieves the user instance for the user that created this item.
     * @return Application_User
     */
-    public function getCreator()
+    public function getCreator() : Application_User
     {
         $this->rememberRevision();
         $this->selectFirstRevision();
@@ -1032,6 +1020,16 @@ abstract class Application_RevisionableStateless
         $this->restoreRevision();
         
         return $user;
+    }
+
+    public function getRevisionAuthor() : ?Application_User
+    {
+        $id = $this->getRevisionAuthorID();
+        if($id > 0 && Application::userIDExists($id)) {
+            return Application::createUser($id);
+        }
+
+        return null;
     }
     
     public function getLockPrimary() : string
