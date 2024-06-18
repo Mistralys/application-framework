@@ -984,10 +984,27 @@ abstract class Application_RevisionableStateless
         return $this->transactionActive;
     }
     
-    public function dispose() : void
+    public function getChildDisposables(): array
     {
-        $this->revisions->dispose();
+        $disposables = $this->_getChildDisposables();
+        $disposables[] = $this->revisions;
+
+        return $disposables;
     }
+
+    protected function _dispose(): void
+    {
+        unset(
+            $this->changedParts,
+            $this->storageParts
+        );
+
+        $this->_disposeRevisionable();
+    }
+
+    abstract protected function _disposeRevisionable() : void;
+
+    abstract protected function _getChildDisposables() : array;
 
     public function isEditable() : bool
     {
@@ -1020,6 +1037,16 @@ abstract class Application_RevisionableStateless
         $this->restoreRevision();
         
         return $user;
+    }
+
+    public function getRevisionAuthorID(): int
+    {
+        return $this->revisions->getOwnerID();
+    }
+
+    public function getRevisionAuthorName(): string
+    {
+        return $this->revisions->getOwnerName();
     }
 
     public function getRevisionAuthor() : ?Application_User
