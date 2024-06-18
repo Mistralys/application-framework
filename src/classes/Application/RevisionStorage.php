@@ -587,15 +587,26 @@ abstract class Application_RevisionStorage
             );
         }
 
+        $this->collectChildDisposables();
+
         $this->_removeRevision($number);
 
         if (isset($this->loadedRevisions[$number])) {
             unset($this->loadedRevisions[$number]);
         }
 
+        $this->disposeChildDisposables();
+
         $this->selectRevision($this->getLatestRevision());
 
         return $this;
+    }
+
+    private function disposeChildDisposables() : void
+    {
+        foreach($this->childDisposables as $disposable) {
+            $disposable->dispose();
+        }
     }
 
     /**
@@ -609,6 +620,8 @@ abstract class Application_RevisionStorage
      */
     public function unloadRevision(int $number) : self
     {
+        $this->collectChildDisposables();
+
         if (isset($this->loadedRevisions[$number])) {
             unset($this->loadedRevisions[$number]);
             if($this->revision === $number) {
@@ -620,6 +633,8 @@ abstract class Application_RevisionStorage
         {
             unset($this->dataKeys[$number]);
         }
+
+        $this->disposeChildDisposables();
 
         return $this;
     }
@@ -1351,6 +1366,8 @@ abstract class Application_RevisionStorage
 
     private function collectChildDisposables() : void
     {
+        $this->childDisposables = array();
+
         foreach($this->data as $data)
         {
             foreach($data as $value)
