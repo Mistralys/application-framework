@@ -126,12 +126,12 @@ class RevisionableRecord
         return sprintf('Revisionable [#%s v%s]', $this->getID(), $this->getRevision());
     }
 
-    public function getChildDisposables(): array
+    protected function _getChildDisposables(): array
     {
         return array();
     }
 
-    protected function _dispose(): void
+    protected function _disposeRevisionable(): void
     {
     }
 
