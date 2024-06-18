@@ -42,6 +42,16 @@ const APP_COMPANY_HOMEPAGE = 'https://company-homepage.website';
 const APP_DUMMY_EMAIL = 'dummy@application.website';
 const APP_SYSTEM_EMAIL = 'system@application.website';
 const APP_SYSTEM_NAME = 'Application Name';
+/**
+ * List of email addresses that will receive developer-specific
+ * information on a running application.
+ *
+ * Separate multiple addresses with a comma.
+ *
+ * NOTE: If left empty, no emails will be sent.
+ * Errors can still be viewed in the error log.
+ */
+const APP_RECIPIENTS_DEV = '';
 
 const APP_DB_ENABLED = true;
 const APP_DB_HOST = 'localhost';
