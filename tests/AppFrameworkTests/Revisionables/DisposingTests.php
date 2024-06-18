@@ -43,4 +43,44 @@ final class DisposingTests extends RevisionableTestCase
         $this->assertTrue($subDependent->isDisposed(), 'Revision-dependent instances must be disposed.');
         $this->assertFalse($subDependentNoMatch->isDisposed(), 'Only matching revision-dependent instances must be disposed.');
     }
+
+    /**
+     * If a revision is unloaded, all dependent disposables
+     * must be disposed of as well.
+     */
+    public function test_unloadingRevisionDisposesDependents() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+        $subDependent = new RevisionDependentDisposableStub($record, $record->getRevision());
+
+        $storage = $record->getRevisionStorage();
+        $storage->setPrivateKey('dependent', $subDependent);
+
+        $storage->unloadRevision($record->getRevision());
+
+        $this->assertTrue($subDependent->isDisposed());
+    }
+
+    /**
+     * If a revision is removed, all dependent disposables
+     * must be disposed of as well.
+     */
+    public function test_removingRevisionDisposesDependents() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+
+        // Make a change to add a revision we can remove,
+        // since the initial revision cannot be removed.
+        $record->startCurrentUserTransaction();
+            $record->setAlias('new-alias');
+        $record->endTransaction();
+
+        $subDependent = new RevisionDependentDisposableStub($record, $record->getRevision());
+        $storage = $record->getRevisionStorage();
+        $storage->setPrivateKey('dependent', $subDependent);
+
+        $storage->removeRevision($record->getRevision());
+
+        $this->assertTrue($subDependent->isDisposed());
+    }
 }
