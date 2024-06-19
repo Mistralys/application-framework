@@ -1,8 +1,9 @@
 ## v4.1.0 - Revisionable update (Breaking-S)
-- Revisionables: Added `getRevisionAuthorXXX()` methods for better comprehension.
+- Revisionables: Added `getRevisionAuthorXXX()` methods for more consistent naming.
 - Revisionables: Added some missing methods in the revisionable interface.
 - Revisionables: Storage now automatically disposes of keys that contain revision-dependent instances.
 - Revisionables: Tweaked the disposable method setup to automate internal disposal.
+- Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
