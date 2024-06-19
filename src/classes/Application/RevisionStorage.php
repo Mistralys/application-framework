@@ -58,7 +58,7 @@ abstract class Application_RevisionStorage
 
     public const KEY_OWNER_ID = 'ownerID';
     public const KEY_OWNER_NAME = 'ownerName';
-    private const PRIVATE_KEY_PREFIX = '__';
+    public const PRIVATE_KEY_PREFIX = '__';
 
     /**
     * @var array<int,array<string,mixed>>
@@ -392,6 +392,11 @@ abstract class Application_RevisionStorage
         }
         
         return false;
+    }
+
+    public function clearPrivateKey(string $name) : bool
+    {
+        return $this->clearKey($this->resolvePrivateKey($name));
     }
 
    /**
@@ -815,6 +820,20 @@ abstract class Application_RevisionStorage
         }
 
         return false;
+    }
+
+    public function hasPrivateKey(string $name) : bool
+    {
+        return $this->hasKey($this->resolvePrivateKey($name));
+    }
+
+    private function resolvePrivateKey(string $name) : string
+    {
+        if(strpos($name, self::PRIVATE_KEY_PREFIX) === 0) {
+            return $name;
+        }
+
+        return self::PRIVATE_KEY_PREFIX.$name;
     }
 
     // region: X - ArrayAccess methods
@@ -1324,6 +1343,12 @@ abstract class Application_RevisionStorage
     // endregion
 
     /**
+     * Sets a key that is to be treated as private, i.e., it is
+     * not part of the regular data keys, but is stored separately.
+     *
+     * The same key names will not conflict with each other if
+     * used in {@see self::setKey()} and {@see self::setPrivateKey()}.
+     *
      * @param string $name
      * @param mixed|NULL $value
      * @return $this
@@ -1331,8 +1356,7 @@ abstract class Application_RevisionStorage
      */
     public function setPrivateKey(string $name, $value) : self
     {
-
-        return $this->setKey(self::PRIVATE_KEY_PREFIX . $name, $value);
+        return $this->setKey($this->resolvePrivateKey($name), $value);
     }
 
     /**
@@ -1342,7 +1366,7 @@ abstract class Application_RevisionStorage
      */
     public function getPrivateKey(string $name)
     {
-        return $this->getKey(self::PRIVATE_KEY_PREFIX . $name);
+        return $this->getKey($this->resolvePrivateKey($name));
     }
 
     public function getIdentification(): string
