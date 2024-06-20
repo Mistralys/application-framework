@@ -4,6 +4,7 @@
 - Revisionables: Storage now automatically disposes of keys that contain revision-dependent instances.
 - Revisionables: Tweaked the disposable method setup to automate internal disposal.
 - Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
+- Disposables: `_dispose()` is now called after the child revisionables have been disposed.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
