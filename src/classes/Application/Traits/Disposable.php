@@ -27,16 +27,7 @@ trait Application_Traits_Disposable
             return;
         }
 
-        $this->_dispose();
-
         $this->disposableDisposed = true;
-
-        // Let event listeners react to the disposing
-        $this->triggerEvent(
-            Application_Interfaces_Disposable::EVENT_DISPOSED,
-            array($this),
-            Application_Traits_Disposable_Event_Disposed::class
-        );
 
         // Disable all further event handlings.
         $this->clearAllEventListeners();
@@ -51,6 +42,15 @@ trait Application_Traits_Disposable
                 $child->dispose();
             }
         }
+
+        $this->_dispose();
+
+        // Let event listeners react to the disposing
+        $this->triggerEvent(
+            Application_Interfaces_Disposable::EVENT_DISPOSED,
+            array($this),
+            Application_Traits_Disposable_Event_Disposed::class
+        );
     }
 
     /**
