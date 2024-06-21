@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace testsuites\Application;
 
+use AppFrameworkTestClasses\ApplicationTestCase;
 use Application;
 use Application\AppFactory;
 use Application_Bootstrap;
 use Application_Exception;
-use PHPUnit\Framework\TestCase;
+use Application_Logger;
 use TestDriver_Bootstrap_Screen_ExceptionTest;
 use TestLoggable;
 
-final class LoggingTests extends TestCase
+final class LoggingTests extends ApplicationTestCase
 {
    /**
     * Ensure that regular exceptions get converted to application
@@ -104,5 +105,54 @@ final class LoggingTests extends TestCase
 
         $loggable->addHeaderLog('Supah %s header', 'foo');
         $this->assertStringContainsString('SUPAH FOO HEADER', implode('', $logger->getLog()));
+    }
+
+    public function test_loggingEnabled() : void
+    {
+        $logger = AppFactory::createLogger();
+
+        $this->assertTrue($logger->isLoggingEnabled(), 'The default is to have the runtime logging enabled.');
+
+        $logger->setLoggingEnabled(false);
+        $logger->clearLog();
+
+        $logger->log('Test message');
+
+        $this->assertFalse($logger->isLoggingEnabled());
+        $this->assertEmpty($logger->getLog(), 'No log entries must be present after disabling logging.');
+    }
+
+    public function test_disableMemoryLogging() : void
+    {
+        $logger = AppFactory::createLogger();
+
+        $this->assertTrue($logger->isMemoryStorageEnabled(), 'The default is to have the memory logging enabled.');
+        $this->assertEmpty($logger->getLog(), 'No log entries must be present after creating the logger.');
+
+        $logger->log('First message');
+
+        $this->assertNotEmpty($logger->getLog(), 'Log entries must be present after logging a message.');
+
+        $logger->clearLog();
+        $logger->setMemoryStorageEnabled(false);
+
+        $logger->log('Test message');
+
+        $this->assertEmpty($logger->getLog(), 'No log entries must be present after disabling memory logging.');
+    }
+
+    public function test_setCategoryEnabled() : void
+    {
+        $logger = AppFactory::createLogger();
+
+        $this->assertTrue($logger->isCategoryEnabled(Application_Logger::CATEGORY_UI), 'The default is to have the UI category enabled.');
+        $logger->logUI('First UI test');
+        $this->assertNotEmpty($logger->getLog());
+
+        $logger->clearLog();
+
+        $logger->setCategoryEnabled(Application_Logger::CATEGORY_UI, false);
+        $logger->logUI('Test UI message');
+        $this->assertEmpty($logger->getLog(), 'No log entries must be present after disabling the UI category.');
     }
 }
