@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\ConfigSettings\BaseConfigRegistry;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 
 /**
@@ -26,6 +26,8 @@ class Application_Logger
     public const LOG_MODE_ECHO = 2;
     public const LOG_MODE_NONE = 3;
 
+    public const LOG_MODE_DEFAULT = self::LOG_MODE_NONE;
+
     public const LINE_LENGTH = 65;
 
     public const CATEGORY_GENERAL = 'GEN';
@@ -34,8 +36,12 @@ class Application_Logger
     public const CATEGORY_EVENT = 'EVENT';
     public const CATEGORY_REQUEST = 'REQ';
 
-    private int $logMode = self::LOG_MODE_NONE;
-    private bool $html = false;
+    public const HTML_MODE_DEFAULT = false;
+    public const LOGGING_ENABLED_DEFAULT = true;
+    public const MEMORY_STORAGE_ENABLED_DEFAULT = true;
+
+    private int $logMode = self::LOG_MODE_DEFAULT;
+    private bool $html = self::HTML_MODE_DEFAULT;
     private string $separator;
     private string $logFile;
 
@@ -50,29 +56,83 @@ class Application_Logger
      * @var array<string,bool>
      */
     private array $enabledCategories = array();
+    private bool $loggingEnabled = self::LOGGING_ENABLED_DEFAULT;
+    private bool $logFileInitialized = false;
+    private bool $memoryStorageEnabled = self::MEMORY_STORAGE_ENABLED_DEFAULT;
 
     public function __construct()
     {
         $this->separator = str_repeat('-', self::LINE_LENGTH);
-        $this->logFile = $this->getLogFolder().'/trace.log';
+        $this->logFile = sprintf(
+            '%s/%s/%s/%s/trace.log',
+            $this->getLogFolder(),
+            date('Y'),
+            date('m'),
+            date('d')
+        );
+    }
+
+    public function reset() : self
+    {
+        $this->memoryStorageEnabled = self::MEMORY_STORAGE_ENABLED_DEFAULT;
+        $this->loggingEnabled = self::LOGGING_ENABLED_DEFAULT;
+        $this->enabledCategories = array();
+        $this->logMode = self::LOG_MODE_DEFAULT;
+        $this->html = self::HTML_MODE_DEFAULT;
+
+        $this->clearLog();
+
+        return $this;
     }
 
     /**
-     * Whether logging is enabled.
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setLoggingEnabled(bool $enabled) : self
+    {
+        $this->loggingEnabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * Sets whether log messages should be stored in memory (default is yes).
+     *
+     * This is useful to turn off when using an error log file as target,
+     * to keep memory usage low, as it is not otherwise used.
+     *
+     * NOTE: If memory storage is disabled, the log messages will not be
+     * available in the exception screen.
+     *
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setMemoryStorageEnabled(bool $enabled) : self
+    {
+        $this->memoryStorageEnabled = $enabled;
+        return $this;
+    }
+
+    public function isMemoryStorageEnabled() : bool
+    {
+        return $this->memoryStorageEnabled;
+    }
+
+    /**
+     * Whether logging is enabled. This includes both
+     * the logging configuration from the application
+     * configuration constants, and the runtime setting.
      *
      * @param string $category
      * @return bool
      */
     public function isLoggingEnabled(string $category='') : bool
     {
-        return
-            !Application_Bootstrap::isInitialized()
-            ||
-            (
-                boot_constant(BaseConfigRegistry::LOGGING_ENABLED) === true
-                &&
-               $this->isCategoryEnabled($category)
-            );
+        if($this->loggingEnabled === false) {
+            return false;
+        }
+
+        return $this->isCategoryEnabled($category);
     }
 
     public function setCategoryEnabled(string $category, bool $enabled) : self
@@ -83,8 +143,7 @@ class Application_Logger
 
     public function isCategoryEnabled(string $category) : bool
     {
-        if(!empty($category) && isset($this->enabledCategories[$category]))
-        {
+        if(!empty($category) && isset($this->enabledCategories[$category])) {
             return $this->enabledCategories[$category];
         }
 
@@ -311,28 +370,24 @@ class Application_Logger
             $category = self::CATEGORY_GENERAL;
         }
 
-        if($withTime === null) {
-            $withTime = true;
-        }
-
         if(!$this->isLoggingEnabled($category))
         {
             return $this;
         }
 
-        if(!empty($args))
-        {
+        if(!empty($args)) {
             $message = sprintf($message, ...$args);
         }
 
-        if($withTime === true)
-        {
+        if($withTime === null || $withTime === true) {
             $message = $this->getTime().' | '.$message;
         }
 
         $message = $category . ' | ' . $message;
 
-        $this->log[] = $message;
+        if($this->memoryStorageEnabled === true) {
+            $this->log[] = $message;
+        }
 
         if($this->logMode === self::LOG_MODE_ECHO)
         {
@@ -340,11 +395,18 @@ class Application_Logger
         }
         else if($this->logMode === self::LOG_MODE_FILE)
         {
+            if(!$this->logFileInitialized) {
+                $this->logFileInitialized = true;
+                FileHelper::createFolder(dirname($this->logFile));
+            }
+
             error_log($message, 3, $this->logFile);
         }
         
         return $this;
     }
+
+
     
     private function format(string $message) : string
     {
