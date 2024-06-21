@@ -2,8 +2,9 @@
 - Revisionables: Added `getRevisionAuthorXXX()` methods for more consistent naming.
 - Revisionables: Added some missing methods in the revisionable interface.
 - Revisionables: Storage now automatically disposes of keys that contain revision-dependent instances.
-- Revisionables: Tweaked the disposable method setup to automate internal disposal.
+- Revisionables: Tweaked the abstract disposable method setup to handle common internal disposal.
 - Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
+- Revisionables: Added disposed checks in all relevant public methods.
 - Disposables: `_dispose()` is now called after the child revisionables have been disposed.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
@@ -14,8 +15,9 @@
 
 ### Deprecations
 
-- `RevisionableStatelessInterface::getOwnerID()`
-- `RevisionableStatelessInterface::getOwnerName()`
+- `RevisionableStatelessInterface::getOwnerID()` => `getRevisionAuthorID()`
+- `RevisionableStatelessInterface::getOwnerName()` => `getRevisionAuthorName()`
+- `Application_Exception_DisposableDisposed` => `DisposableDisposedException`
 
 ## v4.0.7 - Layout tweak
 - UI: Moved the subnav context menu to the left (icon only).
