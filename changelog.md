@@ -10,6 +10,7 @@
 - Logging: Added `setLoggingEnabled()` to change this at runtime.
 - Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
 - Logging: The memory storage option allows limiting memory usage in long-running tasks.
+- Logging: Added `reset()` to reset to defaults.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
