@@ -322,6 +322,7 @@ trait Application_Traits_Eventable
 
     public function clearAllEventListeners() : void
     {
+        $this->log('EventHandling | Clearing all event listeners.');
         $this->eventListeners = array();
     }
 
@@ -332,10 +333,12 @@ trait Application_Traits_Eventable
 
     protected function disableEvents() : void
     {
-        if ($this->eventsDisabled)
-        {
+        if ($this->eventsDisabled) {
             return;
         }
+
+        $this->log('EventHandling | Disabling all events.');
+
         $this->eventsDisabled = true;
     }
 }
