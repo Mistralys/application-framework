@@ -224,6 +224,8 @@ abstract class ApplicationTestCase extends TestCase
     {
         Localization::selectAppLocale('en_UK');
 
+        AppFactory::createLogger()->reset();
+
         $this->testMedia = array();
     }
 
