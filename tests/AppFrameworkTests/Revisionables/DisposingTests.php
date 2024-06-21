@@ -83,4 +83,16 @@ final class DisposingTests extends RevisionableTestCase
 
         $this->assertTrue($subDependent->isDisposed());
     }
+
+    public function test_canGetIdentificationOfDisposedRecord() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+
+        $record->dispose();
+
+        $record->getLogIdentifier();
+        $record->getIdentification();
+
+        $this->addToAssertionCount(1);
+    }
 }

@@ -123,6 +123,10 @@ class RevisionableRecord
 
     public function getIdentification(): string
     {
+        if($this->isDisposed()) {
+            return sprintf('Revisionable (Disposed) [#%s]', $this->getID());
+        }
+
         return sprintf('Revisionable [#%s v%s]', $this->getID(), $this->getRevision());
     }
 

@@ -28,6 +28,18 @@ final class StubTests extends RevisionableTestCase
     {
         $stub = $this->revCollection->createDummyRecord();
 
+        // Stub records have no current revision on the collection level,
+        // as they do not exist in the database.
+        $this->assertNull($this->revCollection->getCurrentRevision($stub->getID()));
+
+        // This is why the stub record's current revision is fixed to
+        // the stub revision constant.
+        $this->assertSame(StubDBRevisionStorage::STUB_REVISION_NUMBER, $stub->getCurrentRevision());
+
+        // The revision is selected correctly, because DB revisionables
+        // select the current revision on instantiation.
+        /* @see Application_RevisionableCollection_DBRevisionable::__construct() */
+
         $this->assertSame($stub->getRevision(), StubDBRevisionStorage::STUB_REVISION_NUMBER);
     }
 
