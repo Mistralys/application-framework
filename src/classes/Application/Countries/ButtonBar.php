@@ -8,6 +8,7 @@
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\OptionableInterface;
@@ -51,7 +52,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
      * @param string $id A freeform ID to tie the country selection to: Used to namespace the setting under which the country is stored.
      * @param string $baseURL
      *
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws BaseClassHelperException
      */

@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use AppUtils\BaseException;
 use AppUtils\ConvertHelper_Exception;
 
@@ -82,7 +83,7 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      * @return DBHelper_BaseRecord
      *
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */

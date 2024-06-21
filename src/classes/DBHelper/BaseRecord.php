@@ -6,6 +6,7 @@
  * @see DBHelper_BaseRecord
  */
 
+use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use DBHelper\BaseRecord\Event\KeyModifiedEvent;
@@ -135,7 +136,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     /**
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function refreshData() : void
@@ -263,7 +264,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param mixed $default
      * @return mixed
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function getRecordKey($name, $default=null)
     {
@@ -283,7 +284,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param int $default
      * @return int
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function getRecordIntKey(string $name, int $default=0) : int
     {
@@ -302,7 +303,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param float $default
      * @return float
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function getRecordFloatKey(string $name, float $default=0) : float
     {
@@ -320,7 +321,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param string $default
      * @return string
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function getRecordStringKey(string $name, string $default='') : string
     {
@@ -356,7 +357,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param string $name
      * @param boolean $default
      * @return boolean
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     protected function getRecordBooleanKey($name, $default=false) : bool
@@ -372,7 +373,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @param string $name
      * @return bool
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     protected function recordKeyExists(string $name) : bool
     {
@@ -395,7 +396,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise "true/false" is used.
      * @return boolean Whether the value has changed.
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno=true) : bool
@@ -409,7 +410,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param DateTime $date
      * @return bool
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordDateKey(string $name, DateTime $date) : bool
@@ -420,7 +421,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @param string $name
      * @return bool
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function hasKey(string $name) : bool
     {
@@ -438,7 +439,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @param mixed $value
      * @return boolean
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordKey(string $name, $value) : bool
@@ -491,7 +492,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     /**
      * @param string $name
      * @return bool
-     * @throws Application_Exception_DisposableDisposed|DBHelper_Exception
+     * @throws DisposableDisposedException|DBHelper_Exception
      */
     protected function requireKey(string $name) : bool
     {
@@ -569,7 +570,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      *                       has to be checked manually.
      *
      * @return boolean Whether there was anything to save.
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception|ConvertHelper_Exception
      */
     public function save(bool $silent=false) : bool
@@ -680,7 +681,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      *
      * @param bool $silent
      * @return $this
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function saveChained(bool $silent=false) : self
@@ -921,7 +922,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
 
     /**
      * @return array<string,mixed>
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function getFormValues() : array
     {

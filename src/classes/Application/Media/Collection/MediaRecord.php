@@ -9,7 +9,7 @@ use Application\AppFactory;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
-use Application_Exception_DisposableDisposed;
+use Application\Exception\DisposableDisposedException;
 use Application_Media_Document;
 use Application_User;
 use AppUtils\FileHelper;
@@ -93,7 +93,7 @@ class MediaRecord extends DBHelper_BaseRecord implements TaggableInterface
      * then the file on disk.
      *
      * @return int
-     * @throws Application_Exception_DisposableDisposed
+     * @throws \Application\Exception\DisposableDisposedException
      */
     public function getFileSize() : int
     {
