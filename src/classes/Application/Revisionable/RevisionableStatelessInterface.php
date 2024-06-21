@@ -284,10 +284,9 @@ interface RevisionableStatelessInterface
     /**
      * Adds a callback for when a revisionable change transaction has ended.
      *
-     * The callback gets the following parameters:
+     * The callback gets a single parameter:
      *
-     * 1) The revisionable instance {@see RevisionableStatelessInterface}.
-     * 2) The event instance {@see Application_Revisionable_Event_TransactionEnded}.
+     * 1. The event object {@see TransactionEndedEvent}.
      *
      * @param callable $callback
      * @return Application_EventHandler_EventableListener
@@ -297,10 +296,9 @@ interface RevisionableStatelessInterface
     /**
      * Adds a callback for when a new revision is added to the revisionable.
      *
-     * The callback gets the following parameters:
+     * The callback gets a single parameter:
      *
-     * 1) The revisionable instance {@see RevisionableStatelessInterface}.
-     * 2) The event instance {@see RevisionAddedEvent}.
+     * 1. The event object {@see RevisionAddedEvent}.
      *
      * @param callable $callback
      * @return Application_EventHandler_EventableListener
@@ -313,10 +311,23 @@ interface RevisionableStatelessInterface
      *
      * This gets a single parameter:
      *
-     * - The revisionable instance {@see RevisionableStatelessInterface}.
+     * - The event object {@see \Application\Revisionable\Event\BeforeSaveEvent}.
      *
      * @param callable $callback
      * @return Application_EventHandler_EventableListener
      */
     public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a callback to whenever a different revisionable revision
+     * has been selected.
+     *
+     * This gets a single parameter:
+     *
+     * - The event object {@see \Application\Revisionable\Event\RevisionSelectedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener;
 }
