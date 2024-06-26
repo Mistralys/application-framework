@@ -14,7 +14,7 @@ use Application\Exception\DisposableDisposedException;
  *
  * @deprecated Use {@see DisposableDisposedException} instead.
  */
-public class Application_Exception_DisposableDisposed extends DisposableDisposedException
+class Application_Exception_DisposableDisposed extends DisposableDisposedException
 {
 
 }
