@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Revisionables
+ */
 
 declare(strict_types=1);
 
@@ -11,6 +15,12 @@ use Application\RevisionStorage\StubDBRevisionStorage;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 
+/**
+ * @package Application
+ * @subpackage Revisionables
+ *
+ * @property BaseDBCollectionStorage $revisions
+ */
 abstract class Application_RevisionableCollection_DBRevisionable
     extends Application_Revisionable
 {
