@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use BaseDBCollectionStorage;
-use TestDriver\Revisionables\ChangelogHandler;
 use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
@@ -13,11 +12,7 @@ use Application\Traits\ChangelogViaHandlerTrait;
 use Application_Revisionable;
 use Application_RevisionableCollection;
 use Application_RevisionableCollection_DBRevisionable;
-use TestDriver\Revisionables\Storage\RevisionableStorage;
 
-/**
- * @property RevisionableStorage $revisions
- */
 class RevisionableRecord
     extends Application_RevisionableCollection_DBRevisionable
     implements
