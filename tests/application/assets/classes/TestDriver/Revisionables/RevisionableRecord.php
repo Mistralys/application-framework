@@ -116,13 +116,21 @@ class RevisionableRecord
 
     // region: X - Interface methods
 
-    public function getIdentification(): string
+    protected function _getIdentification(): string
     {
-        if($this->isDisposed()) {
-            return sprintf('Revisionable (Disposed) [#%s]', $this->getID());
-        }
+        return sprintf(
+            'Revisionable [#%s v%s]',
+            $this->getID(),
+            $this->getRevision()
+        );
+    }
 
-        return sprintf('Revisionable [#%s v%s]', $this->getID(), $this->getRevision());
+    protected function _getIdentificationDisposed(): string
+    {
+        return sprintf(
+            'Revisionable [#%s] (Disposed)',
+            $this->getID()
+        );
     }
 
     protected function _getChildDisposables(): array
@@ -133,13 +141,6 @@ class RevisionableRecord
     protected function _disposeRevisionable(): void
     {
     }
-
-    public function getLogIdentifier(): string
-    {
-        return $this->getIdentification();
-    }
-
-
 
     protected function _registerEvents(): void
     {

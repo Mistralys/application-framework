@@ -1000,7 +1000,7 @@ abstract class Application_RevisionStorage
      */
     protected array $logFormat = array();
     
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
         // creating the base string once per revision for
         // performance reasons, and not using sprintf
@@ -1445,11 +1445,6 @@ abstract class Application_RevisionStorage
         $this->requireNotDisposed();
 
         return $this->getKey($this->resolvePrivateKey($name));
-    }
-
-    public function getIdentification(): string
-    {
-        return $this->getLogIdentifier();
     }
 
     public function getChildDisposables(): array

@@ -32,7 +32,7 @@ class TestDisposable implements Application_Interfaces_Disposable
         }
     }
 
-    public function getIdentification() : string
+    protected function _getIdentification() : string
     {
         return 'Test disposable #'.$this->id;
     }
@@ -50,11 +50,6 @@ class TestDisposable implements Application_Interfaces_Disposable
     public function isCleaned() : bool
     {
         return $this->cleaned;
-    }
-
-    public function getLogIdentifier() : string
-    {
-        return sprintf('TestDisposable [%s]', self::$counter);
     }
 
     public function onEventTriggered(callable $callback) : void

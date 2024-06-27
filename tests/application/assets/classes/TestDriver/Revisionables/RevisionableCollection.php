@@ -58,7 +58,7 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::PRIMARY_NAME;
     }
 
-    public function getIdentification(): string
+    protected function _getIdentification(): string
     {
         return 'Revisionables';
     }

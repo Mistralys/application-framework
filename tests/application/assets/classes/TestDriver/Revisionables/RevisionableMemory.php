@@ -166,4 +166,9 @@ class RevisionableMemory extends Application_RevisionableStateless
     {
         return RevisionableMemoryCollection::create();
     }
+
+    protected function _getIdentification(): string
+    {
+        return 'MemoryRevisionable';
+    }
 }

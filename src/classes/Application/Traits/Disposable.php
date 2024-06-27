@@ -106,4 +106,32 @@ trait Application_Traits_Disposable
 
         throw new DisposableDisposedException($this, $actionLabel);
     }
+
+    public function getLogIdentifier() : string
+    {
+        return $this->getIdentification();
+    }
+
+    public function getIdentification() : string
+    {
+        if($this->isDisposed()) {
+            return $this->_getIdentificationDisposed();
+        }
+
+        return $this->_getIdentification();
+    }
+
+    /**
+     * Overridable method to customize the object's identification
+     * when it has been disposed, in case there are details that
+     * can be added safely after disposing.
+     * 
+     * @return string
+     */
+    protected function _getIdentificationDisposed() : string
+    {
+        return get_class($this).' (Disposed)';
+    }
+
+    abstract protected function _getIdentification() : string;
 }

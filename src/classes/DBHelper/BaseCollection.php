@@ -1322,19 +1322,18 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     protected ?string $logPrefix = null;
 
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
-        return $this->getIdentification();
-    }
-
-    public function getIdentification() : string
-    {
-        if(!isset($this->logPrefix))
-        {
+        if(!isset($this->logPrefix)) {
             $this->logPrefix = ucfirst($this->getRecordTypeName()).' collection';
         }
 
         return $this->logPrefix;
+    }
+
+    protected function _getIdentificationDisposed() : string
+    {
+        return $this->_getIdentification();
     }
 
     public function isRecordLoaded(int $recordID) : bool

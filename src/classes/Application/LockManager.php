@@ -170,11 +170,11 @@ class Application_LockManager extends DBHelper_BaseCollection
         $this->primary = $primary;
     }
     
-    public function getIdentification() : string
+    protected function _getIdentification() : string
     {
         return 'LockManager';
     }
-    
+
    /**
     * Retrieves the primary key for which the lock manager is 
     * currently locked. This is always a string, and can be

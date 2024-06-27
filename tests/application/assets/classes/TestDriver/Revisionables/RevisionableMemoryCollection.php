@@ -15,7 +15,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
     use Application_Traits_Eventable;
     use Application_Traits_Disposable;
 
-    public function getIdentification(): string
+    protected function _getIdentification(): string
     {
         return 'RevisionableMemoryCollection';
     }
@@ -40,7 +40,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
 
     public function getRecordClassName(): string
     {
-        return \TestApplication\TestDriver\Revisionables\RevisionableMemory::class;
+        return RevisionableMemory::class;
     }
 
     public function getRecordTypeName(): string
@@ -126,5 +126,10 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
     public function canRecordBeDestroyed(RevisionableInterface $revisionable): bool
     {
         return true;
+    }
+
+    public function getPrimaryRequestName(): string
+    {
+        return '';
     }
 }

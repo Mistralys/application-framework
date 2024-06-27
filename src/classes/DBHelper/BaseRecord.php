@@ -931,18 +931,22 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         return $this->recordData;
     }
 
-    public function getIdentification() : string
+    protected function _getIdentification() : string
     {
         return sprintf(
             '%s [#%s]',
-            ucfirst($this->getRecordTypeName()),
+            $this->getRecordTypeName(),
             $this->getID()
         );
     }
 
-    public function getLogIdentifier(): string
+    protected function _getIdentificationDisposed(): string
     {
-        return $this->getIdentification();
+        return sprintf(
+            '%s [#%s]',
+            $this->getRecordTypeName(),
+            $this->getID()
+        );
     }
 
     protected function _dispose() : void

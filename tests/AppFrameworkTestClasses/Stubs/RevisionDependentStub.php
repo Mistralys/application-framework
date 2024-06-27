@@ -12,6 +12,9 @@ use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
+use Application_Traits_Disposable;
+use Application_Traits_Eventable;
+use Application_Traits_Loggable;
 
 /**
  * Implementation of a revision-dependent object.
@@ -43,5 +46,23 @@ class RevisionDependentStub implements RevisionDependentInterface
     public function getRevisionable(): RevisionableStatelessInterface
     {
         return $this->revisionable;
+    }
+
+    public function getChildDisposables(): array
+    {
+        return array();
+    }
+
+    protected function _dispose(): void
+    {
+        unset($this->revisionable);
+    }
+
+    public function getIdentification(): string
+    {
+        return sprintf(
+            '%s | RevisionDependentStub',
+            $this->revisionable->getIdentification()
+        );
     }
 }
