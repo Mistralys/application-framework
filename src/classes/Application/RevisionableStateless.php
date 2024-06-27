@@ -1132,7 +1132,7 @@ abstract class Application_RevisionableStateless
 
         $this->rememberRevision();
         $this->selectFirstRevision();
-        $user = $this->getChangelogOwner();
+        $user = $this->getRevisionAuthor();
         $this->restoreRevision();
         
         return $user;
