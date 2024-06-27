@@ -6,6 +6,7 @@
 - Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
 - Revisionables: Added disposed checks in all relevant public methods.
 - Disposables: `_dispose()` is now called after the child revisionables have been disposed.
+- Disposables: `getIdentification()` now handles the disposed state.
 - Logging: The `APP_LOGGING` configuration is not used anymore.
 - Logging: Added `setLoggingEnabled()` to change this at runtime.
 - Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
@@ -17,6 +18,12 @@
 
 - Revisionables must rename their `_dispose()` method to `_disposeRevisionable()`.
 - Revisionables must rename their `getChildDisposable()` method to `_getChildDisposable()`.
+- Revision-dependent classes must now implement the `getIdentification()` method.
+
+### Other changes
+
+- Disposables should not implement `getLogIdentifier()` anymore.
+- Disposables should replace `getIdentification()` with the protected `_getIdentification()` method.
 
 ### Deprecations
 
