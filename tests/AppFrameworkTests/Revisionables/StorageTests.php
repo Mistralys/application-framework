@@ -116,6 +116,25 @@ final class StorageTests extends RevisionableTestCase
         $this->assertSame('overwritten', $this->storage->getPrivateKey('foo'));
     }
 
+    public function test_ownerExists() : void
+    {
+        $rev = $this->createTestRevisionable();
+
+        $this->assertTrue($rev->getRevisionAuthorID() > 0, 'The revision author ID must not be 0. Given: ['.$rev->getRevisionAuthorID().'].');
+        $this->assertNotNull($rev->getRevisionAuthor());
+
+        $rev->getCreator();
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_hasTimestamp() : void
+    {
+        $rev = $this->createTestRevisionable();
+
+        $this->assertNotNull($rev->getRevisionTimestamp());
+    }
+
     // endregion
 
     // region: Support methods

@@ -60,6 +60,8 @@ abstract class Application_RevisionStorage
 
     public const KEY_OWNER_ID = 'ownerID';
     public const KEY_OWNER_NAME = 'ownerName';
+    public const KEY_TIMESTAMP = 'timestamp';
+    public const KEY_COMMENTS = 'comments';
     public const PRIVATE_KEY_PREFIX = '__';
 
     /**
@@ -151,10 +153,10 @@ abstract class Application_RevisionStorage
         }
 
         $this->data[$number] = array(
-            '__timestamp' => $timestamp, // the time the revision was created
-            self::KEY_OWNER_ID => $ownerID,
-            self::KEY_OWNER_NAME => $ownerName,
-            '__comments' => (string)$comments
+            $this->resolvePrivateKey(self::KEY_TIMESTAMP) => $timestamp, // the time the revision was created
+            $this->resolvePrivateKey(self::KEY_OWNER_ID) => $ownerID,
+            $this->resolvePrivateKey(self::KEY_OWNER_NAME) => $ownerName,
+            $this->resolvePrivateKey(self::KEY_COMMENTS) => (string)$comments
         );
 
         $this->triggerRevisionAdded($number, $timestamp, $ownerID, $ownerName, $comments);
@@ -741,7 +743,7 @@ abstract class Application_RevisionStorage
     {
         $this->requireNotDisposed();
 
-        return StrictType::createStrict($this->getKey('__timestamp'))->getIntOrNull();
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_TIMESTAMP))->getIntOrNull();
     }
 
     /**
@@ -869,7 +871,7 @@ abstract class Application_RevisionStorage
         return $this->hasKey($this->resolvePrivateKey($name));
     }
 
-    private function resolvePrivateKey(string $name) : string
+    protected function resolvePrivateKey(string $name) : string
     {
         if(strpos($name, self::PRIVATE_KEY_PREFIX) === 0) {
             return $name;
