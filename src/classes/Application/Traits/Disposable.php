@@ -29,9 +29,6 @@ trait Application_Traits_Disposable
         }
 
         $this->log('Dispose | Disposing of the object.');
-
-        $this->disposableDisposed = true;
-
         $this->log('Dispose | Disposing of child disposables.');
 
         $children = $this->getChildDisposables();
@@ -54,6 +51,8 @@ trait Application_Traits_Disposable
             array($this),
             Application_Traits_Disposable_Event_Disposed::class
         );
+
+        $this->disposableDisposed = true;
 
         // Disable all further event handlings.
         $this->clearAllEventListeners();
