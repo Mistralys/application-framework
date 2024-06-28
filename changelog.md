@@ -7,6 +7,7 @@
 - Revisionables: Added disposed checks in all relevant public methods.
 - Disposables: `_dispose()` is now called after the child revisionables have been disposed.
 - Disposables: `getIdentification()` now handles the disposed state.
+- Disposables: Added the "disposing" state with `isDisposing()`.
 - Logging: The `APP_LOGGING` configuration is not used anymore.
 - Logging: Added `setLoggingEnabled()` to change this at runtime.
 - Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
