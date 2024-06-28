@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use Application\Revisionable\BaseRevisionableChangelogHandler;
 use Application\Revisionable\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\RevisionableChangelogTrait;
@@ -51,9 +52,12 @@ abstract class Application_Revisionable
     /**
      * Retrieves the item's state handler.
      * @return Application_StateHandler
+     * @throws DisposableDisposedException
      */
     public function getStateHandler() : Application_StateHandler
     {
+        $this->requireNotDisposed();
+
         return $this->stateHandler;
     }
 
@@ -148,6 +152,7 @@ abstract class Application_Revisionable
      * or null if no state has been set yet.
      * @return string|NULL
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      */
     public function getCurrentStateLabel() : ?string
     {
@@ -160,6 +165,11 @@ abstract class Application_Revisionable
         return null;
     }
 
+    /**
+     * @return string|null
+     * @throws RevisionableException
+     * @throws DisposableDisposedException
+     */
     public function getCurrentPrettyStateLabel() : ?string
     {
         $state = $this->getState();
@@ -179,9 +189,12 @@ abstract class Application_Revisionable
      * @param string|NULL $stateName If no state name is specified, uses the current state.
      * @return string
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      */
     public function getStateLabel(?string $stateName = null) : string
     {
+        $this->requireNotDisposed();
+
         if (empty($stateName)) {
             $stateName = $this->getStateName();
         }
@@ -212,9 +225,12 @@ abstract class Application_Revisionable
      *
      * @return Application_StateHandler_State|NULL
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      */
     public function getState() : ?Application_StateHandler_State
     {
+        $this->requireNotDisposed();
+
         $state = $this->revisions->getKey(Application_RevisionableCollection::COL_REV_STATE);
 
         if($state instanceof Application_StateHandler_State) {
@@ -231,6 +247,7 @@ abstract class Application_Revisionable
      *
      * @return Application_StateHandler_State
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      */
     public function requireState() : Application_StateHandler_State
     {
@@ -255,6 +272,7 @@ abstract class Application_Revisionable
      *
      * @return string
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      */
     public function getStateName() : string
     {
@@ -266,9 +284,12 @@ abstract class Application_Revisionable
      * array containing state objects.
      *
      * @return Application_StateHandler_State[]
+     * @throws DisposableDisposedException
      */
     public function getStates() : array
     {
+        $this->requireNotDisposed();
+
         return $this->stateHandler->getStates();
     }
 
@@ -283,9 +304,11 @@ abstract class Application_Revisionable
      * @return $this
      * @throws RevisionableException
      * @throws StateHandlerException
+     * @throws DisposableDisposedException
      */
     public function setState(Application_StateHandler_State $newState) : self
     {
+        $this->requireNotDisposed();
         $this->requireTransaction();
 
         if($newState->getName() === $this->getStateName()) {
@@ -340,9 +363,12 @@ abstract class Application_Revisionable
     * @param Application_StateHandler_State $state
     * @return boolean
     * @see getStateChangeMessages()
+    * @throws DisposableDisposedException
     */
     public function validateStateChange(Application_StateHandler_State $state) : bool
     {
+        $this->requireNotDisposed();
+
         $this->stateValidationMessages = array();
         
         $method = '_validateStateChange_'.$state->getName();
@@ -371,9 +397,12 @@ abstract class Application_Revisionable
     * Retrieves all messages added during the last
     * call to the {@link validateStateChange()} method.
     * @return string[]
+    * @throws DisposableDisposedException
     */
     public function getStateChangeMessages() : array
     {
+        $this->requireNotDisposed();
+
         return $this->stateValidationMessages;
     }
 
@@ -410,9 +439,12 @@ abstract class Application_Revisionable
      *
      * @param string|Application_StateHandler_State $state_object_or_name
      * @return boolean
+     * @throws DisposableDisposedException
      */
     public function stateHasDependency($state_object_or_name) : bool
     {
+        $this->requireNotDisposed();
+
         $state = $this->stateHandler->getStateByName($state_object_or_name);
 
         return $this->requireState()->hasDependency($state);
@@ -423,9 +455,12 @@ abstract class Application_Revisionable
      *
      * @param string|Application_StateHandler_State $nameOrInstance
      * @return Application_StateHandler_State
+     * @throws DisposableDisposedException
      */
     public function getStateByName($nameOrInstance) : Application_StateHandler_State
     {
+        $this->requireNotDisposed();
+
         return $this->stateHandler->getStateByName($nameOrInstance);
     }
 
@@ -433,9 +468,12 @@ abstract class Application_Revisionable
      * Checks whether the object is in the specified state.
      * @param string|Application_StateHandler_State $nameOrInstance
      * @return boolean
+     * @throws DisposableDisposedException
      */
     public function isState($nameOrInstance) : bool
     {
+        $this->requireNotDisposed();
+
         if ($nameOrInstance instanceof Application_StateHandler_State) {
             $stateName = $nameOrInstance->getName();
         } else {
@@ -560,9 +598,12 @@ abstract class Application_Revisionable
 
     /**
      * @inheritDoc
+     * @throws DisposableDisposedException
      */
     public function makeState(Application_StateHandler_State $state, ?string $comments=null) : bool
     {
+        $this->requireNotDisposed();
+
         if($state->getName() === $this->getStateName()) {
             return false;
         }
@@ -588,9 +629,11 @@ abstract class Application_Revisionable
      * @param string|null $comments
      * @return $this
      * @throws Application_Exception
+     * @throws DisposableDisposedException
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
+        $this->requireNotDisposed();
         $this->requireNotStub('Start a revision transaction');
 
         parent::startTransaction($newOwnerID, $newOwnerName, $comments);
@@ -602,8 +645,14 @@ abstract class Application_Revisionable
         return $this;
     }
 
+    /**
+     * @return bool
+     * @throws RevisionableException
+     * @throws DisposableDisposedException
+     */
     public function endTransaction() : bool
     {
+        $this->requireNotDisposed();
         $this->requireNotStub('End a revision transaction');
 
         if ($this->stateChanged) {
@@ -636,31 +685,44 @@ abstract class Application_Revisionable
      *
      * @param string|NULL $title
      * @return UI_Page_RevisionableTitle
+     * @throws DisposableDisposedException
      */
     public function renderTitle(?string $title=null) : UI_Page_RevisionableTitle
     {
+        $this->requireNotDisposed();
+
         return UI::getInstance()->getPage()->createRevisionableTitle($this)->setLabel($title);
     }
 
     /**
      * @inheritDoc
+     * @throws DisposableDisposedException
      */
     public function hasState(string $stateName) : bool
     {
+        $this->requireNotDisposed();
+
         return $this->stateHandler->isStateKnown($stateName);
     }
     
    /**
     * Whether changes may be made to the revisionable in its current state.
     * @return boolean
+    * @throws DisposableDisposedException
     */
     public function isChangingAllowed() : bool
     {
         return $this->requireState()->isChangingAllowed();
     }
-    
+
+    /**
+     * @return bool
+     * @throws DisposableDisposedException
+     */
     public function isEditable() : bool
     {
+        $this->requireNotDisposed();
+
         if(!parent::isEditable())
         {
             return false;
@@ -669,8 +731,16 @@ abstract class Application_Revisionable
         return $this->isChangingAllowed();
     }
 
+    /**
+     * @return Application_StateHandler_State
+     * @throws BaseException
+     * @throws DisposableDisposedException
+     * @throws StateHandlerException
+     */
     public function getInitialState() : Application_StateHandler_State
     {
+        $this->requireNotDisposed();
+
         return $this->stateHandler->getInitialState();
     }
 
@@ -689,10 +759,13 @@ abstract class Application_Revisionable
      * sets the previous one as active.
      *
      * @throws RevisionableException {@see RevisionableInterface::ERROR_CANNOT_UNDO_REVISION}
+     * @throws DisposableDisposedException
      * @return int
      */
     public function undoRevision() : int
     {
+        $this->requireNotDisposed();
+
         // get the last two revisions
         $filters = $this->getRevisionsFilterCriteria();
         $filters->setOrderBy(Application_RevisionableCollection::COL_REV_DATE, 'DESC');
