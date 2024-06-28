@@ -1056,9 +1056,17 @@ abstract class Application_RevisionableStateless
         return $this->revisionableTypeName;
     }
 
-    public function reload() : void
+    /**
+     * @inheritDoc
+     * @return RevisionableStatelessInterface|$this
+     */
+    public function reload() : RevisionableStatelessInterface
     {
-        $this->revisions->reload();
+        if($this->isDisposed()) {
+            return $this->getCollection()->getByID($this->getID());
+        }
+
+        return $this;
     }
     
    /**

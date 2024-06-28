@@ -261,6 +261,15 @@ interface RevisionableStatelessInterface
     public function getRevisionableTypeName(): string;
 
     /**
+     * Reloads the revisionable if it has been disposed,
+     * and returns a fresh instance. Otherwise, the current
+     * instance is returned.
+     *
+     * @return RevisionableStatelessInterface
+     */
+    public function reload() : RevisionableStatelessInterface;
+
+    /**
      * Retrieves key => value pairs of all non-standard revision fields
      * that must be stored in the revision history.
      *
