@@ -18,6 +18,7 @@ use Application\Exception\DisposableDisposedException;
 trait Application_Traits_Disposable
 {
     private bool $disposableDisposed = false;
+    private bool $disposableDisposing = false;
 
     /**
      * Disposes of the object once it is not needed anymore.
@@ -27,6 +28,8 @@ trait Application_Traits_Disposable
         if($this->disposableDisposed) {
             return;
         }
+
+        $this->disposableDisposing = true;
 
         $this->log('Dispose | Disposing of the object.');
         $this->log('Dispose | Disposing of child disposables.');
@@ -53,6 +56,7 @@ trait Application_Traits_Disposable
         );
 
         $this->disposableDisposed = true;
+        $this->disposableDisposing = false;
 
         // Disable all further event handlings.
         $this->clearAllEventListeners();
@@ -73,6 +77,11 @@ trait Application_Traits_Disposable
     public function isDisposed() : bool
     {
         return $this->disposableDisposed;
+    }
+
+    public function isDisposing() : bool
+    {
+        return $this->disposableDisposing;
     }
 
     /**
@@ -113,7 +122,7 @@ trait Application_Traits_Disposable
 
     public function getIdentification() : string
     {
-        if($this->isDisposed()) {
+        if($this->disposableDisposing === true || $this->disposableDisposed === true) {
             return $this->_getIdentificationDisposed();
         }
 
