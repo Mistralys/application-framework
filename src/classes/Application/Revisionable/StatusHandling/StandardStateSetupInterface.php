@@ -37,6 +37,7 @@ interface StandardStateSetupInterface extends RevisionableInterface
      *
      * @param string|NULL $comments
      * @return $this
+     * @deprecated
      */
     public function makeFinalized(?string $comments=null) : self;
 
@@ -49,6 +50,7 @@ interface StandardStateSetupInterface extends RevisionableInterface
      *
      * @param string|NULL $comments
      * @return $this
+     * @deprecated
      */
     public function makeInactive(?string $comments=null) : self;
 
@@ -61,6 +63,7 @@ interface StandardStateSetupInterface extends RevisionableInterface
      *
      * @param string|NULL $comments
      * @return $this
+     * @deprecated
      */
     public function makeDeleted(?string $comments=null) : self;
 
@@ -73,8 +76,48 @@ interface StandardStateSetupInterface extends RevisionableInterface
      *
      * @param string|NULL $comments
      * @return $this
+     * @deprecated
      */
     public function makeDraft(?string $comments=null) : self;
+
+    /**
+     * Sets the state of the record to "Finalized"
+     * if the current state allows this.
+     *
+     * NOTE: Requires a transaction.
+     *
+     * @return $this
+     */
+    public function setStateFinalized() : self;
+
+    /**
+     * Sets the state of the record to "Inactive"
+     * if the current state allows this.
+     *
+     * NOTE: Requires a transaction.
+     *
+     * @return $this
+     */
+    public function setStateInactive() : self;
+
+    /**
+     * Sets the state of the record to "Deleted",
+     * if the current state allows this.
+     *
+     * NOTE: Requires a transaction.
+     *
+     * @return $this
+     */
+    public function setStateDeleted() : self;
+
+    /**
+     * Sets the state of the record to "Draft".
+     *
+     * NOTE: Requires a transaction.
+     *
+     * @return $this
+     */
+    public function setStateDraft() : self;
 
     public function isFinalized() : bool;
     public function isInactive() : bool;
