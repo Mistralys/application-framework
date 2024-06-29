@@ -5,6 +5,7 @@
 - Revisionables: Tweaked the abstract disposable method setup to handle common internal disposal.
 - Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
 - Revisionables: Added disposed checks in all relevant public methods.
+- Revisionables: Added `setStateXXX()` methods to set the state within a transaction.
 - Disposables: `_dispose()` is now called after the child revisionables have been disposed.
 - Disposables: `getIdentification()` now handles the disposed state.
 - Disposables: Added the "disposing" state with `isDisposing()`.
@@ -28,6 +29,7 @@
 
 ### Deprecations
 
+- `StandardStateSetup`: deprecated the `makeXXX()` methods in favor of the `setupXXX()` methods.
 - `RevisionableStatelessInterface::getOwnerID()` => `getRevisionAuthorID()`
 - `RevisionableStatelessInterface::getOwnerName()` => `getRevisionAuthorName()`
 - `Application_Exception_DisposableDisposed` => `DisposableDisposedException`
