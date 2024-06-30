@@ -1,14 +1,26 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Revisionables
+ */
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use Application\Revisionable\RevisionableChangelogHandlerInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
+use Application\RevisionStorage\RevisionStorageException;
 use Application\RevisionStorage\StubDBRevisionStorage;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 
+/**
+ * @package Application
+ * @subpackage Revisionables
+ *
+ * @property BaseDBCollectionStorage $revisions
+ */
 abstract class Application_RevisionableCollection_DBRevisionable
     extends Application_Revisionable
 {
@@ -18,7 +30,6 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
     protected Application_RevisionableCollection $collection;
     protected int $id;
-    protected int $currentRevision;
 
     public function __construct(Application_RevisionableCollection $collection, int $id)
     {
@@ -27,34 +38,34 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
         parent::__construct();
 
-        if ($this->isStub()) {
-            return;
-        }
-
-        $this->currentRevision = $this->collection->getCurrentRevision($id);
-
-        if (!$this->currentRevision) {
-            throw new Application_Exception(
-                'Error loading current revision',
-                sprintf(
-                    'Could not load %s [%s] from database, no current revision found.',
-                    $this->getRevisionableTypeName(),
-                    $this->id
-                ),
-                self::ERROR_NO_CURRENT_REVISION_FOUND
-            );
-        }
-
         $this->selectCurrentRevision();
     }
 
     /**
      * Selects the revisionable's current revision.
      * @return $this
+     *
+     * @throws DisposableDisposedException
+     * @throws RevisionableException
+     * @throws RevisionStorageException
      */
     public function selectCurrentRevision(): self
     {
-        return $this->selectRevision($this->currentRevision);
+        $current = $this->getCurrentRevision();
+
+        if ($current !== null) {
+            return $this->selectRevision($current);
+        }
+
+        throw new RevisionableException(
+            'Error selecting current revision',
+            sprintf(
+                'Could not load %s [%s] from database, no current revision found.',
+                $this->getRevisionableTypeName(),
+                $this->id
+            ),
+            self::ERROR_NO_CURRENT_REVISION_FOUND
+        );
     }
 
     /**
@@ -291,6 +302,10 @@ abstract class Application_RevisionableCollection_DBRevisionable
      */
     public function getCurrentRevision(): ?int
     {
+        if($this->isStub()) {
+            return StubDBRevisionStorage::STUB_REVISION_NUMBER;
+        }
+
         return $this->collection->getCurrentRevision($this->getID());
     }
 

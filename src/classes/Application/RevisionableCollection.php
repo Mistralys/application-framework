@@ -553,19 +553,12 @@ abstract class Application_RevisionableCollection
         );
     }
     
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
-        $id = sprintf(
+        return sprintf(
             '%s Collection | ',
-            ucfirst($this->getRecordTypeName())
+            $this->getRecordTypeName()
         );
-        
-        if(!empty($this->campaignKeys)) 
-        {
-            $id .= http_build_query($this->campaignKeys, '', '; ').' | ';
-        }
-        
-        return $id;
     }
     
    /**

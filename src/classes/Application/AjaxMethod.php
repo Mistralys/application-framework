@@ -1,6 +1,7 @@
 <?php
 
 use Application\AppFactory;
+use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
@@ -521,7 +522,7 @@ abstract class Application_AjaxMethod
      * and returns its instance.
      *
      * @return Application_Countries_Country
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws Request_Exception
      */

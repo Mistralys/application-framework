@@ -755,7 +755,7 @@ abstract class Application_Driver implements Application_Driver_Interface
             return;
         }
 
-        if (self::isMaintenanceMode() && !$this->user->isDeveloper())
+        if (self::isMaintenanceMode() && !$this->user->canLoginInMaintenanceMode())
         {
             echo AppFactory::createMaintenance()->renderScreen($this->getPage());
             Application::exit('Maintenance is enabled');
@@ -886,7 +886,8 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $default = $this->user->getSetting('startup_tab', $this->appset->getDefaultArea()->getURLName());
 
-        $areaID = $this->request->getParam('page');
+        $areaID = (string)$this->request->getParam('page');
+
         if (empty($areaID) || !isset($this->enabledAreas[$areaID]))
         {
             $this->log(sprintf('Requested page [%s] | Empty or not enabled, using default [%s].', $areaID, $default));

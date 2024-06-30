@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
+use Application_RevisionStorage;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDriver\Revisionables\RevisionableCollection;
 use TestDriver\Revisionables\RevisionableRecord;
@@ -85,6 +86,53 @@ final class StorageTests extends RevisionableTestCase
                 $this->revisionable->setNonStructuralDataKey('FooBar');
             }
         );
+    }
+
+    public function test_setPrivateKey() : void
+    {
+        $this->storage->setPrivateKey('foo', 'private');
+        $this->storage->setKey('foo', 'public');
+
+        $this->assertSame('private', $this->storage->getPrivateKey('foo'));
+        $this->assertSame('public', $this->storage->getKey('foo'));
+    }
+
+    public function test_clearPrivateKey() : void
+    {
+        $this->storage->setPrivateKey('foo', 'private');
+
+        $this->assertTrue($this->storage->hasPrivateKey('foo'));
+
+        $this->storage->clearPrivateKey('foo');
+
+        $this->assertFalse($this->storage->hasPrivateKey('foo'));
+    }
+
+    public function test_noPrivateKeyPrefixDuplicates() : void
+    {
+        $this->storage->setPrivateKey('foo', 'initial');
+        $this->storage->setPrivateKey(Application_RevisionStorage::PRIVATE_KEY_PREFIX.'foo', 'overwritten');
+
+        $this->assertSame('overwritten', $this->storage->getPrivateKey('foo'));
+    }
+
+    public function test_ownerExists() : void
+    {
+        $rev = $this->createTestRevisionable();
+
+        $this->assertTrue($rev->getRevisionAuthorID() > 0, 'The revision author ID must not be 0. Given: ['.$rev->getRevisionAuthorID().'].');
+        $this->assertNotNull($rev->getRevisionAuthor());
+
+        $rev->getCreator();
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function test_hasTimestamp() : void
+    {
+        $rev = $this->createTestRevisionable();
+
+        $this->assertNotNull($rev->getRevisionTimestamp());
     }
 
     // endregion

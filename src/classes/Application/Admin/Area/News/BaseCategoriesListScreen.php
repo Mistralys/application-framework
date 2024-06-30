@@ -7,6 +7,8 @@ namespace Application\Admin\Area\News;
 use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionList;
 use AppUtils\ClassHelper;
 use Closure;
@@ -17,6 +19,8 @@ use UI_DataGrid_Action;
 
 abstract class BaseCategoriesListScreen extends Application_Admin_Area_Mode_CollectionList
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'categories-list';
 
     public const COL_LABEL = 'label';
@@ -105,8 +109,8 @@ abstract class BaseCategoriesListScreen extends Application_Admin_Area_Mode_Coll
         return t('Available categories');
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewNews();
+        return NewsScreenRights::SCREEN_CATEGORIES_LIST;
     }
 }

@@ -9,7 +9,9 @@ use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
+use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
+use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
 
 /**
@@ -17,8 +19,10 @@ use DBHelper_BaseRecord;
  * @property NewsEntry $record
  * @property NewsCollection $collection
  */
-class BaseArticleSettingsScreen extends BaseCollectionEditExtended
+abstract class BaseArticleSettingsScreen extends BaseCollectionEditExtended
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'settings';
 
     public function getURLName(): string
@@ -41,9 +45,21 @@ class BaseArticleSettingsScreen extends BaseCollectionEditExtended
         return $this->createCollection()->createSettingsManager($this, $this->record);
     }
 
+    public function getRequiredRight(): string
+    {
+        return NewsScreenRights::SCREEN_ARTICLE_SETTINGS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array(
+            t('Modify the settings') => NewsScreenRights::SCREEN_ARTICLE_SETTINGS_EDIT
+        );
+    }
+
     public function isUserAllowedEditing(): bool
     {
-        return $this->user->canEditNews();
+        return $this->user->can(NewsScreenRights::SCREEN_ARTICLE_SETTINGS_EDIT);
     }
 
     public function isEditable(): bool

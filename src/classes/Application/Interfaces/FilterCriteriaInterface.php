@@ -8,6 +8,8 @@ namespace Application\Interfaces;
 
 use Application_Exception;
 use Application_FilterCriteria;
+use AppUtils\OperationResult;
+use AppUtils\OperationResult_Collection;
 use UI\PaginationRenderer;
 use UI_DataGrid;
 
@@ -159,9 +161,17 @@ interface FilterCriteriaInterface
      */
     public function addWarning(string $message) : self;
 
+    /**
+     * Adds an operation result instance as a message.
+     *
+     * @param OperationResult $message
+     * @return self
+     */
+    public function addResultMessage(OperationResult $message) : self;
+
     public function hasMessages(): bool;
 
-    public function getMessages(): array;
+    public function getMessages(): OperationResult_Collection;
 
     /**
      * @return $this

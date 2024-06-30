@@ -155,6 +155,4 @@ interface RevisionableInterface
     public function getAdminChangelogURL(array $params = array()): string;
 
     public function getAdminStatusURL(array $params = array()): string;
-
-    public function getLastModifiedDate() : ?DateTime;
 }

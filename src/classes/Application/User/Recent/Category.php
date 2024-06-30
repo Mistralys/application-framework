@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\LookupItems\BaseLookupItem;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
@@ -15,50 +16,27 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
     public const ERROR_RECENT_ENTRY_NOT_FOUND = 72801;
 
-    const OPTION_MAX_ITEMS = 'max-items';
-    const MAX_ITEMS_DEFAULT = 10;
+    public const OPTION_MAX_ITEMS = 'max-items';
+    public const MAX_ITEMS_DEFAULT = 10;
 
     /**
-     * Maximum amount of entries to keep in storage
+     * Maximum number of entries to keep in storage
      */
-    const STORAGE_MAX_ITEMS = 60;
+    public const STORAGE_MAX_ITEMS = 60;
 
-    const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
+    public const REQUEST_PARAM_CLEAR_CATEGORY = 'clear-category';
 
-    /**
-     * @var string
-     */
-    private $label;
+    private string $label;
+    private string $alias;
+    protected Application_User_Recent $recent;
+    private string $settingName;
+    private Application_User $user;
+    private ?BaseLookupItem $lookupItem = null;
 
     /**
      * @var Application_User_Recent_Entry[]
      */
-    private $entries = array();
-
-    /**
-     * @var string
-     */
-    private $alias;
-
-    /**
-     * @var Application_User_Recent
-     */
-    protected $recent;
-
-    /**
-     * @var string
-     */
-    private $settingName;
-
-    /**
-     * @var Application_User
-     */
-    private $user;
-
-    /**
-     * @var Application_LookupItems_Item|NULL
-     */
-    private $lookupItem = null;
+    private array $entries = array();
 
     public function __construct(Application_User_Recent $recent, string $alias, string $label)
     {
@@ -105,7 +83,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      *
      * @param string $id The unique ID of the item, which can be used to retrieve it again later.
      * @param string $label The item label to show in the UI.
-     * @param string $url An URL to open to view the item.
+     * @param string $url A URL to open to view the item.
      * @param DateTime|null $date A specific date and time, or null to use the current time.
      * @return Application_User_Recent_Entry
      * @throws Application_Exception
@@ -137,7 +115,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
         $this->entries[] = $entry;
 
-        usort($this->entries, function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
+        usort($this->entries, static function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
             return $b->getDate() <=> $a->getDate();
         });
 
@@ -265,7 +243,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
             $this->registerEntry($def['id'], $def['label'], $def['url'], new DateTime($def['date']));
         }
 
-        usort($this->entries, function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
+        usort($this->entries, static function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
             return $b->getDate() <=> $a->getDate();
         });
     }
@@ -333,16 +311,16 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
     }
 
     /**
-     * @param Application_LookupItems_Item $item
+     * @param BaseLookupItem $item
      * @return $this
      */
-    public function setLookupItem(Application_LookupItems_Item $item) : Application_User_Recent_Category
+    public function setLookupItem(BaseLookupItem $item) : Application_User_Recent_Category
     {
         $this->lookupItem = $item;
         return $this;
     }
 
-    public function getLookupItem() : ?Application_LookupItems_Item
+    public function getLookupItem() : ?BaseLookupItem
     {
         return $this->lookupItem;
     }

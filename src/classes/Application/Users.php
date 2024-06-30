@@ -7,6 +7,7 @@
  * @see Application_Users
  */
 
+use Application\Exception\DisposableDisposedException;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
 use AppUtils\ClassHelper;
@@ -172,7 +173,7 @@ class Application_Users extends DBHelper_BaseCollection
      * @param int $record_id
      * @return Application_Users_User
      *
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      * @throws DBHelper_Exception

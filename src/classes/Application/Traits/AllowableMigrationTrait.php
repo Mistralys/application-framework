@@ -29,6 +29,9 @@ trait AllowableMigrationTrait
 {
     abstract public function getRequiredRight() : string;
 
+    /**
+     * @return array<string,string> Human-readable feature label > Right name pairs.
+     */
     public function getFeatureRights() : array
     {
         return array();

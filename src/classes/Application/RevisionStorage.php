@@ -9,14 +9,19 @@
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionDependentInterface;
 use Application\RevisionStorage\Copy\BaseRevisionCopy;
+use Application\RevisionStorage\Event\RevisionSelectedEvent;
 use Application\RevisionStorage\RevisionStorageException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\ConvertHelper;
 use AppUtils\TypeFilter\StrictType;
+use testsuites\Traits\RenderableTests;
 
 /**
  * Utility class for storing revision data: stores data sets
@@ -31,10 +36,12 @@ use AppUtils\TypeFilter\StrictType;
 abstract class Application_RevisionStorage
     implements
     ArrayAccess,
-    Application_Interfaces_Eventable
+    Application_Interfaces_Eventable,
+    Application_Interfaces_Disposable
 {
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
+    use Application_Traits_Disposable;
 
     public const DATA_KEY_MAX_LENGTH = 180;
     
@@ -51,8 +58,11 @@ abstract class Application_RevisionStorage
     public const ERROR_CANNOT_REMOVE_PRIOR_REVISION = 15557011;
     public const ERROR_CANNOT_REMOVE_LAST_REVISION = 15557012;
 
-    public const KEY_OWNER_ID = '__ownerID';
-    public const KEY_OWNER_NAME = '__ownerName';
+    public const KEY_OWNER_ID = 'ownerID';
+    public const KEY_OWNER_NAME = 'ownerName';
+    public const KEY_TIMESTAMP = 'timestamp';
+    public const KEY_COMMENTS = 'comments';
+    public const PRIVATE_KEY_PREFIX = '__';
 
     /**
     * @var array<int,array<string,mixed>>
@@ -135,16 +145,18 @@ abstract class Application_RevisionStorage
     */
     public function addRevision(int $number, int $ownerID, string $ownerName, ?int $timestamp = null, ?string $comments = null) : void
     {
+        $this->requireNotDisposed();
+
         if ($timestamp === null)
         {
             $timestamp = time();
         }
 
         $this->data[$number] = array(
-            '__timestamp' => $timestamp, // the time the revision was created
-            self::KEY_OWNER_ID => $ownerID,
-            self::KEY_OWNER_NAME => $ownerName,
-            '__comments' => (string)$comments
+            $this->resolvePrivateKey(self::KEY_TIMESTAMP) => $timestamp, // the time the revision was created
+            $this->resolvePrivateKey(self::KEY_OWNER_ID) => $ownerID,
+            $this->resolvePrivateKey(self::KEY_OWNER_NAME) => $ownerName,
+            $this->resolvePrivateKey(self::KEY_COMMENTS) => (string)$comments
         );
 
         $this->triggerRevisionAdded($number, $timestamp, $ownerID, $ownerName, $comments);
@@ -167,6 +179,8 @@ abstract class Application_RevisionStorage
     */
     public function rememberRevision() : self
     {
+        $this->requireNotDisposed();
+
         $this->revisionsToRemember[] = $this->getRevision();
         return $this;
     }
@@ -182,6 +196,8 @@ abstract class Application_RevisionStorage
     */
     public function restoreRevision() : self
     {
+        $this->requireNotDisposed();
+
         if (empty($this->revisionsToRemember)) {
             throw new RevisionableException(
                 'Cannot restore revision, no revision was selected to remember.',
@@ -228,13 +244,18 @@ abstract class Application_RevisionStorage
      *
      * @param int $number
      * @return Application_RevisionStorage
-     * @throws Application_Exception
+     *
+     * @throws RevisionStorageException
+     * @throws DisposableDisposedException
+     *
      * @see lock()
      * @see unlock()
      * @see isLocked()
      */
     public function selectRevision(int $number) : self
     {
+        $this->requireNotDisposed();
+
         if($this->locked) {
             return $this;
         }
@@ -254,6 +275,9 @@ abstract class Application_RevisionStorage
         }
         
         $this->revision = $number;
+
+        $this->triggerRevisionSelected($number);
+
         return $this;
     }
 
@@ -268,6 +292,8 @@ abstract class Application_RevisionStorage
     */
     public function isLoaded(int $number) : bool
     {
+        $this->requireNotDisposed();
+
         return isset($this->loadedRevisions[$number]);
     }
 
@@ -281,6 +307,8 @@ abstract class Application_RevisionStorage
     */
     public function hasDataKeys() : bool
     {
+        $this->requireNotDisposed();
+
         if(!isset($this->hasDataKeys)) {
             $this->hasDataKeys = $this->_hasDataKeys();
         }
@@ -295,7 +323,7 @@ abstract class Application_RevisionStorage
     
    /**
     * @param int $number
-    * @throws Application_Exception
+    * @throws RevisionStorageException
     */
     protected function loadRevision(int $number) : void
     {
@@ -306,7 +334,7 @@ abstract class Application_RevisionStorage
         
         if (!$this->revisionExists($number)) 
         {
-            throw new Application_Exception(
+            throw new RevisionStorageException(
                 'Revision does not exist',
                 sprintf(
                     'Tried selecting the revision [%1$s], but it does not exist.',
@@ -323,8 +351,6 @@ abstract class Application_RevisionStorage
         $this->revision = $number;
 
         $this->_loadRevision($number);
-
-        $this->revisionable->handle_revisionLoaded($number);
     }
     
    /**
@@ -347,6 +373,8 @@ abstract class Application_RevisionStorage
     */
     public function isSelected(int $number) : bool
     {
+        $this->requireNotDisposed();
+
         return $this->revision === $number;
     }
 
@@ -366,6 +394,8 @@ abstract class Application_RevisionStorage
     */
     public function hasRevisions() : bool
     {
+        $this->requireNotDisposed();
+
         return $this->countRevisions() > 0;
     }
     
@@ -378,6 +408,8 @@ abstract class Application_RevisionStorage
     */
     public function clearKey(string $name) : bool
     {
+        $this->requireNotDisposed();
+
         $revision = $this->getRevision();
         
         if(isset($this->data[$revision][$name])) {
@@ -386,6 +418,11 @@ abstract class Application_RevisionStorage
         }
         
         return false;
+    }
+
+    public function clearPrivateKey(string $name) : bool
+    {
+        return $this->clearKey($this->resolvePrivateKey($name));
     }
 
    /**
@@ -486,6 +523,8 @@ abstract class Application_RevisionStorage
      */
     public function addByCopy(int $sourceRevision, int $ownerID, string $ownerName, ?string $comments=null) : int
     {
+        $this->requireNotDisposed();
+
         $this->log('Adding revision by copy.');
 
         $newRev = $this->nextRevision($ownerID, $ownerName, $comments);
@@ -533,6 +572,8 @@ abstract class Application_RevisionStorage
      */
     public function copy(int $sourceRevision, int $targetRevision, int $targetOwnerID, string $targetOwnerName, ?string $targetComments, ?DateTime $targetDate=null) : self
     {
+        $this->requireNotDisposed();
+
         $copy = $this->createCopyRevision(
             $sourceRevision,
             $targetRevision,
@@ -581,15 +622,26 @@ abstract class Application_RevisionStorage
             );
         }
 
+        $disposables = $this->getChildDisposables();
+
         $this->_removeRevision($number);
 
         if (isset($this->loadedRevisions[$number])) {
             unset($this->loadedRevisions[$number]);
         }
 
+        $this->disposeChildDisposables($disposables);
+
         $this->selectRevision($this->getLatestRevision());
 
         return $this;
+    }
+
+    private function disposeChildDisposables(array $disposables) : void
+    {
+        foreach($disposables as $disposable) {
+            $disposable->dispose();
+        }
     }
 
     /**
@@ -603,6 +655,8 @@ abstract class Application_RevisionStorage
      */
     public function unloadRevision(int $number) : self
     {
+        $disposables = $this->getChildDisposables();
+
         if (isset($this->loadedRevisions[$number])) {
             unset($this->loadedRevisions[$number]);
             if($this->revision === $number) {
@@ -615,6 +669,8 @@ abstract class Application_RevisionStorage
             unset($this->dataKeys[$number]);
         }
 
+        $this->disposeChildDisposables($disposables);
+
         return $this;
     }
     
@@ -623,6 +679,8 @@ abstract class Application_RevisionStorage
     */
     public function reload() : self
     {
+        $this->requireNotDisposed();
+
         $this->unloadRevision($this->revision);
         return $this;
     }
@@ -644,6 +702,8 @@ abstract class Application_RevisionStorage
      */
     public function replaceRevision(int $targetRevision, int $sourceRevision) : self
     {
+        $this->requireNotDisposed();
+
         // Select both revisions once to allow the custom
         // implementation to load them if needed.
         // Also check whether they exist at all.
@@ -663,6 +723,8 @@ abstract class Application_RevisionStorage
     */
     public function getRevision() : ?int
     {
+        $this->requireNotDisposed();
+
         if (!isset($this->revision)) {
             $this->selectLatest();
         }
@@ -679,7 +741,9 @@ abstract class Application_RevisionStorage
     */
     public function getTimestamp() : ?int
     {
-        return StrictType::createStrict($this->getKey('__timestamp'))->getIntOrNull();
+        $this->requireNotDisposed();
+
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_TIMESTAMP))->getIntOrNull();
     }
 
     /**
@@ -689,7 +753,7 @@ abstract class Application_RevisionStorage
      */
     public function setOwnerName(string $name) : self
     {
-        return $this->setKey(self::KEY_OWNER_NAME, $name);
+        return $this->setPrivateKey(self::KEY_OWNER_NAME, $name);
     }
 
    /**
@@ -697,7 +761,7 @@ abstract class Application_RevisionStorage
     */
     public function getOwnerName() : string
     {
-        return StrictType::createStrict($this->getKey(self::KEY_OWNER_NAME))->getString();
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_OWNER_NAME))->getString();
     }
 
     /**
@@ -707,7 +771,7 @@ abstract class Application_RevisionStorage
      */
     public function setOwnerID(int $id) : self
     {
-        return $this->setKey(self::KEY_OWNER_ID, $id);
+        return $this->setPrivateKey(self::KEY_OWNER_ID, $id);
     }
 
    /**
@@ -715,7 +779,7 @@ abstract class Application_RevisionStorage
     */
     public function getOwnerID() : int
     {
-        return StrictType::createStrict($this->getKey(self::KEY_OWNER_ID))->getInt();
+        return StrictType::createStrict($this->getPrivateKey(self::KEY_OWNER_ID))->getInt();
     }
 
    /**
@@ -728,6 +792,8 @@ abstract class Application_RevisionStorage
     */
     public function getKey(string $name, $default = null)
     {
+        $this->requireNotDisposed();
+
         if (!isset($this->revision)) {
             $this->selectLatest();
         }
@@ -784,6 +850,8 @@ abstract class Application_RevisionStorage
     */
     public function hasKey(string $name) : bool
     {
+        $this->requireNotDisposed();
+
         $revision = $this->getRevision();
         if (!isset($this->data[$revision])) {
             return false;
@@ -794,6 +862,22 @@ abstract class Application_RevisionStorage
         }
 
         return false;
+    }
+
+    public function hasPrivateKey(string $name) : bool
+    {
+        $this->requireNotDisposed();
+
+        return $this->hasKey($this->resolvePrivateKey($name));
+    }
+
+    protected function resolvePrivateKey(string $name) : string
+    {
+        if(strpos($name, self::PRIVATE_KEY_PREFIX) === 0) {
+            return $name;
+        }
+
+        return self::PRIVATE_KEY_PREFIX.$name;
     }
 
     // region: X - ArrayAccess methods
@@ -873,6 +957,8 @@ abstract class Application_RevisionStorage
     */
     public function getLatestRevision() : int
     {
+        $this->requireNotDisposed();
+
         $revisions = $this->getRevisions();
         if (empty($revisions)) {
             throw new RevisionableException(
@@ -892,6 +978,8 @@ abstract class Application_RevisionStorage
     */
     public function getFirstRevision() : int
     {
+        $this->requireNotDisposed();
+
         $revisions = $this->getRevisions();
 
         if (empty($revisions)) {
@@ -912,7 +1000,7 @@ abstract class Application_RevisionStorage
      */
     protected array $logFormat = array();
     
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
         // creating the base string once per revision for
         // performance reasons, and not using sprintf
@@ -937,6 +1025,8 @@ abstract class Application_RevisionStorage
      */
     public function copyTo(Application_Revisionable $revisionable) : self
     {
+        $this->requireNotDisposed();
+
         $this->log(sprintf(
             'Copying %s [%s v%s] to %s [%s v%s].',
             $revisionable->getRevisionableTypeName(),
@@ -1018,22 +1108,13 @@ abstract class Application_RevisionStorage
     */
     abstract public function getTypeID() : string;
     
-   /**
-    * Disposes of all internal session data.
-    */
-    public function dispose() : void
-    {
-        $this->data = array();
-        $this->loadedRevisions = array();
-        $this->revision = null;
-        $this->revisionsToRemember = array();
-    }
-
     /**
      * @return $this
      */
     public function lock() : self
     {
+        $this->requireNotDisposed();
+
         $this->locked = true;
         return $this;
     }
@@ -1043,6 +1124,8 @@ abstract class Application_RevisionStorage
      */
     public function unlock() : self
     {
+        $this->requireNotDisposed();
+
         $this->locked = false;
         return $this;
     }
@@ -1052,6 +1135,8 @@ abstract class Application_RevisionStorage
     */
     public function isLocked() : bool
     {
+        $this->requireNotDisposed();
+
         return $this->locked;
     }
 
@@ -1064,6 +1149,8 @@ abstract class Application_RevisionStorage
     */
     public function setStaticColumn(string $name, $value) : self
     {
+        $this->requireNotDisposed();
+
         if(!isset($this->staticColumns[$name]) || $this->staticColumns[$name] !== $value) {
             $this->log(sprintf('Set the static column [%s] to [%s].', $name, $value));
             $this->staticColumns[$name] = $value;
@@ -1077,6 +1164,8 @@ abstract class Application_RevisionStorage
     */
     public function getStaticColumns() : array
     {
+        $this->requireNotDisposed();
+
         return $this->staticColumns;
     }
     
@@ -1089,6 +1178,8 @@ abstract class Application_RevisionStorage
     */
     public function getStaticColumn(string $name, $default=null)
     {
+        $this->requireNotDisposed();
+
         if(isset($this->staticColumns[$name])) {
             return $this->staticColumns[$name];
         }
@@ -1126,6 +1217,8 @@ abstract class Application_RevisionStorage
      */
     public function getDataKey(string $name, $default=null)
     {
+        $this->requireNotDisposed();
+
         if(!$this->hasDataKeys())
         {
             return $default;
@@ -1171,6 +1264,8 @@ abstract class Application_RevisionStorage
      */
     public function setDataKey(string $name, $value) : self
     {
+        $this->requireNotDisposed();
+
         if(!$this->hasDataKeys()) {
             return $this;
         }
@@ -1217,6 +1312,8 @@ abstract class Application_RevisionStorage
      */
     public function writeDataKeys() : self
     {
+        $this->requireNotDisposed();
+
         $this->log('Writing data keys.');
 
         $this->requireRevision();
@@ -1245,12 +1342,16 @@ abstract class Application_RevisionStorage
 
     public function writeRevisionKeys(array $data) : self
     {
+        $this->requireNotDisposed();
+
         $this->_writeRevisionKeys($data);
         return $this;
     }
 
     public function writeCustomKeys() : self
     {
+        $this->requireNotDisposed();
+
         $data = $this->revisionable->getCustomKeyValues();
 
         // We have to add the label here, because it is not part
@@ -1269,6 +1370,8 @@ abstract class Application_RevisionStorage
      */
     public function getDataKeys() : array
     {
+        $this->requireNotDisposed();
+
         $revision = $this->getRevision();
 
         if(isset($this->dataKeys[$revision])) {
@@ -1312,4 +1415,87 @@ abstract class Application_RevisionStorage
     }
 
     // endregion
+
+    /**
+     * Sets a key that is to be treated as private, i.e., it is
+     * not part of the regular data keys, but is stored separately.
+     *
+     * The same key names will not conflict with each other if
+     * used in {@see self::setKey()} and {@see self::setPrivateKey()}.
+     *
+     * @param string $name
+     * @param mixed|NULL $value
+     * @return $this
+     * @throws RevisionableException
+     */
+    public function setPrivateKey(string $name, $value) : self
+    {
+        $this->requireNotDisposed();
+
+        return $this->setKey($this->resolvePrivateKey($name), $value);
+    }
+
+    /**
+     * @param string $name
+     * @return mixed|NULL
+     * @throws RevisionableException
+     */
+    public function getPrivateKey(string $name)
+    {
+        $this->requireNotDisposed();
+
+        return $this->getKey($this->resolvePrivateKey($name));
+    }
+
+    public function getChildDisposables(): array
+    {
+        $disposables = array();
+
+        foreach($this->data as $data) {
+            foreach ($data as $value) {
+                if (!$value instanceof Application_Interfaces_Disposable) {
+                    continue;
+                }
+
+                if (!$value instanceof RevisionDependentInterface) {
+                    continue;
+                }
+
+                if ($value->getRevisionable() === $this->revisionable && $value->getRevision() === $this->revision) {
+                    $disposables[] = $value;
+                }
+            }
+        }
+
+        return $disposables;
+    }
+
+    protected function _dispose(): void
+    {
+        $this->data = array();
+        $this->keyLoaders = array();
+        $this->loadedRevisions = array();
+        $this->dataKeys = array();
+        $this->defaults = array();
+        $this->revisionsToRemember = array();
+        $this->staticColumns = array();
+
+        unset(
+            $this->revisionable
+        );
+    }
+
+    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(RevisionSelectedEvent::EVENT_NAME, $callback);
+    }
+
+    private function triggerRevisionSelected(int $number) : void
+    {
+        $this->triggerEvent(
+            RevisionSelectedEvent::EVENT_NAME,
+            array($this, $number),
+            RevisionSelectedEvent::class
+        );
+    }
 }

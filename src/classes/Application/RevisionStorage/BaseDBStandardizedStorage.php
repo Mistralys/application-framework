@@ -358,13 +358,13 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
         return new Application_FilterCriteria_RevisionableRevisions($this);
     }
     
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
         if(!isset($this->logFormat[$this->revision])) {
             $this->logFormat[$this->revision] = $this->logName.' ['.$this->revisionableID.'] | RevisionStorage ['.$this->revision.'] | ';
         }
         
-        return parent::getLogIdentifier();
+        return $this->logFormat[$this->revision];
     }
 
    /**

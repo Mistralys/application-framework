@@ -51,8 +51,10 @@ class UI_DataGrid implements HiddenVariablesInterface
      * @var string[]
      */
     protected array $persistRequestVars = array(
-        'page',
-        'mode',
+        Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_MODE,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE,
+        Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION,
         self::REQUEST_PARAM_PERPAGE,
         self::REQUEST_PARAM_PAGE,
         self::REQUEST_PARAM_ORDERBY,
@@ -1240,7 +1242,8 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $this->addPrivateHiddenVar(self::REQUEST_PARAM_ORDERBY, $this->getOrderBy(), $this->getFormID('orderby'));
         $this->addPrivateHiddenVar(self::REQUEST_PARAM_ORDERDIR, $this->getOrderDir(), $this->getFormID('orderdir'));
-        $this->addPrivateHiddenVar(self::REQUEST_PARAM_ACTION, $this->getPage(), $this->getFormID('action'));
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_ACTION, $this->getAction(), $this->getFormID('action'));
+        $this->addPrivateHiddenVar(self::REQUEST_PARAM_PAGE, $this->getPage(), $this->getFormID('page'));
         $this->addPrivateHiddenVar(self::REQUEST_PARAM_SUBMITTED, $id);
 
         return $this->renderHiddenInputs(array('datagrid-hiddenvars'));
@@ -1253,18 +1256,38 @@ class UI_DataGrid implements HiddenVariablesInterface
         }
 
         $messages = $this->filterCriteria->getMessages();
-        $texts = array();
-        foreach($messages as $msg) {
-            $texts[] = $msg['message'];
+        $output = '';
+
+        $warningMessages = array();
+        foreach($messages->getErrors() as $message) {
+            $warningMessages[] = $message->getMessage();
+        }
+        foreach($messages->getWarnings() as $message) {
+            $warningMessages[] = $message->getMessage();
         }
 
-        return $this->ui->getPage()->renderWarningMessage(
-            UI::icon()->warning() . ' ' .
-            '<b>'.t('Please review your filter settings:').'</b> '.
-            '<ul>'.
-                '<li>'.implode('</li><li>', $texts).'</li>'.
-            '</ul>'
-        );
+        if(!empty($warningMessages)) {
+            $output .= $this->ui->getPage()->renderWarningMessage(sb()
+                ->icon(UI::icon()->warning())
+                ->bold(t('Please review your filter settings:'))
+                ->ul($warningMessages)
+            );
+        }
+
+        $infoMessages = array();
+        foreach($messages->getNotices() as $message) {
+            $infoMessages[] = $message->getMessage();
+        }
+
+        if(!empty($infoMessages)) {
+            $output .= $this->ui->getPage()->renderInfoMessage(sb()
+                ->icon(UI::icon()->information())
+                ->bold(t('Please note:'))
+                ->ul($infoMessages)
+            );
+        }
+
+        return $output;
     }
 
     protected function renderEmptyMessage() : string
@@ -1877,7 +1900,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             }
         }
 
-        foreach ($this->hiddenVars as $name => $value) {
+        foreach ($this->getHiddenVars() as $name => $value) {
             $params[$name] = $value;
         }
 
@@ -1896,7 +1919,7 @@ class UI_DataGrid implements HiddenVariablesInterface
         return $value;
     }
 
-    protected function setSetting(string $name, $value) : void
+    protected function setSetting(string $name, string $value) : void
     {
         $user = Application::getUser();
         $user->setSetting($this->resolveSettingName($name), $value);
@@ -2625,7 +2648,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             ->getInt();
 
         if($perPage > 0) {
-            $this->setSetting(self::REQUEST_PARAM_PERPAGE, $perPage);
+            $this->setSetting(self::REQUEST_PARAM_PERPAGE, (string)$perPage);
         }
 
         $orderBy = $this->request
@@ -2647,7 +2670,6 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         if($this->getActiveAction() !== null) {
             $this->executeCallbacks();
-            return;
         }
 
         AppFactory::createDriver()->redirectTo($this->getRefreshURL());

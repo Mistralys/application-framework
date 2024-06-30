@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\RevisionableScreen;
 
+use Application\Revisionable\RevisionableInterface;
 use Application_Admin_Area_Mode_RevisionableList;
 use Application_RevisionableCollection;
-use Application_RevisionableCollection_DBRevisionable;
-use Application_Traits_Admin_RevisionableList;
 use TestDriver\Revisionables\RevisionableCollection;
 
 class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableList
@@ -19,7 +18,7 @@ class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableLis
         return RevisionableCollection::getInstance();
     }
 
-    protected function getEntryData(Application_RevisionableCollection_DBRevisionable $revisionable) : array
+    protected function getEntryData(RevisionableInterface $revisionable) : array
     {
         return array();
     }

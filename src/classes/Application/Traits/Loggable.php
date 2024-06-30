@@ -31,8 +31,6 @@ use AppUtils\ClassHelper;
  */
 trait Application_Traits_Loggable
 {
-    abstract public function getLogIdentifier() : string;
-
     private ?string $selfLogIdentifier = null;
 
     protected function getIdentifierFromSelf(string $prefix) : string

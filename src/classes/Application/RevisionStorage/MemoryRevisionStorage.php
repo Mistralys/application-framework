@@ -76,10 +76,10 @@ class MemoryRevisionStorage extends Application_RevisionStorage
 
         // overwrite these keys as they are the ones that are
         // unique to each revision
-        $copiedData['__timestamp'] = $targetDate->getTimestamp();
-        $copiedData['__ownerID'] = $targetOwnerID;
-        $copiedData['__ownerName'] = $targetOwnerName;
-        $copiedData['__comments'] = $targetComments;
+        $copiedData[$this->resolvePrivateKey(self::KEY_TIMESTAMP)] = $targetDate->getTimestamp();
+        $copiedData[$this->resolvePrivateKey(self::KEY_OWNER_ID)] = $targetOwnerID;
+        $copiedData[$this->resolvePrivateKey(self::KEY_OWNER_NAME)] = $targetOwnerName;
+        $copiedData[$this->resolvePrivateKey(self::KEY_COMMENTS)] = $targetComments;
 
         $this->data[$targetRevision] = $copiedData;
 

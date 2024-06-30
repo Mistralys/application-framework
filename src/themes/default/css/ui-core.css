@@ -10,7 +10,7 @@
 }
 
 BODY {
-    padding-top: 40px;
+    padding-top: 3.5rem;
     position: absolute; /* to make it fill the viewport even in smaller resolutions */
     min-width: fit-content; /* to fix the body being smaller than the content in smaller resolutions */
     width: 100%;
@@ -155,7 +155,7 @@ UL.nav > LI{
 /* region: Navigation - Quicknav */
 
 BODY.with-quicknav{
-    padding-top:60px;
+    padding-top: 5.5rem;
 }
 
 #app-quicknav .nav > LI > A{
@@ -202,7 +202,7 @@ BODY.with-quicknav{
 }
 
 #content_frame {
-    padding: 26px 0 26px 0;
+    padding: 0 0 26px 0;
     position: relative;
 }
 
@@ -1130,7 +1130,7 @@ UL.unstyled.compact > LI {
 H1.page-title,
 H2.page-subtitle {
     margin: 0;
-    padding: 40px 0 26px 0;
+    padding: 2rem 0 26px 0;
     font-size: 150%;
     line-height: 95%;
 }

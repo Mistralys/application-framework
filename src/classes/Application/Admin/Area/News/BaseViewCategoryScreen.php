@@ -8,6 +8,8 @@ use Application\Admin\Area\News\ViewCategory\BaseCategorySettingsScreen;
 use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionRecord;
 use UI;
 
@@ -16,6 +18,8 @@ use UI;
  */
 abstract class BaseViewCategoryScreen extends Application_Admin_Area_Mode_CollectionRecord
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'view-category';
 
     public function getURLName(): string
@@ -23,9 +27,9 @@ abstract class BaseViewCategoryScreen extends Application_Admin_Area_Mode_Collec
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewNews();
+        return NewsScreenRights::SCREEN_VIEW_CATEGORIES;
     }
 
     public function getDefaultSubmode(): string

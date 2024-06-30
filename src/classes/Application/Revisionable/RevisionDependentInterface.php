@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Traits\RevisionDependentTrait;
+use Application_Interfaces_Disposable;
 
 /**
  * Interface for objects that are dependent on a revisionable's revision.
@@ -22,6 +23,7 @@ use Application\Traits\RevisionDependentTrait;
  */
 interface RevisionDependentInterface
 {
+    public function getIdentification() : string;
     public function getRevision() : ?int;
     public function getRevisionable() : RevisionableStatelessInterface;
 

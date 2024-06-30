@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@see Application_Exception_UnexpectedInstanceType} class.
- *
  * @package Application
- * @subpackage Core
- * @see Application_Exception_UnexpectedInstanceType
+ * @subpackage Deprecated Classes
  */
 
 declare(strict_types=1);
@@ -18,8 +15,7 @@ use function AppUtils\parseVariable;
  * that the expected class instance was not specified.
  *
  * @package Application
- * @subpackage Core
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @subpackage Deprecated Classes
  *
  * @deprecated Use the {@see \AppUtils\ClassHelper} methods instead.
  */

@@ -6,27 +6,16 @@ class TestDisposable implements Application_Interfaces_Disposable
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 
-    const EVENT_EVENT_TRIGGERED = 'EventTriggered';
+    public const EVENT_EVENT_TRIGGERED = 'EventTriggered';
 
-    /**
-     * @var int
-     */
-    private static $counter = 0;
-
-    /**
-     * @var int
-     */
-    private $id;
+    private static int $counter = 0;
+    private int $id;
+    private bool $cleaned = false;
 
     /**
      * @var TestDisposable[]
      */
-    private $children = array();
-
-    /**
-     * @var bool
-     */
-    private $cleaned = false;
+    private array $children = array();
 
     public function __construct()
     {
@@ -43,7 +32,7 @@ class TestDisposable implements Application_Interfaces_Disposable
         }
     }
 
-    public function getIdentification() : string
+    protected function _getIdentification() : string
     {
         return 'Test disposable #'.$this->id;
     }
@@ -61,11 +50,6 @@ class TestDisposable implements Application_Interfaces_Disposable
     public function isCleaned() : bool
     {
         return $this->cleaned;
-    }
-
-    public function getLogIdentifier() : string
-    {
-        return sprintf('TestDisposable [%s]', self::$counter);
     }
 
     public function onEventTriggered(callable $callback) : void

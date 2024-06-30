@@ -3,18 +3,12 @@
 declare(strict_types=1);
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application\Exception\DisposableDisposedException;
 
 class Disposables_CoreTests extends ApplicationTestCase
 {
-    /**
-     * @var bool
-     */
-    private $eventTriggered = false;
-
-    /**
-     * @var bool
-     */
-    private $disposedTriggered;
+    private bool $eventTriggered = false;
+    private bool $disposedTriggered;
 
     protected function setUp() : void
     {
@@ -42,6 +36,14 @@ class Disposables_CoreTests extends ApplicationTestCase
 
         $disposable->triggerTheEvent();
         $this->assertFalse($this->eventTriggered);
+    }
+
+    public function test_isDisposedTrueAfterDisposing() : void
+    {
+        $disposable = new TestDisposable();
+        $disposable->dispose();
+
+        $this->assertTrue($disposable->isDisposed());
     }
 
     /**
@@ -87,7 +89,7 @@ class Disposables_CoreTests extends ApplicationTestCase
         $disposable = new TestDisposable();
         $disposable->dispose();
 
-        $this->expectException(Application_Exception_DisposableDisposed::class);
+        $this->expectException(DisposableDisposedException::class);
 
         $disposable->notAllowedAfterDisposing();
     }
@@ -99,6 +101,7 @@ class Disposables_CoreTests extends ApplicationTestCase
     {
         $disposable = new TestDisposable();
         $disposable->onDisposed(array($this, 'callback_disposed'));
+
         $disposable->dispose();
 
         $this->assertTrue($this->disposedTriggered);

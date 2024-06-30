@@ -47,8 +47,8 @@ class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMeth
                 'date' => ConvertHelper::date2listLabel($revisionable->getRevisionDate(), true, true),
                 'timestamp' => $revisionable->getRevisionTimestamp(),
                 'comments' => $revisionable->getRevisionComments(),
-                'owner_name' => $revisionable->getOwnerName(),
-                'owner_id' => $revisionable->getOwnerID(),
+                'owner_name' => $revisionable->getRevisionAuthorName(),
+                'owner_id' => $revisionable->getRevisionAuthorID(),
             );
             
             if($revisionable instanceof Application_Revisionable) 

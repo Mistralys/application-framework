@@ -52,6 +52,7 @@ abstract class Application_Session_Base implements Application_Session
     public const KEY_NAME_AUTH_RETURN_URI = 'auth_return_url';
 
     public const ADMIN_PRESET_ID = 'Admin';
+    public const QA_TESTING_PRESET_ID = 'QATesting';
 
     public const LOGOUT_REASON_USER_REQUEST = 75901;
     public const LOGOUT_REASON_LOGIN_NOT_ALLOWED = 75902;

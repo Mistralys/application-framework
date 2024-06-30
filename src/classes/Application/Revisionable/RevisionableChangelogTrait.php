@@ -86,7 +86,7 @@ trait RevisionableChangelogTrait
 
     public function getChangelogOwner() : Application_User
     {
-        return Application::createUser($this->getOwnerID());
+        return Application::createUser($this->getRevisionAuthorID());
     }
 
     /**

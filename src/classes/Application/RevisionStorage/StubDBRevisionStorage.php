@@ -33,7 +33,12 @@ class StubDBRevisionStorage extends BaseDBCollectionStorage
         parent::__construct($revisionable);
 
         $user = Application::createSystemUser();
-        $this->addRevision(self::STUB_REVISION_NUMBER, $user->getID(), $user->getName());
+
+        $this->addRevision(
+            self::STUB_REVISION_NUMBER,
+            $user->getID(),
+            $user->getName()
+        );
     }
 
     public function createRevision(int $revisionable_id, string $label, Application_StateHandler_State $state, DateTime $date, ?Application_User $author = null, int $prettyRevision = 1, ?string $comments = null, array $customColumns = array()): int

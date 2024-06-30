@@ -7,9 +7,12 @@ namespace Application\Admin\Area\News\ViewCategory;
 use Application\Admin\Area\Mode\Submode\BaseCollectionEditExtended;
 use Application\Admin\Area\News\BaseViewCategoryScreen;
 use Application\AppFactory;
+use Application\Interfaces\AllowableInterface;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
 
 /**
@@ -17,8 +20,10 @@ use DBHelper_BaseRecord;
  * @property Category $record
  * @property CategoriesCollection $collection
  */
-class BaseCategorySettingsScreen extends BaseCollectionEditExtended
+abstract class BaseCategorySettingsScreen extends BaseCollectionEditExtended
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'settings';
 
     public function getURLName(): string
@@ -41,9 +46,21 @@ class BaseCategorySettingsScreen extends BaseCollectionEditExtended
         return $this->createCollection()->createSettingsManager($this, $this->record);
     }
 
+    public function getRequiredRight(): string
+    {
+        return NewsScreenRights::SCREEN_CATEGORY_SETTINGS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array(
+            t('Modify the settings') => NewsScreenRights::SCREEN_CATEGORY_SETTINGS_EDIT
+        );
+    }
+
     public function isUserAllowedEditing(): bool
     {
-        return $this->user->canEditNews();
+        return $this->user->can(NewsScreenRights::SCREEN_CATEGORY_SETTINGS_EDIT);
     }
 
     public function isEditable(): bool

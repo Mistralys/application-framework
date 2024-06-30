@@ -1,10 +1,31 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Lookup Items
+ */
 
 declare(strict_types=1);
 
+use Application\LookupItems\BaseDBCollectionLookupItem;
+use Application\LookupItems\BaseLookupItem;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
 
+/**
+ * Manager class for the item lookup dialog (aka quick search).
+ *
+ * Every data type that can be searched for in the dialog must
+ * have its own class in the application's <code>assets/LookupItems</code>
+ * folder. The class must extend {@see BaseLookupItem}, or one
+ * of its specialized flavors, like {@see BaseDBCollectionLookupItem}.
+ *
+ * The rest is handled automatically.
+ *
+ * @package Application
+ * @subpackage Lookup Items
+ */
 class Application_LookupItems implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
@@ -16,7 +37,7 @@ class Application_LookupItems implements Application_Interfaces_Loggable
     protected string $folder;
 
     /**
-     * @var Application_LookupItems_Item[]|NULL
+     * @var BaseLookupItem[]|NULL
      */
     protected ?array $items = null;
 
@@ -30,10 +51,10 @@ class Application_LookupItems implements Application_Interfaces_Loggable
             $this->driverID
         );
     }
-    
+
     /**
-     * @return Application_LookupItems_Item[]
-     * @throws Application_Exception
+     * @return BaseLookupItem[]
+     * @throws BaseClassHelperException
      * @throws FileHelper_Exception
      */
     public function getItems() : array
@@ -62,44 +83,33 @@ class Application_LookupItems implements Application_Interfaces_Loggable
 
     /**
      * @param string $name
-     * @throws Application_Exception
+     * @throws BaseClassHelperException
      */
     private function registerItem(string $name) : void
     {
         $this->log(sprintf('Adding item [%s].', $name));
 
-        $className = sprintf(
+        $className = ClassHelper::requireResolvedClass(sprintf(
             '%s_LookupItems_%s',
             $this->driverID,
             $name
-        );
+        ));
 
-        $item = new $className();
-        if($item instanceof Application_LookupItems_Item)
-        {
-            $this->items[] = $item;
-            return;
-        }
-
-        throw new Application_Exception(
-            'Invalid lookup item',
-            sprintf(
-                'The lookup item class [%s] does not extend the [%s] base class.',
-                $className,
-                Application_LookupItems_Item::class
-            ),
+        $this->items[] = ClassHelper::requireObjectInstanceOf(
+            BaseLookupItem::class,
+            new $className(),
             self::ERROR_INVALID_LOOKUP_ITEM_CLASS
         );
     }
 
     /**
      * @param string $id
-     * @return Application_LookupItems_Item
+     * @return BaseLookupItem
      *
      * @throws Application_Exception|FileHelper_Exception
      * @see Application_LookupItems::ERROR_ITEM_NOT_FOUND
      */
-    public function getItemByID(string $id) : Application_LookupItems_Item
+    public function getItemByID(string $id) : BaseLookupItem
     {
         $items = $this->getItems();
 

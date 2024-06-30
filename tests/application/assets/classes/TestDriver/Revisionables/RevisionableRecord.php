@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use BaseDBCollectionStorage;
-use TestDriver\Revisionables\ChangelogHandler;
 use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
@@ -13,11 +12,7 @@ use Application\Traits\ChangelogViaHandlerTrait;
 use Application_Revisionable;
 use Application_RevisionableCollection;
 use Application_RevisionableCollection_DBRevisionable;
-use TestDriver\Revisionables\Storage\RevisionableStorage;
 
-/**
- * @property RevisionableStorage $revisions
- */
 class RevisionableRecord
     extends Application_RevisionableCollection_DBRevisionable
     implements
@@ -121,26 +116,31 @@ class RevisionableRecord
 
     // region: X - Interface methods
 
-    public function getIdentification(): string
+    protected function _getIdentification(): string
     {
-        return sprintf('Revisionable [#%s v%s]', $this->getID(), $this->getRevision());
+        return sprintf(
+            'Revisionable [#%s v%s]',
+            $this->getID(),
+            $this->getRevision()
+        );
     }
 
-    public function getChildDisposables(): array
+    protected function _getIdentificationDisposed(): string
+    {
+        return sprintf(
+            'Revisionable [#%s] (Disposed)',
+            $this->getID()
+        );
+    }
+
+    protected function _getChildDisposables(): array
     {
         return array();
     }
 
-    protected function _dispose(): void
+    protected function _disposeRevisionable(): void
     {
     }
-
-    public function getLogIdentifier(): string
-    {
-        return $this->getIdentification();
-    }
-
-
 
     protected function _registerEvents(): void
     {

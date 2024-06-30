@@ -302,7 +302,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
             );
         }
 
-        $this->add(t('Author'), $revisionable->getOwnerName());
+        $this->add(t('Author'), $revisionable->getRevisionAuthorName());
         $this->add(t('Comments'), $revisionable->getRevisionComments())->ifEmpty('<span class="muted">' . t('No comments') . '</span>');
 
         // if the revisionable supports clearing, find out if it has been
@@ -345,7 +345,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
             }
 
             if ($found) {
-                $this->add(t('Author'), $revisionable->getOwnerName());
+                $this->add(t('Author'), $revisionable->getRevisionAuthorName());
                 $this->add(t('Comments'), $revisionable->getRevisionComments())->ifEmpty('<span class="muted">' . t('No comments') . '</span>');
             }
 
@@ -357,7 +357,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
 
         $revisionable->selectFirstRevision();
 
-        $this->add(t('Author'), $revisionable->getOwnerName());
+        $this->add(t('Author'), $revisionable->getRevisionAuthorName());
         $this->add(
             t('Date'),
             ConvertHelper::date2listLabel($revisionable->getRevisionDate()) . ' ' .

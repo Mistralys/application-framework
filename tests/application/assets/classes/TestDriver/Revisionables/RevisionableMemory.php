@@ -109,12 +109,12 @@ class RevisionableMemory extends Application_RevisionableStateless
 
     }
 
-    public function getChildDisposables(): array
+    protected function _getChildDisposables(): array
     {
         return array();
     }
 
-    protected function _dispose(): void
+    protected function _disposeRevisionable(): void
     {
 
     }
@@ -165,5 +165,10 @@ class RevisionableMemory extends Application_RevisionableStateless
     public function getCollection(): Application_RevisionableCollection
     {
         return RevisionableMemoryCollection::create();
+    }
+
+    protected function _getIdentification(): string
+    {
+        return 'MemoryRevisionable';
     }
 }

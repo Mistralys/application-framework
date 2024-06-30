@@ -6,10 +6,12 @@ namespace Application\Revisionable;
 
 use Application\Interfaces\ChangelogableInterface;
 use Application_CollectionItemInterface;
+use Application_EventHandler_EventableListener;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
 use Application_RevisionableCollection;
+use Application_User;
 use DateTime;
 use TestDriver\Revisionables\RevisionableCollection;
 
@@ -74,7 +76,38 @@ interface RevisionableStatelessInterface
 
     public function getRevisionDate() : DateTime;
 
+    /**
+     * @return string
+     * @deprecated Use {@see self::getRevisionAuthorName()} instead.
+     */
     public function getOwnerName() : string;
+
+    /**
+     * @return int
+     * @deprecated Use {@see self::getRevisionAuthorID()} instead.
+     */
+    public function getOwnerID() : int;
+    public function getRevisionAuthor() : ?Application_User;
+    public function getRevisionAuthorName() : string;
+    public function getRevisionAuthorID() : int;
+
+    /**
+     * Gets the user who created the revisionable (=who created the first revision).
+     * @return Application_User
+     */
+    public function getCreator() : Application_User;
+
+    /**
+     * Retrieves the date the revisionable was created (=date of the first revision).
+     * @return DateTime
+     */
+    public function getCreationDate() : DateTime;
+
+    /**
+     * Retrieves the date the revisionable was last modified.
+     * @return DateTime
+     */
+    public function getLastModifiedDate() : DateTime;
 
     /**
      * Like {@see self::getRevision()}, but never returns null.
@@ -156,7 +189,7 @@ interface RevisionableStatelessInterface
      * @return $this
      */
     public function selectLatestRevision(): self;
-
+    public function selectPreviousRevision() : bool;
     /**
      * Selects the very first revision available for the item.
      * @return $this
@@ -164,6 +197,14 @@ interface RevisionableStatelessInterface
     public function selectFirstRevision(): self;
 
     public function getFirstRevision(): int;
+
+    /**
+     * Retrieves the previous revision number to the currently selected
+     * revision, if any. Returns the number or null if there is none.
+     *
+     * @return integer|NULL
+     */
+    public function getPreviousRevision() : ?int;
 
     /**
      * Starts a modification transaction: does all modifications
@@ -182,6 +223,8 @@ interface RevisionableStatelessInterface
      * Ends the transaction.
      */
     public function endTransaction(): bool;
+    public function rollBackTransaction() : self;
+    public function isTransactionStarted() : bool;
 
     /**
      * Returns the pretty revision number as relevant for humans.
@@ -218,6 +261,15 @@ interface RevisionableStatelessInterface
     public function getRevisionableTypeName(): string;
 
     /**
+     * Reloads the revisionable if it has been disposed,
+     * and returns a fresh instance. Otherwise, the current
+     * instance is returned.
+     *
+     * @return RevisionableStatelessInterface
+     */
+    public function reload() : RevisionableStatelessInterface;
+
+    /**
      * Retrieves key => value pairs of all non-standard revision fields
      * that must be stored in the revision history.
      *
@@ -236,4 +288,55 @@ interface RevisionableStatelessInterface
      * @return Application_RevisionableCollection
      */
     public function getCollection() : Application_RevisionableCollection;
+
+
+    /**
+     * Adds a callback for when a revisionable change transaction has ended.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1. The event object {@see TransactionEndedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onTransactionEnded(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a callback for when a new revision is added to the revisionable.
+     *
+     * The callback gets a single parameter:
+     *
+     * 1. The event object {@see RevisionAddedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     * @see RevisionAddedEvent
+     */
+    public function onRevisionAdded(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a callback to call before the revisionable is saved.
+     *
+     * This gets a single parameter:
+     *
+     * - The event object {@see \Application\Revisionable\Event\BeforeSaveEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener;
+
+    /**
+     * Adds a callback to whenever a different revisionable revision
+     * has been selected.
+     *
+     * This gets a single parameter:
+     *
+     * - The event object {@see \Application\Revisionable\Event\RevisionSelectedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener;
 }

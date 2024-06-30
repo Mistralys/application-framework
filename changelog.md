@@ -1,7 +1,75 @@
+## v4.1.0 - Revisionable update (Breaking-S)
+- Revisionables: Added `getRevisionAuthorXXX()` methods for more consistent naming.
+- Revisionables: Added some missing methods in the revisionable interface.
+- Revisionables: Storage now automatically disposes of keys that contain revision-dependent instances.
+- Revisionables: Tweaked the abstract disposable method setup to handle common internal disposal.
+- Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
+- Revisionables: Added disposed checks in all relevant public methods.
+- Revisionables: Added `setStateXXX()` methods to set the state within a transaction.
+- Disposables: `_dispose()` is now called after the child revisionables have been disposed.
+- Disposables: `getIdentification()` now handles the disposed state.
+- Disposables: Added the "disposing" state with `isDisposing()`.
+- Logging: The `APP_LOGGING` configuration is not used anymore.
+- Logging: Added `setLoggingEnabled()` to change this at runtime.
+- Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
+- Logging: The memory storage option allows limiting memory usage in long-running tasks.
+- Logging: Added `reset()` to reset to defaults.
+- Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
+
+### Breaking changes
+
+- Revisionables must rename their `_dispose()` method to `_disposeRevisionable()`.
+- Revisionables must rename their `getChildDisposable()` method to `_getChildDisposable()`.
+- Revision-dependent classes must now implement the `getIdentification()` method.
+
+### Other changes
+
+- Disposables should not implement `getLogIdentifier()` anymore.
+- Disposables should replace `getIdentification()` with the protected `_getIdentification()` method.
+
+### Deprecations
+
+- `StandardStateSetup`: deprecated the `makeXXX()` methods in favor of the `setupXXX()` methods.
+- `RevisionableStatelessInterface::getOwnerID()` => `getRevisionAuthorID()`
+- `RevisionableStatelessInterface::getOwnerName()` => `getRevisionAuthorName()`
+- `Application_Exception_DisposableDisposed` => `DisposableDisposedException`
+
+## v4.0.7 - Layout tweak
+- UI: Moved the subnav context menu to the left (icon only).
+- Properties Grid: Fixed `0` value not being displayed when using `addAmount()`.
+
+## v4.0.6 - Lookup Item improvements
+- Item Lookup: Added getter methods in the result class.
+- Item Lookup: Driver lookup items now support namespaces.
+- Item Lookup: Added a base class for DBHelper collection items.
+- Item Lookup: Added a base class for Revisionable collection items.
+- Revisionables: Added a missing NULL check when no current revision is found.
+
+### Deprecations
+
+- Deprecated the `Application_LookupItems_Item` class.
+
+## v4.0.5 - Filter criteria messages
+- Filter Criteria: Upgraded the messages to use the `OperationResult` classes.
+- Item Lookup: Improved layout to focus on the search results.
+
+## v4.0.4 - DataGrid Bugfix
+- DataGrid: Fixed navigating to another page throwing a system error.
+- UI: Fixed header navbar overlapping contents ([#64](https://github.com/Mistralys/application-framework/issues/64)).
+- Dev: Fixed the user rights overview showing an empty screen.
+
+## v4.0.3 - QA Testing role
+- User: Added the right `QATester` to formalize the role of application UI QA tester.
+- User: Added `canLoginInMaintenanceMode()`.
+- User: Both developers and QA testers can now access the UI during maintenance.
+- News: Upgraded screens to use the screen rights handling layer.
+- UI: Added docs for the screen rights method `getFeatureRights()`. 
+
 ## v4.0.2 - QOL improvements (Breaking-XS)
 - UI: Fixed some timing issues with output buffering.
 - UI: Added `requireRights()` to the conditionals.
 - UI: Added the screen rights handling layer to formalize accessing this information.
+- UI: Added the `AllowableMigrationTrait` to ease the migration of the screen rights handling.
 - AdminURL: Added the `AdminURLInterface` interface.
 - Core: The `Application_Exception` class can now hold page output.
 - DataGrid: Filter settings now inherit hidden variables when using `configure()` ([#35](https://github.com/Mistralys/application-framework/issues/35)).

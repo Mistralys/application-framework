@@ -75,12 +75,17 @@ class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
         return $key;
     }
 
-    public function getIdentification() : string
+    protected function _getIdentification() : string
     {
         return sprintf(
             '%s | DataKeys',
             $this->collection->getIdentification()
         );
+    }
+
+    protected function _getIdentificationDisposed(): string
+    {
+        return 'Collection | DataKeys (Disposed)';
     }
 
     public function getChildDisposables() : array
@@ -91,10 +96,5 @@ class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
     protected function _dispose() : void
     {
         $this->keys = array();
-    }
-
-    public function getLogIdentifier() : string
-    {
-        return $this->getIdentification();
     }
 }

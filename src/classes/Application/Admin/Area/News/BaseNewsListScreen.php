@@ -8,6 +8,8 @@ use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
@@ -25,6 +27,8 @@ use UI_DataGrid_Action;
  */
 abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_CollectionList
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = self::URL_NAME_DEFAULT;
     public const COLUMN_ID = 'id';
     public const COLUMN_LABEL = 'label';
@@ -39,9 +43,9 @@ abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_Collection
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewNews();
+        return NewsScreenRights::SCREEN_NEWS_LIST;
     }
 
     /**

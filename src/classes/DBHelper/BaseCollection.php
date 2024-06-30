@@ -7,6 +7,7 @@
  */
 
 use Application\AppFactory;
+use Application\Exception\DisposableDisposedException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -469,7 +470,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *
      * @param integer $record_id
      * @return DBHelper_BaseRecord
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function getByID(int $record_id) : DBHelper_BaseRecord
@@ -502,7 +503,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * Refreshes all loaded record's data from the database.
      *
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function refreshRecordsData() : void
@@ -575,7 +576,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * with {@see self::getRecordPrimaryName()} as fallback.
      *
      * @return DBHelper_BaseRecord|NULL
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws Request_Exception
      */
@@ -629,7 +630,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param string $key
      * @param string $value
      * @return DBHelper_BaseRecord|NULL
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function getByKey(string $key, string $value) : ?DBHelper_BaseRecord
@@ -679,7 +680,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *
      * @param integer|string|NULL $record_id
      * @return boolean
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws JsonException
      */
@@ -763,7 +764,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * Counts the amount of records in total.
      * @return int
      * @throws Application_Exception
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function countRecords() : int
@@ -778,7 +779,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * which is used to query the records.
      *
      * @return DBHelper_BaseFilterCriteria
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      * @throws DBHelper_Exception
@@ -810,7 +811,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * @return DBHelper_BaseFilterSettings
      *
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      * @throws DBHelper_Exception
@@ -860,7 +861,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      *                       onCreated() method, and which can be used for
      *                       custom initialization routines.
      * @return DBHelper_BaseRecord
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function createNewRecord(array $data=array(), bool $silent=false, array $options=array())
@@ -1184,7 +1185,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param string $keyName
      * @param string $value
      * @return integer|boolean The record's ID, or false if not found.
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function recordKeyValueExists(string $keyName, string $value)
     {
@@ -1236,7 +1237,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param bool $silent Whether to delete the record silently, without processing events afterwards.
      *                      The _onDeleted method will still be called for cleanup tasks, but the context
      *                      will reflect the silent state. The method implementation must check this manually.
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void
@@ -1295,7 +1296,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     /**
      * @return array<string,string|null|number|array>
-     * @throws Application_Exception_DisposableDisposed
+     * @throws DisposableDisposedException
      */
     public function describe() : array
     {
@@ -1321,19 +1322,18 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     protected ?string $logPrefix = null;
 
-    public function getLogIdentifier() : string
+    protected function _getIdentification() : string
     {
-        return $this->getIdentification();
-    }
-
-    public function getIdentification() : string
-    {
-        if(!isset($this->logPrefix))
-        {
+        if(!isset($this->logPrefix)) {
             $this->logPrefix = ucfirst($this->getRecordTypeName()).' collection';
         }
 
         return $this->logPrefix;
+    }
+
+    protected function _getIdentificationDisposed() : string
+    {
+        return $this->_getIdentification();
     }
 
     public function isRecordLoaded(int $recordID) : bool

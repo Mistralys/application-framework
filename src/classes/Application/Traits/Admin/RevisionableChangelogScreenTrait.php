@@ -242,7 +242,7 @@ trait RevisionableChangelogScreenTrait
             'Revision %1$s, created on %2$s by %3$s',
             $this->revisionable->getPrettyRevision(),
             ConvertHelper::date2listLabel($this->revisionable->getRevisionDate(), true),
-            $this->revisionable->getOwnerName()
+            $this->revisionable->getRevisionAuthorName()
         ));
 
         $grid->enableLimitOptionsDefault();

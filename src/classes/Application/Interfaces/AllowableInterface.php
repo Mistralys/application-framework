@@ -33,5 +33,8 @@ interface AllowableInterface
      */
     //public function getFeatureRights() : array;
 
+    /**
+     * @return Application_User
+     */
     public function getUser() : Application_User;
 }

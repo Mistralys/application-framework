@@ -11,7 +11,7 @@ namespace Application\Tags;
 use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
 use Application_Admin_ScreenInterface;
-use Application_Exception_DisposableDisposed;
+use Application\Exception\DisposableDisposedException;
 use Application_Formable;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
@@ -110,7 +110,7 @@ class TagCollection extends DBHelper_BaseCollection
      * @return TagRecord
      *
      * @throws BaseClassHelperException
-     * @throws Application_Exception_DisposableDisposed
+     * @throws \Application\Exception\DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()) : TagRecord

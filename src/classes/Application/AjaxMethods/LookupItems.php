@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\LookupItems\BaseLookupItem;
 use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
@@ -33,7 +34,7 @@ class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
     protected array $terms = array();
     
    /**
-    * @var Application_LookupItems_Item[]
+    * @var BaseLookupItem[]
     */
     protected array $items = array();
     

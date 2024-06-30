@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Exception\DisposableDisposedException;
 use Application\Revisionable\Event\BeforeSaveEvent;
 use Application\Revisionable\Event\RevisionAddedEvent;
 use Application\Revisionable\Event\TransactionEndedEvent;
@@ -17,6 +18,8 @@ use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionableStorageException;
 use Application\Revisionable\TransactionInfo;
+use Application\RevisionStorage\Event\RevisionSelectedEvent;
+use Application\RevisionStorage\RevisionStorageException;
 use Application\Traits\RevisionDependentTrait;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
@@ -51,6 +54,7 @@ abstract class Application_RevisionableStateless
     protected static int $instanceCounter = 0;
     protected int $instanceID;
     protected bool $initialized = false;
+    private ?int $selectedRevision = null;
     
     /**
      * Initializes the underlying objects like the revision
@@ -60,7 +64,7 @@ abstract class Application_RevisionableStateless
     public function __construct()
     {
         $this->revisions = $this->createRevisionStorage();
-        
+
         self::$instanceCounter++;
         $this->instanceID = self::$instanceCounter;
 
@@ -110,48 +114,50 @@ abstract class Application_RevisionableStateless
         return new MemoryRevisionStorage($this);
     }
 
-    /**
-     * Returns the ID of the owner of the currently selected revision.
-     * @return int
-     * @see getOwnerName()
-     */
     public function getOwnerID() : int
     {
+        $this->requireNotDisposed('Getting owner ID');
+
         return $this->revisions->getOwnerID();
     }
 
-    /**
-     * Returns the name of the currently selected revision's owner.
-     * @return string
-     * @see self::getOwnerID()
-     */
     public function getOwnerName() : string
     {
+        $this->requireNotDisposed('Getting owner name');
+
         return $this->revisions->getOwnerName();
     }
 
     public function countRevisions() : int
     {
+        $this->requireNotDisposed('Counting revisions');
+
         return $this->revisions->countRevisions();
     }
 
     public function getRevisionComments() : ?string
     {
+        $this->requireNotDisposed('Getting revision comments');
+
         return $this->revisions->getComments();
     }
 
     public function getRevisions() : array
     {
+        $this->requireNotDisposed('Getting revisions');
+
         return $this->revisions->getRevisions();
     }
     
     public function getRevision() : ?int
     {
-        return $this->revisions->getRevision();
+        return $this->selectedRevision;
     }
 
     public function requireRevision() : int
     {
+        $this->requireNotDisposed('Requiring revision');
+
         $revision = $this->getRevision();
         if($revision !== null) {
             return $revision;
@@ -177,6 +183,8 @@ abstract class Application_RevisionableStateless
     */
     public function getRevisionsFilterCriteria() : Application_FilterCriteria_RevisionableRevisions
     {
+        $this->requireNotDisposed('Getting revisions filter criteria');
+
         return $this->revisions->getFilterCriteria();
     }
     
@@ -186,20 +194,29 @@ abstract class Application_RevisionableStateless
     }
 
     /**
+     * @param int $number
      * @return $this
+     *
+     * @throws DisposableDisposedException
+     * @throws RevisionStorageException
      */
     public function selectRevision(int $number) : self
     {
+        $this->requireNotDisposed('Selecting revision');
+
         $this->revisions->selectRevision($number);
         return $this;
     }
 
     /**
      * @return int
+     * @throws DisposableDisposedException
      * @throws RevisionableException
      */
     public function getLatestRevision() : int
     {
+        $this->requireNotDisposed('Getting latest revision');
+
         return $this->revisions->getLatestRevision();
     }
 
@@ -209,6 +226,8 @@ abstract class Application_RevisionableStateless
     */
     public function getLastModifiedDate() : DateTime
     {
+        $this->requireNotDisposed('Getting last modified date');
+
         $this->rememberRevision();
         $this->selectLatestRevision();
         $date = $this->getRevisionDate();
@@ -225,6 +244,8 @@ abstract class Application_RevisionableStateless
      */
     public function getPreviousRevision() : ?int
     {
+        $this->requireNotDisposed('Getting previous revision');
+
         $current = $this->getRevision();
         $revisions = $this->getRevisions();
 
@@ -246,6 +267,8 @@ abstract class Application_RevisionableStateless
 
     public function getRevisionTimestamp() : ?int
     {
+        $this->requireNotDisposed('Getting revision timestamp');
+
         return $this->revisions->getTimestamp();
     }
 
@@ -255,6 +278,8 @@ abstract class Application_RevisionableStateless
      */
     public function getRevisionDate() : DateTime
     {
+        $this->requireNotDisposed('Getting revision date');
+
         if ($this->revisions->hasKey('__date')) {
             return $this->revisions->getKey('__date');
         }
@@ -277,6 +302,8 @@ abstract class Application_RevisionableStateless
      */
     public function rememberRevision() : self
     {
+        $this->requireNotDisposed('Remembering revision');
+
         $this->revisions->rememberRevision();
         return $this;
     }
@@ -286,12 +313,16 @@ abstract class Application_RevisionableStateless
      */
     public function restoreRevision() : self
     {
+        $this->requireNotDisposed('Restoring revision');
+
         $this->revisions->restoreRevision();
         return $this;
     }
 
     public function revisionExists(int $number) : bool
     {
+        $this->requireNotDisposed('Checking if revision exists');
+
         return $this->revisions->revisionExists($number);
     }
 
@@ -308,10 +339,13 @@ abstract class Application_RevisionableStateless
      *
      * @see self::endTransaction()
      * @throws RevisionableException
+     * @throws DisposableDisposedException
      * @return $this
      */
     public function startTransaction(int $newOwnerID, string $newOwnerName, ?string $comments = null) : self
     {
+        $this->requireNotDisposed('Starting a transaction');
+
         $this->log('Transaction | START | Starting new transaction.');
 
         $this->logRevisionData();
@@ -346,15 +380,17 @@ abstract class Application_RevisionableStateless
 
         return $this;
     }
-    
-   /**
-    * Starts a new transaction with the currently authenticated
-    * user as the owner of the transaction.
-    * 
-    * @param string|NULL $comments
-    * @return $this
-    * @see self::startTransaction()
-    */
+
+    /**
+     * Starts a new transaction with the currently authenticated
+     * user as the owner of the transaction.
+     *
+     * @param string|NULL $comments
+     * @return $this
+     * @throws DisposableDisposedException
+     * @throws RevisionableException
+     * @see self::startTransaction()
+     */
     public function startCurrentUserTransaction(?string $comments = null) : self
     {
         $user = Application::getUser();
@@ -382,6 +418,8 @@ abstract class Application_RevisionableStateless
      */
     public function endTransaction() : bool
     {
+        $this->requireNotDisposed('Ending a transaction');
+
         $this->log('Transaction | END | Ending the transaction.');
 
         if(!$this->transactionActive) {
@@ -469,9 +507,13 @@ abstract class Application_RevisionableStateless
      * effect if the transaction did not add a new revision.
      *
      * @return $this
+     * @throws Application_Exception
+     * @throws DisposableDisposedException
      */
     public function rollBackTransaction() : self
     {
+        $this->requireNotDisposed('Rolling back transaction');
+
         if (!$this->transactionActive) {
             return $this;
         }
@@ -498,7 +540,7 @@ abstract class Application_RevisionableStateless
 
     protected function logRevisionData() : void
     {
-        $this->log('Revision | Author: [%s %s]', $this->getOwnerID(), $this->getOwnerName());
+        $this->log('Revision | Author: [%s %s]', $this->getRevisionAuthorID(), $this->getRevisionAuthorName());
         $this->log('Revision | Pretty revision: [%s].', $this->getPrettyRevision());
         $this->log('Revision | Comments: [%s].', $this->getRevisionComments());
         $this->log('Revision | Date: [%s].', $this->getRevisionDate()->format('d.m.Y H:i:s'));
@@ -506,13 +548,25 @@ abstract class Application_RevisionableStateless
 
     protected ?TransactionInfo $lastTransaction = null;
 
+    /**
+     * @return bool
+     * @throws DisposableDisposedException
+     * @throws RevisionableException
+     */
     public function hasLastTransactionAddedARevision() : bool
     {
         return $this->getLastAddedRevision() !== null;
     }
 
+    /**
+     * @return int|null
+     * @throws RevisionableException
+     * @throws DisposableDisposedException
+     */
     public function getLastAddedRevision() : ?int
     {
+        $this->requireNotDisposed('Checking for added revision');
+
         if($this->isTransactionStarted()) {
             throw new RevisionableException(
                 'Cannot check for added revision',
@@ -579,21 +633,29 @@ abstract class Application_RevisionableStateless
      */
     public function selectLatestRevision() : self
     {
+        $this->requireNotDisposed('Selecting latest revision');
+
         return $this->selectRevision($this->getLatestRevision());
     }
     
     public function selectFirstRevision() : self
     {
+        $this->requireNotDisposed('Selecting first revision');
+
         return $this->selectRevision($this->getFirstRevision());
     }
     
     public function getFirstRevision() : int
     {
+        $this->requireNotDisposed('Getting first revision');
+
         return $this->revisions->getFirstRevision();
     }
     
     public function lockRevision() : self
     {
+        $this->requireNotDisposed('Locking revision');
+
         $this->revisions->lock();
         return $this;
     }
@@ -603,12 +665,16 @@ abstract class Application_RevisionableStateless
      */
     public function unlockRevision() : self
     {
+        $this->requireNotDisposed('Unlocking revision');
+
         $this->revisions->unlock();
         return $this;
     }
     
     public function isRevisionLocked() : bool
     {
+        $this->requireNotDisposed('Checking if revision is locked');
+
         return $this->revisions->isLocked();
     }
     
@@ -620,6 +686,8 @@ abstract class Application_RevisionableStateless
     */
     public function selectPreviousRevision() : bool
     {
+        $this->requireNotDisposed('Selecting previous revision');
+
         $prev = $this->getPreviousRevision();
         if(!$prev) {
             return false;
@@ -666,6 +734,8 @@ abstract class Application_RevisionableStateless
      */
     public function hasChanges() : bool
     {
+        $this->requireNotDisposed('Checking for changes');
+
         return $this->requiresNewRevision;
     }
 
@@ -697,6 +767,7 @@ abstract class Application_RevisionableStateless
      */
     public function save() : bool
     {
+        $this->requireNotDisposed('Saving');
         $this->requireTransaction('Cannot save without starting a transaction.');
 
         $this->triggerEvent(
@@ -860,6 +931,8 @@ abstract class Application_RevisionableStateless
     * This is called by the revisionable storage when a new
     * revision has been loaded. Can be extended to add any
     * relevant custom implementations.
+    *
+    * @deprecated Use the {@see self::onRevisionSelected()} event handling.
     */
     public function handle_revisionLoaded(int $number) : void
     {
@@ -932,6 +1005,7 @@ abstract class Application_RevisionableStateless
      */
     public function isPartChanged(string $part) : bool
     {
+        $this->requireNotDisposed('Checking for part changes');
         $this->requirePartExists($part);
 
         return isset($this->changedParts[$part]) && $this->changedParts[$part]===true;
@@ -939,6 +1013,8 @@ abstract class Application_RevisionableStateless
 
     public function getChangedParts() : array
     {
+        $this->requireNotDisposed('Getting changed parts');
+
         $result = array();
         foreach($this->changedParts as $part => $state) {
             if($state === true) {
@@ -971,18 +1047,26 @@ abstract class Application_RevisionableStateless
     
     public function getRevisionableTypeName() : string
     {
+        $this->requireNotDisposed('Getting revisionable type name');
+
         if(!isset($this->revisionableTypeName)) {
             $this->revisionableTypeName = getClassTypeName($this);
         }
         
         return $this->revisionableTypeName;
     }
-    
 
-    
-    public function reload() : void
+    /**
+     * @inheritDoc
+     * @return RevisionableStatelessInterface|$this
+     */
+    public function reload() : RevisionableStatelessInterface
     {
-        $this->revisions->reload();
+        if($this->isDisposed()) {
+            return $this->getCollection()->getByID($this->getID());
+        }
+
+        return $this;
     }
     
    /**
@@ -991,27 +1075,53 @@ abstract class Application_RevisionableStateless
     */
     public function isTransactionStarted() : bool
     {
+        $this->requireNotDisposed('Checking if transaction is started');
+
         return $this->transactionActive;
     }
     
-    public function dispose() : void
+    public function getChildDisposables(): array
     {
-        $this->revisions->dispose();
+        $disposables = $this->_getChildDisposables();
+        $disposables[] = $this->revisions;
+
+        return $disposables;
     }
+
+    protected function _dispose(): void
+    {
+        $this->changedParts = array();
+        $this->storageParts = array();
+        $this->lastTransaction = null;
+        $this->lastTransactionAddedRevision = null;
+        $this->revisionableTypeName = null;
+        $this->transactionSourceRevision = null;
+        $this->transactionTargetRevision = null;
+
+        unset(
+            $this->revisions
+        );
+
+        $this->_disposeRevisionable();
+    }
+
+    abstract protected function _disposeRevisionable() : void;
+
+    abstract protected function _getChildDisposables() : array;
 
     public function isEditable() : bool
     {
         return !$this->isLocked();
     }
 
-
-
    /**
     * Retrieves the revisionable's first revision date.
     * @return DateTime
     */
-    public function getCreationDate()
+    public function getCreationDate() : DateTime
     {
+        $this->requireNotDisposed('Getting creation date');
+
         $this->rememberRevision();
         $this->selectFirstRevision();
         $date = $this->getRevisionDate();
@@ -1024,18 +1134,48 @@ abstract class Application_RevisionableStateless
     * Retrieves the user instance for the user that created this item.
     * @return Application_User
     */
-    public function getCreator()
+    public function getCreator() : Application_User
     {
+        $this->requireNotDisposed('Getting creator');
+
         $this->rememberRevision();
         $this->selectFirstRevision();
-        $user = $this->getChangelogOwner();
+        $user = $this->getRevisionAuthor();
         $this->restoreRevision();
         
         return $user;
     }
+
+    public function getRevisionAuthorID(): int
+    {
+        $this->requireNotDisposed('Getting revision author ID');
+
+        return $this->revisions->getOwnerID();
+    }
+
+    public function getRevisionAuthorName(): string
+    {
+        $this->requireNotDisposed('Getting revision author name');
+
+        return $this->revisions->getOwnerName();
+    }
+
+    public function getRevisionAuthor() : ?Application_User
+    {
+        $this->requireNotDisposed('Getting revision author');
+
+        $id = $this->getRevisionAuthorID();
+        if($id > 0 && Application::userIDExists($id)) {
+            return Application::createUser($id);
+        }
+
+        return null;
+    }
     
     public function getLockPrimary() : string
     {
+        $this->requireNotDisposed('Getting lock primary');
+
         return $this->getRevisionableTypeName().'-'.$this->getID();
     }
     
@@ -1085,10 +1225,13 @@ abstract class Application_RevisionableStateless
     /**
      * @param string $name
      * @return mixed|null
+     * @throws DisposableDisposedException
      * @throws RevisionableException
      */
     protected function getRevisionKey(string $name)
     {
+        $this->requireNotDisposed('Getting revision key');
+
         return $this->revisions->getKey($name);
     }
     
@@ -1183,6 +1326,8 @@ abstract class Application_RevisionableStateless
      */
     public function getDataKey(string $name, $default=null)
     {
+        $this->requireNotDisposed('Getting data key');
+
         return $this->revisions->getDataKey($name, $default);
     }
 
@@ -1208,7 +1353,23 @@ abstract class Application_RevisionableStateless
             array($this, 'callback_revisionAdded')
         ));
 
+        $this->revisions->onRevisionSelected(NamedClosure::fromClosure(
+            Closure::fromCallable(array($this, 'callback_revisionSelected')),
+            array($this, 'callback_revisionSelected')
+        ));
+
         $this->_registerEvents();
+    }
+
+    private function callback_revisionSelected(RevisionSelectedEvent $event) : void
+    {
+        $this->selectedRevision = $event->getRevision();
+
+        $this->triggerEvent(
+            \Application\Revisionable\Event\RevisionSelectedEvent::EVENT_NAME,
+            array($this, $event->getRevision()),
+            \Application\Revisionable\Event\RevisionSelectedEvent::class
+        );
     }
 
     private function callback_revisionAdded(Application_RevisionStorage_Event_RevisionAdded $event) : void
@@ -1256,7 +1417,7 @@ abstract class Application_RevisionableStateless
     public function getEventNamespace(string $eventName) : ?string
     {
         if(!$this->isEventRevisionAgnostic($eventName)) {
-            return (string)$this->getRevision();
+            return (string)$this->selectedRevision;
         }
 
         return null;
@@ -1267,7 +1428,7 @@ abstract class Application_RevisionableStateless
      *
      * This gets a single parameter:
      *
-     * - The revisionable instance {@see RevisionableStatelessInterface}.
+     * - The event object {@see BeforeSaveEvent}.
      *
      * @param callable $callback
      * @return Application_EventHandler_EventableListener
@@ -1275,6 +1436,22 @@ abstract class Application_RevisionableStateless
     public function onBeforeSave(callable $callback) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(self::EVENT_BEFORE_SAVE, $callback);
+    }
+
+    /**
+     * Adds a callback to whenever a different revisionable revision
+     * has been selected.
+     *
+     * This gets a single parameter:
+     *
+     * - The event object {@see \Application\Revisionable\Event\RevisionSelectedEvent}.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onRevisionSelected(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(\Application\Revisionable\Event\RevisionSelectedEvent::EVENT_NAME, $callback);
     }
 
     /**

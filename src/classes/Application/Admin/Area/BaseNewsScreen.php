@@ -11,6 +11,8 @@ namespace Application\Admin\Area;
 
 use Application\Admin\Area\News\BaseNewsListScreen;
 use Application\AppFactory;
+use Application\NewsCentral\NewsScreenRights;
+use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area;
 use UI;
 use UI_Icon;
@@ -24,6 +26,8 @@ use UI_Icon;
  */
 abstract class BaseNewsScreen extends Application_Admin_Area
 {
+    use AllowableMigrationTrait;
+
     public const URL_NAME = 'news';
 
     public function getURLName(): string
@@ -31,9 +35,9 @@ abstract class BaseNewsScreen extends Application_Admin_Area
         return self::URL_NAME;
     }
 
-    public function isUserAllowed(): bool
+    public function getRequiredRight(): string
     {
-        return $this->user->canViewNews();
+        return NewsScreenRights::SCREEN_NEWS;
     }
 
     public function getNavigationIcon(): UI_Icon

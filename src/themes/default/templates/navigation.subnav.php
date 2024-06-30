@@ -19,14 +19,14 @@ $nav->addClass($nav->getID());
 
 $menu = $nav->getContextMenu();
 
-if($menu) 
+if($menu->hasItems())
 {
-	$dropdown = $this->ui->createButtonDropdown(mb_strtoupper(t('Menu')))
-	->setMenu($menu)
-	->makeNavItem()
-	->noCaret()
-	->setIcon(UI::icon()->menu())
-	->addClass('pull-right');
+	$dropdown = $this->ui->createButtonDropdown()
+    	->setMenu($menu)
+	    ->makeNavItem()
+	    ->noCaret()
+        ->setTooltip(UI::tooltip(t('Context menu')))
+	    ->setIcon(UI::icon()->menu());
 }
 
 ?>

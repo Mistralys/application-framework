@@ -8,7 +8,7 @@
  */
 
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\Traits_Classable;
+use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
 
@@ -21,7 +21,9 @@ use function AppUtils\parseVariable;
  *
  * @see template_default_sidebar_button
  */
-class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implements UI_Interfaces_Button
+class UI_Page_Sidebar_Item_Button
+    extends UI_Page_Sidebar_LockableItem
+    implements UI_Interfaces_Button
 {
     public const ERROR_CANNOT_DETERMINE_FORM_NAME = 55301;
 
@@ -34,7 +36,7 @@ class UI_Page_Sidebar_Item_Button extends UI_Page_Sidebar_LockableItem implement
     public const MODE_CLICKABLE = 'clickable';
 
     use Application_Traits_Iconizable;
-    use Traits_Classable;
+    use ClassableTrait;
     use UI_Traits_ClientConfirmable;
 
     protected string $title = '';

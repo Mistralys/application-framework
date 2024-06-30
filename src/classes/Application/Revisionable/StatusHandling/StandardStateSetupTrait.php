@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\StatusHandling;
 
+use Application\Exception\DisposableDisposedException;
 use Application\Revisionable\RevisionableException;
 use Application\StateHandler\StateHandlerException;
 use Application_StateHandler_State;
@@ -79,8 +80,10 @@ trait StandardStateSetupTrait
     /**
      * @inheritDoc
      * @return $this
+     * @throws DisposableDisposedException
      * @throws RevisionableException
      * @throws StateHandlerException
+     * @deprecated Use {@see self::setStateFinalized()} instead.
      */
     public function makeFinalized(?string $comments=null) : self
     {
@@ -97,6 +100,7 @@ trait StandardStateSetupTrait
      * @return $this
      * @throws RevisionableException
      * @throws StateHandlerException
+     * @deprecated Use {@see self::setStateInactive()} instead.
      */
     public function makeInactive(?string $comments=null) : self
     {
@@ -114,6 +118,7 @@ trait StandardStateSetupTrait
      * @return $this
      * @throws RevisionableException
      * @throws StateHandlerException
+     * @deprecated Use {@see self::setStateDeleted()} instead.
      */
     public function makeDeleted(?string $comments=null) : self
     {
@@ -131,6 +136,7 @@ trait StandardStateSetupTrait
      * @return $this
      * @throws RevisionableException
      * @throws StateHandlerException
+     * @deprecated Use {@see self::setStateDraft()} instead.
      */
     public function makeDraft(?string $comments=null) : self
     {
@@ -264,5 +270,31 @@ trait StandardStateSetupTrait
         $this->restoreRevision();
 
         return $result;
+    }
+
+    /**
+     * @return $this
+     * @throws RevisionableException
+     * @throws StateHandlerException
+     * @throws DisposableDisposedException
+     */
+    public function setStateFinalized() : self
+    {
+        return $this->setState($this->getStateByName(StandardStateSetupInterface::STATUS_FINALIZED));
+    }
+
+    public function setStateInactive() : self
+    {
+        return $this->setState($this->getStateByName(StandardStateSetupInterface::STATUS_INACTIVE));
+    }
+
+    public function setStateDeleted() : self
+    {
+        return $this->setState($this->getStateByName(StandardStateSetupInterface::STATUS_DELETED));
+    }
+
+    public function setStateDraft() : self
+    {
+        return $this->setState($this->getStateByName(StandardStateSetupInterface::STATUS_DRAFT));
     }
 }

@@ -7,6 +7,7 @@ namespace Application\Admin\Area\News;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsRightsInterface;
+use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper_BaseRecord;
@@ -24,12 +25,7 @@ abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 
     public function getRequiredRight(): string
     {
-        return NewsRightsInterface::RIGHT_CREATE_NEWS_ALERTS;
-    }
-
-    public function getFeatureRights(): array
-    {
-        return array();
+        return NewsScreenRights::SCREEN_CREATE_ALERT;
     }
 
     public function getSettingsManager() : NewsSettingsManager
