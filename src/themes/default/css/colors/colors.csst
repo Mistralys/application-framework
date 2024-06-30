@@ -20,7 +20,7 @@
     --color-bg-warning-xl: var(--accent-warning);
     --color-bg-success: var(--accent-success-xxs);
     --color-bg-success-xl: var(--accent-success);
-    --color-bg-code: var(--color-bg-highlight);
+    --color-bg-code: var(--accent-code);
     --color-bg-active: var(--accent-primary);
     --color-border-code: var(--accent-borders-s);
     --color-border-warning: var(--accent-warning-s);

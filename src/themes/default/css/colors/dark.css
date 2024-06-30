@@ -43,8 +43,8 @@
     --accent-inactive-xl: #000;
     --accent-developer-gradient-b: #f2cfa5;
     --accent-developer-gradient-a: #ffc27d;
-    --accent-borders-s: #e1e1e8;
-    --accent-borders: #ddd;
+    --accent-borders-s: #1a1d1f;
+    --accent-borders: #0e0f10;
     --accent-shadow: #000;
     --accent-shadow-75: rgba(0,0,0,.75);
     --accent-shadow-25: rgba(0,0,0,.25);
@@ -52,6 +52,7 @@
     --accent-highlight-20: rgba(255,255,255,.2);
     --accent-highlight-60: rgba(255,255,255,.6);
     --accent-highlight-50: rgba(255,255,255,.5);
+    --accent-code: #dadada;
     --accent-form-element-bg: #fff;
     --accent-form-element-border: #ccc;
     --accent-form-file-bg: #f0f8ff;
