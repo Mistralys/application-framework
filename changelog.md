@@ -6,6 +6,7 @@
 - Revisionables: Added private key handling in the revision storage with `setPrivateKey()`.
 - Revisionables: Added disposed checks in all relevant public methods.
 - Revisionables: Added `setStateXXX()` methods to set the state within a transaction.
+- Revisionables: Fixed the changelog queue not being cleared after a transaction.
 - Disposables: `_dispose()` is now called after the child revisionables have been disposed.
 - Disposables: `getIdentification()` now handles the disposed state.
 - Disposables: Added the "disposing" state with `isDisposing()`.
@@ -14,6 +15,7 @@
 - Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
 - Logging: The memory storage option allows limiting memory usage in long-running tasks.
 - Logging: Added `reset()` to reset to defaults.
+- Changelogs: Added the `onQueueCommitted()` event handling method. 
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
