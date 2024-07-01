@@ -2,21 +2,27 @@
 
 declare(strict_types=1);
 
+use Application\Changelog\Event\ChangelogCommittedEvent;
 use Application\Interfaces\ChangelogableInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\ConvertHelper_Exception;
 
-class Application_Changelog
+class Application_Changelog implements Application_Interfaces_Eventable
 {
+    use Application_Traits_Eventable;
+    use Application_Traits_Loggable;
+
     public const ERROR_MISSING_CHANGELOG_KEY = 599601;
     public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
     
     protected ChangelogableInterface $owner;
-    
+    private string $logIdentifier;
+
     public function __construct(ChangelogableInterface $owner)
     {
         $this->owner = $owner;
+        $this->logIdentifier = getClassTypeName($owner).' | ChangeLog';
     }
     
    /**
@@ -104,6 +110,22 @@ class Application_Changelog
             
             $this->commitQueueEntry($entry['type'], $entry['data']);
         }
+
+        $this->triggerQueueCommitted();
+    }
+
+    private function triggerQueueCommitted() : void
+    {
+        $this->triggerEvent(
+            ChangelogCommittedEvent::EVENT_NAME,
+            array(),
+            ChangelogCommittedEvent::class
+        );
+    }
+
+    public function onQueueCommitted(callable $callback) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(ChangelogCommittedEvent::EVENT_NAME, $callback);
     }
 
     /**
@@ -265,6 +287,11 @@ class Application_Changelog
     public function getTypeLabel(string $type) : string
     {
         return $this->owner->getChangelogTypeLabel($type);
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->logIdentifier;
     }
 }
 
