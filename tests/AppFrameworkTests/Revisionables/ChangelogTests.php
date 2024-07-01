@@ -34,4 +34,16 @@ final class ChangelogTests extends RevisionableTestCase
         $this->assertNotNull($latest);
         $this->assertSame($latest->getType(), ChangelogHandler::CHANGELOG_SET_ALIAS);
     }
+
+    public function test_changelogQueueIsClearedWhenTransactionHasEnded() : void
+    {
+        $record = $this->createTestRevisionable('FooBar');
+
+        $record->startCurrentUserTransaction();
+            $record->setAlias('foo_bar');
+            $this->assertNotEmpty($record->getChangelogQueue());
+        $record->endTransaction();
+
+        $this->assertEmpty($record->getChangelogQueue());
+    }
 }
