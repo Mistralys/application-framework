@@ -151,4 +151,15 @@ class UI_Bootstrap_ButtonGroup
 
         return $this;
     }
+
+    public function getSelected() : ?ButtonGroupItemInterface
+    {
+        foreach($this->getAll() as $button) {
+            if($button->isActive()) {
+                return $button;
+            }
+        }
+
+        return null;
+    }
 }
