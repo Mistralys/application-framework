@@ -12,8 +12,10 @@ use AppUtils\JSHelper;
 use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Bootstrap\ButtonGroup\ButtonGroupItemInterface;
+use UI\Interfaces\ButtonLayoutInterface;
 use UI\Interfaces\ButtonSizeInterface;
 use UI\Traits\ActivatableTrait;
+use UI\Traits\ButtonLayoutTrait;
 use UI\Traits\ButtonSizeTrait;
 
 /**
@@ -39,18 +41,16 @@ class UI_Button
     use UI_Traits_ClientConfirmable;
     use ButtonSizeTrait;
     use ActivatableTrait;
+    use ButtonLayoutTrait;
 
     public const MODE_CLICKABLE = 'clickable';
     public const MODE_LINKED = 'linked';
     public const MODE_SUBMIT = 'submit';
 
-    public const TYPE_LINK = 'link';
-
     protected string $label = '';
     protected string $id;
     protected string $url = '';
     protected string $size = '';
-    protected string $layout = 'default';
     protected string $type = 'button';
     protected string $tooltipText = '';
     protected bool $disabled = false;
@@ -59,7 +59,6 @@ class UI_Button
     private string $urlTarget = '';
     private string $javascript = '';
     private ?UI_Bootstrap_Popover $popover = null;
-    private bool $active = false;
     private string $submitValue = '';
 
    /**
@@ -140,45 +139,19 @@ class UI_Button
         return $this;
     }
 
-   /**
-    * Styles the button as a primary button.
-    * 
-    * @return $this
-    */
-    public function makePrimary() : self
-    {
-        return $this->makeType('primary');
-    }
-
     /**
-     * Styles the button as a button for a dangerous operation, like deleting records.
-     *
      * @return $this
+     * @deprecated Not used anymore.
      */
-    public function makeDangerous() : self
-    {
-        return $this->makeType('danger');
-    }
-    
-   /**
-    * Styles the button for developers.
-    * 
-    * @return $this
-    */
-    public function makeDeveloper() : self
-    {
-        return $this->makeType('developer');
-    }
-    
     public function makeSpecial() : self
     {
-        return $this->makeType('special'); 
+        return $this->makeLayout('special');
     }
     
    /**
     * Styles the button as an informational button.
     *
-    * @deprecated
+    * @deprecated Use {@see self::makeInfo()} instead.
     * @return $this
     */
     public function makeInformational() : self
@@ -186,56 +159,7 @@ class UI_Button
         return $this->makeInfo();
     }
 
-    /**
-     * @return $this
-     */
-    public function makeInfo() : self
-    {
-        return $this->makeType('info');
-    }
 
-    /**
-    * Styles the button as a success button.
-    * 
-    * @return $this
-    */
-    public function makeSuccess() : self
-    {
-        return $this->makeType('success');
-    }
-    
-   /**
-    * Styles the button as a warning button for potentially dangerous operations.
-    * 
-    * @return $this
-    */
-    public function makeWarning() : self
-    {
-        return $this->makeType('warning');
-    }
-    
-   /**
-    * Styles the button as an inverted button.
-    * 
-    * @return $this
-    */
-    public function makeInverse() : self
-    {
-        return $this->makeType('inverse');
-    }
-    
-   /**
-    * Sets the button's layout to the specified type.
-    * 
-    * @param string $type
-    * @return $this
-    */
-    protected function makeType(string $type) : self
-    {
-        $this->layout = $type;
-        
-        return $this;
-    }
     
    /**
     * Turns the button into a submit button.
@@ -337,7 +261,7 @@ class UI_Button
     {
         $this->buttonLink = $buttonLink;
 
-        return $this->makeType(self::TYPE_LINK);
+        return $this->makeLayout(ButtonLayoutInterface::LAYOUT_LINK);
     }
     
    /**
@@ -464,8 +388,12 @@ class UI_Button
     private function resolveClasses() : array
     {
         $classes = $this->classes;
-        $classes[] = 'btn';
-        $classes[] = 'btn-'.$this->layout;
+
+        if($this->layout !== ButtonLayoutInterface::LAYOUT_LINK || $this->buttonLink === true)
+        {
+            $classes[] = 'btn-'.$this->resolveLayout();
+            $classes[] = 'btn';
+        }
 
         $sizeClass = $this->getSizeClass();
         if(!empty($sizeClass))
@@ -473,8 +401,7 @@ class UI_Button
             $classes[] = $sizeClass;
         }
 
-        if($this->isActive())
-        {
+        if($this->isActive()) {
             $classes[] = 'active';
         }
 
@@ -485,18 +412,6 @@ class UI_Button
 
         if($this->disabled) {
             $classes[] = 'disabled';
-        }
-
-        if($this->layout === self::TYPE_LINK && !$this->buttonLink)
-        {
-            $keep = array();
-            foreach($classes as $class) {
-                if(strpos($class, 'btn') !== 0) {
-                    $keep[] = $class;
-                }
-            }
-
-            $classes = $keep;
         }
 
         return $classes;
@@ -604,7 +519,7 @@ class UI_Button
     */
     public function push() : self
     {
-        return $this->addClass('active');
+        return $this->makeActive();
     }
     
    /**
@@ -614,7 +529,7 @@ class UI_Button
     */
     public function unpush() : self
     {
-        return $this->removeClass('active');
+        return $this->makeActive(false);
     }
     
    /**
@@ -681,7 +596,7 @@ class UI_Button
 
     public function isDangerous() : bool
     {
-        return $this->layout === 'danger';
+        return $this->layout === ButtonLayoutInterface::LAYOUT_DANGER;
     }
 
     private function getAttribute(string $name) : string
