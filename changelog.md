@@ -15,6 +15,12 @@
 - Logging: Added `setMemoryStorageEnabled()` to turn log message storage in memory on or off.
 - Logging: The memory storage option allows limiting memory usage in long-running tasks.
 - Logging: Added `reset()` to reset to defaults.
+- UI: Added `isActive()` to regular buttons.
+- UI: Added static `buttonDropdown()` method to create dropdown buttons.
+- UI: Added selecting the active button to the button groups.
+- UI: Added the interface `ButtonSizesInterface` and matching trait.
+- UI: Added the interface `ActivatableInterface` and matching trait.
+- App Interface: Added button group references.
 - Changelogs: Added the `onQueueCommitted()` event handling method. 
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
