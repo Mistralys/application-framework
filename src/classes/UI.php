@@ -941,10 +941,10 @@ class UI
     }
 
     /**
-     * @param string $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @return UI_Bootstrap_ButtonDropdown
      */
-    public function createButtonDropdown(string $label='') : UI_Bootstrap_ButtonDropdown
+    public function createButtonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
     {
         $dropDown = new UI_Bootstrap_ButtonDropdown($this);
         $dropDown->setLabel($label);
@@ -1109,6 +1109,16 @@ class UI
     public static function button($label=null) : UI_Button
     {
     	return new UI_Button($label);
+    }
+
+    /**
+     * @param string|int|float|StringableInterface|NULL $label
+     * @return UI_Bootstrap_ButtonDropdown
+     * @throws UI_Exception
+     */
+    public static function buttonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
+    {
+        return self::getInstance()->createButtonDropdown($label);
     }
 
     public function createPropertiesGrid(string $id='') : UI_PropertiesGrid
