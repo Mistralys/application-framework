@@ -3,6 +3,7 @@
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Interfaces\ButtonLayoutInterface;
 
 interface UI_Interfaces_Button
     extends
@@ -10,7 +11,8 @@ interface UI_Interfaces_Button
     ClassableInterface,
     Application_LockableItem_Interface,
     UI_Interfaces_ClientConfirmable,
-    UI_Interfaces_Conditional
+    UI_Interfaces_Conditional,
+    ButtonLayoutInterface
 {
     /**
      * @param string|number|UI_Renderable_Interface|NULL $reason
@@ -19,43 +21,6 @@ interface UI_Interfaces_Button
     public function disable($reason='') : self;
 
     public function isDisabled() : bool;
-
-    /**
-     * Styles the button as a button for a dangerous operation, like deleting records.
-     *
-     * @return $this
-     */
-    public function makeDangerous() : self;
-
-    /**
-     * @return $this
-     */
-    public function makePrimary() : self;
-
-    /**
-     * @return $this
-     */
-    public function makeSuccess() : self;
-
-    /**
-     * @return $this
-     */
-    public function makeDeveloper() : self;
-
-    /**
-     * @return $this
-     */
-    public function makeWarning() : self;
-
-    /**
-     * @return $this
-     */
-    public function makeInfo() : self;
-
-    /**
-     * @return $this
-     */
-    public function makeInverse() : self;
 
     /**
      * @param string $statement
