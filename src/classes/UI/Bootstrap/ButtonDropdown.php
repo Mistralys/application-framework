@@ -1,8 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+use AppUtils\Interfaces\StringableInterface;
+use UI\Bootstrap\ButtonGroup\ButtonGroupItemInterface;
+use UI\Traits\ActivatableTrait;
+use UI\Traits\ButtonSizeTrait;
+
 class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
+    implements
+    ButtonGroupItemInterface
 {
-    protected $size;
+    use ButtonSizeTrait;
+    use ActivatableTrait;
 
     protected function init(): void
     {
@@ -11,19 +22,12 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
         $this->setID(nextJSID());
     }
 
-    public function makeMini()
-    {
-        $this->size = 'btn-mini';
-        return $this;
-    }
-    
-    public function makeSmall()
-    {
-        $this->size = 'btn-small';
-        return $this;
-    }
-    
-    public function makeLink()
+    /**
+     * Makes the button a link.
+     *
+     * @return $this
+     */
+    public function makeLink() : self
     {
         $this->isLink = true;
         return $this;
@@ -35,34 +39,50 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
      *
      * @return $this
      */
-    public function openLeft()
+    public function openLeft() : self
     {
         $this->menu->openLeft();
         return $this;
     }
 
-    protected $linkClasses = array(
+    protected array $linkClasses = array(
         'dropdown-toggle'
     );
-    
-    public function addLinkClass($class)
+
+    /**
+     * @param string $class
+     * @return $this
+     */
+    public function addLinkClass(string $class) : self
     {
-        if(!in_array($class, $this->linkClasses)) {
+        if(!in_array($class, $this->linkClasses, true)) {
             $this->linkClasses[] = $class;
         }
+
+        return $this;
     }
 
-    protected $linkAttributes = array();
-    
-    public function setLinkAttribute($name, $value)
+    /**
+     * @var array<string,string>
+     */
+    protected array $linkAttributes = array();
+
+    /**
+     * @param string $name
+     * @param string|number|StringableInterface|NULL $value
+     * @return $this
+     */
+    public function setLinkAttribute(string $name, $value) : self
     {
-        $this->linkAttributes[$name] = $value;
+        $this->linkAttributes[$name] = toString($value);
+        return $this;
     }
     
     protected function _render() : string
     {
-        if(isset($this->size)) {
-            $this->addLinkClass($this->size);
+        $sizeClass = $this->getSizeClass();
+        if(!empty($sizeClass)) {
+            $this->addLinkClass($sizeClass);
         }
         
         if($this->inNavigation)
@@ -93,7 +113,7 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
         
         $html = 
         '<'.$tagName.$this->renderAttributes().'>'.
-            '<a'.AppUtils\ConvertHelper::array2attributeString($this->linkAttributes).'>' .
+            '<a'.ConvertHelper::array2attributeString($this->linkAttributes).'>' .
                 $this->icon . ' ' .
                 $this->label;
                 if($this->caret) {

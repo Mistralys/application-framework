@@ -11,6 +11,10 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\JSHelper;
 use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Bootstrap\ButtonGroup\ButtonGroupItemInterface;
+use UI\Interfaces\ButtonSizeInterface;
+use UI\Traits\ActivatableTrait;
+use UI\Traits\ButtonSizeTrait;
 
 /**
  * A configurable HTML `button` element. Use the
@@ -25,25 +29,22 @@ class UI_Button
     extends UI_BaseLockable
     implements
     UI_Renderable_Interface,
-    UI_Interfaces_Button
+    UI_Interfaces_Button,
+    ButtonGroupItemInterface
 {
     use Application_Traits_Iconizable;
     use UI_Traits_RenderableGeneric;
     use ClassableTrait;
     use UI_Traits_Conditional;
     use UI_Traits_ClientConfirmable;
- 
-    public const ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION = 66601;
-    public const ERROR_UNKNOWN_BOOTSTRAP_SIZE = 66602;
+    use ButtonSizeTrait;
+    use ActivatableTrait;
 
     public const MODE_CLICKABLE = 'clickable';
     public const MODE_LINKED = 'linked';
     public const MODE_SUBMIT = 'submit';
 
-    public const SIZE_SMALL = 'small';
-    public const SIZE_LARGE = 'large';
-    public const SIZE_MINI = 'mini';
-    const TYPE_LINK = 'link';
+    public const TYPE_LINK = 'link';
 
     protected string $label = '';
     protected string $id;
@@ -70,23 +71,7 @@ class UI_Button
     * @var array<string,string>
     */
     protected array $styles = array();
-    
-   /**
-    * @var array<int,array<string,string>>
-    */
-    protected static array $sizes = array(
-        2 => array(
-            self::SIZE_LARGE => 'large',
-            self::SIZE_SMALL => 'small',
-            self::SIZE_MINI => 'mini'
-        ),
-        4 => array(
-            self::SIZE_LARGE => 'lg',
-            self::SIZE_SMALL => 'sm',
-            self::SIZE_MINI => 'xs'
-        )
-    );
-    
+
     /**
      * @var array<string,string>
      */
@@ -101,6 +86,11 @@ class UI_Button
         $this->setLabel($label);
 
         $this->id = 'btn'.nextJSID();
+    }
+
+    public function getName() : string
+    {
+        return $this->getAttribute('name');
     }
 
     /**
@@ -150,89 +140,6 @@ class UI_Button
         return $this;
     }
 
-    /**
-     * Makes the button into a small button.
-     *
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function makeSmall() : self
-    {
-        return $this->makeSize(self::SIZE_SMALL);
-    }
-
-    /**
-     * Makes the button into a large button.
-     *
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function makeLarge() : self
-    {
-        return $this->makeSize(self::SIZE_LARGE);
-    }
-
-    /**
-     * Makes the button into a miniature button.
-     *
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function makeMini() : self
-    {
-        return $this->makeSize(self::SIZE_MINI);
-    }
-
-    /**
-     * @param string $size
-     * @return $this
-     * @throws Application_Exception
-     */
-    public function makeSize(string $size) : self
-    {
-        self::requireValidSize($size);
-        
-        $this->size = self::$sizes[UI::getInstance()->getBoostrapVersion()][$size];
-        
-        return $this;
-    }
-
-    /**
-     * @param string $size
-     * @throws UI_Exception
-     */
-    public static function requireValidSize(string $size) : void
-    {
-        $version = UI::getInstance()->getBoostrapVersion();
-
-        if(!isset(self::$sizes[$version]))
-        {
-            throw new UI_Exception(
-                'Unknown bootstrap version',
-                sprintf(
-                    'No button sizes known for bootstrap version [%s].',
-                    $version
-                ),
-                self::ERROR_UNKNOWN_BOOTSTRAP_SIZE_VERSION
-            );
-        }
-
-        if(isset(self::$sizes[$version][$size]))
-        {
-            return;
-        }
-
-        throw new UI_Exception(
-            'Unknown button size',
-            sprintf(
-                'Button size [%s] not known for bootstrap version [%s].',
-                $size,
-                $version
-            ),
-            self::ERROR_UNKNOWN_BOOTSTRAP_SIZE
-        );
-    }
-    
    /**
     * Styles the button as a primary button.
     * 
@@ -346,6 +253,11 @@ class UI_Button
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @return $this
+     * @throws UI_Exception
+     */
     public function setName(string $name) : self
     {
         return $this->setAttribute('name', $name);
@@ -555,12 +467,13 @@ class UI_Button
         $classes[] = 'btn';
         $classes[] = 'btn-'.$this->layout;
 
-        if(!empty($this->size))
+        $sizeClass = $this->getSizeClass();
+        if(!empty($sizeClass))
         {
-            $classes[] = 'btn-'.$this->size;
+            $classes[] = $sizeClass;
         }
 
-        if($this->active)
+        if($this->isActive())
         {
             $classes[] = 'active';
         }
@@ -769,12 +682,6 @@ class UI_Button
     public function isDangerous() : bool
     {
         return $this->layout === 'danger';
-    }
-
-    public function makeActive(bool $active=true) : self
-    {
-        $this->active = $active;
-        return $this;
     }
 
     private function getAttribute(string $name) : string

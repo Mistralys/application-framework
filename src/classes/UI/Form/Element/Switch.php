@@ -9,6 +9,9 @@
 
 declare(strict_types=1);
 
+use UI\Interfaces\ButtonSizeInterface;
+use UI\Traits\ButtonSizeTrait;
+
 /**
  * Twitter Bootstrap-based switch element that acts like a checkbox.
  *
@@ -16,8 +19,12 @@ declare(strict_types=1);
  * @subpackage Form Elements
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
+class HTML_QuickForm2_Element_Switch
+    extends HTML_QuickForm2_Element_Input
+    implements ButtonSizeInterface
 {
+    use ButtonSizeTrait;
+
     public const ELEMENT_TYPE = 'switch';
 
     /**
@@ -35,7 +42,6 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     private bool $useIcons = false;
     private ?UI_Icon $onIcon = null;
     private ?UI_Icon $offIcon = null;
-    protected string $buttonSize = UI_Button::SIZE_SMALL;
     protected ?string $jsID = null;
 
     /**
@@ -58,7 +64,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     /**
      * Sets the label for the ON state of the button
      * @param string $label
-     * @return HTML_QuickForm2_Element_Switch
+     * @return $this
      */
     public function setOnLabel(string $label) : self
     {
@@ -69,7 +75,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
     /**
      * Sets the label for the OFF state of the button
      * @param string $label
-     * @return HTML_QuickForm2_Element_Switch
+     * return $this
      */
     public function setOffLabel(string $label) : self
     {
@@ -100,7 +106,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
         $btnON = UI::button($this->onLabel)
             ->setID($id.'-on')
-            ->makeSize($this->buttonSize)
+            ->makeSize((string)$this->buttonSize)
             ->click(sprintf(
                 "switchElement.turnOn('%s')",
                 $id
@@ -108,7 +114,7 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
 
         $btnOFF = UI::button($this->offLabel)
             ->setID($id.'-off')
-            ->makeSize($this->buttonSize)
+            ->makeSize((string)$this->buttonSize)
             ->click(sprintf(
                 "switchElement.turnOff('%s')",
                 $id
@@ -187,12 +193,12 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
      *
      * Example:
      *
-     * <pre>
+     * ```php
      * $switch->setOnchangeHandler(
      *     'SomeClass.MethodName()',
      *     '"string"'
      * );
-     * </pre>
+     * ```
      *
      * @param string $statement
      * @param string|null $data A javascript compatible value as a string.
@@ -260,30 +266,6 @@ class HTML_QuickForm2_Element_Switch extends HTML_QuickForm2_Element_Input
         
         $this->setAttribute('value', $value);
         
-        return $this;
-    }
-
-    public function makeLarge() : self
-    {
-        return $this->makeSize(UI_Button::SIZE_LARGE);
-    }
-
-    public function makeMini() : self
-    {
-        return $this->makeSize(UI_Button::SIZE_MINI);
-    }
-
-    public function makeSmall() : self
-    {
-        return $this->makeSize(UI_Button::SIZE_SMALL);
-    }
-
-    public function makeSize(string $size) : self
-    {
-        UI_Button::requireValidSize($size);
-
-        $this->buttonSize = $size;
-
         return $this;
     }
 
