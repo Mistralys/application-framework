@@ -116,6 +116,8 @@ class ExampleFile implements StringPrimaryRecordInterface
 
     public function renderOutput() : string
     {
+        self::$instance = $this;
+
         $activeExampleID = $this->getScreenID();
         $activeURL = $this->getAdminViewURL();
 
@@ -127,5 +129,16 @@ class ExampleFile implements StringPrimaryRecordInterface
     public function getSourceCode() : string
     {
         return $this->getCodeFile()->getContents();
+    }
+
+    private static ?ExampleFile $instance = null;
+
+    public static function buildURL(array $params=array()) : string
+    {
+        if(!isset(self::$instance)) {
+            return '';
+        }
+
+        return self::$instance->getAdminViewURL($params);
     }
 }
