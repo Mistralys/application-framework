@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
+use Mistralys\Examples\UserInterface\ExampleFile;
+
 echo sb()
     ->tag('h3', t('Color styles'))
     ->add(UI::button('Default'))
@@ -21,4 +25,10 @@ echo sb()
     ->add(UI::button('Large')->makeLarge()->setIcon(UI::icon()->add()))
     ->add(UI::button('Normal')->setIcon(UI::icon()->add()))
     ->add(UI::button('Small')->makeSmall()->setIcon(UI::icon()->add()))
-    ->add(UI::button('Mini')->makeMini()->setIcon(UI::icon()->add()));
+    ->add(UI::button('Mini')->makeMini()->setIcon(UI::icon()->add()))
+
+    ->tag('h3', t('Miscellaneous'))
+    ->add(UI::button('Disabled')->disable(t('Reason for the disabled button.')))
+    ->add(UI::button('Active')->makeActive())
+    ->add(UI::button(t('Button-sized link'))->makeLink()->link(ExampleFile::buildURL()))
+    ->add(UI::button(t('Regular link'))->makeLink(false)->link(ExampleFile::buildURL()));
