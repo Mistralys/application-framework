@@ -193,7 +193,7 @@ abstract class Application_Session_Base implements Application_Session
         $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $returnURI);
         $this->log('Authenticate | Return URI is [%s].', $returnURI);
 
-        if(Application::isAuthenticationEnabled()) {
+        if(Application::isAuthenticationEnabled() && !Application::isSessionSimulated()) {
             $user = $this->sendAuthenticationCallbacks();
         } else {
             $this->log('Authenticate | Auth is disabled - using the system user.');
