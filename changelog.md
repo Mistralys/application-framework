@@ -20,8 +20,18 @@
 - UI: Added selecting the active button to the button groups.
 - UI: Added the interface `ButtonSizesInterface` and matching trait.
 - UI: Added the interface `ActivatableInterface` and matching trait.
+- UI: Disabled the Keep-Alive AJAX calls in the logout and request log screens. 
 - App Interface: Added button group references.
-- Changelogs: Added the `onQueueCommitted()` event handling method. 
+- Changelogs: Added the `onQueueCommitted()` event handling method.
+- RequestLog: Now ensuring that the session uses a different storage from the main app.
+- Sessions: Trimmed the authentication process, fixed right presets not being applied.
+- Sessions: Removed simulating users, too error-prone and risky.
+- Sessions: Added `Application::isUserReady()` as `isSessionReady()` does not include authentication.
+- Users: Added new role preset handling via autoloader classes in the `{DriverName}/User/Role` folder.
+- Devel Mode: Fixed right presets not being applied.
+- Devel Mode: Enabling devel mode can only be turned off when the selected preset has devel rights.
+- Devel Mode: Storing the enabled flag in the session instead of a user setting.
+- Devel Mode: Removed possibility to simulate users, as the main use case is simulating roles.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
