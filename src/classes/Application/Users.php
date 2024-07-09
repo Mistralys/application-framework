@@ -186,14 +186,22 @@ class Application_Users extends DBHelper_BaseCollection
         );
     }
 
+    public function getSystemUser() : Application_Users_User
+    {
+        return $this->getByID(Application::USER_ID_SYSTEM);
+    }
+
     public function initSystemUsers() : void
     {
         $ids = Application::getSystemUserIDs();
 
         foreach($ids as $id)
         {
-            $user = Application::createUser($id);
-            $this->initSystemUser($user);
+            $this->log(sprintf('User [%s] | Does not exist, creating.', $id));
+
+            // This works because the `createUser()` method does not query
+            // the database for the system users: It uses hardwired data.
+            $this->initSystemUser(Application::createUser($id));
         }
     }
 
