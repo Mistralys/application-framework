@@ -109,7 +109,7 @@ trait Application_Session_AuthTypes_CAS
      *
      * @throws Application_Exception
      */
-    protected function handleLogin() : Application_Users_User
+    protected function sendAuthenticationCallbacks() : Application_Users_User
     {
         $client = $this->getClient();
 
