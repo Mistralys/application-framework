@@ -164,9 +164,10 @@ abstract class Application_Session_Base implements Application_Session
         // or via a redirect to an error page.
         if ($userID === 0) {
             $this->runAuthentication();
+            $userID = $this->getUserID();
         }
 
-        $this->log(sprintf('Authenticate | User ID [%s] found in session.', $this->getUserID()));
+        $this->log(sprintf('Authenticate | User ID [%s] found in session.', $userID));
 
         $this->user = $this->loadUserByID($userID);
 
