@@ -105,12 +105,26 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     protected function handleLogout(array $clearKeys=array()) : void
     {
+        $this->log('LogOut | Clearing keys:');
+        $this->logData($clearKeys);
+
         foreach($clearKeys as $name) {
             $this->unsetValue($name);
         }
     }
 
-    abstract public function getPrefix() : string;
+    public function getPrefix() : string
+    {
+        // Use a separate session prefix when using the request log,
+        // to ensure that it has a separate session storage.
+        if(defined(Application_Bootstrap_Screen_RequestLog::CONST_REQUEST_LOG_RUNNING)) {
+            return $this->_getPrefix().'reqlog_';
+        }
+
+        return $this->_getPrefix();
+    }
+
+    abstract protected function _getPrefix() : string;
 
     public function getNameWithPrefix(string $name) : string
     {
@@ -144,10 +158,6 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     public function unsetValue(string $name) : void
     {
-        $name = $this->getNameWithPrefix($name);
-
-        if ($this->valueExists($name)) {
-            unset($_SESSION[$name]);
-        }
+        unset($_SESSION[$this->getNameWithPrefix($name)]);
     }
 }

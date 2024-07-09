@@ -90,6 +90,11 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        // Allow the request log to make changes to the session
+        if($class === Application_Bootstrap_Screen_RequestLog::class) {
+            Application_Bootstrap_Screen_RequestLog::init();
+        }
+
         // start so we can capture the page's content
         ob_start();
 
