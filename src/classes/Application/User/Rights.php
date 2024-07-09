@@ -14,7 +14,7 @@ class Application_User_Rights
     private array $groups = array();
 
     /**
-     * @var Application_User_Rights_Role[]
+     * @var array<string,Application_User_Rights_Role>
      */
     private array $roles = array();
 
@@ -74,6 +74,7 @@ class Application_User_Rights
 
         foreach($this->groups as $group)
         {
+            // Cannot be unpacked with array_push because the keys are strings
             $result = array_merge($result, $group->toArray());
         }
 
@@ -113,12 +114,21 @@ class Application_User_Rights
         );
     }
 
+    private bool $rolesSorted = false;
+
     /**
      * @return Application_User_Rights_Role[]
      */
     public function getRoles() : array
     {
-        return $this->roles;
+        if($this->rolesSorted === false) {
+            $this->rolesSorted = true;
+            usort($this->roles, static function (Application_User_Rights_Role $a, Application_User_Rights_Role $b): int {
+                return strnatcasecmp($a->getLabel(), $b->getLabel());
+            });
+        }
+
+        return array_values($this->roles);
     }
 
     public function roleIDExists(string $roleID) : bool

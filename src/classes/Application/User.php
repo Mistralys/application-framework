@@ -16,6 +16,7 @@ use Application\Tags\TagsRightsInterface;
 use Application\Tags\TagsRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
+use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
 use AppLocalize\Localization;
 use AppLocalize\Localization_Locale;
@@ -783,10 +784,6 @@ abstract class Application_User
 
     public function isDeveloperModeEnabled() : bool
     {
-        if(!$this->isDeveloper()) {
-            return false;
-        }
-
         return $this->getBoolSetting(self::SETTING_DEVELOPER_MODE);
     }
 
@@ -944,6 +941,9 @@ abstract class Application_User
         self::$rightsManager
             ->getRightByID(self::RIGHT_DEVELOPER)
             ->grantRights(...self::$rightsManager->getRights()->getIDs());
+
+        $collection = new RoleCollection(self::$rightsManager);
+        $collection->register();
 
         $this->registerRoles(self::$rightsManager);
 
