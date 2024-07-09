@@ -44,10 +44,20 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function getUser() : ?Application_User;
 
     /**
-     * Force the authentication of the user (only done if no user is authenticated yet).
+     * Starts the user authentication process.
+     *
+     * This must only be called once. Use {@see Application::isUserReady()}
+     * to check if a user has already been authenticated.
+     *
+     * NOTE: In the usual workflow of the application,
+     * this method is called automatically by the bootstrap
+     * for the current screen, see {@see Application_Bootstrap_Screen::authenticateUser()}.
+     *
      * @return Application_User
      */
     public function authenticate() : Application_User;
+
+    public function isStarted() : bool;
 
     /**
      * Like {@see self::getUser()}, but triggers the authentication process
@@ -61,10 +71,10 @@ interface Application_Session extends Application_Interfaces_Eventable
     /**
      * Fetches a list of all rights available for the specified user.
      *
-     * @param Application_Users_User $user
+     * @param Application_User $user
      * @return string[]
      */
-    public function fetchRights(Application_Users_User $user) : array;
+    public function fetchRights(Application_User $user) : array;
 
     /**
      * Whether user registration is enabled.
@@ -125,17 +135,9 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function fetchSimulatedRights() : array;
 
     /**
-     * Retrieves a list of all available right presets, as an associative
-     * array with preset name => roles string pairs.
+     * Retrieves a list of all available right role presets.
      *
-     * Example:
-     *
-     * array(
-     *     'Admin' => array('AddRecord', 'DeleteRecord', 'PublishRecord'),
-     *     'Reader' => array('ViewRecord')
-     * )
-     *
-     * @return array<string,array<int,string>>
+     * @return Application_User_Rights_Role[]
      */
     public function getRightPresets() : array;
 
@@ -184,6 +186,10 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener;
 
     /**
+     * Starts the session. It is then available, but no user has yet
+     * been authenticated. For this, the {@see self::authenticate()} method
+     * must be called.
+     *
      * @return $this
      */
     public function start() : self;
