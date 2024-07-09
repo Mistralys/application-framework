@@ -267,7 +267,7 @@ function isContentTypeHTML()
  */
 function displayError(Throwable $e) : void
 {
-    $develinfo = false;
+    $develinfo = true;
     $output = ob_get_clean();
 
     if($e instanceof Application_Exception) {
@@ -276,7 +276,7 @@ function displayError(Throwable $e) : void
 
     try
     {
-        if(Application::isSessionReady()) {
+        if(Application::isUserReady()) {
             $user = Application::getUser();
             $develinfo = $user->isDeveloper();
         }
@@ -1080,7 +1080,7 @@ function ensureType(string $className, object $object, int $code=0)
  * NOTE: It is automatically enabled when unit tests are
  * running, or if the application runs in a development
  * environment.
- * 
+ *
  * @return bool
  */
 function isDevelMode() : bool
@@ -1093,7 +1093,11 @@ function isDevelMode() : bool
         return true;
     }
 
-    return Application::isDevelEnvironment();
+    if(Application::isUserReady()) {
+        return Application::getUser()->isDeveloperModeEnabled();
+    }
+
+    return false;
 }
 
 /**
