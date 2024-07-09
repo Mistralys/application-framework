@@ -342,7 +342,7 @@ class Application
      * @return Application_Session
      * @see Application::isSessionReady()
      *
-     * @throws Application_Exception
+     * @throws Application_Session_Exception
      * @see Application::ERROR_SESSION_NOT_AVAILABLE_YET
      */
     public static function getSession() : Application_Session
@@ -352,7 +352,7 @@ class Application
             return self::$session;
         }
 
-        throw new Application_Exception(
+        throw new Application_Session_Exception(
             'Session not available yet',
             'The session instance has not been created yet.',
             self::ERROR_SESSION_NOT_AVAILABLE_YET
@@ -361,7 +361,7 @@ class Application
 
     /**
      * @return Application_User
-     * @throws Application_Exception
+     * @throws Application_Session_Exception
      * @see Application::ERROR_NO_USER_PRIOR_TO_SESSION
      */
     public static function getUser() : Application_User
@@ -1306,7 +1306,12 @@ class Application
 
     public static function isSessionReady() : bool
     {
-        return isset(self::$session);
+        return isset(self::$session) && self::$session->isStarted();
+    }
+
+    public static function isUserReady() : bool
+    {
+        return self::isSessionReady() && self::getSession()->getUser() !== null;
     }
 
     public static function isSystemUserID(int $userID) : bool
