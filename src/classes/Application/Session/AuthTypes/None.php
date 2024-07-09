@@ -36,27 +36,9 @@ trait Application_Session_AuthTypes_None
         Application_User::RIGHT_QA_TESTER
     );
 
-    protected function handleLogin() : Application_Users_User
+    protected function sendAuthenticationCallbacks() : Application_Users_User
     {
-        return AppFactory::createUsers()
-            ->getByID(Application::USER_ID_SYSTEM);
-    }
-
-    /**
-     * @return array<string,array<int,string>>
-     */
-    public function getRightPresets() : array
-    {
-        return array(
-            self::ADMIN_PRESET_ID => array(
-                Application_User::RIGHT_LOGIN,
-                Application_User::RIGHT_DEVELOPER
-            ),
-            self::QA_TESTING_PRESET_ID => array(
-                Application_User::RIGHT_LOGIN,
-                Application_User::RIGHT_QA_TESTER
-            )
-        );
+        return AppFactory::createUsers()->getSystemUser();
     }
 
     public function isRegistrationEnabled(): bool
@@ -64,12 +46,7 @@ trait Application_Session_AuthTypes_None
         return false;
     }
 
-    public function fetchRights(Application_Users_User $user): array
-    {
-        return $this->fixedRights;
-    }
-
-    public function fetchSimulatedRights() : array
+    public function fetchRights(Application_User $user): array
     {
         return $this->fixedRights;
     }
