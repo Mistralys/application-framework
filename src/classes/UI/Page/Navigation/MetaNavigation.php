@@ -102,7 +102,7 @@ class MetaNavigation implements UI_Renderable_Interface
 
     public function isDeveloperMenuEnabled() : bool
     {
-        $preset = Application::getSession()->getValue(Application_Session_Base::KEY_NAME_RIGHTS_PRESET);
+        $preset = Application::getSession()->getPresetBySession();
 
         if(!empty($preset)) {
             return true;
