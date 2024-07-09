@@ -38,8 +38,8 @@ class Application_Bootstrap_Screen_LoggedOut extends Application_Bootstrap_Scree
     protected function _boot()
     {
         $this->disableAuthentication();
-        
         $this->createEnvironment();
+        $this->disableKeepAlive();
 
         displayHTML(
             $this->driver
@@ -61,7 +61,7 @@ class Application_Bootstrap_Screen_LoggedOut extends Application_Bootstrap_Scree
             return null;
         }
 
-        $code = intval($_REQUEST['reason']);
+        $code = (int)$_REQUEST['reason'];
 
         switch ($code)
         {

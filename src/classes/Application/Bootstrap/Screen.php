@@ -282,6 +282,11 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
 
         $this->setDefine(BaseConfigRegistry::NO_AUTHENTICATION, true);
     }
+
+    protected function disableKeepAlive() : void
+    {
+        UI::getInstance()->addJavascriptHead('application.keepAlive.Disable()');
+    }
     
     private $disallowDBWriteOperations = false;
     
