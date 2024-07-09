@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace UI\Page\Navigation\MetaNavigation;
 
 use Application;
+use Application\Environments;
 use Application_Driver;
 use Application_LockManager;
 use Application_Request;
@@ -49,18 +50,23 @@ class DeveloperMenu
         $menu->addSeparator();
         $menu->addHeader(t('Application mode'));
 
-        $disable = $menu->addLink(t('Regular'), $this->request->buildRefreshURL(array('develmode_enable' => 'no')));
-        $enable = $menu->addLink(t('Developer'), $this->request->buildRefreshURL(array('develmode_enable' => 'yes')));
+        if($this->user->isDeveloper()) {
+            $disable = $menu->addLink(t('Regular'), $this->request->buildRefreshURL(array('develmode_enable' => 'no')));
+            $enable = $menu->addLink(t('Developer'), $this->request->buildRefreshURL(array('develmode_enable' => 'yes')));
 
-        if($this->user->isDeveloperModeEnabled()) {
-            $enable->setIcon(UI::icon()->itemActive());
-            $disable->setIcon(UI::icon()->itemInactive());
+            if ($this->user->isDeveloperModeEnabled()) {
+                $enable->setIcon(UI::icon()->itemActive());
+                $disable->setIcon(UI::icon()->itemInactive());
+            } else {
+                $enable->setIcon(UI::icon()->itemInactive());
+                $disable->setIcon(UI::icon()->itemActive());
+            }
         } else {
-            $enable->setIcon(UI::icon()->itemInactive());
-            $disable->setIcon(UI::icon()->itemActive());
+            $menu->addClickable(t('Developer'), "alert('".t('Switch back to a developer role to disable.')."')")
+                ->setIcon(UI::icon()->itemActive());
         }
 
-        if(Application::isSessionSimulated())
+        if(isDevelMode())
         {
             $session = Application::getSession();
             $current = $session->getRightPreset();
@@ -86,44 +92,20 @@ class DeveloperMenu
             $menu->addHeader(t('Rolesets'));
 
             $presets = $session->getRightPresets();
-            foreach ($presets as $presetName => $rights)
+            foreach ($presets as $preset)
             {
                 $link = $menu->addLink(
-                    $presetName,
+                    $preset->getLabel(),
                     $this->request->buildRefreshURL(array(
-                            Application_Session_Base::KEY_NAME_RIGHTS_PRESET => $presetName
+                        Application_Session_Base::REQUEST_PARAM_RIGHTS_PRESET => $preset->getID()
                     )
                 ))
-                    ->setTitle(implode(', ', $rights));
+                    ->setTitle(implode(', ', $preset->getRightIDs()));
 
-                if ($presetName === $current) {
+                if ($preset->getID() === $current) {
                     $link->setIcon(UI::icon()->itemActive());
                 } else {
                     $link->setIcon(UI::icon()->itemInactive());
-                }
-            }
-
-            if($session instanceof Application_Session_Native)
-            {
-                $menu->addSeparator();
-                $menu->addHeader(t('Users'));
-
-                $users = $session->getSimulateableUsers();
-
-                foreach($users as $suid => $name)
-                {
-                    $link = $menu->addLink(
-                        $name,
-                        $this->request->buildRefreshURL(array(
-                            Application_Session_Base::KEY_NAME_SIMULATED_ID => $suid
-                        ))
-                    );
-
-                    if($this->user->getID() === $suid) {
-                        $link->setIcon(UI::icon()->itemActive());
-                    } else {
-                        $link->setIcon(UI::icon()->itemInactive());
-                    }
                 }
             }
         }
