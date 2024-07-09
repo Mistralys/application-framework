@@ -338,10 +338,10 @@ class Application_ErrorLog
         
         try
         {
-            if(Application::isSessionReady())
-            {
-                $user = Application::getUser();
-                $userID = $user->getID();
+            $userID = 'Unauthenticated';
+
+            if(Application::isUserReady()) {
+                $userID = Application::getUser()->getID();
             }
         }
         catch (Application_Exception $e)
