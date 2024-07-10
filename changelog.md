@@ -24,7 +24,7 @@
 - App Interface: Added button group references.
 - Changelogs: Added the `onQueueCommitted()` event handling method.
 - RequestLog: Now ensuring that the session uses a different storage from the main app.
-- Sessions: Trimmed the authentication process, fixed right presets not being applied.
+- Sessions: Trimmed the authentication process, fixed right presets not being applied ([#67](https://github.com/Mistralys/application-framework/issues/67)).
 - Sessions: Removed simulating users, too error-prone and risky.
 - Sessions: Added `Application::isUserReady()` as `isSessionReady()` does not include authentication.
 - Users: Added new role preset handling via autoloader classes in the `{DriverName}/User/Role` folder.
