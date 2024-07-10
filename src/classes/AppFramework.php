@@ -30,6 +30,11 @@ class AppFramework
         return $this->installFolder;
     }
 
+    public function getNameLinked() : string
+    {
+        return (string)sb()->link($this->getName(), $this->getGithubURL());
+    }
+
     public function getGithubURL() : string
     {
         return self::GITHUB_URL;
