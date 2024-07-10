@@ -15,6 +15,7 @@ use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
 use Application_Countries;
 use Application_DBDumps;
@@ -221,6 +222,11 @@ class AppFactory
     public static function createOfflineEvents() : Application_EventHandler_OfflineEvents
     {
         return Application_EventHandler::createOfflineEvents();
+    }
+
+    public static function createSystemMailer() : SystemMailer
+    {
+        return self::createClassInstance(SystemMailer::class);
     }
 
     // endregion
