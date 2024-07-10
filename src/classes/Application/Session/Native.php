@@ -113,7 +113,7 @@ abstract class Application_Session_Native extends Application_Session_Base
         }
     }
 
-    public function getPrefix() : string
+    final public function getPrefix() : string
     {
         // Use a separate session prefix when using the request log,
         // to ensure that it has a separate session storage.
