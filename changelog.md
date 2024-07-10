@@ -32,6 +32,7 @@
 - Devel Mode: Enabling devel mode can only be turned off when the selected preset has devel rights.
 - Devel Mode: Storing the enabled flag in the session instead of a user setting.
 - Devel Mode: Removed possibility to simulate users, as the main use case is simulating roles.
+- Validatable: Added validation code support to the `Validatable` trait.
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
