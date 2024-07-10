@@ -33,7 +33,7 @@
 - Devel Mode: Storing the enabled flag in the session instead of a user setting.
 - Devel Mode: Removed possibility to simulate users, as the main use case is simulating roles.
 - Validatable: Added validation code support to the `Validatable` trait.
-- SystemMailer: Added classes to create and send system emails to admins.
+- SystemMailer: Added classes to create and send system emails to admins ([#69](https://github.com/Mistralys/application-framework/issues/69)).
 - DeployCallback: Now sending an email on success or failure ([#68](https://github.com/Mistralys/application-framework/issues/68))
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
