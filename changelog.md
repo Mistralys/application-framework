@@ -33,13 +33,18 @@
 - Devel Mode: Storing the enabled flag in the session instead of a user setting.
 - Devel Mode: Removed possibility to simulate users, as the main use case is simulating roles.
 - Validatable: Added validation code support to the `Validatable` trait.
+- SystemMailer: Added classes to create and send system emails to admins.
+- DeployCallback: Now sending an email on success or failure ([#68](https://github.com/Mistralys/application-framework/issues/68))
 - Dependencies: Updated AppUtils Core to [v1.2.0](https://github.com/Mistralys/application-utils-core/releases/tag/1.2.0).
 
 ### Breaking changes
 
+- The `APP_RECIPIENTS_DEV` setting must now be set in the environment configuration. Use the new method `setSystemEmailRecipients()` in the environment configuration to set it.
 - Revisionables must rename their `_dispose()` method to `_disposeRevisionable()`.
 - Revisionables must rename their `getChildDisposable()` method to `_getChildDisposable()`.
 - Revision-dependent classes must now implement the `getIdentification()` method.
+- Existing overrides of the native session method `getPrefix()` must be renamed to `_getPrefix()`, and set to `protected`.
+- The updated user role handling requires existing role arrays to be moved to separate classes.
 
 ### Other changes
 
