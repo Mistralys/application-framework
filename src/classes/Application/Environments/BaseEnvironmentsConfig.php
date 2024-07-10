@@ -70,7 +70,6 @@ abstract class BaseEnvironmentsConfig
         $this->config = $this->createCustomSettings();
 
         $this->configureCoreSettings();
-        $this->configureRequiredSettings();
         $this->registerEnvironments();
 
         $environments = $this->environments->getAll();
@@ -81,6 +80,8 @@ abstract class BaseEnvironmentsConfig
         foreach($environments as $environment) {
             $environment->onIncludesLoaded(function(IncludesLoaded $event) {
                 $this->configureDefaultSettings($event->getEnvironment());
+                $this->configureSoftcoreSettings();
+                $this->configureRequiredSettings();
             });
         }
     }
@@ -95,6 +96,7 @@ abstract class BaseEnvironmentsConfig
     abstract protected function getDummyEmail() : string;
     abstract protected function getSystemEmail() : string;
     abstract protected function getSystemName() : string;
+    abstract protected function getSystemEmailRecipients() : string;
 
     /**
      * @return string[]
@@ -162,6 +164,8 @@ abstract class BaseEnvironmentsConfig
     /**
      * Sets all core system settings, which are directly
      * defined as constants, without using {@see boot_define()}.
+     * They have to be set before everything else, as much
+     * depends on them.
      *
      * @return void
      */
@@ -170,11 +174,25 @@ abstract class BaseEnvironmentsConfig
         $this->config
             ->setClassName($this->getClassName())
             ->setCompanyName($this->getCompanyName())
+            ->setContentLocales($this->getContentLocales())
+            ->setUILocales($this->getUILocales());
+    }
+
+    /**
+     * Sets all softcore settings, meaning any settings that can
+     * be added after the environments have been initialized,
+     * as they may depend on include files that the environment
+     * loads (to access configuration constants defined therein).
+     *
+     * @return void
+     */
+    private function configureSoftcoreSettings() : void
+    {
+        $this->config
             ->setDummyEmail($this->getDummyEmail())
             ->setSystemEmail($this->getSystemEmail())
             ->setSystemName($this->getSystemName())
-            ->setContentLocales($this->getContentLocales())
-            ->setUILocales($this->getUILocales());
+            ->setSystemEmailRecipients($this->getSystemEmailRecipients());
     }
 
     /**

@@ -23,8 +23,6 @@ class LocalEnvironment extends BaseEnvironmentConfig
 
     protected function configureCustomSettings(): void
     {
-        $this->config
-            ->setSystemEmailRecipients(TESTS_SYSTEM_EMAIL_RECIPIENTS);
     }
 
     protected function setUpEnvironment(): void

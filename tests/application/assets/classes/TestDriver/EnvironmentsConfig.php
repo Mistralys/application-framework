@@ -36,6 +36,11 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
         return 'Application Framework';
     }
 
+    protected function getSystemEmailRecipients(): string
+    {
+        return TESTS_SYSTEM_EMAIL_RECIPIENTS;
+    }
+
     protected function getContentLocales(): array
     {
         return array(
