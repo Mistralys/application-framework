@@ -72,6 +72,11 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
     public const SYSTEM_NAME = 'APP_SYSTEM_NAME';
 
     /**
+     * @see APP_RECIPIENTS_DEV
+     */
+    public const SYSTEM_EMAIL_RECIPIENTS = 'APP_RECIPIENTS_DEV';
+
+    /**
      * @see APP_CLASS_NAME
      */
     public const CLASS_NAME = 'APP_CLASS_NAME';
