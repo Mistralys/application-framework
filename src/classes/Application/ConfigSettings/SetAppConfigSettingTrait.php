@@ -334,6 +334,18 @@ trait SetAppConfigSettingTrait
     }
 
     /**
+     * Sets a comma-separated list of email addresses to send
+     * system emails to.
+     *
+     * @param string $recipients
+     * @return $this
+     */
+    public function setSystemEmailRecipients(string $recipients) : self
+    {
+        return $this->setConstant(BaseConfigRegistry::SYSTEM_EMAIL_RECIPIENTS, $recipients);
+    }
+
+    /**
      * @param string|AdminURLInterface $url
      * @return $this
      */
