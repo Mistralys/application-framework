@@ -21,6 +21,8 @@
 - UI: Added the interface `ButtonSizesInterface` and matching trait.
 - UI: Added the interface `ActivatableInterface` and matching trait.
 - UI: Disabled the Keep-Alive AJAX calls in the logout and request log screens. 
+- UI: `UI::tooltip()` now accepts an existing `TooltipInfo` instance.
+- UI: Pretty booleans now support tooltips.
 - App Interface: Added button group references.
 - Changelogs: Added the `onQueueCommitted()` event handling method.
 - RequestLog: Now ensuring that the session uses a different storage from the main app.
