@@ -17,9 +17,9 @@ use AppUtils\FileHelper;
  * @package Application
  * @subpackage API
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @see Application_API_Method
+ * @see BaseAPIMethod
  */
-class Application_API_Method_DescribeCollections extends Application_API_Method
+class Application_API_Method_DescribeCollections extends BaseAPIMethod
 {
     public function getDefaultInputFormat()
     {

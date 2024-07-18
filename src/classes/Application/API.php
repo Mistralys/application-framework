@@ -28,7 +28,7 @@ class Application_API
         $this->request = $this->driver->getRequest();
 
         $this->repositories = array(
-            'Application_API_Method' => APP_INSTALL_FOLDER . '/classes/Application/API/Method',
+            'BaseAPIMethod' => APP_INSTALL_FOLDER . '/classes/Application/API/Method',
             APP_CLASS_NAME . '_API' => APP_ROOT . '/assets/classes/' . APP_CLASS_NAME . '/API/'
         );
     }
@@ -67,40 +67,16 @@ class Application_API
             );
         }
 
-        $method = $this->loadMethod($name);
-
-        $inputFormats = $method->getInputFormats();
-        $defaultInputFormat = $method->getDefaultInputFormat();
-        $inputFormat = $defaultInputFormat;
-
-        $outputFormats = $method->getOutputFormats();
-        $defaultOutputFormat = $method->getDefaultOutputFormat();
-        $outputFormat = $defaultOutputFormat;
-
-        // if the method has several input formats, determine
-        // which one should be used.
-        if (count($inputFormats) > 1) {
-            $inputFormat = $this->request->getParam('input', $defaultInputFormat);
-        }
-
-        // if the method has several output formats, determine
-        // which one should be used.
-        if (count($outputFormats) > 1) {
-            $outputFormat = $this->request->getParam('output', $defaultOutputFormat);
-        }
-
-        $method->selectInputFormat($inputFormat);
-        $method->selectOutputFormat($outputFormat);
-        $method->process();
+        $this->loadMethod($name)->process();
     }
 
     /**
      *
      * @param string $name
-     * @return Application_API_Method
+     * @return BaseAPIMethod
      * @throws APIException
      */
-    public function loadMethod(string $name) : Application_API_Method
+    public function loadMethod(string $name) : BaseAPIMethod
     {
         $class = null;
 
@@ -142,7 +118,7 @@ class Application_API
         try
         {
             return ClassHelper::requireObjectInstanceOf(
-                Application_API_Method::class,
+                BaseAPIMethod::class,
                 new $class($this)
             );
         }
