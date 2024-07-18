@@ -65,6 +65,21 @@
             'label' => t('Active / inactive'),
             'true' => UI::prettyBool(true)->makeActiveInactive(),
             'false' => UI::prettyBool(false)->makeActiveInactive()
+        ),
+        array(
+            'label' => t('Custom labels'),
+            'true' => UI::prettyBool(true)->setLabels('Custom enabled', 'Custom disabled'),
+            'false' => UI::prettyBool(false)->setLabels('Custom enabled', 'Custom disabled')
+        ),
+        array(
+            'label' => t('Tooltips'),
+            'true' => UI::prettyBool(true)->setTooltip('True tooltip', 'False tooltip'),
+            'false' => UI::prettyBool(false)->setTooltip('True tooltip', 'False tooltip')
+        ),
+        array(
+            'label' => t('Tooltips (bottom)'),
+            'true' => UI::prettyBool(true)->setTooltip(UI::tooltip('True tooltip')->makeBottom(), UI::tooltip('False tooltip')->makeBottom()),
+            'false' => UI::prettyBool(false)->setTooltip(UI::tooltip('True tooltip')->makeBottom(), UI::tooltip('False tooltip')->makeBottom())
         )
     );
 
