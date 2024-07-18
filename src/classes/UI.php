@@ -771,12 +771,13 @@ class UI
      *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
      *    is called, or if {@see TooltipInfo::injectJS()} is called.
      *
-     * @param string|int|float|StringableInterface|NULL $content
+     * @param string|int|float|StringableInterface|TooltipInfo|NULL $content
      * @return TooltipInfo
+     * @throws UI_Exception
      */
     public static function tooltip($content) : TooltipInfo
     {
-        return new TooltipInfo($content);
+        return TooltipInfo::create($content);
     }
 
     /**
