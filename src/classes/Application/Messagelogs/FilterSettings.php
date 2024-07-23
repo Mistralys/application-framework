@@ -37,9 +37,6 @@ class Application_Messagelogs_FilterSettings extends DBHelper_BaseFilterSettings
         }
         
         $this->addElementDateSearch('date', $container);
-        
-        $fields = $this->collection->getRecordSearchableColumns();
-        $this->addElementSearch(array_values($fields), $container);
     }
     
     /**
