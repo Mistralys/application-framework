@@ -1,4 +1,4 @@
-## v4.1.0 - Revisionable update (Breaking-S)
+## v5.0.0 - Revisionable update (Breaking-S)
 - Revisionables: Added `getRevisionAuthorXXX()` methods for more consistent naming.
 - Revisionables: Added some missing methods in the revisionable interface.
 - Revisionables: Storage now automatically disposes of keys that contain revision-dependent instances.
@@ -23,6 +23,7 @@
 - UI: Disabled the Keep-Alive AJAX calls in the logout and request log screens. 
 - UI: `UI::tooltip()` now accepts an existing `TooltipInfo` instance.
 - UI: Pretty booleans now support tooltips.
+- UI: Added the interface `MissingRecordInterface`.
 - App Interface: Added button group references.
 - Changelogs: Added the `onQueueCommitted()` event handling method.
 - RequestLog: Now ensuring that the session uses a different storage from the main app.
@@ -48,6 +49,7 @@
 - Revision-dependent classes must now implement the `getIdentification()` method.
 - Existing overrides of the native session method `getPrefix()` must be renamed to `_getPrefix()`, and set to `protected`.
 - The updated user role handling requires existing role arrays to be moved to separate classes.
+- UI: Made the `getRecordMissingURL()` method public.
 
 ### Other changes
 
