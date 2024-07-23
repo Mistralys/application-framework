@@ -43,7 +43,7 @@ abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Collect
         return AppFactory::createNews();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return $this->createCollection()->getAdminListURL();
     }

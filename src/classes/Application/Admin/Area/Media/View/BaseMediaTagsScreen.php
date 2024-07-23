@@ -36,7 +36,7 @@ class BaseMediaTagsScreen
         return AppFactory::createMediaCollection();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
     }

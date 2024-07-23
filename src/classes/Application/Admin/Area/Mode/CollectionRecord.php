@@ -1,6 +1,10 @@
 <?php
 
-abstract class Application_Admin_Area_Mode_CollectionRecord extends Application_Admin_Area_Mode
+use Application\Interfaces\Admin\MissingRecordInterface;
+
+abstract class Application_Admin_Area_Mode_CollectionRecord
+    extends Application_Admin_Area_Mode
+    implements MissingRecordInterface
 {
     /**
      * @var DBHelper_BaseCollection
@@ -14,8 +18,6 @@ abstract class Application_Admin_Area_Mode_CollectionRecord extends Application_
     
     abstract protected function createCollection();
 
-    abstract protected function getRecordMissingURL() : string;
-    
     protected function init() : void
     {
         $this->collection = $this->createCollection();

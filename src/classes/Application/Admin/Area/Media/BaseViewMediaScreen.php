@@ -29,7 +29,7 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
         return AppFactory::createMediaCollection();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
     }
