@@ -19,8 +19,6 @@ var Sidebar =
 		 */
 		'Speed':350,
 
-		'parentInnerHeight':null,
-
 		/**
 		 * Starts the sidebar handling: checks if the page has a sidebar
 		 * at all, and if it does registers the required events to make
@@ -51,15 +49,11 @@ var Sidebar =
 				var windowScrollTop = $window.scrollTop();
 				var sidebarHeight = $sidebar.height();
 				var windowInnerHeight = $window.innerHeight();
-
-				//Set it once when scrolling started, otherwise this value is not correct from start
-				if(this.parentInnerHeight == null){
-					this.parentInnerHeight = $sidebar.parent().innerHeight();
-				}
+				var parentInnerHeight = $sidebar.parent().innerHeight() - 2;
 
 				// Only consider scrolling the sidebar,
 				// if sidebar is bigger than the section to the left of it
-				if (this.parentInnerHeight > sidebarHeight) {
+				if (parentInnerHeight > sidebarHeight) {
 
 					//Calculate starting point to scroll
 					var topMarginStart = windowScrollTop + navbarHeight + topPadding;
@@ -91,8 +85,8 @@ var Sidebar =
 
 						// If sidebarHeight + marginTop is bigger than the praentInnerHeight,
 						// we are at the bottom of the page and the sidebar should not scroll any further
-						if(sidebarMargin + sidebarHeight > this.parentInnerHeight){
-							sidebarMargin = this.parentInnerHeight - (sidebarHeight);
+						if(sidebarMargin + sidebarHeight > parentInnerHeight){
+							sidebarMargin = parentInnerHeight - (sidebarHeight);
 						}
 
 					}else{
