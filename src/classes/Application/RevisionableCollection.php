@@ -6,6 +6,7 @@ use Application\AppFactory;
 use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
+use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -115,13 +116,18 @@ abstract class Application_RevisionableCollection
         return array_keys($columns);
     }
 
-   /**
-    * @return Application_RevisionableCollection_FilterCriteria
-    */
-    public function getFilterCriteria() : Application_RevisionableCollection_FilterCriteria
+    /**
+     * @return RevisionableFilterCriteriaInterface
+     * @throws BaseClassHelperException
+     */
+    public function getFilterCriteria() : RevisionableFilterCriteriaInterface
     {
         $class = $this->getRecordFiltersClassName();
-        return new $class($this);
+
+        return ClassHelper::requireObjectInstanceOf(
+            RevisionableFilterCriteriaInterface::class,
+            new $class($this)
+        );
     }
     
    /**
