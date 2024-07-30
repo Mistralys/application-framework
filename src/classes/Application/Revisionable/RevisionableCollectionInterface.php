@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable;
 
+use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
 use Application_CollectionInterface;
 use Application_RevisionableCollection_FilterCriteria;
 use Application_RevisionableCollection_FilterSettings;
@@ -107,7 +108,7 @@ interface RevisionableCollectionInterface extends Application_CollectionInterfac
     public function getRevisionKeyName() : string;
 
     public function getRecordChangelogTableName() : string;
-    public function getFilterCriteria() : Application_RevisionableCollection_FilterCriteria;
+    public function getFilterCriteria() : RevisionableFilterCriteriaInterface;
     public function getFilterSettings() : Application_RevisionableCollection_FilterSettings;
     public function getByID(int $record_id) : RevisionableInterface;
     public function getByRevision(int $revision) : RevisionableInterface;
