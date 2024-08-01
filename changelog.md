@@ -1,3 +1,8 @@
+## v5.0.1 - Disposable fix
+- Disposables: Fixed `dispose()` not checking if currently in the process of disposing.
+- Core: The `VERSION` file is now automatically generated and updated.
+- Core: Added the `mistralys/changelog-parser` Composer dependency.
+
 ## v5.0.0 - Revisionable update (Breaking-S)
 - Revisionables: Added `getRevisionAuthorXXX()` methods for more consistent naming.
 - Revisionables: Added some missing methods in the revisionable interface.
