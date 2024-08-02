@@ -13,6 +13,6 @@
  * @subpackage TestDriver
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class TestDriver_Area_Devel_Messagelog extends Application_Admin_Area_Mode_Messagelog
+class TestDriver_Area_Devel_Messagelog extends BaseMessageLogScreen
 {
 }
