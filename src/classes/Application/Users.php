@@ -27,6 +27,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
  * 
  * @method Application_Users_User|NULL getByKey(string $key, string $value)
  * @method Application_Users_User createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ * @method Application_Users_User[] getAll()
  */
 class Application_Users extends DBHelper_BaseCollection
 {
