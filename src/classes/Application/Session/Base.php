@@ -251,11 +251,10 @@ abstract class Application_Session_Base implements Application_Session
 
         $this->triggerUserAuthenticated($unpacked);
 
-        $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
-
         // Only redirect if this was actually part of an
         // authentication callback.
         if($authActive && !isCLI()) {
+            $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
             Application::redirect($this->unpackTargetURL());
         }
     }
