@@ -2,9 +2,14 @@
 
 class Application_Users_User extends DBHelper_BaseRecord
 {
-    const COL_EMAIL = 'email';
-    const COL_FIRST_NAME = 'firstname';
-    const COL_LAST_NAME = 'lastname';
+    public const COL_EMAIL = 'email';
+    public const COL_FIRST_NAME = 'firstname';
+    public const COL_LAST_NAME = 'lastname';
+
+    public function getUserInstance() : Application_User
+    {
+        return Application::createUser($this->getID());
+    }
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
