@@ -1,3 +1,13 @@
+## v5.0.2 - Message log screen fix
+- MessageLog: Fixed missing request variables in the message log grid and filters.
+- MessageLog: Added the possibility to filter by user.
+- MessageLog: Added log message generation for testing for developers.
+- Users: Added `getUserInstance()` in the user collection record class. 
+
+### Deprecations:
+
+- `Application_Admin_Area_Mode_Messagelog` => `BaseMessageLogScreen`
+
 ## v5.0.1 - Disposable fix
 - Disposables: Fixed `dispose()` not checking if currently in the process of disposing.
 - Core: The `VERSION` file is now automatically generated and updated.
