@@ -127,7 +127,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     protected function registerAppLogs(?string $category=null) : void
     {
         if(Application::isDatabaseEnabled()) {
-            $this->registerCoreItem('messagelog', t('Message log'), t('Logs'), $category);
+            $this->registerCoreItem(BaseMessageLogScreen::URL_NAME, t('Message log'), t('Logs'), $category);
         }
     }
 
