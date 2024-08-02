@@ -1,3 +1,6 @@
+## v5.0.3 - Auth redirect loop fix
+-  Session: Fixed the infinite redirect loop in simulated session mode.
+
 ## v5.0.2 - Message log screen fix
 - MessageLog: Fixed missing request variables in the message log grid and filters.
 - MessageLog: Added the possibility to filter by user.
