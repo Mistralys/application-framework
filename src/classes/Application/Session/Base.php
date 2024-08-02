@@ -194,16 +194,20 @@ abstract class Application_Session_Base implements Application_Session
         $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $returnURI);
         $this->log('Authenticate | Return URI is [%s].', $returnURI);
 
-        if(Application::isAuthenticationEnabled() && !Application::isSessionSimulated()) {
+        $runAuth = Application::isAuthenticationEnabled() && !Application::isSessionSimulated();
+        if($runAuth)
+        {
             $user = $this->sendAuthenticationCallbacks();
-        } else {
+        }
+        else
+        {
             $this->log('Authenticate | Auth is disabled - using the system user.');
             $user = AppFactory::createUsers()->getSystemUser();
         }
 
         if($user !== null)
         {
-            $this->finalizeAuthentication($user);
+            $this->finalizeAuthentication($user, $runAuth);
             return;
         }
 
@@ -228,8 +232,10 @@ abstract class Application_Session_Base implements Application_Session
      * after the authentication process has completed successfully.
      *
      * @param Application_Users_User $user
+     * @param bool $authActive Whether the authentication callbacks were enabled during the authentication.
+     * @throws Application_Exception
      */
-    private function finalizeAuthentication(Application_Users_User $user) : void
+    private function finalizeAuthentication(Application_Users_User $user, bool $authActive) : void
     {
         $userID = $user->getID();
 
@@ -247,7 +253,9 @@ abstract class Application_Session_Base implements Application_Session
 
         $this->log('User [%s] | Redirecting to the initially requested URL.', $userID);
 
-        if(!isCLI()) {
+        // Only redirect if this was actually part of an
+        // authentication callback.
+        if($authActive && !isCLI()) {
             Application::redirect($this->unpackTargetURL());
         }
     }
