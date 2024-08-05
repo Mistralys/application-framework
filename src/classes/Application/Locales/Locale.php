@@ -43,11 +43,18 @@ class Locale implements StringPrimaryRecordInterface
         $this->countryISO = strtolower($parts[1]);
     }
 
+    /**
+     * @return string The locale ID, e.g., `en_US`.
+     *
+     */
     public function getID(): string
     {
         return $this->localeID;
     }
 
+    /**
+     * @return string The locale code, e.g., `en_US`.
+     */
      public function getCode() : string
      {
          return $this->getID();
@@ -66,11 +73,17 @@ class Locale implements StringPrimaryRecordInterface
         return $this->label;
     }
 
+    /**
+     * @return string The ISO code of the language, e.g., `en`.
+     */
     public function getLangISO(): string
     {
         return $this->langISO;
     }
 
+    /**
+     * @return string The ISO code of the country, e.g., `US`.
+     */
     public function getCountryISO(): string
     {
         return $this->countryISO;

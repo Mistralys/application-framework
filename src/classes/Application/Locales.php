@@ -7,6 +7,7 @@ namespace Application;
 use Application\Languages\Language;
 use Application\Locales\Locale;
 use AppUtils\Collections\BaseStringPrimaryCollection;
+use AppUtils\Collections\CollectionException;
 
 /**
  * Locale collection class, used to fetch information on the
@@ -68,6 +69,11 @@ class Locales extends BaseStringPrimaryCollection
         return self::LOCALE_EN_US;
     }
 
+    /**
+     * @param string $localeCode The locale code, e.g., `en_US`.
+     * @return Locale
+     * @throws CollectionException
+     */
     public function getByCode(string $localeCode) : Locale
     {
         return $this->getByID($localeCode);
