@@ -1,3 +1,7 @@
+## v5.0.4 - Minor fixes
+- API: Fixed wrongly documented return value of `getParam()`.
+- Locales: Added some return type docs to avoid confusion with locale codes.
+
 ## v5.0.3 - Auth redirect loop fix
 -  Session: Fixed the infinite redirect loop in simulated session mode.
 
