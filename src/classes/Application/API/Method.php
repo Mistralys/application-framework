@@ -311,42 +311,27 @@ abstract class Application_API_Method
      * request's getParam Method.
      *
      * @param string $name
-     * @param string $default
-     * @return string
+     * @param string|array<mixed>|int|float|bool|NULL $default
+     * @return mixed|NULL
      */
-    protected function getParam($name, $default = null)
+    protected function getParam(string $name, $default = null)
     {
         return $this->request->getParam($name, $default);
     }
 
-    protected $id;
+    protected ?string $id = null;
 
     /**
      * Returns the ID of the method (its name)
      * @return string
      */
-    public function getID()
+    public function getID() : string
     {
         if (isset($this->id)) {
             return $this->id;
         }
 
-        // since the method's class name depends on the
-        // class repository from which it has been loaded,
-        // we simply strip all relevant class names.
-        $classes = array_keys($this->api->getRepositories());
-        $search = array();
-        $replace = array();
-        foreach ($classes as $class) {
-            $search[] = $class . '_';
-            $replace[] = '';
-        }
-
-        $this->id = str_replace(
-            $search,
-            $replace,
-            get_class($this)
-        );
+        $this->id = getClassTypeName($this);
 
         return $this->id;
     }
