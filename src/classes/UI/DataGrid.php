@@ -428,6 +428,25 @@ class UI_DataGrid implements HiddenVariablesInterface
     }
 
     /**
+     * Counts the number of columns that the user has
+     * chosen not to display.
+     *
+     * @return int
+     */
+    public function countUserHiddenColumns() : int
+    {
+        $count = 0;
+
+        foreach($this->getAllColumns() as $column) {
+            if($column->isHiddenForUser()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
      * @param string $dataKey
      * @param string|number|UI_Renderable_Interface $title
      * @param array<string,mixed> $options
@@ -617,13 +636,18 @@ class UI_DataGrid implements HiddenVariablesInterface
             $this->multiSelect = false;
         }
 
+        $this->injectJavascript();
+    }
+
+    private function injectJavascript() : void
+    {
         self::addClientSupport();
 
         $objName = $this->getClientObjectName();
 
         $this->ui->addJavascriptHeadStatement(
             sprintf("var %s = new UI_Datagrid", $objName),
-        	$this->id,
+            $this->id,
             $objName
         );
 
@@ -635,13 +659,13 @@ class UI_DataGrid implements HiddenVariablesInterface
         $props = array();
 
         if($this->columnControls) {
-        	$this->ui->addJavascriptHead(sprintf(
-        		'%s.EnableColumnControls(%d)',
-        		$objName,
-        		$this->maxColumnsShown
-        	));
+            $this->ui->addJavascriptHead(sprintf(
+                '%s.EnableColumnControls(%d)',
+                $objName,
+                $this->maxColumnsShown
+            ));
 
-        	$props['fullViewTitle'] = $this->fullViewTitle;
+            $props['fullViewTitle'] = $this->fullViewTitle;
         }
 
         foreach($this->getValidColumns() as $column) {
@@ -671,6 +695,7 @@ class UI_DataGrid implements HiddenVariablesInterface
         $props['ConfiguratorSectionID'] = $this->configurator->getSectionID();
         $props['CurrentPage'] = $this->getPage();
         $props['TotalEntries'] = $this->getTotal();
+        $props['TotalUserHiddenColumns'] = $this->countUserHiddenColumns();
         $props['TotalEntriesUnfiltered'] = $this->getTotalUnfiltered();
 
         if(!empty($this->primaryKeyName)) {
@@ -695,8 +720,8 @@ class UI_DataGrid implements HiddenVariablesInterface
         }
 
         $this->ui->addJavascriptOnload(sprintf(
-        	'%s.Start()',
-        	$objName
+            '%s.Start()',
+            $objName
         ));
     }
 
