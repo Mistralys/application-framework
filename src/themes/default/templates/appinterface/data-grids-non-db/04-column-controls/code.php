@@ -43,7 +43,14 @@ for ($row = 1; $row <= 10; $row++) {
     $entry['hidden'] = 'Hidden '.$row;
 
     foreach($letters as $letter) {
-        $entry['col'.$letter] = $letter.$row;
+        // Use a closure to generate the column value:
+        // This is useful to avoid rendering complex column
+        // values when they have been hidden by the user.
+        // The closure is only called if the column is
+        // actually shown.
+        $entry['col'.$letter] = static function() use ($letter, $row) {
+            return $letter.$row;
+        };
     }
 
     $entry['actions'] = UI::button(t('Action'))
