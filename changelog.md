@@ -7,6 +7,7 @@
 - DataGrid: Columns can now be sorted and hidden on a per-user basis.
 - DataGrid: Converted the main JS classes to ES6 classes.
 - DataGrid: It is now possible to reset individual grid settings.
+- DataGrid: Cell values can now use callables to generate the value on demand.
 - Examples: Added a detailed DataGrid column controls example.
 - Users: Added the `$prefix` parameter to the `resetSettings()` method to limit the reset.
 
