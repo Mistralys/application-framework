@@ -1,3 +1,20 @@
+## v5.0.5 - DataGrid Enhancements
+- Clientside: Modernized the renderable classes, converted to ES6.
+- Clientside: Converted `ApplicationException` to ES6. 
+- DataGrid: Modernized the JS class, converted to ES6.
+- DataGrid: Added the grid configuration UI.
+- DataGrid: Fixed the column settings storage not being applied.
+- DataGrid: Columns can now be sorted and hidden on a per-user basis.
+- DataGrid: Converted the main JS classes to ES6 classes.
+- DataGrid: It is now possible to reset individual grid settings.
+- Examples: Added a detailed DataGrid column controls example.
+- Users: Added the `$prefix` parameter to the `resetSettings()` method to limit the reset.
+
+### Deprecations
+
+- JS: `Application_BaseRenderable` => `UI_Renderable_Base`
+- JS: `Application_RenderableHTML` => `UI_Renderable_HTML`
+
 ## v5.0.4 - Minor fixes
 - API: Fixed wrongly documented return value of `getParam()`.
 - Locales: Added some return type docs to avoid confusion with locale codes.
