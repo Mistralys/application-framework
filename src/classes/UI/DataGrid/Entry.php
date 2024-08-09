@@ -199,15 +199,18 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     {
         $value = $this->getValue($column->getDataKey());
         
-        if($value instanceof DateTime)
-        {
+        if($value instanceof DateTime) {
             return ConvertHelper::date2listLabel($value, true, true);
+        }
+
+        if(is_callable($value)) {
+            return $value($this, $column);
         }
 
         return (string)$value;
     }
     
-    public function render()
+    public function render() : string
     {
         $primary = $this->grid->getPrimaryField();
 
@@ -232,13 +235,11 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
             
             $attribs['data-refid'] = $this->data[$primary];
         }
-        
-        $html =
-        '<tr '.compileAttributes($attribs).'>' .
-            $this->grid->renderCells($this) .
-        '</tr>';
-        
-        return $html;
+
+        return
+            '<tr '.compileAttributes($attribs).'>' .
+                $this->grid->renderCells($this) .
+            '</tr>';
     }
 
     // region: Array access interface
