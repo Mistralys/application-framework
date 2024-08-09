@@ -1,4 +1,7 @@
-var Application_BaseRenderable = 
+/**
+ * @deprecated Use {@see UI_Renderable_Base} instead.
+ */
+var Application_BaseRenderable =
 {
 	'ERROR_MISSING_METHOD':15101,
 		
@@ -110,6 +113,9 @@ var Application_BaseRenderable =
 
 Application_BaseRenderable = Class.extend(Application_BaseRenderable);
 
+/**
+ * @deprecated Use {@see UI_Renderable_HTML} instead.
+ */
 var Application_RenderableHTML = 
 {
 	'classes':null,
