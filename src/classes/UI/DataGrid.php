@@ -2125,6 +2125,10 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     public function executeCallbacks() : UI_DataGrid
     {
+        if($this->configurator->process()) {
+            return $this;
+        }
+
         if($this->callbacksExecuted || !$this->isFormEnabled()) {
             return $this;
         }

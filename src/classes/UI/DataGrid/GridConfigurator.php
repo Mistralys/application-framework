@@ -44,6 +44,7 @@ class GridConfigurator implements UI_Renderable_Interface
     private UI_DataGrid $grid;
     private UI $ui;
     private Application_Request $request;
+    private bool $processed = false;
 
     public function __construct(UI_DataGrid $grid)
     {
@@ -62,7 +63,7 @@ class GridConfigurator implements UI_Renderable_Interface
         return $this->grid->getID().'_configurator';
     }
 
-    public function render(): string
+    public function process() : bool
     {
         if($this->request->getBool(self::REQUEST_PARAM_SAVE)) {
             $this->handleSaveSettings();
@@ -71,6 +72,13 @@ class GridConfigurator implements UI_Renderable_Interface
         if($this->request->getBool(self::REQUEST_PARAM_RESET_GRID)) {
             $this->handleResetSettings();
         }
+
+        return false;
+    }
+
+    public function render(): string
+    {
+        $this->process();
 
         $this->ui->addStylesheet('ui/datagrid/grid-configurator.css');
 
