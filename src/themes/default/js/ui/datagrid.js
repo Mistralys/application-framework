@@ -62,14 +62,10 @@ class UI_Datagrid extends UI_Renderable_HTML
 		this.ConfiguratorSectionID = '';
 		this.TotalPages = 0;
 		this.CurrentPage = 0;
-
-		/**
-		 * @type {String|null}
-		 */
-		this.PrimaryName = null;
-
-		this.TotalEntries = null;
-		this.TotalEntriesUnfiltered = null;
+		this.PrimaryName = '';
+		this.TotalEntries = 0;
+		this.TotalEntriesUnfiltered = 0;
+		this.TotalUserHiddenColumns = 0;
 
 		UI_Datagrid.instances.push(this);
 	}
@@ -877,16 +873,7 @@ class UI_Datagrid extends UI_Renderable_HTML
 			this.GetFormElement('previous').removeClass('disabled');
 		}
 
-		const hiddenCount = this.CountHiddenColumns();
-		if(hiddenCount === 1) {
-			this.GetFormElement('hint').show();
-			this.GetFormElement('hint_amount').text(t('1 column is hidden.'));
-		} else if(hiddenCount > 1) {
-			this.GetFormElement('hint').show();
-			this.GetFormElement('hint_amount').text(t('%1$s columns are hidden.', hiddenCount));
-		} else {
-			this.GetFormElement('hint').hide();
-		}
+		this.UpdateHiddenColumnsHint();
 		
 		if(this.maxColumnsShown === this.CountHideableColumns()) {
 			this.GetFormElement('plus').addClass('disabled');
@@ -901,6 +888,35 @@ class UI_Datagrid extends UI_Renderable_HTML
 		}
 
 		this.SaveSettings();
+	}
+
+	UpdateHiddenColumnsHint()
+	{
+		const hiddenCount = this.CountHiddenColumns();
+		let messages = [];
+		const elHint = this.GetFormElement('hint');
+		const elAmount = this.GetFormElement('hint_amount');
+
+		if(hiddenCount === 1) {
+			messages.push(t('1 column is not shown.'));
+		} else if(hiddenCount > 1) {
+			messages.push(t('%1$s columns are not shown.', hiddenCount));
+		}
+
+		if(this.TotalUserHiddenColumns === 1) {
+			messages.push(t('1 column is disabled.'));
+		} else if(this.TotalUserHiddenColumns > 1) {
+			messages.push(t('%1$s columns are disabled.', this.TotalUserHiddenColumns));
+		}
+
+		if(messages.length > 0) {
+			elAmount.html(messages.join(' '));
+			elHint.show();
+			return;
+		}
+
+		elAmount.text('');
+		elHint.hide();
 	}
 	
 	CountHiddenColumns()
