@@ -8,14 +8,15 @@ which opens a new window with all columns visible.
 
 **Some things you can try:**
 
-- Reduce the number of columns, and navigate through them with 
+- Reduce the number of columns and navigate through them with 
   the arrow buttons.
 - Open the full view to see all columns in a new window.
-- Open the grid settings to change column visibility and order.
+- Open the grid settings to change which columns are enabled
+  as well as their positions.
 
 The "Actions" column, since it is marked as such using 
 `roleActions()`, does not scroll. It is always visible and 
-cannot be hidden or repositioned by design.
+cannot be disabled or repositioned by design.
 
 ----
 
