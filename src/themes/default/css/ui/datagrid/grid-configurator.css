@@ -1,0 +1,31 @@
+.grid-configurator .grid-column{
+    padding: 0.4rem 0.6rem;
+    border: solid 1px var(--color-border);
+    margin-bottom: 0.5rem;
+    border-radius: var(--border-radius-normal);
+}
+
+.grid-configurator .grid-column:hover{
+    background-color: var(--color-bg-highlight-hover);
+}
+
+.grid-configurator .grid-column > UL{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.grid-configurator .grid-column > UL > LI{
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+}
+
+.grid-configurator .grid-column-handle{
+    margin-right: 0.5rem !important;
+    cursor: ns-resize;
+}
+
+.grid-configurator .grid-column-visibility{
+    float: right;
+}
