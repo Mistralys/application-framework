@@ -126,8 +126,7 @@ class GridConfigurator implements UI_Renderable_Interface
                             <li class="grid-column-label">
                             <?php echo sb()
                                 ->italic($column->getTitle())
-                                ->muted(sb()->parentheses(sb()->sf('#%02d', $column->getNumber())))
-                            ->add($column->getOrder())
+                                ->muted(sb()->tooltip(sb()->parentheses(sb()->sf('#%02d', $column->getNumber())), t('The original column number.')))
                             ?>
                             </li>
                             <li class="grid-column-visibility">
@@ -137,8 +136,8 @@ class GridConfigurator implements UI_Renderable_Interface
                                     $checked = 'checked';
                                 }
                                 ?>
-                                <label class="checkbox">
-                                    <?php pt('Visible') ?>
+                                <label class="checkbox" data-toggle="tooltip" title="<?php pt('If not checked, the column will be excluded from the list.') ?>">
+                                    <?php pt('Enabled') ?>
                                     <input type="checkbox" name="<?php echo self::REQUEST_PARAM_VISIBILITY ?>[<?php echo $column->getDataKey() ?>]" value="yes" <?php echo $checked; ?>>
                                 </label>
                             </li>
