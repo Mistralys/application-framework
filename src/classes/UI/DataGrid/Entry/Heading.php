@@ -16,7 +16,7 @@ class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
         return false;
     }
 
-    public function render()
+    public function render() : string
     {
         $this->addClass('row-heading');
         
