@@ -100,7 +100,7 @@ class GridConfigurator implements UI_Renderable_Interface
             ->setIcon(UI::icon()->settings())
             ->setAbstract(sb()
                 ->t('The configurator allows you to customize the data grid to your liking.')
-                ->t('Reorder the columns to your preference, and select which ones you want to be visible.')
+                ->t('Reorder the columns to your preference, and select which ones you want to be enabled.')
             );
 
         OutputBuffering::start();
