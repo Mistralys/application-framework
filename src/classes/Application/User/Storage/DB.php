@@ -31,7 +31,7 @@ class Application_User_Storage_DB extends Application_User_Storage
      */
     public function load() : array
     {
-        $items = DBHelper::fetchAll((string)statementBuilder("
+        $items = DBHelper::fetchAll(self::statement("
             SELECT
                 {name},
                 {value}
@@ -39,11 +39,7 @@ class Application_User_Storage_DB extends Application_User_Storage
                 {table_settings}
             WHERE
                 {users_primary}=:user_id"
-            )
-                ->table('{table_settings}', self::TABLE_NAME)
-                ->field('{users_primary}', Application_Users::PRIMARY_NAME)
-                ->field('{name}', self::COL_SETTING_NAME)
-                ->field('{value}', self::COL_SETTING_VALUE),
+            ),
             array(
                 ':user_id' => $this->userID
             )
@@ -56,15 +52,56 @@ class Application_User_Storage_DB extends Application_User_Storage
         
         return $data;
     }
+
+    public static function statement(string $template) : DBHelper_StatementBuilder
+    {
+        return statementBuilder($template, self::statementValues());
+    }
+
+    public static function statementValues() : DBHelper_StatementBuilder_ValuesContainer
+    {
+        return statementValues()
+            ->table('{table_settings}', self::TABLE_NAME)
+            ->field('{users_primary}', Application_Users::PRIMARY_NAME)
+            ->field('{name}', self::COL_SETTING_NAME)
+            ->field('{value}', self::COL_SETTING_VALUE);
+    }
     
-    public function reset() : void
+    public function reset(?string $prefix=null) : void
     {
         DBHelper::requireTransaction('Reset user settings');
+
+        if($prefix !== null) {
+            $this->resetByPrefix($prefix);
+            return;
+        }
         
         DBHelper::deleteRecords(
             self::TABLE_NAME,
             array(
                 self::COL_USER_ID => $this->userID
+            )
+        );
+    }
+
+    private function resetByPrefix(string $prefix) : void
+    {
+        $query = <<<'SQL'
+DELETE FROM
+    {table_settings}
+WHERE
+    {users_primary}=:user_id
+AND 
+    {name} LIKE '{prefix}%'
+SQL;
+
+        $statement = self::statement($query)
+            ->val('prefix', $prefix);
+
+        DBHelper::delete(
+            $statement,
+            array(
+                ':user_id' => $this->userID
             )
         );
     }

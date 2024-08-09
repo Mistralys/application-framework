@@ -66,14 +66,29 @@ class Application_User_Storage_File extends Application_User_Storage
     /**
      * @throws FileHelper_Exception
      */
-    public function reset() : void
+    public function reset(?string $prefix=null) : void
     {
-        if(file_exists($this->dataFile)) 
-        {
+        if($prefix !== null) {
+            $this->resetByPrefix($prefix);
+            return;
+        }
+
+        if(file_exists($this->dataFile)) {
             FileHelper::deleteFile($this->dataFile);
         }
         
         $this->data = array();
+    }
+
+    private function resetByPrefix(string $prefix) : void
+    {
+        $keys = array_keys($this->data);
+
+        foreach($keys as $key) {
+            if(strpos($key, $prefix) === 0) {
+                unset($this->data[$key]);
+            }
+        }
     }
 
     /**

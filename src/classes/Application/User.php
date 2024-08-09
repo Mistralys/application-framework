@@ -293,12 +293,12 @@ abstract class Application_User
         return true;
     }
 
-    public function resetSettings() : void
+    public function resetSettings(?string $prefix=null) : void
     {
         $this->settingsLoaded = false;
         $this->settings = array();
 
-        $this->storage->reset();
+        $this->storage->reset($prefix);
     }
 
     protected function validateSetting(string $name, string $value) : string
