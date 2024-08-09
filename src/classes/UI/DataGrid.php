@@ -13,6 +13,7 @@ use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
 use AppUtils\Interfaces\StringableInterface;
+use UI\DataGrid\GridConfigurator;
 use function AppLocalize\tex;
 
 /**
@@ -33,12 +34,18 @@ class UI_DataGrid implements HiddenVariablesInterface
     public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
     public const ERROR_DUPLICATE_DATAGRID_ID = 599905;
     public const ERROR_UNKNOWN_OPTION = 5999007;
+    public const ERROR_COLUMN_NAME_DOES_NOT_EXIST = 599908;
+
     public const REQUEST_PARAM_ORDERBY = 'datagrid_orderby';
     public const REQUEST_PARAM_ORDERDIR = 'datagrid_orderdir';
     public const REQUEST_PARAM_ACTION = 'datagrid_action';
     public const REQUEST_PARAM_SUBMITTED = 'datagrid_submitted';
     public const REQUEST_PARAM_PERPAGE = 'datagrid_perpage';
     public const REQUEST_PARAM_PAGE = 'datagrid_page';
+    public const REQUEST_PARAM_CONFIGURE_GRID = 'configure_data_grid';
+    public const COLUMN_START_INDEX = 1;
+    public const SETTING_SEPARATOR = '_';
+
 
     protected string $id;
     protected UI $ui;
@@ -98,6 +105,7 @@ class UI_DataGrid implements HiddenVariablesInterface
     protected array $entries = array();
     private string $dispatcher = '';
     private string $footerCountText = '';
+    private GridConfigurator $configurator;
 
     /**
      * @param UI $ui
@@ -123,6 +131,7 @@ class UI_DataGrid implements HiddenVariablesInterface
         $this->id = $id;
         $this->request = Application_Request::getInstance();
         $this->emptyMessage = t('No entries found.');
+        $this->configurator = new GridConfigurator($this);
 
         // Automatically add the screen's hidden variables
         // when the UI is enabled.
@@ -179,7 +188,7 @@ class UI_DataGrid implements HiddenVariablesInterface
     /**
      * @var int
      */
-    protected int $columnCounter = 0;
+    protected int $columnCounter = self::COLUMN_START_INDEX;
 
     protected bool $columnControls = false;
 
@@ -286,12 +295,23 @@ class UI_DataGrid implements HiddenVariablesInterface
     {
         $this->columns[] = $column;
         $this->columnCount++;
+
+        $this->resetColumnCache();
+    }
+
+    private bool $columnsSorted = false;
+
+    private function resetColumnCache() : void
+    {
+        $this->columnsSorted = false;
     }
 
     protected function prependColumnObject(UI_DataGrid_Column $column) : void
     {
         array_unshift($this->columns, $column);
         $this->columnCount++;
+
+        $this->resetColumnCache();
     }
 
     /**
@@ -310,10 +330,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     public function makeEvenColumnWidths(bool $overwriteExisting = false) : self
     {
         $leftover = 100;
+        $columns = $this->getAllColumns();
         $distributeColumns = $this->columnCount;
         if (!$overwriteExisting) {
-            for ($i = 0; $i < $this->columnCount; $i++) {
-                $column = $this->columns[$i];
+            foreach($columns as $column) {
                 if (!$column->hasWidth() || !$column->isValid()) {
                     continue;
                 }
@@ -331,8 +351,7 @@ class UI_DataGrid implements HiddenVariablesInterface
                 $distributeColumns--;
             }
         } else {
-            for ($i = 0; $i < $this->columnCount; $i++) {
-                $column = $this->columns[$i];
+            foreach($columns as $column) {
                 if ($column->hasWidth() && $column->isValid()) {
                     $column->resetWidth();
                 }
@@ -345,13 +364,12 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $width = (int)floor($leftover / $distributeColumns);
 
-        for ($i = 0; $i < $this->columnCount; $i++) {
-            $column = $this->columns[$i];
+        foreach($columns as $column) {
             if ($column->hasWidth() || !$column->isValid()) {
                 continue;
             }
 
-            $this->columns[$i]->setWidthPercent($width);
+            $column->setWidthPercent($width);
         }
 
         return $this;
@@ -364,35 +382,16 @@ class UI_DataGrid implements HiddenVariablesInterface
      * @param UI_DataGrid_Column $column
      * @param int|string $position
      * @return boolean Whether the column was moved
+     * @deprecated Not supported anymore. Use custom ordering instead.
      */
     public function moveColumn(UI_DataGrid_Column $column, $position) : bool
     {
-        $position = (int)$position;
-
-        $moved = false;
-        $total = count($this->columns);
-        $shuffled = array();
-        for ($i = 1; $i <= $total; $i++) {
-            if ($position === $i) {
-                $shuffled[] = $column;
-                $moved = true;
-            }
-
-            if ($this->columns[($i - 1)] === $column) {
-                continue;
-            }
-
-            $shuffled[] = $this->columns[($i - 1)];
-        }
-
-        $this->columns = $shuffled;
-
-        return $moved;
+        return false;
     }
 
     public function resetColumnWidths() : self
     {
-        foreach ($this->columns as $column) {
+        foreach ($this->getAllColumns() as $column) {
             $column->resetWidth();
         }
 
@@ -425,14 +424,7 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     public function countColumns() : int
     {
-        $count = 0;
-        foreach ($this->columns as $column) {
-            if ($column->isValid() && !$column->isHidden()) {
-                $count++;
-            }
-        }
-
-        return $count;
+        return count($this->getValidColumns());
     }
 
     /**
@@ -443,15 +435,19 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     protected function createColumn(string $dataKey, $title, array $options = array()) : UI_DataGrid_Column
     {
-    	$this->columnCounter++;
-
-        return new UI_DataGrid_Column(
+        $column = new UI_DataGrid_Column(
         	$this,
         	$this->columnCounter,
         	$dataKey,
         	$title,
         	$options
     	);
+
+        // Increasing the counter afterward to guarantee that
+        // the column start index constant is respected.
+        $this->columnCounter++;
+
+        return $column;
     }
 
     /**
@@ -480,9 +476,9 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     public function hasColumn(string $keyName)
     {
-        for($i=0; $i < $this->columnCount; $i++) {
-            if($this->columns[$i]->getDataKey() === $keyName) {
-                return $this->columns[$i];
+        foreach($this->getAllColumns() as $column) {
+            if($column->getDataKey() === $keyName) {
+                return $column;
             }
         }
 
@@ -648,10 +644,8 @@ class UI_DataGrid implements HiddenVariablesInterface
         	$props['fullViewTitle'] = $this->fullViewTitle;
         }
 
-        foreach($this->columns as $column) {
-            if($column->isValid()) {
-                $column->injectJavascript($this->ui, $objName);
-            }
+        foreach($this->getValidColumns() as $column) {
+            $column->injectJavascript($this->ui, $objName);
         }
 
         if($this->entriesSortable) {
@@ -671,7 +665,11 @@ class UI_DataGrid implements HiddenVariablesInterface
             ));
         }
 
+        $props['REQUEST_PARAM_CONFIGURE_GRID'] = self::REQUEST_PARAM_CONFIGURE_GRID;
         $props['BaseURL'] =  $this->buildURL(array(self::REQUEST_PARAM_PAGE => '_PGNR_'));
+        $props['RefreshURL'] = $this->getRefreshURL();
+        $props['ConfiguratorSectionID'] = $this->configurator->getSectionID();
+        $props['CurrentPage'] = $this->getPage();
         $props['TotalEntries'] = $this->getTotal();
         $props['TotalEntriesUnfiltered'] = $this->getTotalUnfiltered();
 
@@ -951,14 +949,14 @@ class UI_DataGrid implements HiddenVariablesInterface
      * @param string $name
      * @return string
      */
-    protected function resolveSettingName(string $name) : string
+    public function resolveSettingName(string $name) : string
     {
-        return $this->getID() . '_' . $name;
+        return $this->getID() . self::SETTING_SEPARATOR . $name;
     }
 
     /**
      * Disables the multiple choice selector for choosing the
-     * amount of items to show per page (only useful if it
+     * number of items to show per page (only useful if it
      * has been enabled prior to calling this, as it is
      * disabled by default).
      */
@@ -1085,6 +1083,10 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     public function render(array $entries) : string
     {
+        if($this->request->getBool(self::REQUEST_PARAM_CONFIGURE_GRID)) {
+            return $this->renderConfiguration();
+        }
+
         $this->initRender();
 
         $this->rendering = true;
@@ -1221,7 +1223,7 @@ class UI_DataGrid implements HiddenVariablesInterface
         return $entries;
     }
 
-    protected function renderHiddenVars() : string
+    public function renderHiddenVars() : string
     {
         // actions can have parameters that get submitted with the
         // list, so they are passed on.
@@ -1507,10 +1509,8 @@ class UI_DataGrid implements HiddenVariablesInterface
             if($this->countEntries() >= $this->duplicateHeadersThreshold) {
                 $html .=
                 '<tr class="column-headers duplicate-headers">';
-                    for ($i = 0; $i < $this->columnCount; $i++) {
-                        if($this->columns[$i]->isValid()) {
-                            $html .= $this->columns[$i]->renderHeaderCell(true);
-                        }
+                    foreach ($this->getValidColumns() as $column) {
+                        $html .= $column->renderHeaderCell(true);
                     }
                     $html .=
                 '</tr>';
@@ -1911,8 +1911,7 @@ class UI_DataGrid implements HiddenVariablesInterface
     {
         $value = Application::getUser()->getSetting($this->resolveSettingName($name));
 
-        if (empty($value))
-        {
+        if ($value === '') {
             $value = $this->getRequestDefault($name);
         }
 
@@ -2052,10 +2051,8 @@ class UI_DataGrid implements HiddenVariablesInterface
         $html =
         '<thead>' .
             '<tr class="column-headers">';
-                for ($i = 0; $i < $this->columnCount; $i++) {
-                    if($this->columns[$i]->isValid()) {
-                        $html .= $this->columns[$i]->renderHeaderCell();
-                    }
+                foreach($this->getValidColumns() as $column) {
+                    $html .= $column->renderHeaderCell();
                 }
                 $html .=
             '</tr>' .
@@ -2098,17 +2095,14 @@ class UI_DataGrid implements HiddenVariablesInterface
     {
         $clientData = $cell->getData();
         $html = '';
-        for ($i = 0; $i < $this->columnCount; $i++) {
-            $column = $this->columns[$i];
-
+        foreach($this->getValidColumns() as $column)
+        {
             // remove action column data from the client data set.
             if($column->isAction()) {
                 unset($clientData[$column->getDataKey()]);
             }
 
-            if($column->isValid()) {
-                $html .= $column->renderCell($cell);
-            }
+            $html .= $column->renderCell($cell);
         }
 
         if($register) {
@@ -2684,8 +2678,72 @@ class UI_DataGrid implements HiddenVariablesInterface
                 self::REQUEST_PARAM_ORDERBY,
                 self::REQUEST_PARAM_ORDERDIR,
                 self::REQUEST_PARAM_SUBMITTED,
-                self::REQUEST_PARAM_ACTION
+                self::REQUEST_PARAM_ACTION,
+                self::REQUEST_PARAM_CONFIGURE_GRID,
+                GridConfigurator::REQUEST_PARAM_SAVE,
+                GridConfigurator::REQUEST_PARAM_COLUMNS,
+                GridConfigurator::REQUEST_PARAM_VISIBILITY,
+                GridConfigurator::REQUEST_PARAM_RESET_GRID
             )
         );
+    }
+
+    private function renderConfiguration() : string
+    {
+        return $this->configurator->render();
+    }
+
+    /**
+     * @return UI_DataGrid_Column[]
+     */
+    public function getAllColumns() : array
+    {
+        if(!$this->columnsSorted) {
+            usort($this->columns, static function (UI_DataGrid_Column $a, UI_DataGrid_Column $b) {
+                return $a->getOrder() <=> $b->getOrder();
+            });
+            $this->columnsSorted = true;
+        }
+
+        return $this->columns;
+    }
+
+    /**
+     * @return UI_DataGrid_Column[]
+     */
+    public function getValidColumns() : array
+    {
+        $result = array();
+        foreach($this->getAllColumns() as $column) {
+            if($column->isValid() && !$column->isHidden()) {
+                $result[] = $column;
+            }
+        }
+
+        return $result;
+    }
+
+    public function requireColumnByName(string $columnName) : UI_DataGrid_Column
+    {
+        $column = $this->getColumnByName($columnName);
+        if($column !== null) {
+            return $column;
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Column does not exist.',
+            sprintf(
+                'No column with the name [%s] exists in the data grid.',
+                $columnName
+            ),
+            self::ERROR_COLUMN_NAME_DOES_NOT_EXIST
+        );
+    }
+
+    public function resetSettings() : void
+    {
+        $prefix = $this->resolveSettingName('');
+
+        Application::getUser()->resetSettings($prefix);
     }
 }

@@ -1,67 +1,39 @@
-/**  
+"use strict";
+
+/**
  * Datagrid class: handles the functionality of a datagrid in the
  * UI, from selecting items in the list to hiding/showing columns.
  * 
- * @package UI
+ * @package User Interface
  * @subpackage DataGrids
- * @class
- * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
- * @extends Application_BaseRenderable
+ * @extends UI_Renderable_HTML
  */
-var UI_Datagrid = 
+class UI_Datagrid extends UI_Renderable_HTML
 {
-	'ERROR_STRAY_ROW_WHILE_SORTING':19501,
-	'ERROR_PRIMARY_KEY_VALUE_MISSING_IN_RECORD':19502,
-	'ERROR_PRIMARY_KEY_NAME_REQUIRED':19503,
-		
-	'id':null,
-	'objectName':null,
-	'classes':null,
-	'title':null,
-	'fullViewTitle':null, // set server-side
-	'selectionActive':null,
-	'columnControls':null,
-	'maxColumnsShown':null,
-	'started':null,
-	'columns':null,
-	'columnOffset':null,
-	'instances':[],
-	'entriesSortable':null,
-	'entriesDroppable':null,
-	'sortHandler':null,
-	'dropHandler':null,
-	'entries':null,
-	'eventHandlers':null,
-	'selectAllActive':false,
-	
-	// Set serverside
-	'BaseURL':null, 
-	'TotalPages':null, 
-	'PrimaryName':null, 
-	'TotalEntries':null,
-	'TotalEntriesUnfiltered':null,
-	
+	static instances = [];
+
    /**
-    * Constructor. 
-    * 
     * @param {String} id
     * @param {String} [objectName] The name of the global variable that holds this instance. Created automatically if not specified.
     */
-	init:function(id, objectName)
+	constructor(id, objectName)
 	{
-		this._super();
-		
+		super();
+
+		this.ERROR_STRAY_ROW_WHILE_SORTING = 19501;
+		this.ERROR_PRIMARY_KEY_VALUE_MISSING_IN_RECORD = 19502;
+		this.ERROR_PRIMARY_KEY_NAME_REQUIRED = 19503;
+
 		// compatibility between server-side generated grids and
 		// clientside generated ones.
 		if(isEmpty(objectName)) {
 			objectName = 'csgrid' + nextJSID();
 			window[objectName] = this;
 		}
-		
+
 		this.id = id;
 		this.objectName = objectName;
 		this.title = null;
-		this.fullViewTitle = null;
 		this.classes = [];
 		this.selectionActive = false;
 		this.selectAllActive = false;
@@ -74,22 +46,42 @@ var UI_Datagrid =
 		this.entriesDroppable = false;
 		this.sortHandler = null;
 		this.dropHandler = null;
+
+		/**
+		 * @type {UI_DataGrid_Entry[]}
+		 */
 		this.entries = [];
+
 		this.eventHandlers = {};
-		
-		this.BaseURL = null;
-		
-		this.instances.push(this);
-	},
+
+		// Set server-side
+		this.REQUEST_PARAM_CONFIGURE_GRID = '';
+		this.fullViewTitle = null;
+		this.BaseURL = '';
+		this.RefreshURL = '';
+		this.ConfiguratorSectionID = '';
+		this.TotalPages = 0;
+		this.CurrentPage = 0;
+
+		/**
+		 * @type {String|null}
+		 */
+		this.PrimaryName = null;
+
+		this.TotalEntries = null;
+		this.TotalEntriesUnfiltered = null;
+
+		UI_Datagrid.instances.push(this);
+	}
 	
    /**
     * Retrieves the name of the variable holding the instance of this datagrid.
     * @return {String}
     */
-	GetObjectName:function()
+	GetObjectName()
 	{
 		return this.objectName;
-	},
+	}
 	
    /**
     * Shows a confirmation dialog for the specified datagrid
@@ -104,20 +96,20 @@ var UI_Datagrid =
     * @param {String} confirmMessage
     * @param {String} confirmType
     */
-	ConfirmSubmit:function(actionName, confirmMessage, confirmType)
+	ConfirmSubmit(actionName, confirmMessage, confirmType)
 	{
-		var datagrid = this;
-		var dialog = application.dialogConfirmation(
+		const datagrid = this;
+		const dialog = application.dialogConfirmation(
 			confirmMessage,
-			function() {
+			function () {
 				datagrid.Submit(actionName);
 			}
 		);
-		
-		if(confirmType=='danger') {
+
+		if(confirmType === 'danger') {
 			dialog.MakeDangerous();
 		}
-	},
+	}
 	
    /**
     * Submits the datagrid's form with the specified action.
@@ -125,33 +117,42 @@ var UI_Datagrid =
     * are enabled.
     *
     */
-	Submit:function(actionName)
+	Submit(actionName)
 	{
 		this.GetFormElement('action').val(actionName);
 		this.GetFormElement().submit();
-	},
+	}
 
-	GetFormID:function(part)
+	/**
+	 * @param {String|null} part
+	 * @return {string}
+	 */
+	GetFormID(part = null)
 	{
-		var id = 'datagrid-'+this.id;
-		if(typeof(part)!=='undefined') {
+		let id = 'datagrid-' + this.id;
+
+		if(typeof part !=='undefined' && part !== null) {
 			id += '-'+part;
 		}
 
 		return id;
-	},
-	
-	GetFormElement:function(part)
+	}
+
+	/**
+	 * @param {String|null} part
+	 * @return {jQuery}
+	 */
+	GetFormElement(part = null)
 	{
 		return $('#' + this.GetFormID(part));
-	},
+	}
 	
    /**
-    * Toggles the items selection: if none are selected,
+    * Toggles the item selection: if none are selected,
     * selects all items and vice versa.
     *
     */
-	ToggleSelection:function()
+	ToggleSelection()
 	{
 		if(this.selectAllActive) {
 			return;
@@ -166,17 +167,16 @@ var UI_Datagrid =
 			this.DeselectAll();
 			this.selectionActive = false;
 		}
-	},
+	}
 	
-	ToggleSelectAll:function()
+	ToggleSelectAll()
 	{
-		var gridID = this.GetFormID();
-		
-		var checkbox = $('#'+gridID+' .selectall-checkbox');
-		var link = $('#'+gridID+' .selectall-link');
-		var activeEl = $('#'+gridID+' .selectall-active');
-		var inactiveEl = $('#'+gridID+' .selectall-inactive');
-		
+		const gridID = this.GetFormID();
+
+		const checkbox = $('#' + gridID + ' .selectall-checkbox');
+		const activeEl = $('#' + gridID + ' .selectall-active');
+		const inactiveEl = $('#' + gridID + ' .selectall-inactive');
+
 		if(this.selectAllActive) 
 		{
 			this.selectAllActive = false;
@@ -212,21 +212,27 @@ var UI_Datagrid =
 				);
 			}
 		}
-	},
-	
-	Handle_SelectionChanged:function(checkboxEl)
+	}
+
+	/**
+	 * @param {jQuery} checkboxEl
+	 */
+	Handle_SelectionChanged(checkboxEl)
 	{
 		if(this.selectAllActive) {
 			this.ToggleSelectAll();
 		}
-	},
-	
-	IsSelectAllActive:function()
+	}
+
+	/**
+	 * @return {boolean}
+	 */
+	IsSelectAllActive()
 	{
 		return this.selectAllActive;
-	},
+	}
 	
-	ChangePerPage:function()
+	ChangePerPage()
 	{
 		if(this.IsSelectAllActive()) {
 			this.ToggleSelectAll();
@@ -235,77 +241,80 @@ var UI_Datagrid =
 		}
 		
 		this.GetFormElement().submit();
-	},
+	}
 	
    /**
     * Deselects all entries available in the datagrid. Note:
     * works only if the datagrid has the multiselect function
     * enabled.
     *
-    * @return {UI_Datagrid}
+    * @return {this}
     */
-	DeselectAll:function()
+	DeselectAll()
 	{
 		if(this.selectAllActive) {
-			return;
+			return this;
 		}
 
 		this.log('Deselecting all entries.', 'ui');
 		
 		$('#'+this.GetFormID()+' input[name="datagrid_items[]"]').each(
-			function(idx, value) {
+			function() {
 				$(this).prop('checked', false);
 			}
 		);
-	},
+
+		return this;
+	}
 
    /**
     * Selects all entries available in the datagrid. Note:
     * works only if the datagrid has the multiselect function
     * enabled.
     *
-    * @return {UI_Datagrid}
+    * @return {this}
     */
-	SelectAll:function()
+	SelectAll()
 	{
 		if(this.selectAllActive) {
-			return;
+			return this;
 		}
 
 		this.log('Selecting all entries.', 'ui');
 		
 		$('#'+this.GetFormID()+' input[name="datagrid_items[]"]').each(
-			function(idx, value) {
+			function() {
 				$(this).prop('checked', true);
 			}
 		);
 		
 		return this;
-	},
+	}
 	
    /**
     * Enables the controls with which columns above the specified
     * colun count get hidden and can be navigated with a dedicated
     * column gimmick.
     *
-    * @return {UI_Datagrid}
+    * @return {this}
     */
-	EnableColumnControls:function(maxColumns)
+	EnableColumnControls(maxColumns)
 	{
 		this.columnControls = true;
 		this.maxColumnsShown = maxColumns;
 		return this;
-	},
+	}
 	
    /**
     * Starts the datagrid functions. This is called automatically
     * when the page is ready, and does not need to be called manually.
     *
+	* @return {this}
     */
-	Start:function()
+	Start()
 	{
 		if(this.started) {
-			return;
+			return this;
 		}
 		
 		this.started = true;
@@ -321,68 +330,62 @@ var UI_Datagrid =
 		if(this.IsEntriesDroppable()) {
 			this.StartDroppableEntries();
 		}
-	},
+
+		return this;
+	}
 	
    /**
     * Checks whether the column navigation controls should be shown.
-    * They have to be enabled manually, but even if enabled they will
-    * not be shown if the amount of columns to show is higher than the
+    * They have to be enabled manually, but even if enabled, they will
+    * not be shown if the number of columns to show is higher than the
     * columns that can be navigated.
     *
     * @return {Boolean}
     */
-	IsColumnControlsEnabled:function()
+	IsColumnControlsEnabled()
 	{
-		if(!this.columnControls) {
-			return false;
-		}
-		
-		if(this.maxColumnsShown >= this.CountHideableColumns()) {
-			//return false;
-		}
-		
-		return true;
-	},
+		return this.columnControls;
+	}
 	
    /**
     * When column controls are enabled, this sets them up by first
     * rendering the required markup, and then doing the initial hiding
     * of columns.
     */
-	StartColumnControls:function()
+	StartColumnControls()
 	{
 		// avoid showing the controls if there are no entries in the list
-		if(this.entries.length==0) {
+		if(this.entries.length === 0) {
 			this.log('Skipping rending the column controls, the grid has no entries.', 'ui');
 			return;
 		}
 		
 		this.RenderColumnControls();
 
-		var max = parseInt(this.GetSetting('maxColumnsShown', this.maxColumnsShown));
-		if(!isNaN(max) && max != this.maxColumnsShown) {
+		const max = parseInt(this.GetSetting('maxColumnsShown', this.maxColumnsShown));
+		if(!isNaN(max) && max !== this.maxColumnsShown) {
 			this.maxColumnsShown = max;
 			this.Handle_ChangeMaxColumns();
 		}
-		
-		var off = parseInt(this.GetSetting('columnOffset', this.columnOffset));
-		if(!isNaN(off) & off != this.columnOffset) {
+
+		const off = parseInt(this.GetSetting('columnOffset', this.columnOffset));
+		if(!isNaN(off) && off !== this.columnOffset) {
 			this.columnOffset = off;
 			this.Handle_ChangeColumnOffset();
 		}
 		
 		this.UpdateColumns();
-	},
+	}
 	
    /**
     * Renders the required markup for the column navigation controls,
     * and injects it into the DOM.
     */
-	RenderColumnControls:function()
+	RenderColumnControls()
 	{
-		var datagrid = this;
-		
-		var html = ''+
+		const datagrid = this;
+
+		let html = ''+
 		'<div class="datagrid-hidden-hint" id="'+this.GetFormID('hint')+'" style="display:hidden;" title="'+t('Use the navigation controls to the right to browse through hidden columns.')+'">'+
 			application.renderLabelInfo('<b>'+t('Hint').toUpperCase()+'</b>')+' '+
 			'<span id="'+this.GetFormID('hint_amount')+'"></span>'+
@@ -436,7 +439,7 @@ var UI_Datagrid =
 						datagrid.Handle_DecreaseMaxColumns();
 					})+
 			'</div> ';
-			if(this.instances.length > 1) {
+			if(UI_Datagrid.instances.length > 1) {
 				html += ''+
 				'<div class="btn-group">'+
 					'<label class="checkbox" id="'+this.GetFormID('multiset_wrapper')+'" title="'+t('Applies the column settings to all lists on the page.')+'">'+
@@ -449,6 +452,13 @@ var UI_Datagrid =
 			'<div class="btn-group" style="margin-left:20px;">'+
 				UI.Button('')
 					.MakeSmall()
+					.SetIcon(UI.Icon().Settings())
+					.SetTooltip(t('Opens the list configuration screen to choose and reorder columns.'))
+					.Click(function() {
+						datagrid.Handle_Configure();
+					})+
+				UI.Button('')
+					.MakeSmall()
 					.SetIcon(UI.Icon().Maximize())
 					.SetTooltip(t('Opens the list in a new tab with all columns'))
 					.Click(function() {
@@ -456,7 +466,7 @@ var UI_Datagrid =
 					});
 				// the option to open all lists is only available if there
 				// are several lists in the page.
-				if(this.instances.length > 1) {
+				if(UI_Datagrid.instances.length > 1) {
 					html += ''+
 					'<button class="btn btn-small dropdown-toggle" data-toggle="dropdown">'+
 						'<span class="caret"></span>'+
@@ -483,7 +493,7 @@ var UI_Datagrid =
 		
 		UI.MakeTooltip('#'+this.GetFormID('multiset_wrapper'));
 		UI.MakeTooltip('#'+this.GetFormID('hint'));
-	},
+	}
 	
    /**
     * Sets a hidden variable in the data grid's hidden form variables. Replaces or
@@ -491,16 +501,16 @@ var UI_Datagrid =
     * 
     * @param {String} name
     * @param {String} value
-    * @returns {UI_Datagrid}
+    * @returns {this}
     */
-	SetHiddenVar:function(name, value)
+	SetHiddenVar(name, value)
 	{
-		var container = $('#datagrid-'+this.id+' .datagrid-hiddenvars');
-		
-		var found = false;
+		const container = $('#datagrid-' + this.id + ' .datagrid-hiddenvars');
+
+		let found = false;
 		$.each(container.find('input[type=hidden]'), function(idx, element) {
-			var el = $(element);
-			if(el.attr('name') == name) {
+			let el = $(element);
+			if(el.attr('name') === name) {
 				el.val(value);
 				found = true;
 				return false;
@@ -512,18 +522,18 @@ var UI_Datagrid =
 		}
 		
 		return this;
-	},
+	}
 	
    /**
     * Displays the specified datagrids in a new tab. Uses only the body
     * of the tables, and hides action columns to keep only the important
     * parts.
     *
-    * @param {Array:UI_Datagrid} datagrids
+    * @param {UI_Datagrid[]} datagrids
     */
-	Maximize:function(datagrids)
+	Maximize(datagrids)
 	{
-		var grid = this;
+		const grid = this;
 
 		application.showLoader(t('Please wait, generating...'));
 		
@@ -539,23 +549,26 @@ var UI_Datagrid =
 				grid.Maximize_DisplayPage(data.html);
 			})
 			.Send();
-	},
+	}
 
 	GetGrids(datagrids)
 	{
+		let i;
+		let datagrid;
+
 		// to be able to copy the whole table with all hidden cells visible,
 		// we temporarily make them all visible, and hide any action cells.
-		for(var i=0; i<datagrids.length; i++) {
-			var datagrid = datagrids[i];
+		for(i=0; i<datagrids.length; i++) {
+			datagrid = datagrids[i];
 			$('#'+datagrid.GetFormID('table')+' .role-cell').show();
 			$('#'+datagrid.GetFormID('table')+' .role-actions').hide();
 		}
 
-		var grids = [];
+		const grids = [];
 
-		for(var i=0; i<datagrids.length; i++)
+		for(i=0; i<datagrids.length; i++)
 		{
-			var datagrid = datagrids[i];
+			datagrid = datagrids[i];
 
 			grids.push({
 				'title':datagrid.GetFullViewTitle(),
@@ -564,39 +577,42 @@ var UI_Datagrid =
 		}
 
 		// restore hidden columns
-		for(var i=0; i<datagrids.length; i++) {
+		for(i=0; i<datagrids.length; i++) {
 			datagrid = datagrids[i];
 			$('#'+datagrid.GetFormID('table')+' .role-actions').show();
 			datagrid.UpdateColumns();
 		}
 
 		return grids;
-	},
-	
+	}
+
+	/**
+	 * @param {String} html
+	 */
 	Maximize_DisplayPage(html)
 	{
 		application.hideLoader();
 
-		var w = window.open();
+		const w = window.open();
 		w.document.open();
 		w.document.write(html);
 		w.document.close();
-	},
+	}
 	
    /**
     * Retrieves the title for the datagrid when it is in full view mode
     * (which is only available if column controls are enabled).
     *
-    * @return {String|NULL}
+    * @return {String|null}
     */
-	GetFullViewTitle:function()
+	GetFullViewTitle()
 	{
-		if(this.fullViewTitle != null) {
+		if(this.fullViewTitle !== null) {
 			return this.fullViewTitle;
 		}
 		
 		return this.title;
-	},
+	}
 	
    /**
     * Maximizes this datagrid by opening it in a new tab, with only
@@ -605,13 +621,24 @@ var UI_Datagrid =
     * @see Maximize
     * @see Handle_MaximizeAll
     */
-	Handle_Maximize:function()
+	Handle_Maximize()
 	{
-		var datagrids = [];
+		const datagrids = [];
+
 		datagrids.push(this);
 		
 		this.Maximize(datagrids);
-	},
+	}
+
+	Handle_Configure()
+	{
+		application.redirect(sprintf(
+			'%s&%s=yes#%s',
+			this.RefreshURL,
+			this.REQUEST_PARAM_CONFIGURE_GRID,
+			this.ConfiguratorSectionID
+		));
+	}
 	
    /**
     * Like Handle_Maximize, but brings together all datagrids present
@@ -620,34 +647,34 @@ var UI_Datagrid =
     * @see Maximize
     * @see Handle_Maximize
     */
-	Handle_MaximizeAll:function()
+	Handle_MaximizeAll()
 	{
-		this.Maximize(this.instances);
-	},
+		this.Maximize(UI_Datagrid.instances);
+	}
 	
    /**
     * Checks whether the "Apply to all" setting is active for the list.
     *
     * @return {Boolean}
     */
-	IsApplyToAll:function()
+	IsApplyToAll()
 	{
 		return this.GetFormElement('multiset').prop('checked');
-	},
+	}
 	
-	Handle_PreviousColumn:function()
+	Handle_PreviousColumn()
 	{
 		this.columnOffset--;
 		this.Handle_ChangeColumnOffset();
-	},
+	}
 	
-	Handle_NextColumn:function()
+	Handle_NextColumn()
 	{
 		this.columnOffset++;
 		this.Handle_ChangeColumnOffset();
-	},
+	}
 	
-	Handle_ChangeColumnOffset:function()
+	Handle_ChangeColumnOffset()
 	{
 		this.log('Column offset has changed, current: '+this.columnOffset+'.');
 		
@@ -655,8 +682,8 @@ var UI_Datagrid =
 			this.log('Column offset is smaller than 0, adjusting to 0.');
 			this.columnOffset = 0;
 		}
-		
-		var maxOffset = this.GetMaxColumnOffset();
+
+		const maxOffset = this.GetMaxColumnOffset();
 		if(this.columnOffset > maxOffset) {
 			this.log('Column offset is higher than the max offset, adjusting to '+maxOffset);
 			this.columnOffset = maxOffset;
@@ -666,67 +693,69 @@ var UI_Datagrid =
 		
 		this.UpdateColumns();
 		
-		if(this.IsApplyToAll()) {
-			for(var i=0; i<this.instances.length; i++) {
-				var instance = this.instances[i];
-				if(instance.id != this.id) {
-					instance.ApplySettings(this.maxColumnsShown, this.columnOffset);
-				}
+		if(!this.IsApplyToAll()) {
+			return;
+		}
+
+		for(let i=0; i < UI_Datagrid.instances.length; i++) {
+			let instance = UI_Datagrid.instances[i];
+			if(instance.id !== this.id) {
+				instance.ApplySettings(this.maxColumnsShown, this.columnOffset);
 			}
 		}
-	},
+	}
 	
    /**
     * Determines the maximum navigation offset value for navigating
     * columns.
     *
-    * @return {Integer}
+    * @return {Number}
     */
-	GetMaxColumnOffset:function()
+	GetMaxColumnOffset()
 	{
-		var total = this.CountHideableColumns();
-		var maxOffset = total-this.maxColumnsShown;
+		const total = this.CountHideableColumns();
+		let maxOffset = total - this.maxColumnsShown;
 		if(maxOffset < 0) {
 			maxOffset = 0;
 		}
 		
 		return maxOffset;
-	},
+	}
 	
    /**
-    * Counts the amount of "cell" columns that can be navigated through.
+    * Counts the number of "cell" columns that can be navigated through.
     *
     * @return {Integer}
     */
-	CountHideableColumns:function()
+	CountHideableColumns()
 	{
-		var total = 0;
-		for(var i=0; i<this.columns.length; i++) {
-			var column = this.columns[i];
+		let total = 0;
+		for(let i=0; i<this.columns.length; i++) {
+			let column = this.columns[i];
 			if(column.IsHideable()) {
 				total++;
 			}
 		}
 		
 		return total;
-	},
+	}
 	
-	Handle_IncreaseMaxColumns:function()
+	Handle_IncreaseMaxColumns()
 	{
 		this.maxColumnsShown++;
 		this.Handle_ChangeMaxColumns();
-	},
+	}
 	
-	Handle_DecreaseMaxColumns:function()
+	Handle_DecreaseMaxColumns()
 	{
 		this.maxColumnsShown--;
 		this.Handle_ChangeMaxColumns();
-	},
+	}
 	
-	Handle_ChangeMaxColumns:function()
+	Handle_ChangeMaxColumns()
 	{
-		var el = this.GetFormElement('f_maxcols');
-		var max = this.maxColumnsShown;
+		const el = this.GetFormElement('f_maxcols');
+		let max = this.maxColumnsShown;
 		if(max < 1) {
 			max = 1;
 		}
@@ -742,64 +771,64 @@ var UI_Datagrid =
 		this.UpdateColumns();
 		
 		// if the user selected the option to apply the settings to all
-		// datagrids present in the page, we go through the instances 
+		// datagrids present in the page, we go through the instance
 		// collection and tell each to apply these settings.
 		if(this.IsApplyToAll()) {
-			for(var i=0; i<this.instances.length; i++) {
-				var instance = this.instances[i];
-				if(instance.id != this.id) {
+			for(let i=0; i<UI_Datagrid.instances.length; i++) {
+				let instance = UI_Datagrid.instances[i];
+				if(instance.id !== this.id) {
 					instance.ApplySettings(this.maxColumnsShown, this.columnOffset);
 				}
 			}
 		}
-	},
+	}
 	
-	SaveSettings:function()
+	SaveSettings()
 	{
 		this.SetSetting('maxColumnsShown', this.maxColumnsShown);
 		this.SetSetting('columnOffset', this.columnOffset);
-	},
+	}
 	
-	SetSetting:function(name, value)
+	SetSetting(name, value)
 	{
 		application.setPref('datagrid-'+this.id+'-'+name, value);
-	},
+	}
 	
-	GetSetting:function(name, defaultValue)
+	GetSetting(name, defaultValue)
 	{
 		return application.getPref('datagrid-'+this.id+'-'+name, defaultValue);
-	},
+	}
 	
    /**
-    * Used when the apply to all setting is active, to apply the same
-    * settings to all datagrids in the page.
+    * Used when the "Apply to all" setting is active, to apply the same
+    * settings to all data grids in the page.
     * 
     * @param {Integer} maxColumnsShown
     * @param {Integer} columnOffset
     * @see Handle_ChangeMaxColumns()
     * @see Handle_ChangeColumnOffset()
     */
-	ApplySettings:function(maxColumnsShown, columnOffset)
+	ApplySettings(maxColumnsShown, columnOffset)
 	{
 		this.maxColumnsShown = maxColumnsShown;
 		this.columnOffset = columnOffset;
 		this.Handle_ChangeMaxColumns();
-	},
+	}
 	
    /**
     * Updates the column display according to the current settings:
     * hides and shows columns as needed.
     *
     */
-	UpdateColumns:function()
+	UpdateColumns()
 	{
 		this.log('Updating the visible columns.', 'ui');
 		
 		// the start and end offset of columns to show is determined
 		// by the position the user chose to show.
-		var startOffset = this.columnOffset;
+		let startOffset = this.columnOffset;
 		
-		// the user may change the amount of columns shown when he/she already 
+		// the user may change the number of columns shown when he/she already
 		// navigated to the end of the columns, so we check here if the offset
 		// is still within bounds.
 		if(startOffset > this.GetMaxColumnOffset()) {
@@ -808,14 +837,14 @@ var UI_Datagrid =
 			this.log('Start offset was too high, adjusting to '+this.GetMaxColumnOffset(), 'ui');
 		}
 		
-		var endOffset = startOffset+this.maxColumnsShown;
+		let endOffset = startOffset+this.maxColumnsShown;
 		
-		var position = 0;
-		for(var i=0; i<this.columns.length; i++) {
-			var column = this.columns[i];
+		let position = 0;
+		for(let i=0; i<this.columns.length; i++) {
+			let column = this.columns[i];
 			
 			// only columns with the "cell" role are considered hideable.
-			// this is because we don't want to hide action columns, for ex.
+			// this is because we don't want to hide action columns for ex.
 			if(!column.IsHideable()) {
 				continue;
 			}
@@ -842,14 +871,14 @@ var UI_Datagrid =
 			this.GetFormElement('next').removeClass('disabled');
 		}
 		
-		if(this.columnOffset == 0) {
+		if(this.columnOffset === 0) {
 			this.GetFormElement('previous').addClass('disabled');
 		} else {
 			this.GetFormElement('previous').removeClass('disabled');
 		}
-		
-		var hiddenCount = this.CountHiddenColumns();
-		if(hiddenCount == 1) {
+
+		const hiddenCount = this.CountHiddenColumns();
+		if(hiddenCount === 1) {
 			this.GetFormElement('hint').show();
 			this.GetFormElement('hint_amount').text(t('1 column is hidden.'));
 		} else if(hiddenCount > 1) {
@@ -859,33 +888,33 @@ var UI_Datagrid =
 			this.GetFormElement('hint').hide();
 		}
 		
-		if(this.maxColumnsShown==this.CountHideableColumns()) {
+		if(this.maxColumnsShown === this.CountHideableColumns()) {
 			this.GetFormElement('plus').addClass('disabled');
 		} else {
 			this.GetFormElement('plus').removeClass('disabled');
 		}
 		
-		if(this.maxColumnsShown==1) {
+		if(this.maxColumnsShown === 1) {
 			this.GetFormElement('minus').addClass('disabled');
 		} else {
 			this.GetFormElement('minus').removeClass('disabled');
 		}
 
 		this.SaveSettings();
-	},
+	}
 	
-	CountHiddenColumns:function()
+	CountHiddenColumns()
 	{
-		var hidden = 0;
-		for(var i=0; i<this.columns.length; i++) {
-			var column = this.columns[i];
+		let hidden = 0;
+		for(let i=0; i<this.columns.length; i++) {
+			let column = this.columns[i];
 			if(column.IsHidden()) {
 				hidden++;
 			}
 		}
 		
 		return hidden;
-	},
+	}
 	
    /**
     * Adds/registers a column with the data grid. This is done 
@@ -893,14 +922,14 @@ var UI_Datagrid =
     * are available.
     *
     * @param {String} key The name of the data key holding the values
-    * @param {String} [title=''] The title of the column 
-    * @param {String} [id] The unique ID of the column
+    * @param {String} [title=''] The title of the column
+    * @param {String|Number} [id] The unique ID of the column
     * @param {String} [type='Regular'] The column type, e.g. "Regular" or "MultiSelect"
     * @param {Integer} [number] The column index, starting at 1
     * @param {String} [role='cell'] The column's role, e.g. "cell", "actions", etc.
     * @return {UI_Datagrid_Column}
     */
-	AddColumn:function(key, title, id, type, number, role)
+	AddColumn(key, title, id, type, number, role)
 	{
 		if(isEmpty(id)) { id = nextJSID(); }
 		if(isEmpty(type)) { type = 'Regular'; }
@@ -908,53 +937,78 @@ var UI_Datagrid =
 		if(isEmpty(number)) { number = this.entries.length; }
 		if(isEmpty(title)) { title = ''; }
 		
-		var column = new UI_Datagrid_Column(this, key, title, id, type, number*1, role);
+		const column = new UI_Datagrid_Column(
+			this,
+			key,
+			title,
+			String(id),
+			type,
+			number*1,
+			role
+		);
+
 		this.columns.push(column);
+
 		return column;
-	},
+	}
 	
    /**
     * Retrieves an indexed array containing all columns in
     * the grid, ordered in the order they are shown in the UI.
     * 
-    * @return {Array}
+    * @return {UI_Datagrid_Column[]}
     */
-	GetColumns:function()
+	GetColumns()
 	{
 		return this.columns;
-	},
-	
-	GetColumnByName:function()
+	}
+
+	/**
+	 * @return {UI_Datagrid_Column|null}
+	 */
+	GetColumnByName()
 	{
-		var found = null;
-		$.each(this.columns, function(idx, column) {
-			if(column.GetName() == name) {
+		let found = null;
+		$.each(
+			this.columns,
+			/**
+			 * @param {Number} idx
+			 * @param {UI_Datagrid_Column} column
+			 * @return {boolean}
+			 */
+			function(idx, column) {
+			if(column.GetName() === name) {
 				found = column;
 				return false;
 			}
 		});
 		
 		return found;
-	},
-	
-	SetTitle:function(title)
+	}
+
+	/**
+	 * @param {String} title
+	 * @return {this}
+	 */
+	SetTitle(title)
 	{
 		this.title = title;
-	},
+		return this;
+	}
 
 	/**
-	 * @param Event e
+	 * @param {Event} e
 	 * @returns {boolean}
 	 */
-	Handle_Submit:function(e)
+	Handle_Submit(e)
 	{
 		return true;
-	},
+	}
 
 	/**
-	 * @param Event e
+	 * @param {Event} e
 	 */
-	CheckJumpToCustom:function (e)
+	CheckJumpToCustom (e)
 	{
 		if(e.keyCode !== KeyCodes.Enter) {
 			return true;
@@ -965,7 +1019,7 @@ var UI_Datagrid =
 		this.JumpToCustomPage();
 
 		return false;
-	},
+	}
 
    /**
     * When the advanced page navigation is shown, the user can enter a
@@ -973,9 +1027,9 @@ var UI_Datagrid =
     * to the target page.
     * 
     */
-	JumpToCustomPage:function()
+	JumpToCustomPage()
 	{
-		var pageNr = this.GetFormElement('custompage').val();
+		let pageNr = this.GetFormElement('custompage').val();
 		if(pageNr <= 0) {
 			pageNr = 1;
 		}
@@ -985,19 +1039,18 @@ var UI_Datagrid =
 		}
 		
 		application.redirect(this.BaseURL.replace('_PGNR_', pageNr));
-	},
+	}
 	
    /**
     * Tells the data grid that its entries (rows) should be sortable.
     * This is called automatically serverside.
     *  
-    * @param {Object} handlerObj The object that will handle sorting events. Must extend the UI_DataGrid_Sortable class.
+    * @param {UI_DataGrid_Sortable|*} handlerObj The object that will handle sorting events. Must extend the UI_DataGrid_Sortable class.
     * @return boolean Whether the feature could be activated
     */
-	MakeSortable:function(handlerObj)
+	MakeSortable(handlerObj)
 	{
-		var valid = handlerObj instanceof UI_DataGrid_Sortable;
-		if(!valid) {
+		if(!handlerObj instanceof UI_DataGrid_Sortable) {
 			this.log('Cannot make the entries sortable: Specified handler is not an instance of UI_DataGrid_Sortable.', 'error');
 			return false;
 		}
@@ -1008,12 +1061,15 @@ var UI_Datagrid =
 		this.sortHandler = handlerObj;
 		
 		return true;
-	},
-	
-	MakeDroppable:function(handlerObj)
+	}
+
+	/**
+	 * @param {UI_DataGrid_Droppable|*} handlerObj
+	 * @return {boolean}
+	 */
+	MakeDroppable(handlerObj)
 	{
-		var valid = handlerObj instanceof UI_DataGrid_Droppable;
-		if(!valid) {
+		if(!handlerObj instanceof UI_DataGrid_Droppable) {
 			this.log('Cannot make the entries droppable: Specified handler is not an instance of UI_DataGrid_Droppable.', 'error');
 			return false;
 		}
@@ -1024,69 +1080,71 @@ var UI_Datagrid =
 		this.dropHandler = handlerObj;
 		
 		return true;
-	},
+	}
 	
-	GetPrimaryName:function()
+	GetPrimaryName()
 	{
 		return this.PrimaryName;
-	},
+	}
 
-	GetDropHandler:function()
+	GetDropHandler()
 	{
 		return this.dropHandler;
-	},
+	}
 	
    /**
-    * Retrieves the entries sorting handler object, as
-    * set with the {@link MakeSortable()} method. 
+    * Retrieves the entries sorting a handler object, as
+    * specified with the {@link MakeSortable()} method.
     * 
-    * @return {UI_DataGrid_Sortable}
+    * @return {UI_DataGrid_Sortable|null}
     */
-	GetSortHandler:function()
+	GetSortHandler()
 	{
 		return this.sortHandler;
-	},
+	}
 	
    /**
     * Whether the entries of the grid are sortable.
     * @return boolean
     */
-	IsEntriesSortable:function()
+	IsEntriesSortable()
 	{
 		return this.entriesSortable;
-	},
+	}
 	
-	IsEntriesDroppable:function()
+	IsEntriesDroppable()
 	{
 		return this.entriesDroppable;
-	},
+	}
 	
-	StartSortableEntries:function()
+	StartSortableEntries()
 	{
-		var conf = new UI_DataGrid_Sortable_Configuration(this);
-		
-		this.GetBodyElement().sortable(conf);
-	},
+		this.GetBodyElement().sortable(new UI_DataGrid_Sortable_Configuration(this));
+	}
 	
-	StartDroppableEntries:function()
+	StartDroppableEntries()
 	{
-		var conf = new UI_DataGrid_Droppable_Configuration(this);
-		
+		const conf = new UI_DataGrid_Droppable_Configuration(this);
+
 		this.GetBodyElement().droppable(conf);
+
 		$('#'+this.GetFormID('dropper')).droppable(conf);
-	},
-	
-	GetBodyElement:function()
+	}
+
+	/**
+	 * @return {jQuery|HTMLElement}
+	 */
+	GetBodyElement()
 	{
 		return $(this.GetBodySelector());
-	},
+	}
 	
-	GetBodySelector:function()
+	GetBodySelector()
 	{
 		return '#'+this.GetFormID('table') + ' TBODY';
-	},
+	}
 	
-	ShowTable:function()
+	ShowTable()
 	{
 		if(this.GetBodyElement().children().length > 0) {
 			this.GetFormElement('table').show();
@@ -1097,7 +1155,7 @@ var UI_Datagrid =
 			this.GetFormElement('empty').hide();
 			this.GetFormElement('dropper').show();
 		}
-	},
+	}
 	
    /**
     * Appends an entry at the end of the list. Note that this does
@@ -1105,18 +1163,17 @@ var UI_Datagrid =
     * separately.
     * 
     * @param {Object} cellData The data for all columns in the row. Requires all keys to be set.
-    * @return {UI_DataGrid_Entry}
+    * @return {UI_DataGrid_Entry|false} The created entry, or false if the data was invalid.
     */
-	AppendEntry:function(cellData)
+	AppendEntry(cellData)
 	{
-		var entry = this.CreateNewEntry(cellData);
+		const entry = this.CreateNewEntry(cellData);
 		if(!entry) {
 			return false;
 		}
 		
 		if(this.IsRendered()) {
-			var html = entry.Render();
-			this.GetBodyElement().append(html);
+			this.GetBodyElement().append(entry.Render());
 	
 			// display the table since we may have started from an empty table
 			this.ShowTable();
@@ -1125,20 +1182,20 @@ var UI_Datagrid =
 		this.Handle_EntriesModified();
 		
 		return entry;
-	},
+	}
 	
    /**
     * Removes an existing entry from the grid.
     * 
-    * @param {UI_Datagrid_Entry} targetEntry
+    * @param {UI_DataGrid_Entry} targetEntry
     */
-	RemoveEntry:function(targetEntry)
+	RemoveEntry(targetEntry)
 	{
 		targetEntry.Remove(); // remove the row from the DOM
 		
 		var keep = [];
 		$.each(this.entries, function(idx, entry) {
-			if(entry.GetID() != targetEntry.GetID()) {
+			if(entry.GetID() !== targetEntry.GetID()) {
 				keep.push(entry);
 			}
 		});
@@ -1146,18 +1203,22 @@ var UI_Datagrid =
 		this.entries = keep;
 
 		this.Handle_EntriesModified();
-	},
-	
-	PrependEntry:function(cellData)
+	}
+
+	/**
+	 *
+	 * @param {object} cellData
+	 * @return {UI_DataGrid_Entry|false} The created entry, or false if the data was invalid.
+	 */
+	PrependEntry(cellData)
 	{
-		var entry = this.CreateNewEntry(cellData);
-		if(!entry) {
+		const entry = this.CreateNewEntry(cellData);
+		if(!entry instanceof UI_DataGrid_Entry) {
 			return false;
 		}
 		
 		if(this.IsRendered()) {
-			var html = entry.Render();
-			this.GetBodyElement().prepend(html);
+			this.GetBodyElement().prepend(entry.Render());
 	
 			// display the table since we may have started from an empty table
 			this.ShowTable();
@@ -1166,20 +1227,24 @@ var UI_Datagrid =
 		this.Handle_EntriesModified();
 		
 		return entry;
-	},
-	
-	InsertEntryBefore:function(primary, cellData)
+	}
+
+	/**
+	 * @param {Number|String} primary
+	 * @param {Object} cellData
+	 * @return {UI_DataGrid_Entry|false} The created entry, or false if the data was invalid.
+	 */
+	InsertEntryBefore(primary, cellData)
 	{
-		var entry = this.CreateNewEntry(cellData);
-		if(!entry) {
+		const entry = this.CreateNewEntry(cellData);
+		if(!entry instanceof UI_DataGrid_Entry) {
 			return false;
 		}
 		
 		if(this.IsRendered()) {
-			var html = entry.Render();
-			
-			var el = $('#'+this.GetFormID('table') + ' tr[data-refid="'+primary+'"]');
-			el.before(html);
+			const el = $('#' + this.GetFormID('table') + ' tr[data-refid="' + primary + '"]');
+
+			el.before(entry.Render());
 	
 			// display the table since we may have started from an empty table
 			this.ShowTable();
@@ -1188,21 +1253,25 @@ var UI_Datagrid =
 		this.Handle_EntriesModified();
 		
 		return entry;
-	},
+	}
 	
-	Handle_EntriesModified:function()
+	Handle_EntriesModified()
 	{
 		this.RefreshCount();
 		this.Sort();
-	},
-	
-	RegisterEntry:function(cellData)
+	}
+
+	/**
+	 * @param {Object} cellData
+	 * @return {UI_DataGrid_Entry}
+	 */
+	RegisterEntry(cellData)
 	{
-		var entry = new UI_DataGrid_Entry(this, cellData);
+		const entry = new UI_DataGrid_Entry(this, cellData);
 		this.entries.push(entry);
 		
 		return entry;
-	},
+	}
 	
    /**
     * Creates and adds a new datagrid entry.
@@ -1213,16 +1282,20 @@ var UI_Datagrid =
     * @param {Object} cellData
     * @returns {UI_DataGrid_Entry|false}
     */
-	CreateNewEntry:function(cellData)
+	CreateNewEntry(cellData)
 	{
 		if(!this.ValidateCellData(cellData)) {
 			return false;
 		}
 		
 		return this.RegisterEntry(cellData);
-	},
-	
-	ValidateCellData:function(cellData)
+	}
+
+	/**
+	 * @param {Object} cellData
+	 * @return {boolean}
+	 */
+	ValidateCellData(cellData)
 	{
 		this.log('Validating cell data:', 'data');
 		this.log(cellData, 'data');
@@ -1237,8 +1310,8 @@ var UI_Datagrid =
 		}
 		
 		// and now go through all data columns to check if all values are present
-		var grid = this;
-		var valid = true;
+		const grid = this;
+		let valid = true;
 		$.each(this.columns, function(idx, column) {
 			if(!column.IsCell()) {
 				return;
@@ -1251,100 +1324,113 @@ var UI_Datagrid =
 		});
 		
 		return valid;
-	},
-	
-	GetEntry:function(primaryValue)
+	}
+
+	/**
+	 *
+	 * @param {Number|String} primaryValue
+	 * @return {UI_DataGrid_Entry|null}
+	 */
+	GetEntry(primaryValue)
 	{
-		for(var i=0; i<this.entries.length; i++) {
-			var entry = this.entries[i];
-			if(entry.GetPrimary()==primaryValue) {
+		for(let i=0; i < this.entries.length; i++) {
+			let entry = this.entries[i];
+			if(String(entry.GetPrimary()) === String(primaryValue)) {
 				return entry;
 			}
 		}
 		
 		return null;
-	},
+	}
 	
    /**
     * Retrieves all entries available in the grid.
     * 
-    * @return {UI_Datagrid_Entry[]}
+    * @return {UI_DataGrid_Entry[]}
     */
-	GetEntries:function()
+	GetEntries()
 	{
 		return this.entries;
-	},
+	}
 	
    /**
     * Sets the name of the primary key in the data sets.
     * @param {String} name
-    * @returns {UI_Datagrid}
+    * @returns {this}
     */
-	SetPrimaryName:function(name)
+	SetPrimaryName(name)
 	{
 		this.PrimaryName = name;
 		return this;
-	},
+	}
 	
    /**
     * Checks whether the datagrid has a primary key set.
     * @returns {Boolean}
     */
-	HasPrimary:function()
+	HasPrimary()
 	{
-		if(this.PrimaryName!=null) {
-			return true;
-		}
-		
-		return false;
-	},
-	
-	GetSelectedEntries:function()
+		return this.PrimaryName != null;
+	}
+
+	/**
+	 * @return {UI_DataGrid_Entry[]}
+	 */
+	GetSelectedEntries()
 	{
-		var grid = this;
-		var entries = [];
-		var checkboxes = $('#'+this.GetFormID('table')+' input[name="datagrid_items[]"]:checked');
+		const grid = this;
+		const entries = [];
+		const checkboxes = $('#' + this.GetFormID('table') + ' input[name="datagrid_items[]"]:checked');
+
 		$.each(checkboxes, function(idx, checkbox) {
-			var entry = grid.GetEntry($(checkbox).attr('value'));
+			let entry = grid.GetEntry($(checkbox).attr('value'));
 			if(entry != null) {
 				entries.push(entry);
 			}
 		});
 		
 		return entries;
-	},
+	}
 	
    /**
     * Retrieves the primary keys of all currently selected list entries.
     * 
-    * @return string[]
+    * @return {String[]}
     */
-	GetSelectedPrimaries:function()
+	GetSelectedPrimaries()
 	{
-		var entries = this.GetSelectedEntries();
-		var ids = [];
+		const entries = this.GetSelectedEntries();
+		const ids = [];
+
 		$.each(entries, function(idx, entry) {
-			ids.push(entry.GetPrimary());
+			ids.push(String(entry.GetPrimary()));
 		});
 		
 		return ids;
-	},
-	
-	SetOrderBy:function(columnName, orderDir)
+	}
+
+	/**
+	 * @param {String} columnName
+	 * @param {String} orderDir
+	 * @return {this}
+	 */
+	SetOrderBy(columnName, orderDir)
 	{
 		this.GetFormElement('orderby').val(columnName);
 		this.GetFormElement('orderdir').val(orderDir);
 		this.GetFormElement().submit();
-	},
+
+		return this;
+	}
 	
-	log:function(message, category)
+	log(message, category)
 	{
 		application.log(
 			'DataGrid ['+this.id+']',
 			message,
 			category
 		);
-	},
+	}
 	
    /**
     * Renders the datagrid to HTML. Note that this is only
@@ -1353,9 +1439,9 @@ var UI_Datagrid =
     * 
     * @return {String}
     */
-	_Render:function()
+	_Render()
 	{
-		if(this.columns.length == 0) {
+		if(this.columns.length === 0) {
 			application.log('DataGrid', 'No columns added', 'error');
 			return '';
 		}
@@ -1364,7 +1450,7 @@ var UI_Datagrid =
 		this.SetStyle('display', 'table');
 		this.SetAttribute('id', 'datagrid-'+this.id+'-table');
 		
-		var html = ''+
+		let html = ''+
 		'<div class="datagrid" id="datagrid-'+this.id+'-wrapper">'+
 			'<div id="datagrid-'+this.id+'-empty" style="display:none">'+
 				application.renderAlertInfo(UI.Icon().Information() + ' ' + t('No elements found.'), false)+
@@ -1397,44 +1483,44 @@ var UI_Datagrid =
 		'</div>';
 		
 		return html;
-	},
+	}
 	
-	_PostRender:function()
+	_PostRender()
 	{
-		if(this.entries.length == 0) {
+		if(this.entries.length === 0) {
 			$('#datagrid-'+this.id+'-empty').show();
 			$('#datagrid-'+this.id+'-table').hide();
 		} else {
 			$('#datagrid-'+this.id+'-empty').hide();
 			$('#datagrid-'+this.id+'-table').show();
 		}
-	},
+	}
 	
-	EnableCompactMode:function()
+	EnableCompactMode()
 	{
 		return this.AddClass('table-condensed');
-	},
+	}
 	
-	EnableHover:function()
+	EnableHover()
 	{
 		return this.AddClass('table-hover');
-	},
+	}
 	
    /**
     * @protected
     */
-	_GetTypeName:function()
+	_GetTypeName()
 	{
 		return 'DataGrid';
-	},
+	}
 	
    /**
     * @protected
     */
-	Handle_RowClicked:function(entry, column)
+	Handle_RowClicked(entry, column)
 	{
 		return this.TriggerEvent('RowClicked', entry, column);
-	},
+	}
 	
    /**
     * Adds an event handling function for the RowClicked event:
@@ -1454,53 +1540,12 @@ var UI_Datagrid =
     * @param {Function} handler
     * @return {UI_Datagrid}
     */
-	RowClicked:function(handler)
+	RowClicked(handler)
 	{
 		return this.AddEventHandler('RowClicked', handler);
-	},
+	}
 	
-   /**
-    * @protected
-    */
-	AddEventHandler:function(eventName, handler)
-	{
-		if(typeof(this.eventHandlers[eventName]) == 'undefined') {
-			this.eventHandlers[eventName] = [];
-		}
-		
-		this.eventHandlers[eventName].push(handler);
-		return this;
-	},
-	
-   /**
-    * Checks whether the grid has an event handler set for the specified type.
-    * 
-    * @protected 
-    * @param {String} name
-    * @returns {Boolean}
-    */
-	HasEventHandler:function(eventName)
-	{
-		return typeof(this.eventHandlers[eventName]) != 'undefined';
-	},
-	
-	TriggerEvent:function()
-	{
-		var eventName = arguments[0];
-		if(typeof(this.eventHandlers[eventName]) == 'undefined') {
-			return;
-		}
-		
-		var args = Array.prototype.slice.call(arguments);
-		args.shift(); // remove the event name
-		
-		var grid = this;
-		$.each(this.eventHandlers[eventName], function(idx, handler) {
-			handler.apply(grid, args);
-		}); 
-	},
-	
-	DialogActionNotSelectAllEnabled:function()
+	DialogActionNotSelectAllEnabled()
 	{
 		application.dialogMessage(
 			application.renderAlertInfo(
@@ -1513,7 +1558,7 @@ var UI_Datagrid =
 				t('The upper limit for this operation is the maximum items per page you can choose for the list.')+
 			'</p>'
 		);
-	},
+	}
 	
    /**
     * Triggers the grid's clientside sorting, or sets a callback 
@@ -1522,22 +1567,22 @@ var UI_Datagrid =
     * Note: This only works with clientside grids.
     * 
     * @param {Function} handler
-    * @return {UI_DataGrid}
+    * @return {this}
     */
-	Sort:function(handler)
+	Sort(handler)
 	{
 		if(!isEmpty(handler)) {
 			return this.AddEventHandler('sort', handler);
 		}
 		
 		if(!this.HasEventHandler('sort')) {
-			return;
+			return this;
 		}
 
 		this.log('Sorting ['+this.entries.length+'] entries');
 		
 		// start by re-ordering the internal entries collection 
-		var entries = this.entries;
+		const entries = this.entries;
 		$.each(this.eventHandlers['sort'], function(idx, handler) {
 			entries.sort(handler);
 		});
@@ -1545,7 +1590,7 @@ var UI_Datagrid =
 		// reorder the table rows
 		if(this.IsRendered()) 
 		{
-			var previous = null;
+			let previous = null;
 			$.each(entries, function(idx, entry) {
 				if(previous != null) {
 					entry.GetRowElement().insertAfter(previous.GetRowElement());
@@ -1556,9 +1601,9 @@ var UI_Datagrid =
 		}
 			
 		return this;
-	},
+	}
 	
-	RequirePrimary:function(operationLabel)
+	RequirePrimary(operationLabel)
 	{
 		if(this.HasPrimary()) {
 			return;
@@ -1569,19 +1614,19 @@ var UI_Datagrid =
 			'A primary key needs to be set for operation ['+operationLabel+'].',
 			this.ERROR_PRIMARY_KEY_NAME_REQUIRED
 		);
-	},
+	}
 	
    /**
     * Retrieves an entry by its DOM row.
     * 
     * @protected
-    * @return {UI_Datagrid_Entry|NULL}
+    * @return {UI_DataGrid_Entry|null}
     */
-	GetEntryByRow:function(row)
+	GetEntryByRow(row)
 	{
 		this.RequirePrimary('Retrieve entry instance by row');
 		
-		var result = null;
+		let result = null;
 		row = $(row);
 		
 		$.each(this.entries, function(idx, entry) {
@@ -1600,16 +1645,14 @@ var UI_Datagrid =
 			'The row element ['+el.attr('id')+'] does not match any entry instance.',
 			this.ERROR_STRAY_ROW_WHILE_SORTING
 		);
-	},
+	}
 	
    /**
-    * Refreshes the amount of entries shown in the footer.
+    * Refreshes the number of entries shown in the footer.
     * @protected
     */
-	RefreshCount:function()
+	RefreshCount()
 	{
 		this.element('entries_count').html(t('%1$s entries total.', this.entries.length));
 	}
-};
-
-UI_Datagrid = Application_RenderableHTML.extend(UI_Datagrid);
+}
