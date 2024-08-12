@@ -1,4 +1,4 @@
-## v5.0.5 - DataGrid Enhancements
+## v5.1.0 - DataGrid Enhancements
 - Clientside: Modernized the renderable classes, converted to ES6.
 - Clientside: Converted `ApplicationException` to ES6. 
 - DataGrid: Modernized the JS class, converted to ES6.
