@@ -198,13 +198,26 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     public function getValueForColumn(UI_DataGrid_Column $column) : string
     {
         $value = $this->getValue($column->getDataKey());
-        
+
+        if(!is_string($value) && is_callable($value)) {
+            $value = $value($this, $column);
+        }
+
+        return $this->var2cellText($value);
+    }
+
+    public function var2cellText($value) : string
+    {
         if($value instanceof DateTime) {
             return ConvertHelper::date2listLabel($value, true, true);
         }
 
-        if(is_callable($value)) {
-            return $value($this, $column);
+        if(is_string($value)) {
+            return $value;
+        }
+
+        if(is_bool($value)) {
+            return bool2string($value);
         }
 
         return (string)$value;
