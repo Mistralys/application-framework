@@ -110,6 +110,6 @@ class TestDriver extends Application_Driver
 
     public function getExtendedVersion() : string
     {
-        return AppFactory::createDevChangelog()->getCurrentVersion()->getVersion();
+        return AppFactory::createDevChangelog()->getCurrentVersion()->getTagVersion();
     }
 }

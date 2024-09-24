@@ -12,7 +12,7 @@ for the driver's `getExtendedVersion()` method:
 ```php
 public function getExtendedVersion() : string
 {
-    return AppFactory::createDevChangelog()->getCurrentVersion()->getVersion();
+    return AppFactory::createDevChangelog()->getCurrentVersion()->getTagVersion();
 }
 ```
 
