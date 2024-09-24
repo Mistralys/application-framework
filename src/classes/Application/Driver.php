@@ -1,9 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Driver} class.
- *
- * @see Application_Driver
  * @package Application
+ * @subpackage Driver
  */
 
 use Application\AppFactory;
@@ -28,7 +26,7 @@ use UI\Page\Navigation\NavConfigurator;
  * {@see Application_Bootstrap_Screen::initDriver()}.
  *
  * @package Application
- * @subpackage Core
+ * @subpackage Driver
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class Application_Driver implements Application_Driver_Interface
@@ -485,8 +483,9 @@ abstract class Application_Driver implements Application_Driver_Interface
 
     public function areaExists(string $name): bool
     {
-        $areas = $this->getAdminAreas();
-        return isset($areas[$name]) || in_array($name, $areas, true);
+        $this->buildAreasIndex();
+
+        return isset($this->areaIndex[$name]) || in_array($name, $this->areaIndex, true);
     }
 
     protected function buildAreasIndex() : void
