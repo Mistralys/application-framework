@@ -11,6 +11,7 @@ namespace Application;
 
 use Application;
 use Application\AppFactory\AppFactoryException;
+use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Media\Collection\MediaCollection;
@@ -227,6 +228,17 @@ class AppFactory
     public static function createSystemMailer() : SystemMailer
     {
         return self::createClassInstance(SystemMailer::class);
+    }
+
+    /**
+     * Creates a new instance of the developer changelog manager.
+     *
+     * @return DevChangelog
+     * @throws AppFactoryException
+     */
+    public static function createDevChangelog() : DevChangelog
+    {
+        return self::createClassInstance(DevChangelog::class);
     }
 
     // endregion
