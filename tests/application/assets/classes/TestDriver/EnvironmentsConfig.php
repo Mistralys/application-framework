@@ -8,6 +8,7 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\BaseEnvironmentsConfig;
 use Application\Environments\Environment;
 use TestDriver\Environments\LocalEnvironment;
+use const TESTS_SYSTEM_EMAIL_RECIPIENTS;
 
 class EnvironmentsConfig extends BaseEnvironmentsConfig
 {
