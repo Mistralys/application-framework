@@ -59,12 +59,6 @@ class TestDriver extends Application_Driver
         return $areas;
     }
 
-    public function areaExists(string $name) : bool
-    {
-        $areas = $this->getAdminAreas();
-        return isset($areas[$name]);
-    }
-
     /**
      * Overridden to check if the test driver is running
      * in unit test mode: In this case, the redirect is
