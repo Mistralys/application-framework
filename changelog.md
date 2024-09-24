@@ -1,3 +1,6 @@
+## v5.1.2 - Driver fix
+- Driver: Added missing implementation for the `areaExists()`.
+
 ## v5.1.1 - DataGrid fix
 - DataGrid: Fixed a PHP error when using a string value that corresponds to a PHP function ([#72](https://github.com/Mistralys/application-framework/issues/72))
 - DataGrid: Callback cell values are now filtered like all other values.
