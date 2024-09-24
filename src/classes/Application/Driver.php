@@ -483,6 +483,12 @@ abstract class Application_Driver implements Application_Driver_Interface
         return $this->areas[$key];
     }
 
+    public function areaExists(string $name): bool
+    {
+        $areas = $this->getAdminAreas();
+        return isset($areas[$name]) || in_array($name, $areas, true);
+    }
+
     protected function buildAreasIndex() : void
     {
         if (isset($this->areaIndex))
