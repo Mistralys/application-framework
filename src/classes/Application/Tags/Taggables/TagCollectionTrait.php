@@ -92,7 +92,7 @@ trait TagCollectionTrait
 
     public function createTagTree(?UI $ui=null) : TreeNode
     {
-        $rootTag = AppFactory::createMedia()->requireRootTag();
+        $rootTag = $this->requireRootTag();
 
         $rootNode = new TreeNode($ui, $rootTag->getLabel());
 
