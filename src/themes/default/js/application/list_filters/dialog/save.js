@@ -12,7 +12,7 @@ var Application_ListFilters_Dialog_Save =
 	_RenderAbstract:function()
 	{
 		return ''+ 
-		t('This will save the current product list filter in your user settings.')+' '+
+		t('This will save the current list filters in your user settings.')+' '+
 		t('You will be able to load it again anytime you like.')+' '+
 		t('Note:')+' '+t('To replace an existing filter, simply give it the same name.');
 	},
