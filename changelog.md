@@ -3,6 +3,7 @@
 - Driver: Made the use of the `dev-changelog.md` file official.
 - Driver: Added the helper class `DevChangelog` to parse the developer changelog file.
 - Driver: The `version` file can now optionally be automatically generated.
+- Tagging: Fixed a hardcoded media collection reference in the tag collection trait. 
 
 ### Update guide
 
