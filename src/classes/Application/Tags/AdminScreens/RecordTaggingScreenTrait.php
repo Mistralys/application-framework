@@ -165,7 +165,20 @@ trait RecordTaggingScreenTrait
             (string)$record->getTagRecordPrimaryValue()
         );
 
+        $this->_handleHiddenFormVars();
+
         $this->injectTagTree();
+    }
+
+    /**
+     * Overridable method to allow the screen to add any hidden
+     * form variables that may be required.
+     *
+     * @return void
+     */
+    protected function _handleHiddenFormVars() : void
+    {
+
     }
 
     public function getTagManager() : Taggable
