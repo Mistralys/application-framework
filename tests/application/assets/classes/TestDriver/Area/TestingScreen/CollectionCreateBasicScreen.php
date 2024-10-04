@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use TestDriver\Admin\TestingScreenInterface;
+use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
@@ -33,14 +35,13 @@ use TestDriver\TestDBRecords\TestDBRecord;
  * @package TestDriver
  * @subpackage Testing
  */
-class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_CollectionCreate
+class CollectionCreateBasicScreen
+    extends Application_Admin_Area_Mode_CollectionCreate
+    implements TestingScreenInterface
 {
-    public const URL_NAME = 'collection-create-basic';
+    use TestingScreenTrait;
 
-    public function getURLName(): string
-    {
-        return self::URL_NAME;
-    }
+    public const URL_NAME = 'collection-create-basic';
 
     public function createCollection() : TestDBCollection
     {
@@ -55,21 +56,6 @@ class CollectionCreateBasicScreen extends Application_Admin_Area_Mode_Collection
     public function getBackOrCancelURL(): string
     {
         return $this->getURL();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->isDeveloper();
-    }
-
-    public function getNavigationTitle(): string
-    {
-        return self::getTestLabel();
-    }
-
-    public function getTitle(): string
-    {
-        return self::getTestLabel();
     }
 
     public static function getTestLabel() : string
