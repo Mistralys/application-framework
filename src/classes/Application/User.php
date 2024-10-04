@@ -8,6 +8,7 @@
  */
 
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaRightsInterface;
 use Application\Media\MediaRightsTrait;
 use Application\NewsCentral\NewsRightsInterface;
@@ -682,7 +683,7 @@ abstract class Application_User
         return $this;
     }
 
-    public function handleScreenAccessed(Application_Admin_ScreenInterface $screen)
+    public function handleScreenAccessed(AdminScreenInterface $screen)
     {
         $this->getScreenTracker()->handleScreenAccessed($screen);
         return $this;
@@ -908,7 +909,7 @@ abstract class Application_User
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Settings::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Settings::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

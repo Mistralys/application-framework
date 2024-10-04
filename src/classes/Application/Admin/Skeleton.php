@@ -8,6 +8,7 @@
  */
 
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
@@ -30,13 +31,13 @@ use UI\AdminURLs\AdminURLInterface;
  * @see Application_Admin_Area_Mode_Submode
  * @see Application_Admin_Area_Mode_Submode_Action
  *
- * @see Application_Admin_ScreenInterface
+ * @see AdminScreenInterface
  * @see Application_Traits_Admin_Screen
  */
 abstract class Application_Admin_Skeleton
     extends Application_Formable
     implements
-    Application_Admin_ScreenInterface,
+    AdminScreenInterface,
     Application_Interfaces_Admin_LockableScreen
 {
     use Application_Traits_Loggable;
@@ -59,7 +60,7 @@ abstract class Application_Admin_Skeleton
     protected UI_Page_Breadcrumb $breadcrumb;
     protected Application_Session $session;
     protected ?Application_LockManager $lockManager = null;
-    protected ?Application_Admin_ScreenInterface $parentScreen = null;
+    protected ?AdminScreenInterface $parentScreen = null;
     protected static bool $simulationStarted = false;
 
     protected ?UI_Page_Help $help = null;
@@ -77,14 +78,14 @@ abstract class Application_Admin_Skeleton
     */
     protected bool $adminMode = true;
     
-    public function __construct(Application_Driver $driver, ?Application_Admin_ScreenInterface $parent=null)
+    public function __construct(Application_Driver $driver, ?AdminScreenInterface $parent=null)
     {
         $this->driver = $driver;
         $this->user = $this->driver->getUser();
         $this->request = $this->driver->getRequest();
         $this->session = Application::getSession();
         $this->parentScreen = $parent;
-        
+
         if($this->adminMode) {
             $this->startUI();
             $this->startSimulation();
@@ -929,7 +930,7 @@ abstract class Application_Admin_Skeleton
         return $grid;
     }
     
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         return $this->driver->getActiveScreen();
     }

@@ -1,5 +1,6 @@
 <?php
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\AttributeCollection;
 use UI\Page\Navigation\LinkItemBase;
 
@@ -21,7 +22,7 @@ class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
     {
         parent::__construct($nav, $id);
 
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = $targetPageID;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = $targetPageID;
 
         $this->page = $page;
         $this->params = $params;
@@ -101,7 +102,7 @@ class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
         return $id.'-'.self::$ids[$id];
     }
     
-    public function getAdminScreen() : ?Application_Admin_ScreenInterface
+    public function getAdminScreen() : ?AdminScreenInterface
     {
         return Application_Driver::getInstance()
             ->getScreenByPath($this->getURLPath());
@@ -109,19 +110,19 @@ class UI_Page_Navigation_Item_InternalLink extends LinkItemBase
     
     public function getURLPath() : string
     {
-        $tokens = array($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]);
+        $tokens = array($this->params[AdminScreenInterface::REQUEST_PARAM_PAGE]);
 
-        if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE]))
+        if(isset($this->params[AdminScreenInterface::REQUEST_PARAM_MODE]))
         {
-            $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE];
+            $tokens[] = $this->params[AdminScreenInterface::REQUEST_PARAM_MODE];
 
-            if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE]))
+            if(isset($this->params[AdminScreenInterface::REQUEST_PARAM_SUBMODE]))
             {
-                $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE];
+                $tokens[] = $this->params[AdminScreenInterface::REQUEST_PARAM_SUBMODE];
 
-                if(isset($this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION]))
+                if(isset($this->params[AdminScreenInterface::REQUEST_PARAM_ACTION]))
                 {
-                    $tokens[] = $this->params[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION];
+                    $tokens[] = $this->params[AdminScreenInterface::REQUEST_PARAM_ACTION];
                 }
             }
         }

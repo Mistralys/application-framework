@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Admin\Screens\Events;
 
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_EventHandler_EventableEvent;
 
 /**
@@ -19,8 +19,8 @@ use Application_EventHandler_EventableEvent;
  */
 abstract class BaseScreenEvent extends Application_EventHandler_EventableEvent
 {
-    public function getScreen() : Application_Admin_ScreenInterface
+    public function getScreen() : AdminScreenInterface
     {
-        return $this->getArgumentObject(0, Application_Admin_ScreenInterface::class);
+        return $this->getArgumentObject(0, AdminScreenInterface::class);
     }
 }

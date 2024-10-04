@@ -10,8 +10,7 @@ namespace Application\Tags;
 
 use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
-use Application_Admin_ScreenInterface;
-use Application\Exception\DisposableDisposedException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Formable;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
@@ -183,7 +182,7 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseTagsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseTagsScreen::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);
@@ -191,14 +190,14 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseTagListScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseTagListScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateTagScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateTagScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

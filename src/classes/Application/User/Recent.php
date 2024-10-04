@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ConvertHelper;
 
 /**
@@ -179,14 +180,14 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Welcome::URL_NAME_WELCOME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Welcome::URL_NAME_WELCOME;
 
         return Application_Driver::getInstance()->getRequest()->buildURL($params);
     }
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Welcome_Settings::URL_NAME_SETTINGS;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Welcome_Settings::URL_NAME_SETTINGS;
 
         return $this->getAdminURL($params);
     }

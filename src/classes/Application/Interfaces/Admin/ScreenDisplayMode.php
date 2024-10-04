@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * Matching interface for the ScreenDisplayMode trait.
  * 
@@ -18,7 +20,7 @@ declare(strict_types=1);
  *
  * @see Application_Traits_Admin_ScreenDisplayMode
  */
-interface Application_Interfaces_Admin_ScreenDisplayMode extends Application_Admin_ScreenInterface
+interface Application_Interfaces_Admin_ScreenDisplayMode extends AdminScreenInterface
 {
     public function resolveDisplayMode() : string;
     

@@ -1,6 +1,8 @@
 <?php
 
-interface Application_Interfaces_Admin_Wizard_Step extends Application_Admin_ScreenInterface
+use Application\Interfaces\Admin\AdminScreenInterface;
+
+interface Application_Interfaces_Admin_Wizard_Step extends AdminScreenInterface
 {
     /**
      * @param string $name

@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation\QuickNavigation\Items;
 
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Request;
 use UI\Page\Navigation\QuickNavigation;
 use UI\Page\Navigation\QuickNavigation\BaseQuickNavItem;
@@ -52,25 +52,25 @@ class ScreenNavItem extends BaseQuickNavItem
 
     public function setAreaID(string $areaID) : self
     {
-        $this->setParam(Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE, $areaID);
+        $this->setParam(AdminScreenInterface::REQUEST_PARAM_PAGE, $areaID);
         return $this;
     }
 
     public function setModeID(string $modeID) : self
     {
-        $this->setParam(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE, $modeID);
+        $this->setParam(AdminScreenInterface::REQUEST_PARAM_MODE, $modeID);
         return $this;
     }
 
     public function setSubmodeID(string $submodeID) : self
     {
-        $this->setParam(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE, $submodeID);
+        $this->setParam(AdminScreenInterface::REQUEST_PARAM_SUBMODE, $submodeID);
         return $this;
     }
 
     public function setActionID(string $actionID) : self
     {
-        $this->setParam(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION, $actionID);
+        $this->setParam(AdminScreenInterface::REQUEST_PARAM_ACTION, $actionID);
         return $this;
     }
 

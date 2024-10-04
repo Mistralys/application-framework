@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
@@ -291,7 +292,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
         }
         
         return $this->addInternalLink(
-            $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
+            $params[AdminScreenInterface::REQUEST_PARAM_PAGE],
             $title,
             $params
         );
@@ -309,10 +310,10 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     {
         $params = Application_Request::resolveParams($url);
 
-        if(isset($params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]))
+        if(isset($params[AdminScreenInterface::REQUEST_PARAM_PAGE]))
         {
             return $this->addInternalLink(
-                $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE],
+                $params[AdminScreenInterface::REQUEST_PARAM_PAGE],
                 $title,
                 $params
             );

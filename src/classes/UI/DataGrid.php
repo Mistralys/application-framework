@@ -9,6 +9,7 @@
 
 use Application\AppFactory;
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
@@ -58,10 +59,10 @@ class UI_DataGrid implements HiddenVariablesInterface
      * @var string[]
      */
     protected array $persistRequestVars = array(
-        Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_MODE,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION,
+        AdminScreenInterface::REQUEST_PARAM_PAGE,
+        AdminScreenInterface::REQUEST_PARAM_MODE,
+        AdminScreenInterface::REQUEST_PARAM_SUBMODE,
+        AdminScreenInterface::REQUEST_PARAM_ACTION,
         self::REQUEST_PARAM_PERPAGE,
         self::REQUEST_PARAM_PAGE,
         self::REQUEST_PARAM_ORDERBY,
@@ -2562,16 +2563,16 @@ class UI_DataGrid implements HiddenVariablesInterface
      * by setting all required hidden variables to stay on the
      * current page when using the pager.
      *
-     * @param Application_Admin_ScreenInterface $screen
+     * @param AdminScreenInterface $screen
      * @return $this
      * @throws Application_Exception
      */
-    public function configureForScreen(Application_Admin_ScreenInterface $screen) : self
+    public function configureForScreen(AdminScreenInterface $screen) : self
     {
-        $page = Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE;
-        $mode = Application_Admin_ScreenInterface::REQUEST_PARAM_MODE;
-        $submode = Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE;
-        $action = Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION;
+        $page = AdminScreenInterface::REQUEST_PARAM_PAGE;
+        $mode = AdminScreenInterface::REQUEST_PARAM_MODE;
+        $submode = AdminScreenInterface::REQUEST_PARAM_SUBMODE;
+        $action = AdminScreenInterface::REQUEST_PARAM_ACTION;
 
         if($screen instanceof Application_Admin_Area)
         {

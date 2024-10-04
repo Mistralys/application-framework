@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\FileHelper;
 use AppUtils\Microtime;
 
@@ -165,21 +166,21 @@ class Application_RequestLog_LogInfo
         $requestVars = $this->getRequestVars();
         $path = array();
 
-        if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]))
+        if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_PAGE]))
         {
-            $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE];
+            $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_PAGE];
 
-            if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE]))
+            if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_MODE]))
             {
-                $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE];
+                $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_MODE];
 
-                if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE]))
+                if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_SUBMODE]))
                 {
-                    $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE];
+                    $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_SUBMODE];
 
-                    if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION]))
+                    if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_ACTION]))
                     {
-                        $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION];
+                        $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_ACTION];
                     }
                 }
             }

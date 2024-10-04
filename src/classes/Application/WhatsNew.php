@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\WhatsNew\WhatsNewException;
 use Application\WhatsNew\WhatsNewImage;
 use Application\WhatsNew\XMLFileWriter;
@@ -21,7 +22,6 @@ use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_WhatsNewEditor;
 use Application_Admin_Area_Devel_WhatsNewEditor_Create;
 use Application_Admin_Area_Devel_WhatsNewEditor_List;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
 use Application\WhatsNew\AppVersion;
@@ -152,7 +152,7 @@ class WhatsNew
      */
     public function getAdminCreateURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_Create::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_Create::URL_NAME;
 
         return $this->getAdminURL($params);
     }
@@ -163,8 +163,8 @@ class WhatsNew
      */
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Devel_WhatsNewEditor::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Devel_WhatsNewEditor::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()
@@ -177,7 +177,7 @@ class WhatsNew
      */
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_List::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = Application_Admin_Area_Devel_WhatsNewEditor_List::URL_NAME;
 
         return $this->getAdminURL($params);
     }

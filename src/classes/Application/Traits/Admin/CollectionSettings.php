@@ -7,6 +7,8 @@
  * @see Application_Traits_Admin_CollectionSettings
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * Trait for administration screens that are used to
  * edit the settings of a DBHelper record. Handles 
@@ -110,9 +112,9 @@ trait Application_Traits_Admin_CollectionSettings
     
    /**
     * Retrieves the administration screen that can be used to delete the record, if any.
-    * @return Application_Admin_ScreenInterface|NULL
+    * @return AdminScreenInterface|NULL
     */
-    public function getDeleteScreen() : ?Application_Admin_ScreenInterface
+    public function getDeleteScreen() : ?AdminScreenInterface
     {
         $path = $this->getDeletePath();
         
@@ -551,7 +553,7 @@ trait Application_Traits_Admin_CollectionSettings
         $devel->addSubmitButton($this);
     }
     
-    protected function resolveDeleteURL(Application_Admin_ScreenInterface $deleteScreen) : string
+    protected function resolveDeleteURL(AdminScreenInterface $deleteScreen) : string
     {
         $params = $this->collection->getForeignKeys();
         $params[$this->collection->getRecordPrimaryName()] = $this->record->getID();

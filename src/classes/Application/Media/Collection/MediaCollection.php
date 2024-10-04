@@ -6,18 +6,14 @@ namespace Application\Media\Collection;
 
 use Application;
 use Application\Admin\Area\BaseMediaLibraryScreen;
-use Application\Admin\Area\Media\BaseCreateMediaScreen;
-use Application\Admin\Area\Media\BaseImageGalleryScreen;
-use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaAdminURLs;
 use Application\Media\MediaTagConnector;
 use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
-use Application\Tags\Taggables\TagConnector;
 use Application\Tags\TagRecord;
-use Application_Admin_ScreenInterface;
 use Application_Formable;
 use Application_Media;
 use AppUtils\Microtime;
@@ -139,7 +135,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);

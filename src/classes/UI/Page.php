@@ -6,6 +6,7 @@
  * @see UI_page
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -568,10 +569,10 @@ class UI_Page extends UI_Renderable
     /**
      * Retrieves the currently active administration screen.
      *
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      * @throws Application_Exception
      */
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         return $this->driver->getActiveScreen();
     }

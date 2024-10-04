@@ -8,7 +8,7 @@
  */
 
 declare(strict_types=1);
-use Application\AppFactory;use AppUtils\ClassHelper;use UI\Event\PageRendered;use UI\Page\Navigation\QuickNavigation;
+use Application\AppFactory;use Application\Interfaces\Admin\AdminScreenInterface;use AppUtils\ClassHelper;use UI\Event\PageRendered;use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -75,7 +75,7 @@ class template_default_frame extends UI_Page_Template_Custom
     private array $variables;
     
     private Application_Ratings $ratings;
-    private Application_Admin_ScreenInterface $screen;
+    private AdminScreenInterface $screen;
     private ?Application_LockManager $lockManager;
     
     protected function preRender() : void

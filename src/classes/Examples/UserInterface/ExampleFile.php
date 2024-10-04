@@ -9,16 +9,15 @@ declare(strict_types=1);
 namespace Mistralys\Examples\UserInterface;
 
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_Appinterface;
-use Application_Admin_ScreenInterface;
 use AppUtils\ArrayDataCollection;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\JSONFile;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 use AppUtils\OutputBuffering;
-use TestDriver\ClassFactory;
 
 /**
  * A single UI example file.
@@ -73,8 +72,8 @@ class ExampleFile implements StringPrimaryRecordInterface
 
     public function getAdminViewURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Devel_Appinterface::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Devel_Appinterface::URL_NAME;
         $params[Application_Admin_Area_Devel_Appinterface::REQUEST_PARAM_EXAMPLE_ID] = $this->getScreenID();
 
         return AppFactory::createRequest()

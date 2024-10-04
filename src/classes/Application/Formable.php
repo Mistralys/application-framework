@@ -6,6 +6,7 @@
  * @see Application_Formable
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -139,7 +140,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
             }
         }
 
-        if($this instanceof Application_Admin_ScreenInterface)
+        if($this instanceof AdminScreenInterface)
         {
             $this->addFormablePageVars();
         }

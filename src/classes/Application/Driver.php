@@ -7,6 +7,7 @@
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
@@ -79,10 +80,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @var array<string,string>
      */
     protected array $screensChain = array(
-        Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE => Application_Admin_Area::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_MODE => Application_Admin_Area_Mode::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE => Application_Admin_Area_Mode_Submode::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION => Application_Admin_Area_Mode_Submode_Action::class
+        AdminScreenInterface::REQUEST_PARAM_PAGE => Application_Admin_Area::class,
+        AdminScreenInterface::REQUEST_PARAM_MODE => Application_Admin_Area_Mode::class,
+        AdminScreenInterface::REQUEST_PARAM_SUBMODE => Application_Admin_Area_Mode_Submode::class,
+        AdminScreenInterface::REQUEST_PARAM_ACTION => Application_Admin_Area_Mode_Submode_Action::class
     );
 
     public function __construct(Application $app)
@@ -1015,10 +1016,10 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves the currently active administration screen instance.
      *
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      * @throws DriverException
      */
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         return $this->getActiveArea()->getActiveScreen();
     }
@@ -1455,11 +1456,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Determines the name of the URL parameter to use for the
      * screen, by checking which screen type it is an instance of.
      *
-     * @param Application_Admin_ScreenInterface $screen
+     * @param AdminScreenInterface $screen
      * @return string
      * @throws DriverException
      */
-    public function resolveURLParam(Application_Admin_ScreenInterface $screen) : string
+    public function resolveURLParam(AdminScreenInterface $screen) : string
     {
         foreach ($this->screensChain as $paramName => $class)
         {
@@ -1484,9 +1485,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves an administration screen instance by its path.
      *
      * @param string $path e.g. "products.edit.settings"
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      */
-    public function getScreenByPath(string $path, bool $adminMode=true) : ?Application_Admin_ScreenInterface
+    public function getScreenByPath(string $path, bool $adminMode=true) : ?AdminScreenInterface
     {
         $tokens = explode('.', $path);
         $screen = $this->createArea(array_shift($tokens));

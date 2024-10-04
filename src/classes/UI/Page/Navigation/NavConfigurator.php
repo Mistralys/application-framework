@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace UI\Page\Navigation;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
-use Application_Exception;
 use UI\Page\Navigation\NavConfigurator\MenuConfigurator;
-use UI_Bootstrap_DropdownAnchor;
 use UI_Page_Navigation;
 use UI_Page_Navigation_Item;
-use UI_Page_Navigation_Item_DropdownMenu;
 
 abstract class NavConfigurator
 {
@@ -96,7 +93,7 @@ abstract class NavConfigurator
         return $this->menus[$label];
     }
 
-    public function getScreenByPath(string $area, ?string $mode=null, ?string $submode=null, ?string $action=null) : ?Application_Admin_ScreenInterface
+    public function getScreenByPath(string $area, ?string $mode=null, ?string $submode=null, ?string $action=null) : ?AdminScreenInterface
     {
         $path = array($area);
 

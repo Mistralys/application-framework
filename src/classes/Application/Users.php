@@ -8,6 +8,7 @@
  */
 
 use Application\Exception\DisposableDisposedException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
 use AppUtils\ClassHelper;
@@ -265,8 +266,8 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

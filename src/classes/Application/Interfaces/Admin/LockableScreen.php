@@ -1,12 +1,10 @@
 <?php
-
 /**
- * File containing the {@see Application_Admin_ScreenInterface} interface.
- *
  * @package Application
  * @subpackage Admin
- * @see Application_Admin_ScreenInterface
  */
+
+use Application\Interfaces\Admin\AdminScreenInterface;
 
 /**
  * Interface for administration screens: defines all methods
@@ -25,7 +23,7 @@
  * @see Application_Traits_Admin_Screen
  * @see Application_Admin_Skeleton
  */
-interface Application_Interfaces_Admin_LockableScreen extends Application_Admin_ScreenInterface
+interface Application_Interfaces_Admin_LockableScreen extends AdminScreenInterface
 {
    /**
     * @return bool

@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Traits\Admin;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\Admin\ScreenAccessInterface;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 
 /**
@@ -27,9 +27,9 @@ use Application_Driver;
  */
 trait ScreenAccessTrait
 {
-    public function getAdminScreen() : Application_Admin_ScreenInterface
+    public function getAdminScreen() : AdminScreenInterface
     {
-        if($this instanceof Application_Admin_ScreenInterface) {
+        if($this instanceof AdminScreenInterface) {
             return $this;
         }
 

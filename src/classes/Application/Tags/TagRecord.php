@@ -11,7 +11,7 @@ namespace Application\Tags;
 use Application\AppFactory;
 use Application\Area\Tags\ViewTag\BaseTagSettingsScreen;
 use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Area\Tags\BaseViewTagScreen;
 use DBHelper_BaseRecord;
 use UI;
@@ -236,7 +236,7 @@ class TagRecord extends DBHelper_BaseRecord
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewTagScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseViewTagScreen::URL_NAME;
         $params[TagCollection::PRIMARY_NAME] = $this->getID();
 
         return $this->collection->getAdminURL($params);
@@ -244,14 +244,14 @@ class TagRecord extends DBHelper_BaseRecord
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagSettingsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagSettingsScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminTagTreeURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagTreeScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseTagTreeScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

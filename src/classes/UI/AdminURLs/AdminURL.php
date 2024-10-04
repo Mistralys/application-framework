@@ -9,10 +9,9 @@ namespace UI\AdminURLs;
 
 use Application;
 use Application\AppFactory;
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
-use AppUtils\Interfaces\RenderableInterface;
 use AppUtils\Traits\RenderableTrait;
 
 /**
@@ -160,7 +159,7 @@ class AdminURL implements AdminURLInterface
      */
     public function area(string $name) : self
     {
-        return $this->string(Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE, $name);
+        return $this->string(AdminScreenInterface::REQUEST_PARAM_PAGE, $name);
     }
 
     /**
@@ -170,7 +169,7 @@ class AdminURL implements AdminURLInterface
      */
     public function mode(string $name) : self
     {
-        return $this->string(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE, $name);
+        return $this->string(AdminScreenInterface::REQUEST_PARAM_MODE, $name);
     }
 
     /**
@@ -180,7 +179,7 @@ class AdminURL implements AdminURLInterface
      */
     public function submode(string $name) : self
     {
-        return $this->string(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE, $name);
+        return $this->string(AdminScreenInterface::REQUEST_PARAM_SUBMODE, $name);
     }
 
     /**
@@ -190,7 +189,7 @@ class AdminURL implements AdminURLInterface
      */
     public function action(string $name) : self
     {
-        return $this->string(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION, $name);
+        return $this->string(AdminScreenInterface::REQUEST_PARAM_ACTION, $name);
     }
 
     /**

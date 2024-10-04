@@ -16,6 +16,7 @@ use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
 use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
 use Application\Admin\Screens\Events\ContentRenderedEvent;
 use Application\Admin\Screens\Events\SidebarHandledEvent;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
@@ -60,7 +61,7 @@ use UI\Page\Navigation\QuickNavigation;
  * @see Application_Admin_Area_Mode_Submode
  * @see Application_Admin_Area_Mode_Submode_Action
  * 
- * @see Application_Admin_ScreenInterface
+ * @see AdminScreenInterface
  * 
  * @property Application_Driver $driver
  */
@@ -83,7 +84,7 @@ trait Application_Traits_Admin_Screen
     
     /**
      * Stores subscreen instances that have been loaded.
-     * @var Application_Admin_ScreenInterface[]
+     * @var AdminScreenInterface[]
      */
     protected array $subscreens = array();
     
@@ -114,7 +115,7 @@ trait Application_Traits_Admin_Screen
 
    /**
     * Caches the screen's parent screens stack.
-    * @var Application_Admin_ScreenInterface[]|NULL
+    * @var AdminScreenInterface[]|NULL
     */
     protected ?array $parentScreens = null;
     
@@ -691,7 +692,7 @@ trait Application_Traits_Admin_Screen
         throw new Application_Admin_Exception(
             'No sidebar available at this time.',
             '',
-            Application_Admin_ScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
+            AdminScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
         );
     }
 
@@ -737,7 +738,7 @@ trait Application_Traits_Admin_Screen
         throw new Application_Admin_Exception(
             'Administration screen has no area.',
             'Path to screen: '.$this->getURLPath(),
-            Application_Admin_ScreenInterface::ERROR_SCREEN_HAS_NO_AREA
+            AdminScreenInterface::ERROR_SCREEN_HAS_NO_AREA
         );
     }
     
@@ -756,7 +757,7 @@ trait Application_Traits_Admin_Screen
     * this screen, with the area at the top. If this is the 
     * area, the array will have only the area.
     * 
-    * @return Application_Admin_ScreenInterface[]
+    * @return AdminScreenInterface[]
     */
     public function getParentScreens()
     {
@@ -896,9 +897,9 @@ trait Application_Traits_Admin_Screen
    /**
     * Retrieves the currently active administration screen.
     * 
-    * @return Application_Admin_ScreenInterface
+    * @return AdminScreenInterface
     */
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         $target = $this->getArea();
         
@@ -959,7 +960,7 @@ trait Application_Traits_Admin_Screen
                 throw new UI_Exception(
                     'Cannot instantiate admin screen.',
                     'An exception occurred when creating the screen.',
-                    Application_Admin_ScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
+                    AdminScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
                     $e
                 );
             }
@@ -1002,7 +1003,7 @@ trait Application_Traits_Admin_Screen
         return !empty($screenID);
     }
     
-    public function getSubscreenByID(string $id, bool $adminMode) : Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode) : AdminScreenInterface
     {
         return $this->createSubscreen($id, $adminMode);
     }
@@ -1010,10 +1011,10 @@ trait Application_Traits_Admin_Screen
     /**
      * @param string $id
      * @param bool $adminMode
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      * @throws Application_Exception
      */
-    protected function createSubscreen(string $id, bool $adminMode) : Application_Admin_ScreenInterface
+    protected function createSubscreen(string $id, bool $adminMode) : AdminScreenInterface
     {
         $screenID = $this->requireValidSubscreenID($id);
         $key = $screenID.'.'.ConvertHelper::boolStrict2string($adminMode);
@@ -1031,7 +1032,7 @@ trait Application_Traits_Admin_Screen
         return $screen;
     }
 
-    protected function createSubscreenInstance(string $screenID, bool $adminMode) : Application_Admin_ScreenInterface
+    protected function createSubscreenInstance(string $screenID, bool $adminMode) : AdminScreenInterface
     {
         $class = ClassHelper::requireResolvedClass(sprintf(
             '%s_%s',
@@ -1046,7 +1047,7 @@ trait Application_Traits_Admin_Screen
         }
 
         $instance = ClassHelper::requireObjectInstanceOf(
-            Application_Admin_ScreenInterface::class,
+            AdminScreenInterface::class,
             new $class($this->driver, $this)
         );
 
@@ -1190,7 +1191,7 @@ trait Application_Traits_Admin_Screen
                     get_class($this),
                     implode(', ', $names)
                 ),
-                Application_Admin_ScreenInterface::ERROR_MISSING_URL_PARAMETER
+                AdminScreenInterface::ERROR_MISSING_URL_PARAMETER
             );
         }
         
@@ -1209,7 +1210,7 @@ trait Application_Traits_Admin_Screen
         return '';
     }
     
-    public function getActiveSubscreen() : ?Application_Admin_ScreenInterface
+    public function getActiveSubscreen() : ?AdminScreenInterface
     {
         $id = $this->getActiveSubscreenID();
         
@@ -1221,7 +1222,7 @@ trait Application_Traits_Admin_Screen
         return null;
     }
 
-    public function getParentScreen() : ?Application_Admin_ScreenInterface
+    public function getParentScreen() : ?AdminScreenInterface
     {
         return $this->parentScreen;
     }

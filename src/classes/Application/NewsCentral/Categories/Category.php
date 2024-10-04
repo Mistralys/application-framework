@@ -6,7 +6,7 @@ namespace Application\NewsCentral\Categories;
 
 use Application\Admin\Area\News\BaseViewCategoryScreen;
 use Application\Admin\Area\News\ViewCategory\BaseCategorySettingsScreen;
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -29,7 +29,7 @@ class Category extends DBHelper_BaseRecord
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewCategoryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseViewCategoryScreen::URL_NAME;
         $params[CategoriesCollection::PRIMARY_NAME] = $this->getID();
 
         return $this->getCollection()->getAdminURL($params);
@@ -37,7 +37,7 @@ class Category extends DBHelper_BaseRecord
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseCategorySettingsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseCategorySettingsScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

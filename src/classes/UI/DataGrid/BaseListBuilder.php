@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace UI\DataGrid;
 
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
 use Application_FilterSettings;
@@ -238,7 +238,7 @@ abstract class BaseListBuilder
     protected ?UI_DataGrid $dataGrid = null;
     protected string $listID;
     protected ?FilterCriteriaInterface $filters = null;
-    protected Application_Admin_ScreenInterface $screen;
+    protected AdminScreenInterface $screen;
     protected bool $debug = false;
     protected bool $advancedMode = false;
 
@@ -253,7 +253,7 @@ abstract class BaseListBuilder
     protected array $hiddenVars = array();
 
 
-    public function __construct(Application_Admin_ScreenInterface $screen, string $listID = '')
+    public function __construct(AdminScreenInterface $screen, string $listID = '')
     {
         $this->screen = $screen;
         $this->ui = $screen->getRenderer()->getUI();

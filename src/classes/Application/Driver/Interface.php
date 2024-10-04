@@ -7,6 +7,8 @@
  * @see Application_Driver_Interface
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * Interface for driver classes.
  * 
@@ -45,11 +47,11 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getActiveArea() : Application_Admin_Area;
 
-    public function getActiveScreen() : Application_Admin_ScreenInterface;
+    public function getActiveScreen() : AdminScreenInterface;
 
     public function getPage() : ?UI_Page;
 
-    public function getScreenByPath(string $path, bool $adminMode=true) : ?Application_Admin_ScreenInterface;
+    public function getScreenByPath(string $path, bool $adminMode=true) : ?AdminScreenInterface;
 
     /**
      * @return string[]
@@ -142,5 +144,5 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      */
     public function redirectWithSuccessMessage($message, $paramsOrURL = null);
 
-    public function resolveURLParam(Application_Admin_ScreenInterface $screen) : string;
+    public function resolveURLParam(AdminScreenInterface $screen) : string;
 }

@@ -7,6 +7,7 @@
  * @see Application_Admin_Wizard_Step
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\OutputBuffering;
 use UI\Page\Navigation\QuickNavigation;
 use function AppUtils\parseVariable;
@@ -740,7 +741,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->getTitle();
     }
 
-    public function getParentScreen() : ?Application_Admin_ScreenInterface
+    public function getParentScreen() : ?AdminScreenInterface
     {
         return $this->wizard;
     }
@@ -762,11 +763,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function handleHelp(UI_Page_Help $help) : void {}
 
     public function getActiveSubscreenID(): ?string { return null; }
-    public function getActiveSubscreen(): ?Application_Admin_ScreenInterface {return null;}
+    public function getActiveSubscreen(): ?AdminScreenInterface {return null;}
     public function hasSubscreen(string $id): bool { return false; }
     public function getSubscreenIDs(): array { return array(); }
     public function hasSubscreens(): bool { return false; }
-    public function getSubscreenByID(string $id, bool $adminMode): Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode): AdminScreenInterface
     {
         throw new Application_Exception(
             'Wizard steps have no subscreens.',

@@ -6,8 +6,8 @@ namespace Application;
 
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Devel;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
 use Application_Interfaces_Loggable;
@@ -192,8 +192,8 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
 
     public function getAdminURLHistory(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseDeploymentHistoryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseDeploymentHistoryScreen::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

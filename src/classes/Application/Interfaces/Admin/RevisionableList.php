@@ -1,10 +1,12 @@
 <?php
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * 
  * @see Application_Traits_Admin_RevisionableList
  */
-interface Application_Interfaces_Admin_RevisionableList extends Application_Admin_ScreenInterface
+interface Application_Interfaces_Admin_RevisionableList extends AdminScreenInterface
 {
    /**
     * @return string

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Mode;
-use Application_Admin_ScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper;
 use TestDriver\Admin\TestingScreenInterface;
@@ -82,8 +82,8 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
 
     protected function getTestURL(string $testURLName, array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = TestingScreen::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = $testURLName;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = TestingScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = $testURLName;
 
         return ClassFactory::createRequest()->buildURL($params);
     }

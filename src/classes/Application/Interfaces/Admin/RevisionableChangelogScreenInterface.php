@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Application\Interfaces\Admin;
 
 use Application\Traits\Admin\RevisionableChangelogScreenTrait;
-use Application_Admin_ScreenInterface;
 
 /**
  * @package Application
@@ -17,7 +16,7 @@ use Application_Admin_ScreenInterface;
  *
  * @see RevisionableChangelogScreenTrait
  */
-interface RevisionableChangelogScreenInterface extends Application_Admin_ScreenInterface
+interface RevisionableChangelogScreenInterface extends AdminScreenInterface
 {
     public const REVISIONABLE_CHANGELOG_ERROR_NOT_A_VALID_REVISIONABLE = 630001;
     public const COL_TYPE = 'type';

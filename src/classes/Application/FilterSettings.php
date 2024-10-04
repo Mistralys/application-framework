@@ -13,6 +13,7 @@ use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\FilterSettings\SettingDef;
 use Application\FilterSettingsInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Traits\HiddenVariablesTrait;
 use AppUtils\ClassHelper;
@@ -504,10 +505,10 @@ abstract class Application_FilterSettings
         $this->form->addClass('filter-form');
         
         $autoAddVars = array(
-            Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_MODE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION
+            AdminScreenInterface::REQUEST_PARAM_PAGE,
+            AdminScreenInterface::REQUEST_PARAM_MODE,
+            AdminScreenInterface::REQUEST_PARAM_SUBMODE,
+            AdminScreenInterface::REQUEST_PARAM_ACTION
         );
         
         foreach($autoAddVars as $varName) {

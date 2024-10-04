@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Interfaces\Admin\RequestTypes;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Traits\Admin\RequestTypes\RequestCountryTrait;
-use Application_Admin_ScreenInterface;
 use Application_Countries;
 use Application_Countries_Country;
 
@@ -23,7 +23,7 @@ use Application_Countries_Country;
  *
  * @see RequestCountryTrait
  */
-interface RequestCountryInterface extends Application_Admin_ScreenInterface
+interface RequestCountryInterface extends AdminScreenInterface
 {
     public const ERROR_NO_COUNTRY_SPECIFIED = 114201;
     public const REQUEST_PARAM_COUNTRY_ID = Application_Countries::REQUEST_PARAM_ID;

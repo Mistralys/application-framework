@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Admin;
 
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 
 /**
  * @package Application
@@ -18,13 +18,13 @@ interface ScreenRightsInterface
 {
     /**
      * Fetches the right for a specific admin screen class.
-     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string $screen
      * @return string
      */
     public function getByScreen($screen) : string;
 
     /**
-     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string $screen
      * @return bool
      */
     public function screenExists($screen) : bool;

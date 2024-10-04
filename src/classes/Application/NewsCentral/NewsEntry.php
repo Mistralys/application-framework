@@ -8,23 +8,18 @@ use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\Admin\Area\News\ViewArticle\BaseArticleSettingsScreen;
 use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
-use Application\NewsCentral\Categories\CategoriesCollection;
-use Application\NewsCentral\Categories\Category;
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_User;
 use Application_Users_User;
 use AppLocalize\Localization;
 use AppLocalize\Localization_Locale;
 use DateTime;
-use DBHelper;
 use DBHelper_BaseRecord;
-use League\CommonMark\CommonMarkConverter;
 use NewsCentral\Entries\EntryCategoriesManager;
 use NewsCentral\NewsEntryStatus;
 use NewsCentral\NewsEntryType;
 use UI;
 use UI_Badge;
-use function AppUtils\valBoolTrue;
 
 /**
  * @property NewsCollection $collection
@@ -201,14 +196,14 @@ class NewsEntry extends DBHelper_BaseRecord
 
     public function getAdminStatusURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleStatusScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleStatusScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleSettingsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_SUBMODE] = BaseArticleSettingsScreen::URL_NAME;
 
         return $this->getAdminViewURL($params);
     }
@@ -223,7 +218,7 @@ class NewsEntry extends DBHelper_BaseRecord
     public function getAdminURL(array $params=array()) : string
     {
         $params[NewsCollection::PRIMARY_NAME] = $this->getID();
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseViewArticleScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseViewArticleScreen::URL_NAME;
 
         return $this->collection->getAdminURL($params);
     }
