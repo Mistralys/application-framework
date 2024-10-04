@@ -25,6 +25,7 @@ use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\QuickNavigation;
 use UI_Bootstrap_DropdownMenu;
 use UI_Bootstrap_Tabs;
+use UI_Page_Breadcrumb;
 use UI_Page_Help;
 use UI_Page_Navigation;
 use UI_Page_Sidebar;
@@ -342,6 +343,7 @@ interface AdminScreenInterface
      * @return array<string,string>
      */
     public function getPageParams() : array;
+    public function getBreadcrumb() : UI_Page_Breadcrumb;
 
 
     public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener;
