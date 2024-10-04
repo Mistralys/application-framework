@@ -41,6 +41,7 @@ abstract class Application_Admin_Skeleton
 {
     use Application_Traits_Loggable;
     use ScreenAccessTrait;
+    use Application_Traits_Eventable;
 
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
