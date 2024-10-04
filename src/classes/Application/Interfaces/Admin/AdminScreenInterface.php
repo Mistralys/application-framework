@@ -6,8 +6,17 @@
 
 namespace Application\Interfaces\Admin;
 
+use Application\Admin\Screens\Events\ActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeBreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\BeforeContentRenderedEvent;
+use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
+use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\ContentRenderedEvent;
+use Application\Admin\Screens\Events\SidebarHandledEvent;
 use Application\Interfaces\AllowableInterface;
 use Application_Admin_Area;
+use Application_EventHandler_EventableListener;
 use Application_Interfaces_Eventable;
 use Application_Interfaces_Formable;
 use Application_Interfaces_Loggable;
@@ -333,4 +342,52 @@ interface AdminScreenInterface
      * @return array<string,string>
      */
     public function getPageParams() : array;
+
+
+    public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onSidebarHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onBeforeSidebarHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onBeforeBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener;
+    public function onActionsHandled(callable $listener) : Application_EventHandler_EventableListener;
+
+    /**
+     * Listen to when the screen has finished rendering its content.
+     *
+     * The listener gets one parameter:
+     *
+     * 1. Instance of {@see ContentRenderedEvent}
+     *
+     * NOTE: Use {@see ContentRenderedEvent::hasRenderedContent()} to
+     * check if the screen had any content to render.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener;
+
+    /**
+     * Listen to when the screen is getting ready to render
+     * its content.
+     *
+     * The listener gets one parameter:
+     *
+     * 1. Instance of {@see BeforeContentRenderedEvent}
+     *
+     * This has the possibility to override the screen's
+     * content by calling {@see BeforeContentRenderedEvent::replaceScreenContentWith()}.
+     *
+     * One use case for this is a tie-in class that automatically
+     * displays a selection list of items when a request parameter
+     * is not present.
+     *
+     * Imagine a screen that needs a media document to be specified:
+     * The tie-in can check the request, and display a list of media
+     * documents to choose from if none is specified. This allows the
+     * selection code to not be duplicated across all screens that need it.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener;
 }
