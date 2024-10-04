@@ -758,6 +758,86 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function handleSubnavigation(UI_Page_Navigation $subnav) : void {}
     public function handleQuickNavigation(QuickNavigation $navigation) : void {}
 
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onContentRendered(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeContentRendered(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
     public function isUserAllowed() : bool {return true; }
     public function isArea(): bool { return false; }
     public function handleHelp(UI_Page_Help $help) : void {}
@@ -769,10 +849,19 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function hasSubscreens(): bool { return false; }
     public function getSubscreenByID(string $id, bool $adminMode): AdminScreenInterface
     {
-        throw new Application_Exception(
-            'Wizard steps have no subscreens.',
-            'Cannot get a subscreen by its ID, wizard steps have no subscreens.',
-            self::ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    private function unsupportedWizardStepAction() : void
+    {
+        throw new Application_Admin_WizardException(
+            'Unsupported wizard step action',
+            'Wizard steps do not support actions.',
+            Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION
         );
     }
 
