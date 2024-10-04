@@ -6,6 +6,9 @@ namespace TestDriver\Area\TestingScreen;
 
 use Application_Admin_Area_Mode;
 use Application_Admin_ScreenInterface;
+use AppUtils\ClassHelper;
+use AppUtils\FileHelper;
+use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
 
@@ -43,24 +46,38 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
         $list = $this->ui->createBigSelection()
             ->makeSmall();
 
-        $list->addLink(
-            CollectionCreateBasicScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateBasicScreen::URL_NAME)
-        );
-
-        $list->addLink(
-            CollectionCreateManagerLegacyScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateManagerLegacyScreen::URL_NAME)
-        );
-
-        $list->addLink(
-            CollectionCreateManagerExtendedScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateManagerExtendedScreen::URL_NAME)
-        );
+        foreach($this->getScreenList() as $screenDef) {
+            $list->addLink(
+                $screenDef['label'],
+                $this->getTestURL($screenDef['urlName'])
+            );
+        }
 
         return $this->renderer
             ->appendContent($list)
             ->makeWithoutSidebar();
+    }
+
+    private function getScreenList() : array
+    {
+        $result = array();
+
+        $reference = CancelHandleActionsScreen::class;
+        foreach(FileHelper::createFileFinder(__DIR__)->getPHPClassNames() as $name) {
+            $class = ClassHelper::resolveClassByReference($name, $reference);
+            if(is_a($class, TestingScreenInterface::class, true)) {
+                $result[] = array(
+                    'label' => $class::getTestLabel(),
+                    'urlName' => $class::URL_NAME
+                );
+            }
+        }
+
+        usort($result, static function(array $a, array $b) : int {
+            return strnatcasecmp($a['label'], $b['label']);
+        });
+
+        return $result;
     }
 
     protected function getTestURL(string $testURLName, array $params=array()) : string
