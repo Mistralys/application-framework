@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Admin\Screens\Events;
 
+use UI_Page_Breadcrumb;
+
 /**
  * @package Application
  * @subpackage Admin Screens - Events
@@ -18,4 +20,9 @@ namespace Application\Admin\Screens\Events;
 class BreadcrumbHandledEvent extends BaseScreenEvent
 {
     public const EVENT_NAME = 'BreadcrumbHandled';
+
+    public function getBreadcrumb() : UI_Page_Breadcrumb
+    {
+        return $this->getScreen()->getBreadcrumb();
+    }
 }
