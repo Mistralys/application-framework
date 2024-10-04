@@ -7,10 +7,20 @@
  * @see Application_Traits_Admin_Screen
  */
 
+use Application\Admin\ScreenEvents;
+use Application\Admin\Screens\Events\ActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeBreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\BeforeContentRenderedEvent;
+use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
+use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\ContentRenderedEvent;
+use Application\Admin\Screens\Events\SidebarHandledEvent;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Interfaces\RenderableInterface;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -69,19 +79,19 @@ trait Application_Traits_Admin_Screen
     * Caches subscreen IDs.
     * @var string[]|NULL
     */
-    protected $subscreenIDs;
+    protected ?array $subscreenIDs = null;
     
     /**
      * Stores subscreen instances that have been loaded.
      * @var Application_Admin_ScreenInterface[]
      */
-    protected $subscreens = array();
+    protected array $subscreens = array();
     
    /**
     * Caches the screen's URL param name.
     * @var string|NULL
     */
-    protected $urlParam;
+    protected ?string $urlParam = null;
     
    /**
     * Caches the screen's log prefix.
@@ -93,7 +103,7 @@ trait Application_Traits_Admin_Screen
     * Caches the screen's URL path.
     * @var string|NULL
     */
-    protected $urlPath;
+    protected ?string $urlPath = null;
     
     protected ?string $activeSubscreenID = null;
 
@@ -106,20 +116,20 @@ trait Application_Traits_Admin_Screen
     * Caches the screen's parent screens stack.
     * @var Application_Admin_ScreenInterface[]|NULL
     */
-    protected $parentScreens;
+    protected ?array $parentScreens = null;
     
    /**
     * Caches the screen's ID path.
     * @var string|NULL
     * @see Application_Traits_Admin_Screen::getIDPath()
     */
-    protected $idPath;
+    protected ?string $idPath = null;
     
    /**
     * Caches the name of the subscreen's URL parameter.
     * @var string|NULL
     */
-    protected $subscreenURLParam;
+    protected ?string $subscreenURLParam = null;
 
     protected QuickNavigation $quickNav;
     
@@ -150,9 +160,15 @@ trait Application_Traits_Admin_Screen
         }
         
         $this->log('Handling actions | Executing before actions.');
-        
+
         $this->_handleBeforeActions();
-        
+
+        $eventBefore = $this->triggerBeforeActionsHandled();
+        if($eventBefore !== null && $eventBefore->isCancelled()) {
+            $this->log('Handling Actions | Cancelled by the before actions event.');
+            return false;
+        }
+
         $this->log('Handling actions | Executing actions.');
         
         if($this->_handleActions() === false)
@@ -160,24 +176,204 @@ trait Application_Traits_Admin_Screen
             return false;
         }
 
-        if($this->hasSubscreens())
-        {
-            $this->log('Handling actions | Handling subscreen.');
+        $this->triggerActionsHandled();
 
-            $sub = $this->getActiveSubscreen();
-            if($sub !== null)
-            {
-                $this->log('Handling actions | Executing subscreen actions.');
-                $sub->handleActions();
-            }
+        if(!$this->hasSubscreens()) {
+            return true;
         }
-        
+
+        $this->log('Handling actions | Handling sub-screen.');
+
+        $sub = $this->getActiveSubscreen();
+        if($sub !== null)
+        {
+            $this->log('Handling actions | Executing sub-screen actions.');
+            $sub->handleActions();
+        }
+
         return true;
     }
 
     protected function _handleBeforeActions() : void
     {
     }
+
+    // region: Event handling
+
+    public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeActionsHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+
+    public function onSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            SidebarHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBeforeSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeSidebarHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BreadcrumbHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBeforeBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeBreadcrumbHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            ActionsHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    /**
+     * Listen to when the screen has finished rendering its content.
+     *
+     * The listener gets one parameter:
+     *
+     * 1. Instance of {@see ContentRenderedEvent}
+     *
+     * NOTE: Use {@see ContentRenderedEvent::hasRenderedContent()} to
+     * check if the screen had any content to render.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            ContentRenderedEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    /**
+     * Listen to when the screen is getting ready to render
+     * its content.
+     *
+     * The listener gets one parameter:
+     *
+     * 1. Instance of {@see BeforeContentRenderedEvent}
+     *
+     * This has the possibility to override the screen's
+     * content by calling {@see BeforeContentRenderedEvent::replaceScreenContentWith()}.
+     *
+     * One use case for this is a tie-in class that automatically
+     * displays a selection list of items when a request parameter
+     * is not present.
+     *
+     * Imagine a screen that needs a media document to be specified:
+     * The tie-in can check the request, and display a list of media
+     * documents to choose from if none is specified. This allows the
+     * selection code to not be duplicated across all screens that need it.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_EventableListener
+     */
+    public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeContentRenderedEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    private function triggerBeforeActionsHandled() : ?BeforeActionsHandledEvent
+    {
+        return $this->triggerEventClass(
+            BeforeActionsHandledEvent::EVENT_NAME,
+            BeforeActionsHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerActionsHandled() : void
+    {
+        $this->triggerEventClass(
+            ActionsHandledEvent::EVENT_NAME,
+            ActionsHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerContentRendered(bool $hasContent) : ?ContentRenderedEvent
+    {
+        return $this->triggerEventClass(
+            ContentRenderedEvent::EVENT_NAME,
+            ContentRenderedEvent::class,
+            array($this, $hasContent)
+        );
+    }
+
+    private function triggerBeforeContentRendered() : ?BeforeContentRenderedEvent
+    {
+        return $this->triggerEventClass(
+            BeforeContentRenderedEvent::EVENT_NAME,
+            BeforeContentRenderedEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBeforeSidebarHandled() : void
+    {
+        $this->triggerEventClass(
+            BeforeSidebarHandledEvent::EVENT_NAME,
+            BeforeSidebarHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerSidebarHandled() : void
+    {
+        $this->triggerEventClass(
+            SidebarHandledEvent::EVENT_NAME,
+            SidebarHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBreadcrumbHandled() : void
+    {
+        $this->triggerEventClass(
+            BreadcrumbHandledEvent::EVENT_NAME,
+            BreadcrumbHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBeforeBreadcrumbHandled() : void
+    {
+        $this->triggerEventClass(
+            BeforeBreadcrumbHandledEvent::EVENT_NAME,
+            BeforeBreadcrumbHandledEvent::class,
+            array($this)
+        );
+    }
+
+    // endregion
 
     /**
      * @return bool
@@ -268,7 +464,11 @@ trait Application_Traits_Admin_Screen
     */
     public function handleBreadcrumb() : void
     {
+        $this->triggerBeforeBreadcrumbHandled();
+
         $this->_handleUIMethod(array($this, 'handleBreadcrumb')[1]);
+
+        $this->triggerBreadcrumbHandled();
     }
 
     /**
@@ -288,7 +488,11 @@ trait Application_Traits_Admin_Screen
     {
         $this->sidebar = $sidebar;
 
+        $this->triggerBeforeSidebarHandled();
+
         $this->_handleUIMethodObject(array($this, 'handleSidebar')[1], $sidebar);
+
+        $this->triggerSidebarHandled();
     }
 
     protected function _handleSidebar() : void
@@ -395,38 +599,50 @@ trait Application_Traits_Admin_Screen
             $this->log('Render content | User not authorized.');
             return $this->renderUnauthorized();
         }
-        
-        $content = $this->_renderContent();
-        if(!empty($content))
-        {
-            $this->log('Render content | Using the area\'s own content.');
+
+        $content = $this->renderOwnContent();
+        $hasOwnContent = !empty($content);
+
+        $this->triggerContentRendered($hasOwnContent);
+
+        if($hasOwnContent) {
             return $content;
         }
-        
-        if($this->hasSubscreens())
+
+        $subScreen = $this->getActiveSubscreen();
+
+        if($subScreen)
         {
-            $subscreen = $this->getActiveSubscreen();
-            
-            if($subscreen)
-            {
-                $this->log('Render content | Rending subscreen content.');
-                return $subscreen->renderContent();
-            }
+            $this->log('Render content | Rending sub-screen content.');
+            return $subScreen->renderContent();
         }
-        {
-            $this->log('RenderContent | No subscreens present.');
-        }
-        
-        $this->log('Render content | No content has been rendered.');
+
         return '';
     }
 
     /**
-     * @return string|UI_Renderable_Interface
+     * Determines the rendered content for this screen,
+     * excluding its sub-screens.
+     *
+     * @return string
+     */
+    private function renderOwnContent() : string
+    {
+        $event = $this->triggerBeforeContentRendered();
+
+        if($event !== null && $event->replacesContent()) {
+            return $event->getContent();
+        }
+
+        return (string)$this->_renderContent();
+    }
+
+    /**
+     * @return string|RenderableInterface|UI_Themes_Theme_ContentRenderer|NULL Return NULL or an empty string if the screen has nothing to display.
      */
     protected function _renderContent()
     {
-        return '';
+        return null;
     }
 
    /**
