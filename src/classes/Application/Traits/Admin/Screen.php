@@ -250,19 +250,6 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    /**
-     * Listen to when the screen has finished rendering its content.
-     *
-     * The listener gets one parameter:
-     *
-     * 1. Instance of {@see ContentRenderedEvent}
-     *
-     * NOTE: Use {@see ContentRenderedEvent::hasRenderedContent()} to
-     * check if the screen had any content to render.
-     *
-     * @param callable $listener
-     * @return Application_EventHandler_EventableListener
-     */
     public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(
@@ -271,29 +258,6 @@ trait Application_Traits_Admin_Screen
         );
     }
 
-    /**
-     * Listen to when the screen is getting ready to render
-     * its content.
-     *
-     * The listener gets one parameter:
-     *
-     * 1. Instance of {@see BeforeContentRenderedEvent}
-     *
-     * This has the possibility to override the screen's
-     * content by calling {@see BeforeContentRenderedEvent::replaceScreenContentWith()}.
-     *
-     * One use case for this is a tie-in class that automatically
-     * displays a selection list of items when a request parameter
-     * is not present.
-     *
-     * Imagine a screen that needs a media document to be specified:
-     * The tie-in can check the request, and display a list of media
-     * documents to choose from if none is specified. This allows the
-     * selection code to not be duplicated across all screens that need it.
-     *
-     * @param callable $listener
-     * @return Application_EventHandler_EventableListener
-     */
     public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(
