@@ -124,6 +124,14 @@ interface Application_Session extends Application_Interfaces_Eventable
      */
     public function getRightPreset() : string;
 
+    /**
+     * Gets the name of the currently active simulated
+     * session rights preset.
+     *
+     * @return string The preset name or an empty string if none.
+     */
+    public function getPresetBySession() : string;
+
     public function getRightsString() : string;
 
     /**
