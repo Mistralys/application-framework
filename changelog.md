@@ -1,3 +1,13 @@
+## v5.3.0 - Admin Screen event handling (Deprecation)
+- Admin Screens: Added events and listener methods for screen initialization and rendering.
+- Admin Screens: Added possibility to replace a screen's content via events.
+- Admin Screens: Added the possibility to disable the action handling via events.
+- Testing: Added some test screens for the screen event handling.
+
+### Deprecations
+
+- `Application_Admin_ScreenInterface` has been replaced by `AdminScreenInterface`.
+
 ## v5.2.0 - Developer changelog handling
 - Driver: Added missing implementation for the `areaExists()`.
 - Driver: Made the use of the `dev-changelog.md` file official.
