@@ -44,7 +44,7 @@ class BeforeContentRenderedEvent extends BaseScreenEvent
      * @return $this
      * @throws UI_Exception
      */
-    public function replaceScreenContentWith(string $content) : self
+    public function replaceScreenContentWith($content) : self
     {
         $content = toString($content);
         if(!empty($content)) {
