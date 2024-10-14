@@ -1,28 +1,29 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSettings_Setting} class.
- * 
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSettings_Setting
  */
 
 declare(strict_types=1);
 
 use AppUtils\BaseException;
+use AppUtils\Interfaces\RuntimePropertizableInterface;
+use AppUtils\Traits\RuntimePropertizableTrait;
 use function AppUtils\parseVariable;
 
 /**
  * Handles individual record settings and their configuration.
- * Used to track for example if the element is required and that
+ * Used to track, for example, if the element is required and that
  * sort of information.
  * 
  * @package Application
  * @subpackage Formable
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_Formable_RecordSettings_Setting
+class Application_Formable_RecordSettings_Setting implements RuntimePropertizableInterface
 {
+    use RuntimePropertizableTrait;
+
     public const ERROR_INVALID_CALLBACK = 45301;
     public const ERROR_NO_CALLBACK_EXECUTABLE = 45302;
     public const ERROR_STORAGE_FILTER_CALLBACK_FAILED = 45303;
