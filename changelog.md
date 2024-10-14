@@ -1,3 +1,6 @@
+## v5.3.1 - Record Settings
+- Record Settings: Added possibility to set runtime properties on record settings.
+
 ## v5.3.0 - Admin Screen event handling (Deprecation)
 - Admin Screens: Added events and listener methods for screen initialization and rendering.
 - Admin Screens: Added possibility to replace a screen's content via events.
