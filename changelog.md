@@ -1,4 +1,4 @@
-## v5.3.1 - Record Settings
+## v5.3.1 - Record Setting Properties
 - Record Settings: Added possibility to set runtime properties on record settings.
 
 ## v5.3.0 - Admin Screen event handling (Deprecation)
