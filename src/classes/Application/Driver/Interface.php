@@ -81,7 +81,7 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      * Must return an associative array with page name => administration class name
      * pairs to generate the main administration tree.
      *
-     * @return array<string,string>
+     * @return array<string|class-string>
      */
     public function getAdminAreas() : array;
     public function areaExists(string $name) : bool;
