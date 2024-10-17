@@ -1,3 +1,6 @@
+## v5.3.2 - AJAX exception fix
+- AJAX: Fixed a type issue in the AJAX error logger.
+
 ## v5.3.1 - Record Setting Properties
 - Record Settings: Added possibility to set runtime properties on record settings.
 
