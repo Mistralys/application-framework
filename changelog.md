@@ -1,3 +1,6 @@
+## v5.3.3 - AppSets fix
+- AppSets: Fixed not properly recognizing areas, now using the Driver's `areaExists()`.
+
 ## v5.3.2 - AJAX exception fix
 - AJAX: Fixed a type issue in the AJAX error logger.
 
