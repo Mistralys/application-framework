@@ -1,3 +1,7 @@
+## v5.3.4 - Upgraded localization library
+- Countries: Updated return types to avoid using deprecated AppLocalization types.
+- Dependencies: Updated AppLocalization to [v1.5.0](https://github.com/Mistralys/application-localization/releases/tag/1.5.0).
+
 ## v5.3.3 - AppSets fix
 - AppSets: Fixed not properly recognizing areas, now using the Driver's `areaExists()`.
 
