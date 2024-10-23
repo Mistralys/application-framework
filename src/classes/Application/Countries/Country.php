@@ -1,17 +1,18 @@
 <?php
 /**
- * File containing the {@link Application_Countries_Country} class.
  * @package Maileditor
  * @subpackage Countries
  */
+
+declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Languages;
 use Application\Languages\Language;
 use Application\Languages\LanguageException;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Country;
-use AppLocalize\Localization_Currency;
+use AppLocalize\Localization\Countries\CountryInterface;
+use AppLocalize\Localization\Currencies\CurrencyInterface;
 
 /**
  * Country data type; handles an individual country and its information.
@@ -29,11 +30,11 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public const COL_ISO = 'iso';
     public const COL_LABEL = 'label';
 
-    protected Localization_Country $country;
+    protected CountryInterface $country;
 
     protected function init() : void
     {
-        $this->country = Localization::createCountry($this->getISO());
+        $this->country = Localization::createCountries()->getByISO($this->getISO());
     }
     
     public function getLabel() : string
@@ -138,7 +139,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
    /**
     * Retrieves the lowercase two-letter language code for
     * the country. Note that this only returns the main 
-    * language used in the country, if it has several
+    * language used in the country if it has several
     * official ones.
     * 
     * @throws Application_Exception
@@ -192,9 +193,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     
    /**
     * The currency used in this country.
-    * @return Localization_Currency
+    * @return CurrencyInterface
     */
-    public function getCurrency() : Localization_Currency
+    public function getCurrency() : CurrencyInterface
     {
         return $this->country->getCurrency();
     }
@@ -203,7 +204,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
      * {@inheritDoc}
      * @see DBHelper_BaseRecord::recordRegisteredKeyModified()
      */
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
     
