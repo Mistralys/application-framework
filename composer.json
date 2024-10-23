@@ -69,7 +69,7 @@
     "mistralys/application-utils": ">=3.0.4",
     "mistralys/application-utils-core": ">=1.2.0",
     "mistralys/application-utils-collections": ">=1.1.1",
-    "mistralys/application-localization": ">=1.4.1",
+    "mistralys/application-localization": ">=1.5.0",
     "mistralys/changelog-parser": ">=1.0.1",
     "mistralys/deepl-xml-translator": ">=2.0.2",
     "mistralys/subsetsum": ">=1.0.2",
