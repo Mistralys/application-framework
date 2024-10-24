@@ -40,6 +40,7 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
     protected function _boot() : void
     {
         $exception = null;
+        $logger = AppFactory::createLogger();
 
         try
         {
@@ -47,7 +48,6 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
             $this->disableAuthentication();
             $this->createEnvironment();
 
-            $logger = AppFactory::createLogger();
             $logger->setMemoryStorageEnabled(true);
 
             $output = AppFactory::createRequest()->getBool(self::REQUEST_PARAM_ENABLE_OUTPUT);
@@ -57,22 +57,22 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
             if ($output)
             {
                 header('Content-Type: text/plain; charset=UTF-8');
-                AppFactory::createLogger()->logModeEcho();
+                $logger->logModeEcho();
             }
 
             $registry = AppFactory::createDeploymentRegistry();
             $registry->registerDeployment();
 
-            $logger->logModeNone();
-
             DBHelper::commitTransaction();
 
-            http_response_code(200);
+            $code = 200;
         }
         catch (Throwable $e)
         {
-            http_response_code(500);
+            $code = 500;
             $exception = $e;
+
+            $this->logError('An exception occurred: #%s "%s"', $e->getCode(), $e->getMessage());
         }
 
         // Send an email with the status of the operation
@@ -85,11 +85,17 @@ class DeployCallbackBootstrap extends Application_Bootstrap_Screen
         }
         catch (Throwable $e)
         {
+            $this->logError('An exception occurred while sending the email: #%s "%s"', $e->getCode(), $e->getMessage());
+
             // We cannot do more than log the exception.
             Application_Bootstrap::convertException($e)->log();
         }
 
-        Application::exit('Bootstrap callback done.');
+        $this->log('Sending status code [%s].', $code);
+
+        http_response_code($code);
+
+        Application::exit('Bootstrap callback complete');
     }
 
     private function sendMailError(Throwable $e) : void
