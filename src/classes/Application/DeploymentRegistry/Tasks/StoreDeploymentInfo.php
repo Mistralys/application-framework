@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Deployment Registry
+ */
 
 declare(strict_types=1);
 
@@ -10,6 +14,12 @@ use AppUtils\Microtime;
 use Application\DeploymentRegistry\BaseDeployTask;
 use Application\DeploymentRegistry\DeploymentInfo;
 
+/**
+ * Stores the deployment date for the current version in the deployment history.
+ *
+ * @package Application
+ * @subpackage Deployment Registry
+ */
 class StoreDeploymentInfo extends BaseDeployTask
 {
     protected function _process(): void
