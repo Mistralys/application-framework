@@ -596,9 +596,10 @@ abstract class Application_RevisionableCollection
         
         AppFactory::createMessageLog()->addInfo(
             t(
-                'Destroyed the %1$s %2$s.',
+                'Destroyed the %1$s %2$s (%3$s).',
                 $this->getRecordReadableNameSingular(),
-                $revisionable->getLabel()
+                $revisionable->getLabel(),
+                t('Identification:', $revisionable->getIdentification())
             ),
             t('Revisionables')
         );
