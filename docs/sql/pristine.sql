@@ -51,7 +51,7 @@ CREATE TABLE `app_locking_messages` (
 CREATE TABLE `app_messagelog` (
     `log_id` bigint(11) UNSIGNED NOT NULL,
     `date` datetime NOT NULL,
-    `type` varchar(60) NOT NULL,
+    `type` varchar(60) CHARACTER SET ascii NOT NULL,
     `message` text NOT NULL,
     `user_id` int(11) UNSIGNED NOT NULL,
     `category` varchar(180) NOT NULL
@@ -87,11 +87,11 @@ CREATE TABLE `app_messaging` (
 CREATE TABLE `app_news` (
     `news_id` int(11) UNSIGNED NOT NULL,
     `parent_news_id` int(11) UNSIGNED DEFAULT NULL,
-    `news_type` varchar(60) NOT NULL,
+    `news_type` varchar(60) CHARACTER SET ascii NOT NULL,
     `label` varchar(120) NOT NULL,
     `author` int(11) UNSIGNED NOT NULL,
-    `locale` varchar(5) NOT NULL,
-    `status` varchar(20) NOT NULL DEFAULT 'draft',
+    `locale` varchar(5) CHARACTER SET ascii NOT NULL,
+    `status` varchar(20) CHARACTER SET ascii NOT NULL DEFAULT 'draft',
     `synopsis` text NOT NULL DEFAULT '',
     `article` mediumtext NOT NULL DEFAULT '',
     `date_created` datetime NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE `app_news_reactions` (
 CREATE TABLE `app_news_related` (
     `news_id` int(11) UNSIGNED NOT NULL,
     `related_news_id` int(11) UNSIGNED NOT NULL,
-    `relation_type` varchar(160) NOT NULL,
+    `relation_type` varchar(160) CHARACTER SET ascii NOT NULL,
     `relation_params` text NOT NULL COMMENT 'JSON configuration.'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -197,7 +197,7 @@ CREATE TABLE `app_ratings` (
 
 CREATE TABLE `app_ratings_screens` (
     `rating_screen_id` int(11) UNSIGNED NOT NULL,
-    `hash` varchar(32) NOT NULL,
+    `hash` varchar(32) CHARACTER SET ascii NOT NULL,
     `dispatcher` varchar(250) NOT NULL,
     `path` varchar(250) NOT NULL,
     `params` text NOT NULL
@@ -210,7 +210,7 @@ CREATE TABLE `app_ratings_screens` (
 --
 
 CREATE TABLE `app_settings` (
-    `data_key` varchar(80) NOT NULL,
+    `data_key` varchar(80) CHARACTER SET ascii NOT NULL,
     `data_value` mediumtext NOT NULL,
     `data_role` enum('cache','persistent') NOT NULL DEFAULT 'cache'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -223,9 +223,9 @@ CREATE TABLE `app_settings` (
 
 CREATE TABLE `countries` (
     `country_id` int(11) UNSIGNED NOT NULL,
-    `iso` varchar(2) NOT NULL,
+    `iso` varchar(2) CHARACTER SET ascii NOT NULL,
     `label` varchar(180) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Cache for Editor countries';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Supported application countries';
 
 --
 -- Dumping data for table `countries`
@@ -263,9 +263,9 @@ CREATE TABLE `custom_properties` (
 
 CREATE TABLE `custom_properties_data` (
     `property_id` int(11) UNSIGNED NOT NULL,
-    `owner_type` varchar(250) NOT NULL,
-    `owner_key` varchar(250) NOT NULL,
-    `name` varchar(180) NOT NULL,
+    `owner_type` varchar(250) CHARACTER SET ascii NOT NULL,
+    `owner_key` varchar(250) CHARACTER SET ascii NOT NULL,
+    `name` varchar(180) CHARACTER SET ascii NOT NULL,
     `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
     `value` text NOT NULL,
     `label` varchar(180) NOT NULL,
@@ -281,7 +281,7 @@ CREATE TABLE `custom_properties_data` (
 
 CREATE TABLE `custom_properties_presets` (
     `preset_id` int(11) UNSIGNED NOT NULL,
-    `owner_type` varchar(250) NOT NULL,
+    `owner_type` varchar(250) CHARACTER SET ascii NOT NULL,
     `editable` enum('yes','no') NOT NULL DEFAULT 'yes',
     `name` varchar(180) NOT NULL,
     `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
@@ -301,8 +301,8 @@ CREATE TABLE `feedback` (
     `date` datetime NOT NULL,
     `feedback` text NOT NULL,
     `request_params` text NOT NULL,
-    `feedback_scope` varchar(40) NOT NULL DEFAULT 'application',
-    `feedback_type` varchar(40) NOT NULL
+    `feedback_scope` varchar(40) CHARACTER SET ascii NOT NULL DEFAULT 'application',
+    `feedback_type` varchar(40) CHARACTER SET ascii NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -316,7 +316,7 @@ CREATE TABLE `known_users` (
     `foreign_id` varchar(250) NOT NULL,
     `firstname` varchar(250) NOT NULL,
     `lastname` varchar(250) NOT NULL,
-    `email` varchar(254) NOT NULL
+    `email` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -349,9 +349,9 @@ CREATE TABLE `media` (
     `media_id` int(11) UNSIGNED NOT NULL,
     `user_id` int(11) UNSIGNED NOT NULL,
     `media_date_added` datetime NOT NULL,
-    `media_type` varchar(100) NOT NULL,
+    `media_type` varchar(100) CHARACTER SET ascii NOT NULL,
     `media_name` varchar(240) NOT NULL,
-    `media_extension` varchar(20) NOT NULL,
+    `media_extension` varchar(20) CHARACTER SET ascii NOT NULL,
     `file_size` int(11) UNSIGNED NOT NULL DEFAULT 0,
     `keywords` varchar(500) NOT NULL DEFAULT '',
     `description` varchar(1200) NOT NULL DEFAULT ''
@@ -365,8 +365,8 @@ CREATE TABLE `media` (
 
 CREATE TABLE `media_configurations` (
     `config_id` int(11) UNSIGNED NOT NULL,
-    `type_id` varchar(60) NOT NULL,
-    `config_key` varchar(32) NOT NULL,
+    `type_id` varchar(60) CHARACTER SET ascii NOT NULL,
+    `config_key` varchar(32) CHARACTER SET ascii NOT NULL,
     `config` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -403,7 +403,7 @@ CREATE TABLE `revisionables_changelog` (
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
     `changelog_date` datetime NOT NULL,
     `changelog_author` int(11) UNSIGNED NOT NULL,
-    `changelog_type` varchar(160) NOT NULL,
+    `changelog_type` varchar(160) CHARACTER SET ascii NOT NULL,
     `changelog_data` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -429,7 +429,7 @@ CREATE TABLE `revisionables_revisions` (
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
     `pretty_revision` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
-    `alias` varchar(160) NOT NULL,
+    `alias` varchar(160) CHARACTER SET ascii NOT NULL,
     `state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
     `date` datetime NOT NULL,
     `author` int(11) UNSIGNED NOT NULL,
@@ -446,7 +446,7 @@ CREATE TABLE `revisionables_revisions` (
 CREATE TABLE `revisionables_revisions_data` (
     `revisionable_id` int(11) UNSIGNED NOT NULL,
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
-    `data_key` varchar(300) NOT NULL,
+    `data_key` varchar(300) CHARACTER SET ascii NOT NULL,
     `data_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -460,7 +460,7 @@ CREATE TABLE `tags` (
     `tag_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
     `parent_tag_id` int(11) DEFAULT NULL,
-    `sort_type` varchar(60) NOT NULL,
+    `sort_type` varchar(60) CHARACTER SET ascii NOT NULL,
     `sort_weight` int(11) NOT NULL DEFAULT 0,
     `weight` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -473,7 +473,7 @@ CREATE TABLE `tags` (
 
 CREATE TABLE `tags_registry` (
     `tag_id` int(11) UNSIGNED NOT NULL,
-    `registry_key` varchar(180) NOT NULL
+    `registry_key` varchar(180) CHARACTER SET ascii NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -497,7 +497,7 @@ CREATE TABLE `tags_translations` (
 CREATE TABLE `test_records` (
     `record_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(180) NOT NULL,
-    `alias` varchar(160) NOT NULL
+    `alias` varchar(160) CHARACTER SET ascii NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -541,23 +541,12 @@ CREATE TABLE `uploads` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_emails`
---
-
-CREATE TABLE `user_emails` (
-    `user_id` int(11) UNSIGNED NOT NULL,
-    `email` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `user_settings`
 --
 
 CREATE TABLE `user_settings` (
     `user_id` int(11) UNSIGNED NOT NULL,
-    `setting_name` varchar(180) NOT NULL,
+    `setting_name` varchar(180) CHARACTER SET ascii NOT NULL,
     `setting_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -890,15 +879,6 @@ ALTER TABLE `uploads`
     ADD PRIMARY KEY (`upload_id`),
     ADD KEY `user_id` (`user_id`),
     ADD KEY `media_id` (`media_id`);
-
---
--- Indexes for table `user_emails`
---
-ALTER TABLE `user_emails`
-    ADD PRIMARY KEY (`user_id`,`email`),
-    ADD UNIQUE KEY `email_2` (`email`),
-    ADD KEY `user_id` (`user_id`),
-    ADD KEY `email` (`email`);
 
 --
 -- Indexes for table `user_settings`
