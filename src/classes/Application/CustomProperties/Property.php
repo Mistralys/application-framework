@@ -1,5 +1,7 @@
 <?php
 
+use AppUtils\ConvertHelper;
+
 class Application_CustomProperties_Property extends DBHelper_BaseRecord
 {
     public const ERROR_CANNOT_FIND_OWNER = 16901;
@@ -147,10 +149,16 @@ class Application_CustomProperties_Property extends DBHelper_BaseRecord
     {
         return $this->setRecordBooleanKey('is_structural', $isStructural);
     }
-    
-    public function setName($name)
+
+    /**
+     * Sets the machine name of the property (aka Alias).
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function setName(string $name) : bool
     {
-        return $this->setRecordKey('name', $name);
+        return $this->setRecordKey('name', ConvertHelper::transliterate($name));
     }
     
     public function setValue($value)

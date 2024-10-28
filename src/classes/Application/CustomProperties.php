@@ -8,6 +8,7 @@
  */
 
 use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
 
 /**
  * Manages the collection of custom properties for the specified
@@ -142,7 +143,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         
         $property = $this->createNewRecord(array(
             'label' => $label,
-            'name' => $name,
+            'name' => ConvertHelper::transliterate($name),
             'value' => $value,
             'default_value' => $defaultValue,
             'is_structural' => AppUtils\ConvertHelper::bool2string($isStructural, true),
