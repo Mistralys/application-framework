@@ -1,10 +1,7 @@
 <?php
 /**
- * Class containing the {@link Application_Users} class.
- * 
  * @package Application
  * @subpackage Users
- * @see Application_Users
  */
 
 use Application\Exception\DisposableDisposedException;
@@ -16,10 +13,10 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 
 /**
- * User management class: allows retrieving and modifiying the
+ * User management class: allows retrieving and modifying the
  * users available in the database. This is not like the 
  * {@link Application_User} class, which only handles the user
- * which is currently logged in. 
+ * that is currently logged in.
  *
  * @package Application
  * @subpackage Users
@@ -32,11 +29,14 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
  */
 class Application_Users extends DBHelper_BaseCollection
 {
-    public const TABLE_USER_EMAILS = 'user_emails';
     public const TABLE_NAME = 'known_users';
     public const TABLE_USER_SETTINGS = Application_User_Storage_DB::TABLE_NAME;
 
     public const PRIMARY_NAME = 'user_id';
+    public const COL_EMAIL = 'email';
+    public const COL_FIRSTNAME = 'firstname';
+    public const COL_LASTNAME = 'lastname';
+    public const COL_FOREIGN_ID = 'foreign_id';
 
     /**
      * {@inheritDoc}
@@ -67,7 +67,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordDefaultSortKey() : string
     {
-        return 'email';
+        return self::COL_EMAIL;
     }
 
     /**
@@ -77,9 +77,9 @@ class Application_Users extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'firstname' => t('First name'),
-            'lastname' => t('Last name'),
-            'email' => t('E-mail address')
+            self::COL_FIRSTNAME => t('First name'),
+            self::COL_LASTNAME => t('Last name'),
+            self::COL_EMAIL => t('E-mail address')
         );
     }
 
@@ -138,24 +138,11 @@ class Application_Users extends DBHelper_BaseCollection
 
     public function getByEmail(string $email) : ?Application_Users_User
     {
-        $user = $this->getByKey('email', $email);
+        $user = $this->getByKey(self::COL_EMAIL, $email);
 
         if($user !== null)
         {
             return $user;
-        }
-
-        // TODO Remove this once the table has been created everywhere.
-        if(DBHelper::tableExists(self::TABLE_USER_EMAILS))
-        {
-            $id = DBHelper::createFetchKey(self::PRIMARY_NAME, self::TABLE_USER_EMAILS)
-                ->whereValue('email', $email)
-                ->fetchInt();
-
-            if ($id > 0)
-            {
-                return $this->getByID($id);
-            }
         }
 
         return null;
@@ -164,10 +151,10 @@ class Application_Users extends DBHelper_BaseCollection
     public function createNewUser(string $email, string $firstname, string $lastname, string $foreignID='') : Application_Users_User
     {
         return $this->createNewRecord(array(
-            'email' => $email,
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'foreign_id' => $foreignID
+            self::COL_EMAIL => $email,
+            self::COL_FIRSTNAME => $firstname,
+            self::COL_LASTNAME => $lastname,
+            self::COL_FOREIGN_ID => $foreignID
         ));
     }
 
@@ -235,10 +222,10 @@ class Application_Users extends DBHelper_BaseCollection
                 $this->getRecordTableName(),
                 array(
                     $this->getRecordPrimaryName() => $userID,
-                    'email' => $user->getEmail(),
-                    'firstname' => $user->getFirstname(),
-                    'lastname' => $user->getLastname(),
-                    'foreign_id' => $user->getForeignID()
+                    self::COL_EMAIL => $user->getEmail(),
+                    self::COL_FIRSTNAME => $user->getFirstname(),
+                    self::COL_LASTNAME => $user->getLastname(),
+                    self::COL_FOREIGN_ID => $user->getForeignID()
                 )
             );
 
