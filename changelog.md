@@ -1,6 +1,21 @@
-## v5.3.5 - Deployment Callback
+## v5.4.0 - UTF8MB4 compatibility (SQL Update)
 - Deployments: Added a callback to write the localization files to disk.
 - Deployments: Added logging in the deployment process for debugging.
+- Revisionables: Improved the record destruction message to use `getIdentification()`.
+- Database: Added the ASCII character set to all relevant database columns.
+- Database: Temporarily removed the index on the `known_users::email` column (see [#61](https://github.com/Mistralys/application-framework/issues/61)).
+
+### SQL Update
+
+To be able to set up the framework with `utf8_mb4` charsets, a number of
+columns must have their character set changed to `ascii`. This is necessary
+because their character sizes will not work correctly with `utf8_mb4`.
+
+This update is straightforward and non-destructive. 
+
+Import the provided SQL script:
+
+[docs/sql/2024-10-28-ascii-columns.sql](/docs/sql/2024-10-28-ascii-columns.sql)
 
 ## v5.3.4 - Upgraded localization library
 - Countries: Updated return types to avoid using deprecated AppLocalization types.
