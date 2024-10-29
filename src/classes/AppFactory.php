@@ -11,6 +11,7 @@ namespace Application;
 
 use Application;
 use Application\AppFactory\AppFactoryException;
+use Application\AppFactory\ClassCacheHandler;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
@@ -38,6 +39,8 @@ use Application_Uploads;
 use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\FileHelper\FolderInfo;
+use AppUtils\FileHelper\SerializedFile;
 use DBHelper;
 use DeeplHelper;
 use UI;
@@ -290,6 +293,26 @@ class AppFactory
                 $e
             );
         }
+    }
+
+    /**
+     * Uses the class helper to find classes in the target folder.
+     * The results are cached to avoid unnecessary file system
+     * accesses. The cache uses the application version as a key, so
+     * it is automatically invalidated when the application is updated.
+     *
+     * NOTE: The cache is automatically disabled in development mode.
+     *
+     * @param FolderInfo $folder
+     * @param bool $recursive
+     * @param string|null $baseClass
+     * @return void
+     *
+     * @see ClassCacheHandler
+     */
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
+    {
+        return ClassCacheHandler::findClassesInFolder($folder, $recursive, $baseClass);
     }
 
     // endregion
