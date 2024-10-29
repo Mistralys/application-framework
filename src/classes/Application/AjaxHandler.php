@@ -1,30 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Ajax\AjaxException;
+use Application\AppFactory;
+use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper\FolderInfo;
+use AppUtils\Interfaces\StringableInterface;
+
 class Application_AjaxHandler
 {
-    /**
-     * @var Application_Driver
-     */
-    protected $driver;
+    public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
+    public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
 
-    /**
-     * @var Application_Request
-     */
-    protected $request;
-
-    /**
-     * @var Application_User
-     */
-    protected $user;
+    protected Application_Driver $driver;
+    protected Application_Request $request;
+    protected Application_User $user;
 
    /**
-    * @var Application_AjaxMethod[]
+    * @var array<string,Application_AjaxMethod>
     */
-    protected $methods = array();
-    
-    public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
-
-    public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
+    protected array $methods = array();
     
     public function __construct(Application_Driver $driver)
     {
@@ -32,32 +29,24 @@ class Application_AjaxHandler
         $this->request = $driver->getRequest();
         $this->user = $driver->getUser();
         
-        $this->requireMethodsFromFolder(
-            $this->driver->getApplication()->getClassesFolder().'/Application/AjaxMethods',
-            'Application_AjaxMethods'
-        );
+        $this->requireMethodsFromFolder(FolderInfo::factory($this->driver->getApplication()->getClassesFolder().'/Application/AjaxMethods'));
     }
 
-    /**
-     * @return Application_Driver
-     */
-    public function getDriver()
+    public function getDriver() : Application_Driver
     {
         return $this->driver;
     }
 
-    /**
-     * @return Application_Request
-     */
-    public function getRequest()
+    public function getRequest() : Application_Request
     {
         return $this->request;
     }
     
-    public function requireMethodsFromFolder($folder, $classPrefix = null)
+    public function requireMethodsFromFolder(FolderInfo $folder) : void
     {
-        if (is_dir($folder)) {
-            return $this->addMethodsFromFolder($folder, $classPrefix);
+        if ($folder->exists()) {
+            $this->addMethodsFromFolder($folder);
+            return;
         }
          
         throw new Application_Exception(
@@ -70,52 +59,43 @@ class Application_AjaxHandler
         );
     }
 
-    public function addMethodsFromFolder($folder, $classPrefix = null)
+    public function addMethodsFromFolder(FolderInfo $folder) : void
     {
-        if(!is_dir($folder)) {
+        if(!$folder->exists()) {
             return;
         }
-        
-        $files = AppUtils\FileHelper::createFileFinder($folder)
-        ->setPathmodeAbsolute()
-        ->getPHPFiles();
-        
-        foreach ($files as $file) {
-            $this->registerClassFile($file, $classPrefix);
+
+        $classes = AppFactory::findClassesInFolder($folder, true, Application_AjaxMethod::class);
+
+        foreach ($classes as $class) {
+            $this->registerClass($class);
         }
+
+        ksort($this->methods);
     }
 
-    public function registerClassFile($file, $classPrefix = null)
+    public function registerClass(string $class) : void
     {
-        $methodName = pathinfo($file, PATHINFO_FILENAME);
-        $className = $methodName;
-        if (!empty($classPrefix)) {
-            $className = $classPrefix . '_' . $className;
-        }
-
-        require_once $file;
-
-        if (!class_exists($className)) {
+        if (!class_exists($class)) {
             throw new Application_Exception(
                 'Cannot register AJAX class file',
                 sprintf(
-                    'Loaded the file [%1$s] successfully, but the expected class [%2$s] was not present.',
-                    $file,
-                    $className
+                    'The class [%1$s] does not exist.',
+                    $class
                 ),
                 self::ERROR_CANNOT_REGISTER_CLASS_FILE
             );
         }
 
-        $this->methods[$methodName] = new $className($this);
+        $method = ClassHelper::requireObjectInstanceOf(
+            Application_AjaxMethod::class,
+            new $class($this)
+        );
+
+        $this->methods[$method->getMethodName()] = $method;
     }
 
-    public function registerMethod($methodName)
-    {
-
-    }
-
-    public function process()
+    public function process() : void
     {
         $returnFormat = $this->request->getParam('return', Application_AjaxMethod::RETURNFORMAT_JSON);
         $method = $this->getMethod();
@@ -130,19 +110,17 @@ class Application_AjaxHandler
             $this->sendError(t('Unsupported return format.'));
         }
         
-        if($this->request->getParam('debug')=='yes') {
+        if($this->request->getBool('debug')) {
             $method->enableDebug();
         }
 
         $method->process($returnFormat);
     }
    
-   /**
-    * @return NULL|Application_AjaxMethod
-    */
-    public function getMethod()
+    public function getMethod() : ?Application_AjaxMethod
     {
         $methodName = $this->request->getParam('method');
+
         if (isset($this->methods[$methodName])) {
             return $this->methods[$methodName];
         }
@@ -150,18 +128,65 @@ class Application_AjaxHandler
         return null;
     }
     
-    public function getErrorMethod()
+    public function getErrorMethod() : Application_AjaxMethod
     {
-        return $this->methods['NoAjaxHandlerFound'];
+        return $this->requireMethodByName(Application_AjaxMethods_NoAJAXHandlerFound::METHOD_NAME);
     }
 
+    /**
+     * @return string[]
+     */
+    public function getMethodNames() : array
+    {
+        return array_keys($this->methods);
+    }
+
+    public function getMethodByName(string $methodName) : ?Application_AjaxMethod
+    {
+        return $this->methods[$methodName] ?? null;
+    }
+
+    public function requireMethodByName(string $methodName) : Application_AjaxMethod
+    {
+        $method = $this->getMethodByName($methodName);
+
+        if($method !== null) {
+            return $method;
+        }
+
+        throw new AjaxException(
+            'Unknown AJAX method',
+            sprintf(
+                'The method [%1$s] does not exist. '.PHP_EOL.
+                'Known methods are: '.PHP_EOL.
+                '- %s',
+                $methodName,
+                implode(PHP_EOL.'- ', $this->getMethodNames())
+            ),
+        );
+    }
+
+    /**
+     * @param string|int|float|StringableInterface|NULL $message
+     * @return never
+     */
     protected function sendError($message)
     {
+        $message = toString($message);
+        if(empty($message)) {
+            $message = 'Unknown error';
+        }
+
         header('HTTP/1.1 500 ' . $message);
         Application::exit();
     }
 
-    public function displayException(Exception $e)
+    /**
+     * @param Throwable $e
+     * @return never
+     * @throws ConvertHelper_Exception
+     */
+    public function displayException(Throwable $e)
     {
         if(isDevelMode() || ($this->user->isDeveloper() && $this->request->getBool('debug'))) 
         {
