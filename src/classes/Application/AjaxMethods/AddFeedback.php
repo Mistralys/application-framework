@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'AddFeedback';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $report = $this->collection->addFeedback(

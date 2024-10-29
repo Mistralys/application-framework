@@ -2,6 +2,13 @@
 
 class Application_AjaxMethods_AddMessage extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'AddMessage';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $ui = UI::getInstance();

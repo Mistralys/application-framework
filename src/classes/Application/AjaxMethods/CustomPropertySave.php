@@ -16,6 +16,13 @@
  */
 class Application_AjaxMethods_CustomPropertySave extends Application_AjaxMethod_CustomProperties
 {
+    public const METHOD_NAME = 'CustomPropertySave';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         //$this->forceStartSimulation();

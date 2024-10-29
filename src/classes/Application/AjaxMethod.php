@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Application
+ * @subpackage AJAX
+ */
 
 use Application\AppFactory;
 use Application\Exception\DisposableDisposedException;
@@ -6,6 +10,14 @@ use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
 
+/**
+ * Abstract base class for AJAX methods.
+ *
+ * @package Application
+ * @subpackage AJAX
+ *
+ * @see Application_Bootstrap_Screen_Ajax
+ */
 abstract class Application_AjaxMethod
 {
     public const ERROR_MALFORMED_JSON_DATA = 554001;
@@ -73,6 +85,8 @@ abstract class Application_AjaxMethod
         // initialize cross-domain requests
         $this->CORS->init();
     }
+
+    abstract public function getMethodName() : string;
     
    /**
     * Can be extended to handle things done after constructing the instance.

@@ -2,10 +2,15 @@
 
 declare(strict_types=1);
 
-use AppUtils\RegexHelper;
-
 class Application_AjaxMethods_NotepadSave extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'NotepadSave';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->note->setTitle($this->title);

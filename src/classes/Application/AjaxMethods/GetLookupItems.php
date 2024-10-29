@@ -2,10 +2,15 @@
 
 use Application\AppFactory;
 
-require_once 'Application/AjaxMethod.php';
-
 class Application_AjaxMethods_GetLookupItems extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'GetLookupItems';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $payload = array();

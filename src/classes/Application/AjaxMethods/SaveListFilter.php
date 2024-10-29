@@ -2,10 +2,17 @@
 
 class Application_AjaxMethods_SaveListFilter extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'SaveListFilter';
+
     public const ERROR_INVALID_LABEL = 460001;
     public const ERROR_INVALID_SETTINGS_ID = 460002;
     public const ERROR_NO_SETTINGS_SPECIFIED = 460003;
-    
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->request->registerParam('label')->setRegex(AppUtils\RegexHelper::REGEX_LABEL);

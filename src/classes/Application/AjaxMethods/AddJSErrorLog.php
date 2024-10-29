@@ -2,6 +2,13 @@
 
 class Application_AjaxMethods_AddJSErrorLog extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'AddJSErrorLog';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON() : void
     {
         $message = $this->request->getParam('message');

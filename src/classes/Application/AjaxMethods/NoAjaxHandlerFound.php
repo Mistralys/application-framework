@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_NoAJAXHandlerFound extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'NoAJAXHandlerFound';
     public const ERROR_NO_SUCH_METHOD = 14501;
-    
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->sendError(

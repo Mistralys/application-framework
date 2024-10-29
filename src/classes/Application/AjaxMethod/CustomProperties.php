@@ -1,9 +1,14 @@
 <?php
 
-require_once 'Application/CustomProperties.php';
-
 abstract class Application_AjaxMethod_CustomProperties extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'CustomProperties';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     protected $label;
     
     protected function requireLabel()

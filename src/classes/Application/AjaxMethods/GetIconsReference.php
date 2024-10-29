@@ -6,6 +6,13 @@ use AppUtils\FileHelper\JSONFile;
 
 class Application_AjaxMethods_GetIconsReference extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'GetIconsReference';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON() : void
     {
         $files = array(

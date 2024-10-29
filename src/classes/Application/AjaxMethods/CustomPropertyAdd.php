@@ -7,8 +7,6 @@
  * @see Application_AjaxMethods_CustomPropertyAdd
  */
 
-require_once 'Application/AjaxMethod/CustomProperties.php';
-
 /**
  * This is called to add a new custom property for an item.
  *
@@ -18,6 +16,13 @@ require_once 'Application/AjaxMethod/CustomProperties.php';
  */
 class Application_AjaxMethods_CustomPropertyAdd extends Application_AjaxMethod_CustomProperties
 {
+    public const METHOD_NAME = 'CustomPropertyAdd';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         //$this->forceStartSimulation();

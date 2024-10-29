@@ -1,9 +1,14 @@
 <?php
 
-require_once 'Application/AjaxMethod.php';
-
 class Application_AjaxMethods_LockingReleaseLock extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'LockingReleaseLock';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $lock_id = $this->request->registerParam('lock_id')->setInteger()->get();

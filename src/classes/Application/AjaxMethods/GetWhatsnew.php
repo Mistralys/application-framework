@@ -6,6 +6,13 @@ use AppLocalize\Localization;
 
 class Application_AjaxMethods_GetWhatsnew extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'GetWhatsnew';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $changes = array(
