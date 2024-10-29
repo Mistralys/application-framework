@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the {@link Application_CORS} class.
- *
  * @package Application
  * @subpackage Core
- * @see Application_CORS
  */
+
+declare(strict_types=1);
 
 /**
  * Helper class used to enable CORS requests: whenever cross-domain
@@ -43,7 +42,10 @@
  */
 class Application_CORS
 {
-    protected $domains = array();
+    /**
+     * @var array<int,array{host:string,port:string}>
+     */
+    protected array $domains = array();
     
     /**
      * Adds a domain name to the list of allowed cross-origin
@@ -51,7 +53,7 @@ class Application_CORS
      * this API endpoint.
      *
      * Note: use the wildcard <code>*</code> as domain to enable
-     * all cross origin sources. This supersedes any other specific
+     * all cross-origin sources. This supersedes any other specific
      * domains that may have been added. 
      *
      * Examples:
@@ -66,14 +68,14 @@ class Application_CORS
      * </pre>
      *
      * @param string $domain The domain to allow. Should include the scheme, and optionally the port if needed.
-     * @return Application_CORS
+     * @return $this
      */
-    public function allowDomain($domain)
+    public function allowDomain(string $domain) : self
     {
         $host = $domain;
         $port = '*';
         
-        if(strstr($domain, ':')) {
+        if(strpos($domain, ':') !== false) {
             $tokens = explode(':', $domain);
             $host = $tokens[0];
             $port = $tokens[1];
@@ -91,10 +93,14 @@ class Application_CORS
      * Called when CORS requests have been enabled by adding one or
      * more allowed domains using the {@link allowCORSDomain()} method.
      * Handles the CORS Preflight handshake if present, and sends the
-     * allow header if the origin of the request is valid.
+     * "allow" header if the origin of the request is valid.
      */
-    public function init()
+    public function init() : void
     {
+        if(isCLI()) {
+            return;
+        }
+
         // CORS-Enabled requests should send this header, even when the
         // actual request is disallowed.
         header('Vary: Origin');
@@ -105,7 +111,7 @@ class Application_CORS
         
         // CORS uses the OPTIONS method to handle handshakes prior to
         // the actual data request, to see if the request is allowed.
-        if(strtolower($_SERVER['REQUEST_METHOD']) == 'options')
+        if(strtolower($_SERVER['REQUEST_METHOD']) === 'options')
         {
             if (isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])) {
                 header("Access-Control-Allow-Methods: OPTIONS, GET, POST");
@@ -140,7 +146,7 @@ class Application_CORS
         if($origin !== null)
         {
             // origin does not match? This request is not allowed, stop sending
-            // any headers. As long as the allow header is not sent, the client
+            // any headers. As long as the "allow" header is not sent, the client
             // will assume that the request is denied.
             $match = $this->getMatchedCORSDomain($origin);
             if($match === null) {
@@ -149,7 +155,7 @@ class Application_CORS
                 // However, Chrome has some versions in which this fails, and
                 // the request is simply shown as being empty.
                 //
-                // To make it at least easier to debug, added this forbidden header.
+                // To make it at least easier to debug, this forbidden header was added.
                 header('HTTP/1.1 403 Access forbidden by CORS rules for '.$origin);
                 exit;
             }
@@ -178,14 +184,14 @@ class Application_CORS
     
    /**
     * Retrieves the string to use for the <code>Access-Control-Allow-Origin</code>
-    * header. This can be the wildcard, <code>*</code>, the exact matched domain,
+    * header. This can be the wildcard, <code>*</code>, the exact-matched domain,
     * e.g. <code>http://www.matched-domain.com</code> or <code>none</code> if the
     * origin is not trusted. 
     * 
     * @param string $origin
     * @return string|NULL
     */
-    protected function getMatchedCORSDomain($origin)
+    protected function getMatchedCORSDomain(string $origin) : ?string
     {
         $info = parse_url($origin);
 
@@ -199,7 +205,7 @@ class Application_CORS
         // go through the wildcard domains first
         $keep = array();
         foreach($this->domains as $domain) {
-            if($domain['host'] == '*') {
+            if($domain['host'] === '*') {
                 if($this->isPortAllowed($originPort, $domain['port'])) {
                     return '*';
                 }
@@ -233,16 +239,12 @@ class Application_CORS
     * @param string|integer $allowedPort
     * @return boolean
     */
-    protected function isPortAllowed($port, $allowedPort)
+    protected function isPortAllowed($port, $allowedPort) : bool
     {
-        if($allowedPort == '*' || $port == $allowedPort) {
-            return true;
-        }
-        
-        return false;
+        return $allowedPort === '*' || (int)$port === (int)$allowedPort;
     }
     
-    protected $simulate;
+    protected bool $simulate;
     
    /**
     * Allows simulating a specific string sent as origin in the
@@ -251,9 +253,9 @@ class Application_CORS
     * NOTE: Must be set before calling {@link init()}.
     * 
     * @param string $domain
-    * @return Application_CORS
+    * @return $this
     */
-    public function simulateOrigin($domain)
+    public function simulateOrigin(string $domain) : self
     {
         $this->simulate = $domain;
         return $this;
