@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Ajax\AjaxException;
+use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application\AppFactory;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper_Exception;
@@ -13,6 +14,7 @@ class Application_AjaxHandler
 {
     public const ERROR_CANNOT_REGISTER_CLASS_FILE = 17995001;
     public const ERROR_CLASSES_FOLDER_DOES_NOT_EXIST = 17995002;
+    public const ERROR_NO_SUCH_METHOD = 17995003;
 
     protected Application_Driver $driver;
     protected Application_Request $request;
@@ -30,6 +32,7 @@ class Application_AjaxHandler
         $this->user = $driver->getUser();
         
         $this->requireMethodsFromFolder(FolderInfo::factory($this->driver->getApplication()->getClassesFolder().'/Application/AjaxMethods'));
+        $this->addMethodsFromFolder(FolderInfo::factory($this->driver->getClassesFolder().'/AjaxMethods'));
     }
 
     public function getDriver() : Application_Driver
@@ -130,7 +133,7 @@ class Application_AjaxHandler
     
     public function getErrorMethod() : Application_AjaxMethod
     {
-        return $this->requireMethodByName(Application_AjaxMethods_NoAJAXHandlerFound::METHOD_NAME);
+        return $this->requireMethodByName(NoAjaxHandlerFoundMethod::METHOD_NAME);
     }
 
     /**
@@ -163,6 +166,7 @@ class Application_AjaxHandler
                 $methodName,
                 implode(PHP_EOL.'- ', $this->getMethodNames())
             ),
+            self::ERROR_NO_SUCH_METHOD
         );
     }
 
