@@ -2,7 +2,13 @@
 
 declare(strict_types=1);
 
-class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
+namespace Application\AjaxMethods;
+
+use Application;
+use Application_AjaxMethod;
+use Application_Feedback;
+
+class AddFeedbackMethod extends Application_AjaxMethod
 {
     public const METHOD_NAME = 'AddFeedback';
 
@@ -50,7 +56,7 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
      */
     private $text;
 
-    protected function validateRequest()
+    protected function validateRequest() : void
     {
         $this->collection = Application::createFeedback();
 
@@ -58,8 +64,7 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
             ->setEnum($this->collection->getScopeIDs())
             ->get();
 
-        if (empty($this->scope))
-        {
+        if (empty($this->scope)) {
             $this->sendErrorUnknownElement('Scope');
         }
 
@@ -67,8 +72,7 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
             ->setEnum($this->collection->getTypeIDs())
             ->get();
 
-        if (empty($this->type))
-        {
+        if (empty($this->type)) {
             $this->sendErrorUnknownElement('Type');
         }
 
@@ -76,8 +80,7 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
             ->setURL()
             ->get();
 
-        if (empty($this->url))
-        {
+        if (empty($this->url)) {
             $this->sendErrorUnknownElement('URL');
         }
 
@@ -86,8 +89,7 @@ class Application_AjaxMethods_AddFeedback extends Application_AjaxMethod
             ->addHTMLSpecialcharsFilter()
             ->get();
 
-        if (empty($this->text))
-        {
+        if (empty($this->text)) {
             $this->sendErrorUnknownElement('Feedback text');
         }
     }
