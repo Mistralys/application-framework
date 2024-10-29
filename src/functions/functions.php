@@ -264,8 +264,9 @@ function isContentTypeHTML()
  * be switched to plain text.
  *
  * @param Throwable $e
+ * @return never
  */
-function displayError(Throwable $e) : void
+function displayError(Throwable $e)
 {
     $develinfo = true;
     $output = ob_get_clean();
