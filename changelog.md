@@ -4,6 +4,10 @@
 - Revisionables: Improved the record destruction message to use `getIdentification()`.
 - Database: Added the ASCII character set to all relevant database columns.
 - Database: Temporarily removed the index on the `known_users::email` column (see [#61](https://github.com/Mistralys/application-framework/issues/61)).
+- AppFactory: Added `findClassesInFolder()`.
+- AppFactory: Added the static `ClassCacheHandler` to handle dynamic class caching.
+- AJAX: Added `getMethodName()` to all AJAX methods.
+- AJAX: Using the AppFactory to load method classes.
 
 ### SQL Update
 
