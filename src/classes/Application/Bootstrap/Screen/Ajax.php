@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\FileHelper\FolderInfo;
+
 class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 {
     public function getDispatcher() : string
@@ -19,10 +21,7 @@ class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 
         try
         {
-            $ajax->addMethodsFromFolder(
-                $this->driver->getClassesFolder().'/AjaxMethods', 
-                APP_CLASS_NAME.'_AjaxMethods'
-            );
+            $ajax->addMethodsFromFolder(FolderInfo::factory($this->driver->getClassesFolder().'/AjaxMethods'));
             
             $ajax->process();
         }
