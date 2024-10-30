@@ -86,6 +86,8 @@ class Connectors_Response implements Application_Interfaces_Loggable
         
         $this->responseData = $this->extractDataFromBody($result->getBody());
 
+        // Only method requests have the "state" key, so any data extracted
+        // from the response must be considered loose data.
         if(!$request instanceof Connectors_Request_Method || $this->isError())
         {
             $this->log('Loose data detected.');
@@ -108,7 +110,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
             return;
         }
 
-        $state = $this->responseData->getString(self::KEY_STATE);
+        $state = $this->getResponseState();
 
         $this->log('Response state is [%s].', $state);
 
@@ -419,7 +421,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
     }
 
     /**
-     * Retrieves the decoded JSON data that was returned
+     * Retrieves the decoded JSON data returned
      * by the endpoint, if any.
      *
      * @return array<mixed>
