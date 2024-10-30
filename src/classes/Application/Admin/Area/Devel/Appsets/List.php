@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 
-class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_Mode_Submode
+abstract class Application_Admin_Area_Devel_Appsets_List extends Application_Admin_Area_Mode_Submode
 {
+    public const URL_NAME = 'list';
+
     public function getURLName() : string
     {
-        return 'list';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string

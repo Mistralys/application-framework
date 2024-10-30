@@ -2,11 +2,13 @@
 
 use Application\AppFactory;
 
-class Application_Admin_Area_Devel_Appsets_Create extends Application_Admin_Area_Mode_Submode
+abstract class Application_Admin_Area_Devel_Appsets_Create extends Application_Admin_Area_Mode_Submode
 {
+    public const URL_NAME = 'create';
+
     public function getURLName() : string
     {
-        return 'create';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string

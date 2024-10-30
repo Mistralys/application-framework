@@ -2,11 +2,13 @@
 
 use Application\AppFactory;
 
-class Application_Admin_Area_Devel_Appsets_Delete extends Application_Admin_Area_Mode_Submode
+abstract class Application_Admin_Area_Devel_Appsets_Delete extends Application_Admin_Area_Mode_Submode
 {
+    public const URL_NAME = 'delete';
+
     public function getURLName() : string
     {
-        return 'delete';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string
