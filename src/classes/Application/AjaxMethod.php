@@ -26,6 +26,13 @@ abstract class Application_AjaxMethod
     public const RETURNFORMAT_JSON = 'JSON';
     public const RETURNFORMAT_TEXT = 'TXT';
     public const RETURNFORMAT_XML = 'XML';
+    public const PAYLOAD_STATE = 'state';
+    public const PAYLOAD_REQUEST_URI = 'request_uri';
+    public const PAYLOAD_DATA = 'data';
+    public const PAYLOAD_ERROR_MESSAGE = 'message';
+    public const PAYLOAD_ERROR_CODE = 'code';
+    public const STATE_SUCCESS = 'success';
+    public const STATE_ERROR = 'error';
 
     /**
      * @var Application_AjaxHandler
@@ -261,9 +268,9 @@ abstract class Application_AjaxMethod
         
         return json_encode(
             array(
-                'state' => 'success',
-                'request_uri' => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
-                'data' => $data
+                self::PAYLOAD_STATE => self::STATE_SUCCESS,
+                self::PAYLOAD_REQUEST_URI => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
+                self::PAYLOAD_DATA => $data
             ),
             JSON_THROW_ON_ERROR
         );
@@ -285,10 +292,10 @@ abstract class Application_AjaxMethod
         }
         
         return array(
-            'state' => 'error',
-            'message' => $message,
-            'code' => $code,
-            'data' => $data
+            self::PAYLOAD_STATE => self::STATE_ERROR,
+            self::PAYLOAD_ERROR_MESSAGE => $message,
+            self::PAYLOAD_ERROR_CODE => $code,
+            self::PAYLOAD_DATA => $data
         );
     }
 

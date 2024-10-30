@@ -6,9 +6,9 @@ namespace TestDriver\AjaxMethods;
 
 use Application_AjaxMethod;
 
-class AppSpecificMethod extends Application_AjaxMethod
+class TestJSONFormatMethod extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'AppSpecificMethod';
+    public const METHOD_NAME = 'TestJSONFormat';
 
     public function getMethodName(): string
     {
@@ -17,6 +17,6 @@ class AppSpecificMethod extends Application_AjaxMethod
 
     public function processJSON() : void
     {
-        $this->sendJSONResponse(['success' => 'yes']);
+        $this->sendJSONResponse(array('success' => 'yes'));
     }
 }
