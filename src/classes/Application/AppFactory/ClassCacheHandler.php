@@ -67,6 +67,9 @@ class ClassCacheHandler
             self::$classCache[$cacheKey][] = $classInfo->getNameNS();
         }
 
+        // Ensure consistent order
+        sort(self::$classCache[$cacheKey]);
+
         $cacheFile->putData(self::$classCache[$cacheKey]);
 
         return self::$classCache[$cacheKey];
