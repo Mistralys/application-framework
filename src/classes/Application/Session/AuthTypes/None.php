@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the trait {@see Application_Session_AuthTypes_None}.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_AuthTypes_None
  */
 
 declare(strict_types=1);
@@ -13,9 +10,9 @@ use Application\AppFactory;
 use Hybridauth\User\Profile;
 
 /**
- * Use this as drop-in trait for the application's session class
+ * Use this as a drop-in trait for the application's session class
  * when the application does not require any authentication: it
- * uses the system user to simulate the logged in user.
+ * uses the system user to simulate the logged-in user.
  *
  * @package Application
  * @subpackage Sessions
@@ -54,5 +51,11 @@ trait Application_Session_AuthTypes_None
     public function getRightsString() : string
     {
         return implode(',', $this->fixedRights);
+    }
+
+    protected function redirectToReturnURI(bool $authActive) : void
+    {
+        // Do nothing: Without authentication, there is no need to redirect
+        // to a return URI, as there are no callbacks between services.
     }
 }
