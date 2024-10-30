@@ -86,6 +86,11 @@ class BaseCacheControlScreen extends Application_Admin_Area_Mode
         $this->renderer->setAbstract(sb()
             ->t('These are all cache locations used in %1$s.', $this->driver->getAppNameShort())
             ->t('Use the list actions to choose among the possible maintenance tasks for the selected locations.')
+            ->t('Also see:')
+            ->link(
+                t('The cache control documentation'),
+                CacheManager::DOCUMENTATION_URL
+            )
         );
     }
 
