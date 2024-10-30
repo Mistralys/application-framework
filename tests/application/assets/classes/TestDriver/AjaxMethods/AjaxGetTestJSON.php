@@ -6,9 +6,10 @@ namespace TestDriver\AjaxMethods;
 
 use Application_AjaxMethod;
 
-class TestJSONFormatMethod extends Application_AjaxMethod
+class AjaxGetTestJSON extends Application_AjaxMethod
 {
-    public const METHOD_NAME = 'TestJSONFormat';
+    public const METHOD_NAME = 'GetTestJSON';
+    public const RESPONSE_PAYLOAD = array('success' => 'yes');
 
     public function getMethodName(): string
     {
@@ -17,6 +18,6 @@ class TestJSONFormatMethod extends Application_AjaxMethod
 
     public function processJSON() : void
     {
-        $this->sendJSONResponse(array('success' => 'yes'));
+        $this->sendJSONResponse(self::RESPONSE_PAYLOAD);
     }
 }

@@ -9,7 +9,7 @@ use Application\AppFactory;
 use Application\AjaxMethods\AddFeedbackMethod;
 use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application_AjaxHandler;
-use TestDriver\AjaxMethods\AppSpecificMethod;
+use TestDriver\AjaxMethods\AjaxGetTestJSON;
 
 final class AjaxHandlerTests extends ApplicationTestCase
 {
@@ -20,7 +20,7 @@ final class AjaxHandlerTests extends ApplicationTestCase
         $this->assertNotEmpty($names);
         $this->assertContains(AddFeedbackMethod::METHOD_NAME, $names);
         $this->assertContains(NoAjaxHandlerFoundMethod::METHOD_NAME, $names);
-        $this->assertContains(AppSpecificMethod::METHOD_NAME, $names);
+        $this->assertContains(AjaxGetTestJSON::METHOD_NAME, $names);
     }
 
     public function test_getByName() : void
