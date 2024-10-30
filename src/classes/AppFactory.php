@@ -12,6 +12,7 @@ namespace Application;
 use Application;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
+use Application\CacheControl\CacheManager;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
@@ -242,6 +243,17 @@ class AppFactory
     public static function createDevChangelog() : DevChangelog
     {
         return self::createClassInstance(DevChangelog::class);
+    }
+
+    /**
+     * Creates / gets the global cache manager instance used
+     * to manage all cache locations in the application.
+     *
+     * @return CacheManager
+     */
+    public static function createCacheManager() : CacheManager
+    {
+        return CacheManager::getInstance();
     }
 
     // endregion
