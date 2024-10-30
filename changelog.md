@@ -1,25 +1,43 @@
-## v5.4.0 - UTF8MB4 compatibility (SQL Update)
+## v5.4.0 - Class loading and AJAX (SQL, Breaking-S)
 - Deployments: Added a callback to write the localization files to disk.
 - Deployments: Added logging in the deployment process for debugging.
 - Revisionables: Improved the record destruction message to use `getIdentification()`.
-- Database: Added the ASCII character set to all relevant database columns.
 - Database: Temporarily removed the index on the `known_users::email` column (see [#61](https://github.com/Mistralys/application-framework/issues/61)).
 - AppFactory: Added `findClassesInFolder()`.
 - AppFactory: Added the static `ClassCacheHandler` to handle dynamic class caching.
 - AJAX: Added `getMethodName()` to all AJAX methods.
 - AJAX: Using the AppFactory to load method classes.
+- AJAX: Method class names now support namespaces and can be freely named.
+- AJAX: Added some tests against the application's own AJAX methods. 
+- RequestLog: Now sorting log entries from most recent to oldest.
+- Icons: Added the `cache` icon.
+- CacheControl: Added the `CacheManager` class to handle cache locations.
+- CacheControl: Added a dedicated screen in the Developer area.
+- DataGrids: Removed padding of checkbox labels in cells.
+- TestApp: Added the app sets UI in the test driver application.
+- Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
+
+### Cache Control
+
+To make use of the new cache control screen, do the following:
+
+1. Create a screen class under `{DriverName}/Area/Devel/CacheControlScreen` 
+   that implements the base class `CacheControlScreenInterface`.
+2. Call `registerCacheControl()` in your developer admin screen.
+
+
 
 ### SQL Update
 
-To be able to set up the framework with `utf8_mb4` charsets, a number of
-columns must have their character set changed to `ascii`. This is necessary
-because their character sizes will not work correctly with `utf8_mb4`.
+This update is straightforward and non-destructive. Import the provided SQL script:
 
-This update is straightforward and non-destructive. 
+[docs/sql/2024-10-28-user-email-index.sql](/docs/sql/2024-10-28-user-email-index.sql)
 
-Import the provided SQL script:
+### Breaking changes
 
-[docs/sql/2024-10-28-ascii-columns.sql](/docs/sql/2024-10-28-ascii-columns.sql)
+1. All custom Ajax methods of the application must now implement the `getMethodName()` 
+   method to return their method name. This makes it possible to use namespaces and
+   arbitrary class names for the methods.
 
 ## v5.3.4 - Upgraded localization library
 - Countries: Updated return types to avoid using deprecated AppLocalization types.
