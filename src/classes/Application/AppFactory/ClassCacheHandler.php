@@ -97,4 +97,23 @@ class ClassCacheHandler
     {
         return self::$enabled === true || !isDevelMode() || !Application::isUnitTestingRunning();
     }
+
+    private static ?ClassCacheLocation $cacheLocation = null;
+
+    /**
+     * Gets the cache location instance for the folder where
+     * the class cache files are stored, for use with the
+     * {@see Application\CacheControl\CacheManager}.
+     *
+     * @return ClassCacheLocation
+     * @see Application\OfflineEvents\RegisterCacheLocationsEvent\RegisterClassCacheHandler::handleEvent()
+     */
+    public static function getCacheLocation() : ClassCacheLocation
+    {
+        if(self::$cacheLocation === null) {
+            self::$cacheLocation = new ClassCacheLocation();
+        }
+
+        return self::$cacheLocation;
+    }
 }
