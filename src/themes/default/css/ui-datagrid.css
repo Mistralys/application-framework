@@ -226,6 +226,11 @@ TABLE.table.table-hover TR.row-type-warning:hover > TD {
     background-color: var(--color-bg-warning-hover) !important;
 }
 
+TABLE.table .grid-check-label{
+    margin: 0;
+    padding: 0;
+}
+
 /** -------------------------------------------------------------------------
     Hide header and footer
     ------------------------------------------------------------------------- */

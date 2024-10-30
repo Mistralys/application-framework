@@ -67,7 +67,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     public function renderCheckboxLabel(string $label) : string
     {
         return sprintf(
-            '<label for="%s">%s</label>',
+            '<label for="%s" class="grid-check-label">%s</label>',
             $this->getCheckboxID(),
             $label
         );
