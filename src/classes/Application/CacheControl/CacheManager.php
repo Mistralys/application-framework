@@ -15,6 +15,7 @@ use Application_EventHandler_OfflineEvents_OfflineEvent;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\ConvertHelper;
+use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
  * The cache manager is a singleton that acts as an inventory of
@@ -39,9 +40,13 @@ use AppUtils\ConvertHelper;
  *
  * @method CacheLocationInterface getByID(string $id)
  * @method CacheLocationInterface[] getAll()
+ *
+ * @see self::DOCUMENTATION_URL
  */
 class CacheManager extends BaseStringPrimaryCollection
 {
+    public const DOCUMENTATION_URL = DocumentationPages::MANAGING_CACHE_LOCATIONS;
+
     private static ?self $instance = null;
 
     private function __construct()
@@ -67,6 +72,18 @@ class CacheManager extends BaseStringPrimaryCollection
         foreach($this->triggerRegisterEvent()->getLocations() as $location) {
             $this->registerItem($location);
         }
+    }
+
+    /**
+     * @return $this
+     */
+    public function clearAll() : self
+    {
+        foreach($this->getAll() as $location) {
+            $location->clear();
+        }
+
+        return $this;
     }
 
     private function triggerRegisterEvent() : RegisterCacheLocationsEvent
