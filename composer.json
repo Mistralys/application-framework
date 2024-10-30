@@ -64,7 +64,7 @@
   "prefer-stable": true,
   "require": {
     "psr/log": ">=1.1.0",
-    "mistralys/application-framework-docs": "dev-main",
+    "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
     "mistralys/application-utils": ">=3.0.4",
     "mistralys/application-utils-core": ">=1.2.0",
