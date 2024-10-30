@@ -6,14 +6,8 @@ use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
 use Composer\Autoload\ClassLoader;
-use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 const APP_DEVEL_SQL_MODE = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION';
-
-/**
- * @deprecated Use {@see DocumentationPages} instead.
- */
-const APP_FRAMEWORK_DOCUMENTATION_URL = DocumentationPages::START;
 
 /**
  * Must be loaded manually, because autoloading is not ready
