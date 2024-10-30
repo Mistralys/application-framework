@@ -16,8 +16,4 @@ namespace Application\CacheControl;
  */
 abstract class BaseCacheLocation implements CacheLocationInterface
 {
-    public function getID() : string
-    {
-        return str_replace(array('\\', '_'), '-', get_class($this));
-    }
 }
