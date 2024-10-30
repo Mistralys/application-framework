@@ -25,7 +25,7 @@ use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
 use UI_Page;
 
-abstract class ApplicationTestCase extends TestCase
+abstract class ApplicationTestCase extends TestCase implements ApplicationTestCaseInterface
 {
     /**
      * @var array<string,int>
