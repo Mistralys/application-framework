@@ -38,6 +38,8 @@ This update is straightforward and non-destructive. Import the provided SQL scri
 1. All custom Ajax methods of the application must now implement the `getMethodName()` 
    method to return their method name. This makes it possible to use namespaces and
    arbitrary class names for the methods.
+2. Removed the global constant `APP_FRAMEWORK_DOCUMENTATION_URL`. 
+   Use the `DocumentationHub` class instead.
 
 ## v5.3.4 - Upgraded localization library
 - Countries: Updated return types to avoid using deprecated AppLocalization types.
