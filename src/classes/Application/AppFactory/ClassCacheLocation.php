@@ -8,6 +8,13 @@ use Application\CacheControl\BaseCacheLocation;
 
 class ClassCacheLocation extends BaseCacheLocation
 {
+    public const CACHE_ID = 'DynamicClassCache';
+
+    public function getID(): string
+    {
+        return self::CACHE_ID;
+    }
+
     public function getByteSize(): int
     {
         return ClassCacheHandler::getCacheFolder()->getSize();
