@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 {
+    public const DISPATCHER = 'ajax/';
+
     public function getDispatcher() : string
     {
-        return 'ajax/';
+        return self::DISPATCHER;
     }
     
     protected function _boot() : void
