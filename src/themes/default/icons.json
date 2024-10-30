@@ -830,5 +830,9 @@
   "tree": {
     "icon": "sitemap",
     "type": "fas"
+  },
+  "cache": {
+    "icon": "memory",
+    "type": "fas"
   }
 }

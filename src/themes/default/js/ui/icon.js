@@ -124,6 +124,7 @@ var UI_Icon =
     Build:function() { return this.SetType('magic'); },
     Business:function() { return this.SetType('university'); },
     Button:function() { return this.SetType('external-link-square-alt'); },
+    Cache:function() { return this.SetType('memory', 'fas'); },
     Calendar:function() { return this.SetType('calendar'); },
     Campaigns:function() { return this.SetType('flag'); },
     Cancel:function() { return this.SetType('ban'); },
