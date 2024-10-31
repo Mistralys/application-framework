@@ -14,32 +14,14 @@
 - CacheControl: Added the `CacheManager` class to handle cache locations.
 - CacheControl: Added a dedicated screen in the Developer area.
 - DataGrids: Removed padding of checkbox labels in cells.
-- TestApp: Added the app sets UI in the test driver application.
+- Admin: Added a base class for the "Devel > Application configuration" screen. 
+- TestApp: Added the "Application sets" screen.
+- TestApp: Added the "Application configuration" screen.
 - Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
 
-### Cache Control
+### Upgrade guide
 
-To make use of the new cache control screen, do the following:
-
-1. Create a screen class under `{DriverName}/Area/Devel/CacheControlScreen` 
-   that implements the base class `CacheControlScreenInterface`.
-2. Call `registerCacheControl()` in your developer admin screen.
-
-
-
-### SQL Update
-
-This update is straightforward and non-destructive. Import the provided SQL script:
-
-[docs/sql/2024-10-28-user-email-index.sql](/docs/sql/2024-10-28-user-email-index.sql)
-
-### Breaking changes
-
-1. All custom Ajax methods of the application must now implement the `getMethodName()` 
-   method to return their method name. This makes it possible to use namespaces and
-   arbitrary class names for the methods.
-2. Removed the global constant `APP_FRAMEWORK_DOCUMENTATION_URL`. 
-   Use the `DocumentationHub` class instead.
+See the [upgrade guide](docs/upgrade-guides/upgrade-v5.4.0.md) for details.
 
 ## v5.3.4 - Upgraded localization library
 - Countries: Updated return types to avoid using deprecated AppLocalization types.
