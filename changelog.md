@@ -8,7 +8,13 @@
 - AJAX: Added `getMethodName()` to all AJAX methods.
 - AJAX: Using the AppFactory to load method classes.
 - AJAX: Method class names now support namespaces and can be freely named.
-- AJAX: Added some tests against the application's own AJAX methods. 
+- AJAX: Added some tests against the application's own AJAX methods.
+- AJAX: Now correctly sending the `returnFormat` flag from clientside.
+- AJAX: Now correctly recognizing the expected return format.
+- UI: Added the jQuery extension `$().onClassChange()` to observe element class changes.
+- UI: Fixed badge dropdown caret position.
+- UI: Dropdowns: Added the AJAX loading feature for asynchronous menu loading.
+- UI: Dropdowns: Added `renderMenuItems()` to the menu class.
 - RequestLog: Now sorting log entries from most recent to oldest.
 - Icons: Added the `cache` icon.
 - CacheControl: Added the `CacheManager` class to handle cache locations.
