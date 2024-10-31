@@ -9,6 +9,7 @@ class TestDriver_Area_Devel extends Application_Admin_Area_Devel
         $this->registerErrorLog();
         $this->registerAppSettings();
         $this->registerAppSets();
+        $this->registerAppConfig();
         $this->registerAppInterface();
         $this->registerCacheControl();
         $this->registerAppLogs();
