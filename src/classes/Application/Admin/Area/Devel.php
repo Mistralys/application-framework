@@ -1,6 +1,7 @@
 <?php
 
 use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Area\Devel\BaseAppConfigScreen;
 use Application\Admin\Area\Devel\BaseCacheControlScreen;
 use Application\Admin\Area\Devel\BaseCSSGenScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
@@ -160,9 +161,24 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         }
     }
 
-    protected function registerAppSettings($category=null)
+    protected function registerAppSettings(?string $category=null) : void
     {
-        $this->registerCoreItem('appsettings', t('Application settings'), t('Settings'), $category);
+        $this->registerCoreItem(
+            Application_Admin_Area_Devel_AppSettings::URL_NAME,
+            t('Application settings'),
+            t('Settings'),
+            $category
+        );
+    }
+
+    protected function registerAppConfig(?string $category=null) : void
+    {
+        $this->registerCoreItem(
+            BaseAppConfigScreen::URL_NAME,
+            t('Application configuration'),
+            t('Settings'),
+            $category
+        );
     }
 
     protected function registerCSSGenerator($category=null) : void
