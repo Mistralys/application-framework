@@ -36,16 +36,23 @@ class UI_Bootstrap_DropdownMenu extends UI_Bootstrap
         ?>
         <!-- start menu -->
         <ul <?php echo $this->renderAttributes() ?>>
-            <?php
-                foreach ($this->items as $item)
-                {
-                   echo $item->render();
-                }
-            ?>
+            <?php echo $this->renderMenuItems() ?>
         </ul>
         <!-- end menu -->
         <?php
         
+        return OutputBuffering::get();
+    }
+
+    public function renderMenuItems() : string
+    {
+        OutputBuffering::start();
+
+        foreach ($this->items as $item)
+        {
+            echo $item->render();
+        }
+
         return OutputBuffering::get();
     }
 
