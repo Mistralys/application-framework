@@ -99,9 +99,26 @@ class Application_AjaxHandler
         $this->methods[$method->getMethodName()] = $method;
     }
 
+    public function resolveReturnFormat() : string
+    {
+        $explicit = strtolower($this->request
+            ->registerParam('returnFormat')
+            ->setAlnum()
+            ->getString(Application_AjaxMethod::RETURNFORMAT_JSON));
+
+        foreach(Application_AjaxMethod::RETURN_FORMATS as $format) {
+            if(strtolower($format) === $explicit) {
+                return $format;
+            }
+        }
+
+        return Application_AjaxMethod::RETURNFORMAT_JSON;
+    }
+
     public function process() : void
     {
-        $returnFormat = $this->request->getParam('return', Application_AjaxMethod::RETURNFORMAT_JSON);
+        $returnFormat = $this->resolveReturnFormat();
+
         $method = $this->getMethod();
         if(!$method) {
             // allow for fallback handlers if no method was found.
