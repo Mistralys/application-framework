@@ -1192,7 +1192,10 @@ class UI
     
     public function addJquery() : void
     {
-        $this->addJavascript('jquery.min.js', 9000);
+        $prio = 9000;
+
+        $this->addJavascript('jquery.min.js', $prio);
+        $this->addJavascript('jquery-custom-extensions.js', $prio-1);
     }
     
     /**
