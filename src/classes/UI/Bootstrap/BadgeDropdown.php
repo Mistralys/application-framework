@@ -10,6 +10,8 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
     protected function init() : void
     {
         $this->badge = UI::badge('');
+
+        parent::init();
     }
     
     public function makeLabel() : self
@@ -28,9 +30,10 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
         }
 
         $this->badge
-        ->addClass('clickable')
-        ->setLabel($label)
-        ->setAttribute('data-toggle', 'dropdown');
+            ->addClass('clickable')
+            ->setLabel($label)
+            ->setID($this->getID().'-toggle')
+            ->setAttribute('data-toggle', 'dropdown');
 
         if(!empty($this->tooltip)) {
             $this->badge->setTooltip($this->tooltip);
@@ -38,7 +41,7 @@ class UI_Bootstrap_BadgeDropdown extends UI_Bootstrap_BaseDropdown implements UI
 
         $this->addClass('badge-dropdown');
         
-        return '<div'.$this->renderAttributes().'>'.$this->badge->render().''.$this->menu->render().'</div>';
+        return '<div'.$this->renderAttributes().'>'.$this->badge->render().$this->renderContent().'</div>';
     }
 
     /**

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Bootstrap\Dropdown\AJAXLoader;
 use UI\Interfaces\TooltipableInterface;
 use UI\Traits\TooltipableTrait;
 
@@ -20,6 +22,7 @@ abstract class UI_Bootstrap_BaseDropdown
     protected bool $caret = true;
     protected bool $isLink = false;
     protected bool $inNavigation = false;
+    protected ?AJAXLoader $ajax = null;
 
     public function __construct($ui)
     {
@@ -31,7 +34,7 @@ abstract class UI_Bootstrap_BaseDropdown
     
     protected function init() : void
     {
-        
+        $this->setID(nextJSID());
     }
     
    /**
@@ -173,6 +176,8 @@ abstract class UI_Bootstrap_BaseDropdown
     
     public function render() : string
     {
+        $this->initAJAX();
+
         if(!$this->menu->hasItems()) {
             return '';
         }
@@ -204,5 +209,38 @@ abstract class UI_Bootstrap_BaseDropdown
     protected function renderCaret() : string
     {
         return '<span class="caret"></span>';
+    }
+
+    /**
+     * @param string $methodName
+     * @param ArrayDataCollection|null $payload Optional parameters for the AJAX call.
+     * @return $this
+     */
+    public function makeAJAX(string $methodName, ?ArrayDataCollection $payload=null) : self
+    {
+        $this->ajax = new AJAXLoader($this->ui, $this->getID(), $methodName, $payload);
+        return $this;
+    }
+
+    private bool $ajaxInitialized = false;
+
+    private function initAJAX() : void
+    {
+        if($this->ajaxInitialized) {
+            return;
+        }
+
+        $this->ajaxInitialized = true;
+
+        if($this->ajax === null) {
+            return;
+        }
+
+        $this->menu->addStatic($this->ajax->renderPlaceholder());
+    }
+
+    protected function renderContent() : string
+    {
+        return $this->menu->render();
     }
 }

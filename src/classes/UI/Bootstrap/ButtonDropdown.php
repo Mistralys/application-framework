@@ -15,13 +15,6 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
     use ButtonSizeTrait;
     use ActivatableTrait;
 
-    protected function init(): void
-    {
-        parent::init();
-
-        $this->setID(nextJSID());
-    }
-
     /**
      * Makes the button a link.
      *
@@ -77,7 +70,7 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
         $this->linkAttributes[$name] = toString($value);
         return $this;
     }
-    
+
     protected function _render() : string
     {
         $sizeClass = $this->getSizeClass();
@@ -106,8 +99,13 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
             $this->tooltipInfo->attachToID($this->getID())->injectJS();
             $this->setAttribute('title', $this->tooltipInfo->getContent());
         }
-    
+
         $this->setLinkAttribute('data-toggle', 'dropdown');
+
+        if($this->ajax !== null) {
+            $this->setLinkAttribute('id', $this->getID().'-toggle');
+        }
+
         $this->setLinkAttribute('href', '#');
         $this->setLinkAttribute('class', implode(' ', $this->linkClasses));
         
@@ -121,7 +119,7 @@ class UI_Bootstrap_ButtonDropdown extends UI_Bootstrap_BaseDropdown
                 }
                 $html .= 
             '</a>' .
-            $this->menu->render().
+            $this->renderContent() .
         '</'.$tagName.'>';
 
         return $html;
