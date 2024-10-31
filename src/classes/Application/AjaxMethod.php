@@ -9,6 +9,7 @@ use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
+use TestDriver\AjaxMethods\AjaxRenderDropdownMenu;
 
 /**
  * Abstract base class for AJAX methods.
@@ -26,6 +27,14 @@ abstract class Application_AjaxMethod
     public const RETURNFORMAT_JSON = 'JSON';
     public const RETURNFORMAT_TEXT = 'TXT';
     public const RETURNFORMAT_XML = 'XML';
+
+    public const RETURN_FORMATS = array(
+        self::RETURNFORMAT_HTML,
+        self::RETURNFORMAT_JSON,
+        self::RETURNFORMAT_TEXT,
+        self::RETURNFORMAT_XML
+    );
+
     public const PAYLOAD_STATE = 'state';
     public const PAYLOAD_REQUEST_URI = 'request_uri';
     public const PAYLOAD_DATA = 'data';
@@ -70,19 +79,12 @@ abstract class Application_AjaxMethod
         $this->user = $driver->getUser();
         $this->driver = $driver;
 
-        $formats = array(
-            self::RETURNFORMAT_HTML,
-            self::RETURNFORMAT_JSON,
-            self::RETURNFORMAT_TEXT,
-            self::RETURNFORMAT_XML
-        );
-
         $this->CORS = new Application_CORS();
 
         $this->initCORS();
         $this->init();
         
-        foreach ($formats as $format) {
+        foreach (self::RETURN_FORMATS as $format) {
             $method = 'process' . $format;
             if (method_exists($this, $method)) {
                 $this->supportedFormats[$format] = $method;
