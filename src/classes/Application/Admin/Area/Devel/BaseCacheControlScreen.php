@@ -138,7 +138,9 @@ class BaseCacheControlScreen extends Application_Admin_Area_Mode
             t('Clear cache')
         )
             ->setIcon(UI::icon()->delete())
-            ->makeConfirm(t('Do you really want to clear the cache of the selected locations?'))
+            ->makeConfirm(sb()
+                ->t('This will delete all data stored in the selected cache locations.')
+            )
             ->makeDangerous()
             ->setCallback(Closure::fromCallable(array($this, 'handle_multiClearCache')));
 
