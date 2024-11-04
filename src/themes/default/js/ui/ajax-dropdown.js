@@ -76,6 +76,11 @@ class AJAXDropdown
 
     HandleLoadSuccess(menuHTML)
     {
+        if(trim(menuHTML) === '') {
+            this.logger.logError('Menu HTML is empty.');
+            menuHTML = '<li class="empty-menu">('+t('No items available')+')</li>';
+        }
+
         this.logger.logEvent('Menu loaded successfully.');
 
         $('#' + this.baseID+'-ajax-body').parents('UL').first().html(menuHTML);
