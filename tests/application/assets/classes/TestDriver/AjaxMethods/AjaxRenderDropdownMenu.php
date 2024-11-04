@@ -10,6 +10,8 @@ use UI;
 class AjaxRenderDropdownMenu extends Application_AjaxMethod
 {
     public const METHOD_NAME = 'RenderDropdownMenu';
+    public const REQUEST_PARAM_EMPTY_MENU = 'emptyMenu';
+    public const REQUEST_PARAM_TRIGGER_ERROR = 'triggerError';
 
     public function getMethodName(): string
     {
@@ -23,6 +25,14 @@ class AjaxRenderDropdownMenu extends Application_AjaxMethod
 
     public function processHTML() : void
     {
+        if($this->request->getBool(self::REQUEST_PARAM_EMPTY_MENU)) {
+            $this->sendHTMLResponse('');
+        }
+
+        if($this->request->getBool(self::REQUEST_PARAM_TRIGGER_ERROR)) {
+            $this->sendError(t('Error triggered by request'));
+        }
+
         $menu = UI::getInstance()->createDropdownMenu();
 
         $menu->addHeader(t('Herbs'));
