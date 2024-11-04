@@ -324,11 +324,6 @@ DIV.log > CODE {
     color: var(--color-text);
 }
 
-.dropdown-menu.height-mini {
-    height: 80px;
-    overflow: auto;
-}
-
 .back_link {
     float: left;
     margin: 4px 26px 0 0;
@@ -599,6 +594,11 @@ PRE.console {
 
 /* region: Menus, Dropdowns */
 
+.dropdown-menu.height-mini {
+    height: 80px;
+    overflow: auto;
+}
+
 /* Fix for submenus nested in dropup menus */
 .dropdown-submenu.dropdown .dropdown-menu {
     bottom: auto !important;
@@ -657,6 +657,11 @@ UL.dropdown-menu .header {
 
 .dropdown-menu LI {
     text-align: left;
+}
+
+.dropdown-menu > LI.empty-menu{
+    padding: 0 8px;
+    color: var(--color-text-muted);
 }
 
 .dropdown-menu .danger A{
