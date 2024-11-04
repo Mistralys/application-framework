@@ -1,4 +1,6 @@
-Dropdown menus can be made to load their contents using an
-AJAX request, which renders the menu items on demand.
-This can be useful for large menus, or to avoid a rendering
-step that is not necessary on each request.
+The target AJAX method must return the menu items,
+rendered as HTML. The menu object has a method
+specifically for this: `renderMenuItems()`.
+
+Look at the `AjaxRenderDropdownMenu` AJAX method
+for an example of how to use this method.
