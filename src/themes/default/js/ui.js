@@ -551,11 +551,14 @@ var UI =
 	
 	Start:function()
 	{
+		const body = $('body');
 		if (document.createElement("detect").style.zoom === "") {
-			$('body').addClass('zoomable');
+			body.addClass('zoomable');
 		} else {
-			$('body').addClass('non-zoomable');
+			body.addClass('non-zoomable');
 		}
+
+		body.css('padding-top', $('#app-mainnav').height()+'px');
 		
 		$('form').submit(function() {
 			UI.formSubmitting = true;
@@ -570,7 +573,7 @@ var UI =
 			var sections = UI.GetGroupSections(group);
 			var last = sections[sections.length-1];
 			last.SetLast();
-		}); 
+		});
 	},
 	
 	IsFormSubmitting:function()
