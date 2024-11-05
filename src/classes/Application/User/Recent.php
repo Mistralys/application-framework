@@ -10,6 +10,8 @@
 declare(strict_types=1);
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Media\Collection\MediaCollection;
+use Application\NewsCentral\NewsCollection;
 use AppUtils\ConvertHelper;
 
 /**
@@ -75,6 +77,16 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         $this->categories[] = $category;
 
         return $category;
+    }
+
+    protected function registerNews() : void
+    {
+        $this->registerCategory(NewsCollection::RECENT_ITEMS_CATEGORY, t('News articles'));
+    }
+
+    protected function registerMedia() : void
+    {
+        $this->registerCategory(MediaCollection::RECENT_ITEMS_CATEGORY, t('Media documents'));
     }
 
     public function categoryAliasExists(string $alias) : bool

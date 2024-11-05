@@ -60,6 +60,16 @@ abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_Collect
 
     protected function _handleHelp(): void
     {
+        $this->user->getRecent()->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY)
+            ->addEntry(
+                NewsCollection::RECENT_ITEMS_CATEGORY.$this->record->getID(),
+                (string)sb()
+                    ->add($this->record->getLabel())
+                    ->add('-')
+                    ->add($this->record->getLocale()->getLabel()),
+                $this->record->getAdminURL()
+            );
+
         $type = $this->record->getType();
 
         $this->renderer
