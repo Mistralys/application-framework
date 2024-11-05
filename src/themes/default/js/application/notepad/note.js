@@ -9,11 +9,13 @@ class Application_Notepad_Note
     constructor(notepad, id)
     {
         this.ERROR_CANNOT_DELETE_NOTE = 90301;
+        this.ERROR_CANNOT_PIN_NOTE = 90302;
 
         this.notepad = notepad;
         this.id = id;
         this.loaded = false;
         this.loading = false;
+        this.rendering = false;
         this.deleting = false;
         this.elContainer = null;
         this.elTitle = null;
@@ -21,6 +23,8 @@ class Application_Notepad_Note
         this.elBody = null;
         this.elLoader = null;
         this.editMode = false;
+        this.logger = new Logger(sprintf('Notepad | Note [%s]', id));
+        this.resizeSensor = null;
 
         this.elTitleInput = null;
         this.elTextInput = null;
@@ -31,20 +35,20 @@ class Application_Notepad_Note
 
     Refresh()
     {
-        if(this.editMode || this.deleting)
+        if(this.editMode || this.deleting || this.rendering)
         {
             return;
         }
 
-        this.log('Refreshing the note...');
-
         if(!this.loading)
         {
+            this.logger.logEvent('Refresh');
+
             this.LoadData();
         }
         else
         {
-            this.log('Ignoring, note is still loading data.');
+            this.logger.logEvent('Refresh | Ignoring, still loading data.');
         }
     }
 
@@ -58,12 +62,12 @@ class Application_Notepad_Note
 
     LoadData()
     {
-        this.log('Loading the note data...');
+        this.logger.logEvent('LoadData');
 
         this.loading = true;
 
-        var notepad = this;
-        var payload = {
+        const notepad = this;
+        let payload = {
             'note_id': this.id
         };
 
@@ -88,8 +92,8 @@ class Application_Notepad_Note
 
     Handle_DataLoaded(data)
     {
-        this.log('The note date has been loaded.');
-        console.log(data);
+        this.logger.logEvent('DataLoaded');
+        this.logger.logData(data);
 
         this.data = data;
 
@@ -98,13 +102,22 @@ class Application_Notepad_Note
 
     Handle_DeleteSuccess()
     {
+        this.logger.logEvent('DeleteSuccess');
+
         this.Remove();
     }
 
     Remove()
     {
+        this.logger.logUI('Remove DOM elements.');
+
         this.elContainer.remove();
         this.notepad.Handle_NoteRemoved(this);
+    }
+
+    IsReady()
+    {
+        return !this.loading && !this.deleting && !this.rendering;
     }
 
     ShowLoader()
@@ -127,6 +140,8 @@ class Application_Notepad_Note
         {
             return;
         }
+
+        this.logger.log('Delete | Requested to delete the note.');
 
         this.deleting = true;
 
@@ -154,6 +169,8 @@ class Application_Notepad_Note
             return;
         }
 
+        this.logger.log('Edit | Entering edit mode.');
+
         this.editMode = true;
 
         this.RenderEditForm();
@@ -163,6 +180,8 @@ class Application_Notepad_Note
 
     ConfirmEdits()
     {
+        this.logger.log('Edit | Saving the changes.');
+
         this.elContainer.removeClass('note-editing');
 
         var title = this.elTitleInput.val();
@@ -176,7 +195,7 @@ class Application_Notepad_Note
             'content': content
         };
 
-        var note = this;
+        const note = this;
 
         application.createAJAX('NotepadSave')
             .SetPayload(payload)
@@ -188,6 +207,8 @@ class Application_Notepad_Note
 
     Handle_SaveSuccess(data)
     {
+        this.logger.logEvent('SaveSuccess');
+
         this.editMode = false;
 
         this.Handle_DataLoaded(data);
@@ -204,7 +225,7 @@ class Application_Notepad_Note
 
     RenderEditForm()
     {
-        var note = this;
+        const note = this;
 
         this.elContainer.addClass('note-editing');
 
@@ -281,6 +302,8 @@ class Application_Notepad_Note
 
     PinToQuickstart()
     {
+        this.logger.log('PinToQuickstart | Pinning the note to the quickstart screen.');
+
         var note = this;
         var payload ={
             'note_id': this.id
@@ -288,7 +311,7 @@ class Application_Notepad_Note
 
         application.createAJAX('NotepadPin')
             .SetPayload(payload)
-            .Error(t('Could not pin the note, the request failed.'))
+            .Error(t('Could not pin the note, the request failed.'), this.ERROR_CANNOT_PIN_NOTE)
             .Success(function() {
                 note.Handle_PinSuccess();
             })
@@ -297,6 +320,8 @@ class Application_Notepad_Note
 
     Handle_PinSuccess()
     {
+        this.logger.logEvent('PinSuccess | Successfully pinned the note.');
+
         var params = new URLSearchParams(window.location.search);
         var dialog;
 
@@ -338,20 +363,13 @@ class Application_Notepad_Note
 
     CreateContainer()
     {
-        this.log('Creating the note container.');
+        this.logger.logUI('Creating the note container.');
 
-        var note = this;
+        const note = this;
 
         this.elContainer = $('<div/>')
             .addClass('notepad-note')
             .attr('data-note-id', this.id);
-
-        // Observe the note container element being
-        // resized, to automatically update the layout.
-        new ResizeSensor(this.elContainer, function() {
-            note.log('Note element has been resized.');
-            note.UpdateLayout();
-        });
 
         this.elTitleText = $('<span/>')
             .addClass('notepad-note-title-text');
@@ -411,14 +429,26 @@ class Application_Notepad_Note
         this.elContainer.append(this.elBody);
 
         this.notepad.AppendNoteElement(this.elContainer);
+
+        // Observe the note container element being
+        // resized, to automatically update the layout.
+        this.resizeSensor = new ResizeSensor(this.elContainer, function () {
+            note.UpdateLayout('Note element has been resized.');
+        });
     }
 
     Render()
     {
-        this.log('Rendering the note\'s data.');
+        if(this.rendering) {
+            return;
+        }
 
-        var note = this;
-        var content = this.data.html;
+        this.rendering = true;
+
+        this.logger.logUI('Rendering the note.');
+
+        const note = this;
+        let content = this.data.html;
 
         if(content.length === 0)
         {
@@ -430,7 +460,7 @@ class Application_Notepad_Note
                 });
         }
 
-        var pinIcon = $('[data-note-id="'+this.id+'"] .note-icon-pin');
+        const pinIcon = $('[data-note-id="'+this.id+'"] .note-icon-pin');
 
         if(this.data.isPinned) {
             pinIcon.hide();
@@ -445,22 +475,32 @@ class Application_Notepad_Note
         this.elTitle.show();
         this.elBody.show();
 
-        this.UpdateLayout();
+        UI.RefreshTimeout(function() {
+            note.Handle_Rendered();
+        });
+    }
+
+    Handle_Rendered()
+    {
+        this.rendering = false;
+
+        this.UpdateLayout('Note has been rendered.');
     }
 
     /**
      * Called whenever the note is resized, to let masonry
      * adjust the layout accordingly. This includes resizing
      * the textarea in edit mode.
+     *
+     * @param {String|null} comments=null
      */
-    UpdateLayout()
+    UpdateLayout(comments)
     {
-        this.notepad.Masonry();
-    }
+        if(!this.IsReady()) {
+            return;
+        }
 
-    log(message, category)
-    {
-        application.log('Notepad note ['+this.id+']', message, category);
+        this.notepad.Masonry();
     }
 }
 

@@ -15,6 +15,9 @@ class Application_Notepad
         this.notes = [];
         this.refreshDelay = 30; // Seconds
         this.refreshTimer = null;
+        this.initializing = true;
+        this.addedNote = null;
+        this.logger = new Logger('Notepad');
     }
 
     /**
@@ -23,7 +26,7 @@ class Application_Notepad
      */
     Open()
     {
-        this.log('Opening the notepad...');
+        this.logger.logUI('Opening the notepad...');
 
         application.disallowAutoRefresh('notepad');
 
@@ -36,7 +39,7 @@ class Application_Notepad
 
     Close()
     {
-        this.log('Closed the notepad.');
+        this.logger.logUI('Closed the notepad.');
 
         application.allowAutoRefresh('notepad');
 
@@ -49,7 +52,7 @@ class Application_Notepad
 
     LoadNotes()
     {
-        var notepad = this;
+        const notepad = this;
 
         application.createAJAX('NotepadGetIDs')
             .Success(function(data) {
@@ -68,7 +71,7 @@ class Application_Notepad
             return;
         }
 
-        this.log('Creating the notepad\'s container element.');
+        this.logger.logUI('Creating the notepad\'s container element.');
 
         var notepad = this;
         var div = $('<div></div>');
@@ -121,10 +124,14 @@ class Application_Notepad
         this.container.append(this.body);
 
         this.container.prependTo($('#content_area'));
+
+        this.notesList.masonry({
+            'itemSelector':'.notepad-note'
+        });
     }
 
     /**
-     * Appends the dom element of a note to the notes
+     * Appends the dom element of a note to the note
      * list container element.
      *
      * @param {jQuery} element
@@ -132,6 +139,7 @@ class Application_Notepad
     AppendNoteElement(element)
     {
         this.notesList.append(element);
+        this.notesList.masonry('appended', element);
     }
 
     /**
@@ -145,7 +153,7 @@ class Application_Notepad
     {
         this.log('Adding a new note...');
 
-        var notepad = this;
+        const notepad = this;
 
         application.createAJAX('NotepadAdd')
             .Success(function(data) {
@@ -168,9 +176,11 @@ class Application_Notepad
             return;
         }
 
-        this.log('Registering new note ['+noteID+'].');
+        this.logger.log('Note ['+noteID+'] | Registering.');
 
-        this.notes.push(new Application_Notepad_Note(this, noteID));
+        const note = new Application_Notepad_Note(this, noteID);
+
+        this.notes.push(note);
     }
 
     /**
@@ -179,62 +189,98 @@ class Application_Notepad
      */
     HasNoteID(noteID)
     {
-        var found = false;
+        return this.GetNoteByID(noteID) !== null;
+    }
 
-        $.each(this.notes, function(idx, note)
-        {
-            if(note.GetID() === noteID) {
-                found = true;
-                return false;
+    GetNoteByID(noteID)
+    {
+        let found = null;
+
+        $.each(
+            this.notes,
+            /**
+             * @param {Number} idx
+             * @param {Application_Notepad_Note} note
+             * @return {boolean}
+             */
+            function(idx, note)
+            {
+                if(note.GetID() === noteID) {
+                    found = note;
+                    return false;
+                }
             }
-        });
+        );
 
         return found;
     }
 
     Masonry()
     {
-        this.log('Applying masonry to note elements.');
+        if(this.initializing) {
+           return;
+        }
 
-        var list = this.notesList;
+        this.logger.log('Applying masonry to note elements.');
+
+        this.ApplyMasonry();
+    }
+
+    ApplyMasonry()
+    {
+        const list = this.notesList;
 
         // Using a short timeout to give the dynamically
         // created DOM elements the time to settle in their
         // dimensions before applying the masonry.
-        setTimeout(
+        UI.RefreshTimeout(
             function () {
-                list.masonry({
-                    'itemSelector':'.notepad-note'
-                });
-            },
-            100
+                list.masonry();
+            }
         );
     }
 
     Refresh()
     {
-        this.log('Refreshing all notes...');
+        this.logger.log('Refreshing all notes...');
 
         $.each(this.notes, function (idx, note) {
             note.Refresh();
         });
-
-        var notepad = this;
-
-        /*
-        this.refreshTimer = setTimeout(
-            function () {
-                notepad.LoadNotes();
-            },
-            this.refreshDelay * 1000
-        );
-
-         */
     }
 
     log(message, category)
     {
         application.log('Notepad', message, category);
+    }
+
+    CheckInitDone()
+    {
+        let ready = true;
+
+        $.each(
+            this.notes,
+            /**
+             * @param {Number} idx
+             * @param {Application_Notepad_Note} note
+             */
+            function (idx, note)
+            {
+                if(!note.IsReady()) {
+                    ready = false;
+                    return false;
+                }
+            }
+        );
+
+        if(ready) {
+            this.Handle_InitDone();
+        } else {
+            const notepad = this;
+            UI.RefreshTimeout(function() {
+                notepad.CheckInitDone();
+            });
+        }
     }
 
     // region: Events
@@ -245,7 +291,9 @@ class Application_Notepad
      */
     Handle_NoteAdded(noteID)
     {
-        this.log('New note was added successfully with ID ['+noteID+'].');
+        this.logger.logEvent(sprintf('Note [%s] | NoteAdded | Added successfully.', noteID));
+
+        this.addedNote = noteID;
 
         this.LoadNotes();
     }
@@ -265,6 +313,8 @@ class Application_Notepad
         });
 
         this.notes = keep;
+
+        this.Masonry();
     }
 
     /**
@@ -275,9 +325,10 @@ class Application_Notepad
      */
     Handle_IDsLoaded(ids)
     {
-        this.log('Note IDs have been loaded successfully: ['+ids.join(', ')+'].');
+        this.logger.logEvent(sprintf('IDsLoaded | [%s] IDs have been loaded successfully.', ids.length));
+        this.logger.logData(ids);
 
-        var notepad = this;
+        const notepad = this;
 
         $.each(ids, function (idx, noteID) {
             notepad.RegisterNote(noteID);
@@ -294,7 +345,22 @@ class Application_Notepad
             }
         });
 
-        this.Refresh();
+        this.CheckInitDone();
+    }
+
+    Handle_InitDone()
+    {
+        this.logger.logEvent(sprintf('InitDone | All [%s] notes are rendered and ready.', this.notes.length));
+
+        this.initializing = false;
+
+        if(this.addedNote !== null) {
+            this.logger.log(sprintf('Note [%s] | Opening after adding it.', this.addedNote));
+            this.GetNoteByID(this.addedNote).Edit();
+            this.addedNote = null;
+        } else {
+            this.Masonry();
+        }
     }
 
     // endregion
