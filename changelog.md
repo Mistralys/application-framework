@@ -15,6 +15,7 @@
 - UI: Fixed badge dropdown caret position.
 - UI: Dropdowns: Added the AJAX loading feature for asynchronous menu loading.
 - UI: Dropdowns: Added `renderMenuItems()` to the menu class.
+- UI: Body padding now dynamically adjusted after the main navigation.
 - RequestLog: Now sorting log entries from most recent to oldest.
 - Icons: Added the `cache` icon.
 - CacheControl: Added the `CacheManager` class to handle cache locations.
@@ -26,6 +27,7 @@
 - Quickstart: Added news entries and media files to the quickstart.
 - Quickstart: Added `registerNews()` and `registerMedia()` in the user's recent items base class.
 - Quickstart: Fixed loading entries in all requests ([#74](https://github.com/Mistralys/application-framework/issues/74)).
+- Notepad: Fixed broken layout when adding new notes ([#57](https://github.com/Mistralys/application-framework/issues/57)).
 - Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
 
 ### Upgrade guide
