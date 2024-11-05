@@ -36,22 +36,33 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
     private Application_User $user;
 
     /**
-     * @var Application_User_Recent_Category[]
+     * @var Application_User_Recent_Category[]|NULL
      */
-    private array $categories = array();
+    private ?array $categories = null;
 
     public function __construct(Application_User $user)
     {
         $this->user = $user;
-
-        $this->registerCategories();
-
-        $this->log(sprintf('Registered [%s] categories.', count($this->categories)));
     }
 
     public function getMaxItemsDefault() : int
     {
         return Application_User_Recent_Category::MAX_ITEMS_DEFAULT;
+    }
+
+    private function initCategories() : array
+    {
+        if(isset($this->categories)) {
+            return $this->categories;
+        }
+
+        $this->categories = array();
+
+        $this->registerCategories();
+
+        $this->log(sprintf('Registered [%s] categories.', count($this->categories)));
+
+        return $this->categories;
     }
 
     abstract protected function registerCategories() : void;
@@ -61,7 +72,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         if($this->categoryAliasExists($alias))
         {
             throw new Application_Exception(
-                'Recent items c1ategory alias already exists.',
+                'Recent items category alias already exists.',
                 sprintf(
                     'Cannot add category with alias [%s], a category has already been added with the same alias.',
                     $alias
@@ -74,7 +85,9 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
         $category = new Application_User_Recent_Category($this, $alias, $label);
 
-        $this->categories[] = $category;
+        $categories = $this->initCategories();
+        $categories[] = $category;
+        $this->categories = $categories;
 
         return $category;
     }
@@ -105,7 +118,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
      */
     public function getCategoryByAlias(string $alias) : Application_User_Recent_Category
     {
-        foreach ($this->categories as $category)
+        foreach ($this->initCategories() as $category)
         {
             if($category->getAlias() === $alias)
             {
@@ -131,7 +144,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
     {
         $result = array();
 
-        foreach ($this->categories as $category)
+        foreach ($this->initCategories() as $category)
         {
             $result[] = $category->getAlias();
         }
@@ -152,13 +165,15 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
      */
     public function getCategories(bool $includeHidden=true): array
     {
+        $categories = $this->initCategories();
+
         if($includeHidden)
         {
-            return $this->categories;
+            return $categories;
         }
 
         $result = array();
-        foreach ($this->categories as $category)
+        foreach ($categories as $category)
         {
             if($category->getMaxItems() > 0)
             {
@@ -171,7 +186,7 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
 
     public function hasEntries() : bool
     {
-        foreach ($this->categories as $category)
+        foreach ($this->initCategories() as $category)
         {
             if($category->hasEntries())
             {

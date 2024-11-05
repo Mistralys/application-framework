@@ -34,9 +34,9 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
     private ?BaseLookupItem $lookupItem = null;
 
     /**
-     * @var Application_User_Recent_Entry[]
+     * @var Application_User_Recent_Entry[]|NULL
      */
-    private array $entries = array();
+    private ?array $entries = null;
 
     public function __construct(Application_User_Recent $recent, string $alias, string $label)
     {
@@ -45,10 +45,6 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
         $this->label = $label;
         $this->user = $this->recent->getUser();
         $this->settingName = 'recent_entries_'.$this->alias;
-
-        $this->log(sprintf('Setting name [%s].', $this->settingName));
-
-        $this->loadEntries();
     }
 
     public function getDefaultOptions(): array
@@ -90,6 +86,8 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      */
     public function addEntry(string $id, string $label, string $url, ?DateTime $date=null) : Application_User_Recent_Entry
     {
+        $this->log('Entry [%s] | Adding as new entry.', $id, $label);
+
         if(!$date)
         {
             $date = new DateTime();
@@ -97,6 +95,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
         if($this->entryIDExists($id))
         {
+            $this->log('Entry [%s] | Already exists.', $id);
             $this->unregisterEntry($this->getEntryByID($id));
         }
 
@@ -109,22 +108,25 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
     private function registerEntry(string $id, string $label, string $url, DateTime $date) : Application_User_Recent_Entry
     {
-        $this->log(sprintf('Registering new entry [%s %s].', $id, $date->format('Y-m-d H:i:s')));
+        $this->log(sprintf('Entry [%s] | Registering the entry @%s.', $id, $date->format('Y-m-d H:i:s')));
 
         $entry = new Application_User_Recent_Entry($this, $id, $label, $url, $date);
 
-        $this->entries[] = $entry;
+        $entries = $this->getEntries();
+        $entries[] = $entry;
 
-        usort($this->entries, static function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
+        usort($entries, static function (Application_User_Recent_Entry $a, Application_User_Recent_Entry $b) {
             return $b->getDate() <=> $a->getDate();
         });
 
-        $total = count($this->entries);
+        $total = count($entries);
 
         if($total > self::STORAGE_MAX_ITEMS)
         {
-            $this->entries = array_slice($this->entries, 0, self::STORAGE_MAX_ITEMS);
+            $entries = array_slice($entries, 0, self::STORAGE_MAX_ITEMS);
         }
+
+        $this->entries = $entries;
 
         return $entry;
     }
@@ -148,10 +150,12 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      */
     private function unregisterEntry(Application_User_Recent_Entry $entry) : void
     {
+        $this->log('Entry [%s] | Unregistering the entry.', $entry->getID());
+
         $keep = array();
         $removeID = $entry->getID();
 
-        foreach ($this->entries as $existing)
+        foreach ($this->getEntries() as $existing)
         {
             if($existing->getID() !== $removeID)
             {
@@ -167,6 +171,8 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      */
     public function getEntries() : array
     {
+        $this->loadEntries();
+
         return $this->entries;
     }
 
@@ -193,7 +199,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
     {
         $result = array();
 
-        foreach($this->entries as $entry)
+        foreach($this->getEntries() as $entry)
         {
             $result[] = $entry->getID();
         }
@@ -214,7 +220,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
      */
     public function getEntryByID(string $id) : Application_User_Recent_Entry
     {
-        foreach($this->entries as $entry)
+        foreach($this->getEntries() as $entry)
         {
             if($entry->getID() === $id)
             {
@@ -234,7 +240,13 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
     private function loadEntries() : void
     {
+        if(isset($this->entries)) {
+            return;
+        }
+
         $this->log('Loading entries.');
+
+        $this->entries = array();
 
         $entries = $this->recent->getUser()->getArraySetting($this->settingName);
 
@@ -256,11 +268,18 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
     private function save() : void
     {
-        $this->log(sprintf('Saving with [%s] entries.', count($this->entries)));
+        if(!isset($this->entries)) {
+            $this->log('Save | SKIP | No entries to save.');
+            return;
+        }
+
+        $entries = $this->getEntries();
+
+        $this->log(sprintf('Save | Found [%s] entries to save.', count($entries)));
 
         $data = array();
 
-        foreach ($this->entries as $entry)
+        foreach ($entries as $entry)
         {
             $data[] = $entry->toArray();
         }
@@ -280,7 +299,7 @@ class Application_User_Recent_Category implements OptionableInterface, Applicati
 
     public function hasEntries() : bool
     {
-        return !empty($this->entries);
+        return !empty($this->getEntries());
     }
 
     public function getAdminURLClear(array $params=array()) : string
