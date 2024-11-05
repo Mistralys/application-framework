@@ -214,7 +214,7 @@ var Application_AJAX =
     * 
     * @param {String} message Error message to display to the user
     * @param {Integer} code The error code to display
-    * @param {String|null} ifErrorCode Only use this error message if the triggered error code equals this code.
+    * @param {String|null} ifErrorCode=null Only use this error message if the triggered error code equals this code.
     * @return {Application_AJAX}
     */
 	Error:function(message, code, ifErrorCode)
