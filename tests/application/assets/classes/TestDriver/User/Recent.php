@@ -6,7 +6,7 @@ class TestDriver_User_Recent extends Application_User_Recent
 {
     protected function registerCategories() : void
     {
-        $this->registerCategory('foo', 'Foo');
-        $this->registerCategory('bar', 'Bar');
+        $this->registerNews();
+        $this->registerMedia();
     }
 }
