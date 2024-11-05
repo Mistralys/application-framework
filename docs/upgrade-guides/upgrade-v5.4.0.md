@@ -17,6 +17,12 @@ do the following:
    that implements the base class `BaseAppConfigScreen`.
 2. Call `registerAppConfig()` in your developer admin screen.
 
+## Recent items
+
+1. Open the class `{DriverName}_User_Recent`.
+2. Call `registerNews()` to add news entries to the categories.
+3. Call `registerMedia()` to add media documents to the categories.
+
 ## Database Update
 
 This update is straightforward and non-destructive. Import the provided SQL script:
