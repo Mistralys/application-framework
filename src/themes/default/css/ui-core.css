@@ -193,7 +193,7 @@ BODY.with-quicknav{
 }
 
 #content_frame {
-    padding: 0 0 26px 0;
+    padding: 0.5rem 0 0 0;
     position: relative;
 }
 
