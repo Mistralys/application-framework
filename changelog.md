@@ -23,6 +23,8 @@
 - Admin: Added a base class for the "Devel > Application configuration" screen. 
 - TestApp: Added the "Application sets" screen.
 - TestApp: Added the "Application configuration" screen.
+- Quickstart: Added news entries and media files to the quickstart.
+- Quickstart: Added `registerNews()` and `registerMedia()` in the user's recent items base class.
 - Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
 
 ### Upgrade guide
