@@ -29,6 +29,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 {
     use TagCollectionTrait;
 
+    public const RECENT_ITEMS_CATEGORY = 'recent_media';
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
     public const MEDIA_TYPE = 'media';

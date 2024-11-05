@@ -44,6 +44,8 @@ use NewsCentral\Entries\NewsArticle;
  */
 class NewsCollection extends DBHelper_BaseCollection
 {
+    public const RECENT_ITEMS_CATEGORY = 'recent_news';
+
     public const PRIMARY_NAME = 'news_id';
     public const TABLE_NAME = 'app_news';
     public const TABLE_NAME_ENTRY_CATEGORIES = 'app_news_entry_categories';
