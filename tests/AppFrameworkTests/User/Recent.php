@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Media\Collection\MediaCollection;
+use Application\NewsCentral\NewsCollection;
 use Mistralys\AppFrameworkTests\TestClasses\UserTestCase;
 
 /**
@@ -53,11 +55,12 @@ final class User_RecentTest extends UserTestCase
 
         $this->logHeader('Categories: Get Aliases');
 
-        $recent = $this->user->getRecent();
+        $expected = array(
+            MediaCollection::RECENT_ITEMS_CATEGORY,
+            NewsCollection::RECENT_ITEMS_CATEGORY
+        );
 
-        $aliases = $recent->getCategoryAliases();
-
-        $this->assertEquals(array('foo', 'bar'), $aliases);
+        $this->assertEquals($expected, $this->user->getRecent()->getCategoryAliases());
     }
 
     public function test_category_getByAlias() : void
@@ -70,11 +73,10 @@ final class User_RecentTest extends UserTestCase
 
         $recent = $this->user->getRecent();
 
-        $category = $recent->getCategoryByAlias('foo');
+        $category = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
 
         $this->assertNotNull($category);
-        $this->assertEquals('foo', $category->getAlias());
-        $this->assertEquals('Foo', $category->getLabel());
+        $this->assertEquals(NewsCollection::RECENT_ITEMS_CATEGORY, $category->getAlias());
     }
 
     public function test_category_aliasExists() : void
@@ -87,7 +89,7 @@ final class User_RecentTest extends UserTestCase
 
         $recent = $this->user->getRecent();
 
-        $this->assertTrue($recent->categoryAliasExists('bar'));
+        $this->assertTrue($recent->categoryAliasExists(NewsCollection::RECENT_ITEMS_CATEGORY));
         $this->assertFalse($recent->categoryAliasExists('lopos'));
     }
 
@@ -100,10 +102,10 @@ final class User_RecentTest extends UserTestCase
         $this->logHeader('Entries: Add');
 
         $recent = $this->user->getRecent();
-        $foo = $recent->getCategoryByAlias('foo');
+        $foo = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
         $id = $this->createEntryID();
 
-        $added = $foo->addEntry($id, 'An entry for Foo', 'http://foo.com');
+        $added = $foo->addEntry($id, 'An entry for news', 'https://mistralys.com');
 
         $this->assertInstanceOf(Application_User_Recent_Entry::class, $added);
     }
@@ -117,10 +119,10 @@ final class User_RecentTest extends UserTestCase
         $this->logHeader('Entries: Get by ID');
 
         $recent = $this->user->getRecent();
-        $foo = $recent->getCategoryByAlias('foo');
+        $foo = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
         $id = $this->createEntryID();
 
-        $foo->addEntry($id, 'An entry for Foo', 'http://foo.com');
+        $foo->addEntry($id, 'An entry for news', 'https://mistralys.com');
 
         $entry = $foo->getEntryByID($id);
 
@@ -136,16 +138,16 @@ final class User_RecentTest extends UserTestCase
         $this->logHeader('Entries: Get all');
 
         $recent = $this->user->getRecent();
-        $foo = $recent->getCategoryByAlias('foo');
+        $category = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
 
-        $entries = $foo->getEntries();
+        $entries = $category->getEntries();
 
         $this->assertCount(0, $entries);
 
-        $foo->addEntry($this->createEntryID(), 'An entry for Foo', 'http://foo.com');
-        $foo->addEntry($this->createEntryID(), 'Another entry for Foo', 'http://foo.com');
+        $category->addEntry($this->createEntryID(), 'An entry for news', 'https://mistralys.com');
+        $category->addEntry($this->createEntryID(), 'Another entry for news', 'https://mistralys.com');
 
-        $entries = $foo->getEntries();
+        $entries = $category->getEntries();
 
         $this->assertCount(2, $entries);
     }
@@ -159,13 +161,13 @@ final class User_RecentTest extends UserTestCase
         $this->logHeader('Entries: ID exists');
 
         $recent = $this->user->getRecent();
-        $foo = $recent->getCategoryByAlias('foo');
+        $foo = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
 
         $id = $this->createEntryID();
 
         $this->assertFalse($foo->entryIDExists($id));
 
-        $foo->addEntry($id, 'An entry for Foo', 'http://foo.com');
+        $foo->addEntry($id, 'An entry for news', 'https://mistralys.com');
 
         $this->assertTrue($foo->entryIDExists($id));
     }
@@ -180,16 +182,16 @@ final class User_RecentTest extends UserTestCase
 
         $user = $this->user;
         $recent = $user->getRecent();
-        $foo = $recent->getCategoryByAlias('foo');
+        $foo = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
 
         $id = $this->createEntryID();
 
-        $foo->addEntry($id, 'An entry for Foo', 'http://foo.com');
+        $foo->addEntry($id, 'An entry for news', 'https://mistralys.com');
 
         $user->clearCache();
         $recent = $user->getRecent();
 
-        $entry = $recent->getCategoryByAlias('foo')->getEntryByID($id);
+        $entry = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY)->getEntryByID($id);
 
         $this->assertInstanceOf(Application_User_Recent_Entry::class, $entry);
     }
