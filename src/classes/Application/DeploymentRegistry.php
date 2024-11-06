@@ -1,11 +1,16 @@
 <?php
+/**
+ * @package Application
+ * @subpackage DeploymentRegistry
+ */
 
 declare(strict_types=1);
 
 namespace Application;
 
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
-use Application\Driver\DriverException;
+use Application\DeploymentRegistry\DeploymentTaskInterface;
+use Application\DeploymentRegistry\Tasks\WriteLocalizationFilesTask;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Devel;
 use Application_Driver;
@@ -13,18 +18,22 @@ use Application_Exception;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
-use AppUtils\FileHelper;
-use AppUtils\FileHelper_Exception;
-use AppUtils\Microtime_Exception;
-use JsonException;
-use Application\DeploymentRegistry\BaseDeployTask;
+use AppUtils\Collections\BaseStringPrimaryCollection;
+use AppUtils\FileHelper\FolderInfo;
 use Application\DeploymentRegistry\DeploymentInfo;
-use Application\DeploymentRegistry\Tasks\StoreDeploymentInfo;
-use testsuites\DBHelper\RecordTests;
 
-class DeploymentRegistry implements Application_Interfaces_Loggable
+/**
+ * The deployment registry is responsible for managing the deployment tasks,
+ * as well as storing the deployment history.
+ *
+ * @package Application
+ * @subpackage DeploymentRegistry
+ *
+ * @method DeploymentTaskInterface getByID(string $id)
+ * @method DeploymentTaskInterface[] getAll()
+ * @method DeploymentTaskInterface getDefault()
+ */
+class DeploymentRegistry extends BaseStringPrimaryCollection implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
@@ -33,25 +42,12 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
     public const ERROR_VERSION_DOES_NOT_EXIST = 123901;
 
     /**
-     * @var BaseDeployTask[]
-     */
-    private array $tasks = array();
-
-    /**
      * @var DeploymentInfo[]|null
      */
     private ?array $historyCache = null;
 
-    public function __construct()
-    {
-    }
-
     /**
      * @return DeploymentInfo[] From oldest to newest.
-     *
-     * @throws Microtime_Exception
-     * @throws DriverException
-     * @throws JsonException
      */
     public function getHistory() : array
     {
@@ -74,6 +70,11 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
         return $result;
     }
 
+    public function getDefaultID(): string
+    {
+        return WriteLocalizationFilesTask::TASK_NAME;
+    }
+
     public function getLastDeployment() : ?DeploymentInfo
     {
         $history = $this->getHistory();
@@ -92,91 +93,69 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
 
     public function registerDeployment() : self
     {
-        $this->resetHistoryCache();
-        $this->loadTasks();
+        $this->logHeader('Registering deployment');
 
-        foreach($this->tasks as $task) {
+        $this->resetHistoryCache();
+
+        $this->log('Processing [%s] tasks.', $this->countRecords());
+
+        foreach($this->getAll() as $task) {
             $task->process();
         }
 
         return $this;
     }
 
-    /**
-     * Loads tasks, both from the framework-internal task
-     * folder and the application-specific task folder.
-     *
-     * @return void
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws DriverException
-     * @throws FileHelper_Exception
-     */
-    private function loadTasks() : void
+    protected function registerItems(): void
     {
-        $tasks = $this->getTaskClasses();
-
-        $this->logHeader('Loading %s deployment tasks.', count($tasks));
-
-        foreach($tasks as $def)
+        foreach($this->getTaskClasses() as $class)
         {
-            $this->log('Loading task [%s]', $def['id']);
-            $class = $def['class'];
+            $task = $this->createTask($class);
 
-            $this->tasks[] = ClassHelper::requireObjectInstanceOf(
-                BaseDeployTask::class,
-                new $class()
-            );
+            $this->registerItem($task);
+
+            $this->log('Registered task [%s].', $class);
         }
     }
 
-    /**
-     * @return array<int,array{folder:string,classTemplate:string}>
-     * @throws DriverException
-     */
-    public function getTaskFolders() : array
+    private function createTask(string $class) : DeploymentTaskInterface
     {
-        return array(
-            array(
-                'folder' => Application_Driver::getInstance()->getClassesFolder().'/DeploymentTasks',
-                'classTemplate' => sprintf(
-                    '\%s\DeploymentTasks\{ID}',
-                    APP_CLASS_NAME
-                )
-            ),
-            array(
-                'folder' => __DIR__.'/DeploymentRegistry/Tasks',
-                'classTemplate' => str_replace(ClassHelper::getClassTypeName(StoreDeploymentInfo::class), '{ID}', StoreDeploymentInfo::class)
-            )
+        return ClassHelper::requireObjectInstanceOf(
+            DeploymentTaskInterface::class,
+            new $class()
         );
     }
 
     /**
-     * @return array<int,array{id:string,class:string}>
-     * @throws DriverException
-     * @throws FileHelper_Exception
+     * @return FolderInfo[]
+     */
+    public function getTaskFolders() : array
+    {
+        return array(
+            FolderInfo::factory(Application_Driver::getInstance()->getClassesFolder().'/DeploymentTasks'),
+            FolderInfo::factory(__DIR__.'/DeploymentRegistry/Tasks'),
+        );
+    }
+
+    /**
+     * @return class-string<DeploymentTaskInterface>[]
      */
     public function getTaskClasses() : array
     {
-        $sources = $this->getTaskFolders();
+        $folders = $this->getTaskFolders();
 
         $tasks = array();
 
-        foreach($sources as $source)
+        foreach($folders as $folder)
         {
-            if(!is_dir($source['folder'])) {
+            if(!$folder->exists()) {
                 continue;
             }
 
-            $ids = FileHelper::createFileFinder($source['folder'])
-                ->getPHPClassNames();
+            $classes = ClassHelper::findClassesInFolder($folder, true, DeploymentTaskInterface::class);
 
-            foreach ($ids as $id)
-            {
-                $tasks[] = array(
-                    'id' => $id,
-                    'class' => str_replace('{ID}', $id,$source['classTemplate'])
-                );
+            foreach ($classes as $class) {
+                $tasks[] = $class->getNameNS();
             }
         }
 
@@ -205,9 +184,16 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
         return 'DeploymentRegistry';
     }
 
+    /**
+     * Clears the entire deployment history.
+     * @return void
+     */
     public function clearHistory() : void
     {
+        $this->log('Clearing the deployment history.');
+
         Application_Driver::createSettings()->delete(self::SETTING_DEPLOYMENT_HISTORY);
+        $this->resetHistoryCache();
     }
 
     public function versionExists(string $version) : bool
@@ -227,11 +213,6 @@ class DeploymentRegistry implements Application_Interfaces_Loggable
     /**
      * @param string $version
      * @return DeploymentInfo
-     *
-     * @throws Application_Exception
-     * @throws DriverException
-     * @throws JsonException
-     * @throws Microtime_Exception
      */
     public function getByVersion(string $version) : DeploymentInfo
     {
