@@ -59,7 +59,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     public const VALUE_UNDEFINED = '__undefined';
 
-    protected string $recordIDTable;
+    protected ?string $recordIDTable;
 
     /**
      * @var class-string
@@ -94,6 +94,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @var DBHelper_BaseRecord[]
      */
     protected array $records = array();
+    private ?string $recordIDTablePrimaryName = null;
 
     /**
     * NOTE: classes extending this class may not create
@@ -558,7 +559,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         $this->log('Invalidating the internal memory cache.');
 
-        $this->allRecords = array();
+        $this->allRecords = null;
         $this->idLookup = array();
     }
 
@@ -879,6 +880,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         );
     }
 
+    public const OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
+
     /**
      * Creates a new record with the specified data.
      *
@@ -899,6 +902,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param array<string,mixed> $options Options that are passed on to the record's
      *                       onCreated() method, and which can be used for
      *                       custom initialization routines.
+     *                       Official options are:
+     *                       - {@see self::OPTION_CUSTOM_RECORD_ID}: Specify a custom
+     *                         ID to use for the record. Can fail if this is not available.
      * @return DBHelper_BaseRecord
      * @throws DisposableDisposedException
      * @throws DBHelper_Exception
@@ -930,15 +936,26 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             );
         }
 
+        $customID = null;
+        if(isset($options[self::OPTION_CUSTOM_RECORD_ID])) {
+            $customID = (int)$options[self::OPTION_CUSTOM_RECORD_ID];
+        }
+
         // use a special table for generating the record id?
-        if(isset($this->recordIDTable)) 
+        if(isset($this->recordIDTable))
         {
+            $primary = 'DEFAULT';
+            if($customID !== null) {
+                $primary = $customID;
+            }
+
             $record_id = (int)DBHelper::insert(sprintf(
                 "INSERT INTO
                     `%s`
-                SET `%s` = DEFAULT",
+                SET `%s` = %s",
                 $this->recordIDTable,
-                $this->recordPrimaryName
+                $this->recordIDTablePrimaryName,
+                $primary
             ));
             
             $data[$this->recordPrimaryName] = $record_id;
@@ -950,6 +967,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         } 
         else 
         {
+            if($customID !== null) {
+                $data[$this->recordPrimaryName] = $customID;
+            }
+
             $record_id = (int)DBHelper::insertDynamic(
                 $this->recordTable,
                 $data
@@ -959,6 +980,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->log(sprintf('Created with ID [%s].', $record_id));
 
         $this->idLookup[$record_id] = true;
+        $this->allRecords = null;
 
         $record = $this->getByID($record_id);
         
@@ -975,6 +997,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->triggerAfterCreateRecord($record, $context);
         
         return $record;
+    }
+
+    public function hasRecordIDTable(): bool
+    {
+        return isset($this->recordIDTable);
     }
 
     /**
@@ -1264,11 +1291,21 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * Sets the table that should be used to generate new record
+     * primary key values. A new row is inserted here when
+     * adding new records to the collection, to determine their
+     * primary key value.
+     *
+     * It must be a table with an auto-increment key and no other
+     * mandatory columns.
+     *
      * @param string $tableName
+     * @param string|NULL $primaryName Optional: Use if this is not the collection's primary key name.
      */
-    protected function setIDTable(string $tableName) : void
+    protected function setIDTable(string $tableName, ?string $primaryName=null) : void
     {
         $this->recordIDTable = $tableName;
+        $this->recordIDTablePrimaryName = $primaryName ?? $this->recordPrimaryName;
     }
 
     /**
@@ -1312,6 +1349,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $where[$this->recordPrimaryName] = $record_id;
 
         $this->idLookup[$record_id] = false;
+        $this->allRecords = null;
 
         if(isset($this->records[$record_id])) 
         {
