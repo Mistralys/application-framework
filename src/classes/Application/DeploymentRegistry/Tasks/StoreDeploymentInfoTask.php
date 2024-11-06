@@ -20,8 +20,20 @@ use Application\DeploymentRegistry\DeploymentInfo;
  * @package Application
  * @subpackage Deployment Registry
  */
-class StoreDeploymentInfo extends BaseDeployTask
+class StoreDeploymentInfoTask extends BaseDeployTask
 {
+    public const TASK_NAME = 'StoreDeploymentInfo';
+
+    public function getID() : string
+    {
+        return self::TASK_NAME;
+    }
+
+    public function getDescription(): string
+    {
+        return t('Stores the deployment date for the current version in the deployment history.');
+    }
+
     protected function _process(): void
     {
         $this->log('Storing release date for version [%s].', $this->driver->getVersion());

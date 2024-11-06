@@ -17,12 +17,22 @@ use AppLocalize\Localization;
  * @package Application
  * @subpackage Deployment Registry
  */
-class WriteLocalizationFiles extends BaseDeployTask
+class WriteLocalizationFilesTask extends BaseDeployTask
 {
+    public const TASK_NAME = 'WriteLocalizationFiles';
+
+    public function getID() : string
+    {
+        return self::TASK_NAME;
+    }
+
+    public function getDescription() : string
+    {
+        return t('Writes the client-side localization files to disk, so they are ready when the application starts.');
+    }
+
     protected function _process(): void
     {
-        $this->log('Writing localization files to disk.');
-
         Localization::createGenerator()->writeFiles();
     }
 }
