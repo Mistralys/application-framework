@@ -39,7 +39,9 @@ use AppUtils\ConvertHelper;
  */
 class Application_CustomProperties extends DBHelper_BaseCollection
 {
-   /**
+    public const TABLE_NAME = 'custom_properties';
+    public const PRIMARY_NAME = 'property_id';
+    /**
     * @var Application_Interfaces_Propertizable
     */
     protected $record;
@@ -57,7 +59,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         $this->setForeignKey('owner_type', $this->ownerType);
         $this->setForeignKey('owner_key', $this->ownerKey);
         
-        $this->setIDTable('custom_properties');
+        $this->setIDTable(self::TABLE_NAME);
     }
     
    /**
@@ -120,7 +122,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     
     public function getRecordPrimaryName() : string
     {
-        return 'property_id';
+        return self::PRIMARY_NAME;
     }
     
    /**
@@ -314,7 +316,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
                 DBHelper::insertOrUpdate(
                     'custom_properties_data', 
                     $record, 
-                    array('property_id', 'owner_type', 'owner_key')
+                    array(self::PRIMARY_NAME, 'owner_type', 'owner_key')
                 );
             }
 
