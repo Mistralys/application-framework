@@ -2,6 +2,7 @@
 - FilterCriteria: Fixed double-encoded query placeholders.
 - FilterCriteria: Added some basic tests.
 - DBHelper: `getQueries()` now returns an array of `TrackedQuery` objects.
+- DBHelper: The results of `getAll()` are now cached to avoid duplicate queries.
 
 ## v5.4.0 - Class loading, AJAX and more (SQL, Breaking-L)
 - Deployments: Added a callback to write the localization files to disk.
