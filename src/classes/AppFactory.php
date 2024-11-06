@@ -318,7 +318,7 @@ class AppFactory
      * @param FolderInfo $folder
      * @param bool $recursive
      * @param string|null $baseClass
-     * @return void
+     * @return class-string[]
      *
      * @see ClassCacheHandler
      */

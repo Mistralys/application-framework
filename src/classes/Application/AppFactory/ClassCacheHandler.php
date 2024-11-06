@@ -40,7 +40,7 @@ class ClassCacheHandler
      * @param FolderInfo $folder
      * @param bool $recursive
      * @param string|null $baseClass
-     * @return void
+     * @return class-string[]
      */
     public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
     {
