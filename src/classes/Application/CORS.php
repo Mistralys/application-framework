@@ -11,17 +11,17 @@ declare(strict_types=1);
  * requests should be allowed, this can be used to automate the
  * client/server handshakes.
  * 
- * <b>Allow all requests:</b>
+ * ### Allow all requests
  * 
- * <pre>
+ * ```php
  * $cors = new Application_CORS();
  * $cors->allowDomain('*');
  * $cors->init();
- * </pre>
+ * ```
  *
- * <b>Allow specific or wildcard domains:</b>
+ * ### Allow specific or wildcard domains
  * 
- * <pre>
+ * ```php
  * $cors = new Application_CORS();
  * $cors->allowDomain('*'); // all hosts, any port
  * $cors->allowDomain('http://www.cats.com'); // this exact host, and only http
@@ -30,7 +30,7 @@ declare(strict_types=1);
  * $cors->allowDomain('*.cats.com:8080'); // only over port 8080
  * $cors->allowDomain('*:8080'); // all hosts on port 8080
  * $cors->init();
- * </pre>
+ * ```
  *
  * @package Application
  * @subpackage Core
@@ -52,20 +52,20 @@ class Application_CORS
      * request sources. Adding one of these enables CORS for
      * this API endpoint.
      *
-     * Note: use the wildcard <code>*</code> as domain to enable
-     * all cross-origin sources. This supersedes any other specific
-     * domains that may have been added. 
+     * > Note: use the wildcard `*` as domain to enable
+     * > all cross-origin sources. This supersedes any other specific
+     * > domains that may have been added.
      *
-     * Examples:
+     * ## Examples
      * 
-     * <pre>
+     * ```php
      * $cors->allowDomain('*'); // all hosts, any port
      * $cors->allowDomain('http://www.cats.com'); // this exact host, and only http
      * $cors->allowDomain('*.cats.com'); // http or https
      * $cors->allowDomain('http://*.dogs.net'); // any subdomain over http
      * $cors->allowDomain('*.cats.com:8080'); // only over port 8080
      * $cors->allowDomain('*:8080'); // all hosts on port 8080
-     * </pre>
+     * ```
      *
      * @param string $domain The domain to allow. Should include the scheme, and optionally the port if needed.
      * @return $this
@@ -169,17 +169,13 @@ class Application_CORS
     * Retrieves the value of the HTTP_ORIGIN header, if any.
     * @return string|NULL
     */
-    protected function getOrigin()
+    protected function getOrigin() : ?string
     {
-        if(isset($this->simulate)) {
-            return $this->simulate;
+        if(isset($this->simulateOriginDomain)) {
+            return $this->simulateOriginDomain;
         }
         
-        if(isset($_SERVER['HTTP_ORIGIN'])) {
-            return $_SERVER['HTTP_ORIGIN'];
-        }
-        
-        return null;
+        return $_SERVER['HTTP_ORIGIN'] ?? null;
     }
     
    /**
@@ -243,8 +239,8 @@ class Application_CORS
     {
         return $allowedPort === '*' || (int)$port === (int)$allowedPort;
     }
-    
-    protected bool $simulate;
+
+    protected ?string $simulateOriginDomain = null;
     
    /**
     * Allows simulating a specific string sent as origin in the
@@ -257,7 +253,7 @@ class Application_CORS
     */
     public function simulateOrigin(string $domain) : self
     {
-        $this->simulate = $domain;
+        $this->simulateOriginDomain = $domain;
         return $this;
     }
 }
