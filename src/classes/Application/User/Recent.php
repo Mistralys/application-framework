@@ -50,6 +50,19 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         return Application_User_Recent_Category::MAX_ITEMS_DEFAULT;
     }
 
+    /**
+     * Clears the history of all categories.
+     * @return $this
+     */
+    public function clearHistories() : self
+    {
+        foreach($this->getCategories() as $category) {
+            $category->clearEntries();
+        }
+
+        return $this;
+    }
+
     private function initCategories() : array
     {
         if(isset($this->categories)) {
@@ -148,6 +161,8 @@ abstract class Application_User_Recent implements Application_Interfaces_Loggabl
         {
             $result[] = $category->getAlias();
         }
+
+        sort($result);
 
         return $result;
     }
