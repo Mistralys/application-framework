@@ -410,6 +410,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     protected function setForeignKey(string $name, string $value) : self
     {
         $this->foreignKeys[$name] = $value;
+
+        $this->resetIDLookup();
+
         return $this;
     }
     
@@ -525,8 +528,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     *
     * NOTE: Records that were already loaded are disposed,
     * and may not be used anymore.
+    *
+    * @return $this
     */
-    public function resetCollection() : void
+    public function resetCollection() : self
     {
         $this->log(sprintf('Resetting the collection. [%s] records were loaded.', count($this->records)));
 
@@ -543,6 +548,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         {
             $this->parentRecord = $this->parentRecord->getCollection()->getByID($this->parentRecord->getID());
         }
+
+        $this->resetIDLookup();
+
+        return $this;
     }
 
     /**
@@ -676,6 +685,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * @var array<int,int>
+     */
+    private array $idLookup = array();
+
+    /**
      * Checks whether a record with the specified ID exists in the database.
      *
      * @param integer|string|NULL $record_id
@@ -689,11 +703,15 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->requireNotDisposed('Check if record ID exists.');
 
         $record_id = (int)$record_id;
-        
+
+        if(isset($this->idLookup[$record_id])) {
+            return $this->idLookup[$record_id];
+        }
+
         if(isset($this->records[$record_id])) {
             return true;
         }
-        
+
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
         
@@ -715,7 +733,15 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             $where
         );
 
-        return $id !== null;
+        $this->idLookup[$record_id] = $id !== null;
+
+        return $this->idLookup[$record_id];
+    }
+
+    protected function resetIDLookup() : void
+    {
+        $this->log('Resetting the ID lookup.');
+        $this->idLookup = array();
     }
 
     /**
@@ -732,7 +758,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             return $this->dummyRecord;
         }
         
-        $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::DUMMY_ID);
+        $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::STUB_ID);
         
         if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
             throw new Application_Exception(
@@ -918,6 +944,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         }
 
         $this->log(sprintf('Created with ID [%s].', $record_id));
+
+        $this->idLookup[$record_id] = true;
 
         $record = $this->getByID($record_id);
         
@@ -1270,6 +1298,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
 
+        $this->idLookup[$record_id] = false;
+
         if(isset($this->records[$record_id])) 
         {
             unset($this->records[$record_id]);
@@ -1343,7 +1373,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
      protected function _dispose() : void
      {
-         unset($this->dummyRecord);
+         $this->dummyRecord = null;
+
+         $this->resetIDLookup();
      }
 
      public function getChildDisposables() : array
