@@ -1,3 +1,7 @@
+## v5.4.1 - Filter Criteria fix
+- FilterCriteria: Fixed double-encoded query placeholders.
+- FilterCriteria: Added some basic tests.
+
 ## v5.4.0 - Class loading, AJAX and more (SQL, Breaking-L)
 - Deployments: Added a callback to write the localization files to disk.
 - Deployments: Added logging in the deployment process for debugging.
