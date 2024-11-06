@@ -6,6 +6,7 @@
  * @see DBHelper
  */
 
+use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -95,7 +96,7 @@ class DBHelper
     
     public static function isQueryTrackingEnabled() : bool
     {
-        return boot_constant(BaseConfigRegistry::TRACK_QUERIES) === true;
+        return AppConfig::isQueryTrackingEnabled();
     }
 
     /**
@@ -916,7 +917,7 @@ class DBHelper
         );
         
         self::$activeDB = self::getDB();
-        
+
         self::triggerEvent('Init');
     }
 
