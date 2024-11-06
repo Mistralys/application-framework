@@ -2,35 +2,25 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\Installer;
+
+use Application;
 use Application\AppFactory;
 use AppFrameworkTestClasses\ApplicationTestCase;
+use Application_Users;
+use DBHelper;
 
-final class Installer_SystemUsersTest extends ApplicationTestCase
+final class SystemUserTests extends ApplicationTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->startTransaction();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->disableLogging();
-    }
+    // region: _Tests
 
     /**
      * The system users must be created if they do not
      * exist in the database.
      */
-    public function test_createUsers() : void
+    public function test_createUsers(): void
     {
         $this->startTest('Create system users if they do not exist');
-
-        // Ensure there are no users in the DB to begin with
-        $this->deleteSystemUsers();
 
         // Run the system users task
         $this->runTask();
@@ -38,8 +28,7 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         // Check that the users are now present
         $ids = Application::getSystemUserIDs();
 
-        foreach ($ids as $id)
-        {
+        foreach ($ids as $id) {
             $found = DBHelper::createFetchKey('user_id', 'known_users')
                 ->whereValue('user_id', $id)
                 ->fetchInt();
@@ -48,11 +37,9 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         }
     }
 
-    public function test_updateUsers() : void
+    public function test_updateUsers(): void
     {
         $this->startTest('Update users with internal data');
-
-        $this->deleteSystemUsers();
 
         // Insert the system user entry with completely different
         // data than the one it should have.
@@ -60,12 +47,14 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
             'known_users',
             array(
                 'user_id' => Application::USER_ID_SYSTEM,
-                'email' => 'test'.$this->getTestCounter().'@testsuite.system',
-                'firstname' => 'test'.$this->getTestCounter(),
-                'lastname' => 'test'.$this->getTestCounter(),
-                'foreign_id' => 'test'.$this->getTestCounter()
+                'email' => 'test' . $this->getTestCounter() . '@testsuite.system',
+                'firstname' => 'test' . $this->getTestCounter(),
+                'lastname' => 'test' . $this->getTestCounter(),
+                'foreign_id' => 'test' . $this->getTestCounter()
             )
         );
+
+        $this->assertTrue(AppFactory::createUsers()->idExists(Application::USER_ID_SYSTEM));
 
         // The task must detect the existing user record in the
         // database, and overwrite the columns with the data from
@@ -86,7 +75,11 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         $this->assertEquals($systemUser->getForeignID(), $updatedData['foreign_id']);
     }
 
-    private function runTask() : void
+    // endregion
+
+    // region: Support methods
+
+    private function runTask(): void
     {
         $installer = Application::createInstaller();
         $result = $installer->getTaskByID('InitSystemUsers')->process();
@@ -94,20 +87,24 @@ final class Installer_SystemUsersTest extends ApplicationTestCase
         $this->assertTrue($result->isValid());
     }
 
-    private function deleteSystemUsers() : void
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->startTransaction();
+
+        // Ensure there are no users in the DB to begin with
+        $this->deleteSystemUsers();
+    }
+
+    private function deleteSystemUsers(): void
     {
         Application::log('Deleting all system users.');
 
-        $ids = Application::getSystemUserIDs();
-        $users = AppFactory::createUsers();
+        $this->cleanUpTables(array(Application_Users::TABLE_NAME));
 
-        // Delete the system users from the database
-        foreach ($ids as $id)
-        {
-            if($users->idExists($id))
-            {
-                $users->deleteRecord($users->getByID($id));
-            }
-        }
+        AppFactory::createUsers()->resetCollection();
     }
+
+    // endregion
 }
