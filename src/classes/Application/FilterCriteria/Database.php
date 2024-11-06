@@ -13,8 +13,9 @@ use AppUtils\ConvertHelper;
 
 /**
  * Database-specific filter criteria base class: allows
- * selecting data from tables in the database, with database-
- * specific methods for handling JOIN statements and the like.
+ * selecting data from tables in the database, with
+ * database-specific methods for handling JOIN statements
+ * and the like.
  *
  * NOTE: For new projects, it is recommended to use the
  * {@see Application_FilterCriteria_DatabaseExtended} class,
@@ -326,9 +327,7 @@ EOT;
      */
     public function addPlaceholder(string $name, $value) : self
     {
-        if (substr($name, 0) !== ':') {
-            $name = ':' . $name;
-        }
+        $name = ':' . ltrim($name, ':');
 
         $this->placeholders[$name] = (string)$value;
 
@@ -341,7 +340,7 @@ EOT;
      *
      * @return array<string,string>
      */
-    protected function getQueryVariables()
+    public function getQueryVariables() : array
     {
         return $this->placeholders;
     }
@@ -349,7 +348,7 @@ EOT;
     /**
      * @return $this
      */
-    protected function resetQueryVariables()
+    public function resetQueryVariables() : self
     {
         $this->placeholders = array();
         return $this;
