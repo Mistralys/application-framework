@@ -42,7 +42,7 @@ final class CollectionTests extends CountriesTestCase
 
         $collection = $this->countries->getCollection();
 
-        $this->assertContains($invariant->getISO(), $collection->getISOs());
+        $this->assertContains($invariant->getISO(), $collection->getISOs(), print_r($collection->getISOs(), true));
         $this->assertContains($invariant->getID(), $collection->getIDs());
         $this->assertContains($invariant, $collection->getAll());
 
