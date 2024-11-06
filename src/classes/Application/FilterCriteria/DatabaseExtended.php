@@ -678,7 +678,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         return $columns;
     }
 
-    protected function getQueryVariables()
+    public function getQueryVariables() : array
     {
         $vars = parent::getQueryVariables();
 
