@@ -129,12 +129,12 @@ class Application_Countries extends DBHelper_BaseCollection
     }
     
    /**
-    * Retrieves the country independent meta entry.
+    * Retrieves the country independent meta-entry.
     * @return Application_Countries_Country
     */
-    public function getInvariantCountry()
+    public function getInvariantCountry() : Application_Countries_Country
     {
-        return $this->getByID(Application_Countries_Country::COUNTRY_INDEPENDENT_ID);
+        return $this->getByISO(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO);
     }
 
     /**
@@ -222,7 +222,7 @@ class Application_Countries extends DBHelper_BaseCollection
 
     public function getCollection() : CountriesCollection
     {
-        return CountriesCollection::create($this->getFilterCriteria()->getItemsObjects());
+        return CountriesCollection::create($this->getAll());
     }
 
     /**
@@ -309,17 +309,12 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function getSupportedISOs(bool $includeInvariant=true) : array
     {
-        $countries = $this->getAll();
+        $countries = $this->getAll($includeInvariant);
         
         $result = array();
         
         foreach($countries as $country)
         {
-            if(!$includeInvariant && $country->isCountryIndependent())
-            {
-                continue;
-            }
-
             $result[] = $country->getISO();
             $result[] = $country->getAlpha2();
         }
@@ -469,6 +464,18 @@ class Application_Countries extends DBHelper_BaseCollection
         return new Application_Countries_ButtonBar($id, $baseURL);
     }
 
+    public function createInvariantCountry() : Application_Countries_Country
+    {
+        if($this->isoExists(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO)) {
+            return $this->getByISO(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO);
+        }
+
+        return $this->createNewCountry(
+            Application_Countries_Country::COUNTRY_INDEPENDENT_ISO,
+            'Country independent'
+        );
+    }
+
     public function createNewCountry(string $iso, string $label) : Application_Countries_Country
     {
         if($this->isoExists($iso)) {
@@ -479,10 +486,12 @@ class Application_Countries extends DBHelper_BaseCollection
             );
         }
 
-        return $this->createNewRecord(array(
-            Application_Countries_Country::COL_ISO => $this->convertISO($iso),
-            Application_Countries_Country::COL_LABEL => $label
-        ));
+        return $this->createNewRecord(
+            array(
+                Application_Countries_Country::COL_ISO => $this->convertISO($iso),
+                Application_Countries_Country::COL_LABEL => $label
+            )
+        );
     }
 
     protected function _registerKeys() : void
