@@ -35,6 +35,7 @@
 - DeploymentRegistry: Added a task to clear the class cache.
 - DeploymentRegistry: Improved task loading, converted to a collection.
 - DeploymentRegistry: Added some tests.
+- DBHelper: Results of `idExists()` are now cached to avoid duplicate queries.
 - Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
 
 ### Upgrade guide
