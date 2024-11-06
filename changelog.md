@@ -1,4 +1,4 @@
-## v5.4.0 - Class loading and AJAX (SQL, Breaking-S)
+## v5.4.0 - Class loading, AJAX and more (SQL, Breaking-L)
 - Deployments: Added a callback to write the localization files to disk.
 - Deployments: Added logging in the deployment process for debugging.
 - Revisionables: Improved the record destruction message to use `getIdentification()`.
@@ -11,7 +11,7 @@
 - AJAX: Added some tests against the application's own AJAX methods.
 - AJAX: Now correctly sending the `returnFormat` flag from clientside.
 - AJAX: Now correctly recognizing the expected return format.
-- UI: Added the jQuery extension `$().onClassChange()` to observe element class changes.
+- UI: Added the jQuery extension `$(*).onClassChange()` to observe element class changes.
 - UI: Fixed badge dropdown caret position.
 - UI: Dropdowns: Added the AJAX loading feature for asynchronous menu loading.
 - UI: Dropdowns: Added `renderMenuItems()` to the menu class.
@@ -28,6 +28,9 @@
 - Quickstart: Added `registerNews()` and `registerMedia()` in the user's recent items base class.
 - Quickstart: Fixed loading entries in all requests ([#74](https://github.com/Mistralys/application-framework/issues/74)).
 - Notepad: Fixed broken layout when adding new notes ([#57](https://github.com/Mistralys/application-framework/issues/57)).
+- DeploymentRegistry: Added a task to clear the class cache.
+- DeploymentRegistry: Improved task loading, converted to a collection.
+- DeploymentRegistry: Added some tests.
 - Dependencies: Updated docs to [v1.0.1](https://github.com/Mistralys/application-framework-docs/releases/tag/1.0.1).
 
 ### Upgrade guide
