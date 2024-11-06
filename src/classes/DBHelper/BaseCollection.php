@@ -411,7 +411,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     {
         $this->foreignKeys[$name] = $value;
 
-        $this->resetIDLookup();
+        $this->invalidateMemoryCache();
 
         return $this;
     }
@@ -549,9 +549,17 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             $this->parentRecord = $this->parentRecord->getCollection()->getByID($this->parentRecord->getID());
         }
 
-        $this->resetIDLookup();
+        $this->invalidateMemoryCache();
 
         return $this;
+    }
+
+    private function invalidateMemoryCache() : void
+    {
+        $this->log('Invalidating the internal memory cache.');
+
+        $this->allRecords = array();
+        $this->idLookup = array();
     }
 
     /**
@@ -738,14 +746,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         return $this->idLookup[$record_id];
     }
 
-    protected function resetIDLookup() : void
-    {
-        $this->log('Resetting the ID lookup.');
-        $this->idLookup = array();
-    }
-
     /**
-     * Creates a dummy record of this collection, which can
+     * Creates a stub record of this collection, which can
      * be used to access the API that may not be available
      * statically.
      *
@@ -776,18 +778,29 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * @var DBHelper_BaseRecord[]|null
+     */
+    private ?array $allRecords = null;
+
+    /**
      * Retrieves all records from the database, ordered by the default sorting key.
      *
      * @return DBHelper_BaseRecord[]
-     *
+     * @cached
      */
     public function getAll() : array
     {
-        return $this->getFilterCriteria()->getItemsObjects();
+        if(isset($this->allRecords)) {
+            return $this->allRecords;
+        }
+
+        $this->allRecords = $this->getFilterCriteria()->getItemsObjects();
+
+        return $this->allRecords;
     }
 
     /**
-     * Counts the amount of records in total.
+     * Counts the number of records in total.
      * @return int
      * @throws Application_Exception
      * @throws DisposableDisposedException
@@ -1375,7 +1388,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      {
          $this->dummyRecord = null;
 
-         $this->resetIDLookup();
+         $this->invalidateMemoryCache();
      }
 
      public function getChildDisposables() : array
