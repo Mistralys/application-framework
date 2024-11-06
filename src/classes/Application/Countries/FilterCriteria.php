@@ -23,7 +23,7 @@ class Application_Countries_FilterCriteria extends DBHelper_BaseFilterCriteria
    /**
     * @var bool
     */
-    protected $excludeInvariant = false;
+    protected bool $excludeInvariant = false;
     
     protected function prepareQuery() : void
     {
@@ -31,7 +31,11 @@ class Application_Countries_FilterCriteria extends DBHelper_BaseFilterCriteria
         
         if($this->excludeInvariant) 
         {
-            $this->addWhere('`country_id` != '.Application_Countries_Country::COUNTRY_INDEPENDENT_ID);
+            $this->addWhere(sprintf(
+                "`%s` != '%s'",
+                Application_Countries_Country::COL_ISO,
+                Application_Countries_Country::COUNTRY_INDEPENDENT_ISO
+            ));
         }
     }
     

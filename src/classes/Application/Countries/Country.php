@@ -25,6 +25,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
 {
     public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
 
+    /**
+     * @deprecated Use the ISO instead, which is more reliable: {@see self::COUNTRY_INDEPENDENT_ISO}
+     */
     public const COUNTRY_INDEPENDENT_ID = 9999;
     public const COUNTRY_INDEPENDENT_ISO = 'zz';
     public const COL_ISO = 'iso';
@@ -80,16 +83,13 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function getISO(bool $emptyIfInvariant=false) : string
     {
-        if($this->isInvariant())
-        {
-            if($emptyIfInvariant) {
-                return '';
-            }
+        $iso = $this->getRecordKey(self::COL_ISO);
 
-            return self::COUNTRY_INDEPENDENT_ISO;
+        if($emptyIfInvariant && $iso === self::COUNTRY_INDEPENDENT_ISO) {
+            return '';
         }
-        
-        return $this->getRecordKey(self::COL_ISO);
+
+        return $iso;
     }
 
     /**
@@ -216,7 +216,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function isInvariant() : bool
     {
-        return $this->getID() === self::COUNTRY_INDEPENDENT_ID;
+        return $this->getISO() === self::COUNTRY_INDEPENDENT_ISO;
     }
     
    /**
