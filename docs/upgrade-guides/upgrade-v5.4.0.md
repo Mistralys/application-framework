@@ -1,5 +1,15 @@
 # Upgrade guide: v5.4.0
 
+## Deployment registry
+
+Applications that define their own deployment tasks must upgrade the task classes:
+
+1. Add the method `getDescription()`.
+2. Add the constant `TASK_NAME`, and return this in `getID()`.
+
+> NOTE: The classes can now be freely renamed and moved to any namespace.
+> We recommend naming them `{TaskName}Task`.
+
 ## Cache Control
 
 To make use of the new cache control screen, do the following:
