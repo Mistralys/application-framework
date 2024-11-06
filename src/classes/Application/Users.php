@@ -186,7 +186,7 @@ class Application_Users extends DBHelper_BaseCollection
 
         foreach($ids as $id)
         {
-            $this->log(sprintf('User [%s] | Does not exist, creating.', $id));
+            $this->log(sprintf('User [%s] | Processing', $id));
 
             // This works because the `createUser()` method does not query
             // the database for the system users: It uses hardwired data.
