@@ -180,7 +180,7 @@ class Application_AjaxHandler
             sprintf(
                 'The method [%1$s] does not exist. '.PHP_EOL.
                 'Known methods are: '.PHP_EOL.
-                '- %s',
+                '- %2$s',
                 $methodName,
                 implode(PHP_EOL.'- ', $this->getMethodNames())
             ),
