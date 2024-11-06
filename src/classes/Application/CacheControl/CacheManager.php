@@ -11,10 +11,8 @@ namespace Application\CacheControl;
 use Application\AppFactory;
 use Application\OfflineEvents\RegisterCacheLocationsEvent;
 use Application_EventHandler;
-use Application_EventHandler_OfflineEvents_OfflineEvent;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
-use AppUtils\ConvertHelper;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
 
 /**
@@ -94,20 +92,9 @@ class CacheManager extends BaseStringPrimaryCollection
             RegisterCacheLocationsEvent::class
         );
 
-        if($event !== null) {
-            return ClassHelper::requireObjectInstanceOf(
-                RegisterCacheLocationsEvent::class,
-                $event->getTriggeredEvent()
-            );
-        }
-
-        throw new CacheManagerException(
-            'Failed to trigger the cache locations registration event.',
-            sprintf(
-                'No event instance was returned by [%s].',
-                ConvertHelper::callback2string(array(Application_EventHandler_OfflineEvents_OfflineEvent::class, 'getTriggeredEvent'))
-            ),
-            CacheManagerException::ERROR_FAILED_TO_TRIGGER_REGISTRATION_EVENT
+        return ClassHelper::requireObjectInstanceOf(
+            RegisterCacheLocationsEvent::class,
+            $event->getTriggeredEvent()
         );
     }
 }
