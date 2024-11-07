@@ -71,6 +71,7 @@ class Application
     public const EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
 
     public const REQUEST_VAR_SIMULATION = 'simulate_only';
+    public const REQUEST_VAR_QUERY_SUMMARY = 'query_summary';
 
     private UI $ui;
     private ?Application_Driver $driver = null;
