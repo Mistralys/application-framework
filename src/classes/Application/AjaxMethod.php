@@ -9,7 +9,6 @@ use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
-use TestDriver\AjaxMethods\AjaxRenderDropdownMenu;
 
 /**
  * Abstract base class for AJAX methods.
@@ -43,32 +42,16 @@ abstract class Application_AjaxMethod
     public const STATE_SUCCESS = 'success';
     public const STATE_ERROR = 'error';
 
-    /**
-     * @var Application_AjaxHandler
-     */
-    protected $handler;
+    protected Application_AjaxHandler $handler;
+    protected Application_Request $request;
+    protected Application_Driver $driver;
+    protected Application_User $user;
+    protected Application_CORS $CORS;
 
     /**
-     * @var Application_Request
+     * @var array<string,string>
      */
-    protected $request;
-
-    /**
-     * @var Application_Driver
-     */
-    protected $driver;
-
-    /**
-     * @var Application_User
-     */
-    protected $user;
-
-    /**
-     * @var Application_CORS
-     */
-    protected $CORS;
-
-    protected $supportedFormats = array();
+    protected array $supportedFormats = array();
 
     public function __construct(Application_AjaxHandler $handler)
     {
@@ -127,7 +110,7 @@ abstract class Application_AjaxMethod
         return isset($this->supportedFormats[$formatName]);
     }
 
-    protected $format;
+    protected string $format = '';
 
     public function process(string $formatName) : void
     {
@@ -325,7 +308,7 @@ abstract class Application_AjaxMethod
     {
         // fallback to avoid deadlocks calling the same method 
         if(empty($this->format)) {
-            $this->format = 'JSON';
+            $this->format = self::RETURNFORMAT_HTML;
         }
         
         $method = 'send' . $this->format . 'Error';
@@ -411,12 +394,11 @@ abstract class Application_AjaxMethod
     }
 
    /**
-    * Checks whether simulation mode is active, which can be enabled by
-    * setting the <code>simulate_only</code> request parameter to <code>yes</code>.
-    * The use that is logged in additionally needs to be a developer for this
-    * to work.
+    * Checks whether simulation mode is active.
+    * See {@see Application::isSimulation()} for details.
     * 
     * @return boolean
+    * @see Application::isSimulation()
     */
     protected function isSimulationEnabled() : bool
     {
@@ -424,8 +406,8 @@ abstract class Application_AjaxMethod
     }
     
    /**
-    * Overrides the request parameter <code>simulate_only</code> and enables
-    * the simulation mode.
+    * Overrides the request parameter {@see Application::REQUEST_VAR_SIMULATION}
+    * and enables the simulation mode.
     * 
     * @return boolean
     */
@@ -435,10 +417,7 @@ abstract class Application_AjaxMethod
         return $this->startSimulation();
     }
 
-    /**
-     * @var bool
-     */
-    protected $simulationStarted = false;
+    protected bool $simulationStarted = false;
     
    /**
     * If the simulation mode is active, starts the simulation mode which
