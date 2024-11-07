@@ -1,9 +1,12 @@
+## v5.4.3 - Query summary
+- DBHelper: Added the query summary via the request param `query_summary` as a developer.
+
 ## v5.4.2 - Query tracking improvements
 - DBHelper: `getQueries()` now returns an array of `TrackedQuery` objects.
 - DBHelper: The results of `getAll()` are now cached to avoid duplicate queries.
+- DBHelper: Added the primary name parameter to the collection's `setIDTable()` method.
 - Countries: Now preferring the ISO to identify the invariant country instead of the ID.
 - Countries: Fixed `getSupportedISOs()` not correctly handling the invariant country.
-- DBHelper: Added the primary name parameter to the collection's `setIDTable()` method.
 
 ## v5.4.1 - Filter Criteria fix
 - FilterCriteria: Fixed double-encoded query placeholders.
