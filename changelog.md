@@ -1,11 +1,13 @@
-## v5.4.1 - Filter Criteria fix
-- FilterCriteria: Fixed double-encoded query placeholders.
-- FilterCriteria: Added some basic tests.
+## v5.4.2 - Query tracking improvements
 - DBHelper: `getQueries()` now returns an array of `TrackedQuery` objects.
 - DBHelper: The results of `getAll()` are now cached to avoid duplicate queries.
 - Countries: Now preferring the ISO to identify the invariant country instead of the ID.
 - Countries: Fixed `getSupportedISOs()` not correctly handling the invariant country.
 - DBHelper: Added the primary name parameter to the collection's `setIDTable()` method.
+
+## v5.4.1 - Filter Criteria fix
+- FilterCriteria: Fixed double-encoded query placeholders.
+- FilterCriteria: Added some basic tests.
 
 ## v5.4.0 - Class loading, AJAX and more (SQL, Breaking-L)
 - Deployments: Added a callback to write the localization files to disk.
