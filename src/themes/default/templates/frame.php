@@ -1,14 +1,17 @@
 <?php
 /**
- * File containing the template class {@see template_default_frame}.
- * 
  * @package UserInterface
  * @subpackage Templates
- * @see template_default_frame
  */
 
 declare(strict_types=1);
-use Application\AppFactory;use Application\Interfaces\Admin\AdminScreenInterface;use AppUtils\ClassHelper;use UI\Event\PageRendered;use UI\Page\Navigation\QuickNavigation;
+
+use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
+use AppUtils\ClassHelper;
+use AppUtils\OutputBuffering;
+use UI\Event\PageRendered;
+use UI\Page\Navigation\QuickNavigation;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -63,6 +66,8 @@ class template_default_frame extends UI_Page_Template_Custom
     </div>
 </footer>
 
+{QUERY_SUMMARY}
+
 </body>
 </html>
 <?php
@@ -107,12 +112,92 @@ class template_default_frame extends UI_Page_Template_Custom
             '{HELP}' => $this->screen->renderHelp(),
             '{CONSOLE}' => $this->page->renderConsole(),
             '{CONTENT}' => $contentHTML,
+            '{QUERY_SUMMARY}' => $this->renderQuerySummary(),
             
             // must always be the last items
             '{HEADER}' => $this->header->render(),
             '{MESSAGES}' => $this->page->renderMessages(),
             '{HEADER_INCLUDES}' => $this->ui->renderHeadIncludes(),
         );
+    }
+
+    private function renderQuerySummary(): string
+    {
+        if(!DBHelper::isQueryTrackingEnabled()) {
+            return '';
+        }
+
+        $queries = DBHelper::getQueries();
+
+        $duplicates = array();
+        $same = array();
+
+        foreach($queries as $query) {
+            $sql = (string)$query->getStatement();
+            $sqlHash = md5($sql);
+            $fullHash = md5($sql.serialize($query->getVariables()));
+
+            if(isset($same[$fullHash])) {
+                $same[$fullHash]['count']++;
+                $same[$fullHash]['origins'][] = $query->trace2string();
+            } else {
+                $same[$fullHash] = array(
+                    'count' => 1,
+                    'sql' => $query->getSQLFormatted(),
+                    'origins' => array($query->trace2string()),
+                );
+            }
+
+            if(isset($duplicates[$sqlHash])) {
+                $duplicates[$sqlHash]['count']++;
+                $duplicates[$sqlHash]['origins'][] = $query->trace2string();
+            } else {
+                $duplicates[$sqlHash] = array(
+                    'count' => 1,
+                    'sql' => (string)$query->getStatement(),
+                    'origins' => array($query->trace2string())
+                );
+            }
+        }
+
+        foreach($same as $hash => $data) {
+            if($data['count'] === 1) {
+                unset($same[$hash]);
+            }
+        }
+
+        foreach($duplicates as $sqlHash => $data) {
+            if($data['count'] === 1) {
+                unset($duplicates[$sqlHash]);
+            }
+        }
+
+        usort($same, static function($a, $b) : int {
+            return $b['count'] - $a['count'];
+        });
+
+        usort($duplicates, static function($a, $b) : int {
+            return $b['count'] - $a['count'];
+        });
+
+        OutputBuffering::start();
+        ?>
+<pre>
+Total queries: <?php echo count($queries) ?>
+
+
+EXACT DUPLICATES (<?php echo count($same) ?>):
+
+<?php echo print_r($same, true) ?>
+
+SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
+
+<?php echo print_r($duplicates, true) ?>
+
+</pre>
+        <?php
+
+        return OutputBuffering::get();
     }
     
     private function getBodyClasses() : array
