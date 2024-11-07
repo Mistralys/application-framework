@@ -1206,25 +1206,12 @@ class Application
             return true;
         }
 
-        $result = DBHelper::fetchKey(
-            'user_id',
-            "SELECT
-                user_id
-            FROM
-                known_users
-            WHERE
-                user_id=:user_id",
-            array(
-                'user_id' => $userID
-            )
-        );
-
-        return $result !== null;
+        return AppFactory::createUsers()->idExists($userID);
     }
 
     /**
      * Retrieves the data set from the database for the
-     * specified user ID. Also handles dummy and system
+     * specified user ID. Also handles stub and system
      * user data.
      *
      * @param int $userID
