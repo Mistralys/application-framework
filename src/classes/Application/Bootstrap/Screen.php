@@ -105,7 +105,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     }
 
     /**
-     * NOTE: Must be done after application has been instantiated,
+     * NOTE: Must be done after the application has been instantiated,
      * and before the user is authenticated, as that triggers the
      * roles to be initialized, which require translation.
      *
@@ -147,6 +147,19 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
         if (!defined('APP_DEVELOPER_MODE'))
         {
             define('APP_DEVELOPER_MODE', false);
+        }
+
+        $this->initQueryTracking();
+    }
+
+    private function initQueryTracking() : void
+    {
+        if(!isset($_REQUEST[Application::REQUEST_VAR_QUERY_SUMMARY])) {
+            return;
+        }
+
+        if(string2bool($_REQUEST[Application::REQUEST_VAR_QUERY_SUMMARY]) && $this->user->isDeveloper()) {
+            DBHelper::enableQueryTracking();
         }
     }
 
@@ -259,7 +272,7 @@ abstract class Application_Bootstrap_Screen implements Application_Interfaces_Lo
     {
         $this->log('SETUP | Authenticating the user.');
 
-        $this->session->authenticate();
+        $this->user = $this->session->authenticate();
     }
 
     public function getSession() : Application_Session
