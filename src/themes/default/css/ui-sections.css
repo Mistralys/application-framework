@@ -45,6 +45,10 @@
     padding: 0 0 30px 0;
 }
 
+.section-body.content-indented{
+    padding-left: 20px;
+}
+
 /* region: Compact mode */
 /* -------------------------------------------------------------------
    COMPACT MODE
@@ -53,6 +57,12 @@
 .section.content-subsection,
 .section.compact {
     margin-bottom: 0;
+}
+
+.section.content-subsection.with-context-buttons > .section-toolbar{
+    margin-top: 3px;
+    margin-bottom: 0;
+    margin-right: 6px;
 }
 
 .section.content-subsection > .section-header,
@@ -202,8 +212,8 @@
     font-size: var(--font-size-l);
 }
 
-.content-section > DIV.btn-toolbar {
-    margin: 9px 13px 0 0;
+.content-section > .btn-toolbar {
+    margin: 7px 7px 0 0;
 }
 
 /* -------------------------------------------------------------------
