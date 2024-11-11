@@ -58,6 +58,8 @@ abstract class UI_Page_Section
     public const STYLE_DANGEROUS = 'dangerous';
     public const PROPERTY_VISUAL_STYLE = 'visual-style';
     public const DEFAULT_GROUP = 'default';
+    public const TYPE_SUBSECTION = 'content-subsection';
+    public const PROPERTY_CONTENT_INDENTED = 'content-indented';
 
     protected string $templateName = 'frame.content.section';
 
@@ -116,6 +118,29 @@ abstract class UI_Page_Section
         }
 
         return null;
+    }
+
+    public function isSubsection() : bool
+    {
+        return $this->getProperty('type') === self::TYPE_SUBSECTION;
+    }
+
+    /**
+     * If enabled, the section's content will be indented to visually
+     * separate it from the rest of the page. Default is to keep all
+     * content left.
+     *
+     * @param bool $indented
+     * @return $this
+     */
+    public function makeContentIndented(bool $indented=true) : self
+    {
+        return $this->setProperty(self::PROPERTY_CONTENT_INDENTED,$indented);
+    }
+
+    public function isContentIndented() : bool
+    {
+        return $this->getProperty(self::PROPERTY_CONTENT_INDENTED) === true;
     }
 
     /**
@@ -770,7 +795,7 @@ abstract class UI_Page_Section
     {
         $this->removeClass('content-section');
         $this->addClass('content-subsection');
-        $this->setProperty('type', 'content-subsection');
+        $this->setProperty('type', self::TYPE_SUBSECTION);
         
         return $this;
     }
