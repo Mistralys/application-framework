@@ -88,6 +88,26 @@ trait ButtonSizeTrait
         );
     }
 
+    public function getSize() : ?string
+    {
+        return $this->buttonSize;
+    }
+
+    public function isLarge() : bool
+    {
+        return $this->getSize() === ButtonSizeInterface::SIZE_LARGE;
+    }
+
+    public function isSmall() : bool
+    {
+        return $this->getSize() === ButtonSizeInterface::SIZE_SMALL;
+    }
+
+    public function isMini() : bool
+    {
+        return $this->getSize() === ButtonSizeInterface::SIZE_MINI;
+    }
+
     public function getSizeClass() : ?string
     {
         if(empty($this->buttonSize)) {

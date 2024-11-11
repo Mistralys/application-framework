@@ -53,4 +53,9 @@ interface ButtonSizeInterface
      * @return $this
      */
     public function makeSize(string $size) : self;
+
+    public function getSize() : ?string;
+    public function isLarge() : bool;
+    public function isSmall() : bool;
+    public function isMini() : bool;
 }
