@@ -153,6 +153,10 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
         $classes[] = 'section-body';
         $classes[] = $this->section->getType() . '-body';
 
+        if($this->section->isContentIndented()) {
+            $classes[] = 'content-indented';
+        }
+
         if ($this->section->isCollapsible()) {
             $classes[] = 'collapse';
             if (!$this->section->isCollapsed()) {
@@ -339,7 +343,13 @@ class template_default_frame_content_section extends UI_Page_Template_Custom
      */
     protected function configureButton($button) : void
     {
-        $button->makeSmall();
+        if($button->isLarge()) {
+            $button->makeSmall();
+        }
+
+        if($this->section->isSubsection()) {
+            $button->makeMini();
+        }
     }
 
     protected function displayQuickSelector() : void
