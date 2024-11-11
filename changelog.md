@@ -1,3 +1,9 @@
+## v5.4.x -  
+- UI: Fixed context button size in subsections.
+- UI: Added `makeContentIndented()` in sections.
+- UI: Added size related methods (e.g. `isSmall()`) to buttons.
+- App Interface: Added/improved some section examples.
+
 ## v5.4.3 - Query summary
 - DBHelper: Added the query summary via the request param `query_summary` as a developer.
 
