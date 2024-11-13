@@ -19,11 +19,27 @@ class ApplicationException
 		this.Message = message;
 		this.DeveloperInfo = develinfo;
 		this.Code = code;
+		this.Trace = '';
+
+		const err = new Error();
+		if(typeof err.stack !== 'undefined') {
+			this.Trace = err.stack.toString();
+		}
 	}
 	
 	GetCode()
 	{
 		return this.Code;
+	}
+
+	/**
+	 *
+	 * @return {String}
+	 * @constructor
+	 */
+	GetTrace()
+	{
+		return this.Trace;
 	}
 	
 	GetMessage()
