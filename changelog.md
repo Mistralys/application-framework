@@ -1,3 +1,12 @@
+## v5.4.5 - Client-side logging improvements
+- JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
+- JS: Moved the code to handle JS error logging to a dedicated class.
+- JS: Improved the logging of JS errors to include the application log ([#15](https://github.com/Mistralys/application-framework/issues/15)).
+- JS: Exceptions now include a stack trace.
+- JS: The full clientside log is now available for JS errors, including a stack trace.
+- Testing: Added a screen in the test application to test the client-side error logging.
+- Core: Added utility class `AppDevelAdminURLs` for Devel admin URLs.
+
 ## v5.4.4 - Sections and context buttons  
 - UI: Fixed context button size in subsections.
 - UI: Added `makeContentIndented()` in sections.
