@@ -275,8 +275,8 @@ class Application_ErrorLog
     {
         $request = Application_Driver::getInstance()->getRequest();
         
-        $params['page'] = 'devel';
-        $params['mode'] = 'errorlog';
+        $params['page'] = Application_Admin_Area_Devel::URL_NAME;
+        $params['mode'] = Application_Admin_Area_Devel_Errorlog::URL_NAME;
         
         return $request->buildURL($params);
     }
@@ -365,12 +365,15 @@ class Application_ErrorLog
         
         if($writeLog)
         {
-            $log = AppFactory::createLogger()->getLog();
-
-            error_log(implode(PHP_EOL, $log), 3, $this->getLogFilePath($logID.'.log'));
+            $this->writeLogfile($logID, AppFactory::createLogger()->getLog());
         }
         
         return $logID;
+    }
+
+    public function writeLogfile(string $logID, array $lines) : void
+    {
+        error_log(implode(PHP_EOL, $lines), 3, $this->getLogFilePath($logID.'.log'));
     }
     
     public function getLogFilePath(string $fileName, int $year=0, int $month=0) : string
