@@ -188,10 +188,23 @@ class Application_Changelog implements Application_Interfaces_Eventable
     {
         return $this->owner;
     }
-    
+
+    /**
+     * Gets all fields required to uniquely identify a single changelog entry.
+     * @return array<string,string>
+     */
     public function getPrimary() : array
     {
         return $this->owner->getChangelogItemPrimary();
+    }
+
+    /**
+     * Gets all fields required to select all changelog entries for the owner.
+     * @return array<string,string>
+     */
+    public function getFilterSelects() : array
+    {
+        return $this->owner->getChangelogFilterSelects();
     }
     
    /**

@@ -18,7 +18,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
     
     protected function getQuery() : string
     {
-        $primary = $this->changelog->getPrimary();
+        $primary = $this->changelog->getFilterSelects();
         foreach($primary as $name => $value) {
             $this->addWhere('chlog.`' . $name . '`=:'.$name);
             $this->addPlaceholder($name, $value);

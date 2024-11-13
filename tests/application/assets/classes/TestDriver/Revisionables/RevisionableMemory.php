@@ -147,6 +147,11 @@ class RevisionableMemory extends Application_RevisionableStateless
         return array('primary');
     }
 
+    public function getChangelogFilterSelects(): array
+    {
+        return array();
+    }
+
     public function getChangelogEntryText(string $type, array $data = array()): string
     {
         return '';

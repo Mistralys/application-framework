@@ -237,6 +237,13 @@ abstract class Application_RevisionableCollection_DBRevisionable
         );
     }
 
+    public function getChangelogFilterSelects(): array
+    {
+        return array(
+            $this->collection->getPrimaryKeyName() => $this->getID()
+        );
+    }
+
     /**
      * Selects the last revision of the record by a specific state.
      *

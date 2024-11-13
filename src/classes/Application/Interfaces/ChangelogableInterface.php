@@ -29,12 +29,23 @@ interface ChangelogableInterface
 
     /**
      * Retrieves the values for the item's primary key in the
-     * changelog table. Note: should include the item's revision
-     * in the case of revisionables.
+     * changelog table.
+     *
+     * NOTE: Must include the item's revision in the case of revisionables.
      *
      * @return array
      */
     public function getChangelogItemPrimary(): array;
+
+    /**
+     * Gets all fields required to select all changelog entries
+     * for the record.
+     *
+     * NOTE: Must NOT include the item's revision in the case of revisionables.
+     *
+     * @return array<string,string> Can be empty.
+     */
+    public function getChangelogFilterSelects() : array;
 
     /**
      * Retrieves the human-readable text to sum up the
