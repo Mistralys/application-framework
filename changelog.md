@@ -1,4 +1,4 @@
-## v5.4.x -  
+## v5.4.4 - Sections and context buttons  
 - UI: Fixed context button size in subsections.
 - UI: Added `makeContentIndented()` in sections.
 - UI: Added size related methods (e.g. `isSmall()`) to buttons.
