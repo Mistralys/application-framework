@@ -1126,7 +1126,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
         $this->ui->addJavascriptHeadStatement('application.keepAlive.SetInterval', $this->getKeepAliveInterval());
-        $this->ui->addJavascriptHead('application.handle_JavaScriptError()');
 
         if (isset($this->activeArea))
         {
@@ -1213,6 +1212,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         'global_functions.js',
         'application/keep_alive.js',
         'application.js',
+        'application/error_logger.js',
         'application/logger.js',
         'application/exception.js',
         '_deprecated/base_renderable.js',
