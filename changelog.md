@@ -6,6 +6,7 @@
 - JS: The full clientside log is now available for JS errors, including a stack trace.
 - Testing: Added a screen in the test application to test the client-side error logging.
 - Core: Added utility class `AppDevelAdminURLs` for Devel admin URLs.
+- Changelogs: Fixed revisionable changelogs showing only the current revision.
 
 ## v5.4.4 - Sections and context buttons  
 - UI: Fixed context button size in subsections.
