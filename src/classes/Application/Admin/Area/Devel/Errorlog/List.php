@@ -6,9 +6,11 @@ use AppUtils\FileHelper;
 
 class Application_Admin_Area_Devel_Errorlog_List extends Application_Admin_Area_Mode_Submode
 {
+    public const URL_NAME = 'list';
+
     public function getURLName() : string
     {
-        return 'list';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string
