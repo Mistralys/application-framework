@@ -694,7 +694,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
-     * @var array<int,int>
+     * @var array<int,bool>
      */
     private array $idLookup = array();
 
