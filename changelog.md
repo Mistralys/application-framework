@@ -1,4 +1,4 @@
-## v5.4.5 - Client-side logging improvements
+## v5.x.x - Client-side logging improvements
 - JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
 - JS: Moved the code to handle JS error logging to a dedicated class.
 - JS: Improved the logging of JS errors to include the application log ([#15](https://github.com/Mistralys/application-framework/issues/15)).
@@ -7,6 +7,10 @@
 - Testing: Added a screen in the test application to test the client-side error logging.
 - Core: Added utility class `AppDevelAdminURLs` for Devel admin URLs.
 - Changelogs: Fixed revisionable changelogs showing only the current revision.
+- Media: Added `getImageFormat()` to images.
+- Media: Added `supportsThumbnails()` to images.
+- Dependencies: AppUtils updated to get access to ImageHelper enhancements for image formats.
+- Dependencies: Updated AppUtils to [v3.1.0](https://github.com/Mistralys/application-utils/releases/tag/3.1.0).
 
 ## v5.4.4 - Sections and context buttons  
 - UI: Fixed context button size in subsections.
