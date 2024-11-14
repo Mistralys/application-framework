@@ -6,9 +6,9 @@
 - JS: The full clientside log is now available for JS errors, including a stack trace.
 - Testing: Added a screen in the test application to test the client-side error logging.
 - Core: Added utility class `AppDevelAdminURLs` for Devel admin URLs.
-- Changelogs: Fixed revisionable changelogs showing only the current revision.
 - Media: Added `getImageFormat()` to images.
 - Media: Added `supportsThumbnails()` to images.
+- Media: Thumbnails will no longer be generated for animated GIF images.
 - Dependencies: AppUtils updated to get access to ImageHelper enhancements for image formats.
 - Dependencies: Updated AppUtils to [v3.1.0](https://github.com/Mistralys/application-utils/releases/tag/3.1.0).
 
