@@ -1,4 +1,4 @@
-## v5.x.x - Client-side logging improvements
+## v5.4.5 - Client-side logging improvements
 - JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
 - JS: Moved the code to handle JS error logging to a dedicated class.
 - JS: Improved the logging of JS errors to include the application log ([#15](https://github.com/Mistralys/application-framework/issues/15)).
