@@ -11,7 +11,7 @@ final class CreateUploadTests extends MediaTestCase
 {
     public function test_createFromFile(): void
     {
-        $file = $this->getExampleImagePath();
+        $file = $this->getExamplePNGPath();
 
         $document = $this->media->createFromFile('example-image', FileInfo::factory($file));
         $documentPath = $document->getPath();

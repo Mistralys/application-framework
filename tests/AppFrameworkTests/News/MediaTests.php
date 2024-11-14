@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace AppFrameworkTests\News;
 
 use AppFrameworkTestClasses\NewsTestCase;
+use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
+use AppFrameworkTestClasses\Traits\ImageMediaTestTrait;
 use Application\AppFactory;
 use Application\NewsCentral\NewsEntryCriticalities;
 use AppLocalize\Locale\en_UK;
 
-final class MediaTests extends NewsTestCase
+final class MediaTests extends NewsTestCase implements ImageMediaTestInterface
 {
+    use ImageMediaTestTrait;
+
     // region: _Tests
 
     public function test_articleWithImage() : void
