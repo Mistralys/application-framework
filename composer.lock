@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aefec23879f8b1b489ead1433ce051ec",
+    "content-hash": "c5462374d8f5f0de814208ba5a7cb2eb",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1366,16 +1366,16 @@
         },
         {
             "name": "mistralys/application-utils",
-            "version": "3.0.5",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils.git",
-                "reference": "7923ba94c22edb6b59ba398f29f0fde6c60e6266"
+                "reference": "657ce5ce94ff3d27b6c602161dfd8452193961d5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/7923ba94c22edb6b59ba398f29f0fde6c60e6266",
-                "reference": "7923ba94c22edb6b59ba398f29f0fde6c60e6266",
+                "url": "https://api.github.com/repos/Mistralys/application-utils/zipball/657ce5ce94ff3d27b6c602161dfd8452193961d5",
+                "reference": "657ce5ce94ff3d27b6c602161dfd8452193961d5",
                 "shasum": ""
             },
             "require": {
@@ -1387,7 +1387,8 @@
                 "ext-mbstring": "*",
                 "ext-simplexml": "*",
                 "ext-zip": "*",
-                "mistralys/application-utils-core": ">=1.0.3",
+                "mistralys/application-utils-core": ">=2.2.3",
+                "mistralys/application-utils-image": ">=1.1",
                 "parsecsv/php-parsecsv": ">=1.3",
                 "php": ">=7.4"
             },
@@ -1401,8 +1402,7 @@
             "type": "library",
             "autoload": {
                 "files": [
-                    "src/functions.php",
-                    "src/ImageHelper/ImageFunctions.php"
+                    "src/functions.php"
                 ],
                 "classmap": [
                     "src/"
@@ -1422,9 +1422,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils/issues",
-                "source": "https://github.com/Mistralys/application-utils/tree/3.0.5"
+                "source": "https://github.com/Mistralys/application-utils/tree/3.1.0"
             },
-            "time": "2024-07-30T07:14:10+00:00"
+            "time": "2024-11-14T10:04:57+00:00"
         },
         {
             "name": "mistralys/application-utils-collections",
@@ -1531,6 +1531,58 @@
                 "source": "https://github.com/Mistralys/application-utils-core/tree/2.3.1"
             },
             "time": "2024-10-17T12:47:31+00:00"
+        },
+        {
+            "name": "mistralys/application-utils-image",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Mistralys/application-utils-image.git",
+                "reference": "d08f4072f055b61e35b1b3b9960b069d190a94d9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Mistralys/application-utils-image/zipball/d08f4072f055b61e35b1b3b9960b069d190a94d9",
+                "reference": "d08f4072f055b61e35b1b3b9960b069d190a94d9",
+                "shasum": ""
+            },
+            "require": {
+                "ext-gd": "*",
+                "mistralys/application-utils-collections": ">=1.1",
+                "mistralys/application-utils-core": ">=1.0.3",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": ">=2.0",
+                "phpunit/phpunit": ">=11.4"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/ImageHelper/ImageFunctions.php"
+                ],
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Mordziol",
+                    "email": "s.mordziol@mistralys.eu",
+                    "role": "Lead"
+                }
+            ],
+            "description": "PHP image helper library for basic image operations and color management.",
+            "support": {
+                "issues": "https://github.com/Mistralys/application-utils-image/issues",
+                "source": "https://github.com/Mistralys/application-utils-image/tree/1.1.0"
+            },
+            "time": "2024-11-14T09:47:34+00:00"
         },
         {
             "name": "mistralys/changelog-parser",
@@ -6084,7 +6136,8 @@
     "stability-flags": {
         "shark/simple_html_dom": 20,
         "ccampbell/mousetrap": 20,
-        "roave/security-advisories": 20
+        "roave/security-advisories": 20,
+        "mistralys/application-utils-image": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
