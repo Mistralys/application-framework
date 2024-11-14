@@ -16,6 +16,12 @@ use Application_Media_Document_Image;
 use Application_User;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
+use AppUtils\ImageHelper\ImageFormats\Formats\JPEGImage;
+use AppUtils\ImageHelper\ImageFormats\Formats\PNGImage;
+use AppUtils\ImageHelper\ImageFormats\Formats\SVGImage;
+use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
+use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 use DBHelper;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
@@ -187,19 +193,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         return Localization::getAppLocaleByName($name);
     }
 
-    public function createTestImage(string $name='example-image') : Application_Media_Document_Image
-    {
-        $file = $this->getExampleImagePath();
 
-        $document = AppFactory::createMedia()->createImageFromFile($name, FileInfo::factory($file));
-        $documentPath = $document->getPath();
-
-        $this->assertFileExists($documentPath);
-
-        $this->testMedia[] = $document;
-
-        return $document;
-    }
 
     protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
     {
@@ -227,20 +221,6 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         AppFactory::createLogger()->reset();
 
         $this->testMedia = array();
-    }
-
-    protected function getMediaStoragePath() : string
-    {
-        return __DIR__.'/../files/Media';
-    }
-
-    protected function getExampleImagePath() : string
-    {
-        $file = $this->getMediaStoragePath() . '/example-image.png';
-
-        $this->assertFileExists($file);
-
-        return $file;
     }
 
     // region Custom assertions

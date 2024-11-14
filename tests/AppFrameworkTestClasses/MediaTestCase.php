@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
+use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
+use AppFrameworkTestClasses\Traits\ImageMediaTestTrait;
 use Application;
 use Application\AppFactory;
 use Application_Media;
@@ -15,8 +17,10 @@ use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use DBHelper;
 
-abstract class MediaTestCase extends ApplicationTestCase
+abstract class MediaTestCase extends ApplicationTestCase implements ImageMediaTestInterface
 {
+    use ImageMediaTestTrait;
+
     protected Application_Media $media;
     protected Application_Uploads $uploads;
     protected string $storageFolder;
