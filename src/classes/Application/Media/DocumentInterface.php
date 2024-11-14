@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use AppUtils\ImageHelper;
+use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 
 interface Application_Media_DocumentInterface extends Application_Interfaces_Loggable
 {
@@ -87,15 +88,16 @@ interface Application_Media_DocumentInterface extends Application_Interfaces_Log
 
     /**
      * @return bool
-     * @deprecated Use {@see self::isVector()} instead.
+     * @deprecated Use {@see self::getImageFormat()} instead.
      */
     public function isTypeSVG() : bool;
 
     public function getTypeIconPath() : string;
 
     public function getTypeIconURL() : string;
-
+    public function supportsThumbnails() : bool;
     public function isVector() : bool;
+    public function getImageFormat() : ImageFormatInterface;
 
     /**
      * Retrieves the extension of the file. Always lowercase.
