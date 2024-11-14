@@ -18,6 +18,7 @@ use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 use AppUtils\ImageHelper;
 use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
+use AppUtils\ImageHelper\ImageFormats\Formats\SVGImage;
 use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
 use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 use AppUtils\ImageHelper_Exception;
@@ -58,7 +59,7 @@ trait DocumentTrait
         $sourcePath = $this->getThumbnailSourcePath();
         $source = ImageHelper::createFromFile($sourcePath);
 
-        if($source->isVector()) {
+        if(!$this->supportsThumbnails()) {
             return $sourcePath;
         }
 
@@ -122,7 +123,7 @@ trait DocumentTrait
         $sourcePath = $this->getThumbnailSourcePath();
         $source = $this->getThumbnailSourceImage();
 
-        if($this->supportsThumbnails()) {
+        if(!$this->supportsThumbnails()) {
             return $sourcePath;
         }
 
@@ -231,16 +232,16 @@ trait DocumentTrait
 
     /**
      * @return bool
-     * @deprecated Use {@see self::isVector()} instead.
+     * @deprecated Use {@see self::getImageFormat()} instead.
      */
     public function isTypeSVG() : bool
     {
-        return $this->isVector();
+        return $this->getImageFormat() instanceof SVGImage;
     }
 
     public function isVector() : bool
     {
-        return strtolower($this->getExtension()) === 'svg';
+        return $this->getImageFormat()->isVector();
     }
 
     /**
