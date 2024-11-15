@@ -1,3 +1,8 @@
+## v5.x.x - 
+- Markdown Renderer: Fixed image tags missing the `width` attribute.
+- Media: Media file tags are now shown in the image gallery.
+- Media: Image names are now linked to the media document pages in the image gallery.
+
 ## v5.4.5 - Client-side logging improvements
 - JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
 - JS: Moved the code to handle JS error logging to a dedicated class.
