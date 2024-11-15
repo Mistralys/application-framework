@@ -12,6 +12,7 @@ use Application\Media\Collection\MediaRecord;
 use Application\Media\MediaException;
 use Application_Admin_Area_Mode;
 use Application_Media_Document_Image;
+use AppUtils\AttributeCollection;
 use AppUtils\ClassHelper;
 use AppUtils\PaginationHelper;
 use UI;
@@ -22,6 +23,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     public const URL_NAME = 'image-gallery';
     public const PREFERRED_THUMBNAIL_SIZE = 260;
     public const REQUEST_PARAM_PAGE_NUMBER = 'page-number';
+    public const STYLESHEET_FILE = 'media-image-gallery.css';
     private MediaCollection $media;
     private MediaFilterCriteria $criteria;
     private MediaFilterSettings $filterSettings;
@@ -113,7 +115,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
 
     protected function _renderContent()
     {
-        $this->ui->addStylesheet('media-image-gallery.css');
+        $this->ui->addStylesheet(self::STYLESHEET_FILE);
 
         $this->filterSettings->configureFilters($this->criteria);
         $this->paginator->configureFilters($this->criteria);
@@ -155,13 +157,15 @@ HTML;
                 $template,
                 $item->renderThumbnail(self::PREFERRED_THUMBNAIL_SIZE),
                 sb()
-                    ->bold($item->getLabel())
+                    ->bold($item->getLabelLinked())
                     ->nl()
                     ->add($document->getExtension())
                     ->add('|')
                     ->add($document->getDimensions()->toReadableString())
                     ->add('|')
                     ->add($document->getFilesizeReadable())
+                    ->nl()
+                    ->ul($document->getTagManager()->getLabels(), AttributeCollection::create()->addClass('gallery-image-tags'))
             );
         }
         catch (MediaException $e)
