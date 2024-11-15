@@ -157,4 +157,15 @@ class Taggable
 
         return $el;
     }
+
+    public function getLabels() : array
+    {
+        $result = array();
+
+        foreach($this->getAll() as $tag) {
+            $result[] = $tag->getLabel();
+        }
+
+        return $result;
+    }
 }
