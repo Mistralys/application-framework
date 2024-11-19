@@ -7,9 +7,11 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaFilterCriteria;
 use Application\Media\MediaException;
 use Application\Media\MediaTagConnector;
+use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\Taggables\TagConnector;
+use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\TagRecord;
 use Application\Tags\TagRegistry;
 use AppUtils\ClassHelper;
@@ -24,6 +26,8 @@ use UI\Tree\TreeRenderer;
  */
 class Application_Media implements TagCollectionInterface
 {
+    public const COLLECTION_ID = 'media_legacy';
+
     use TagCollectionTrait;
 
     public const ERROR_UNKNOWN_MEDIA_CONFIGURATION = 680001;
@@ -58,6 +62,21 @@ class Application_Media implements TagCollectionInterface
     {
         $this->storageFolder = Application::getStorageSubfolderPath('media');
         $this->driver = Application_Driver::getInstance();
+    }
+
+    public function getCollectionRegistrationClass(): string
+    {
+        return RegisterMediaTagsListener::class;
+    }
+
+    public function getCollectionID(): string
+    {
+        return self::COLLECTION_ID;
+    }
+
+    public function getTaggableByID(int $id): Application_Media_Document
+    {
+        return $this->getByID($id);
     }
 
     /**
@@ -127,6 +146,11 @@ class Application_Media implements TagCollectionInterface
     }
 
     /**
+     * @var array<int,Application_Media_Document>
+     */
+    private array $knownDocuments = array();
+
+    /**
      * Retrieves a media document by its ID.
      * Throws an exception if it does not exist in the database.
      *
@@ -135,7 +159,20 @@ class Application_Media implements TagCollectionInterface
      */
     public function getByID(int $media_id) : Application_Media_Document
     {
-        return Application_Media_Document::create($media_id);
+        if(isset($this->knownDocuments[$media_id])) {
+            return $this->knownDocuments[$media_id];
+        }
+
+        $document = Application_Media_Document::create($media_id);
+
+        $this->knownDocuments[$media_id] = $document;
+
+        return $document;
+    }
+
+    public function clearCollection() : void
+    {
+        $this->knownDocuments = array();
     }
     
    /**
