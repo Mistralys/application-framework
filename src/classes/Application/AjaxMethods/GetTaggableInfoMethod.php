@@ -11,6 +11,7 @@ namespace Application\AjaxMethods;
 use Application\Ajax\BaseJSONAjaxMethod;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableUniqueID;
+use Application\Tags\TagRecord;
 use AppUtils\ArrayDataCollection;
 
 /**
@@ -39,6 +40,7 @@ class GetTaggableInfoMethod extends BaseJSONAjaxMethod
     public const KEY_UNIQUE_ID = 'uniqueID';
     public const KEY_LABEL = 'label';
     public const KEY_TYPE_LABEL = 'typeLabel';
+    public const KEY_TAGS = 'tags';
     private TaggableInterface $taggable;
     private TaggableUniqueID $uniqueID;
 
@@ -49,9 +51,40 @@ class GetTaggableInfoMethod extends BaseJSONAjaxMethod
 
     protected function collectPayload(ArrayDataCollection $payload) : void
     {
-        $payload->setKey(self::KEY_UNIQUE_ID, $this->uniqueID->getID());
+        $payload->setKey(self::KEY_UNIQUE_ID, $this->uniqueID->getUniqueID());
         $payload->setKey(self::KEY_LABEL, $this->taggable->getTaggableLabel());
         $payload->setKey(self::KEY_TYPE_LABEL, $this->taggable->getTagCollection()->getTaggableTypeLabel());
+        $payload->setKey(self::KEY_TAGS, $this->collectTags());
+    }
+
+    private function collectTags() : array
+    {
+        $result = array();
+
+        $this->collectTagsRecursive($result, $this->taggable->getTagCollection()->getRootTag());
+
+        return $result[0]['subTags'];
+    }
+
+    private function collectTagsRecursive(array &$list, TagRecord $tag) : void
+    {
+        $data = $this->collectTag($tag);
+        $data['subTags'] = array();
+
+        foreach($tag->getSubTags() as $child) {
+            $this->collectTagsRecursive($data['subTags'], $child);
+        }
+
+        $list[] = $data;
+    }
+
+    private function collectTag(TagRecord $tag) : array
+    {
+        return array(
+            'id' => $tag->getID(),
+            'label' => $tag->getLabel(),
+            'connected' => $this->taggable->getTagManager()->hasTag($tag)
+        );
     }
 
     protected function validateRequest(): void
@@ -64,7 +97,9 @@ class GetTaggableInfoMethod extends BaseJSONAjaxMethod
                     'Invalid unique ID. Reason given: %s',
                     $uniqueID->getErrorMessage()
                 ),
-                null,
+                array(
+                    'uniqueID' => $uniqueID->getCode()
+                ),
                 $uniqueID->getCode()
             );
         }
