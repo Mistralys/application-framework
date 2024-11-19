@@ -9,11 +9,13 @@
     flex-basis: 200px;
     border:solid 1px #ccc;
     border-radius: 5px;
-    padding: 8px;
     background:#f0f0f0;
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
 }
 
 .gallery-image{
+    margin: 8px;
     background: url(../img/forms/VisualSelect/bg-image.png) repeat;
 }
 
@@ -25,21 +27,7 @@
 }
 
 .gallery-details{
-    padding-top:8px;
-    font-size: var(--font-size-s);
-    line-height: var(--line-height-s);
-}
-
-.gallery-details UL.gallery-image-tags{
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.gallery-details UL.gallery-image-tags LI{
-    display: inline;
-    margin-right: 5px;
-    font-style: italic;
+    padding: 0 8px;
 }
 
 .gallery-pagination{
