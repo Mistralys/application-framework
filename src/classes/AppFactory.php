@@ -16,6 +16,7 @@ use Application\CacheControl\CacheManager;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
+use Application\Driver\VersionInfo;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SystemMails\SystemMailer;
@@ -173,6 +174,11 @@ class AppFactory
             TagCollection::class,
             DBHelper::createCollection(TagCollection::class)
         );
+    }
+
+    public static function createVersionInfo() : VersionInfo
+    {
+        return VersionInfo::getInstance();
     }
 
     public function createDriverSettings() : DriverSettings
