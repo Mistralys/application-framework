@@ -41,3 +41,14 @@ fixed to an implementation based on extracting the current version from the
 `dev-changelog.md` file.
 
 1. Remove all version methods from the driver class.
+
+## ListBuilder update
+
+The list builder now has the possibility to automatically configure the
+filter settings just like the filter criteria. The idea is to be able to
+disable settings for which a column has been disabled in the filters, for
+example.
+
+1. Implement the new abstract `configureFilterSettings()` method.
+2. Update the method signature of `configureFilters()`.
+3. Update the method signature of `getFilterSettings()`.
