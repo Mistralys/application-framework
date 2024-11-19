@@ -139,7 +139,7 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
             ->setWithSidebar($this->hasItems);
     }
 
-    private function renderImageThumbnail(MediaRecord $item) : string
+    private function renderImageThumbnail(MediaRecord $record) : string
     {
         $template = <<<'HTML'
 <div class="gallery-card">
@@ -147,25 +147,18 @@ class BaseImageGalleryScreen extends Application_Admin_Area_Mode
     <div class="gallery-details">
         %2$s
     </div>
+    %3$s
 </div>
 HTML;
 
         try {
-            $document = ClassHelper::requireObjectInstanceOf(Application_Media_Document_Image::class, $item->getMediaDocument());
+            $image = ClassHelper::requireObjectInstanceOf(Application_Media_Document_Image::class, $record->getMediaDocument());
 
             return sprintf(
                 $template,
-                $item->renderThumbnail(self::PREFERRED_THUMBNAIL_SIZE),
-                sb()
-                    ->bold($item->getLabelLinked())
-                    ->nl()
-                    ->add($document->getExtension())
-                    ->add('|')
-                    ->add($document->getDimensions()->toReadableString())
-                    ->add('|')
-                    ->add($document->getFilesizeReadable())
-                    ->nl()
-                    ->ul($document->getTagManager()->getLabels(), AttributeCollection::create()->addClass('gallery-image-tags'))
+                $record->renderThumbnail(self::PREFERRED_THUMBNAIL_SIZE),
+                $this->renderMetaInfo($record, $image),
+                $this->renderTagEditor($image)
             );
         }
         catch (MediaException $e)
@@ -176,10 +169,31 @@ HTML;
                 $template,
                 '<img src="'.$this->ui->getTheme()->getEmptyImageURL().'" width="'.self::PREFERRED_THUMBNAIL_SIZE.'" alt=""/>',
                 sb()
-                    ->bold($item->getLabel())
+                    ->bold($record->getLabel())
                     ->nl()
                     ->warning(sb()->bold(t('Not found in the storage.')))
             );
         }
+    }
+
+    private function renderTagEditor(Application_Media_Document_Image $image) : string
+    {
+        if($image->isTaggingEnabled()) {
+            return $image->getTagManager()->renderTaggingUI();
+        }
+
+        return '';
+    }
+
+    private function renderMetaInfo(MediaRecord $record, Application_Media_Document_Image $image) : string
+    {
+        return (string)sb()
+            ->bold($record->getLabelLinked())
+            ->nl()
+            ->add($image->getExtension())
+            ->add('|')
+            ->add($image->getDimensions()->toReadableString())
+            ->add('|')
+            ->add($image->getFilesizeReadable());
     }
 }
