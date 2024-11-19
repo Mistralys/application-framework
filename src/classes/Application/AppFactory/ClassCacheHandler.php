@@ -47,7 +47,8 @@ class ClassCacheHandler
         $cacheKey = sprintf(
             'classes_v%s_%s',
             md5($folder->getPath().bool2string($recursive).$baseClass),
-            AppFactory::createDriver()->getExtendedVersion()
+            // Important not to use the Driver instance, as it may not be initialized yet
+            AppFactory::createVersionInfo()->getFullVersion()
         );
 
         if(isset(self::$classCache[$cacheKey])) {
@@ -109,7 +110,7 @@ class ClassCacheHandler
      * {@see Application\CacheControl\CacheManager}.
      *
      * @return ClassCacheLocation
-     * @see Application\OfflineEvents\RegisterCacheLocationsEvent\RegisterClassCacheHandler::handleEvent()
+     * @see Application\OfflineEvents\RegisterCacheLocationsEvent\RegisterClassCacheListener::handleEvent()
      */
     public static function getCacheLocation() : ClassCacheLocation
     {
