@@ -31,7 +31,7 @@ use AppUtils\ArrayDataCollection;
  * @package Tagging
  * @subpackage AJAX Methods
  */
-class GetTaggableInfo extends BaseJSONAjaxMethod
+class GetTaggableInfoMethod extends BaseJSONAjaxMethod
 {
     public const METHOD_NAME = 'GetTaggableInfo';
     public const PARAM_UNIQUE_ID = 'unique_id';
