@@ -7,36 +7,8 @@ namespace Mistralys\AppFrameworkTests\TestClasses;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
 use AppFrameworkTestClasses\Traits\ImageMediaTestTrait;
-use Application;
-use Application\AppFactory;
-use Application_Media;
-use Application_Media_Document;
-use Application_Media_Document_Image;
-use Application_Uploads;
-use AppUtils\FileHelper;
-use AppUtils\FileHelper\FileInfo;
-use DBHelper;
 
 abstract class MediaTestCase extends ApplicationTestCase implements ImageMediaTestInterface
 {
     use ImageMediaTestTrait;
-
-    protected Application_Media $media;
-    protected Application_Uploads $uploads;
-    protected string $storageFolder;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->media = AppFactory::createMedia();
-        $this->uploads = AppFactory::createUploads();
-        $this->storageFolder = $this->getMediaStoragePath();
-
-        DBHelper::deleteRecords(Application_Media::TABLE_NAME);
-
-        $this->startTransaction();
-
-        $this->media->setRootTag(AppFactory::createTags()->createNewTag('Media'));
-    }
 }

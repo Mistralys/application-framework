@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses;
 
+use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
+use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
 use Application;
 use Application\AppFactory;
 use Application\Interfaces\ChangelogableInterface;
@@ -38,11 +40,6 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
      */
     private static array $counter = array();
 
-    /**
-     * @var Application_Media_Document[]
-     */
-    protected array $testMedia = array();
-
     protected function logHeader(string $testName): void
     {
         Application::logHeader(get_class($this) . ' | ' . $testName);
@@ -72,14 +69,9 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     {
         $this->clearTransaction();
         $this->disableLogging();
-        $this->clearTestMedia();
-    }
 
-    protected function clearTestMedia(): void
-    {
-        foreach($this->testMedia as $media)
-        {
-            FileHelper::deleteFile($media->getPath());
+        if($this instanceof ImageMediaTestInterface) {
+            $this->tearDownImageTestCase();
         }
     }
 
@@ -220,7 +212,13 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
 
         AppFactory::createLogger()->reset();
 
-        $this->testMedia = array();
+        if($this instanceof ImageMediaTestInterface) {
+            $this->setUpImageTestCase();
+        }
+
+        if($this instanceof DBHelperTestInterface) {
+            $this->setUpDBHelperTestTrait();
+        }
     }
 
     // region Custom assertions
