@@ -127,14 +127,25 @@ var UI =
 			ui.position.top -= $(document).scrollTop();
 		}
 	},
+
+	/**
+	 *
+	 * @param {String|jQuery} elementOrSelector
+	 * @constructor
+	 */
+	HideTooltip:function(elementOrSelector)
+	{
+		$(elementOrSelector).tooltip('hide');
+	},
 	
    /**
     * Adds a tooltip to the specified element selector or
     * jQuery DOM element instance, using the global tooltip
     * settings.
     * 
-    * @param {String|jQueryElement} elementOrSelector
-    * @param {Boolean} [htmlAllowed=false] Whether HTML is allowed 
+    * @param {String|jQuery} elementOrSelector
+    * @param {Boolean} [htmlAllowed=false] Whether HTML is allowed
+	* @param {String|null} [placement='top'] The placement of the tooltip.
     */
 	MakeTooltip:function(elementOrSelector, htmlAllowed, placement)
 	{
@@ -166,7 +177,7 @@ var UI =
 		 * https://github.com/twbs/bootstrap/issues/6942
 		 * 
 		 * Added the stop propagation of the events, but this is
-		 * not a catch all. 
+		 * not a catch-all.
 		 */
 		el.tooltip({
 			'html':htmlAllowed,
