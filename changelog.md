@@ -16,6 +16,7 @@
 - AppFactory: Added `createVersionInfo()`.
 - UI: Added an ES6 dialog implementation.
 - UI: Added the `UI.HideTooltip()` clientside method.
+- FilterSettings: Added `configureFiterSettings()` to make adjustments possible.
 - AJAX: Added the base class `BaseHTMLAjaxMethod` for HTML-based requests.
 - AJAX: Added the base class `BaseJSONAjaxMethod` for JSON-based requests.
 
