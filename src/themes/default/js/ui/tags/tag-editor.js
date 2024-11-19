@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * Handles the editing UI for a single taggable record's
+ * tag list. The actual editing is done via a dialog,
+ * {@link TaggingDialog}.
+ *
+ * @package Tagging
+ */
 class TagEditor
 {
     /**
