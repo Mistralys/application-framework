@@ -12,7 +12,10 @@
  */
 class BaseDialog
 {
-    constructor()
+    /**
+     * @param {String} loggingIdentifier
+     */
+    constructor(loggingIdentifier)
     {
         this.BUTTON_POSITION_LEFT = 'left';
         this.BUTTON_POSITION_RIGHT = 'right';
@@ -31,6 +34,7 @@ class BaseDialog
         this.classes = [];
         this.data = {};
         this.buttons = {};
+        this.logger = new Logger(loggingIdentifier);
         this.buttons[this.BUTTON_POSITION_LEFT] = [];
         this.buttons[this.BUTTON_POSITION_RIGHT] = [];
         this.isShown = false;
@@ -41,21 +45,6 @@ class BaseDialog
         };
 
         application.registerDialog(this);
-
-        this._Init();
-    }
-
-    /**
-     * Allows dialog classes to run initialization routines
-     * without having to overload the constructor.
-     *
-     * @protected
-     * @abstract
-     * @returns {void}
-     */
-    _Init()
-    {
-
     }
 
     /**
