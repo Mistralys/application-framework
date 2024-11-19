@@ -10,10 +10,15 @@ namespace Application\Tags\Taggables;
 
 use Application\AppFactory;
 use Application\Tags\TagCollection;
+use Application\Tags\TagCollectionRegistry;
 use Application\Tags\TagRecord;
 use Application_Interfaces_Formable;
+use AppUtils\AttributeCollection;
+use AppUtils\OutputBuffering;
 use DBHelper;
+use Hoa\Stream\IStream\Out;
 use HTML_QuickForm2_Element_TreeSelect;
+use UI;
 
 /**
  * Helper class that can be used to manage tags for a record.
@@ -43,6 +48,11 @@ class Taggable
         $this->primaryName = $this->connector->getPrimaryName();
         $this->tableName = $this->connector->getTableName();
         $this->primaryKey = $primaryKey;
+    }
+
+    public function getPrimaryKey(): int
+    {
+        return $this->primaryKey;
     }
 
     public function getCollection() : TagCollectionInterface
@@ -127,7 +137,7 @@ class Taggable
             $result[] = $collection->getByID($id);
         }
 
-        usort($result, function(TagRecord $a, TagRecord $b) {
+        usort($result, static function(TagRecord $a, TagRecord $b) : int {
             return strnatcasecmp($a->getLabel(), $b->getLabel());
         });
 
@@ -167,5 +177,15 @@ class Taggable
         }
 
         return $result;
+    }
+
+    public function renderTaggingUI() : string
+    {
+        return (string)new TagEditorUI($this);
+    }
+
+    public function getUniqueID() : string
+    {
+        return TaggableUniqueID::compileUniqueID($this);
     }
 }
