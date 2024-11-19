@@ -51,6 +51,16 @@ class RevisionableCollection extends Application_RevisionableCollection
         );
     }
 
+    private ?CollectionAdminURLs $adminURLs = null;
+    public function adminURL() : CollectionAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new CollectionAdminURLs();
+        }
+
+        return $this->adminURLs;
+    }
+
     // region: X - Interface methods
 
     public function getPrimaryRequestName(): string
