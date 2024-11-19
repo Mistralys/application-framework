@@ -564,6 +564,11 @@ abstract class Application_Media_Document
 
     // region: Tagging
 
+    public function getTaggableLabel(): string
+    {
+        return $this->getName();
+    }
+
     public function getTagCollection(): TagCollectionInterface
     {
         return $this->media;
