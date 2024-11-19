@@ -116,14 +116,14 @@ trait ImageMediaTestTrait
 
     public function setUpImageTestCase(): void
     {
+        $this->startTransaction();
+
         $this->media = AppFactory::createMedia();
         $this->uploads = AppFactory::createUploads();
         $this->storageFolder = $this->getMediaStoragePath();
         $this->testMedia = array();
 
         DBHelper::deleteRecords(Application_Media::TABLE_NAME);
-
-        $this->startTransaction();
 
         $this->media->clearCollection();
         $this->media->setRootTag(AppFactory::createTags()->createNewTag('Media'));
