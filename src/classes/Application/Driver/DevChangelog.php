@@ -13,14 +13,12 @@ use Application_Traits_Loggable;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 use Mistralys\ChangelogParser\ChangelogParser;
-use Mistralys\ChangelogParser\ChangelogParserException;
 use Mistralys\VersionParser\VersionParser;
 
 /**
  * Utility class for handling the developer changelog file.
  * If the file {@see self::CHANGELOG_FILE} is present, information
- * can be loaded from it, and the {@see self::VERSION_FILE} can be
- * generated from it automatically.
+ * can be loaded from it.
  *
  * @package Application
  * @subpackage Driver
@@ -30,18 +28,16 @@ class DevChangelog implements Application_Interfaces_Loggable
     use Application_Traits_Loggable;
 
     public const CHANGELOG_FILE = 'dev-changelog.md';
-    public const VERSION_FILE = 'version';
     public const ERROR_NO_CHANGELOG_FILE_FOUND = 164901;
+    public const DEFAULT_VERSION_STRING = '0.0.0';
 
     private FileInfo $changelogFile;
     private ?ChangelogParser $parser = null;
     private ?VersionParser $currentVersion = null;
-    private FileInfo $versionFile;
     private string $logIdentifier;
 
     public function __construct()
     {
-        $this->versionFile = FileInfo::factory(APP_ROOT.'/'.self::VERSION_FILE);
         $this->changelogFile = FileInfo::factory(APP_ROOT.'/'.self::CHANGELOG_FILE);
         $this->logIdentifier = 'DevChangeLog';
     }
@@ -52,40 +48,12 @@ class DevChangelog implements Application_Interfaces_Loggable
     }
 
     /**
-     * Creates or updates the {@see self::VERSION_FILE} with the latest version
-     * found in the developer changelog.
-     *
-     * @return $this
-     *
-     * @throws DriverException
-     * @throws FileHelper_Exception
-     * @throws ChangelogParserException
-     */
-    public function writeVersionFile() : self
-    {
-        $this->log('Writing the version to disk.', self::VERSION_FILE);
-
-        $this->versionFile->putContents(
-            $this->getChangelog()
-                ->requireLatestVersion()
-                ->getVersionInfo()
-                ->getVersion()
-        );
-
-        return $this;
-    }
-
-    /**
      * Deletes the version file if it exists. Has no effect otherwise.
      *
      * @return $this
-     * @throws FileHelper_Exception
      */
     public function clearCurrentVersion() : self
     {
-        $this->log('Deleting the [%s] file.', self::VERSION_FILE);
-
-        $this->versionFile->delete();
         $this->currentVersion = null;
         return $this;
     }
@@ -95,26 +63,17 @@ class DevChangelog implements Application_Interfaces_Loggable
         return $this->changelogFile->exists();
     }
 
-    public function currentVersionExists() : bool
-    {
-        return $this->versionFile->exists();
-    }
-
     /**
      * Gets the current version of the application.
      *
-     * This is determined by the {@see self::VERSION_FILE} if it exists,
-     * or by the latest version found in the developer changelog. If the
-     * version file does not exist but the changelog file exists, the
-     * version file is created automatically.
+     * This is determined by the latest version found in the developer
+     * changelog file, {@see self::CHANGELOG_FILE}.
      *
-     * NOTE: If neither the version file nor the changelog file exist, the
-     * version is assumed to be `0.0.0`.
+     * > NOTE: If the changelog file does not exist or does not contain any
+     * > version information, the version is assumed to be {@see self::DEFAULT_VERSION_STRING}.
      *
      * @return VersionParser
-     * @throws ChangelogParserException
-     * @throws DriverException
-     * @throws FileHelper_Exception
+     * @cached
      */
     public function getCurrentVersion() : VersionParser
     {
@@ -126,30 +85,25 @@ class DevChangelog implements Application_Interfaces_Loggable
 
         $this->log('LOAD | Detected version: %s', $this->currentVersion->getVersion());
 
-        if(!$this->versionFile->exists() && isset($this->parser)) {
-            // We have already loaded the full changelog,
-            // so we might as well use the occasion to
-            // write the version file.
-            $this->writeVersionFile();
-        }
-
         return $this->currentVersion;
     }
 
     private function resolveCurrentVersion() : VersionParser
     {
-        if($this->versionFile->exists()) {
-            $this->log('LOAD | Version file found.');
-            return VersionParser::create($this->versionFile->getContents());
-        }
-
         if(!$this->changelogFile->exists()) {
             $this->log('LOAD | No version file or changelog file found; Using default.');
-            return VersionParser::create('0.0.0');
+            return VersionParser::create(self::DEFAULT_VERSION_STRING);
+        }
+
+        $latest = $this->getChangelog()->getLatestVersion();
+
+        if($latest === null) {
+            $this->log('LOAD | No latest version found in the changelog; Using default.');
+            return VersionParser::create(self::DEFAULT_VERSION_STRING);
         }
 
         $this->log('LOAD | Using latest changelog version.');
-        return $this->getChangelog()->getLatestVersion()->getVersionInfo();
+        return $latest->getVersionInfo();
     }
 
     /**
