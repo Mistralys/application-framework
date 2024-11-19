@@ -1,7 +1,25 @@
-## v5.x.x - 
+## v5.x.x - (Breaking-L)
 - Markdown Renderer: Fixed image tags missing the `width` attribute.
 - Media: Media file tags are now shown in the image gallery.
 - Media: Image names are now linked to the media document pages in the image gallery.
+- Media: Fixed documents being loaded every time `getByID()` is called.
+- Driver: The version handling system now officially uses the `dev-changelog.md` file.
+- Driver: The version info has been moved from the `DevChangelog` to `VersionInfo`.
+- Driver: Added `AppFactory::createVersionInfo()`.
+- Deployments: The version file is now created with a deployment task.
+- OfflineEvents: Now using the class cache to load listeners.
+- OfflineEvents: The listener folders are now named after the event name.
+- OfflineEvents: Listeners now only need to implement the `handleEvent()` method.
+- Tags: Added the `TagCollectionRegistry` that collects all taggable record collections.
+- Tags: Added `getByUniqueID()` and `uniqueIDExists()`.
+- Tags: Added the `TaggableUniqueID` utility class to work with unique IDs.
+- AppFactory: Added `createVersionInfo()`.
+- UI: Added an ES6 dialog implementation.
+- UI: Added the `UI.HideTooltip()` clientside method.
+
+### Upgrade guide
+
+See the [upgrade guide](docs/upgrade-guides/upgrade-v5.5.0.md) for details.
 
 ## v5.4.5 - Client-side logging improvements
 - JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
