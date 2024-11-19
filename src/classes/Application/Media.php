@@ -74,11 +74,6 @@ class Application_Media implements TagCollectionInterface
         return self::COLLECTION_ID;
     }
 
-    public function getTaggableByID(int $id): Application_Media_Document
-    {
-        return $this->getByID($id);
-    }
-
     /**
      * Retrieves the full path to the folder where media files are stored.
      * @return string
@@ -359,6 +354,16 @@ class Application_Media implements TagCollectionInterface
     }
 
     // region: Tagging
+
+    public function getTaggableTypeLabel() : string
+    {
+        return t('Media document');
+    }
+
+    public function getTaggableByID(int $id): Application_Media_Document
+    {
+        return $this->getByID($id);
+    }
 
     public function getTagPrimary(): string
     {

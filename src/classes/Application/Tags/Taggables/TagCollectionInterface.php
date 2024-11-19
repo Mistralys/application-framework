@@ -30,6 +30,8 @@ interface TagCollectionInterface extends StringPrimaryRecordInterface
      */
     public function getCollectionRegistrationClass() : string;
 
+    public function getTaggableTypeLabel() : string;
+
     public function getTaggableByID(int $id) : TaggableInterface;
 
     /**

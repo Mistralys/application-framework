@@ -219,6 +219,11 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     // region: Tagging
 
+    public function getTaggableTypeLabel() : string
+    {
+        return t('Media document');
+    }
+
     public function getTaggableByID(int $id): MediaRecord
     {
         return $this->getByID($id);
