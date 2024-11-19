@@ -2105,7 +2105,7 @@ var application =
     * Automatically called by every dialog to register it in
     * the collection.
     * 
-    * @param {Dialog_Basic|TabbedDialog} dialog
+    * @param {Dialog_Basic|TabbedDialog|BaseDialog} dialog
     */
     registerDialog:function(dialog)
     {
