@@ -1,0 +1,17 @@
+.tag-editor{
+    border-radius: var(--border-radius-s);
+    padding: 4px;
+    margin: 4px;
+}
+
+.tag-editor > .tag-editor-list{
+    font-style: italic;
+}
+
+.tag-editor.started{
+    cursor: pointer;
+}
+
+.tag-editor.started:hover{
+    background-color: #ccf0f0;
+}
