@@ -35,8 +35,11 @@ class TaggableUniqueID extends OperationResult
 {
     public const ID_SEPARATOR_CHAR = '.';
 
-    public const VALIDATION_ERROR_UNKNOWN_COLLECTION = 167701;
-    public const VALIDATION_ERROR_INVALID_FORMAT = 167702;
+    public const VALIDATION_UNKNOWN_COLLECTION = 167701;
+    public const VALIDATION_INCORRECT_AMOUNT_OF_TOKENS = 167702;
+    public const VALIDATION_MISSING_SEPARATOR = 167703;
+    public const VALIDATION_NON_NUMERIC_RECORD_ID = 167704;
+    public const VALIDATION_ZERO_OR_NEGATIVE_RECORD_ID = 167705;
 
     /**
      * @var array<string, TaggableUniqueID>
@@ -66,22 +69,46 @@ class TaggableUniqueID extends OperationResult
 
     private function _parse() : void
     {
-        $parts = ConvertHelper::explodeTrim(self::ID_SEPARATOR_CHAR, $this->uniqueID);
-
-        if(count($parts) !== 2) {
+        if(strpos($this->uniqueID, self::ID_SEPARATOR_CHAR) === false) {
             $this->makeError(
-                t('Invalid ID format.'),
-                self::VALIDATION_ERROR_INVALID_FORMAT
+                t('Invalid ID format, missing separator character.'),
+                self::VALIDATION_MISSING_SEPARATOR
             );
+            return;
         }
 
-        $this->collectionID = $parts[0];
-        $this->primaryKey = (int)$parts[1];
+        $tokens = ConvertHelper::explodeTrim(self::ID_SEPARATOR_CHAR, $this->uniqueID);
+
+        if(count($tokens) !== 2) {
+            $this->makeError(
+                t('Invalid ID format, unexpected amount of tokens.'),
+                self::VALIDATION_INCORRECT_AMOUNT_OF_TOKENS
+            );
+            return;
+        }
+
+        if(!is_numeric($tokens[1])) {
+            $this->makeError(
+                t('Invalid taggable record ID, must be numeric.'),
+                self::VALIDATION_NON_NUMERIC_RECORD_ID
+            );
+            return;
+        }
+
+        $this->collectionID = $tokens[0];
+        $this->primaryKey = (int)$tokens[1];
+
+        if($this->primaryKey < 1) {
+            $this->makeError(
+                t('Invalid taggable record ID, must be greater than zero.'),
+                self::VALIDATION_ZERO_OR_NEGATIVE_RECORD_ID
+            );
+        }
 
         if(!$this->getRegistry()->idExists($this->collectionID)) {
             $this->makeError(
                 t('Unknown tag collection ID.'),
-                self::VALIDATION_ERROR_UNKNOWN_COLLECTION
+                self::VALIDATION_UNKNOWN_COLLECTION
             );
         }
     }
@@ -156,6 +183,11 @@ class TaggableUniqueID extends OperationResult
     public function getPrimaryKey() : int
     {
         return $this->primaryKey;
+    }
+
+    public function getUniqueID() : string
+    {
+        return $this->uniqueID;
     }
 
     public function getRegistry() : TagCollectionRegistry
