@@ -119,6 +119,7 @@ class Taggable
     }
 
     /**
+     * Gets all tags that are connected to the record.
      * @return TagRecord[]
      */
     public function getAll() : array
