@@ -4,8 +4,11 @@
  * @subpackage AJAX
  */
 
+use Application\Ajax\BaseHTMLAjaxMethod;
+use Application\Ajax\BaseJSONAjaxMethod;
 use Application\AppFactory;
 use Application\Exception\DisposableDisposedException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
@@ -112,6 +115,13 @@ abstract class Application_AjaxMethod
 
     protected string $format = '';
 
+    /**
+     * @param string $formatName
+     * @return void
+     * @throws Application_Exception
+     * @see BaseHTMLAjaxMethod::processHTML()
+     * @see BaseJSONAjaxMethod::processJSON()
+     */
     public function process(string $formatName) : void
     {
         $this->startSimulation();
@@ -190,13 +200,17 @@ abstract class Application_AjaxMethod
     }
 
     /**
-     * @param array<string|int,mixed>|string|NULL $data
+     * @param ArrayDataCollection|array<string|int,mixed>|string|NULL $data
      * @return never
      */
     protected function sendResponse($data = null)
     {
         if(DBHelper::isTransactionStarted()) {
             $this->endTransaction();
+        }
+
+        if($data instanceof ArrayDataCollection) {
+            $data = $data->getData();
         }
         
         if($this->isSimulationEnabled()) {
