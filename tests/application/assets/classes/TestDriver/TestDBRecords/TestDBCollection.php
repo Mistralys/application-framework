@@ -7,8 +7,10 @@ namespace TestDriver\TestDBRecords;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\Taggables\TagConnector;
+use Application\Tags\Taggables\TaggableInterface;
 use DBHelper;
 use DBHelper_BaseCollection;
+use TestDriver\OfflineEvents\RegisterTagCollections\RegisterTestDBCollection;
 
 /**
  * @method TestDBRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
@@ -19,6 +21,8 @@ use DBHelper_BaseCollection;
  */
 class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
+    public const COLLECTION_ID = 'test_db_records';
+
     use TagCollectionTrait;
 
     public const TABLE_NAME = 'test_records';
@@ -42,6 +46,21 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
         }
 
         return self::$instance;
+    }
+
+    public function getCollectionRegistrationClass(): string
+    {
+        return RegisterTestDBCollection::class;
+    }
+
+    public function getCollectionID(): string
+    {
+        return self::COLLECTION_ID;
+    }
+
+    public function getTaggableByID(int $id): TestDBRecord
+    {
+        return $this->getByID($id);
     }
 
     public function getRecordClassName(): string
