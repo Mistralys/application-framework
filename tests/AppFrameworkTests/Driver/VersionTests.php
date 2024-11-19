@@ -6,28 +6,37 @@ namespace AppFrameworkTests\Driver;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
+use Application\Driver\VersionInfo;
 
 final class VersionTests extends ApplicationTestCase
 {
+    /**
+     * The version info class will automatically create and
+     * save the version file if it doesn't exist, independently
+     * of the deployment task that creates it. This is used
+     * as a fallback solution.
+     */
     public function test_createAutomatically() : void
     {
         $changelog = AppFactory::createDevChangelog();
+        $versionInfo = AppFactory::createVersionInfo();
 
         $this->assertTrue($changelog->changelogExists());
-        $this->assertFalse($changelog->currentVersionExists());
+        $this->assertFalse($versionInfo->fileExists());
 
-        $version = $changelog->getCurrentVersion();
+        $this->assertEquals('1.0.0', $changelog->getCurrentVersion()->getVersion());
+        $this->assertEquals('1.0.0', $versionInfo->getFullVersion());
 
-        $this->assertEquals('1.0.0', $version->getVersion());
-        $this->assertTrue($changelog->currentVersionExists());
+        $this->assertTrue($versionInfo->fileExists());
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
+        AppFactory::createVersionInfo()->clearVersion();
         AppFactory::createDevChangelog()->clearCurrentVersion();
 
-        $this->assertFileDoesNotExist(APP_ROOT.'/version');
+        $this->assertFileDoesNotExist(APP_ROOT.'/'.VersionInfo::FILE_NAME);
     }
 }

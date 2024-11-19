@@ -6,9 +6,9 @@ namespace AppFrameworkTests\EventHandling;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\AppFactory;
+use TestDriver\OfflineEvents\Test\ListenerA;
+use TestDriver\OfflineEvents\Test\ListenerB;
 use TestDriver\OfflineEvents\TestEvent;
-use TestDriver\OfflineEvents\TestEvent\ListenerA;
-use TestDriver\OfflineEvents\TestEvent\ListenerB;
 
 /**
  * @see TestEvent

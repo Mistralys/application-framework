@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use AppUtils\Microtime;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
@@ -12,11 +13,11 @@ final class DBHelper_DataTableTests extends DBHelperTestCase
      */
     private $dataTable;
 
-    private $recordTable = DBHelperTestCase::TEST_RECORDS_TABLE;
+    private $recordTable = DBHelperTestInterface::TEST_RECORDS_TABLE;
 
-    private $recordTableData = DBHelperTestCase::TEST_RECORDS_DATA_TABLE;
+    private $recordTableData = DBHelperTestInterface::TEST_RECORDS_DATA_TABLE;
 
-    private $recordPrimaryName = DBHelperTestCase::TEST_RECORDS_PRIMARY;
+    private $recordPrimaryName = DBHelperTestInterface::TEST_RECORDS_PRIMARY;
 
     private $recordTypeName = 'record';
 
