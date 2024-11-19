@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 
 declare(strict_types=1);
@@ -10,15 +10,10 @@ namespace Application\Tags\Taggables;
 
 use Application\AppFactory;
 use Application\Tags\TagCollection;
-use Application\Tags\TagCollectionRegistry;
 use Application\Tags\TagRecord;
 use Application_Interfaces_Formable;
-use AppUtils\AttributeCollection;
-use AppUtils\OutputBuffering;
 use DBHelper;
-use Hoa\Stream\IStream\Out;
 use HTML_QuickForm2_Element_TreeSelect;
-use UI;
 
 /**
  * Helper class that can be used to manage tags for a record.
@@ -26,8 +21,8 @@ use UI;
  * record, as stored in the record collection's tag connection
  * table.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 class Taggable
 {

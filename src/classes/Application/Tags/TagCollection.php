@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -24,8 +24,8 @@ use DBHelper_Exception;
 use UI;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @method TagCriteria getFilterCriteria()
  * @method TagFilterSettings getFilterSettings()

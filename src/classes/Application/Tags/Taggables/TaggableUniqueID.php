@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 
 declare(strict_types=1);
@@ -28,8 +28,8 @@ use AppUtils\OperationResult;
  * > the validation, only the format. This avoids calling
  * > the database when the ID is not used.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 class TaggableUniqueID extends OperationResult
 {

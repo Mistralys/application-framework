@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -11,7 +11,6 @@ namespace Application\Tags;
 use Application\AppFactory;
 use Application\OfflineEvents\RegisterTagCollectionsEvent;
 use Application\Tags\Taggables\TagCollectionInterface;
-use Application\Tags\Taggables\Taggable;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableUniqueID;
 use AppUtils\Collections\BaseStringPrimaryCollection;
@@ -24,8 +23,8 @@ use AppUtils\Collections\BaseStringPrimaryCollection;
  *
  * Get an instance via {@see AppFactory::createTags()} and then {@see TagCollection::createCollectionRegistry()}.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @method TagCollectionInterface getByID(string $id)
  * @method TagCollectionInterface[] getAll()

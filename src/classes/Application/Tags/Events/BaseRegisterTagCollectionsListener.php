@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Events
  */
 
 declare(strict_types=1);
@@ -17,8 +17,8 @@ use AppUtils\ClassHelper;
 /**
  * Base class for offline listeners that register tag collections.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Events
  * @see RegisterTagCollectionsEvent
  */
 abstract class BaseRegisterTagCollectionsListener extends Application_EventHandler_OfflineEvents_OfflineListener

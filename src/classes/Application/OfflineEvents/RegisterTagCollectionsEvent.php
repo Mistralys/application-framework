@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Events
  */
 
 declare(strict_types=1);
@@ -22,8 +22,8 @@ use Application_EventHandler_Event;
  * 1. Add listeners in the folder {@see self::EVENT_NAME} in the offline event folder.
  * 2. Extend the base class {@see BaseRegisterTagCollectionsListener}.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Events
  */
 class RegisterTagCollectionsEvent extends Application_EventHandler_Event
 {

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Exceptions
  */
 
 declare(strict_types=1);
@@ -11,8 +11,8 @@ namespace Application\Tags;
 use Application_Exception;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Exceptions
  */
 class TaggingException extends Application_Exception
 {

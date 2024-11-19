@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 
 declare(strict_types=1);
@@ -10,7 +10,6 @@ namespace Application\Tags\Taggables;
 
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
-use Application\Exception\DisposableDisposedException;
 use DBHelper;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
@@ -21,8 +20,8 @@ use DBHelper_Exception;
  * from a tag connection table. It automates retrieval
  * tasks to avoid implementing them manually.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 class TagConnector
 {
