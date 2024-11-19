@@ -10,6 +10,7 @@ use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaAdminURLs;
 use Application\Media\MediaTagConnector;
+use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
@@ -27,6 +28,8 @@ use DBHelper_BaseCollection;
  */
 class MediaCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
+    public const COLLECTION_ID = 'media';
+
     use TagCollectionTrait;
 
     public const RECENT_ITEMS_CATEGORY = 'recent_media';
@@ -42,6 +45,16 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public const COL_SIZE = 'file_size';
     public const COL_KEYWORDS = 'keywords';
     public const COL_DESCRIPTION = 'description';
+
+    public function getCollectionID(): string
+    {
+        return self::COLLECTION_ID;
+    }
+
+    public function getCollectionRegistrationClass(): string
+    {
+        return RegisterMediaTagsListener::class;
+    }
 
     private static ?bool $hasSizeColumn = null;
 
@@ -205,6 +218,11 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     }
 
     // region: Tagging
+
+    public function getTaggableByID(int $id): MediaRecord
+    {
+        return $this->getByID($id);
+    }
 
     public function getTagConnectorClass(): ?string
     {
