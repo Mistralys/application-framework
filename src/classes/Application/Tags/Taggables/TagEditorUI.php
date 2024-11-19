@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Tags\Taggables;
 
 use Application\AppFactory;
-use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\OutputBuffering;
 use UI;
 use UI_Renderable_Interface;
@@ -18,7 +17,15 @@ class TagEditorUI implements UI_Renderable_Interface
     public const STYLESHEET_FILE = 'ui/tags/tag-editor.css';
     public const JAVASCRIPT_FILE_MANAGER = 'ui/tags/tag-editor-manager.js';
     public const JAVASCRIPT_FILE_EDITOR = 'ui/tags/tag-editor.js';
+    public const JAVASCRIPT_FILE_TAGGABLE = 'ui/tags/taggable.js';
+    public const JAVASCRIPT_FILE_TAGGABLE_TAG = 'ui/tags/taggable-tag.js';
 
+    public const JAVASCRIPT_FILES = array(
+        self::JAVASCRIPT_FILE_MANAGER,
+        self::JAVASCRIPT_FILE_EDITOR,
+        self::JAVASCRIPT_FILE_TAGGABLE,
+        self::JAVASCRIPT_FILE_TAGGABLE_TAG
+    );
     private Taggable $taggable;
     private static bool $jsInjected = false;
 
@@ -37,8 +44,10 @@ class TagEditorUI implements UI_Renderable_Interface
 
         $ui = UI::getInstance();
         $ui->addStylesheet(self::STYLESHEET_FILE);
-        $ui->addJavascript(self::JAVASCRIPT_FILE_MANAGER);
-        $ui->addJavascript(self::JAVASCRIPT_FILE_EDITOR);
+
+        foreach(self::JAVASCRIPT_FILES as $file) {
+            $ui->addJavascript($file);
+        }
 
         AppFactory::createTags()->injectJS();
 
