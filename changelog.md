@@ -1,4 +1,4 @@
-## v5.x.x - (Breaking-L)
+## v5.5.0 - (Breaking-L)
 - Markdown Renderer: Fixed image tags missing the `width` attribute.
 - Media: Media file tags are now shown in the image gallery.
 - Media: Image names are now linked to the media document pages in the image gallery.
@@ -16,6 +16,8 @@
 - AppFactory: Added `createVersionInfo()`.
 - UI: Added an ES6 dialog implementation.
 - UI: Added the `UI.HideTooltip()` clientside method.
+- AJAX: Added the base class `BaseHTMLAjaxMethod` for HTML-based requests.
+- AJAX: Added the base class `BaseJSONAjaxMethod` for JSON-based requests.
 
 ### Upgrade guide
 
