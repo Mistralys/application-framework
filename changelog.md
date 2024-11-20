@@ -1,8 +1,10 @@
 ## v5.5.0 - (Breaking-L)
 - Markdown Renderer: Fixed image tags missing the `width` attribute.
-- Media: Media file tags are now shown in the image gallery.
+- Media: Tags are now shown in the image gallery.
+- Media: Tags can be edited in the image gallery.
 - Media: Image names are now linked to the media document pages in the image gallery.
 - Media: Fixed documents being loaded every time `getByID()` is called.
+- Media: Tags can now be edited in the status screen directly.
 - Driver: The version handling system now officially uses the `dev-changelog.md` file.
 - Driver: The version info has been moved from the `DevChangelog` to `VersionInfo`.
 - Driver: Added `AppFactory::createVersionInfo()`.
@@ -20,6 +22,7 @@
 - FilterSettings: Added `configureFiterSettings()` to make adjustments possible.
 - AJAX: Added the base class `BaseHTMLAjaxMethod` for HTML-based requests.
 - AJAX: Added the base class `BaseJSONAjaxMethod` for JSON-based requests.
+- Session: Fixed session not being destroyed when the user logs out.
 
 ### Upgrade guide
 
