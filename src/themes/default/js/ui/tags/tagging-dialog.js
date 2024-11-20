@@ -153,7 +153,7 @@ class TaggingDialog extends BaseDialog
             html += self.RenderTag(tag);
         });
 
-        return '<ul>'+html+'</ul>';
+        return '<ul class="tags-ul">'+html+'</ul>';
     }
 
     /**
@@ -171,7 +171,7 @@ class TaggingDialog extends BaseDialog
         const idCheck = tag.GetElementID('connected');
 
         html += ''+
-        '<label>'+
+        '<label class="checkbox">'+
             '<input type="checkbox" value="yes" id="'+idCheck+'" '+checked+'/>'+
             tag.GetLabel()+
         '</label>';
