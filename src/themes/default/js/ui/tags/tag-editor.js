@@ -10,7 +10,7 @@
 class TagEditor
 {
     /**
-     * @param {jQuery} el The editor DOM element.
+     * @param {jQuery} el The editor DOM element (selector: {@link TagEditorManager.SELECTOR_EDITORS}).
      * @see TagEditorManager.InitEditor
      */
     constructor(el) {
@@ -77,10 +77,38 @@ class TagEditor
             return this.dialog;
         }
 
-        const dialog = new TaggingDialog(this.primary);
+        const self = this;
+        const dialog = new TaggingDialog(
+            this.primary,
+            /**
+             * @param {TaggableTag[]} connectedTags
+             */
+            function (connectedTags) {
+                self.Handle_TagsUpdated(connectedTags);
+            }
+        );
 
         this.dialog = dialog;
 
         return dialog;
+    }
+
+    /**
+     * Updates the connected tag list in the original editor UI.
+     * @param {TaggableTag[]} connectedTags
+     */
+    Handle_TagsUpdated(connectedTags) {
+        this.logger.logEvent('TagsUpdated | Updating connected tags list.');
+
+        this.el.find('.tag-editor-list-tags > SPAN').remove();
+
+        const elContainer = this.el.find('.tag-editor-list-tags');
+
+        connectedTags.forEach(function (tag) {
+            const tagElement = $('<span></span>');
+            tagElement.text(tag.GetLabel());
+            elContainer.append(tagElement);
+            elContainer.append(' ');
+        });
     }
 }

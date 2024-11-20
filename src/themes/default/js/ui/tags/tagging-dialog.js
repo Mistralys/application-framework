@@ -10,12 +10,16 @@ class TaggingDialog extends BaseDialog
 {
     /**
      * @param {String} primary The unique ID of the taggable item.
+     * @param {Function} saveCallback The callback to call when the user saved the changes.
      */
-    constructor(primary) {
+    constructor(primary, saveCallback) {
         super('TaggingDialog ['+primary+']');
 
         this.ERROR_FAILED_TO_LOAD_DATA = 167501;
+        this.ERROR_FAILED_TO_SAVE_DATA = 167502;
+
         this.AJAX_METHOD_LOAD_DATA = 'GetTaggableInfo';
+        this.AJAX_METHOD_SAVE_DATA = 'SetTaggableTags';
         this.AJAX_PARAM_UNIQUE_ID = 'unique_id';
 
         this.KEY_LABEL = 'label';
@@ -29,6 +33,8 @@ class TaggingDialog extends BaseDialog
         this.primary = primary;
         this.loaded = false;
         this.loading = false;
+        this.saveCallback = saveCallback;
+        this.flatTags = [];
 
         this.SetIcon(UI.Icon().Tags());
     }
@@ -103,6 +109,8 @@ class TaggingDialog extends BaseDialog
         ));
 
         this.ChangeBody(this.RenderTagsList());
+
+
     }
 
     /**
@@ -116,13 +124,18 @@ class TaggingDialog extends BaseDialog
             tagData[this.KEY_TAG_ID],
             tagData[this.KEY_TAG_LABEL],
             tagData[this.KEY_TAG_CONNECTED],
-            this.taggable
+            this.taggable,
+            this.elements
         );
 
         const self = this;
         $.each(tagData[this.KEY_TAG_SUBTAGS], function (index, subTagData) {
             tag.RegisterSubTag(self.CreateTag(subTagData));
         });
+
+        // Also store the tag in a flat list for easier access
+        // when saving changes.
+        this.flatTags.push(tag);
 
         return tag;
     }
@@ -149,7 +162,19 @@ class TaggingDialog extends BaseDialog
      */
     RenderTag(tag) {
         let html = '<li>';
-        html += tag.GetLabel();
+
+        let checked = ''
+        if(tag.IsConnected()) {
+            checked = ' checked="checked"';
+        }
+
+        const idCheck = tag.GetElementID('connected');
+
+        html += ''+
+        '<label>'+
+            '<input type="checkbox" value="yes" id="'+idCheck+'" '+checked+'/>'+
+            tag.GetLabel()+
+        '</label>';
 
         if(tag.HasSubTags()) {
             html += '<ul>';
@@ -164,6 +189,70 @@ class TaggingDialog extends BaseDialog
         return html;
     }
 
+    Save()
+    {
+        this.logger.logEvent('Saving tagging data...');
+
+        this.KEY_SET_TAGS = 'tags';
+        this.KEY_SET_TAG_ID = 'id';
+        this.KEY_SET_TAG_CONNECTED = 'connected';
+
+        const payload = {};
+        payload[this.AJAX_PARAM_UNIQUE_ID] = this.primary;
+        payload[this.KEY_SET_TAGS] = [];
+
+        const self = this;
+        this.flatTags.forEach(function(tag) {
+            payload[self.KEY_SET_TAGS].push(self.SaveTag(tag));
+        });
+
+        this.logger.logData(payload);
+
+        application.createAJAX(this.AJAX_METHOD_SAVE_DATA)
+            .SetPayload(payload)
+            .Success(function() {
+                self.Handle_SaveSuccess();
+            })
+            .Error(t('Failed to save the tagging data.'), this.ERROR_FAILED_TO_SAVE_DATA)
+            .Send();
+    }
+
+    /**
+     * @param {TaggableTag} tag
+     */
+    SaveTag(tag)
+    {
+        tag.SetConnected(tag.GetElement('connected').prop('checked'));
+
+        let tagData = {};
+        tagData[this.KEY_SET_TAG_ID] = tag.GetID();
+        tagData[this.KEY_SET_TAG_CONNECTED] = tag.IsConnected();
+
+        return tagData;
+    }
+
+    Handle_SaveSuccess()
+    {
+        this.Hide();
+
+        this.saveCallback(this.GetConnectedTags());
+    }
+
+    /**
+     * @return {TaggableTag[]}
+     */
+    GetConnectedTags()
+    {
+        const connectedTags = [];
+        this.flatTags.forEach(function(tag) {
+            if(tag.IsConnected()) {
+                connectedTags.push(tag);
+            }
+        });
+
+        return connectedTags;
+    }
+
     // region: Abstract methods
 
     _GetTitle() {
@@ -176,7 +265,6 @@ class TaggingDialog extends BaseDialog
     _Handle_Shown() {
         if(!this.loaded) {
             this.Load();
-            return;
         }
     }
 
@@ -184,6 +272,21 @@ class TaggingDialog extends BaseDialog
     }
 
     _PostRender() {
+    }
+
+    _ConfigureButtons() {
+        const self = this
+        this.AddButtonPrimary(t('Save now'), function() {
+            self.Save();
+        });
+
+        this.GetPrimaryButton().SetIcon(UI.Icon().Save());
+
+        this.AddButtonClose();
+    }
+
+    _ConfigureButtonsLeft() {
+
     }
 
     _RenderAbstract() {
@@ -203,6 +306,7 @@ class TaggingDialog extends BaseDialog
     }
 
     _Start() {
+
     }
 
     // endregion
