@@ -31,20 +31,10 @@ class TagsGridProperty extends UI_PropertiesGrid_Property
 
     protected function filterValue($value): UI_StringBuilder
     {
-        if(!$value instanceof TaggableInterface) {
-            return $this->resolveEmptyText();
+        if($value instanceof TaggableInterface) {
+            return sb()->html($value->getTagManager()->renderTaggingUI());
         }
 
-        $tags = $value->getTagManager()->getAll();
-        if(empty($tags)) {
-            return $this->resolveEmptyText();
-        }
-
-        $list = array();
-        foreach($tags as $tag) {
-            $list[] = $tag->getLabel();
-        }
-
-        return sb()->add(implode(', ', $list));
+        return $this->resolveEmptyText();
     }
 }
