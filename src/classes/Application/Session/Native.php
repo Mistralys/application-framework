@@ -39,6 +39,8 @@ abstract class Application_Session_Native extends Application_Session_Base
             array($this, 'callback_sessionStartError')
         ));
 
+        session_name($this->getName());
+
         session_start(self::$options);
 
         restore_error_handler();
@@ -103,38 +105,26 @@ abstract class Application_Session_Native extends Application_Session_Base
         return '';
     }
 
-    protected function handleLogout(array $clearKeys=array()) : void
+    protected function _destroy() : void
     {
-        $this->log('LogOut | Clearing keys:');
-        $this->logData($clearKeys);
-
-        foreach($clearKeys as $name) {
-            $this->unsetValue($name);
-        }
+        session_destroy();
     }
 
-    final public function getPrefix() : string
+    final public function getName() : string
     {
         // Use a separate session prefix when using the request log,
         // to ensure that it has a separate session storage.
         if(defined(Application_Bootstrap_Screen_RequestLog::CONST_REQUEST_LOG_RUNNING)) {
-            return $this->_getPrefix().'reqlog_';
+            return $this->_getName().'reqlog_';
         }
 
-        return $this->_getPrefix();
+        return $this->_getName();
     }
 
-    abstract protected function _getPrefix() : string;
-
-    public function getNameWithPrefix(string $name) : string
-    {
-        return $this->getPrefix().$name;
-    }
+    abstract protected function _getName() : string;
 
     public function getValue(string $name, $default = null)
     {
-        $name = $this->getNameWithPrefix($name);
-
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
         }
@@ -144,20 +134,16 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     public function setValue(string $name, $value) : void
     {
-        $name = $this->getNameWithPrefix($name);
-
         $_SESSION[$name] = $value;
     }
 
     public function valueExists(string $name) : bool
     {
-        $name = $this->getNameWithPrefix($name);
-
         return isset($_SESSION[$name]);
     }
 
     public function unsetValue(string $name) : void
     {
-        unset($_SESSION[$this->getNameWithPrefix($name)]);
+        unset($_SESSION[$name]);
     }
 }

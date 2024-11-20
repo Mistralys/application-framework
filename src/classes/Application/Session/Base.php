@@ -1,29 +1,24 @@
 <?php
 /**
- * File containing the {@see Application_Session_Base} class.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_Base
  */
 
 declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\AppFactory\AppFactoryException;
-use Application\Environments;
 use Application\Session\Events\BeforeLogOutEvent;
 use Application\Session\Events\SessionStartedEvent;
 use Application\Session\Events\UserAuthenticatedEvent;
 use Application\User\Role\DeveloperRole;
-use AppUtils\ConvertHelper;
 use AppUtils\Request;
 use function AppUtils\parseURL;
 
 /**
  * Base session class: defines the core mechanisms of the
  * available session systems. Also included in the mechanism
- * is triggering the authentication, and storing the user
+ * is triggering the authentication and storing the user
  * information in the session.
  *
  * NOTE: To add session event handlers, see the offline
@@ -41,11 +36,7 @@ abstract class Application_Session_Base implements Application_Session
     use Application_Traits_Eventable;
 
     public const ERROR_ADMIN_RIGHTS_PRESET_MISSING = 22201;
-    public const ERROR_ONLY_FOR_SIMULATED_SESSION = 22202;
-    public const ERROR_NO_RIGHT_PRESETS_PRESENT = 22203;
     public const ERROR_AUTH_DID_NOT_RETURN_USER = 22205;
-    public const ERROR_INVALID_USER_CLASS = 22206;
-    public const ERROR_INVALID_USER_ID = 22207;
     public const ERROR_NO_USER_AVAILABLE = 22208;
     public const ERROR_PRESET_NOT_DEFINED = 22209;
     public const ERROR_CANNOT_AUTHENTICATE_TWICE = 22210;
@@ -74,6 +65,13 @@ abstract class Application_Session_Base implements Application_Session
     protected ?Application_User $user = null;
     protected bool $started = false;
 
+    /**
+     * @see Application_Bootstrap_Screen::initSession()
+     */
+    public function __construct()
+    {
+    }
+
     final public function start() : self
     {
         $this->log('Starting the session.');
@@ -88,21 +86,23 @@ abstract class Application_Session_Base implements Application_Session
 
     abstract protected function _start() : void;
 
-    abstract protected function handleLogout(array $clearKeys=array()) : void;
-
-    /**
-     * @see Application_Bootstrap_Screen::initSession()
-     */
-    public function __construct()
+    final public function destroy() : self
     {
+        $this->log('Destroying the session.');
+
+        $this->_destroy();
+
+        return $this;
     }
+
+    abstract protected function _destroy() : void;
 
     public function isStarted() : bool
     {
         return $this->started;
     }
 
-    public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
+    final public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
     {
         if(!isset($this->user)) {
             return;
@@ -116,25 +116,31 @@ abstract class Application_Session_Base implements Application_Session
         $this->user->setDeveloperModeEnabled(false);
         $this->user->saveSettings();
 
-        $this->handleLogout(array(
-            self::KEY_NAME_AUTH_RETURN_URI,
-            self::KEY_NAME_RIGHTS_PRESET,
-            self::KEY_NAME_USER_ID,
-            self::KEY_NAME_SIMULATED_ID,
-            self::KEY_NAME_USER_RIGHTS
-        ));
+        $this->log('Destroying the session.');
+        $this->destroy();
 
         self::redirectToLogout($reasonID);
     }
 
+    private static bool $redirectsEnabled = true;
+
+    public static function setRedirectsEnabled(bool $enabled) : void
+    {
+        self::$redirectsEnabled = $enabled;
+    }
+
     public static function redirectToLogout(int $reasonCode) : void
     {
-        Application::redirect(APP_URL . '/logged-out.php?reason='.$reasonCode);
+        if(self::$redirectsEnabled) {
+            Application::redirect(APP_URL . '/logged-out.php?reason=' . $reasonCode);
+        }
     }
 
     protected function redirectToRegistrationDisabled() : void
     {
-        Application::redirect(APP_URL.'/registration-disabled.php');
+        if(self::$redirectsEnabled) {
+            Application::redirect(APP_URL . '/registration-disabled.php');
+        }
     }
 
     // region: Authentication
@@ -287,6 +293,7 @@ abstract class Application_Session_Base implements Application_Session
      * Unpacks the user instance from the user ID stored in the session.
      * Returns an application-driver-specific object, e.g. `DriverName_User`.
      *
+     * @param int $userID
      * @return Application_User
      * @throws Application_Exception
      */
