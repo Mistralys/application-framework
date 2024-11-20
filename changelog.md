@@ -1,4 +1,4 @@
-## v5.5.0 - (Breaking-L)
+## v5.5.0 - Quality of Life and Tagging (Breaking-L)
 - Markdown Renderer: Fixed image tags missing the `width` attribute.
 - Media: Tags are now shown in the image gallery.
 - Media: Tags can be edited in the image gallery.
