@@ -27,6 +27,7 @@ class BaseDialog
         this.footerDisabled = false;
         this.id = nextJSID();
         this.jsID = 'D' + this.id;
+        this.elements = new ElementIds(this.jsID);
         this.dangerous = false;
         this.large = false;
         this.abstractText = '';
@@ -378,7 +379,10 @@ class BaseDialog
             return html;
         }
 
+        this._ConfigureButtons();
+
         if(this.buttons[this.BUTTON_POSITION_RIGHT].length === 0) {
+            this.logger.logUI('No buttons on the right side, adding a default close button.');
             this.AddButtonClose();
         }
 
@@ -426,6 +430,8 @@ class BaseDialog
             return custom;
         }
 
+        this._ConfigureButtonsLeft();
+
         return this.RenderButtons(this.BUTTON_POSITION_LEFT);
     }
 
@@ -446,10 +452,10 @@ class BaseDialog
      * @public
      * @param {String} label
      * @param {Function} clickHandler The click handler to use for the button. Has the dialog instance as <code>this</code>.
-     * @param {String} position
+     * @param {String|null} [position=null]
      * @return {this}
      */
-    AddButtonPrimary(label, clickHandler, position)
+    AddButtonPrimary(label, clickHandler, position=null)
     {
         if(isEmpty(label)) {
             label = t('OK');
@@ -533,10 +539,10 @@ class BaseDialog
      * Adds a new button to the footer toolbar.
      * @param {UI_Button} button
      * @param {string} name Optional name which can be used to retrieve the button later
-     * @param {String} position On which side the button should be shown.
+     * @param {String|null} [position=null] On which side the button should be shown.
      * @returns {this}
      */
-    AddButton(button, name, position)
+    AddButton(button, name, position=null)
     {
         if(position !== this.BUTTON_POSITION_LEFT) {
             position = this.BUTTON_POSITION_RIGHT;
@@ -701,6 +707,32 @@ class BaseDialog
      * @returns {void}
      */
     _Handle_Closed()
+    {
+
+    }
+
+    /**
+     * Add any buttons in this method that should be shown on the
+     * dialog's left (default) side. If none are configured, a
+     * close button is added automatically.
+     *
+     * @abstract
+     * @protected
+     * @returns {void}
+     */
+    _ConfigureButtons()
+    {
+
+    }
+
+    /**
+     * Add any optional utility buttons on the left side of the dialog.
+     *
+     * @abstract
+     * @protected
+     * @returns {void}
+     */
+    _ConfigureButtonsLeft()
     {
 
     }
@@ -896,24 +928,24 @@ class BaseDialog
     }
 
     /**
+     * @param {String|null} [name=null]
+     * @returns {jQuery}
      * @protected
+     * @throws ApplicationException
      */
-    element(name)
+    element(name=null)
     {
-        return $('#'+this.elementID(name));
+        return this.elements.RequireElement(name);
     }
 
     /**
+     * @param {String|null} [name=null]
+     * @returns {String}
      * @protected
      */
-    elementID(name)
+    elementID(name=null)
     {
-        let id = this.jsID;
-        if(typeof(name)!='undefined') {
-            id += '_'+name;
-        }
-
-        return id;
+        return this.elements.GetID(name);
     }
 
     /**
@@ -1023,7 +1055,7 @@ class BaseDialog
         this.log('Set simulation mode to ['+bool2string(this.simulate)+']');
 
         if(this.IsReady()) {
-            this.element('simulate').html(this.RenderSimulationBadge());
+            this.elements.RequireElement('simulate').html(this.RenderSimulationBadge());
         }
 
         return this;
