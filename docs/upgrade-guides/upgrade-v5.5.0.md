@@ -3,6 +3,7 @@
 ## General breaking changes
 
 - Removed the `Application::setExitEnabled()` method.
+- Renamed `Application_Session::_getPrefix()` to `_getName()`.
 
 ## Offline Event Folder Structure
 
