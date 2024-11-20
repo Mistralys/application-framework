@@ -43,36 +43,6 @@ final class LoggingTests extends ApplicationTestCase
         }
     }
     
-   /**
-    * Ensures that if exceptions are not set to be thrown,
-    * the error page is displayed.
-    * 
-    * @see displayError()
-    * @see Application_Bootstrap::bootClass()
-    */
-    public function test_displayException() : void
-    {
-        // TODO Review this test for the exit bypass
-        $this->markTestIncomplete();
-
-        // disable exiting, since the error page calls exit.
-        $restore = Application::setExitEnabled(false);
-        
-        Application_Bootstrap::bootClass(TestDriver_Bootstrap_Screen_ExceptionTest::class);
-        
-        // PHPUnit captures output of tests by default. This allows us
-        // to check the generated content using a regex - in this case,
-        // we look for the title of the error page (which is used both in
-        // text and HTML mode).
-        $this->expectOutputRegex(sprintf(
-            '/%s/six',
-            str_replace(' ', '\s+', APP_ERROR_PAGE_TITLE)
-        ));
-        
-        // restore the exit setting to the previous value
-        Application::setExitEnabled($restore);
-    }
-
     /**
      * The logging methods support adding arbitrary arguments,
      * which are injected into the message using `sprintf()`.
