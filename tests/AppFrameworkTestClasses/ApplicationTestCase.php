@@ -15,6 +15,7 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
 use Application_Media_Document;
 use Application_Media_Document_Image;
+use Application_Session_Base;
 use Application_User;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -209,8 +210,8 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     protected function setUp(): void
     {
         Localization::selectAppLocale('en_UK');
-
         AppFactory::createLogger()->reset();
+        Application_Session_Base::setRedirectsEnabled(true);
 
         if($this instanceof ImageMediaTestInterface) {
             $this->setUpImageTestCase();
