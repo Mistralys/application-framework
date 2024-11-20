@@ -14,7 +14,7 @@
  * @subpackage Custom properties
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_AjaxMethods_CustomPropertyAdd extends Application_AjaxMethod_CustomProperties
+class Application_AjaxMethods_CustomPropertyAdd extends BaseCustomPropertiesMethod
 {
     public const METHOD_NAME = 'CustomPropertyAdd';
 
