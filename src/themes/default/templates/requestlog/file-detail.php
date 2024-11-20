@@ -46,7 +46,7 @@ class template_default_requestlog_file_detail extends UI_Page_Template_Custom
             ->setTitle(t('Session variables'))
             ->setAbstract(t(
                 'Session prefix is %1$s.',
-                sb()->code(AppFactory::createSession()->getPrefix())
+                sb()->code(AppFactory::createSession()->getName())
             ))
             ->setContent('<pre>'.print_r($this->info->getSessionVars(), true).'</pre>');
 
