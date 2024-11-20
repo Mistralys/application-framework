@@ -6,9 +6,11 @@
 
 declare(strict_types=1);
 
-namespace Application\AjaxMethods;
+namespace Application\AjaxMethods\Tagging;
 
 use Application\Ajax\BaseJSONAjaxMethod;
+use Application\Tags\Ajax\TaggableAjaxRequestInterface;
+use Application\Tags\Ajax\TaggableAjaxRequestTrait;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableUniqueID;
 use Application\Tags\TagRecord;
@@ -19,7 +21,7 @@ use AppUtils\ArrayDataCollection;
  *
  * ## Parameters
  *
- * 1. {@see self::PARAM_UNIQUE_ID} (required) - Unique ID of the taggable record.
+ * 1. {@see TaggableAjaxRequestInterface::PARAM_UNIQUE_ID} (required) - Unique ID of the taggable record.
  *
  * ## Response
  *
@@ -32,11 +34,11 @@ use AppUtils\ArrayDataCollection;
  * @package Tagging
  * @subpackage AJAX Methods
  */
-class GetTaggableInfoMethod extends BaseJSONAjaxMethod
+class GetTaggableInfoMethod extends BaseJSONAjaxMethod implements TaggableAjaxRequestInterface
 {
+    use TaggableAjaxRequestTrait;
+
     public const METHOD_NAME = 'GetTaggableInfo';
-    public const PARAM_UNIQUE_ID = 'unique_id';
-    public const VALIDATION_TAGGABLE_NOT_FOUND = 167901;
     public const KEY_UNIQUE_ID = 'uniqueID';
     public const KEY_LABEL = 'label';
     public const KEY_TYPE_LABEL = 'typeLabel';
@@ -89,30 +91,7 @@ class GetTaggableInfoMethod extends BaseJSONAjaxMethod
 
     protected function validateRequest(): void
     {
-        $uniqueID = TaggableUniqueID::parse((string)$this->request->getParam(self::PARAM_UNIQUE_ID));
-
-        if(!$uniqueID->isValid()) {
-            $this->sendError(
-                sprintf(
-                    'Invalid unique ID. Reason given: %s',
-                    $uniqueID->getErrorMessage()
-                ),
-                array(
-                    'uniqueID' => $uniqueID->getCode()
-                ),
-                $uniqueID->getCode()
-            );
-        }
-
-        if(!$uniqueID->taggableExists()) {
-            $this->sendError(
-                'No taggable not found for the given unique ID.',
-                null,
-                self::VALIDATION_TAGGABLE_NOT_FOUND
-            );
-        }
-
-        $this->uniqueID = $uniqueID;
-        $this->taggable = $uniqueID->getTaggable();
+        $this->uniqueID = $this->getUniqueID();
+        $this->taggable = $this->uniqueID->getTaggable();
     }
 }
