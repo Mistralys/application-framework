@@ -466,6 +466,10 @@ abstract class Application_FilterSettings
         return $this;
     }
 
+    /**
+     * @param array<string,scalar|array>|null $settings
+     * @return $this
+     */
     public function setSettings(?array $settings) : self
     {
         if($settings === null) {
@@ -479,6 +483,12 @@ abstract class Application_FilterSettings
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param bool $enabled
+     * @return $this
+     * @throws Application_Exception
+     */
     public function setSettingEnabled(string $name, bool $enabled) : self
     {
         $this->requireSetting($name)->setEnabled($enabled);
@@ -543,16 +553,16 @@ abstract class Application_FilterSettings
         
         $html =
         '<div class="filters-actions btn-toolbar">'.
-        '<div class="btn-group">'.
-        UI::button(t('Apply'))
-        ->setIcon(UI::icon()->filter())
-        ->makeSubmit('apply', 'yes')
-        ->makeSmall().' '.
-        UI::button(t('Reset'))
-        ->setIcon(UI::icon()->reset())
-        ->makeSubmit('reset', 'yes')
-        ->makeSmall().
-        '</div>'.
+            '<div class="btn-group">'.
+                UI::button(t('Apply'))
+                    ->setIcon(UI::icon()->filter())
+                    ->makeSubmit('apply', 'yes')
+                    ->makeSmall().' '.
+                UI::button(t('Reset'))
+                    ->setIcon(UI::icon()->reset())
+                    ->makeSubmit('reset', 'yes')
+                    ->makeSmall().
+            '</div>'.
         '</div>';
         
         $this->form->addHTML($html);
