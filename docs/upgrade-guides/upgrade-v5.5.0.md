@@ -1,5 +1,9 @@
 # Upgrade Guide: v5.5.0
 
+## General breaking changes
+
+- Removed the `Application::setExitEnabled()` method.
+
 ## Offline Event Folder Structure
 
 Offline event listener folders are now named after the event name instead
