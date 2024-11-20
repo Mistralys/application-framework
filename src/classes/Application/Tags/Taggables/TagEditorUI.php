@@ -70,11 +70,19 @@ class TagEditorUI implements UI_Renderable_Interface
 
         OutputBuffering::start();
 
+        // --------------------------------------------
+        //          /!\    !WARNING!    /!\
+        // --------------------------------------------
+        // Changes to the HTML structure of the tag editor
+        // must be mirrored in the JavaScript code.
+
         ?>
         <div class="tag-editor" data-primary="<?php echo $this->taggable->getUniqueID() ?>">
             <div class="tag-editor-list">
-                <?php echo UI::icon()->tags() ?>
-                <span><?php echo implode('</span> <span>', $this->taggable->getLabels()) ?></span>
+                <span class="tag-editor-list-icon"><?php echo UI::icon()->tags() ?></span>
+                <span class="tag-editor-list-tags">
+                    <span><?php echo implode('</span> <span>', $this->taggable->getLabels()) ?></span>
+                </span>
             </div>
             <div class="tag-editor-ui" style="display: none"></div>
         </div>
