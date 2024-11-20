@@ -26,3 +26,8 @@
     line-height: normal;
 }
 
+.properties-grid .tag-editor{
+    margin: 0 !important;
+    padding: 0 4px !important;
+    display: inline-block;
+}
