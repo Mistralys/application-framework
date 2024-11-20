@@ -1249,6 +1249,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // -----------------------------------------------------------
 
         'ui.js',
+        'ui/element-ids.js',
         'ui/icon.js',
         'ui/label.js',
         'ui/text.js',
