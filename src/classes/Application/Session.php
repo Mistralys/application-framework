@@ -34,6 +34,12 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function getName() : string;
 
     /**
+     * Retrieves the type of authentication the session uses, e.g. {@see Application_Session_AuthTypes_NoneInterface::TYPE_ID}.
+     * @return string
+     */
+    public function getAuthTypeID() : string;
+
+    /**
      * Fetches the currently authenticated user. If this is empty,
      * the authentication has not been performed yet.
      *
