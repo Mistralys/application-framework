@@ -1,3 +1,6 @@
+## v5.5.3 - Session handling
+- Session: Added namespaces for disabled authentication and session simulation.
+
 ## v5.5.2 - Fixes
 - UI: Fixed the request log link in the footer.
 - UI: Fixed the broken deployment callback link in the footer.
