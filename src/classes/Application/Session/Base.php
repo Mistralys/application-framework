@@ -105,7 +105,8 @@ abstract class Application_Session_Base implements Application_Session
     /**
      * The name is a combination of the session name and the type ID.
      * This way, a CAS session will have storage separate from a no-auth
-     * session.
+     * session. Additionally, turning off authentication or enabling
+     * session simulation mode will also use separate names and thus storage.
      *
      * @return string
      */
@@ -119,7 +120,17 @@ abstract class Application_Session_Base implements Application_Session
             $name = $this->_getName();
         }
 
-        return $name.'_'.$this->getAuthTypeID();
+        $name .= '_'.$this->getAuthTypeID();
+
+        if(!Application::isAuthenticationEnabled()) {
+            $name .= '_authOff';
+        }
+
+        if(Application::isSessionSimulated()) {
+            $name .= '_sim';
+        }
+
+        return $name;
     }
 
     abstract protected function _getName() : string;
