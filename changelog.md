@@ -1,3 +1,7 @@
+## v5.5.1 - Fixes
+- Driver: Moved the `version` file to the application's cache folder.
+- Session: Added more logging to debug authentication issues.
+
 ## v5.5.0 - Quality of Life and Tagging (Breaking-L)
 - Markdown Renderer: Fixed image tags missing the `width` attribute.
 - Media: Tags are now shown in the image gallery.
