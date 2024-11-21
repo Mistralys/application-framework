@@ -1,3 +1,8 @@
+## v5.5.2 - Fixes
+- UI: Fixed the request log link in the footer.
+- UI: Fixed the broken deployment callback link in the footer.
+- Session: Sessions are now namespaced to the auth type to avoid NoAuth / CAS conflicts.
+
 ## v5.5.1 - Fixes
 - Driver: Moved the `version` file to the application's cache folder.
 - Session: Added more logging to debug authentication issues.
