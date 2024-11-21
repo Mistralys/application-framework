@@ -29,7 +29,9 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     protected function _start(): void
     {
-        $this->log('Starting session.');
+        $name = $this->getName();
+
+        $this->log('Using session name [%s].', $name);
 
         // Temporarily set an error handler to catch session
         // initialization errors, so they can be converted
@@ -39,11 +41,13 @@ abstract class Application_Session_Native extends Application_Session_Base
             array($this, 'callback_sessionStartError')
         ));
 
-        session_name($this->getName());
-
+        session_name($name);
         session_start(self::$options);
 
         restore_error_handler();
+
+        $this->log('Initial session payload:');
+        $this->logData($_SESSION);
     }
 
     private function callback_sessionStartError(int $code, string $msg, string $file, int $line) : bool

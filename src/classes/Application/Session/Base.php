@@ -165,6 +165,8 @@ abstract class Application_Session_Base implements Application_Session
 
         $userID = $this->getUserID();
 
+        $this->log(sprintf('Authenticate | Stored user ID is [%s].', $userID));
+
         // Starts the authentication process. This ends either by
         // storing the user ID in the session via `storeUser()`,
         // or via a redirect to an error page.
@@ -173,7 +175,7 @@ abstract class Application_Session_Base implements Application_Session
             $userID = $this->getUserID();
         }
 
-        $this->log(sprintf('Authenticate | User ID [%s] found in session.', $userID));
+        $this->log(sprintf('Authenticate | Resolved user ID to be [%s].', $userID));
 
         $this->user = $this->loadUserByID($userID);
 
