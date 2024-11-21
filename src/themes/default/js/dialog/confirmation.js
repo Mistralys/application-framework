@@ -475,7 +475,12 @@ var Dialog_Confirmation =
 			if(typeof url == "object") {
 				url[dialog.commentsRequestVar] = comments;
 			} else {
-				url += '&'+dialog.commentsRequestVar+'=' + encodeURIComponent(comments);
+				if(url.indexOf('?') === -1) {
+					url += '?';
+				} else {
+					url += '&';
+				}
+				url += dialog.commentsRequestVar+'=' + encodeURIComponent(comments);
 			}
 
 			application.redirect(url, loaderText);
