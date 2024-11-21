@@ -38,6 +38,11 @@ trait Application_Session_AuthTypes_CAS
     abstract public function getLastnameField() : string;
     abstract public function getForeignIDField() : string;
 
+    public function getAuthTypeID() : string
+    {
+        return Application_Session_AuthTypes_CASInterface::TYPE_ID;
+    }
+
     private ?CAS_Client $client = null;
 
     public function getClient() : CAS_Client
