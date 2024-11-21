@@ -114,19 +114,6 @@ abstract class Application_Session_Native extends Application_Session_Base
         session_destroy();
     }
 
-    final public function getName() : string
-    {
-        // Use a separate session prefix when using the request log,
-        // to ensure that it has a separate session storage.
-        if(defined(Application_Bootstrap_Screen_RequestLog::CONST_REQUEST_LOG_RUNNING)) {
-            return $this->_getName().'reqlog_';
-        }
-
-        return $this->_getName();
-    }
-
-    abstract protected function _getName() : string;
-
     public function getValue(string $name, $default = null)
     {
         if (isset($_SESSION[$name])) {

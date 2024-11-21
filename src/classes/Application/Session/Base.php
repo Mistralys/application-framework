@@ -102,6 +102,28 @@ abstract class Application_Session_Base implements Application_Session
         return $this->started;
     }
 
+    /**
+     * The name is a combination of the session name and the type ID.
+     * This way, a CAS session will have storage separate from a no-auth
+     * session.
+     *
+     * @return string
+     */
+    final public function getName() : string
+    {
+        // Use a separate session prefix when using the request log,
+        // to ensure that it has a separate session storage.
+        if(defined(Application_Bootstrap_Screen_RequestLog::CONST_REQUEST_LOG_RUNNING)) {
+            $name = $this->_getName().'_reqlog';
+        } else {
+            $name = $this->_getName();
+        }
+
+        return $name.'_'.$this->getAuthTypeID();
+    }
+
+    abstract protected function _getName() : string;
+
     final public function logOut(int $reasonID=self::LOGOUT_REASON_USER_REQUEST): void
     {
         if(!isset($this->user)) {
@@ -153,7 +175,7 @@ abstract class Application_Session_Base implements Application_Session
      */
     final public function authenticate() : Application_User
     {
-        $this->log('Authenticate | Starting authentication.');
+        $this->log('Authenticate | Starting authentication [Auth enabled: %s].', bool2string($this->isAuthEnabled()));
 
         if(isset($this->user)) {
             throw new Application_Session_Exception(
@@ -184,6 +206,14 @@ abstract class Application_Session_Base implements Application_Session
         return $this->user;
     }
 
+    public function isAuthEnabled() : bool
+    {
+        return
+            Application::isAuthenticationEnabled()
+            &&
+            !Application::isSessionSimulated();
+    }
+
     /**
      * Runs the authentication process in the following steps:
      *
@@ -196,15 +226,14 @@ abstract class Application_Session_Base implements Application_Session
      */
     private function runAuthentication() : void
     {
-        $this->log('Authenticate | No user ID found in the session, running authentication.');
-
-        $returnURI = $_SERVER['REQUEST_URI'] ?? '(none available)';
-        $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $returnURI);
-        $this->log('Authenticate | Return URI is [%s].', $returnURI);
-
-        $runAuth = Application::isAuthenticationEnabled() && !Application::isSessionSimulated();
-        if($runAuth)
+        if($this->isAuthEnabled())
         {
+            $this->log('Authenticate | No user ID found in the session, running authentication.');
+
+            $returnURI = $_SERVER['REQUEST_URI'] ?? '(none available)';
+            $this->setValue(self::KEY_NAME_AUTH_RETURN_URI, $returnURI);
+            $this->log('Authenticate | Return URI is [%s].', $returnURI);
+
             $user = $this->sendAuthenticationCallbacks();
         }
         else
@@ -215,7 +244,7 @@ abstract class Application_Session_Base implements Application_Session
 
         if($user !== null)
         {
-            $this->finalizeAuthentication($user, $runAuth);
+            $this->finalizeAuthentication($user);
             return;
         }
 
@@ -240,10 +269,9 @@ abstract class Application_Session_Base implements Application_Session
      * after the authentication process has completed successfully.
      *
      * @param Application_Users_User $user
-     * @param bool $authActive Whether the authentication callbacks were enabled during the authentication.
      * @throws Application_Exception
      */
-    private function finalizeAuthentication(Application_Users_User $user, bool $authActive) : void
+    private function finalizeAuthentication(Application_Users_User $user) : void
     {
         $userID = $user->getID();
 
@@ -254,28 +282,32 @@ abstract class Application_Session_Base implements Application_Session
         // the user is a developer.
         $unpacked = $this->loadUserByID($userID);
 
-        // Store the user ID in the session.
+        // Store the user ID in the session. In no-auth sessions, this
+        // will be the system user. Because sessions are namespaced to
+        // the authentication type, this will not conflict with other
+        // sessions. A No-Auth session can coexist with a CAS session,
+        // for example.
         $this->setValue(self::KEY_NAME_USER_ID, $userID);
 
         $this->triggerUserAuthenticated($unpacked);
 
-        $this->redirectToReturnURI($authActive);
+        $this->redirectToReturnURI();
     }
 
     /**
-     * @param bool $authActive Whether the authentication callbacks were enabled during the authentication.
      * @return void
      * @throws Application_Exception
      */
-    protected function redirectToReturnURI(bool $authActive) : void
+    protected function redirectToReturnURI() : void
     {
         // Only redirect if this was actually part of an
         // authentication callback.
-        if($authActive === false || isCLI()) {
+        if(!$this->isAuthEnabled() || isCLI()) {
+            $this->log('ReturnURI | Ignoring, auth is disabled.');
             return;
         }
 
-        $this->log('Redirecting to the initially requested URL.');
+        $this->log('ReturnURI | Redirecting to the initially requested URL.');
         Application::redirect($this->unpackTargetURL());
     }
 
@@ -345,7 +377,7 @@ abstract class Application_Session_Base implements Application_Session
 
     private function unpackRights(Application_User $user) : array
     {
-        if(Application::isSessionSimulated() || $user->isDeveloperModeEnabled())
+        if(!$this->isAuthEnabled() || $user->isDeveloperModeEnabled())
         {
             $rights = $this->fetchSimulatedRights();
         }
@@ -356,7 +388,7 @@ abstract class Application_Session_Base implements Application_Session
 
         $userID = $user->getID();
 
-        $this->log(sprintf('User [%s] | Fetched [%s] rights.', $userID, count($rights)));
+        $this->log(sprintf('User [%s] | UnpackRights | Found [%s] rights.', $userID, count($rights)));
         $this->logData($rights);
 
         $this->setValue(self::KEY_NAME_USER_RIGHTS, implode(',', $rights));
