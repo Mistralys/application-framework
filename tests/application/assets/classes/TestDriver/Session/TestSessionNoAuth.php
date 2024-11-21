@@ -27,6 +27,6 @@ class TestSessionNoAuth
 
     protected function _getName(): string
     {
-        return 'appframework_test_';
+        return 'appframework_test';
     }
 }

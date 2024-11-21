@@ -35,7 +35,7 @@ class TestSessionCAS extends NativeCASSession
 
     protected function _getName(): string
     {
-        return 'appframework_test_';
+        return 'appframework_test';
     }
 
     public function getEmailField(): string
