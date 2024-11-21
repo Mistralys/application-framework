@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Driver;
 
+use Application;
 use Application\AppFactory;
 use Application\DeploymentRegistry\Tasks\StoreCurrentVersionTask;
 use Application_Interfaces_Loggable;
@@ -64,12 +65,18 @@ class VersionInfo implements Application_Interfaces_Loggable
 
     /**
      * Gets the path to the version file.
+     *
+     * NOTE: The version file is stored in the cache folder.
+     * Historically it was generated in the application's root
+     * folder, but this location is not guaranteed to be writable
+     * or even synchronized in the application server's cluster.
+     *
      * @return FileInfo
      */
     public function getVersionFile() : FileInfo
     {
         if(!isset($this->versionFile)) {
-            $this->versionFile = FileInfo::factory(APP_ROOT . '/'. self::FILE_NAME);
+            $this->versionFile = FileInfo::factory(Application::getCacheFolder() . '/'. self::FILE_NAME);
         }
 
         return $this->versionFile;
