@@ -1,3 +1,7 @@
+## v5.x.x - 
+- Wizards: Added `_onRecordCreated()` to the DB creation step.
+- UI: Linked labels and badges now clearly show that they are clickable on hover.
+
 ## v5.5.3 - Session handling
 - Session: Added namespaces for disabled authentication and session simulation.
 
