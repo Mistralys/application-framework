@@ -1,4 +1,4 @@
-## v5.x.x - 
+## v5.5.4 - Small enhancements 
 - Wizards: Added `_onRecordCreated()` to the DB creation step.
 - UI: Linked labels and badges now clearly show that they are clickable on hover.
 
