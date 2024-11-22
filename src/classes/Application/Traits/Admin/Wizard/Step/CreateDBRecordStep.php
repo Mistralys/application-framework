@@ -37,6 +37,8 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     /**
      * Can be overridden to perform additional actions after the record has been created.
      *
+     * NOTE: A DB transaction is still active at this point.
+     *
      * @param DBHelper_BaseRecord $record
      * @return void
      * @overridable
