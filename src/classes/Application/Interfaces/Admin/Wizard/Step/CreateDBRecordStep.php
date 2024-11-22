@@ -22,7 +22,7 @@ interface Application_Interfaces_Admin_Wizard_CreateDBRecordStep extends Applica
 {
     public const ERROR_NO_RECORD_CREATED_YET = 93801;
 
-    const KEY_RECORD_ID = 'record_id';
+    public const KEY_RECORD_ID = 'record_id';
 
     public function createCollection() : DBHelper_BaseCollection;
 
