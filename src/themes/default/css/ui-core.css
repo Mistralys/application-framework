@@ -847,7 +847,22 @@ TABLE.layout-only TD{
     border-top-color: #fff;
 }
 
-.whatsnew-cavtegory {
+/*
+ * Labels can have a "help" cursor if they have a tooltip assigned,
+ * so we ensure that the label looks clickable.
+ */
+A > .label,
+A > .badge{
+    cursor: pointer !important;
+}
+
+A > .label:hover,
+A > .badge:hover{
+    background: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
+}
+
+.whatsnew-category {
     text-transform: uppercase;
     font-size: 13px !important;
     color: var(--color-text-secondary);
