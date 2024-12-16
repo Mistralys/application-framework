@@ -102,6 +102,7 @@ final class CountryButtonBarTests extends CountriesTestCase
         sort($actual);
 
         $this->assertSame($expected, $actual);
+        $this->assertFalse($bar->isSelectable($this->ca));
     }
 
     // endregion
