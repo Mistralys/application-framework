@@ -104,6 +104,9 @@ trait HiddenVariablesTrait
      */
     public function renderHiddenInputs(array $classes=array()) : string
     {
+        // NOTE: The div can be used clientside, so it must
+        // be present even if there are no hidden variables.
+
         $html = '';
 
         foreach ($this->hiddenVars as $name => $data)
