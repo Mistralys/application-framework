@@ -1,9 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Formable} class.
  * @package Application
  * @subpackage Forms
- * @see Application_Formable
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
@@ -147,7 +145,20 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
         $this->logFormable('Initialization complete.');
 
+        $this->_handleFormableInitialized();
+
         return $this;
+    }
+
+    /**
+     * Overridable method called after the formable has been fully initialized
+     * (after {@see self::createFormableForm()} has been called).
+     *
+     * @return void
+     */
+    protected function _handleFormableInitialized() : void
+    {
+
     }
 
     public function getInstanceID() : string
