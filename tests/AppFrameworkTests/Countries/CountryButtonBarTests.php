@@ -86,6 +86,24 @@ final class CountryButtonBarTests extends CountriesTestCase
         $this->assertSame($this->fr, $newBar->getCountry());
     }
 
+    public function test_limitToSpecificCountries() : void
+    {
+        $bar = Application_Countries::createButtonBar(
+            self::COUNTRY_BAR_ID,
+            'https://buttonbar.test/base',
+            array($this->de->getID(), $this->fr->getID())
+        );
+
+        $this->assertCount(2, $bar->getCountryIDs());
+
+        $expected = array($this->de->getID(), $this->fr->getID());
+        sort($expected);
+        $actual = $bar->getCountryIDs();
+        sort($actual);
+
+        $this->assertSame($expected, $actual);
+    }
+
     // endregion
 
     // region: Support methods
