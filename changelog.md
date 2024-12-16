@@ -1,3 +1,11 @@
+## v5.4.5-hotfix1 - Country button bar fix
+- Country ButtonBar: Fixed the button bar not correctly storing the selected country.
+- Country ButtonBar: Fixed the `load()` method being called repeatedly.
+- Country ButtonBar: Added `setStorageEnabled()` to disable storing the selected country.
+- Country ButtonBar: A country can now be selected manually via `selectCountry()`.
+- Country ButtonBar: Saving the selected country is now done at render time.
+- Country ButtonBar: Added tests.
+
 ## v5.4.5 - Client-side logging improvements
 - JS: Fixed a data key mismatch in the AJAX error logger for the source page URL.
 - JS: Moved the code to handle JS error logging to a dedicated class.
