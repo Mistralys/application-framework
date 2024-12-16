@@ -1,9 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Countries_ButtonBar} class.
  * @package Maileditor
  * @subpackage Countries
- * @see Application_Countries_ButtonBar
  */
 
 declare(strict_types=1);
@@ -26,7 +24,13 @@ use AppUtils\Traits\OptionableTrait;
 class Application_Countries_ButtonBar extends UI_Renderable implements ClassableInterface, OptionableInterface
 {
     public const ERROR_INVALID_COUNTRY_FOR_LINK = 54601;
-    
+
+    public const REQUEST_PARAM_SELECT_COUNTRY = 'select_country';
+    public const OPTION_ENABLE_STORAGE = 'enableStorage';
+    public const OPTION_DISPLAY_THRESHOLD = 'displayThreshold';
+    public const OPTION_ENABLE_LABEL = 'enableLabel';
+    public const OPTION_LABEL = 'label';
+
     use ClassableTrait;
     use OptionableTrait;
     
@@ -40,7 +44,6 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     protected Application_Countries_FilterCriteria $filters;
     protected string $baseURL;
     protected string $storageKey;
-    protected string $urlParamName = 'select_country';
     protected bool $loaded = false;
 
    /**
@@ -61,20 +64,31 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
         parent::__construct();
 
         $this->id = $id;
-        $this->storageKey = md5('countries-button-bar-'.$id);
+        $this->storageKey = self::getStorageName($id);
         $this->collection = Application_Countries::getInstance();
         $this->user = $this->driver->getUser();
         $this->request = $this->driver->getRequest();
         $this->filters = $this->collection->getFilterCriteria();
         $this->baseURL = $this->parseBaseURL($baseURL);
     }
+
+    /**
+     * Gets the setting name under which the country is stored in the user's settings.
+     * @param string $barID The button bar ID.
+     * @return string
+     */
+    public static function getStorageName(string $barID) : string
+    {
+        return md5('countries-button-bar-'.$barID);
+    }
     
     public function getDefaultOptions() : array
     {
         return array(
-            'displayThreshold' => 2,
-            'enableLabel' => false,
-            'label' => t('Country selection')
+            self::OPTION_DISPLAY_THRESHOLD => 2,
+            self::OPTION_ENABLE_LABEL => false,
+            self::OPTION_LABEL => t('Country selection'),
+            self::OPTION_ENABLE_STORAGE => true
         );
     }
     
@@ -88,7 +102,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     */
     public function setDisplayThreshold(int $amount) : Application_Countries_ButtonBar
     {
-        return $this->setOption('displayThreshold', $amount);
+        return $this->setOption(self::OPTION_DISPLAY_THRESHOLD, $amount);
     }
     
    /**
@@ -100,7 +114,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     */
     public function enableLabel(bool $enable=true) : Application_Countries_ButtonBar
     {
-        return $this->setOption('enableLabel', $enable);
+        return $this->setOption(self::OPTION_ENABLE_LABEL, $enable);
     }
 
     /**
@@ -112,7 +126,27 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
      */
     public function setLabel($label) : Application_Countries_ButtonBar
     {
-        return $this->setOption('label', toString($label));
+        return $this->setOption(self::OPTION_LABEL, toString($label));
+    }
+
+    /**
+     * Sets whether the storage of the selected country is enabled.
+     *
+     * If turned off, the country will not be stored in the user's
+     * settings and must be selected manually via {@see self::selectCountry()}
+     * or the request variable {@see self::REQUEST_PARAM_SELECT_COUNTRY}.
+     *
+     * @param bool $enabled
+     * @return self
+     */
+    public function setStorageEnabled(bool $enabled) : self
+    {
+        return $this->setOption(self::OPTION_ENABLE_STORAGE, $enabled);
+    }
+
+    public function isStorageEnabled() : bool
+    {
+        return $this->getBoolOption(self::OPTION_ENABLE_STORAGE);
     }
     
    /**
@@ -129,7 +163,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
             $baseURL .= '&';
         }
         
-        $baseURL .= $this->urlParamName.'=';
+        $baseURL .= self::REQUEST_PARAM_SELECT_COUNTRY.'=';
         
         return $baseURL;
     }
@@ -191,10 +225,11 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     
     protected function load() : void
     {
-        if($this->loaded)
-        {
+        if($this->loaded) {
             return;
         }
+
+        $this->loaded = true;
         
         $this->filters->excludeInvariant(!$this->withInvariant);
         
@@ -203,13 +238,10 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
         if(count($this->countries) === 0) {
             return;
         }
-        
-        $countryID = (int)$this->request->registerParam('select_country')
-            ->setInteger()
-            ->setEnum($this->filters->getIDs())
-            ->get($this->user->getIntSetting($this->storageKey));
-        
-        if(empty($countryID))
+
+        $countryID = $this->resolveCountryID();
+
+        if($countryID === null)
         {
             $country = $this->countries[0];
         }
@@ -218,12 +250,42 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
             $country = $this->collection->getByID($countryID);
         }
 
-        $this->country = $country;
-        $this->countryID = $country->getID();
-        
-        $this->user->setIntSetting($this->storageKey, $this->countryID);
+        $this->selectCountry($country);
     }
-    
+
+    private function resolveCountryID() : ?int
+    {
+        return $this->getIDFromRequest() ?? $this->getIDFromUser();
+    }
+
+    public function getIDFromUser() : ?int
+    {
+        if(!$this->isStorageEnabled()) {
+            return null;
+        }
+
+        $countryID = $this->user->getIntSetting($this->storageKey);
+
+        if (in_array($countryID, $this->getCountryIDs())) {
+            return $countryID;
+        }
+
+        return null;
+    }
+
+    public function getIDFromRequest() : ?int
+    {
+        $countryID = (int)$this->request->registerParam(self::REQUEST_PARAM_SELECT_COUNTRY)
+            ->setInteger()
+            ->get();
+
+        if($countryID !== 0 && in_array($countryID, $this->getCountryIDs())) {
+            return $countryID;
+        }
+
+        return null;
+    }
+
    /**
     * Retrieves all countries selectable in the button bar.
     * 
@@ -299,8 +361,9 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     protected function _render() : string
     {
         $this->load();
+        $this->save();
         
-        if(count($this->countries) < $this->getIntOption('displayThreshold')) {
+        if(count($this->countries) < $this->getIntOption(self::OPTION_DISPLAY_THRESHOLD)) {
             return '';
         }
         
@@ -311,11 +374,45 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     
     public function isLabelEnabled() : bool
     {
-        return $this->getBoolOption('enableLabel');
+        return $this->getBoolOption(self::OPTION_ENABLE_LABEL);
     }
     
     public function getLabel() : string
     {
-        return $this->getStringOption('label');
+        return $this->getStringOption(self::OPTION_LABEL);
+    }
+
+    /**
+     * Manually selects the country, overriding the user's settings
+     * and the current request.
+     *
+     * @param Application_Countries_Country $country
+     * @return $this
+     */
+    public function selectCountry(Application_Countries_Country $country) : self
+    {
+        $this->load();
+
+        $this->country = $country;
+        $this->countryID = $country->getID();
+
+        return $this;
+    }
+
+    /**
+     * Saves the currently selected country in the user's settings.
+     *
+     * NOTE: Only used when storage is enabled. This is called
+     * automatically when the bar is rendered.
+     *
+     * @return $this
+     */
+    public function save() : self
+    {
+        if($this->isStorageEnabled()) {
+            $this->user->setIntSetting($this->storageKey, $this->countryID);
+        }
+
+        return $this;
     }
 }
