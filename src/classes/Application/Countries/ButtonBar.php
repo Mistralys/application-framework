@@ -416,6 +416,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     {
         if($this->isStorageEnabled()) {
             $this->user->setIntSetting($this->storageKey, $this->countryID);
+            $this->user->saveSettings();
         }
 
         return $this;
