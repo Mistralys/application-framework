@@ -2,6 +2,7 @@
 - Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](https://github.com/Mistralys/application-framework/releases/tag/5.4.5-hotfix1).
 - Country ButtonBar: Added constructor parameter to limit the available countries.
 - Country ButtonBar: Fixed duplicate country parameter in links.
+- Formable: Added overridable `_handleFormableInitialized()`.
 
 ## v5.5.4 - Small enhancements 
 - Wizards: Added `_onRecordCreated()` to the DB creation step.
