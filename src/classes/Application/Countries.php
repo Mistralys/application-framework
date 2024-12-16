@@ -455,13 +455,14 @@ class Application_Countries extends DBHelper_BaseCollection
     * whose selection is persisted in the user
     * settings.
     * 
-    * @param string $id A freeform ID to tie the country selection to: used to namespace the setting under which the country is stored.
+    * @param string $id A freeform ID to tie the country selection to: This is used to namespace the setting under which the country is stored.
     * @param string $baseURL The base URL to use, to which the country selection parameter will be appended.
+    * @param int[] $limitToCountries List of country IDs to limit the selection to.
     * @return Application_Countries_ButtonBar
     */
-    public static function createButtonBar(string $id, string $baseURL) : Application_Countries_ButtonBar
+    public static function createButtonBar(string $id, string $baseURL, array $limitToCountries=array()) : Application_Countries_ButtonBar
     {
-        return new Application_Countries_ButtonBar($id, $baseURL);
+        return new Application_Countries_ButtonBar($id, $baseURL, $limitToCountries);
     }
 
     public function createInvariantCountry() : Application_Countries_Country

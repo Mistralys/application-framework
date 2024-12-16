@@ -54,12 +54,13 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     /**
      * @param string $id A freeform ID to tie the country selection to: Used to namespace the setting under which the country is stored.
      * @param string $baseURL
+     * @param int[] $limitToCountries List of country IDs to limit the selection to.
      *
      * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws BaseClassHelperException
      */
-    public function __construct(string $id, string $baseURL)
+    public function __construct(string $id, string $baseURL, array $limitToCountries = array())
     {
         parent::__construct();
 
@@ -70,6 +71,10 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
         $this->request = $this->driver->getRequest();
         $this->filters = $this->collection->getFilterCriteria();
         $this->baseURL = $this->parseBaseURL($baseURL);
+
+        if(!empty($limitToCountries)) {
+            $this->filters->selectCountryIDs($limitToCountries);
+        }
     }
 
     /**
@@ -148,7 +153,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     {
         return $this->getBoolOption(self::OPTION_ENABLE_STORAGE);
     }
-    
+
    /**
     * Prepares the URL so only the country ID needs to be appended.
     * 
