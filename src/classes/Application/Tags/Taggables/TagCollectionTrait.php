@@ -18,6 +18,11 @@ use UI\Tree\TreeRenderer;
  */
 trait TagCollectionTrait
 {
+    public function getID() : string
+    {
+        return $this->getCollectionID();
+    }
+
     private ?TagConnector $tagConnector = null;
 
     public function getTagConnector() : TagConnector

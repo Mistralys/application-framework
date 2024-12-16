@@ -25,8 +25,8 @@ class TestSessionNoAuth
 {
     use Application_Session_AuthTypes_None;
 
-    protected function _getPrefix(): string
+    protected function _getName(): string
     {
-        return 'appframework_test_';
+        return 'appframework_test';
     }
 }

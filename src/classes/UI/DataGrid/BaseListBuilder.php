@@ -51,7 +51,8 @@ abstract class BaseListBuilder
     // region Z - Abstract methods
 
     abstract protected function createFilterCriteria(): FilterCriteriaInterface;
-    abstract protected function configureFilters(): void;
+    abstract protected function configureFilters(FilterCriteriaInterface $filterCriteria): void;
+    abstract protected function configureFilterSettings(Application_FilterSettings $filterSettings): void;
     abstract protected function configureColumns(UI_DataGrid $grid): void;
     abstract protected function configureActions(UI_DataGrid $grid): void;
     abstract protected function resolveRecord(array $itemData): object;
@@ -123,31 +124,23 @@ abstract class BaseListBuilder
 
         $this->filters = $this->createFilterCriteria();
 
-        $this->configureFilters();
-
         return $this->filters;
     }
 
-    /**
-     * Can be null if there are no records to filter.
-     *
-     * @param array<string,mixed>|null $settingValues
-     * @return Application_FilterSettings|NULL
-     * @throws Application_Exception
-     * @throws UI_Exception
-     * @throws DriverException
-     */
-    public function getFilterSettings(?array $settingValues = null): ?Application_FilterSettings
+    public function getFilterSettings(): ?Application_FilterSettings
     {
         if (!$this->hasRecords) {
             return null;
         }
 
-        if (!isset($this->filterSettings)) {
-            $this->filterSettings = $this->createFilterSettings()
-                ->setID($this->listID)
-                ->setSettings($settingValues);
+        if (isset($this->filterSettings)) {
+            return $this->filterSettings;
         }
+
+        $filterSettings = $this->createFilterSettings()
+            ->setID($this->listID);
+
+        $this->filterSettings = $filterSettings;
 
         return $this->filterSettings;
     }
@@ -157,7 +150,10 @@ abstract class BaseListBuilder
         $filters = $this->getFilterCriteria();
         $settings = $this->getFilterSettings();
 
+        $this->configureFilters($filters);
+
         if ($settings) {
+            $this->configureFilterSettings($settings);
             $settings->configureFilters($filters);
         }
 
@@ -305,9 +301,12 @@ abstract class BaseListBuilder
             return array();
         }
 
-        $settings->addHiddenVars($this->hiddenVars);
-
         $filters = $this->getFilterCriteria();
+        $this->configureFilters($filters);
+
+        $settings->addHiddenVars($this->hiddenVars);
+        $this->configureFilterSettings($settings);
+
         $grid = $this->getDataGrid();
 
         $grid->configure($settings, $filters);

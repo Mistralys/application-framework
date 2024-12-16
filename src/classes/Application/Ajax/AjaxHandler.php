@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Ajax\AjaxException;
+use Application\Ajax\AjaxMethodInterface;
 use Application\AjaxMethods\NoAjaxHandlerFoundMethod;
 use Application\AppFactory;
 use AppUtils\ClassHelper;
@@ -104,15 +105,15 @@ class Application_AjaxHandler
         $explicit = strtolower($this->request
             ->registerParam('returnFormat')
             ->setAlnum()
-            ->getString(Application_AjaxMethod::RETURNFORMAT_JSON));
+            ->getString(AjaxMethodInterface::RETURNFORMAT_JSON));
 
-        foreach(Application_AjaxMethod::RETURN_FORMATS as $format) {
+        foreach(AjaxMethodInterface::RETURN_FORMATS as $format) {
             if(strtolower($format) === $explicit) {
                 return $format;
             }
         }
 
-        return Application_AjaxMethod::RETURNFORMAT_JSON;
+        return AjaxMethodInterface::RETURNFORMAT_JSON;
     }
 
     public function process() : void

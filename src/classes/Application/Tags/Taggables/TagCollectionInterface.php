@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Application\Tags\Taggables;
 
+use Application\Tags\Events\BaseRegisterTagCollectionsListener;
+use Application\Tags\TagCollectionRegistry;
 use Application\Tags\TaggingException;
 use Application\Tags\TagRecord;
+use AppUtils\Interfaces\StringPrimaryRecordInterface;
 use UI;
 use UI\Tree\TreeNode;
 use UI\Tree\TreeRenderer;
@@ -13,8 +16,24 @@ use UI\Tree\TreeRenderer;
 /**
  * @see TagCollectionTrait
  */
-interface TagCollectionInterface
+interface TagCollectionInterface extends StringPrimaryRecordInterface
 {
+    public function getCollectionID() : string;
+
+    /**
+     * Offline event listener class used to register this
+     * collection in the global tag collections list ({@see TagCollectionRegistry}).
+     *
+     * These classes typically extend the class {@see BaseRegisterTagCollectionsListener}.
+     *
+     * @return string
+     */
+    public function getCollectionRegistrationClass() : string;
+
+    public function getTaggableTypeLabel() : string;
+
+    public function getTaggableByID(int $id) : TaggableInterface;
+
     /**
      * Optional, custom class that extends {@see TagConnector}.
      * @return class-string|NULL

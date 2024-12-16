@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -19,8 +19,8 @@ use UI\Tree\TreeNode;
 use UI\Tree\TreeRenderer;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @property TagCollection $collection
  * @method TagCollection getCollection()

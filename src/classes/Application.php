@@ -853,42 +853,16 @@ class Application
         return AppFactory::createErrorLog();
     }
 
-    private static $exited = false;
-
-    public static function isExited() : bool
-    {
-        return self::$exited;
-    }
-
     /**
+     * Exit the application and handle shutdown tasks.
      * @return never
-     * @todo Handle shutdown tasks here.
      */
     public static function exit(string $reason = '')
     {
-        self::$exited = true;
-
-        /* TODO: Review the exit bypass handling
-        if (self::$exitEnabled)
-        {
-
-        }
-        */
-
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
         Application_Bootstrap::handleShutDown();
-
         exit;
-    }
-
-    public static function setExitEnabled(bool $enabled = true) : bool
-    {
-        $previous = self::$exitEnabled;
-
-        self::$exitEnabled = $enabled;
-
-        return $previous;
     }
 
     /**
@@ -1011,12 +985,18 @@ class Application
             );
         }
 
+        $message = sprintf('Redirected to [%s]', $url);
+
+        if(isCLI()) {
+            self::exit($message);
+        }
+
         $simulation = self::isSimulation();
 
         if (!$simulation && !headers_sent())
         {
             header('Location:' . $url);
-            self::exit(sprintf('Redirected to [%s]', $url));
+            self::exit($message);
         }
 
         ?>

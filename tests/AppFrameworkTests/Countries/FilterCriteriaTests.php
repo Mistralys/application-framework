@@ -57,11 +57,12 @@ final class FilterCriteriaTests extends CountriesTestCase
             $found,
             sprintf(
                 'ISO [%s] found: [%s]. Expected: [%s]. '.PHP_EOL.
-                'Available ISOs: ',
+                'Available ISOs: '.PHP_EOL.
+                '- %s',
                 $iso,
                 bool2string($found),
                 bool2string($expected),
-                implode(', ', $ISOs)
+                implode(PHP_EOL.'- ', $ISOs)
             )
         );
     }

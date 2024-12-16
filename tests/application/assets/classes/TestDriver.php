@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
-use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
 use Application\Tags\TagCollection;
 use TestDriver\Area\MediaLibraryScreen;
@@ -106,10 +105,5 @@ class TestDriver extends Application_Driver
     public function getPageParams(UI_Page $page) : array
     {
         return array();
-    }
-
-    public function getExtendedVersion() : string
-    {
-        return AppFactory::createDevChangelog()->getCurrentVersion()->getTagVersion();
     }
 }

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Media
+ * @subpackage Admin Screens
+ */
 
 declare(strict_types=1);
 
@@ -13,8 +17,8 @@ use Application\Tags\Taggables\TaggableInterface;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Media
+ * @subpackage Admin Screens
  * @property MediaRecord $record
  */
 class BaseMediaTagsScreen

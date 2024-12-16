@@ -7,6 +7,7 @@
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\Driver\VersionInfo;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
@@ -14,6 +15,7 @@ use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
 use UI\AdminURLs\AdminURLInterface;
@@ -289,40 +291,24 @@ abstract class Application_Driver implements Application_Driver_Interface
         return Application::getSession();
     }
 
-    /**
-     * Retrieves the application's numeric version, e.g. "3.3.7".
-     * If the version has a release name appended, it is stripped
-     * off, e.g. "3.3.7-alpha" will return "3.3.7".
-     *
-     * @return string
-     * @throws DriverException
-     * @see Application_Driver::getExtendedVersion()
-     */
-    public function getVersion() : string
+    final public function getExtendedVersion() : string
     {
-        $driver = self::getInstance();
-        $version = trim($driver->getExtendedVersion());
-
-        if (strpos($version, '-') !== false)
-        {
-            $tokens = explode('-', $version);
-
-            return array_shift($tokens);
-        }
-
-        return $version;
+        return $this->getVersionInfo()->getFullVersion();
     }
 
-    /**
-     * Retrieves the application's minor version, e.g. "3.3.0"
-     * The patch version (last part) is always zero.
-     *
-     * @return string
-     */
-    public function getMinorVersion() : string
+    final public function getVersionInfo() : VersionInfo
     {
-        return (string)VersionParser::create($this->getExtendedVersion())
-            ->getMinorVersion();
+        return AppFactory::createVersionInfo();
+    }
+
+    final public function getVersion() : string
+    {
+        return $this->getVersionInfo()->getParser()->getVersion();
+    }
+
+    final public function getMinorVersion() : string
+    {
+        return (string)$this->getVersionInfo()->getParser()->getMinorVersion();
     }
 
     public function getRequest() : Application_Request
@@ -1085,22 +1071,56 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->configureScriptIncludes();
         $this->configureScripts();
 
-        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
-        $minorVersion = $this->getMinorVersion();
+        $this->checkVersionChanged();
+    }
 
-        // handle the what's new? Dialog: only if the user has used the
-        // app before and his last used version does not fit the current one.
-        if ($lastVersion !== $minorVersion)
-        {
-            $this->ui->addInfoMessage(t(
-                '%1$s has been updated to v%2$s. %3$s.',
-                $this->getAppNameShort(),
-                $this->getVersion(),
-                "<a href=\"javascript:void(0);\" onclick=\"application.dialogWhatsnew('" . $lastVersion . "')\">" . t('See what\'s new') . "</a>"
-            ));
+    /**
+     * Checks the application version the current user last used.
+     * If the version has changed since the last visit, a message
+     * is displayed to view the changes.
+     *
+     * @return void
+     * @throws DriverException
+     * @throws UI_Exception
+     */
+    private function checkVersionChanged() : void
+    {
+        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
+        $currentVersion = $this->getExtendedVersion();
+
+        // User is here for the first time: We don't have to show
+        // the what's new dialog.
+        if(empty($lastVersion)) {
+            $this->saveCurrentVersion();
+            return;
         }
 
-        $this->user->setSetting(self::SETTING_USER_LAST_USED_VERSION, $minorVersion);
+        // Ignore if the version has not changed since the user's last visit.
+        if ($lastVersion === $currentVersion) {
+            return;
+        }
+
+        $this->ui->addInfoMessage(t(
+            '%1$s has been updated to v%2$s. %3$s.',
+            $this->getAppNameShort(),
+            $this->getVersion(),
+            sprintf(
+                "<a href=\"#\" onclick=\"application.dialogWhatsnew('%s');return false;\">%s</a>",
+                $lastVersion,
+                t('See what\'s new')
+            )
+        ));
+
+        $this->saveCurrentVersion();
+    }
+
+    /**
+     * Saves the current application version to the user's settings.
+     * @return void
+     */
+    private function saveCurrentVersion() : void
+    {
+        $this->user->setSetting(self::SETTING_USER_LAST_USED_VERSION, $this->getExtendedVersion());
         $this->user->saveSettings();
     }
 
@@ -1229,6 +1249,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // -----------------------------------------------------------
 
         'ui.js',
+        'ui/element-ids.js',
         'ui/icon.js',
         'ui/label.js',
         'ui/text.js',
@@ -1251,6 +1272,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         'dialog.js',
         'dialog/basic.js',
+        'dialog/base_dialog.es6.js',
         'dialog/generic.js',
         'dialog/select_items.js',
         'dialog/confirmation.js',

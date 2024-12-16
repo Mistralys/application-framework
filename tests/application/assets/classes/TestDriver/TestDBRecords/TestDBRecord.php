@@ -67,6 +67,13 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
         return true;
     }
 
+    // region: Taggable
+
+    public function getTaggableLabel(): string
+    {
+        return $this->getLabel();
+    }
+
     public function getTagRecordPrimaryValue(): int
     {
         return $this->getID();
@@ -86,4 +93,6 @@ class TestDBRecord extends DBHelper_BaseRecord implements TaggableInterface
     {
         return $this->getTagCollection()->isTaggingEnabled();
     }
+
+    // endregion
 }

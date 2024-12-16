@@ -33,6 +33,11 @@ trait Application_Session_AuthTypes_None
         Application_User::RIGHT_QA_TESTER
     );
 
+    public function getAuthTypeID() : string
+    {
+        return Application_Session_AuthTypes_NoneInterface::TYPE_ID;
+    }
+
     protected function sendAuthenticationCallbacks() : Application_Users_User
     {
         return AppFactory::createUsers()->getSystemUser();
@@ -53,7 +58,7 @@ trait Application_Session_AuthTypes_None
         return implode(',', $this->fixedRights);
     }
 
-    protected function redirectToReturnURI(bool $authActive) : void
+    protected function redirectToReturnURI() : void
     {
         // Do nothing: Without authentication, there is no need to redirect
         // to a return URI, as there are no callbacks between services.

@@ -1,36 +1,41 @@
 <?php
+/**
+ * @package TestDriver
+ * @subpackage AJAX
+ */
 
 declare(strict_types=1);
 
 namespace TestDriver\AjaxMethods;
 
-use Application_AjaxMethod;
+use Application\Ajax\BaseHTMLAjaxMethod;
 use UI;
 
-class AjaxRenderDropdownMenu extends Application_AjaxMethod
+/**
+ * Test AJAX method that renders menu items for use in
+ * an AJAX dropdown menu. See the linked example file
+ * for the corresponding code.
+ *
+ * @package TestDriver
+ * @subpackage AJAX
+ * @see /src/themes/default/templates/appinterface/buttons/ajax-dropdown/code.php
+ */
+class AjaxRenderDropdownMenu extends BaseHTMLAjaxMethod
 {
     public const METHOD_NAME = 'RenderDropdownMenu';
     public const REQUEST_PARAM_EMPTY_MENU = 'emptyMenu';
     public const REQUEST_PARAM_TRIGGER_ERROR = 'triggerError';
+    private bool $emptyMenu;
 
     public function getMethodName(): string
     {
         return self::METHOD_NAME;
     }
 
-    protected function init()
+    protected function renderHTML()
     {
-        $this->setReturnFormatHTML();
-    }
-
-    public function processHTML() : void
-    {
-        if($this->request->getBool(self::REQUEST_PARAM_EMPTY_MENU)) {
-            $this->sendHTMLResponse('');
-        }
-
-        if($this->request->getBool(self::REQUEST_PARAM_TRIGGER_ERROR)) {
-            $this->sendError(t('Error triggered by request'));
+        if($this->emptyMenu) {
+            return '';
         }
 
         $menu = UI::getInstance()->createDropdownMenu();
@@ -49,6 +54,15 @@ class AjaxRenderDropdownMenu extends Application_AjaxMethod
         $menu->addLink('Athena', '#');
         $menu->addLink('Zeus', '#');
 
-        $this->sendHTMLResponse($menu->renderMenuItems());
+        return $menu->renderMenuItems();
+    }
+
+    protected function validateRequest() : void
+    {
+        if($this->request->getBool(self::REQUEST_PARAM_TRIGGER_ERROR)) {
+            $this->sendError(t('Error triggered by request'));
+        }
+
+        $this->emptyMenu = $this->request->getBool(self::REQUEST_PARAM_EMPTY_MENU);
     }
 }

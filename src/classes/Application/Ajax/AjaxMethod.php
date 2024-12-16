@@ -4,8 +4,14 @@
  * @subpackage AJAX
  */
 
+declare(strict_types=1);
+
+use Application\Ajax\AjaxMethodInterface;
+use Application\Ajax\BaseHTMLAjaxMethod;
+use Application\Ajax\BaseJSONAjaxMethod;
 use Application\AppFactory;
 use Application\Exception\DisposableDisposedException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\Request_Exception;
@@ -18,30 +24,8 @@ use AppUtils\Request_Exception;
  *
  * @see Application_Bootstrap_Screen_Ajax
  */
-abstract class Application_AjaxMethod
+abstract class Application_AjaxMethod implements AjaxMethodInterface
 {
-    public const ERROR_MALFORMED_JSON_DATA = 554001;
-
-    public const RETURNFORMAT_HTML = 'HTML';
-    public const RETURNFORMAT_JSON = 'JSON';
-    public const RETURNFORMAT_TEXT = 'TXT';
-    public const RETURNFORMAT_XML = 'XML';
-
-    public const RETURN_FORMATS = array(
-        self::RETURNFORMAT_HTML,
-        self::RETURNFORMAT_JSON,
-        self::RETURNFORMAT_TEXT,
-        self::RETURNFORMAT_XML
-    );
-
-    public const PAYLOAD_STATE = 'state';
-    public const PAYLOAD_REQUEST_URI = 'request_uri';
-    public const PAYLOAD_DATA = 'data';
-    public const PAYLOAD_ERROR_MESSAGE = 'message';
-    public const PAYLOAD_ERROR_CODE = 'code';
-    public const STATE_SUCCESS = 'success';
-    public const STATE_ERROR = 'error';
-
     protected Application_AjaxHandler $handler;
     protected Application_Request $request;
     protected Application_Driver $driver;
@@ -67,7 +51,7 @@ abstract class Application_AjaxMethod
         $this->initCORS();
         $this->init();
         
-        foreach (self::RETURN_FORMATS as $format) {
+        foreach (AjaxMethodInterface::RETURN_FORMATS as $format) {
             $method = 'process' . $format;
             if (method_exists($this, $method)) {
                 $this->supportedFormats[$format] = $method;
@@ -78,8 +62,6 @@ abstract class Application_AjaxMethod
         $this->CORS->init();
     }
 
-    abstract public function getMethodName() : string;
-    
    /**
     * Can be extended to handle things done after constructing the instance.
     */
@@ -97,7 +79,7 @@ abstract class Application_AjaxMethod
     
     protected function setReturnFormatHTML() : void
     {
-        $this->format = self::RETURNFORMAT_HTML;
+        $this->format = AjaxMethodInterface::RETURNFORMAT_HTML;
     }
 
     public function getID() : string
@@ -112,6 +94,13 @@ abstract class Application_AjaxMethod
 
     protected string $format = '';
 
+    /**
+     * @param string $formatName
+     * @return void
+     * @throws Application_Exception
+     * @see BaseHTMLAjaxMethod::processHTML()
+     * @see BaseJSONAjaxMethod::processJSON()
+     */
     public function process(string $formatName) : void
     {
         $this->startSimulation();
@@ -190,13 +179,17 @@ abstract class Application_AjaxMethod
     }
 
     /**
-     * @param array<string|int,mixed>|string|NULL $data
+     * @param ArrayDataCollection|array<string|int,mixed>|string|NULL $data
      * @return never
      */
     protected function sendResponse($data = null)
     {
         if(DBHelper::isTransactionStarted()) {
             $this->endTransaction();
+        }
+
+        if($data instanceof ArrayDataCollection) {
+            $data = $data->getData();
         }
         
         if($this->isSimulationEnabled()) {
@@ -253,9 +246,9 @@ abstract class Application_AjaxMethod
         
         return json_encode(
             array(
-                self::PAYLOAD_STATE => self::STATE_SUCCESS,
-                self::PAYLOAD_REQUEST_URI => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
-                self::PAYLOAD_DATA => $data
+                AjaxMethodInterface::PAYLOAD_STATE => AjaxMethodInterface::STATE_SUCCESS,
+                AjaxMethodInterface::PAYLOAD_REQUEST_URI => str_replace('&amp;', '&', $request->buildRefreshURL(array(), array('_loadkeys'))),
+                AjaxMethodInterface::PAYLOAD_DATA => $data
             ),
             JSON_THROW_ON_ERROR
         );
@@ -277,10 +270,10 @@ abstract class Application_AjaxMethod
         }
         
         return array(
-            self::PAYLOAD_STATE => self::STATE_ERROR,
-            self::PAYLOAD_ERROR_MESSAGE => $message,
-            self::PAYLOAD_ERROR_CODE => $code,
-            self::PAYLOAD_DATA => $data
+            AjaxMethodInterface::PAYLOAD_STATE => AjaxMethodInterface::STATE_ERROR,
+            AjaxMethodInterface::PAYLOAD_ERROR_MESSAGE => $message,
+            AjaxMethodInterface::PAYLOAD_ERROR_CODE => $code,
+            AjaxMethodInterface::PAYLOAD_DATA => $data
         );
     }
 
@@ -308,7 +301,7 @@ abstract class Application_AjaxMethod
     {
         // fallback to avoid deadlocks calling the same method 
         if(empty($this->format)) {
-            $this->format = self::RETURNFORMAT_HTML;
+            $this->format = AjaxMethodInterface::RETURNFORMAT_HTML;
         }
         
         $method = 'send' . $this->format . 'Error';
@@ -379,9 +372,13 @@ abstract class Application_AjaxMethod
      */
     protected bool $debug = false;
 
-    public function enableDebug() : void
+    /**
+     * @return $this
+     */
+    public function enableDebug(bool $enable=true) : self
     {
-        $this->debug = true;
+        $this->debug = $enable;
+        return $this;
     }
 
     protected function log(string $message) : void

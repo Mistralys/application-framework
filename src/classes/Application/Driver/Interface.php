@@ -65,10 +65,22 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
      */
     public function getPageURL(UI_Page $page, array $params = array()) : string;
 
+    /**
+     * Gets the full application version with tag, e.g. "3.2.6-beta".
+     * @return string
+     */
     public function getExtendedVersion() : string;
 
+    /**
+     * Gets the application version without a tag, e.g. "3.2.6" in "3.2.6-beta".
+     * @return string
+     */
     public function getVersion() : string;
 
+    /**
+     * Retrieves the application's minor version, e.g. "6" in "3.2.6".
+     * @return string
+     */
     public function getMinorVersion() : string;
 
     public function getUser() : Application_User;

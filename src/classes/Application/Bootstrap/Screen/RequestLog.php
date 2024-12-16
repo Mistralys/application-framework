@@ -48,7 +48,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
      * determine if the request log is currently being used.
      *
      * The main use of the constant is in the session handling,
-     * see {@see Application_Session_Native::getPrefix()}.
+     * see {@see Application_Session_Native::getName()}.
      *
      * @return void
      */

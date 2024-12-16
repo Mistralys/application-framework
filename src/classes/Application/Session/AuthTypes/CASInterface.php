@@ -21,6 +21,7 @@ declare(strict_types=1);
  */
 interface Application_Session_AuthTypes_CASInterface
 {
+    public const TYPE_ID = 'CAS';
     public const ERROR_EMPTY_USER_INFO = 75501;
     public const ERROR_CAS_CLIENT_INIT_FAILED = 75502;
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses;
 
+use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
+use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
 use Application;
 use Application\AppFactory;
 use Application\Interfaces\ChangelogableInterface;
@@ -13,6 +15,7 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
 use Application_Media_Document;
 use Application_Media_Document_Image;
+use Application_Session_Base;
 use Application_User;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -37,11 +40,6 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
      * @var array<string,int>
      */
     private static array $counter = array();
-
-    /**
-     * @var Application_Media_Document[]
-     */
-    protected array $testMedia = array();
 
     protected function logHeader(string $testName): void
     {
@@ -72,14 +70,9 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     {
         $this->clearTransaction();
         $this->disableLogging();
-        $this->clearTestMedia();
-    }
 
-    protected function clearTestMedia(): void
-    {
-        foreach($this->testMedia as $media)
-        {
-            FileHelper::deleteFile($media->getPath());
+        if($this instanceof ImageMediaTestInterface) {
+            $this->tearDownImageTestCase();
         }
     }
 
@@ -217,10 +210,16 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     protected function setUp(): void
     {
         Localization::selectAppLocale('en_UK');
-
         AppFactory::createLogger()->reset();
+        Application_Session_Base::setRedirectsEnabled(true);
 
-        $this->testMedia = array();
+        if($this instanceof ImageMediaTestInterface) {
+            $this->setUpImageTestCase();
+        }
+
+        if($this instanceof DBHelperTestInterface) {
+            $this->setUpDBHelperTestTrait();
+        }
     }
 
     // region Custom assertions

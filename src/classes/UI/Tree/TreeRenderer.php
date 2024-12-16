@@ -37,6 +37,7 @@ class TreeRenderer extends UI_Renderable
     public const OPTION_ELEMENT_NAME = 'selectable_name';
     public const DEFAULT_ELEMENT_NAME = 'tree_items';
     public const OPTION_STANDALONE_FORM = 'standalone_form';
+    public const STYLESHEET_FILE = 'ui/node-tree.css';
 
     private TreeNode $rootNode;
     /**
@@ -134,7 +135,7 @@ class TreeRenderer extends UI_Renderable
 
     protected function _render() : string
     {
-        $this->ui->addStylesheet('ui/node-tree.css');
+        $this->ui->addStylesheet(self::STYLESHEET_FILE);
 
         $this->injectJS();
 

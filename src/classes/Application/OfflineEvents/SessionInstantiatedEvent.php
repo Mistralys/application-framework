@@ -21,6 +21,11 @@ use Application_Session;
  * - {@see Application_Session::onUserAuthenticated()}
  * - {@see Application_Session::onUserLoggedOut()}
  *
+ * ## Usage
+ *
+ * 1. Add listeners in the folder {@see self::EVENT_NAME} in the offline event folder.
+ * 2. Extend the base class {@see BaseSessionInstantiatedListener}.
+ *
  * @package Application
  * @subpackage Session
  */

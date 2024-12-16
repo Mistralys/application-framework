@@ -26,14 +26,18 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function getID() : string;
 
     /**
-     * Prefix used to store session values.
-     *
-     * It is prefixed to session variable names to avoid
-     * conflicts with other session variables.
+     * Name used to identify the session, and keep values
+     * separate between different scripts and applications.
      *
      * @return string
      */
-    public function getPrefix() : string;
+    public function getName() : string;
+
+    /**
+     * Retrieves the type of authentication the session uses, e.g. {@see Application_Session_AuthTypes_NoneInterface::TYPE_ID}.
+     * @return string
+     */
+    public function getAuthTypeID() : string;
 
     /**
      * Fetches the currently authenticated user. If this is empty,
@@ -151,6 +155,8 @@ interface Application_Session extends Application_Interfaces_Eventable
 
     /**
      * @param int $reasonID
+     * @return void|never Will exit the application if redirects are enabled.
+     * @see Application_Session_Base::setRedirectsEnabled()
      */
     public function logOut(int $reasonID=0) : void;
 
@@ -201,4 +207,10 @@ interface Application_Session extends Application_Interfaces_Eventable
      * @return $this
      */
     public function start() : self;
+
+    /**
+     * Destroys the session.
+     * @return self
+     */
+    public function destroy() : self;
 }

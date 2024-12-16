@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use Application\Tags\TagCollection;
 use AppUtils\Microtime;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
@@ -118,15 +119,15 @@ final class DBHelper_CoreTests extends DBHelperTestCase
 
     public function test_isAutoIncrementColumn() : void
     {
-        $this->assertFalse(DBHelper::isAutoIncrementColumn(DBHelperTestCase::TEST_RECORDS_TABLE, DBHelperTestCase::TEST_RECORDS_COL_LABEL));
-        $this->assertTrue(DBHelper::isAutoIncrementColumn(DBHelperTestCase::TEST_RECORDS_TABLE, DBHelperTestCase::TEST_RECORDS_PRIMARY));
+        $this->assertFalse(DBHelper::isAutoIncrementColumn(DBHelperTestInterface::TEST_RECORDS_TABLE, DBHelperTestInterface::TEST_RECORDS_COL_LABEL));
+        $this->assertTrue(DBHelper::isAutoIncrementColumn(DBHelperTestInterface::TEST_RECORDS_TABLE, DBHelperTestInterface::TEST_RECORDS_PRIMARY));
     }
 
     public function test_tableExists() : void
     {
         $this->assertFalse(DBHelper::tableExists('unknown_table_'.$this->getTestCounter()));
-        $this->assertTrue(DBHelper::tableExists(DBHelperTestCase::TEST_RECORDS_TABLE));
-        $this->assertTrue(DBHelper::tableExists(DBHelperTestCase::TEST_RECORDS_DATA_TABLE));
+        $this->assertTrue(DBHelper::tableExists(DBHelperTestInterface::TEST_RECORDS_TABLE));
+        $this->assertTrue(DBHelper::tableExists(DBHelperTestInterface::TEST_RECORDS_DATA_TABLE));
     }
 
     /**
@@ -140,20 +141,20 @@ final class DBHelper_CoreTests extends DBHelperTestCase
         $alias = 'test-alias-'.$this->getTestCounter();
 
         DBHelper::insertDynamic(
-            DBHelperTestCase::TEST_RECORDS_TABLE,
+            DBHelperTestInterface::TEST_RECORDS_TABLE,
             array(
-                DBHelperTestCase::TEST_RECORDS_COL_LABEL => $label,
-                DBHelperTestCase::TEST_RECORDS_COL_ALIAS => $alias
+                DBHelperTestInterface::TEST_RECORDS_COL_LABEL => $label,
+                DBHelperTestInterface::TEST_RECORDS_COL_ALIAS => $alias
             )
         );
 
         // Attempt to find the record
         $this->assertTrue(
             DBHelper::keyExists(
-                DBHelperTestCase::TEST_RECORDS_TABLE,
+                DBHelperTestInterface::TEST_RECORDS_TABLE,
                 array(
-                    DBHelperTestCase::TEST_RECORDS_COL_LABEL => $label,
-                    DBHelperTestCase::TEST_RECORDS_COL_ALIAS => $alias
+                    DBHelperTestInterface::TEST_RECORDS_COL_LABEL => $label,
+                    DBHelperTestInterface::TEST_RECORDS_COL_ALIAS => $alias
                 )
             )
         );
@@ -161,10 +162,10 @@ final class DBHelper_CoreTests extends DBHelperTestCase
         // Try the same with a combination that does not exist.
         $this->assertFalse(
             DBHelper::keyExists(
-                DBHelperTestCase::TEST_RECORDS_TABLE,
+                DBHelperTestInterface::TEST_RECORDS_TABLE,
                 array(
-                    DBHelperTestCase::TEST_RECORDS_COL_LABEL => $label,
-                    DBHelperTestCase::TEST_RECORDS_COL_ALIAS => 'other-alias-'.$this->getTestCounter()
+                    DBHelperTestInterface::TEST_RECORDS_COL_LABEL => $label,
+                    DBHelperTestInterface::TEST_RECORDS_COL_ALIAS => 'other-alias-'.$this->getTestCounter()
                 )
             )
         );
@@ -172,18 +173,18 @@ final class DBHelper_CoreTests extends DBHelperTestCase
 
     public function test_getTablesList() : void
     {
-        $this->assertContains(DBHelperTestCase::TEST_RECORDS_TABLE, DBHelper::getTablesList());
+        $this->assertContains(DBHelperTestInterface::TEST_RECORDS_TABLE, DBHelper::getTablesList());
     }
 
     public function test_columnExists() : void
     {
         $this->assertTrue(DBHelper::columnExists(
-            DBHelperTestCase::TEST_RECORDS_TABLE,
-            DBHelperTestCase::TEST_RECORDS_COL_ALIAS
+            DBHelperTestInterface::TEST_RECORDS_TABLE,
+            DBHelperTestInterface::TEST_RECORDS_COL_ALIAS
         ));
 
         $this->assertFalse(DBHelper::columnExists(
-            DBHelperTestCase::TEST_RECORDS_TABLE,
+            DBHelperTestInterface::TEST_RECORDS_TABLE,
             'unknown-column-'.$this->getTestCounter()
         ));
     }

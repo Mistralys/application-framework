@@ -103,6 +103,8 @@
       <path value="$PROJECT_DIR$/vendor/css-crush/css-crush" />
       <path value="$PROJECT_DIR$/vendor/phpmailer/phpmailer" />
       <path value="$PROJECT_DIR$/vendor/mistralys/changelog-parser" />
+      <path value="$PROJECT_DIR$/vendor/mistralys/php-sprintf-parser" />
+      <path value="$PROJECT_DIR$/vendor/mistralys/application-utils-image" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">

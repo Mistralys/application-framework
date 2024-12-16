@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 
 declare(strict_types=1);
@@ -21,8 +21,8 @@ use HTML_QuickForm2_Element_TreeSelect;
  * record, as stored in the record collection's tag connection
  * table.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Taggables
  */
 class Taggable
 {
@@ -43,6 +43,11 @@ class Taggable
         $this->primaryName = $this->connector->getPrimaryName();
         $this->tableName = $this->connector->getTableName();
         $this->primaryKey = $primaryKey;
+    }
+
+    public function getPrimaryKey(): int
+    {
+        return $this->primaryKey;
     }
 
     public function getCollection() : TagCollectionInterface
@@ -114,6 +119,7 @@ class Taggable
     }
 
     /**
+     * Gets all tags that are connected to the record.
      * @return TagRecord[]
      */
     public function getAll() : array
@@ -127,7 +133,7 @@ class Taggable
             $result[] = $collection->getByID($id);
         }
 
-        usort($result, function(TagRecord $a, TagRecord $b) {
+        usort($result, static function(TagRecord $a, TagRecord $b) : int {
             return strnatcasecmp($a->getLabel(), $b->getLabel());
         });
 
@@ -156,5 +162,26 @@ class Taggable
         $el->setTree($rootNode);
 
         return $el;
+    }
+
+    public function getLabels() : array
+    {
+        $result = array();
+
+        foreach($this->getAll() as $tag) {
+            $result[] = $tag->getLabel();
+        }
+
+        return $result;
+    }
+
+    public function renderTaggingUI() : string
+    {
+        return (string)new TagEditorUI($this);
+    }
+
+    public function getUniqueID() : string
+    {
+        return TaggableUniqueID::compileUniqueID($this);
     }
 }

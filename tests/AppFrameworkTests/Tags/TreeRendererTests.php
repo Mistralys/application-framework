@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application Tests
- * @subpackage Tagging
+ * @package Tagging
+ * @subpackage Tests
  */
 
 declare(strict_types=1);
@@ -14,8 +14,8 @@ use UI\Tree\TreeRenderer;
 /**
  * The tree renderer is used to display a tree structure.
  *
- * @package Application Tests
- * @subpackage Tagging
+ * @package Tagging
+ * @subpackage Tests
  * @see TreeRenderer
  */
 final class TreeRendererTests extends TaggingTestCase

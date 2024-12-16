@@ -1,6 +1,8 @@
 <?php
 
-abstract class Application_AjaxMethod_CustomProperties extends Application_AjaxMethod
+declare(strict_types=1);
+
+abstract class BaseCustomPropertiesMethod extends Application_AjaxMethod
 {
     public const METHOD_NAME = 'CustomProperties';
 

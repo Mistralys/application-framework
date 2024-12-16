@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace AppFrameworkTestClasses\Traits;
 
 use Application\AppFactory;
+use Application_Media;
+use Application_Media_Document;
 use Application_Media_Document_Image;
+use Application_Uploads;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
 use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
 use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
+use DBHelper;
 
+/**
+ * @see ImageMediaTestInterface
+ */
 trait ImageMediaTestTrait
 {
     public function createTestPNGImage() : Application_Media_Document_Image
@@ -95,5 +103,42 @@ trait ImageMediaTestTrait
     protected function getExampleGIFPath(bool $animated=false) : string
     {
         return $this->getExampleImagePath(FormatsCollection::getInstance()->getGIFFormat(), $animated);
+    }
+
+    protected Application_Media $media;
+    protected Application_Uploads $uploads;
+    protected string $storageFolder;
+
+    /**
+     * @var Application_Media_Document[]
+     */
+    protected array $testMedia = array();
+
+    public function setUpImageTestCase(): void
+    {
+        $this->startTransaction();
+
+        $this->media = AppFactory::createMedia();
+        $this->uploads = AppFactory::createUploads();
+        $this->storageFolder = $this->getMediaStoragePath();
+        $this->testMedia = array();
+
+        DBHelper::deleteRecords(Application_Media::TABLE_NAME);
+
+        $this->media->clearCollection();
+        $this->media->setRootTag(AppFactory::createTags()->createNewTag('Media'));
+    }
+
+    public function tearDownImageTestCase(): void
+    {
+        $this->clearTestMedia();
+    }
+
+    protected function clearTestMedia(): void
+    {
+        foreach($this->testMedia as $media)
+        {
+            FileHelper::deleteFile($media->getPath());
+        }
     }
 }

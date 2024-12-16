@@ -8,6 +8,7 @@
  */
 
 use Application\Interfaces\Admin\CollectionListInterface;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Trait used for simplify displaying lists of DBHelper records:
@@ -109,7 +110,7 @@ trait Application_Traits_Admin_CollectionList
     /**
      * @param DBHelper_BaseRecord $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
-     * @return array<string,string|number|UI_Renderable_Interface>|UI_DataGrid_Entry
+     * @return array<string,string|number|bool|StringableInterface>|UI_DataGrid_Entry
      */
     abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry);
     

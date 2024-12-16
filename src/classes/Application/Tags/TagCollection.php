@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -10,7 +10,9 @@ namespace Application\Tags;
 
 use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
+use Application\Exception\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Tags\Taggables\TaggableInterface;
 use Application_Formable;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
@@ -19,10 +21,11 @@ use AppUtils\ClassHelper\BaseClassHelperException;
 use DBHelper;
 use DBHelper_BaseCollection;
 use DBHelper_Exception;
+use UI;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @method TagCriteria getFilterCriteria()
  * @method TagFilterSettings getFilterSettings()
@@ -109,7 +112,7 @@ class TagCollection extends DBHelper_BaseCollection
      * @return TagRecord
      *
      * @throws BaseClassHelperException
-     * @throws \Application\Exception\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()) : TagRecord
@@ -169,6 +172,26 @@ class TagCollection extends DBHelper_BaseCollection
         $params[BaseCreateTagScreen::REQUEST_PARAM_PARENT_TAG] = $parentTag->getID();
 
         return $this->getAdminCreateURL($params);
+    }
+
+    public function injectJS() : void
+    {
+        UI::getInstance()->addJavascript('ui/tags/tagging-dialog.js');
+    }
+
+    public function createCollectionRegistry() : TagCollectionRegistry
+    {
+        return TagCollectionRegistry::getInstance();
+    }
+
+    public function getTaggableByUniqueID(string $uniqueID) : TaggableInterface
+    {
+        return $this->createCollectionRegistry()->getTaggableByUniqueID($uniqueID);
+    }
+
+    public function uniqueIDExists(string $uniqueID) : bool
+    {
+        return $this->createCollectionRegistry()->uniqueIDExists($uniqueID);
     }
 
     protected function _registerKeys(): void

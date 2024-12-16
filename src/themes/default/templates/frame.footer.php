@@ -99,7 +99,7 @@ class template_default_frame_footer extends UI_Page_Template_Custom
             ->addItemURL(t('Maintenance'), APP_URL.'/'.Application_Bootstrap_Screen_Updaters::DISPATCHER_NAME)
             ->addItemURL(t('Monitoring'), APP_URL.'/xml/monitor/'.Application_Bootstrap_Screen_HealthMonitor::DISPATCHER)
             ->addItemURL(t('Run cronjob script'), APP_URL.'/'.Application_Bootstrap_Screen_Cronjobs::DISPATCHER.'?output=yes')
-            ->addItemURL(t('Request log'), APP_URL.'/.'.Application_Bootstrap_Screen_RequestLog::DISPATCHER)
+            ->addItemURL(t('Request log'), APP_URL.'/'.Application_Bootstrap_Screen_RequestLog::DISPATCHER)
             ->addItemCallback(static function() : string {
                 return (string)UI::button(t('Deploy callback...'))
                     ->makeLink(false)
