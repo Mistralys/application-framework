@@ -1,3 +1,7 @@
+## v5.5.5 - Country ButtonBar fix
+- Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](#v545-hotfix1---country-button-bar-fix).
+- Country ButtonBar: Added constructor parameter to limit the available countries.
+
 ## v5.5.4 - Small enhancements 
 - Wizards: Added `_onRecordCreated()` to the DB creation step.
 - UI: Linked labels and badges now clearly show that they are clickable on hover.
