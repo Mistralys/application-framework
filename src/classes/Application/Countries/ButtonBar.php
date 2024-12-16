@@ -12,6 +12,8 @@ use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\ClassableTrait;
 use AppUtils\Traits\OptionableTrait;
+use AppUtils\URLInfo;
+use function AppUtils\parseURL;
 
 /**
  * UI widget to create and display a country selection
@@ -42,7 +44,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
     protected int $countryID = 0;
     protected ?Application_Countries_Country $country = null;
     protected Application_Countries_FilterCriteria $filters;
-    protected string $baseURL;
+    protected URLInfo $baseURL;
     protected string $storageKey;
     protected bool $loaded = false;
 
@@ -70,7 +72,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
         $this->user = $this->driver->getUser();
         $this->request = $this->driver->getRequest();
         $this->filters = $this->collection->getFilterCriteria();
-        $this->baseURL = $this->parseBaseURL($baseURL);
+        $this->baseURL = parseURL($baseURL);
 
         if(!empty($limitToCountries)) {
             $this->filters->selectCountryIDs($limitToCountries);
@@ -318,7 +320,8 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
         
         if($this->isSelectable($country))
         {
-            return $this->baseURL.$country->getID();
+            $this->baseURL->setParam(self::REQUEST_PARAM_SELECT_COUNTRY, (string)$country->getID());
+            return $this->baseURL->getNormalized();
         }
         
         throw new Application_Exception(
