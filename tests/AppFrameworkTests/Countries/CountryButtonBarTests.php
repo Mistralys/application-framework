@@ -105,6 +105,36 @@ final class CountryButtonBarTests extends CountriesTestCase
         $this->assertFalse($bar->isSelectable($this->ca));
     }
 
+    /**
+     * The country links must work even if the country parameter
+     * is already present in the base URL.
+     */
+    public function test_links_overwriteExistingParameter() : void
+    {
+        $bar = Application_Countries::createButtonBar(
+            self::COUNTRY_BAR_ID,
+            'https://buttonbar.test?select_country=42'
+        );
+
+        $this->assertSame(
+            'https://buttonbar.test?select_country='.$this->de->getID(),
+            $bar->getCountryLink($this->de)
+        );
+    }
+
+    public function test_links_addCountryParameter() : void
+    {
+        $bar = Application_Countries::createButtonBar(
+            self::COUNTRY_BAR_ID,
+            'https://buttonbar.test'
+        );
+
+        $this->assertSame(
+            'https://buttonbar.test?select_country='.$this->de->getID(),
+            $bar->getCountryLink($this->de)
+        );
+    }
+
     // endregion
 
     // region: Support methods
