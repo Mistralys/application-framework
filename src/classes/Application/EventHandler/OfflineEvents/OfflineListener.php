@@ -18,6 +18,18 @@ abstract class Application_EventHandler_OfflineEvents_OfflineListener
 {
     private ?NamedClosure $callable = null;
 
+    /**
+     * Unique identifier for this listener (within the event).
+     *
+     * NOTE: This is derived from the class name.
+     *
+     * @return string
+     */
+    public function getID() : string
+    {
+        return getClassTypeName($this);
+    }
+
     public function getCallable() : NamedClosure
     {
         if(!isset($this->callable))
