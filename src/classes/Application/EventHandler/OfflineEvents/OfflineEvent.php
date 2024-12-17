@@ -120,6 +120,10 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
     }
 
     /**
+     * Gets all listeners registered for this event.
+     *
+     * NOTE: This is sorted by priority and ID.
+     *
      * @return Application_EventHandler_OfflineEvents_OfflineListener[]
      */
     public function getListeners() : array
@@ -141,6 +145,19 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
         {
             $this->listeners[] = $this->createListener($class);
         }
+
+        // Sort the listeners by priority and ID if no
+        // priority is set.
+        usort($this->listeners, static function(Application_EventHandler_OfflineEvents_OfflineListener $a, Application_EventHandler_OfflineEvents_OfflineListener $b) : int {
+            $prioA = $a->getPriority();
+            $prioB = $b->getPriority();
+
+            if($prioA > 0 || $prioB > 0) {
+                return ($prioA <=> $prioB) * -1;
+            }
+
+            return $a->getID() <=> $b->getID();
+        });
     }
 
     /**
