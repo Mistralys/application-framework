@@ -19,7 +19,7 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  * They allow for classes to listen to events even if the
  * class instance is not loaded at the time the event is
  * triggered: the event listener includes everything needed
- * to load the according class instance, and let it process
+ * to load the matching class instance, and let it process
  * the event.
  *
  * ## How do the offline events work?
