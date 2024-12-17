@@ -1,3 +1,7 @@
+## v5.5.6 - Offline listener priority
+- OfflineEvents: Added the `getPriority()` method to listeners.
+- OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
+
 ## v5.5.5 - Country ButtonBar fix
 - Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](https://github.com/Mistralys/application-framework/releases/tag/5.4.5-hotfix1).
 - Country ButtonBar: Added constructor parameter to limit the available countries.
