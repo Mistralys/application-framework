@@ -36,6 +36,19 @@ abstract class Application_EventHandler_OfflineEvents_OfflineListener
     }
 
     /**
+     * Higher priority listeners are called first, giving the
+     * possibility to influence the order in which they are
+     * executed.
+     *
+     * @return int
+     * @overridable
+     */
+    public function getPriority() : int
+    {
+        return 0;
+    }
+
+    /**
      * This method is called when the event is triggered.
      *
      * @param Application_EventHandler_Event $event This will be the event class specific to the event that triggered this listener.
