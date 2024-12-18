@@ -8,8 +8,10 @@ use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\Taggables\TagConnector;
 use Application\Tags\Taggables\TaggableInterface;
+use AppUtils\ConvertHelper;
 use DBHelper;
 use DBHelper_BaseCollection;
+use Mistralys\Examples\HerbsCollection;
 use TestDriver\OfflineEvents\RegisterTagCollections\RegisterTestDBCollection;
 
 /**
@@ -117,6 +119,60 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
             self::COL_LABEL => $label,
             self::COL_ALIAS => $alias
         ));
+    }
+
+    /**
+     * Uses the {@see HerbsCollection} to populate the collection with test records.
+     * Existing records are skipped.
+     *
+     * @return void
+     */
+    public function populateWithTestRecords() : void
+    {
+        foreach(HerbsCollection::getInstance()->getAll() as $herb)
+        {
+            $alias = ConvertHelper::transliterate($herb->getName());
+            $existing = $this->findByAlias($alias);
+            if(!$existing) {
+                $this->createTestRecord($herb->getName(), $alias);
+            }
+        }
+    }
+
+    /**
+     * Attempts to find a record by its alias.
+     *
+     * @param string $alias
+     * @return TestDBRecord|null
+     */
+    public function findByAlias(string $alias) : ?TestDBRecord
+    {
+        $id = $this->getIDByAlias($alias);
+
+        if($id !== null) {
+            return $this->getByID($id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Attempts to find a record ID by its alias.
+     *
+     * @param string $alias
+     * @return int|null
+     */
+    public function getIDByAlias(string $alias) : ?int
+    {
+        $id = DBHelper::createFetchKey(self::PRIMARY_NAME, self::TABLE_NAME)
+            ->whereValue(self::COL_ALIAS, $alias)
+            ->fetchInt();
+
+        if($id !== 0) {
+            return $id;
+        }
+
+        return null;
     }
 
     protected function _registerKeys(): void
