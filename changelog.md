@@ -2,6 +2,11 @@
 - OfflineEvents: Added the `getPriority()` method to listeners.
 - OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
 - AdminURL: Added `importURL()` to import parameters and dispatcher from URL strings.
+- Composer: Added utility scripts in the class `ComposerScripts`.
+- Composer: Use `composer clear-class-cache` to clear the PHP class cache.
+- Composer: Use `composer clear-caches` to clear all caches.
+- Composer: When running `composer dumpautoload`, the class cache is now automatically cleared.
+- DBHelper: Added the utility class `BaseRecordSelectionTieIn`.
 
 ## v5.5.5 - Country ButtonBar fix
 - Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](https://github.com/Mistralys/application-framework/releases/tag/5.4.5-hotfix1).
