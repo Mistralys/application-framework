@@ -7,6 +7,8 @@
 - Composer: Use `composer clear-caches` to clear all caches.
 - Composer: When running `composer dumpautoload`, the class cache is now automatically cleared.
 - DBHelper: Added the utility class `BaseRecordSelectionTieIn`.
+- Application: Added `isInstalledAsDependency()`.
+- Application: Added `detectRootFolder()`.
 
 ## v5.5.5 - Country ButtonBar fix
 - Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](https://github.com/Mistralys/application-framework/releases/tag/5.4.5-hotfix1).
