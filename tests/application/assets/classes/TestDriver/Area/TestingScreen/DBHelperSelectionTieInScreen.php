@@ -54,7 +54,7 @@ class DBHelperSelectionTieInScreen
             ->appendContent(
                 $this->ui->createMessage(t(
                     'The record %1$s has been selected successfully.',
-                    sb()->bold($this->selection->requireItem()->getLabel()))
+                    sb()->bold($this->selection->requireRecord()->getLabel()))
                 )
                     ->makeNotDismissable()
                     ->makeSuccess()

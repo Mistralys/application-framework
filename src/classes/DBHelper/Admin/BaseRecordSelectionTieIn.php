@@ -31,7 +31,7 @@ use UI_Page_Breadcrumb;
  *
  * 1. Extend this class.
  * 2. Instantiate the class in the screen's {@see \Application_Traits_Admin_Screen::_handleBeforeActions()} method.
- * 3. Call {@see self::getRecord()} or {@see self::requireItem()} to retrieve the selected record.
+ * 3. Call {@see self::getRecord()} or {@see self::requireRecord()} to retrieve the selected record.
  *
  * ## Limitations
  *
@@ -96,11 +96,11 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this->record;
     }
 
-    final public function requireItem() : object
+    final public function requireRecord() : object
     {
-        $item = $this->getRecord();
-        if($item !== null) {
-            return $item;
+        $record = $this->getRecord();
+        if($record !== null) {
+            return $record;
         }
 
         $collection = $this->getCollection();
@@ -127,12 +127,12 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return clone $this->baseURL;
     }
 
-    final public function getURLRecord(DBHelper_BaseRecord $item) : AdminURLInterface
+    final public function getURLRecord(DBHelper_BaseRecord $record) : AdminURLInterface
     {
         return (clone $this->baseURL)
             ->int(
                 $this->getCollection()->getRecordRequestPrimaryName(),
-                $item->getID()
+                $record->getID()
             );
     }
 
