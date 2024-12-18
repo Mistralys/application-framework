@@ -36,6 +36,16 @@ interface AdminURLInterface extends RenderableInterface
     public function import(array $params) : self;
 
     /**
+     * Imports the dispatcher and parameters from an application-internal URL string.
+     *
+     * NOTE: The host must match the current application host.
+     *
+     * @param string $url
+     * @return $this
+     */
+    public function importURL(string $url) : self;
+
+    /**
      * Adds a parameter, automatically determining its type.
      *
      * @param string $name
