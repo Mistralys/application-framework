@@ -19,6 +19,12 @@ use AppUtils\FileHelper\SerializedFile;
  * Handles the caching of class information to speed up class
  * discovery operations.
  *
+ * ## Usage
+ *
+ * - Finding classes in a folder: {@see self::findClassesInFolder()}
+ * - Clearing the class cache: {@see self::clearClassCache()}
+ * - Turning the cache on or off: {@see self::setCacheEnabled()}
+ *
  * @package Application
  * @subpackage AppFactory
  */
