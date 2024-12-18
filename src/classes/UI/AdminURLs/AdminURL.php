@@ -13,6 +13,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\Traits\RenderableTrait;
+use function AppUtils\parseURL;
 
 /**
  * Helper class used to build admin screen URLs.
@@ -40,6 +41,11 @@ class AdminURL implements AdminURLInterface
     public function __construct(array $params=array())
     {
         $this->import($params);
+    }
+
+    public function getDispatcher() : string
+    {
+        return $this->dispatcher;
     }
 
     public static function create(array $params=array()) : self
@@ -73,6 +79,20 @@ class AdminURL implements AdminURLInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Imports the dispatcher and parameters from a URL string.
+     * @param string $url
+     * @return $this
+     */
+    public function importURL(string $url) : self
+    {
+        $parsed = parseURL($url);
+
+        return $this
+            ->dispatcher(ltrim($parsed->getPath(), '/'))
+            ->import($parsed->getParams());
     }
 
     /**
@@ -141,7 +161,7 @@ class AdminURL implements AdminURLInterface
     }
 
     /**
-     * Adds an array as a JSON string.
+     * Adds an array as a JSON string URL parameter.
      * @param string $name
      * @param array<int|string,string|int|float|bool|NULL|array> $data
      * @return $this
@@ -232,6 +252,8 @@ class AdminURL implements AdminURLInterface
      */
     public function getParams() : array
     {
+        ksort($this->params);
+
         return $this->params;
     }
 }
