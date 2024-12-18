@@ -87,11 +87,7 @@ class AdminURL implements AdminURLInterface
     }
 
     /**
-     * Imports the dispatcher and parameters from an application-internal URL string.
-     *
-     * NOTE: The host must match the current application host.
-     *
-     * @param string $url
+     * @inheritDoc
      * @return $this
      * @throws AdminURLException {@see AdminURLException::ERROR_INVALID_HOST}
      */
