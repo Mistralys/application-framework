@@ -469,14 +469,17 @@ class Application
     // 1: src/
     // 2: {packageName}/
     // 3: {vendorName}/
-    // 4: root
-    //                                             1  2  3  4
-    private const ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../';
+    // 4: vendor
+    // 5: root
+    //                                             1  2  3  4  5
+    private const ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../../';
 
     // 1: src/
     // 2: root
     //                                          1  2
     private const ROOT_PATH_PACKAGE = __DIR__.'/../../';
+
+    private static ?bool $isInstalledAsDependency = null;
 
     /**
      * Checks whether the application is installed as a
@@ -486,7 +489,11 @@ class Application
      */
     public static function isInstalledAsDependency() : bool
     {
-        return is_dir(self::ROOT_PATH_DEPENDENCY.'/vendor');
+        if(!isset(self::$isInstalledAsDependency)) {
+            self::$isInstalledAsDependency = is_dir(self::ROOT_PATH_DEPENDENCY.'/vendor');
+        }
+
+        return self::$isInstalledAsDependency;
     }
 
     private static ?FolderInfo $rootFolder = null;
