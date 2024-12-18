@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Mode;
-use AppUtils\ClassHelper;
-use AppUtils\FileHelper;
+use AppUtils\FileHelper\FolderInfo;
+use AppUtils\FileHelper_Exception;
 use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
@@ -58,19 +59,26 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
             ->makeWithoutSidebar();
     }
 
+    /**
+     * @return class-string<TestingScreenInterface>[]
+     * @throws FileHelper_Exception
+     */
+    private function getScreenClasses() : array
+    {
+        return AppFactory::findClassesInFolder(
+            FolderInfo::factory(__DIR__),
+            true,
+            TestingScreenInterface::class
+        );
+    }
+
     private function getScreenList() : array
     {
-        $result = array();
-
-        $reference = CancelHandleActionsScreen::class;
-        foreach(FileHelper::createFileFinder(__DIR__)->getPHPClassNames() as $name) {
-            $class = ClassHelper::resolveClassByReference($name, $reference);
-            if(is_a($class, TestingScreenInterface::class, true)) {
-                $result[] = array(
-                    'label' => $class::getTestLabel(),
-                    'urlName' => $class::URL_NAME
-                );
-            }
+        foreach($this->getScreenClasses() as $className) {
+            $result[] = array(
+                'label' => $className::getTestLabel(),
+                'urlName' => $className::URL_NAME
+            );
         }
 
         usort($result, static function(array $a, array $b) : int {
