@@ -1,6 +1,7 @@
 <?php
 /**
  * @package User Interface
+ * @subpackage Admin URLs
  */
 
 declare(strict_types=1);
@@ -12,7 +13,10 @@ use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
+use AppUtils\FileHelper;
 use AppUtils\Traits\RenderableTrait;
+use AppUtils\URLInfo;
+use TestDriver\ClassFactory;
 use function AppUtils\parseURL;
 
 /**
@@ -22,6 +26,7 @@ use function AppUtils\parseURL;
  * or the {@see AdminURL::create()} method.
  *
  * @package User Interface
+ * @subpackage Admin URLs
  * @see AdminURLInterface
  */
 class AdminURL implements AdminURLInterface
@@ -82,17 +87,65 @@ class AdminURL implements AdminURLInterface
     }
 
     /**
-     * Imports the dispatcher and parameters from a URL string.
+     * Imports the dispatcher and parameters from an application-internal URL string.
+     *
+     * NOTE: The host must match the current application host.
+     *
      * @param string $url
      * @return $this
+     * @throws AdminURLException {@see AdminURLException::ERROR_INVALID_HOST}
      */
     public function importURL(string $url) : self
     {
         $parsed = parseURL($url);
 
+        $this->checkHost($parsed);
+
         return $this
             ->dispatcher(ltrim($parsed->getPath(), '/'))
             ->import($parsed->getParams());
+    }
+
+    private ?URLInfo $appURL = null;
+
+    private function getAppURL() : URLInfo
+    {
+        if(!isset($this->appURL)) {
+            $this->appURL = parseURL(ClassFactory::createRequest()->getBaseURL());
+        }
+
+        return $this->appURL;
+    }
+
+    /**
+     * Ensures that the specified URL host matches the current application host.
+     * @param URLInfo $url
+     * @return void
+     * @throws AdminURLException {@see AdminURLException::ERROR_INVALID_HOST}
+     */
+    private function checkHost(URLInfo $url) : void
+    {
+        $appURL = $this->getAppURL();
+
+        $host = str_replace('www.', '', $url->getHost());
+        $expected = str_replace('www.', '', $appURL->getHost());
+
+        if($host === $expected) {
+            return;
+        }
+
+        throw new AdminURLException(
+            'Invalid host in URL.',
+            sprintf(
+                'Cannot import URL: The host [%s] in the URL does not match the current application host [%s]. '.PHP_EOL.
+                'Target URL was: '.PHP_EOL.
+                '%s',
+                $url->getHost(),
+                $appURL->getHost(),
+                $url
+            ),
+            AdminURLException::ERROR_INVALID_HOST
+        );
     }
 
     /**
@@ -229,6 +282,16 @@ class AdminURL implements AdminURLInterface
      */
     public function dispatcher(string $dispatcher) : self
     {
+        // When importing an application URL, the base URL may already
+        // contain a path, so we need to remove it.
+        $basePath = trim($this->getAppURL()->getPath(), '/');
+        $dispatcher = trim(str_replace($basePath, '', trim($dispatcher, '/')), '/');
+
+        // Enforce that non-file dispatcher paths end with a slash
+        if(!empty($dispatcher) && FileHelper::getExtension($dispatcher) === '') {
+            $dispatcher .= '/';
+        }
+
         $this->dispatcher = $dispatcher;
         return $this;
     }
