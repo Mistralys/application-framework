@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package User Interface
+ * @subpackage Admin URLs
+ */
 
 declare(strict_types=1);
 
@@ -7,6 +11,14 @@ namespace UI\AdminURLs;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\Interfaces\RenderableInterface;
 
+/**
+ * Interface for admin URL instances.
+ * See {@see AdminURL} for the implementation.
+ *
+ * @package User Interface
+ * @subpackage Admin URLs
+ * @see AdminURL
+ */
 interface AdminURLInterface extends RenderableInterface
 {
     /**
