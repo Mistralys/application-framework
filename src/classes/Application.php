@@ -16,6 +16,7 @@ use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
@@ -463,6 +464,58 @@ class Application
         }
 
         return self::$develEnvironment;
+    }
+
+    // 1: src/
+    // 2: {packageName}/
+    // 3: {vendorName}/
+    // 4: root
+    //                                             1  2  3  4
+    private const ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../';
+
+    // 1: src/
+    // 2: root
+    //                                          1  2
+    private const ROOT_PATH_PACKAGE = __DIR__.'/../../';
+
+    /**
+     * Checks whether the application is installed as a
+     * Composer dependency in a `vendor` folder.
+     *
+     * @return bool
+     */
+    public static function isInstalledAsDependency() : bool
+    {
+        return is_dir(self::ROOT_PATH_DEPENDENCY.'/vendor');
+    }
+
+    private static ?FolderInfo $rootFolder = null;
+
+    /**
+     * Automatically detects the framework's root folder
+     * depending on whether it is installed as a dependency.
+     *
+     * > NOTE: This does not work for the test application,
+     * > since it does not follow the usual folder structure.
+     *
+     * @return FolderInfo
+     * @throws FileHelper_Exception
+     */
+    public static function detectRootFolder() : FolderInfo
+    {
+        if(isset(self::$rootFolder)) {
+            return self::$rootFolder;
+        }
+
+        if(self::isInstalledAsDependency()) {
+            $root = FolderInfo::factory(self::ROOT_PATH_DEPENDENCY);
+        } else {
+            $root = FolderInfo::factory(self::ROOT_PATH_PACKAGE);
+        }
+
+        self::$rootFolder = $root->requireExists();
+
+        return self::$rootFolder;
     }
 
     /**
