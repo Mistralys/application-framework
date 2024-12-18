@@ -8,8 +8,11 @@ declare(strict_types=1);
 
 namespace Application\Composer;
 
+use Application;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application_Exception;
+use AppUtils\FileHelper\FileInfo;
 
 /**
  * Class with static methods that are used as Composer scripts.
@@ -21,6 +24,8 @@ use Application\CacheControl\CacheManager;
  */
 class ComposerScripts
 {
+    public const ERROR_BOOTSTRAP_NOT_FOUND = 169801;
+
     /**
      * Clears the PHP class cache that is used by the {@see CacheManager}.
      * @return void
@@ -54,15 +59,22 @@ class ComposerScripts
      */
     public static function init() : void
     {
-        $appBoostrap = __DIR__.'/../../../../bootstrap.php';
-        $frameworkBootstrap = __DIR__.'/../../../../tests/bootstrap.php';
-
-        if(file_exists($appBoostrap)) {
-            require_once $appBoostrap;
-            return;
+        if(Application::isInstalledAsDependency()) {
+            $bootstrap = Application::detectRootFolder().'/bootstrap.php';
+        } else {
+            $bootstrap = Application::detectRootFolder().'/tests/bootstrap.php';
         }
 
-        require_once $frameworkBootstrap;
+        $file = FileInfo::factory($bootstrap);
+        if(!$file->exists()) {
+            throw new Application_Exception(
+                'The bootstrap file could not be found at: '.$bootstrap,
+                '',
+                self::ERROR_BOOTSTRAP_NOT_FOUND
+            );
+        }
+
+        require_once (string)$file;
     }
 }
 
