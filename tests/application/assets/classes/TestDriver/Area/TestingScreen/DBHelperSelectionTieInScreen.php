@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TestDriver\Area\TestingScreen;
 
 use Application_Admin_Area_Mode;
-use DBHelper\Admin\BaseRecordSelectionTieIn;
+use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
@@ -41,7 +41,7 @@ class DBHelperSelectionTieInScreen
         $this->renderer->setAbstract(sb()
             ->t(
                 'This screen demonstrates the use of the %1$s class.',
-                sb()->code(BaseRecordSelectionTieIn::class)
+                sb()->code(BaseDBRecordSelectionTieIn::class)
             )
             ->t('The selection list is displayed automatically if no record ID is present in the request.')
             ->t('It effectively takes over rendering from the screen, so no additional work is required.')

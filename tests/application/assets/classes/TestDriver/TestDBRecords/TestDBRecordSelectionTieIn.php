@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace TestDriver\TestDBRecords;
 
-use DBHelper\Admin\BaseRecordSelectionTieIn;
+use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
@@ -18,7 +18,7 @@ use UI_Bootstrap_BigSelection_Item_Regular;
  * @package Test Driver
  * @subpackage Test DB Records
  */
-class TestDBRecordSelectionTieIn extends BaseRecordSelectionTieIn
+class TestDBRecordSelectionTieIn extends BaseDBRecordSelectionTieIn
 {
     protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, DBHelper_BaseRecord $record): void
     {
