@@ -20,7 +20,11 @@ use DBHelper\BaseRecord\Event\KeyModifiedEvent;
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseRecord implements Application_CollectionItemInterface, Application_Interfaces_Loggable, Application_Interfaces_Disposable
+abstract class DBHelper_BaseRecord
+    implements
+    Application_CollectionItemInterface,
+    Application_Interfaces_Loggable,
+    Application_Interfaces_Disposable
 {
     use Application_Traits_Loggable;
     use Application_Traits_Disposable;
