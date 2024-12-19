@@ -7,6 +7,7 @@
 - Composer: Use `composer clear-caches` to clear all caches.
 - Composer: When running `composer dumpautoload`, the class cache is now automatically cleared.
 - DBHelper: Added the utility class `BaseRecordSelectionTieIn`.
+- Collections: Added the utility class `BaseRecordCollectionTieIn`.
 - Application: Added `isInstalledAsDependency()`.
 - Application: Added `detectRootFolder()`.
 
