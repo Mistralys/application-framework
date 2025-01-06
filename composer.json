@@ -86,7 +86,7 @@
     "desandro/masonry": "v4.2.2",
     "marcj/css-element-queries": "^1.2.2",
     "hybridauth/hybridauth": "^3.8.2",
-    "league/commonmark": "^2.4.1",
+    "league/commonmark": "^2.6.0",
     "zenorocha/clipboardjs": "v2.0.8",
     "apereo/phpcas": "^1.6.1",
     "roave/security-advisories": "dev-latest",
