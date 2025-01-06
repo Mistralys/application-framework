@@ -207,10 +207,12 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         }
 
         foreach($records as $record) {
-            $sel->addLink(
+            $entry = $sel->addLink(
                 $record->getLabel(),
                 $this->getURLRecord($record)
             );
+
+            $this->adjustEntry($entry, $record);
         }
 
         return (string)$this->screen
@@ -220,13 +222,14 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     }
 
     /**
-     * Gives the possibility to adjust the record entry.
+     * Gives the possibility to adjust the record entry
+     * before it is rendered in the list.
      *
      * @param UI_Bootstrap_BigSelection_Item_Regular $entry
-     * @param DBHelper_BaseRecord $record
+     * @param Application_CollectionItemInterface $record
      * @return void
      */
-    abstract protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, DBHelper_BaseRecord $record) : void;
+    abstract protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, Application_CollectionItemInterface $record) : void;
 
     private function renderNoRecordsAvailable() : string
     {
