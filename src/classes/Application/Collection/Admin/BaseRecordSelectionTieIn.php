@@ -82,6 +82,16 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         $this->screen->onBreadcrumbHandled(function (BreadcrumbHandledEvent $event) : void {
             $this->handleBreadcrumb($event->getBreadcrumb());
         });
+
+        $this->init();
+    }
+
+    /**
+     * @return void
+     * @overridable Optional initialization method.
+     */
+    protected function init() : void
+    {
     }
 
     final public function getScreen(): AdminScreenInterface
