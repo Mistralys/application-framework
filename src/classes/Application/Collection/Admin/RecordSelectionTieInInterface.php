@@ -78,4 +78,13 @@ interface RecordSelectionTieInInterface
      * @return AdminURLInterface
      */
     public function getURLRecord(Application_CollectionItemInterface $record) : AdminURLInterface;
+
+    /**
+     * Optional abstract: If specified, the screen's abstract will
+     * use this text, overriding any abstract already set by the
+     * parent screen.
+     *
+     * @return string|null
+     */
+    public function getAbstract() : ?string;
 }

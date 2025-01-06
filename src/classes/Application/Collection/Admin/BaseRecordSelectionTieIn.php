@@ -16,7 +16,6 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_CollectionItemInterface;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use DBHelper\Admin\DBHelperAdminException;
-use DBHelper_BaseRecord;
 use UI;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLException;
@@ -45,9 +44,9 @@ use UI_Page_Breadcrumb;
  *
  * ## Limitations
  *
- * The selection is made to work with a small range of records.
- * It does not have any pagination or search functionality.
- * It uses the "Big Selection" UI widget to display the records.
+ * The selection uses the "Big Selection" UI widget to display
+ * the records. It does not have any pagination or search functionality,
+ * so it should not be used for overly large collections.
  *
  * @package Application
  * @subpackage Collections
@@ -184,6 +183,11 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
         if($tenant !== null) {
             return;
+        }
+
+        $abstract = $this->getAbstract();
+        if(!empty($abstract)) {
+            $this->screen->getRenderer()->setAbstract($abstract);
         }
 
         $event->replaceScreenContentWith($this->renderRecordSelection());
