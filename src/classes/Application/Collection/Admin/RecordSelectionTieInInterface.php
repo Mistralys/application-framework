@@ -11,6 +11,7 @@ namespace Application\Collection\Admin;
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_CollectionItemInterface;
+use Closure;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -98,7 +99,29 @@ interface RecordSelectionTieInInterface
      * By default, this is enabled if no record is selected yet.
      *
      * @return bool
-     * @see BaseRecordSelectionTieIn::getEnabledCallback()
+     * @see self::getEnabledCallback()
      */
     public function isEnabled() : bool;
+
+    /**
+     * Custom logic callback to determine if the record selection
+     * should be enabled.
+     *
+     * @return Closure|null
+     */
+     public function getEnabledCallback() : ?Closure;
+
+    /**
+     * Optional custom logic callback to determine if the record
+     * selection should be enabled.
+     *
+     * By default, it is enabled automatically if no record is
+     * selected yet.
+     *
+     * > NOTE: This overrides the default behavior.
+     *
+     * @param Closure|null $callback The closure must return a boolean value.
+     * @return $this
+     */
+     public function setEnabledCallback(?Closure $callback) : self;
 }

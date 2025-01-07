@@ -59,6 +59,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     private ?Application_CollectionItemInterface $record = null;
     private bool $recordFetched = false;
     private UI $ui;
+    private ?Closure $enabledCallback = null;
 
     /**
      * @param AdminScreenInterface $screen
@@ -120,16 +121,20 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this->record;
     }
 
+    public function getEnabledCallback() : ?Closure
+    {
+        return $this->enabledCallback;
+    }
+
     /**
-     * Optional callback to determine if the record selection
-     * should be enabled. By default, it is enabled automatically
-     * if no record is selected yet.
-     *
-     * > NOTE: This overrides the default behavior.
-     *
-     * @return Closure|null The closure must return a boolean value.
+     * @inheritDoc
+     * @return $this
      */
-    abstract protected function getEnabledCallback() : ?Closure;
+    public function setEnabledCallback(?Closure $callback): self
+    {
+        $this->enabledCallback = $callback;
+        return $this;
+    }
 
     abstract protected function recordIDExists(int $id) : bool;
 
@@ -180,7 +185,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     {
         $callback = $this->getEnabledCallback();
         if($callback !== null) {
-            return $callback();
+            return $callback() === true;
         }
 
         return !$this->isRecordSelected();
