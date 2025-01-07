@@ -118,12 +118,25 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
         $this->recordFetched = true;
 
-        $id = AppFactory::createRequest()->registerParam($this->getRequestPrimaryVarName())->getInt();
-        if($id > 0 && $this->recordIDExists($id)) {
+        $id = $this->getRecordID();
+        if(!empty($id)) {
             $this->record = $this->getRecordByID($id);
         }
 
         return $this->record;
+    }
+
+    /**
+     * @return string|int|NULL
+     */
+    public function getRecordID()
+    {
+        $id = AppFactory::createRequest()->getParam($this->getRequestPrimaryVarName());
+        if(!empty($id) && $this->recordIDExists($id)) {
+            return $id;
+        }
+
+        return null;
     }
 
     public function getEnabledCallback() : ?Closure
@@ -141,9 +154,17 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this;
     }
 
-    abstract protected function recordIDExists(int $id) : bool;
+    /**
+     * @param string|int $id
+     * @return bool
+     */
+    abstract protected function recordIDExists($id) : bool;
 
-    abstract protected function getRecordByID(int $id) : Application_CollectionItemInterface;
+    /**
+     * @param string|int $id
+     * @return Application_CollectionItemInterface
+     */
+    abstract protected function getRecordByID($id) : Application_CollectionItemInterface;
 
     /**
      * @return Application_CollectionItemInterface

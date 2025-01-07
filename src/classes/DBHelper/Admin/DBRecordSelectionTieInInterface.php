@@ -26,4 +26,6 @@ use DBHelper_BaseRecord;
 interface DBRecordSelectionTieInInterface extends RecordSelectionTieInInterface
 {
     public function getCollection() : DBHelper_BaseCollection;
+
+    public function getRecordID() : ?int;
 }

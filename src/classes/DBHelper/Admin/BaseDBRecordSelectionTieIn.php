@@ -26,18 +26,28 @@ abstract class BaseDBRecordSelectionTieIn
     extends BaseRecordSelectionTieIn
     implements DBRecordSelectionTieInInterface
 {
-    protected function recordIDExists(int $id): bool
+    public function getRecordID(): ?int
     {
-        return $this->getCollection()->idExists($id);
+        $id = parent::getRecordID();
+        if($id !== null) {
+            return (int)$id;
+        }
+
+        return null;
+    }
+
+    protected function recordIDExists($id): bool
+    {
+        return $this->getCollection()->idExists((int)$id);
     }
 
     /**
-     * @param int $id
+     * @inheritDoc
      * @return DBHelper_BaseRecord
      */
-    protected function getRecordByID(int $id): Application_CollectionItemInterface
+    protected function getRecordByID($id): Application_CollectionItemInterface
     {
-        return $this->getCollection()->getByID($id);
+        return $this->getCollection()->getByID((int)$id);
     }
 
     public function getRequestPrimaryVarName(): string

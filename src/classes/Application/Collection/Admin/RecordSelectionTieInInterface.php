@@ -62,6 +62,11 @@ interface RecordSelectionTieInInterface
     public function getRecord(): ?Application_CollectionItemInterface;
 
     /**
+     * @return string|int|NULL
+     */
+    public function getRecordID();
+
+    /**
      * Gets the currently selected record, or throws an exception if none is selected.
      *
      * @return Application_CollectionItemInterface
