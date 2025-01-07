@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace DBHelper\Admin;
 
 use Application\Collection\Admin\BaseRecordSelectionTieIn;
-use Application_CollectionItemInterface;
+use Application\Collection\CollectionItemInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -45,7 +45,7 @@ abstract class BaseDBRecordSelectionTieIn
      * @inheritDoc
      * @return DBHelper_BaseRecord
      */
-    protected function getRecordByID($id): Application_CollectionItemInterface
+    protected function getRecordByID($id): CollectionItemInterface
     {
         return $this->getCollection()->getByID((int)$id);
     }
@@ -53,5 +53,10 @@ abstract class BaseDBRecordSelectionTieIn
     public function getRequestPrimaryVarName(): string
     {
         return $this->getCollection()->getRecordRequestPrimaryName();
+    }
+
+    protected function getEmptySelectionText() : string
+    {
+        return t('No %1$s records are available.', $this->getCollection()->getRecordLabel());
     }
 }

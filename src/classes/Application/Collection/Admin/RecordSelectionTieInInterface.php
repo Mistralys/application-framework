@@ -10,7 +10,7 @@ namespace Application\Collection\Admin;
 
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_CollectionItemInterface;
+use Application\Collection\CollectionItemInterface;
 use Closure;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -50,16 +50,16 @@ interface RecordSelectionTieInInterface
 
     /**
      * Gets all records that may be selected
-     * @return Application_CollectionItemInterface[]
+     * @return CollectionItemInterface[]
      */
     public function getSelectableRecords(): array;
 
     /**
      * Gets the currently selected record, if any.
      *
-     * @return Application_CollectionItemInterface|null
+     * @return \Application\Collection\CollectionItemInterface|null
      */
-    public function getRecord(): ?Application_CollectionItemInterface;
+    public function getRecord(): ?CollectionItemInterface;
 
     /**
      * @return string|int|NULL
@@ -69,10 +69,10 @@ interface RecordSelectionTieInInterface
     /**
      * Gets the currently selected record, or throws an exception if none is selected.
      *
-     * @return Application_CollectionItemInterface
+     * @return \Application\Collection\CollectionItemInterface
      * @throws CollectionException
      */
-    public function requireRecord(): Application_CollectionItemInterface;
+    public function requireRecord(): CollectionItemInterface;
 
     /**
      * Gets the URL with the current record selected,
@@ -85,10 +85,10 @@ interface RecordSelectionTieInInterface
     /**
      * Gets the URL with the specified record selected.
      *
-     * @param Application_CollectionItemInterface $record
+     * @param CollectionItemInterface $record
      * @return AdminURLInterface
      */
-    public function getURLRecord(Application_CollectionItemInterface $record): AdminURLInterface;
+    public function getURLRecord(CollectionItemInterface $record): AdminURLInterface;
 
     /**
      * Optional abstract: If specified, the screen's abstract will
