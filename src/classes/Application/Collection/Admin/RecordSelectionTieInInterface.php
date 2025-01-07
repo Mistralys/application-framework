@@ -27,7 +27,7 @@ interface RecordSelectionTieInInterface
 {
     public const COMPACT_LIST_THRESHOLD = 10;
 
-    public function getScreen() : AdminScreenInterface;
+    public function getScreen(): AdminScreenInterface;
 
     /**
      * Gets the name of the primary request variable that
@@ -35,7 +35,7 @@ interface RecordSelectionTieInInterface
      *
      * @return string
      */
-    public function getRequestPrimaryVarName() : string;
+    public function getRequestPrimaryVarName(): string;
 
     /**
      * Whether the record selection can require specific user rights.
@@ -44,7 +44,7 @@ interface RecordSelectionTieInInterface
      *
      * @return bool
      */
-    public function isSelectionRightsBased() : bool;
+    public function isSelectionRightsBased(): bool;
 
     public function isRecordSelected(): bool;
 
@@ -52,14 +52,14 @@ interface RecordSelectionTieInInterface
      * Gets all records that may be selected
      * @return Application_CollectionItemInterface[]
      */
-    public function getSelectableRecords() : array;
+    public function getSelectableRecords(): array;
 
     /**
      * Gets the currently selected record, if any.
      *
      * @return Application_CollectionItemInterface|null
      */
-    public function getRecord() : ?Application_CollectionItemInterface;
+    public function getRecord(): ?Application_CollectionItemInterface;
 
     /**
      * Gets the currently selected record, or throws an exception if none is selected.
@@ -67,7 +67,7 @@ interface RecordSelectionTieInInterface
      * @return Application_CollectionItemInterface
      * @throws CollectionException
      */
-    public function requireRecord() : Application_CollectionItemInterface;
+    public function requireRecord(): Application_CollectionItemInterface;
 
     /**
      * Gets the URL with the current record selected,
@@ -75,7 +75,7 @@ interface RecordSelectionTieInInterface
      *
      * @return AdminURLInterface
      */
-    public function getURL() : AdminURLInterface;
+    public function getURL(): AdminURLInterface;
 
     /**
      * Gets the URL with the specified record selected.
@@ -83,7 +83,7 @@ interface RecordSelectionTieInInterface
      * @param Application_CollectionItemInterface $record
      * @return AdminURLInterface
      */
-    public function getURLRecord(Application_CollectionItemInterface $record) : AdminURLInterface;
+    public function getURLRecord(Application_CollectionItemInterface $record): AdminURLInterface;
 
     /**
      * Optional abstract: If specified, the screen's abstract will
@@ -92,7 +92,7 @@ interface RecordSelectionTieInInterface
      *
      * @return string|null
      */
-    public function getAbstract() : ?string;
+    public function getAbstract(): ?string;
 
     /**
      * Whether the record selection is enabled.
@@ -101,7 +101,7 @@ interface RecordSelectionTieInInterface
      * @return bool
      * @see self::getEnabledCallback()
      */
-    public function isEnabled() : bool;
+    public function isEnabled(): bool;
 
     /**
      * Custom logic callback to determine if the record selection
@@ -109,7 +109,7 @@ interface RecordSelectionTieInInterface
      *
      * @return Closure|null
      */
-     public function getEnabledCallback() : ?Closure;
+    public function getEnabledCallback(): ?Closure;
 
     /**
      * Optional custom logic callback to determine if the record
@@ -123,5 +123,14 @@ interface RecordSelectionTieInInterface
      * @param Closure|null $callback The closure must return a boolean value.
      * @return $this
      */
-     public function setEnabledCallback(?Closure $callback) : self;
+    public function setEnabledCallback(?Closure $callback): self;
+
+    /**
+     * Adds a request variable that should be inherited in the
+     * screen's URL if it is present in the request.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function inheritRequestVar(string $name): self;
 }

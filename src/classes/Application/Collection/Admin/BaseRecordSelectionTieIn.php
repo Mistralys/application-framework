@@ -62,6 +62,11 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     private ?Closure $enabledCallback = null;
 
     /**
+     * @var string[]
+     */
+    private array $inheritRequestVars = array();
+
+    /**
      * @param AdminScreenInterface $screen
      * @param AdminURLInterface|null $baseURL The base URL for all record links. The record ID will be automatically injected into this (replacing existing IDs). If not specified, the URL of the screen will be used, as returned by {@see AdminScreenInterface::getURL()}.
      * @throws AdminURLException
@@ -169,16 +174,25 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
             return $this->getURLRecord($record);
         }
 
-        return clone $this->baseURL;
+        return $this->adjustURL(clone $this->baseURL);
     }
 
     final public function getURLRecord(Application_CollectionItemInterface $record) : AdminURLInterface
     {
-        return (clone $this->baseURL)
+        return $this->adjustURL(clone $this->baseURL)
             ->int(
                 $this->getRequestPrimaryVarName(),
                 $record->getID()
             );
+    }
+
+    protected function adjustURL(AdminURLInterface $url) : AdminURLInterface
+    {
+        foreach($this->inheritRequestVars as $var) {
+            $url->inheritParam($var);
+        }
+
+        return $url;
     }
 
     final public function isEnabled() : bool
@@ -311,5 +325,18 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     protected function getRequiredRightsText() : string
     {
         return t('You may not have the necessary rights to view the records.');
+    }
+
+    /**
+     * @inheritDoc
+     * @return $this
+     */
+    public function inheritRequestVar(string $name) : self
+    {
+        if(!in_array($name, $this->inheritRequestVars, true)) {
+            $this->inheritRequestVars[] = $name;
+        }
+
+        return $this;
     }
 }
