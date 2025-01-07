@@ -171,7 +171,8 @@ HTML;
                 sb()
                     ->bold($record->getLabel())
                     ->nl()
-                    ->warning(sb()->bold(t('Not found in the storage.')))
+                    ->warning(sb()->bold(t('Not found in the storage.'))),
+                ''
             );
         }
     }
