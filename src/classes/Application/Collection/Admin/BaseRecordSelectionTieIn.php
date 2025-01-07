@@ -193,6 +193,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
     private function handleBreadcrumb(UI_Page_Breadcrumb $breadcrumb): void
     {
+        if(!$this->isEnabled()) {
+            return;
+        }
+
         $record = $this->getRecord();
 
         if($record === null) {
@@ -206,6 +210,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
     private function renderContent(BeforeContentRenderedEvent $event) : void
     {
+        if(!$this->isEnabled()) {
+            return;
+        }
+
         $tenant = $this->getRecord();
 
         if($tenant !== null) {
