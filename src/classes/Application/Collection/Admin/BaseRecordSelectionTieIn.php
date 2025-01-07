@@ -14,6 +14,7 @@ use Application\AppFactory;
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_CollectionItemInterface;
+use Closure;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use DBHelper\Admin\DBHelperAdminException;
 use UI;
@@ -119,6 +120,17 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this->record;
     }
 
+    /**
+     * Optional callback to determine if the record selection
+     * should be enabled. By default, it is enabled automatically
+     * if no record is selected yet.
+     *
+     * > NOTE: This overrides the default behavior.
+     *
+     * @return Closure|null The closure must return a boolean value.
+     */
+    abstract protected function getEnabledCallback() : ?Closure;
+
     abstract protected function recordIDExists(int $id) : bool;
 
     abstract protected function getRecordByID(int $id) : Application_CollectionItemInterface;
@@ -162,6 +174,16 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
                 $this->getRequestPrimaryVarName(),
                 $record->getID()
             );
+    }
+
+    final public function isEnabled() : bool
+    {
+        $callback = $this->getEnabledCallback();
+        if($callback !== null) {
+            return $callback();
+        }
+
+        return !$this->isRecordSelected();
     }
 
     private function handleBreadcrumb(UI_Page_Breadcrumb $breadcrumb): void

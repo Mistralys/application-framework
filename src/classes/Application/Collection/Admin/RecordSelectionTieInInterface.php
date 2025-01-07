@@ -14,6 +14,11 @@ use Application_CollectionItemInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
+ * Interface for a record selection tie-in.
+ *
+ * See the base implementation in {@see BaseRecordSelectionTieIn}
+ * for details and usage instructions.
+ *
  * @package Application
  * @subpackage Collections
  */
@@ -87,4 +92,13 @@ interface RecordSelectionTieInInterface
      * @return string|null
      */
     public function getAbstract() : ?string;
+
+    /**
+     * Whether the record selection is enabled.
+     * By default, this is enabled if no record is selected yet.
+     *
+     * @return bool
+     * @see BaseRecordSelectionTieIn::getEnabledCallback()
+     */
+    public function isEnabled() : bool;
 }
