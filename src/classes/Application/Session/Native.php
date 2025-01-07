@@ -112,6 +112,8 @@ abstract class Application_Session_Native extends Application_Session_Base
     protected function _destroy() : void
     {
         session_destroy();
+
+        $_SESSION = array();
     }
 
     public function getValue(string $name, $default = null)
