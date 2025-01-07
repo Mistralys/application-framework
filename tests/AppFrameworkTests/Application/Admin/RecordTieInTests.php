@@ -9,6 +9,7 @@ use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use AppFrameworkTestClasses\Traits\DBHelperTestTrait;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
+use TestDriver\Collection\Admin\MythologicalRecordSelectionTieIn;
 use TestDriver\TestDBRecords\TestDBCollection;
 use TestDriver\TestDBRecords\TestDBRecordSelectionTieIn;
 
@@ -95,6 +96,24 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
         $this->assertSame($testRecord->getID(), (int)$url->getParam(TestDBCollection::REQUEST_PRIMARY_NAME));
         $this->assertSame('foo-z', $url->getParam('inherit'));
+    }
+
+    public function test_ancestryHandling() : void
+    {
+        $testRecord = $this->createTestRecord();
+        $parentTieIn = $this->createTestTieIn();
+        $childTieIn = new MythologicalRecordSelectionTieIn($parentTieIn->getScreen(), null, $parentTieIn);
+
+        $this->assertSame($parentTieIn, $childTieIn->getParent());
+        $this->assertSame(array($parentTieIn), $childTieIn->getAncestry());
+
+        // Simulate the record being selected in the request
+        $_REQUEST[TestDBCollection::REQUEST_PRIMARY_NAME] = $testRecord->getID();
+
+        $this->assertTrue($parentTieIn->isRecordSelected());
+        $this->assertFalse($parentTieIn->isEnabled());
+        $this->assertTrue($childTieIn->isEnabled());
+        $this->assertSame($testRecord->getID(), (int)$childTieIn->getURL()->getParam(TestDBCollection::REQUEST_PRIMARY_NAME));
     }
 
     // endregion

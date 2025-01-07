@@ -15,20 +15,18 @@ final class NativeTests extends ApplicationTestCase
 
     public function test_logOut() : void
     {
+        $_SESSION['fooyo'] = 'baryo';
+
         $this->assertNotNull($this->session->getUser());
 
-        foreach(Application_Session_Base::CLEAR_KEYS_ON_LOGOUT as $keyName) {
-            $_SESSION[$keyName] = 'foo'.$this->getTestCounter();
-        }
+        $this->assertNotEmpty($_SESSION);
 
         // To avoid exiting the application on logout.
         Application_Session_Base::setRedirectsEnabled(false);
 
         $this->session->logOut();
 
-        foreach(Application_Session_Base::CLEAR_KEYS_ON_LOGOUT as $keyName) {
-            $this->assertArrayNotHasKey($keyName, $_SESSION);
-        }
+        $this->assertEmpty($_SESSION);
     }
 
     public function test_unsetValue() : void

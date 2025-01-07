@@ -57,7 +57,7 @@ final class AdminURLTests extends ApplicationTestCase
         $this->assertSame(array('argh' => 'lopos'), $params);
     }
 
-    public function test_otherHostsThrowAnException() : self
+    public function test_otherHostsThrowAnException() : void
     {
         $this->expectExceptionCode(AdminURLException::ERROR_INVALID_HOST);
 
