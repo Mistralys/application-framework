@@ -34,6 +34,7 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
 
     public const COL_ALIAS = 'alias';
     public const COL_LABEL = 'label';
+    public const REQUEST_PRIMARY_NAME = self::PRIMARY_NAME;
 
     private static ?self $instance = null;
 
@@ -91,6 +92,11 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
     public function getRecordPrimaryName(): string
     {
         return self::PRIMARY_NAME;
+    }
+
+    public function getRecordRequestPrimaryName(): string
+    {
+        return self::REQUEST_PRIMARY_NAME;
     }
 
     public function getRecordTypeName(): string
