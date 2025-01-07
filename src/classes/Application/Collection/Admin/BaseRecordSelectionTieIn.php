@@ -91,6 +91,8 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         $this->parent = $parent;
         $this->ui = $this->screen->getUI();
 
+        $this->init();
+        
         $this->screen->onBeforeContentRendered(function (BeforeContentRenderedEvent $event) : void {
             $this->renderContent($event);
         });
@@ -105,8 +107,6 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
                 $tieIn->inheritRequestVar($tieIn->getRequestPrimaryVarName());
             }
         }
-
-        $this->init();
     }
 
     /**
