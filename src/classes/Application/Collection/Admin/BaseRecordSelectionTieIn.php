@@ -38,6 +38,13 @@ use UI_Page_Breadcrumb;
  * 2. Instantiate the class in the screen's {@see \Application_Traits_Admin_Screen::_handleBeforeActions()} method.
  * 3. Call {@see self::getRecord()} or {@see self::requireRecord()} to retrieve the selected record.
  *
+ * ## Chaining tie-ins
+ *
+ * To make tie-ins interdependent, so that later tie-ins are only enabled
+ * when a record is selected in the parent tie-in, you can pass the parent tie-in
+ * to the constructor {@see self::__construct()}. The child tie-in will then
+ * automatically be enabled once the parent tie-in has a record selected.
+ *
  * ## DBHelper variant
  *
  * If the records you want to select are from a DBHelper collection,
@@ -60,6 +67,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     private bool $recordFetched = false;
     private UI $ui;
     private ?Closure $enabledCallback = null;
+    private ?RecordSelectionTieInInterface $parent;
 
     /**
      * @var string[]
@@ -69,9 +77,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     /**
      * @param AdminScreenInterface $screen
      * @param AdminURLInterface|null $baseURL The base URL for all record links. The record ID will be automatically injected into this (replacing existing IDs). If not specified, the URL of the screen will be used, as returned by {@see AdminScreenInterface::getURL()}.
+     * @param RecordSelectionTieInInterface|null $parent The parent tie-in to inherit the enabled state from (this tie-in will be enabled once the parent tie-in has a record selected).
      * @throws AdminURLException
      */
-    public function __construct(AdminScreenInterface $screen, ?AdminURLInterface $baseURL=null)
+    public function __construct(AdminScreenInterface $screen, ?AdminURLInterface $baseURL=null, ?RecordSelectionTieInInterface $parent=null)
     {
         if($baseURL === null) {
             $baseURL = AdminURL::create()->importURL($screen->getURL());
@@ -79,6 +88,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
         $this->screen = $screen;
         $this->baseURL = $baseURL;
+        $this->parent = $parent;
         $this->ui = $this->screen->getUI();
 
         $this->screen->onBeforeContentRendered(function (BeforeContentRenderedEvent $event) : void {
@@ -89,6 +99,13 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
             $this->handleBreadcrumb($event->getBreadcrumb());
         });
 
+        // Ensure that we will pass through all relevant request variables in the URL
+        if(isset($this->parent)) {
+            foreach($this->getAncestry() as $tieIn) {
+                $tieIn->inheritRequestVar($tieIn->getRequestPrimaryVarName());
+            }
+        }
+
         $this->init();
     }
 
@@ -98,6 +115,31 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      */
     protected function init() : void
     {
+    }
+
+    public function getParent() : ?RecordSelectionTieInInterface
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Gets the ancestry of this tie-in, starting with the topmost
+     * parent and ending with this tie-in.
+     *
+     * @return RecordSelectionTieInInterface[]
+     */
+    public function getAncestry() : array
+    {
+        $ancestry = array($this);
+
+        $parent = $this->parent;
+
+        while($parent !== null) {
+            $ancestry[] = $parent;
+            $parent = $parent->getParent();
+        }
+
+        return array_reverse($ancestry);
     }
 
     final public function getScreen(): AdminScreenInterface
@@ -218,6 +260,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
     final public function isEnabled() : bool
     {
+        if(isset($this->parent) && !$this->parent->isRecordSelected()) {
+            return false;
+        }
+
         $callback = $this->getEnabledCallback();
         if($callback !== null) {
             return $callback() === true;

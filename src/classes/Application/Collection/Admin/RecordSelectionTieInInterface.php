@@ -138,4 +138,20 @@ interface RecordSelectionTieInInterface
      * @return $this
      */
     public function inheritRequestVar(string $name): self;
+
+    /**
+     * Gets the ancestry of this tie-in, starting with the topmost
+     * parent and ending with this tie-in.
+     *
+     * @return RecordSelectionTieInInterface[]
+     */
+    public function getAncestry() : array;
+
+    /**
+     * Gets the parent tie-in, if any, from which this tie-in's
+     * record selection and enabled status is inherited.
+     *
+     * @return RecordSelectionTieInInterface|NULL
+     */
+    public function getParent() : ?RecordSelectionTieInInterface;
 }
