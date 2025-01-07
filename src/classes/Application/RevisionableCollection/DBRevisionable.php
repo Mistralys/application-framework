@@ -240,7 +240,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
     public function getChangelogFilterSelects(): array
     {
         return array(
-            $this->collection->getPrimaryKeyName() => $this->getID()
+            $this->collection->getPrimaryKeyName() => (string)$this->getID()
         );
     }
 

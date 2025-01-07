@@ -6,6 +6,8 @@
  * @see DBHelper_BaseRecord
  */
 
+use Application\Collection\CollectionItemInterface;
+use Application\Collection\IntegerCollectionItemInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
@@ -22,7 +24,7 @@ use DBHelper\BaseRecord\Event\KeyModifiedEvent;
  */
 abstract class DBHelper_BaseRecord
     implements
-    Application_CollectionItemInterface,
+    IntegerCollectionItemInterface,
     Application_Interfaces_Loggable,
     Application_Interfaces_Disposable
 {

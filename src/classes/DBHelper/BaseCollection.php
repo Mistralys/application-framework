@@ -1,12 +1,11 @@
 <?php
 /**
- * File containing the {@link DBHelper_BaseCollection} class.
  * @package Application
  * @subpackage DBHelper
- * @see DBHelper_BaseCollection
  */
 
 use Application\AppFactory;
+use Application\Collection\IntegerCollectionInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -35,7 +34,7 @@ use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
  * @subpackage DBHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseCollection implements Application_CollectionInterface
+abstract class DBHelper_BaseCollection implements IntegerCollectionInterface
 {
     use Application_Traits_Disposable;
     use Application_Traits_Eventable;
@@ -472,13 +471,15 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * Retrieves a record by its ID.
      *
-     * @param integer $record_id
+     * @param int|string $record_id
      * @return DBHelper_BaseRecord
      * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelper_BaseRecord
     {
+        $record_id = (int)$record_id;
+
         $this->requireNotDisposed('Get a record by its ID.');
 
         if(isset($this->records[$record_id])) {

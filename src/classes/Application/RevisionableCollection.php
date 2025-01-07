@@ -221,23 +221,29 @@ abstract class Application_RevisionableCollection
         return $this->createDummyRecord()->getInitialState();
     }
     
-    public function idExists(int $record_id) : bool
+    public function idExists($record_id) : bool
     {
-        return $this->getCurrentRevision($record_id) !== null;
+        return $this->getCurrentRevision((int)$record_id) !== null;
     }
-    
+
+    /**
+     * @return RevisionableInterface[]
+     * @throws BaseClassHelperException
+     */
     public function getAll() : array
     {
         return $this->getFilterCriteria()->getItemsObjects();
     }
     
    /**
-    * @var RevisionableInterface[]|NULL
+    * @var array<int,RevisionableInterface>|NULL
     */
     protected ?array $cachedItems = null;
     
-    public function getByID(int $record_id) : RevisionableInterface
+    public function getByID($record_id) : RevisionableInterface
     {
+        $record_id = (int)$record_id;
+
         if(!isset($this->cachedItems)) {
             $this->cachedItems = array();
         }

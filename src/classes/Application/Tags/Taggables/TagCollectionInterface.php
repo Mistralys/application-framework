@@ -116,4 +116,6 @@ interface TagCollectionInterface extends StringPrimaryRecordInterface
     public function getTagRegistryKey() : string;
 
     public function getAdminEditTagsURL(array $params=array()) : string;
+
+    public function idExists(int $media_id) : bool;
 }

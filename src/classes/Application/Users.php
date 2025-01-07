@@ -159,7 +159,7 @@ class Application_Users extends DBHelper_BaseCollection
     }
 
     /**
-     * @param int $record_id
+     * @param int|string $record_id
      * @return Application_Users_User
      *
      * @throws DisposableDisposedException
@@ -167,7 +167,7 @@ class Application_Users extends DBHelper_BaseCollection
      * @throws ClassNotImplementsException
      * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelper_BaseRecord
     {
         return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,
