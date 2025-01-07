@@ -29,6 +29,15 @@ interface AdminURLInterface extends RenderableInterface
     public function remove(string $name) : self;
 
     /**
+     * Inherits a parameter value from the current
+     * request, if it exists.
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function inheritParam(string $name) : self;
+
+    /**
      * Imports an array of parameter values.
      * @param array<string,string|int|float|bool|null> $params
      * @return $this

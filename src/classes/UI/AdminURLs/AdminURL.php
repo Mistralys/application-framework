@@ -59,8 +59,7 @@ class AdminURL implements AdminURLInterface
     }
 
     /**
-     * Removes a parameter if it exists.
-     * @param string $name
+     * @inheritDoc
      * @return $this
      */
     public function remove(string $name) : self
@@ -73,8 +72,22 @@ class AdminURL implements AdminURLInterface
     }
 
     /**
-     * Imports an array of parameter values.
-     * @param array<string,string|int|float|bool|null> $params
+     * @inheritDoc
+     * @return $this
+     */
+    public function inheritParam(string $name): self
+    {
+        $value = ClassFactory::createRequest()->getParam($name);
+
+        if($value !== null && $value !== '') {
+            return $this->auto($name, $value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
      * @return $this
      */
     public function import(array $params) : self
