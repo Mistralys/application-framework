@@ -152,4 +152,12 @@ interface AdminURLInterface extends RenderableInterface
      * @return array<string,string>
      */
     public function getParams() : array;
+
+    /**
+     * Gets a parameter value if it exists in the URL.
+     *
+     * @param string $name
+     * @return string|int|float|bool|NULL|array
+     */
+    public function getParam(string $name);
 }

@@ -328,4 +328,9 @@ class AdminURL implements AdminURLInterface
 
         return $this->params;
     }
+
+    public function getParam(string $name)
+    {
+        return $this->params[$name] ?? null;
+    }
 }
