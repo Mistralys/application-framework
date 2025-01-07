@@ -2,6 +2,8 @@
 - OfflineEvents: Added the `getPriority()` method to listeners.
 - OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
 - AdminURL: Added `importURL()` to import parameters and dispatcher from URL strings.
+- AdminURL: Added `inheritParam()` to inherit a parameter from the current request.
+- AdminURL: Added `getParam()`.
 - Composer: Added utility scripts in the class `ComposerScripts`.
 - Composer: Use `composer clear-class-cache` to clear the PHP class cache.
 - Composer: Use `composer clear-caches` to clear all caches.
