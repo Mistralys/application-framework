@@ -1,4 +1,4 @@
-## v5.5.6 - Offline listener priority
+## v5.5.6 - Offline listener priority (Breaking-S)
 - OfflineEvents: Added the `getPriority()` method to listeners.
 - OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
 - AdminURL: Added `importURL()` to import parameters and dispatcher from URL strings.
@@ -9,9 +9,21 @@
 - Composer: Use `composer clear-caches` to clear all caches.
 - Composer: When running `composer dumpautoload`, the class cache is now automatically cleared.
 - Collections: Added the utility class `BaseRecordCollectionTieIn`.
+- Collections: Added `IntegerCollectionInterface` and `StringCollectionInterface`.
+- Collections: Added `IntegerCollectionItemInterface` and `StringCollectionItemInterface`.
 - DBHelper: Added the utility class `BaseDBRecordSelectionTieIn`.
 - Application: Added `isInstalledAsDependency()`.
 - Application: Added `detectRootFolder()`.
+- Session: Now clearing the `$_SESSION` array when destroying the session.
+- Tests: Added a tie-in ancestry testing screen.
+- Tests: Added a test collection of mythological figures to test the string-based collection interfaces.
+
+### Breaking changes
+
+- Renamed `Application_CollectionItemInterface` to `Application\Collection\CollectionItemInterface`.
+- Renamed `Application_CollectionInterface` to `Application\Collection\BaseCollectionInterface`.
+- The `BaseCollectionInterface` should not be used directly, but a type-specific like
+  `IntegerCollectionInterface` instead.
 
 ## v5.5.5 - Country ButtonBar fix
 - Country ButtonBar: Merged hotfix from [v5.4.5-hotfix1](https://github.com/Mistralys/application-framework/releases/tag/5.4.5-hotfix1).
