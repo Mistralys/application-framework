@@ -1,13 +1,24 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Traits
+ */
 
 declare(strict_types=1);
 
 namespace Application\Interfaces;
 
 use Application\Driver\DriverException;
+use Application\Traits\HiddenVariablesTrait;
 use AppUtils\Interfaces\StringableInterface;
 use UI_Exception;
 
+/**
+ * Interface for the trait {@see HiddenVariablesTrait}.
+ *
+ * @package Application
+ * @subpackage Traits
+ */
 interface HiddenVariablesInterface
 {
     /**

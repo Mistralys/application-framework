@@ -1,15 +1,27 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Traits
+ */
 
 declare(strict_types=1);
 
 namespace Application\Traits;
 
 use Application\Driver\DriverException;
+use Application\Interfaces\HiddenVariablesInterface;
 use Application_Driver;
 use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
 use UI_Exception;
 
+/**
+ * Trait for managing hidden variables in a UI element.
+ *
+ * @package Application
+ * @subpackage Traits
+ * @see HiddenVariablesInterface
+ */
 trait HiddenVariablesTrait
 {
     /**
