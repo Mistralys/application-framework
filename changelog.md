@@ -6,8 +6,8 @@
 - Composer: Use `composer clear-class-cache` to clear the PHP class cache.
 - Composer: Use `composer clear-caches` to clear all caches.
 - Composer: When running `composer dumpautoload`, the class cache is now automatically cleared.
-- DBHelper: Added the utility class `BaseRecordSelectionTieIn`.
 - Collections: Added the utility class `BaseRecordCollectionTieIn`.
+- DBHelper: Added the utility class `BaseDBRecordSelectionTieIn`.
 - Application: Added `isInstalledAsDependency()`.
 - Application: Added `detectRootFolder()`.
 
