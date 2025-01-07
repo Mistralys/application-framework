@@ -13,7 +13,7 @@ use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
 use Application\AppFactory;
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_CollectionItemInterface;
+use Application\Collection\CollectionItemInterface;
 use Closure;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use DBHelper\Admin\DBHelperAdminException;
@@ -63,7 +63,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 {
     private AdminScreenInterface $screen;
     private AdminURLInterface $baseURL;
-    private ?Application_CollectionItemInterface $record = null;
+    private ?CollectionItemInterface $record = null;
     private bool $recordFetched = false;
     private UI $ui;
     private ?Closure $enabledCallback = null;
@@ -92,7 +92,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         $this->ui = $this->screen->getUI();
 
         $this->init();
-        
+
         $this->screen->onBeforeContentRendered(function (BeforeContentRenderedEvent $event) : void {
             $this->renderContent($event);
         });
@@ -104,7 +104,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         // Ensure that we will pass through all relevant request variables in the URL
         if(isset($this->parent)) {
             foreach($this->getAncestry() as $tieIn) {
-                $tieIn->inheritRequestVar($tieIn->getRequestPrimaryVarName());
+                $this->inheritRequestVar($tieIn->getRequestPrimaryVarName());
             }
         }
     }
@@ -124,13 +124,13 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
     /**
      * Gets the ancestry of this tie-in, starting with the topmost
-     * parent and ending with this tie-in.
+     * parent.
      *
      * @return RecordSelectionTieInInterface[]
      */
     public function getAncestry() : array
     {
-        $ancestry = array($this);
+        $ancestry = array();
 
         $parent = $this->parent;
 
@@ -152,7 +152,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this->getRecord() !== null;
     }
 
-    final public function getRecord() : ?Application_CollectionItemInterface
+    final public function getRecord() : ?CollectionItemInterface
     {
         if($this->recordFetched) {
             return $this->record;
@@ -204,15 +204,15 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
 
     /**
      * @param string|int $id
-     * @return Application_CollectionItemInterface
+     * @return CollectionItemInterface
      */
-    abstract protected function getRecordByID($id) : Application_CollectionItemInterface;
+    abstract protected function getRecordByID($id) : CollectionItemInterface;
 
     /**
-     * @return Application_CollectionItemInterface
+     * @return CollectionItemInterface
      * @throws CollectionException
      */
-    final public function requireRecord() : Application_CollectionItemInterface
+    final public function requireRecord() : CollectionItemInterface
     {
         $record = $this->getRecord();
         if($record !== null) {
@@ -240,12 +240,12 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
         return $this->adjustURL(clone $this->baseURL);
     }
 
-    final public function getURLRecord(Application_CollectionItemInterface $record) : AdminURLInterface
+    final public function getURLRecord(CollectionItemInterface $record) : AdminURLInterface
     {
         return $this->adjustURL(clone $this->baseURL)
-            ->int(
+            ->string(
                 $this->getRequestPrimaryVarName(),
-                $record->getID()
+                (string)$record->getID()
             );
     }
 
@@ -346,10 +346,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      * before it is rendered in the list.
      *
      * @param UI_Bootstrap_BigSelection_Item_Regular $entry
-     * @param Application_CollectionItemInterface $record
+     * @param CollectionItemInterface $record
      * @return void
      */
-    abstract protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, Application_CollectionItemInterface $record) : void;
+    abstract protected function adjustEntry(UI_Bootstrap_BigSelection_Item_Regular $entry, CollectionItemInterface $record) : void;
 
     private function renderNoRecordsAvailable() : string
     {
@@ -381,7 +381,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      */
     protected function getEmptySelectionText() : string
     {
-        return t('No %1$s records are available.', $this->getCollection()->getRecordLabel());
+        return t('No records are available.');
     }
 
     /**
