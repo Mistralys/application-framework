@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace testsuites\DBHelper;
 
+use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBCollection;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 use TestDriver\TestDBRecords\TestDBRecord;
@@ -18,6 +19,16 @@ use TestDriver\TestDBRecords\TestDBRecord;
  */
 class RecordTests extends DBHelperTestCase
 {
+    /**
+     * Added this test after realizing that the collection
+     * created by the class factory was a different instance
+     * in an unrelated test.
+     */
+    public function test_sameCollectionInstances() : void
+    {
+        $this->assertSame(ClassFactory::createTestDBCollection(), TestDBCollection::getInstance());
+    }
+
     public function test_persistChanges(): void
     {
         $collection = new TestDBCollection();
