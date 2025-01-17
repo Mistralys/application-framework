@@ -1,4 +1,4 @@
-## v5.5.6 - Offline listener priority (Breaking-S)
+## v5.6.0 - Offline listener priority (Breaking-S)
 - OfflineEvents: Added the `getPriority()` method to listeners.
 - OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
 - AdminURL: Added `importURL()` to import parameters and dispatcher from URL strings.
