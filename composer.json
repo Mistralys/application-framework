@@ -66,9 +66,10 @@
     "psr/log": ">=1.1.0",
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
-    "mistralys/application-utils": "3.1.0",
+    "mistralys/application-utils": ">=3.1.0",
     "mistralys/application-utils-core": ">=1.2.0",
     "mistralys/application-utils-collections": ">=1.1.1",
+    "mistralys/application-utils-image": ">=1.2.0",
     "mistralys/application-localization": ">=1.5.0",
     "mistralys/changelog-parser": ">=1.0.1",
     "mistralys/deepl-xml-translator": ">=2.0.2",
@@ -94,8 +95,7 @@
     "ext-mbstring": "*",
     "ext-pdo": "*",
     "php": ">=7.4",
-    "ext-simplexml": "*",
-    "mistralys/application-utils-image": "dev-main"
+    "ext-simplexml": "*"
   },
   "require-dev": {
     "phpunit/phpunit": ">=9.6",
