@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
+use AppUtils\FileHelper\FileInfo\ExtensionClassRegistry;
+use AppUtils\FileHelper\JSONFile;
 use Composer\Autoload\ClassLoader;
 
 const APP_DEVEL_SQL_MODE = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION';
@@ -254,12 +256,18 @@ class Application_Bootstrap
         self::initAutoLoader();
         self::initIncludePath();
         self::initShutdownHandler();
+        self::initFileTypes();
         self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
 
         self::$initializing = false;
         self::$initialized = true;
+    }
+
+    private static function initFileTypes() : void
+    {
+        ExtensionClassRegistry::registerExtensionClass(Application_ErrorLog::LOG_TRACE_EXTENSION, JSONFile::class);
     }
 
     public static function isInitialized() : bool

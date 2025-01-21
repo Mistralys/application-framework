@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper_MimeTypes;
 use AppUtils\ThrowableInfo;
 
 /**
@@ -24,12 +25,14 @@ class Application_ErrorLog
 {
     public const ERROR_UNKNOWN_LOG = 42701;
 
-    const LOG_TYPE_EXCEPTION = 'Exception';
-    const LOG_TYPE_AJAX = 'AJAX';
-    const LOG_TYPE_JAVASCRIPT = 'JavaScript';
-    const LOG_TYPE_GENERAL = 'General';
-    
-   /**
+    public const LOG_TYPE_EXCEPTION = 'Exception';
+    public const LOG_TYPE_AJAX = 'AJAX';
+    public const LOG_TYPE_JAVASCRIPT = 'JavaScript';
+    public const LOG_TYPE_GENERAL = 'General';
+
+    public const LOG_TRACE_EXTENSION = 'trace';
+
+    /**
     * @var string
     */
     private $folder;
@@ -417,8 +420,8 @@ class Application_ErrorLog
     
     public function logTrace(string $logID, ThrowableInfo $info) : void
     {
-        $path = $this->getLogFilePath($logID.'.trace');
-        
+        $path = $this->getLogFilePath($logID.'.'.self::LOG_TRACE_EXTENSION);
+
         FileHelper::saveAsJSON($info->serialize(), $path);
     }
     
