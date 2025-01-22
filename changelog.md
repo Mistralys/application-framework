@@ -1,3 +1,6 @@
+## v
+- FilterSettings: Added constants for the "Apply" and "Request" button request vars.
+
 ## v5.6.1 - Error log fix
 - ErrorLog: Fixed `.trace` JSON files causing an exception in AppUtils.
 - Dependencies: Updated AppUtils Core for the file type registration feature.
