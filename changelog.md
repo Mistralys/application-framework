@@ -1,3 +1,8 @@
+## v5.6.1 - Error log fix
+- ErrorLog: Fixed `.trace` JSON files causing an exception in AppUtils.
+- Dependencies: Updated AppUtils Core for the file type registration feature.
+- Dependencies: Updated AppUtils Core minimum version to [v2.3.4](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.4).
+
 ## v5.6.0 - Offline listener priority (Breaking-S)
 - OfflineEvents: Added the `getPriority()` method to listeners.
 - OfflineEvents: Listeners can now optionally be prioritized to adjust their order.
