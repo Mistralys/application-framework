@@ -1,5 +1,6 @@
 ## v
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.
+- Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
 
 ## v5.6.1 - Error log fix
 - ErrorLog: Fixed `.trace` JSON files causing an exception in AppUtils.
