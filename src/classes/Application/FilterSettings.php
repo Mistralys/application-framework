@@ -37,6 +37,8 @@ abstract class Application_FilterSettings
     public const ERROR_SETTING_ALREADY_REGISTERED = 450006;
 
     public const SETTING_PREFIX = 'filter_settings_';
+    public const REQUEST_VAR_RESET = 'reset';
+    public const REQUEST_VAR_APPLY = 'apply';
 
     protected string $id;
     protected string $jsID;
@@ -367,13 +369,13 @@ abstract class Application_FilterSettings
 
         $values = $this->form->getValues();
 
-        if($this->request->getBool('reset')) {
+        if($this->request->getBool(self::REQUEST_VAR_RESET)) {
             $values = $this->getDefaultSettings();
         }
         
         // remove all unneeded request parameters to avoid them
         // being present in the refresh URL.
-        $toRemove = array_merge(array('reset', 'apply', $this->form->getTrackingName()), array_keys($this->definitions));
+        $toRemove = array_merge(array(self::REQUEST_VAR_RESET, self::REQUEST_VAR_APPLY, $this->form->getTrackingName()), array_keys($this->definitions));
         $this->request->removeParams($toRemove);
         
         $url = $this->request->buildRefreshURL();
@@ -556,11 +558,11 @@ abstract class Application_FilterSettings
             '<div class="btn-group">'.
                 UI::button(t('Apply'))
                     ->setIcon(UI::icon()->filter())
-                    ->makeSubmit('apply', 'yes')
+                    ->makeSubmit(self::REQUEST_VAR_APPLY, 'yes')
                     ->makeSmall().' '.
                 UI::button(t('Reset'))
                     ->setIcon(UI::icon()->reset())
-                    ->makeSubmit('reset', 'yes')
+                    ->makeSubmit(self::REQUEST_VAR_RESET, 'yes')
                     ->makeSmall().
             '</div>'.
         '</div>';
