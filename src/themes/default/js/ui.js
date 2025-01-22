@@ -10,6 +10,8 @@
  */
 var UI =
 {
+	'ERROR_CANNOT_FIND_REQUIRED_ELEMENT': 171101,
+
 	'BOOTSTRAP_VERSION':null, // Set serverside
 		
    /**
@@ -726,5 +728,27 @@ var UI =
 	GetTheme:function()
 	{
 		return this.theme;
+	},
+
+	/**
+	 * @param {String} selector
+	 * @return {*|jQuery|HTMLElement}
+	 */
+	RequireElement(selector)
+	{
+		const el = $(selector);
+
+		if(el.length === 1) {
+			return el;
+		}
+
+		throw new ApplicationException(
+			'Cannot find element by selector.',
+			sprintf(
+				'Could not find an element by the selector [%s].',
+				selector
+			),
+			this.ERROR_CANNOT_FIND_REQUIRED_ELEMENT
+		);
 	}
 };
