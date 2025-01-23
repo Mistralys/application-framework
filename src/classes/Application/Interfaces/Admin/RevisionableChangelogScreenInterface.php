@@ -24,4 +24,6 @@ interface RevisionableChangelogScreenInterface extends AdminScreenInterface
     public const COL_AUTHOR = 'author';
     public const COL_DETAILS = 'details';
     public const COL_ACTIONS = 'actions';
+    public const COL_REVISION = 'revision';
+    public const COL_CHANGELOG_ID = 'changelog_id';
 }
