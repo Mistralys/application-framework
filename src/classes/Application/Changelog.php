@@ -76,7 +76,8 @@ class Application_Changelog implements Application_Interfaces_Eventable
             (int)$entry['changelog_author'],
             (string)$entry['changelog_type'],
             (string)$entry['changelog_date'],
-            (string)$entry['changelog_data']
+            (string)$entry['changelog_data'],
+            $entry
         );
     }
 
