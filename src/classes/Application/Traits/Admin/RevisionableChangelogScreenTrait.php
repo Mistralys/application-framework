@@ -208,7 +208,8 @@ trait RevisionableChangelogScreenTrait
             }
 
             $items[] = array(
-                'changelog_id' => $entry->getID(),
+                RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
+                RevisionableChangelogScreenInterface::COL_REVISION => $entry->getDBEntry()->getInt($this->revisionable->getCollection()->getRevisionKeyName()),
                 RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
                 RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
                 RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
@@ -228,6 +229,7 @@ trait RevisionableChangelogScreenTrait
     {
         $grid = $this->ui->createDataGrid($this->revisionable->getRevisionableTypeName() . '_changelog');
         $grid->enableCompactMode();
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_REVISION, t('Revision'))->setHidden();
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))->setNowrap();
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))->setNowrap();
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
