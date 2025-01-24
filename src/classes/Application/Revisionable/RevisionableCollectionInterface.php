@@ -15,6 +15,14 @@ interface RevisionableCollectionInterface extends IntegerCollectionInterface
     public const ERROR_CANNOT_DESTROY_RECORD = 16103;
     public const ERROR_REVISION_DOES_NOT_EXIST = 16102;
     public const ERROR_INVALID_MULTI_ACTION_CLASS = 16101;
+    public const STUB_OBJECT_ID = -9999;
+    public const COL_REV_DATE = 'date';
+    public const COL_REV_AUTHOR = 'author';
+    public const COL_REV_LABEL = 'label';
+    public const COL_REV_STATE = 'state';
+    public const COL_CURRENT_REVISION = 'current_revision';
+    public const COL_REV_COMMENTS = 'comments';
+    public const COL_REV_PRETTY_REVISION = 'pretty_revision';
 
     public function createDummyRecord() : RevisionableInterface;
     public function createNewRecord(string $label, ?Application_User $author=null, array $data=array()) : RevisionableInterface;
