@@ -7,6 +7,7 @@
 
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -878,11 +879,11 @@ class UI
      * object to make handling forms easier within the application.
      *
      * @param string $id
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return UI_Form
      * @see createGetForm()
      */
-    public function createForm(string $id, array $defaultData = array()) : UI_Form
+    public function createForm(string $id, $defaultData = array()) : UI_Form
     {
         self::initForms();
 

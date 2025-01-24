@@ -10,6 +10,7 @@
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 use UI\AdminURLs\AdminURLInterface;
@@ -482,10 +483,10 @@ abstract class Application_Admin_Skeleton
      * be required, this only adds the mode / submode / action values.
      *
      * @param string $id
-     * @param array $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return UI_Form
      */
-    protected function configureForm($id, $defaultData = array())
+    protected function configureForm(string $id, $defaultData = array()) : UI_Form
     {
         $form = $this->ui->createForm($id, $defaultData);
         $form->addHiddenVars($this->getPageParams());

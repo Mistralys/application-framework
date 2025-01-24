@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -74,26 +75,19 @@ class UI_Form extends UI_Renderable
      * @param UI $ui
      * @param string $formID
      * @param string $method
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @throws FormException
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
-    public function __construct(UI $ui, string $formID, string $method, array $defaultData = array())
+    public function __construct(UI $ui, string $formID, string $method, $defaultData = array())
     {
         parent::__construct($ui->getPage());
 
         $this->registerCustomElements();
         $this->registerCustomRules();
 
-        if(!is_array($defaultData)) {
-            throw new FormException(
-                'Invalid form data',
-                sprintf(
-                    'The default form data must be an array, [%s] given.',
-                    gettype($defaultData)
-                ),
-                self::ERROR_INVALID_FORM_DATA
-            );
+        if($defaultData instanceof ArrayDataCollection) {
+            $defaultData = $defaultData->getData();
         }
 
         $this->id = $formID;
