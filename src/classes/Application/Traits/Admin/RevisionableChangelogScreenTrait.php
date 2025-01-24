@@ -15,6 +15,7 @@ use Application_Changelog_Entry;
 use Application_Changelog_FilterCriteria;
 use Application_RevisionableCollection;
 use Application_RevisionableStateless;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use UI;
@@ -116,6 +117,7 @@ trait RevisionableChangelogScreenTrait
         $this->injectAuthor();
         $this->injectType();
         $this->injectSearch();
+        $this->injectRevision();
         $this->injectButtons();
 
         $wrapper->makeCondensed();
@@ -123,6 +125,15 @@ trait RevisionableChangelogScreenTrait
         $wrapper->addHiddenVars($changelog->getPrimary());
 
         $this->filterForm = $wrapper;
+    }
+
+    private function injectRevision() : void
+    {
+        $el = $this->filterForm->addText(RevisionableChangelogScreenInterface::FILTER_REVISION, t('Revision'))
+            ->addFilter('strip_tags')
+            ->addFilterTrim();
+
+        $this->filterForm->addRuleInteger($el);
     }
 
     private function injectButtons() : void
@@ -319,26 +330,38 @@ trait RevisionableChangelogScreenTrait
     {
         $changelog = $this->revisionable->getChangelog();
         $filters = $changelog->getFilters();
-
         $config = $this->getFiltersConfig();
-        if ($config[RevisionableChangelogScreenInterface::FILTER_AUTHOR] !== 'all') {
-            $filters->limitByAuthorID($config[RevisionableChangelogScreenInterface::FILTER_AUTHOR]);
-        }
 
-        if ($config[RevisionableChangelogScreenInterface::FILTER_TYPE] !== 'all') {
-            $filters->limitByType($config[RevisionableChangelogScreenInterface::FILTER_TYPE]);
-        }
-
-        if (!empty($config[RevisionableChangelogScreenInterface::FILTER_SEARCH])) {
-            $filters->setSearch($config[RevisionableChangelogScreenInterface::FILTER_SEARCH]);
-        }
-
-        $this->applyCustomFilters($filters);
+        $this->applyFilters($filters, $config);
+        $this->applyCustomFilters($filters, $config);
 
         return $filters;
     }
 
-    protected function applyCustomFilters(Application_Changelog_FilterCriteria $filters) : void
+    private function applyFilters(Application_Changelog_FilterCriteria $filters, ArrayDataCollection $values) : void
+    {
+        $authorID = $values->getString(RevisionableChangelogScreenInterface::FILTER_AUTHOR);
+        if (!empty($authorID) && $authorID !== 'all') {
+            $filters->limitByAuthorID((int)$authorID);
+        }
+
+        $typeID = $values->getString(RevisionableChangelogScreenInterface::FILTER_TYPE);
+        if (!empty($typeID) && $typeID !== 'all') {
+            $filters->limitByType($typeID);
+        }
+
+        $revision = $values->getInt(RevisionableChangelogScreenInterface::FILTER_REVISION);
+        if($revision > 0) {
+            $filters->limitByCustomField($this->revisionable->getCollection()->getRevisionKeyName(), $revision);
+        }
+
+        $search = $values->getString(RevisionableChangelogScreenInterface::FILTER_SEARCH);
+        if (!empty($search)) {
+            $filters->setSearch($search);
+        }
+    }
+
+    protected function applyCustomFilters(Application_Changelog_FilterCriteria $filters, ArrayDataCollection $values) : void
     {
 
     }
@@ -353,11 +376,12 @@ trait RevisionableChangelogScreenTrait
         return array(
             RevisionableChangelogScreenInterface::FILTER_AUTHOR => 'all',
             RevisionableChangelogScreenInterface::FILTER_TYPE => 'all',
-            RevisionableChangelogScreenInterface::FILTER_SEARCH => ''
+            RevisionableChangelogScreenInterface::FILTER_SEARCH => '',
+            RevisionableChangelogScreenInterface::FILTER_REVISION => ''
         );
     }
 
-    protected function getFiltersConfig(): array
+    protected function getFiltersConfig(): ArrayDataCollection
     {
         $config = $this->getDefaultFilters();
 
@@ -366,7 +390,7 @@ trait RevisionableChangelogScreenTrait
             $config = array_merge($config, ConvertHelper::json2array($raw));
         }
 
-        return $config;
+        return ArrayDataCollection::create($config);
     }
 
     protected function handle_filtersSubmitted(): void
