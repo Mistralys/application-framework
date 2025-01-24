@@ -1020,14 +1020,14 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Retrieves a form element by its name.
     *
     * @param string $name
-    * @return HTML_QuickForm2_Element|NULL
+    * @return HTML_QuickForm2_Node|NULL
     */
-    public function getElementByName(string $name) : ?HTML_QuickForm2_Element
+    public function getElementByName(string $name) : ?HTML_QuickForm2_Node
     {
         return $this->getFormInstance()->getElementByName($name);
     }
 
-    public function requireElementByName(string $name) : HTML_QuickForm2_Element
+    public function requireElementByName(string $name) : HTML_QuickForm2_Node
     {
         $el = $this->getElementByName($name);
 
