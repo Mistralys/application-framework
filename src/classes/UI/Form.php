@@ -50,6 +50,7 @@ class UI_Form extends UI_Renderable
     public const ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
     public const ERROR_CANNOT_CREATE_ELEMENT = 45524016;
     public const ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
+    public const ERROR_ELEMENT_NOT_FOUND = 45524018;
 
     /**
      * Stores the string that form element IDs get prefixed with.
@@ -62,6 +63,7 @@ class UI_Form extends UI_Renderable
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
     public const FORM_PREFIX = 'form-';
     public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
+
 
 
     protected string $id;
@@ -469,6 +471,24 @@ class UI_Form extends UI_Renderable
         }
 
         return null;
+    }
+
+    public function requireElementByName(string $name) : HTML_QuickForm2_Element
+    {
+        $element = $this->getElementByName($name);
+
+        if($element !== null) {
+            return $element;
+        }
+
+        throw new FormException(
+            'Required element not found',
+            sprintf(
+                'The form element with the name [%s] was not found.',
+                $name
+            ),
+            self::ERROR_ELEMENT_NOT_FOUND
+        );
     }
 
     public function getValue($elementID)
