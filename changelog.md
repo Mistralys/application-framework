@@ -3,10 +3,11 @@
 - Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
 - Changelog: Added `limitByCustomField()` to the changelog filter criteria.
 - Changelog: Added `getChangelogItemInsertColumns()` to the changelogable interface.
-- Changelog: Removed the obsolete "Switch revision" button.
-- Changelog: Now displaying the revision number in the revisionable changelog item list.
-- Changelog: Added the overridable `applyCustomFilters()` in the revisionable changelog screen trait.
-- Changelog: Added a button to reset the filters in the revisionable changelog screen. 
+- Changelog Screen: Removed the obsolete "Switch revision" button.
+- Changelog Screen: Now displaying the revision number in the grid.
+- Changelog Screen: Added the overridable `applyCustomFilters()`.
+- Changelog Screen: Added a button to reset the filters.
+- Changelog Screen: Added filtering by revision.
 
 ### Update notes
 
