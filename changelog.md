@@ -1,4 +1,4 @@
-## v5.7.x - Filter settings and changelog improvements
+## v5.6.2 - Filter settings and changelog improvements
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.
 - Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
 - Changelog: Added `limitByCustomField()` to the changelog filter criteria.
@@ -6,12 +6,14 @@
 - Changelog: Removed the obsolete "Switch revision" button.
 - Changelog: Now displaying the revision number in the revisionable changelog item list.
 - Changelog: Added the overridable `applyCustomFilters()` in the revisionable changelog screen trait.
+- Changelog: Added a button to reset the filters in the revisionable changelog screen. 
 
-### Breaking changes
+### Update notes
 
-- Changelogable classes must implement the new `getChangelogItemInsertColumns()` method.
-- Changelogable revisionables must ensure that `getChangelogItemPrimary()` 
-  do not include the item's revision.
+Check if any of your revisionable classes override the method
+`getChangelogItemPrimary()` provided by the base class. 
+If they do, make sure that the return value does not include 
+the item's revision.
 
 ## v5.6.1 - Error log fix
 - ErrorLog: Fixed `.trace` JSON files causing an exception in AppUtils.
