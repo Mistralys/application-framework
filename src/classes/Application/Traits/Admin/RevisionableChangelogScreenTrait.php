@@ -93,26 +93,9 @@ trait RevisionableChangelogScreenTrait
 
     protected function _handleSidebar(): void
     {
-        $this->sidebar->addButton('switch_revision', t('Switch revision...'))
-            ->makePrimary()
-            ->setIcon(UI::icon()->changelog())
-            ->makeClickable('Changelog.DialogSwitchRevision()');
-
-        $this->sidebar->addSeparator();
-
         $section = $this->sidebar->addSection();
         $section->setTitle(t('Filter the list'));
         $section->appendContent($this->filterForm->renderHorizontal());
-
-
-        $this->sidebar->addHelp(
-            t('Filtering help'),
-            '<ul>' .
-            '<li>' . t('The author and type of change filters only show those available in the selected revision.') . '</li>' .
-            '<li>' . t('The search works on any element names shown in the changelog.') . '</li>' .
-            '<li>' . t('The filter settings are automatically saved, but separately for each revision.') . '</li>' .
-            '</ul>'
-        );
     }
 
     protected function createFilterForm(): void
@@ -209,7 +192,7 @@ trait RevisionableChangelogScreenTrait
 
             $items[] = array(
                 RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
-                RevisionableChangelogScreenInterface::COL_REVISION => $entry->getDBEntry()->getInt($this->revisionable->getCollection()->getRevisionKeyName()),
+                RevisionableChangelogScreenInterface::COL_REVISION => sb()->code($entry->getDBEntry()->getInt($this->revisionable->getCollection()->getRevisionKeyName())),
                 RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
                 RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
                 RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
@@ -229,7 +212,12 @@ trait RevisionableChangelogScreenTrait
     {
         $grid = $this->ui->createDataGrid($this->revisionable->getRevisionableTypeName() . '_changelog');
         $grid->enableCompactMode();
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_REVISION, t('Revision'))->setHidden();
+
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_REVISION, t('Revision'))
+            ->setCompact()
+            ->setNowrap()
+            ->alignRight();
+
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))->setNowrap();
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))->setNowrap();
         $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
