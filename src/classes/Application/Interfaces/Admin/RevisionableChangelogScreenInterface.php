@@ -29,4 +29,5 @@ interface RevisionableChangelogScreenInterface extends AdminScreenInterface
     public const FILTER_SEARCH = 'search';
     public const FILTER_TYPE = 'type';
     public const FILTER_AUTHOR = 'author';
+    public const REQUEST_PARAM_RESET = 'reset';
 }

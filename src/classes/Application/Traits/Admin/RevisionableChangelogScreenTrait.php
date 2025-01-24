@@ -71,6 +71,11 @@ trait RevisionableChangelogScreenTrait
 
     protected function _handleActions(): bool
     {
+        if($this->request->getBool(RevisionableChangelogScreenInterface::REQUEST_PARAM_RESET)) {
+            $this->handle_resetFilters();
+            return true;
+        }
+
         $this->createDataGrid();
         $this->createFilterForm();
 
@@ -79,6 +84,17 @@ trait RevisionableChangelogScreenTrait
         }
 
         return true;
+    }
+
+    protected function handle_resetFilters() : void
+    {
+        $this->user->setSetting($this->getListID(),'');
+        $this->user->saveSettings();
+
+        $this->redirectWithSuccessMessage(
+            t('The filters have been reset successfully at %1$s.', sb()->time()),
+            $this->getURL()
+        );
     }
 
     protected function _handleSidebar(): void
@@ -95,23 +111,45 @@ trait RevisionableChangelogScreenTrait
         $changelog = $this->revisionable->getChangelog();
 
         $wrapper = $this->configureForm('changelog-filters', $this->getFiltersConfig());
-        $form = $wrapper->getForm();
+        $this->filterForm = $wrapper;
 
         $this->injectAuthor();
         $this->injectType();
         $this->injectSearch();
-
-
-        $button = $form->addButton('filter');
-        $button->setContent(UI::icon()->filter() . ' ' . t('Filter the list'));
-        $button->setAttribute(RevisionableChangelogScreenInterface::FILTER_TYPE, 'submit');
-        $button->addClass('btn btn-default');
+        $this->injectButtons();
 
         $wrapper->makeCondensed();
         $wrapper->addHiddenVars($this->getPageParams());
         $wrapper->addHiddenVars($changelog->getPrimary());
 
         $this->filterForm = $wrapper;
+    }
+
+    private function injectButtons() : void
+    {
+        $this->filterForm->addButton('filter')
+            ->setIcon(UI::icon()->filter())
+            ->setLabel(t('Filter the list'))
+            ->makeSubmit();
+
+        $this->filterForm->addButton('reset')
+            ->setIcon(UI::icon()->reset())
+            ->setLabel(t('Reset'))
+            ->link($this->getResetURL());
+    }
+
+    public function getURL(array $params = array()) : string
+    {
+        return parent::getURL(array_merge(
+            $params,
+            $this->revisionable->getChangelogItemPrimary()
+        ));
+    }
+
+    public function getResetURL(array $params=array()) : string
+    {
+        $params[RevisionableChangelogScreenInterface::REQUEST_PARAM_RESET] = 'yes';
+        return $this->getURL($params);
     }
 
     private function injectAuthor() : void
@@ -236,9 +274,7 @@ trait RevisionableChangelogScreenTrait
 
         return array(
             RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
-            RevisionableChangelogScreenInterface::COL_REVISION => (string)sb()
-                ->add($dbEntry->getInt(Application_RevisionableCollection::COL_REV_PRETTY_REVISION))
-                ->code($dbEntry->getInt($this->revisionable->getCollection()->getRevisionKeyName())),
+            RevisionableChangelogScreenInterface::COL_REVISION => '<span class="monospace">'.$dbEntry->getInt($this->revisionable->getCollection()->getRevisionKeyName()).'</span>',
             RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
             RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
             RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
