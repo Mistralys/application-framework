@@ -15,7 +15,12 @@ class Application_Changelog implements Application_Interfaces_Eventable
 
     public const ERROR_MISSING_CHANGELOG_KEY = 599601;
     public const ERROR_UNKNOWN_CHANGELOG_ENTRY = 599602;
-    
+    public const COL_AUTHOR = 'changelog_author';
+    public const COL_TYPE = 'changelog_type';
+    public const COL_DATE = 'changelog_date';
+    public const COL_DATA = 'changelog_data';
+    public const COL_PRIMARY_ID = 'changelog_id';
+
     protected ChangelogableInterface $owner;
     private string $logIdentifier;
 
@@ -53,13 +58,13 @@ class Application_Changelog implements Application_Interfaces_Eventable
             FROM
                 `".$this->getTableName()."`
             WHERE
-                `changelog_id`=:changelog_id",
+                `changelog_id`=:primary",
             array(
-                'changelog_id' => $id
+                'primary' => $id
             )    
         );
         
-        if(!is_array($entry) || !isset($entry['changelog_id'])) {
+        if(!is_array($entry) || !isset($entry[self::COL_PRIMARY_ID])) {
             throw new Application_Exception(
                 'Unknown changelog entry',
                 sprintf(
@@ -72,18 +77,18 @@ class Application_Changelog implements Application_Interfaces_Eventable
         
         return new Application_Changelog_Entry(
             $this->owner,
-            (int)$entry['changelog_id'],
-            (int)$entry['changelog_author'],
-            (string)$entry['changelog_type'],
-            (string)$entry['changelog_date'],
-            (string)$entry['changelog_data'],
+            (int)$entry[self::COL_PRIMARY_ID],
+            (int)$entry[self::COL_AUTHOR],
+            (string)$entry[self::COL_TYPE],
+            (string)$entry[self::COL_DATE],
+            (string)$entry[self::COL_DATA],
             $entry
         );
     }
 
    /**
-    * Commits the current changelog queue of the owner
-    * of this changelog, by inserting all entries into
+    * Commits the current changelog queue of this
+    * changelog's owner, by inserting all entries into
     * the according changelog table.
     */
     public function commitQueue() : void
@@ -143,11 +148,11 @@ class Application_Changelog implements Application_Interfaces_Eventable
     {
         $this->log(sprintf('Committing entry of type [%s].', $type));
         
-        $record = $this->getPrimary();
-        $record['changelog_author'] = Application::getUser()->getID();
-        $record['changelog_type'] = $type;
-        $record['changelog_date'] = date('Y-m-d H:i:s');
-        $record['changelog_data'] = JSONConverter::var2json($data);
+        $record = $this->getInsertColumns();
+        $record[self::COL_AUTHOR] = Application::getUser()->getID();
+        $record[self::COL_TYPE] = $type;
+        $record[self::COL_DATE] = date('Y-m-d H:i:s');
+        $record[self::COL_DATA] = JSONConverter::var2json($data);
         
         return DBHelper::insertDynamic(
             $this->owner->getChangelogTable(),
@@ -192,7 +197,7 @@ class Application_Changelog implements Application_Interfaces_Eventable
 
     /**
      * Gets all fields required to uniquely identify a single changelog entry.
-     * @return array<string,string>
+     * @return array<string,string|int>
      */
     public function getPrimary() : array
     {
@@ -200,14 +205,13 @@ class Application_Changelog implements Application_Interfaces_Eventable
     }
 
     /**
-     * Gets all fields required to select all changelog entries for the owner.
-     * @return array<string,string>
+     * @return array<string,string|int>
      */
-    public function getFilterSelects() : array
+    public function getInsertColumns() : array
     {
-        return $this->owner->getChangelogFilterSelects();
+        return $this->owner->getChangelogItemInsertColumns();
     }
-    
+
    /**
     * Retrieves all authors that have contributed to the item's
     * changelog in the current revision.
@@ -226,8 +230,8 @@ class Application_Changelog implements Application_Interfaces_Eventable
         $placeholders = array();
         
         // only use the primary values if set, and if the query is to
-        // fetch a list of items. For single items, the changelog_id
-        // is sufficient as primary.
+        // fetch a list of items. For single items, the primary key
+        // is enough as primary.
         $primary = $this->getPrimary();
         if(!empty($primary)) {
             foreach($primary as $key => $val) {
@@ -242,7 +246,7 @@ class Application_Changelog implements Application_Interfaces_Eventable
         
         $query .= " GROUP BY changelog_author";
         
-        $user_ids = DBHelper::fetchAllKeyInt('changelog_author', $query, $placeholders);
+        $user_ids = DBHelper::fetchAllKeyInt(self::COL_AUTHOR, $query, $placeholders);
         $users = array();
 
         foreach($user_ids as $user_id) {
@@ -272,7 +276,7 @@ class Application_Changelog implements Application_Interfaces_Eventable
         
         // only use the primary values if set, and if the query is to
         // fetch a list of items. For single items, the changelog_id
-        // is sufficient as primary.
+        // is enough as primary.
         $primary = $this->getPrimary();
         if(!empty($primary)) {
             foreach($primary as $key => $val) {
@@ -288,7 +292,7 @@ class Application_Changelog implements Application_Interfaces_Eventable
         $query .= " GROUP BY changelog_type";
         
         $items = array();
-        $types = DBHelper::fetchAllKey('changelog_type', $query, $placeholders);
+        $types = DBHelper::fetchAllKey(self::COL_TYPE, $query, $placeholders);
         foreach($types as $type) {
             $items[$type] = $this->owner->getChangelogTypeLabel($type);
         }

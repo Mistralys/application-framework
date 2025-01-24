@@ -18,7 +18,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
     
     protected function getQuery() : string
     {
-        $primary = $this->changelog->getFilterSelects();
+        $primary = $this->changelog->getPrimary();
         foreach($primary as $name => $value) {
             $this->addWhere('chlog.`' . $name . '`=:'.$name);
             $this->addPlaceholder($name, $value);
@@ -81,6 +81,13 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         return $this;
     }
 
+    public function limitByCustomField(string $name, $value) : self
+    {
+        $placeholder = $this->generatePlaceholder($value);
+        $this->addWhere('chlog.`'.$name.'`='.$placeholder);
+        return $this;
+    }
+
     /**
      * @return Application_Changelog_Entry[]
      * @throws Application_Exception
@@ -93,7 +100,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $items = array();
         $entries = $this->getItems();
         foreach($entries as $entry) {
-            $items[] = $this->changelog->getByID((int)$entry['changelog_id']);
+            $items[] = $this->changelog->getByID((int)$entry[Application_Changelog::COL_PRIMARY_ID]);
         }
         
         $this->objects = false;

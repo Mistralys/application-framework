@@ -7,6 +7,7 @@ namespace Application\Interfaces;
 use Application\Revisionable\RevisionableChangelogTrait;
 use Application_Changelog_FilterCriteria;
 use Application_User;
+use TestDriver\TestDBRecords\TestDBCollection;
 
 /**
  * @see RevisionableChangelogTrait
@@ -28,24 +29,36 @@ interface ChangelogableInterface
     public function configureChangelogFilters(Application_Changelog_FilterCriteria $filters): void;
 
     /**
-     * Retrieves the values for the item's primary key in the
-     * changelog table.
+     * Retrieves the values needed to recognize all changelog
+     * entries for this specific item.
      *
-     * NOTE: Must include the item's revision in the case of revisionables.
+     * Typically, when working with database records, this
+     * contains only the primary key column, e.g.
+     * {@see TestDBCollection::PRIMARY_NAME}.
      *
-     * @return array
+     * > **WARNING**: **Must NOT include the revision** in the
+     * > case of revisionables. See {@see self::getChangelogItemInsertColumns()}.
+     *
+     * @return array<string,string|int>
      */
     public function getChangelogItemPrimary(): array;
 
     /**
-     * Gets all fields required to select all changelog entries
-     * for the record.
+     * Retrieves all item-specific database column values
+     * that are required to insert a new record in the
+     * item's changelog table.
      *
-     * NOTE: Must NOT include the item's revision in the case of revisionables.
+     * This may contain additional columns that are not part
+     * of the regular changelog columns. They can be accessed
+     * later in changelog entries using {@see \Application_Changelog_Entry::getDBEntry()}.
      *
-     * @return array<string,string> Can be empty.
+     * > **WARNING**: In the case of revisionables, this
+     * > **MUST include the revision** as changelog entries
+     * > are revision-specific.
+     *
+     * @return array<string,string|int>
      */
-    public function getChangelogFilterSelects() : array;
+    public function getChangelogItemInsertColumns() : array;
 
     /**
      * Retrieves the human-readable text to sum up the
