@@ -70,13 +70,34 @@ class Application_Changelog implements Application_Interfaces_Eventable
             );
         }
         
-        return new Application_Changelog_Entry(
+        return $this->createEntry(
             $this->owner,
             (int)$entry['changelog_id'],
             (int)$entry['changelog_author'],
             (string)$entry['changelog_type'],
             (string)$entry['changelog_date'],
             (string)$entry['changelog_data'],
+            $entry
+        );
+    }
+
+    protected function createEntry(
+        ChangelogableInterface $owner,
+        int $changelogID,
+        int $authorID,
+        string $type,
+        string $date,
+        string $data,
+        array $entry
+    ) : Application_Changelog_Entry
+    {
+        return new Application_Changelog_Entry(
+            $owner,
+            $changelogID,
+            $authorID,
+            $type,
+            $date,
+            $data,
             $entry
         );
     }
@@ -177,14 +198,18 @@ class Application_Changelog implements Application_Interfaces_Eventable
     
     public function getFilters() : Application_Changelog_FilterCriteria
     {
-        if(!isset($this->cachedFilters))
-        {
-            $this->cachedFilters = new Application_Changelog_FilterCriteria($this);
+        if(!isset($this->cachedFilters)) {
+            $this->cachedFilters = $this->createFilters();
         }
         
         return $this->cachedFilters;
     }
-    
+
+    protected function createFilters() : Application_Changelog_FilterCriteria
+    {
+        return new Application_Changelog_FilterCriteria($this);
+    }
+
     public function getOwner() : ChangelogableInterface
     {
         return $this->owner;
