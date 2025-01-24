@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Application\Revisionable;
+namespace Application\Revisionable\Changelog;
 
 use Application;
 use Application\Interfaces\ChangelogableInterface;
-use Application_Changelog;
 use Application_User;
 
 /**
@@ -91,17 +90,17 @@ trait RevisionableChangelogTrait
 
     /**
      * Retrieves the changelog for the current revision.
-     * @return Application_Changelog
+     * @return RevisionableChangelog
      */
-    public function getChangelog() : Application_Changelog
+    public function getChangelog() : RevisionableChangelog
     {
         $changelog = $this->revisions->getPrivateKey('changelog');
 
-        if($changelog instanceof Application_Changelog) {
+        if($changelog instanceof RevisionableChangelog) {
             return $changelog;
         }
 
-        $changelog = new Application_Changelog($this);
+        $changelog = new RevisionableChangelog($this);
 
         $changelog->onQueueCommitted(function () {
             $this->clearChangelogQueue();

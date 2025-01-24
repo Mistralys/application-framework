@@ -7,7 +7,8 @@
 declare(strict_types=1);
 
 use Application\Exception\DisposableDisposedException;
-use Application\Revisionable\RevisionableChangelogHandlerInterface;
+use Application\Revisionable\Changelog\RevisionableChangelogHandlerInterface;
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\RevisionStorage\RevisionStorageException;
@@ -126,7 +127,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
     protected function _saveWithStateChange(): void
     {
         $this->revisions->writeRevisionKeys(array(
-            Application_RevisionableCollection::COL_REV_STATE => $this->getStateName()
+            RevisionableCollectionInterface::COL_REV_STATE => $this->getStateName()
         ));
     }
 
@@ -274,7 +275,7 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
         $where = $this->collection->getCampaignKeys();
         $where[$primaryKey] = $this->getID();
-        $where[Application_RevisionableCollection::COL_REV_STATE] = $state->getName();
+        $where[RevisionableCollectionInterface::COL_REV_STATE] = $state->getName();
 
         $query = sprintf(
             "SELECT
@@ -318,18 +319,18 @@ abstract class Application_RevisionableCollection_DBRevisionable
 
     public function getPrettyRevision(): int
     {
-        return (int)$this->revisions->getKey(Application_RevisionableCollection::COL_REV_PRETTY_REVISION);
+        return (int)$this->revisions->getKey(RevisionableCollectionInterface::COL_REV_PRETTY_REVISION);
     }
 
     public function getLabel(): string
     {
-        return (string)$this->getRevisionKey(Application_RevisionableCollection::COL_REV_LABEL);
+        return (string)$this->getRevisionKey(RevisionableCollectionInterface::COL_REV_LABEL);
     }
 
     public function setLabel(string $label): self
     {
         $this->setCustomKey(
-            Application_RevisionableCollection::COL_REV_LABEL,
+            RevisionableCollectionInterface::COL_REV_LABEL,
             $label,
             false,
             RevisionableChangelogHandlerInterface::CHANGELOG_SET_LABEL

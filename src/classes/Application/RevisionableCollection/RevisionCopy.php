@@ -1,5 +1,6 @@
 <?php
 
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\RevisionStorage\Copy\BaseDBRevisionCopy;
 
 /**
@@ -58,7 +59,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
             )
         );
         
-        unset($data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION]);
+        unset($data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION]);
         
         $keys = $this->storage->getStaticColumns();
         foreach($keys as $key => $value) {
@@ -66,9 +67,9 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
         }
         
         // overwrite the required keys with the target information
-        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = $this->comments;
-        $data[Application_RevisionableCollection::COL_REV_DATE] = $this->date->format('Y-m-d H:i:s');
-        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $this->ownerID;
+        $data[RevisionableCollectionInterface::COL_REV_COMMENTS] = $this->comments;
+        $data[RevisionableCollectionInterface::COL_REV_DATE] = $this->date->format('Y-m-d H:i:s');
+        $data[RevisionableCollectionInterface::COL_REV_AUTHOR] = $this->ownerID;
         $data[$this->revisionKey] = $this->targetRevision;
         $data[$this->primaryKey] = $targetRevisionable->getID();
         

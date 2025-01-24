@@ -22,19 +22,9 @@ abstract class Application_RevisionableCollection
     use Application_Traits_Disposable;
 
     /**
-     * @deprecated Use {@see Application_RevisionableCollection::STUB_OBJECT_ID} instead.
+     * @deprecated Use {@see RevisionableCollectionInterface::STUB_OBJECT_ID} instead.
      */
-    public const DUMMY_ID = self::STUB_OBJECT_ID;
-
-    public const COL_REV_DATE = 'date';
-    public const COL_REV_LABEL = 'label';
-    public const COL_REV_STATE = 'state';
-    public const COL_REV_COMMENTS = 'comments';
-    public const COL_REV_AUTHOR = 'author';
-    public const COL_REV_PRETTY_REVISION = 'pretty_revision';
-    public const COL_CURRENT_REVISION = 'current_revision';
-    public const STUB_OBJECT_ID = -9999;
-
+    public const DUMMY_ID = RevisionableCollectionInterface::STUB_OBJECT_ID;
 
     /**
      * This is called right after the collection's constructor:
@@ -148,7 +138,7 @@ abstract class Application_RevisionableCollection
      */
     public function createDummyRecord() : RevisionableInterface
     {
-        return $this->getByID(self::STUB_OBJECT_ID);
+        return $this->getByID(RevisionableCollectionInterface::STUB_OBJECT_ID);
     }
     
    /**
@@ -418,16 +408,16 @@ abstract class Application_RevisionableCollection
                 `%s`
             WHERE
                 %s",
-            self::COL_CURRENT_REVISION,
+            RevisionableCollectionInterface::COL_CURRENT_REVISION,
             $this->getCurrentRevisionsTableName(),
             DBHelper::buildWhereFieldsStatement($params)
         );
         
         $entry = DBHelper::fetch($query, $params);
         
-        if(isset($entry[self::COL_CURRENT_REVISION]))
+        if(isset($entry[RevisionableCollectionInterface::COL_CURRENT_REVISION]))
         {
-            return (int)$entry[self::COL_CURRENT_REVISION];
+            return (int)$entry[RevisionableCollectionInterface::COL_CURRENT_REVISION];
         }
         
         return null;
@@ -446,7 +436,7 @@ abstract class Application_RevisionableCollection
         $revision = DBHelper::createFetchOne($this->getRevisionsTableName())
             ->selectColumn('MAX(`'.$this->getRevisionKeyName().'`) as `rev`')
             ->whereValue($this->getPrimaryKeyName(), $revisionableID)
-            ->whereValue(self::COL_REV_STATE, $state->getName())
+            ->whereValue(RevisionableCollectionInterface::COL_REV_STATE, $state->getName())
             ->whereValues($this->getCampaignKeys())
             ->fetch();
 
@@ -483,7 +473,7 @@ abstract class Application_RevisionableCollection
         ON
         revs.`$primaryKey` = current.`$primaryKey`
         WHERE
-        revs.`$revisionKey` = current.".self::COL_CURRENT_REVISION;
+        revs.`$revisionKey` = current.". RevisionableCollectionInterface::COL_CURRENT_REVISION;
         
         $where = $this->getCampaignKeys();
         $where[$key] = $value;
@@ -551,7 +541,7 @@ abstract class Application_RevisionableCollection
         
         $data = $foreignKeys;
         $data[$this->primaryKeyName] = $revisionableID;
-        $data[self::COL_CURRENT_REVISION] = $revision;
+        $data[RevisionableCollectionInterface::COL_CURRENT_REVISION] = $revision;
         
         // Primary keys are the campaign keys + the revisionable ID.
         // Without campaign keys, it's just the revisionable ID.

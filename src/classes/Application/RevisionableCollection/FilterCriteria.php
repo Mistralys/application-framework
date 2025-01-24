@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
 use Application\RevisionableCollection\RevisionableStateFilterTrait;
@@ -80,7 +81,7 @@ abstract class Application_RevisionableCollection_FilterCriteria
         return sprintf(
             '`%s`.`%s`',
             self::ALIAS_REVISION_TABLE,
-            Application_RevisionableCollection::COL_REV_STATE
+            RevisionableCollectionInterface::COL_REV_STATE
         );
     }
     
@@ -206,7 +207,7 @@ EOT;
             self::ALIAS_REVISION_TABLE,
             $this->revisionKeyName,
             self::ALIAS_CURRENT_REVISION_TABLE,
-            Application_RevisionableCollection::COL_CURRENT_REVISION
+            RevisionableCollectionInterface::COL_CURRENT_REVISION
         ));
     }
 

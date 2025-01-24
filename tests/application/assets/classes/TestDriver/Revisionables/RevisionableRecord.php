@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use Application\Revisionable\RevisionableCollectionInterface;
 use BaseDBCollectionStorage;
 use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
@@ -167,6 +168,6 @@ class RevisionableRecord
 
     public static function createStubObject(): Application_Revisionable
     {
-        return new self(RevisionableCollection::getInstance(), Application_RevisionableCollection::STUB_OBJECT_ID);
+        return new self(RevisionableCollection::getInstance(), RevisionableCollectionInterface::STUB_OBJECT_ID);
     }
 }

@@ -10,10 +10,10 @@
 declare(strict_types=1);
 
 use Application\Exception\DisposableDisposedException;
+use Application\Revisionable\Changelog\RevisionableChangelogTrait;
 use Application\Revisionable\Event\BeforeSaveEvent;
 use Application\Revisionable\Event\RevisionAddedEvent;
 use Application\Revisionable\Event\TransactionEndedEvent;
-use Application\Revisionable\RevisionableChangelogTrait;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionableStorageException;

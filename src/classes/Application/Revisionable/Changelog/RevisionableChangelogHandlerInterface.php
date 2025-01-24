@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Revisionable;
+namespace Application\Revisionable\Changelog;
 
 use Application\Interfaces\ChangelogHandlerInterface;
 

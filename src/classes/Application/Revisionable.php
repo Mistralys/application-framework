@@ -10,15 +10,13 @@
 declare(strict_types=1);
 
 use Application\Exception\DisposableDisposedException;
-use Application\Revisionable\BaseRevisionableChangelogHandler;
-use Application\Revisionable\RevisionableChangelogHandlerInterface;
-use Application\Revisionable\RevisionableChangelogTrait;
+use Application\Revisionable\Changelog\BaseRevisionableChangelogHandler;
+use Application\Revisionable\Changelog\RevisionableChangelogHandlerInterface;
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\BaseException;
-use AppUtils\ConvertHelper;
 
 /**
  * Base class for data types that are revisionable and have states.
@@ -231,7 +229,7 @@ abstract class Application_Revisionable
     {
         $this->requireNotDisposed();
 
-        $state = $this->revisions->getKey(Application_RevisionableCollection::COL_REV_STATE);
+        $state = $this->revisions->getKey(RevisionableCollectionInterface::COL_REV_STATE);
 
         if($state instanceof Application_StateHandler_State) {
             return $state;
@@ -330,7 +328,7 @@ abstract class Application_Revisionable
 
         $this->log('Setting state to [%1$s].', $newState->getName());
 
-        $this->revisions->setKey(Application_RevisionableCollection::COL_REV_STATE, $newState);
+        $this->revisions->setKey(RevisionableCollectionInterface::COL_REV_STATE, $newState);
         
         $this->structureChanged('State has changed');
         $this->stateChanged = true;
@@ -746,7 +744,7 @@ abstract class Application_Revisionable
 
     public function isStub() : bool
     {
-        return $this->getID() === Application_RevisionableCollection::STUB_OBJECT_ID;
+        return $this->getID() === RevisionableCollectionInterface::STUB_OBJECT_ID;
     }
 
     public function getLatestRevisionByState(Application_StateHandler_State $state) : ?int
@@ -768,7 +766,7 @@ abstract class Application_Revisionable
 
         // get the last two revisions
         $filters = $this->getRevisionsFilterCriteria();
-        $filters->setOrderBy(Application_RevisionableCollection::COL_REV_DATE, 'DESC');
+        $filters->setOrderBy(RevisionableCollectionInterface::COL_REV_DATE, 'DESC');
         $filters->setLimit(2, 0);
         $items = $filters->getItems();
 

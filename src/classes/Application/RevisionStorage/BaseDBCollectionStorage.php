@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableCollectionInterface;
+
 /**
  * @property Application_RevisionableCollection_DBRevisionable $revisionable
  */
@@ -81,12 +83,12 @@ abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
 
         $data = $customColumns;
         $data[$this->idColumn] = $revisionable_id;
-        $data[Application_RevisionableCollection::COL_REV_LABEL] = $label;
-        $data[Application_RevisionableCollection::COL_REV_STATE] = $state->getName();
-        $data[Application_RevisionableCollection::COL_REV_DATE] = $date->format('Y-m-d H:i:s');
-        $data[Application_RevisionableCollection::COL_REV_AUTHOR] = $author->getID();
-        $data[Application_RevisionableCollection::COL_REV_COMMENTS] = $comments;
-        $data[Application_RevisionableCollection::COL_REV_PRETTY_REVISION] = $prettyRevision;
+        $data[RevisionableCollectionInterface::COL_REV_LABEL] = $label;
+        $data[RevisionableCollectionInterface::COL_REV_STATE] = $state->getName();
+        $data[RevisionableCollectionInterface::COL_REV_DATE] = $date->format('Y-m-d H:i:s');
+        $data[RevisionableCollectionInterface::COL_REV_AUTHOR] = $author->getID();
+        $data[RevisionableCollectionInterface::COL_REV_COMMENTS] = $comments;
+        $data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION] = $prettyRevision;
         
         $campaignKeys = $this->getStaticColumns();
         foreach($campaignKeys as $keyName => $keyValue) {

@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\Exception\DisposableDisposedException;
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\RevisionStorage\Copy\BaseRevisionCopy;
@@ -1356,7 +1357,7 @@ abstract class Application_RevisionStorage
 
         // We have to add the label here, because it is not part
         // of the essential revision keys handled by the storage.
-        $data[Application_RevisionableCollection::COL_REV_LABEL] = $this->revisionable->getLabel();
+        $data[RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
 
         $this->_writeRevisionKeys($data);
 

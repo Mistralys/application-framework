@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Collection\IntegerCollectionItemInterface;
+use Application\Revisionable\Changelog\RevisionableChangelogableInterface;
 use Application_EventHandler_EventableListener;
 use Application_Interfaces_Disposable;
 use Application_Interfaces_Simulatable;
@@ -21,7 +22,7 @@ interface RevisionableStatelessInterface
     Application_LockableRecord_Interface,
     Application_Interfaces_Disposable,
     Application_Interfaces_Simulatable,
-    RevisionableChangelogInterface
+    RevisionableChangelogableInterface
 {
     public const ERROR_CANNOT_START_TRANSACTION = 68437001;
     public const ERROR_INVALID_REVISION_STORAGE = 68437002;
@@ -273,8 +274,8 @@ interface RevisionableStatelessInterface
      * that must be stored in the revision history.
      *
      * In practice, this means all fields beyond the automatically
-     * handled ones like {@see RevisionableCollection::COL_REV_AUTHOR}
-     * or {@see RevisionableCollection::COL_REV_COMMENTS}.
+     * handled ones like {@see RevisionableCollectionInterface::COL_REV_AUTHOR}
+     * or {@see RevisionableCollectionInterface::COL_REV_COMMENTS}.
      *
      * @return array<string, mixed>
      */

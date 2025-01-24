@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application_RevisionableCollection;
 use Application_Traits_Disposable;
@@ -129,7 +130,7 @@ class RevisionableCollection extends Application_RevisionableCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            self::COL_REV_LABEL => t('Label'),
+            RevisionableCollectionInterface::COL_REV_LABEL => t('Label'),
             self::COL_REV_ALIAS => t('Alias')
         );
     }
