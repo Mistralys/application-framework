@@ -32,8 +32,6 @@ use UI_Form;
 trait RevisionableChangelogScreenTrait
 {
     protected RevisionableStatelessInterface $revisionable;
-    protected UI_DataGrid $dataGrid;
-    protected UI_Form $filterForm;
 
     abstract protected function getRevisionable(): RevisionableStatelessInterface;
 
@@ -81,7 +79,7 @@ trait RevisionableChangelogScreenTrait
         $this->createDataGrid();
         $this->createFilterForm();
 
-        if ($this->filterForm->isSubmitted() && $this->filterForm->validate()) {
+        if ($this->isFormValid()) {
             $this->handle_filtersSubmitted();
         }
 
@@ -103,7 +101,7 @@ trait RevisionableChangelogScreenTrait
     {
         $section = $this->sidebar->addSection();
         $section->setTitle(t('Filter the list'));
-        $section->appendContent($this->filterForm->renderHorizontal());
+        $section->appendContent($this->renderFormable());
     }
 
     // region: Filter form
@@ -112,8 +110,7 @@ trait RevisionableChangelogScreenTrait
     {
         $changelog = $this->revisionable->getChangelog();
 
-        $wrapper = $this->configureForm('changelog-filters', $this->getFiltersConfig());
-        $this->filterForm = $wrapper;
+        $this->createFormableForm('changelog-filters', $this->getFiltersConfig());
 
         $this->injectAuthor();
         $this->injectType();
@@ -123,11 +120,9 @@ trait RevisionableChangelogScreenTrait
         $this->injectToDate();
         $this->injectButtons();
 
-        $wrapper->makeCondensed();
-        $wrapper->addHiddenVars($this->getPageParams());
-        $wrapper->addHiddenVars($changelog->getPrimary());
-
-        $this->filterForm = $wrapper;
+        $this->getFormInstance()->makeCondensed();
+        $this->addHiddenVars($this->getPageParams());
+        $this->addHiddenVars($changelog->getPrimary());
     }
 
     private function injectFromDate() : void
@@ -154,8 +149,8 @@ trait RevisionableChangelogScreenTrait
 
     private function validateScheduleDates() : bool
     {
-        $fromDate = $this->filterForm->requireElementByName(RevisionableChangelogScreenInterface::FILTER_FROM_DATE)->getValue();
-        $toDate = $this->filterForm->requireElementByName(RevisionableChangelogScreenInterface::FILTER_TO_DATE)->getValue();
+        $fromDate = $this->requireElementByName(RevisionableChangelogScreenInterface::FILTER_FROM_DATE)->getValue();
+        $toDate = $this->requireElementByName(RevisionableChangelogScreenInterface::FILTER_TO_DATE)->getValue();
 
         if(empty($fromDate) || empty($toDate)) {
             return true;
@@ -166,43 +161,29 @@ trait RevisionableChangelogScreenTrait
 
     private function injectRevision() : void
     {
-        $el = $this->filterForm->addText(RevisionableChangelogScreenInterface::FILTER_REVISION, t('Revision'))
+        $el = $this->addElementText(RevisionableChangelogScreenInterface::FILTER_REVISION, t('Revision'))
             ->addFilter('strip_tags')
             ->addFilterTrim();
 
-        $this->filterForm->addRuleInteger($el);
+        $this->addRuleInteger($el);
     }
 
     private function injectButtons() : void
     {
-        $this->filterForm->addButton('filter')
+        $this->getFormInstance()->addButton('filter')
             ->setIcon(UI::icon()->filter())
             ->setLabel(t('Filter the list'))
             ->makeSubmit();
 
-        $this->filterForm->addButton('reset')
+        $this->getFormInstance()->addButton('reset')
             ->setIcon(UI::icon()->reset())
             ->setLabel(t('Reset'))
             ->link($this->getResetURL());
     }
 
-    public function getURL(array $params = array()) : string
-    {
-        return parent::getURL(array_merge(
-            $params,
-            $this->revisionable->getChangelogItemPrimary()
-        ));
-    }
-
-    public function getResetURL(array $params=array()) : string
-    {
-        $params[RevisionableChangelogScreenInterface::REQUEST_PARAM_RESET] = 'yes';
-        return $this->getURL($params);
-    }
-
     private function injectAuthor() : void
     {
-        $el = $this->filterForm->addSelect(RevisionableChangelogScreenInterface::FILTER_AUTHOR, t('Author'));
+        $el = $this->addElementSelect(RevisionableChangelogScreenInterface::FILTER_AUTHOR, t('Author'));
 
         $el->addOption(t('All'), 'all');
 
@@ -216,7 +197,7 @@ trait RevisionableChangelogScreenTrait
 
     private function injectType() : void
     {
-        $el = $this->filterForm->addSelect(RevisionableChangelogScreenInterface::FILTER_TYPE, t('Type of change'));
+        $el = $this->addElementSelect(RevisionableChangelogScreenInterface::FILTER_TYPE, t('Type of change'));
 
         $el->addOption(t('All'), 'all');
 
@@ -227,7 +208,7 @@ trait RevisionableChangelogScreenTrait
 
     private function injectSearch() : void
     {
-        $el = $this->filterForm->addText(RevisionableChangelogScreenInterface::FILTER_SEARCH, t('Search terms'));
+        $el = $this->addElementText(RevisionableChangelogScreenInterface::FILTER_SEARCH, t('Search terms'));
         $el->addFilter('strip_tags');
         $el->addFilterTrim();
     }
@@ -276,6 +257,8 @@ trait RevisionableChangelogScreenTrait
 
     // region: Data grid
 
+    protected UI_DataGrid $dataGrid;
+    
     protected function createDataGrid(): void
     {
         $grid = $this->ui->createDataGrid($this->getListID());
@@ -442,7 +425,7 @@ trait RevisionableChangelogScreenTrait
 
     protected function handle_filtersSubmitted(): void
     {
-        $values = $this->filterForm->getValues();
+        $values = $this->getFormValues();
         $filters = array();
 
         foreach(array_keys($this->getDefaultFilters()) as $key) {
@@ -462,4 +445,18 @@ trait RevisionableChangelogScreenTrait
     }
 
     // endregion
+
+    public function getURL(array $params = array()) : string
+    {
+        return parent::getURL(array_merge(
+            $params,
+            $this->revisionable->getChangelogItemPrimary()
+        ));
+    }
+
+    public function getResetURL(array $params=array()) : string
+    {
+        $params[RevisionableChangelogScreenInterface::REQUEST_PARAM_RESET] = 'yes';
+        return $this->getURL($params);
+    }
 }
