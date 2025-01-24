@@ -1027,9 +1027,7 @@ EOT;
      * will return the same placeholder name for every same value
      * within the same request.
      *
-     * Returns the placeholder name.
-     *
-     * @param string|int|float|null $value
+     * @param string|int|float|null $value Placeholder name with prepended `:`.
      * @return string
      */
     public function generatePlaceholder($value) : string
