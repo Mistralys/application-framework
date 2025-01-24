@@ -136,6 +136,7 @@ trait RevisionableChangelogScreenTrait
     private function injectToDate() : void
     {
         $el = $this->addElementDatepicker(RevisionableChangelogScreenInterface::FILTER_TO_DATE, t('To date'));
+        $el->setTimeOptional();
         $el->setComment(sb()
             ->t('Limit to entries up to (and including) this date and time.')
         );
@@ -258,7 +259,7 @@ trait RevisionableChangelogScreenTrait
     // region: Data grid
 
     protected UI_DataGrid $dataGrid;
-    
+
     protected function createDataGrid(): void
     {
         $grid = $this->ui->createDataGrid($this->getListID());
@@ -407,7 +408,9 @@ trait RevisionableChangelogScreenTrait
             RevisionableChangelogScreenInterface::FILTER_AUTHOR => 'all',
             RevisionableChangelogScreenInterface::FILTER_TYPE => 'all',
             RevisionableChangelogScreenInterface::FILTER_SEARCH => '',
-            RevisionableChangelogScreenInterface::FILTER_REVISION => ''
+            RevisionableChangelogScreenInterface::FILTER_REVISION => '',
+            RevisionableChangelogScreenInterface::FILTER_FROM_DATE => '',
+            RevisionableChangelogScreenInterface::FILTER_TO_DATE => ''
         );
     }
 
