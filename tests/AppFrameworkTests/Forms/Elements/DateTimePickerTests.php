@@ -91,4 +91,25 @@ final class DateTimePickerTests extends FormTestCase
         $this->assertSame('12:30', $el->getTimeElement()->getValue());
         $this->assertSame('2020-06-21 12:30', $el->getDateString());
     }
+
+    public function test_timeOptional() : void
+    {
+        $_REQUEST[HTML_QuickForm2::resolveTrackVarName('test-create')] = 'yes';
+
+        $_POST['picker'] = '2020-06-21';
+
+        $form = new HTML_QuickForm2('test-create');
+
+        $el = new HTML_QuickForm2_Element_HTMLDateTimePicker('picker');
+        $el->setTimeOptional();
+
+        $form->addElement($el);
+
+        $this->assertTrue($form->isSubmitted());
+        $this->assertTrue($form->validate());
+
+        $this->assertSame('2020-06-21', $el->getDateElement()->getValue());
+        $this->assertSame('', $el->getTimeElement()->getValue());
+        $this->assertSame('2020-06-21', $el->getDateString());
+    }
 }
