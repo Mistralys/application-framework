@@ -18,6 +18,7 @@ use Application_RevisionableStateless;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\Microtime;
 use Closure;
 use UI;
 use UI_DataGrid;
@@ -381,14 +382,14 @@ trait RevisionableChangelogScreenTrait
             $filters->setSearch($search);
         }
 
-        $dateTo = $values->getMicrotime(RevisionableChangelogScreenInterface::FILTER_TO_DATE);
-        if($dateTo !== null) {
-            $filters->limitByDateTo($dateTo);
+        $dateTo = $values->getString(RevisionableChangelogScreenInterface::FILTER_TO_DATE);
+        if(!empty($dateTo)) {
+            $filters->limitByDateTo(Microtime::createFromString($dateTo));
         }
 
-        $dateFrom = $values->getMicrotime(RevisionableChangelogScreenInterface::FILTER_FROM_DATE);
-        if($dateFrom !== null) {
-            $filters->limitByDateFrom($dateFrom);
+        $dateFrom = $values->getString(RevisionableChangelogScreenInterface::FILTER_FROM_DATE);
+        if(!empty($dateFrom)) {
+            $filters->limitByDateFrom(Microtime::createFromString($dateFrom));
         }
     }
 
