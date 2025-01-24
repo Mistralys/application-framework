@@ -18,6 +18,7 @@ use Application_RevisionableStateless;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
+use Closure;
 use UI;
 use UI_DataGrid;
 use UI_Form;
@@ -118,6 +119,8 @@ trait RevisionableChangelogScreenTrait
         $this->injectType();
         $this->injectSearch();
         $this->injectRevision();
+        $this->injectFromDate();
+        $this->injectToDate();
         $this->injectButtons();
 
         $wrapper->makeCondensed();
@@ -125,6 +128,40 @@ trait RevisionableChangelogScreenTrait
         $wrapper->addHiddenVars($changelog->getPrimary());
 
         $this->filterForm = $wrapper;
+    }
+
+    private function injectFromDate() : void
+    {
+        $el = $this->addElementDatepicker(RevisionableChangelogScreenInterface::FILTER_FROM_DATE, t('From date'));
+        $el->setComment(sb()
+            ->t('Limit to entries starting at (and including) this date and time.')
+        );
+    }
+
+    private function injectToDate() : void
+    {
+        $el = $this->addElementDatepicker(RevisionableChangelogScreenInterface::FILTER_TO_DATE, t('To date'));
+        $el->setComment(sb()
+            ->t('Limit to entries up to (and including) this date and time.')
+        );
+
+        $this->addRuleCallback(
+            $el,
+            Closure::fromCallable(array($this, 'validateScheduleDates')),
+            t('The "To date" must be after the "From date".')
+        );
+    }
+
+    private function validateScheduleDates() : bool
+    {
+        $fromDate = $this->filterForm->requireElementByName(RevisionableChangelogScreenInterface::FILTER_FROM_DATE)->getValue();
+        $toDate = $this->filterForm->requireElementByName(RevisionableChangelogScreenInterface::FILTER_TO_DATE)->getValue();
+
+        if(empty($fromDate) || empty($toDate)) {
+            return true;
+        }
+
+        return $fromDate < $toDate;
     }
 
     private function injectRevision() : void
@@ -358,6 +395,16 @@ trait RevisionableChangelogScreenTrait
         $search = $values->getString(RevisionableChangelogScreenInterface::FILTER_SEARCH);
         if (!empty($search)) {
             $filters->setSearch($search);
+        }
+
+        $dateTo = $values->getMicrotime(RevisionableChangelogScreenInterface::FILTER_TO_DATE);
+        if($dateTo !== null) {
+            $filters->limitByDateTo($dateTo);
+        }
+
+        $dateFrom = $values->getMicrotime(RevisionableChangelogScreenInterface::FILTER_FROM_DATE);
+        if($dateFrom !== null) {
+            $filters->limitByDateFrom($dateFrom);
         }
     }
 
