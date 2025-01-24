@@ -13,6 +13,7 @@ use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application_Changelog_Entry;
 use Application_Changelog_FilterCriteria;
+use Application_RevisionableCollection;
 use Application_RevisionableStateless;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -70,8 +71,6 @@ trait RevisionableChangelogScreenTrait
 
     protected function _handleActions(): bool
     {
-        $this->selectRevision();
-
         $this->createDataGrid();
         $this->createFilterForm();
 
@@ -82,38 +81,14 @@ trait RevisionableChangelogScreenTrait
         return true;
     }
 
-    protected function selectRevision(): void
-    {
-        $this->request->registerParam('revision')->setInteger();
-        $revision = $this->request->getParam('revision');
-        if (!empty($revision) && $this->revisionable->revisionExists($revision)) {
-            $this->revisionable->selectRevision($revision);
-        }
-    }
-
     protected function _handleSidebar(): void
     {
-        $this->sidebar->addButton('switch_revision', t('Switch revision...'))
-            ->makePrimary()
-            ->setIcon(UI::icon()->changelog())
-            ->makeClickable('Changelog.DialogSwitchRevision()');
-
-        $this->sidebar->addSeparator();
-
         $section = $this->sidebar->addSection();
         $section->setTitle(t('Filter the list'));
         $section->appendContent($this->filterForm->renderHorizontal());
-
-
-        $this->sidebar->addHelp(
-            t('Filtering help'),
-            '<ul>' .
-            '<li>' . t('The author and type of change filters only show those available in the selected revision.') . '</li>' .
-            '<li>' . t('The search works on any element names shown in the changelog.') . '</li>' .
-            '<li>' . t('The filter settings are automatically saved, but separately for each revision.') . '</li>' .
-            '</ul>'
-        );
     }
+
+    // region: Filter form
 
     protected function createFilterForm(): void
     {
@@ -122,42 +97,56 @@ trait RevisionableChangelogScreenTrait
         $wrapper = $this->configureForm('changelog-filters', $this->getFiltersConfig());
         $form = $wrapper->getForm();
 
-        $authors = $changelog->getAuthors();
-        $authorEl = $form->addSelect('author');
-        $authorEl->setLabel(t('Author'));
-        $authorEl->addOption(t('All'), 'all');
-        foreach ($authors as $user) {
-            $authorEl->addOption(
-                $user->getName(),
-                (string)$user->getID()
-            );
-        }
+        $this->injectAuthor();
+        $this->injectType();
+        $this->injectSearch();
 
-        $types = $changelog->getTypes();
-        $typeEl = $form->addSelect('type');
-        $typeEl->setLabel(t('Type of change'));
-        $typeEl->addOption(t('All'), 'all');
-        foreach ($types as $type => $label) {
-            $typeEl->addOption($label, $type);
-        }
-
-        $searchEl = $form->addText('search');
-        $searchEl->setLabel(t('Search terms'));
-        $searchEl->addFilter('trim');
-        $searchEl->addFilter('strip_tags');
 
         $button = $form->addButton('filter');
         $button->setContent(UI::icon()->filter() . ' ' . t('Filter the list'));
-        $button->setAttribute('type', 'submit');
+        $button->setAttribute(RevisionableChangelogScreenInterface::FILTER_TYPE, 'submit');
         $button->addClass('btn btn-default');
 
         $wrapper->makeCondensed();
         $wrapper->addHiddenVars($this->getPageParams());
         $wrapper->addHiddenVars($changelog->getPrimary());
-        $wrapper->addHiddenVar('revision', (string)$this->revisionable->getRevision());
 
         $this->filterForm = $wrapper;
     }
+
+    private function injectAuthor() : void
+    {
+        $el = $this->filterForm->addSelect(RevisionableChangelogScreenInterface::FILTER_AUTHOR, t('Author'));
+
+        $el->addOption(t('All'), 'all');
+
+        foreach ($this->revisionable->getChangelog()->getAuthors() as $user) {
+            $el->addOption(
+                $user->getName(),
+                (string)$user->getID()
+            );
+        }
+    }
+
+    private function injectType() : void
+    {
+        $el = $this->filterForm->addSelect(RevisionableChangelogScreenInterface::FILTER_TYPE, t('Type of change'));
+
+        $el->addOption(t('All'), 'all');
+
+        foreach ($this->revisionable->getChangelog()->getTypes() as $type => $label) {
+            $el->addOption($label, $type);
+        }
+    }
+
+    private function injectSearch() : void
+    {
+        $el = $this->filterForm->addText(RevisionableChangelogScreenInterface::FILTER_SEARCH, t('Search terms'));
+        $el->addFilter('strip_tags');
+        $el->addFilterTrim();
+    }
+
+    // endregion
 
     protected function _renderContent()
     {
@@ -189,33 +178,7 @@ trait RevisionableChangelogScreenTrait
         $this->dataGrid->configureFromFilters($filters);
         $entries = $filters->getItemsObjects();
         foreach ($entries as $entry) {
-            $actions = '';
-            if ($entry->hasDiff()) {
-                $actions = UI::button()
-                    ->setIcon(UI::icon()->view())
-                    ->makeMini()
-                    ->click("Changelog.DialogDetails('" . $entry->getID() . "')");
-
-                $this->ui->addJavascriptHeadStatement(
-                    'Changelog.Add',
-                    $entry->getID(),
-                    $entry->getAuthorName(),
-                    $entry->getDatePretty(true),
-                    $entry->getText(),
-                    $entry->getValueBefore(),
-                    $entry->getValueAfter()
-                );
-            }
-
-            $items[] = array(
-                RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
-                RevisionableChangelogScreenInterface::COL_REVISION => $entry->getDBEntry()->getInt($this->revisionable->getCollection()->getRevisionKeyName()),
-                RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
-                RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
-                RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
-                RevisionableChangelogScreenInterface::COL_ACTIONS => $actions,
-                RevisionableChangelogScreenInterface::COL_TYPE => $entry->getTypeLabel()
-            );
+            $items[] = $this->collectEntry($entry);
         }
 
         return $this->renderer
@@ -225,41 +188,90 @@ trait RevisionableChangelogScreenTrait
             );
     }
 
+    // region: Data grid
+
     protected function createDataGrid(): void
     {
-        $grid = $this->ui->createDataGrid($this->revisionable->getRevisionableTypeName() . '_changelog');
+        $grid = $this->ui->createDataGrid($this->getListID());
+
         $grid->enableCompactMode();
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_REVISION, t('Revision'))->setHidden();
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))->setNowrap();
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))->setNowrap();
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_TYPE, t('Change type'));
-        $grid->addColumn(RevisionableChangelogScreenInterface::COL_ACTIONS, '')->setCompact()->roleActions();
-
-        $grid->setEmptyMessage(
-            t('No changes found in this revision.')
-        );
-
-        $grid->setTitle(t(
-            'Revision %1$s, created on %2$s by %3$s',
-            $this->revisionable->getPrettyRevision(),
-            ConvertHelper::date2listLabel($this->revisionable->getRevisionDate(), true),
-            $this->revisionable->getRevisionAuthorName()
-        ));
-
         $grid->enableLimitOptionsDefault();
-        $grid->enableColumnControls(3);
+        $grid->enableColumnControls(4);
+        $grid->setEmptyMessage(t('No changes found.'));
+        $grid->addHiddenScreenVars();
+        $grid->addHiddenVars($this->revisionable->getChangelogItemPrimary());
 
-        $grid->addHiddenVars($this->getPageParams());
-        $grid->addHiddenVar('revision', $this->revisionable->getRevision());
+        $this->registerColumns($grid);
 
-        $primary = $this->revisionable->getChangelogItemPrimary();
-        foreach ($primary as $name => $value) {
-            $grid->addHiddenVar($name, $value);
-        }
 
         $this->dataGrid = $grid;
     }
+
+    protected function registerColumns(UI_DataGrid $grid) : void
+    {
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_REVISION, t('Revision'))
+            ->setNowrap()
+            ->setCompact()
+            ->alignRight();
+
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DATE, t('Date'))
+            ->setNowrap()
+            ->setCompact();
+
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_AUTHOR, t('Author'))
+            ->setNowrap()
+            ->setCompact();
+
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_DETAILS, t('Details'));
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_TYPE, t('Change type'));
+
+        $grid->addColumn(RevisionableChangelogScreenInterface::COL_ACTIONS, '')
+            ->setCompact()
+            ->roleActions();
+    }
+
+    protected function collectEntry(Application_Changelog_Entry $entry) : array
+    {
+        $dbEntry = $entry->getDBEntry();
+
+        return array(
+            RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
+            RevisionableChangelogScreenInterface::COL_REVISION => (string)sb()
+                ->add($dbEntry->getInt(Application_RevisionableCollection::COL_REV_PRETTY_REVISION))
+                ->code($dbEntry->getInt($this->revisionable->getCollection()->getRevisionKeyName())),
+            RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
+            RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
+            RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
+            RevisionableChangelogScreenInterface::COL_ACTIONS => $this->renderEntryActions($entry),
+            RevisionableChangelogScreenInterface::COL_TYPE => $entry->getTypeLabel()
+        );
+    }
+
+    protected function renderEntryActions(Application_Changelog_Entry $entry) : string
+    {
+        if (!$entry->hasDiff()) {
+            return '';
+        }
+
+        $this->ui->addJavascriptHeadStatement(
+            'Changelog.Add',
+            $entry->getID(),
+            $entry->getAuthorName(),
+            $entry->getDatePretty(true),
+            $entry->getText(),
+            $entry->getValueBefore(),
+            $entry->getValueAfter()
+        );
+
+        return (string)UI::button()
+            ->setIcon(UI::icon()->view())
+            ->makeMini()
+            ->click("Changelog.DialogDetails('" . $entry->getID() . "')");
+    }
+
+    // endregion
+
+    // region: Apply filters
 
     /**
      * Creates and configures the filter criteria object instance
@@ -273,37 +285,49 @@ trait RevisionableChangelogScreenTrait
         $filters = $changelog->getFilters();
 
         $config = $this->getFiltersConfig();
-        if ($config['author'] !== 'all') {
-            $filters->limitByAuthorID($config['author']);
+        if ($config[RevisionableChangelogScreenInterface::FILTER_AUTHOR] !== 'all') {
+            $filters->limitByAuthorID($config[RevisionableChangelogScreenInterface::FILTER_AUTHOR]);
         }
 
-        if ($config['type'] !== 'all') {
-            $filters->limitByType($config['type']);
+        if ($config[RevisionableChangelogScreenInterface::FILTER_TYPE] !== 'all') {
+            $filters->limitByType($config[RevisionableChangelogScreenInterface::FILTER_TYPE]);
         }
 
-        if (!empty($config['search'])) {
-            $filters->setSearch($config['search']);
+        if (!empty($config[RevisionableChangelogScreenInterface::FILTER_SEARCH])) {
+            $filters->setSearch($config[RevisionableChangelogScreenInterface::FILTER_SEARCH]);
         }
+
+        $this->applyCustomFilters($filters);
 
         return $filters;
     }
 
-    protected function getFiltersVar(): string
+    protected function applyCustomFilters(Application_Changelog_FilterCriteria $filters) : void
     {
-        return md5(get_class($this)) . '-' . $this->revisionable->getRevision();
+
+    }
+
+    protected function getListID(): string
+    {
+        return 'changelog-'.$this->revisionable->getRevisionableTypeName();
+    }
+
+    protected function getDefaultFilters() : array
+    {
+        return array(
+            RevisionableChangelogScreenInterface::FILTER_AUTHOR => 'all',
+            RevisionableChangelogScreenInterface::FILTER_TYPE => 'all',
+            RevisionableChangelogScreenInterface::FILTER_SEARCH => ''
+        );
     }
 
     protected function getFiltersConfig(): array
     {
-        $config = array(
-            'author' => 'all',
-            'type' => 'all',
-            'search' => ''
-        );
+        $config = $this->getDefaultFilters();
 
-        $raw = $this->user->getSetting($this->getFiltersVar());
+        $raw = $this->user->getSetting($this->getListID());
         if (!empty($raw)) {
-            $config = ConvertHelper::json2array($raw);
+            $config = array_merge($config, ConvertHelper::json2array($raw));
         }
 
         return $config;
@@ -312,18 +336,16 @@ trait RevisionableChangelogScreenTrait
     protected function handle_filtersSubmitted(): void
     {
         $values = $this->filterForm->getValues();
+        $filters = array();
 
-        $filters = array(
-            'author' => $values['author'],
-            'type' => $values['type'],
-            'search' => $values['search']
-        );
+        foreach(array_keys($this->getDefaultFilters()) as $key) {
+            $filters[$key] = $values[$key] ?? null;
+        }
 
-        $this->user->setSetting($this->getFiltersVar(), JSONConverter::var2json($filters));
+        $this->user->setSetting($this->getListID(), JSONConverter::var2json($filters));
         $this->user->saveSettings();
 
         $redirectParams = $this->revisionable->getChangelogItemPrimary();
-        $redirectParams['revision'] = $this->revisionable->getRevision();
         $redirectParams = array_merge($redirectParams, $this->getPageParams());
 
         $this->redirectWithSuccessMessage(
@@ -331,4 +353,6 @@ trait RevisionableChangelogScreenTrait
             $redirectParams
         );
     }
+
+    // endregion
 }
