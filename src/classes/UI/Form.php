@@ -455,17 +455,17 @@ class UI_Form extends UI_Renderable
      * matches the specified name.
      *
      * @param string $name
-     * @return HTML_QuickForm2_Element|null
+     * @return HTML_QuickForm2_Node|null
      * @throws BaseClassHelperException
      */
-    public function getElementByName(string $name) : ?HTML_QuickForm2_Element
+    public function getElementByName(string $name) : ?HTML_QuickForm2_Node
     {
         $elements = $this->form->getElementsByName($name);
 
         if(!empty($elements))
         {
             return ClassHelper::requireObjectInstanceOf(
-                HTML_QuickForm2_Element::class,
+                HTML_QuickForm2_Node::class,
                 $elements[0]
             );
         }
@@ -473,7 +473,7 @@ class UI_Form extends UI_Renderable
         return null;
     }
 
-    public function requireElementByName(string $name) : HTML_QuickForm2_Element
+    public function requireElementByName(string $name) : HTML_QuickForm2_Node
     {
         $element = $this->getElementByName($name);
 

@@ -555,16 +555,16 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * Retrieves a form element by its name.
      *
      * @param string $name
-     * @return HTML_QuickForm2_Element|NULL
+     * @return HTML_QuickForm2_Node|NULL
      */
-    public function getElementByName(string $name): ?HTML_QuickForm2_Element;
+    public function getElementByName(string $name): ?HTML_QuickForm2_Node;
 
     /**
      * @param string $name
-     * @return HTML_QuickForm2_Element
+     * @return HTML_QuickForm2_Node
      * @throws Application_Formable_Exception
      */
-    public function requireElementByName(string $name): HTML_QuickForm2_Element;
+    public function requireElementByName(string $name): HTML_QuickForm2_Node;
 
     /**
      * Retrieves the formable's UI Form instance.
