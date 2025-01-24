@@ -280,7 +280,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @see Application_Formable::createFormableForm()
     * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData = array()) : self
+    public function createFormableForm(string $name, $defaultData = array()) : self
     {
         parent::createFormableForm($name, $defaultData);
 

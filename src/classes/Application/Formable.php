@@ -5,6 +5,7 @@
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -73,11 +74,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * Creates a regular, non clientside form.
      *
      * @param string $name
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return UI_Form
      * @throws UI_Exception
      */
-    protected function createForm(string $name, array $defaultData=array()) : UI_Form
+    protected function createForm(string $name, $defaultData=array()) : UI_Form
     {
         return UI::getInstance()->createForm($name, $defaultData);
     }
@@ -85,7 +86,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
    /**
     * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData=array()) : self
+    public function createFormableForm(string $name, $defaultData=array()) : self
     {
         $form = $this->createForm($name, $defaultData);
         $this->initFormable($form);

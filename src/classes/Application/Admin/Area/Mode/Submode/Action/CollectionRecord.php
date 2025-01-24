@@ -92,10 +92,9 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord
     * key value to the form's hidden variables. Also adds
     * the parent record's ID if present. 
     * 
-    * @param string $name
-    * @param array $defaultData
+    * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData=array()) : self
+    public function createFormableForm(string $name, $defaultData=array()) : self
     {
         parent::createFormableForm($name, $defaultData);
         
@@ -109,7 +108,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord
         
         if($collection->hasParentCollection())
         {
-            $parent = $collection->getParentRecord();
+            $parent = $collection->requireParentRecord();
             
             $this->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
         }

@@ -7,6 +7,7 @@
  * @see Application_Interfaces_Formable
  */
 
+use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringableInterface;
 
 /**
@@ -27,10 +28,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * and {@link initFormable()}.
      *
      * @param string $name
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return $this
      */
-    public function createFormableForm(string $name, array $defaultData = array()) : self;
+    public function createFormableForm(string $name, $defaultData = array()) : self;
 
     public function getFormableJSID(): string;
 
