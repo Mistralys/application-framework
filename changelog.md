@@ -8,6 +8,7 @@
 - Changelog Screen: Added the overridable `applyCustomFilters()`.
 - Changelog Screen: Added a button to reset the filters.
 - Changelog Screen: Added filtering by revision.
+- Changelog Screen: Added filtering by start and end date.
 - Forms: Added support for `ArrayDataCollection` as default form data set.
 
 ### Update notes
