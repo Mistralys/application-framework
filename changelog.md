@@ -1,3 +1,8 @@
+## v5.7.0 - Time tracker
+- TimeTracker: Added the time tracker management.
+- DBHelper: Added an abstract list builder for DBHelper collections.
+- ListBuilder: Added a trait for list screens via a list builder.
+
 ## v5.6.2 - Filter settings and changelog improvements
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.
 - Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
