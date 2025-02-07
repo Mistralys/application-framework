@@ -9,6 +9,7 @@ use Application\TimeTracker\Admin\Screens\BaseListScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseDayListScreen;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
+use AppUtils\Microtime;
 use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
@@ -32,10 +33,16 @@ class TrackerAdminURLs
         return $this->list()
             ->submode(BaseGlobalListScreen::URL_NAME);
     }
-    public function dayList() : AdminURLInterface
+    public function dayList(?Microtime $targetDate=null) : AdminURLInterface
     {
-        return $this->list()
+        $url = $this->list()
             ->submode(BaseDayListScreen::URL_NAME);
+
+        if($targetDate !== null) {
+            $url->string(BaseDayListScreen::REQUEST_VAR_DATE, $targetDate->format('Y-m-d'));
+        }
+
+        return $url;
     }
 
     public function base() : AdminURLInterface
