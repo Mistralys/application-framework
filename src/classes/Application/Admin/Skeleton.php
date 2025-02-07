@@ -677,13 +677,23 @@ abstract class Application_Admin_Skeleton
         self::$simulationStarted = true;
 
         header('Content-Type:text/html; charset=UTF-8');
-        AppFactory::createLogger()->enableHTML()->logModeEcho();
+        $logger = AppFactory::createLogger();
+        $logger->enableHTML()->logModeEcho();
+
+        $entries = $logger->getLog();
+        $logger->clearLog();
         
-        Application::logHeader('Simulation mode active');
-        Application::log('Memory usage: '.memory_get_usage(true));
-        Application::log('Request variables:');
-        Application::logData($_REQUEST);
-        Application::log('');
+        $logger->logHeader('Simulation mode active');
+        $logger->log('Memory usage: '.memory_get_usage(true));
+        $logger->log('Request variables:');
+        $logger->logData($_REQUEST);
+        $logger->log('');
+
+        $logger->logHeader('System log entries');
+        foreach($entries as $entry) {
+            $logger->log($entry);
+        }
+
         return true;
     }
     
