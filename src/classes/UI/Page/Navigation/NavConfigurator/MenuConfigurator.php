@@ -8,15 +8,24 @@ use UI\Page\Navigation\NavConfigurator;
 use UI_Bootstrap_DropdownAnchor;
 use UI_Page_Navigation_Item_DropdownMenu;
 
-class MenuConfigurator
+class MenuConfigurator implements \Application_Interfaces_Loggable
 {
+    use \Application_Traits_Loggable;
+
     private UI_Page_Navigation_Item_DropdownMenu $menu;
     private NavConfigurator $configurator;
+    private string $logIdentifier;
 
     public function __construct(NavConfigurator $configurator, UI_Page_Navigation_Item_DropdownMenu $menu)
     {
         $this->configurator = $configurator;
         $this->menu = $menu;
+        $this->logIdentifier = 'MenuConfigurator';
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->logIdentifier;
     }
 
     public function setAutoActivate(bool $auto) : self
@@ -35,8 +44,15 @@ class MenuConfigurator
     {
         $area = $this->configurator->getAreaByURLName($urlName);
 
-        if($area === null || !$area->isUserAllowed())
+        if($area === null)
         {
+            $this->log('AddArea | [%s] | Area not found.', $urlName);
+            return null;
+        }
+
+        if(!$area->isUserAllowed())
+        {
+            $this->log('AddArea | [%s] | User not allowed.', $urlName);
             return null;
         }
 
