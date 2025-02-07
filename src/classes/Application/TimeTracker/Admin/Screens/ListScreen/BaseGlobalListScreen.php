@@ -59,6 +59,10 @@ class BaseGlobalListScreen extends Application_Admin_Area_Mode_Submode implement
         return new TimeListBuilder($this);
     }
 
+    protected function _handleCustomActions(): void
+    {
+    }
+
     protected function _handleSidebarTop(): void
     {
         $this->sidebar->addButton('create', t('Create new entry').'...')
