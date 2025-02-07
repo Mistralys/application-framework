@@ -85,6 +85,16 @@ class TimeEntry extends DBHelper_BaseRecord
         return MarkdownRenderer::create()->render($this->getComments());
     }
 
+    public function getDayName() : string
+    {
+        $date = $this->getDate();
+        return sprintf(
+            '%02d. %s',
+            $date->format('d'),
+            ConvertHelper::date2dayName($date)
+        );
+    }
+
     private ?EntryAdminURLs $adminURLs = null;
 
     public function adminURL() : EntryAdminURLs
