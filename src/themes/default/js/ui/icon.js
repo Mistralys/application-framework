@@ -292,6 +292,7 @@ var UI_Icon =
     Tenant:function() { return this.SetType('award'); },
     Text:function() { return this.SetType('font'); },
     Time:function() { return this.SetType('clock'); },
+    TimeTracker:function() { return this.SetType('biohazard', 'fas'); },
     Toggle:function() { return this.SetType('retweet'); },
     Tools:function() { return this.SetType('tools'); },
     Translation:function() { return this.SetType('globe'); },

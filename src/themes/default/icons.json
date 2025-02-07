@@ -834,5 +834,9 @@
   "cache": {
     "icon": "memory",
     "type": "fas"
+  },
+  "time-tracker": {
+    "icon": "biohazard",
+    "type": "fas"
   }
 }

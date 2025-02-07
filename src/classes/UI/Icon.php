@@ -804,6 +804,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function timeTracker() : self { return $this->setType('biohazard', 'fas'); }
+    /**
+     * @return $this
+     */
     public function toggle() : self { return $this->setType('retweet'); }
     /**
      * @return $this
