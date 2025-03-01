@@ -194,6 +194,17 @@ class TagCollection extends DBHelper_BaseCollection
         return $this->createCollectionRegistry()->uniqueIDExists($uniqueID);
     }
 
+    private ?ClientsideTagging $clientside = null;
+
+    public function createClientsideTagging() : ClientsideTagging
+    {
+        if(!isset($this->clientside)) {
+            $this->clientside = new ClientsideTagging(AppFactory::createUI());
+        }
+
+        return $this->clientside;
+    }
+
     protected function _registerKeys(): void
     {
         $this->keys->register(self::COL_LABEL)
