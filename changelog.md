@@ -1,3 +1,8 @@
+## v5.7.0 - Tagging fixes and improvements
+- Tagging: Fixed a hardcoded media collection reference in the tag collection trait.
+- Tagging: Added `_handleHiddenFormVars()` in the record's tagging screen trait.
+- Core JS: Added an ES6 version of the basic dialog class.
+
 ## v5.6.2 - Filter settings and changelog improvements
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.
 - Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
