@@ -19,7 +19,7 @@ var DialogHelper =
     * @param {Object} [options]
     * @param {Array} [options.modalClasses]
     * @param {Array} [options.bodyClasses]
-    * @param {Integer} [options.id] The ID for the dialog div.
+    * @param {Integer|String} [options.id] The ID for the dialog div.
     * @returns {jQuery}
     */
 	createDialog:function(title, body, footer, options)
@@ -40,8 +40,8 @@ var DialogHelper =
 			options.bodyClasses = [];
 		}
 		
-		var dialogID = options.id;
-		var html =
+		const dialogID = options.id;
+		let html =
 		'<div class="modal hide '+application.dialogAnimation+' '+options.modalClasses.join(' ')+'" id="'+dialogID+'">';
 			if(title!=null) {
 				html +=
@@ -60,24 +60,6 @@ var DialogHelper =
 		'</div>';
 
 		$('body').append(html);
-		
-		if(typeof(Runner)!='undefined') {
-			$('#'+dialogID).find('button, a, input[type=submit]').bind('click', function() {
-				Runner.RecordElement($(this), 'click', '');
-			});
-			
-			$('#'+dialogID).find('input[type=text], textarea').bind('change', function() {
-				Runner.RecordElement($(this), 'type', $(this).val());
-			});
-			
-			$('#'+dialogID).find('select').bind('change', function() {
-				Runner.RecordElement($(this), 'select', $(this).val());
-			});
-			
-			$('#'+dialogID).find('input[type=checkbox], input[type=rado]').bind('change', function() {
-				Runner.RecordElement($(this), '', $(this).val());
-			});
-		}
 		
 		return $('#'+dialogID);
 	},
