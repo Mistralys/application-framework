@@ -11,6 +11,7 @@ namespace Application\AppFactory;
 use Application;
 use Application\AppFactory;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\SerializedFile;
@@ -35,51 +36,42 @@ class ClassCacheHandler
      */
     private static array $classCache = array();
 
+    private static ?ClassRepositoryManager $manager = null;
+
+    private static function createManager() : ClassRepositoryManager
+    {
+        if(!isset(self::$manager)) {
+            self::$manager = ClassRepositoryManager::create(self::getCacheFolder());
+        }
+
+        return self::$manager;
+    }
+
     /**
      * Uses the class helper to find classes in the target folder.
      * The results are cached to avoid unnecessary file system
      * accesses. The cache uses the application version as a key, so
      * it is automatically invalidated when the application is updated.
      *
-     * NOTE: The cache is automatically disabled in development mode.
+     * > NOTE: The cache is automatically disabled in development mode.
      *
      * @param FolderInfo $folder
      * @param bool $recursive
      * @param string|null $baseClass
      * @return class-string[]
      */
-    public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
     {
-        $cacheKey = sprintf(
-            'classes_v%s_%s',
-            md5($folder->getPath().bool2string($recursive).$baseClass),
-            // Important not to use the Driver instance, as it may not be initialized yet
-            AppFactory::createVersionInfo()->getFullVersion()
-        );
-
-        if(isset(self::$classCache[$cacheKey])) {
-            return self::$classCache[$cacheKey];
+        if(self::isCacheEnabled()) {
+            return self::createManager()->findClassesInFolder($folder, $recursive, $baseClass)->getClasses();
         }
 
-        $cacheFile = SerializedFile::factory(self::getCacheFolder()->create().'/'.$cacheKey.'.ser');
-
-        if($cacheFile->exists() && self::isCacheEnabled()) {
-            self::$classCache[$cacheKey] = $cacheFile->parse();
-            return self::$classCache[$cacheKey];
-        }
-
-        self::$classCache[$cacheKey] = array();
-
+        $result = array();
         foreach(ClassHelper::findClassesInFolder($folder, $recursive, $baseClass) as $classInfo) {
-            self::$classCache[$cacheKey][] = $classInfo->getNameNS();
+            $result[] = $classInfo->getNameNS();
         }
 
-        // Ensure consistent order
-        sort(self::$classCache[$cacheKey]);
-
-        $cacheFile->putData(self::$classCache[$cacheKey]);
-
-        return self::$classCache[$cacheKey];
+        return $result;
     }
 
     public static function getCacheFolder() : FolderInfo
@@ -89,7 +81,7 @@ class ClassCacheHandler
 
     public static function clearClassCache() : void
     {
-        FileHelper::deleteTree(self::getCacheFolder());
+        self::createManager()->clearCache();
     }
 
     private static ?bool $enabled = null;
@@ -125,5 +117,16 @@ class ClassCacheHandler
         }
 
         return self::$cacheLocation;
+    }
+
+    public static function getCacheSize() : int
+    {
+        $file = self::createManager()->getCacheFile();
+
+        if($file->exists()) {
+            return $file->getSize();
+        }
+
+        return 0;
     }
 }
