@@ -1,3 +1,15 @@
+## v5.7.0 - Deployment task prioritization (Breaking-XS)
+- DeploymentRegistry: Added a prioritization system for deployment tasks.
+- DeploymentRegistry: The version update task is now always run first.
+- DeploymentRegistry: Fixed the wrong version being stored in the history.
+- AppFactory: Replaced the class cache with AppUtil's native class caching.
+- Dependencies: Bumped up AppUtils core to [v2.3.6](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.6).
+
+### Breaking changes
+
+- Deployment tasks must now implement the `getPriority()` method. 
+  If you have custom deployment tasks, make sure to add this method.
+
 ## v5.6.2 - Filter settings and changelog improvements
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.
 - Clientside: Added `UI.RequireElement()` to fetch elements by selector with exception fallback.
