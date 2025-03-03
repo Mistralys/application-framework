@@ -402,10 +402,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
 
     /**
      * Hides the element from the readonly ("frozen") version of the form.
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @return $this
      */
-    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element) : self;
+    public function makeHiddenWhenReadonly(HTML_QuickForm2_Node $element) : self;
 
     /**
      * Creates an integer form element that comes with a validation
@@ -447,22 +447,22 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * e.g. "Centimetres". Will be displayed next to the element as a
      * typehint for the user.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param string|number|StringableInterface|NULL $units
      * @return $this
      */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units) : self;
+    public function setElementUnits(HTML_QuickForm2_Node $element, $units) : self;
 
     /**
      * Marks the specified element as structural, which means the
      * related object being modified will need a new draft revision
      * (only relevant with revisionables).
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param bool $structural
      * @return $this
      */
-    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural = true) : self;
+    public function makeStructural(HTML_QuickForm2_Node $element, bool $structural = true) : self;
 
     /**
      * Adds a redactor to the specified element.
@@ -477,10 +477,10 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * required rule with the default text, or the one specified
      * if set.
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @return $this
      */
-    public function makeStandalone(HTML_QuickForm2_Element $element) : self;
+    public function makeStandalone(HTML_QuickForm2_Node $element) : self;
 
     /**
      * Adds a validation rule to the element to limit the length
@@ -512,20 +512,20 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
      * Adds a string to prepend to an element. For example
      * for units, like "Centimetres".
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param string|number|StringableInterface $prependString
      * @return $this
      */
-    public function setElementPrepend(HTML_QuickForm2_Element $element, $prependString) : self;
+    public function setElementPrepend(HTML_QuickForm2_Node $element, $prependString) : self;
     /**
      * Adds a string to append to an element. For example
      * for units, like "Centimetres".
      *
-     * @param HTML_QuickForm2_Element $element
+     * @param HTML_QuickForm2_Node $element
      * @param string|number|StringableInterface $appendString
      * @return $this
      */
-    public function setElementAppend(HTML_QuickForm2_Element $element, $appendString) : self;
+    public function setElementAppend(HTML_QuickForm2_Node $element, $appendString) : self;
 
     /**
      * Retrieves the form's values as an associative array

@@ -1165,7 +1165,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units) : self
+    public function setElementUnits(HTML_QuickForm2_Node $element, $units) : self
     {
         $this->getFormInstance()->setElementUnits($element, $units);
         return $this;
@@ -1176,7 +1176,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws ConvertHelper_Exception
      */
-    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural=true) : self
+    public function makeStructural(HTML_QuickForm2_Node $element, bool $structural=true) : self
     {
         $this->getFormInstance()->makeStructural($element, $structural);
         return $this;
@@ -1196,7 +1196,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function makeStandalone(HTML_QuickForm2_Element $element) : self
+    public function makeStandalone(HTML_QuickForm2_Node $element) : self
     {
         $this->getFormInstance()->makeStandalone($element);
         return $this;
@@ -1206,7 +1206,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element) : self
+    public function makeHiddenWhenReadonly(HTML_QuickForm2_Node $element) : self
     {
         $this->getFormInstance()->makeHiddenWhenReadonly($element);
         return $this;
@@ -1244,7 +1244,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function setElementPrepend(HTML_QuickForm2_Element $element, $prependString) : self
+    public function setElementPrepend(HTML_QuickForm2_Node $element, $prependString) : self
     {
         $this->getFormInstance()->setElementPrepend($element, $prependString);
         return $this;
@@ -1256,7 +1256,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function setElementAppend(HTML_QuickForm2_Element $element, $appendString) : self
+    public function setElementAppend(HTML_QuickForm2_Node $element, $appendString) : self
     {
         $this->getFormInstance()->setElementAppend($element, $appendString);
         return $this;
