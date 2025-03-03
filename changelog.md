@@ -1,3 +1,6 @@
+## v5.7.1 - Formable type update
+- Formable: Changed methods requiring element instances to accept nodes instead.
+
 ## v5.7.0 - Deployment task prioritization (Breaking-XS)
 - DeploymentRegistry: Added a prioritization system for deployment tasks.
 - DeploymentRegistry: The version update task is now always run first.
