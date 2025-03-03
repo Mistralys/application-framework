@@ -6,6 +6,7 @@ namespace AppFrameworkTests\DeploymentRegistry;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\DeploymentRegistry\Tasks\ClearClassCacheTask;
+use Application\DeploymentRegistry\Tasks\StoreCurrentVersionTask;
 use Application\DeploymentRegistry\Tasks\StoreDeploymentInfoTask;
 use Application\DeploymentRegistry\Tasks\WriteLocalizationFilesTask;
 use TestDriver\ClassFactory;
@@ -28,5 +29,14 @@ final class ClassLoadingTests extends ApplicationTestCase
         $this->assertInstanceOf(StoreDeploymentInfoTask::class, $registry->getByID(StoreDeploymentInfoTask::TASK_NAME));
         $this->assertInstanceOf(WriteLocalizationFilesTask::class, $registry->getByID(WriteLocalizationFilesTask::TASK_NAME));
         $this->assertInstanceOf(ClearClassCacheTask::class, $registry->getByID(ClearClassCacheTask::TASK_NAME));
+    }
+
+    public function test_currentVersionTaskIsFirst() : void
+    {
+        $tasks = ClassFactory::createDeploymentRegistry()->getAll();
+
+        $this->assertGreaterThan(0, count($tasks));
+
+        $this->assertInstanceOf(StoreCurrentVersionTask::class, $tasks[0]);
     }
 }

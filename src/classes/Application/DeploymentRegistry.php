@@ -21,6 +21,7 @@ use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\FileHelper\FolderInfo;
 use Application\DeploymentRegistry\DeploymentInfo;
+use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
 /**
  * The deployment registry is responsible for managing the deployment tasks,
@@ -118,6 +119,22 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
         }
     }
 
+    protected function sortItems(StringPrimaryRecordInterface $a, StringPrimaryRecordInterface $b): int
+    {
+        $prioA = ClassHelper::requireObjectInstanceOf(DeploymentTaskInterface::class, $a)->getPriority();
+        $prioB = ClassHelper::requireObjectInstanceOf(DeploymentTaskInterface::class, $b)->getPriority();
+
+        if($prioA > $prioB) {
+            return -1;
+        }
+
+        if($prioA < $prioB) {
+            return 1;
+        }
+
+        return 0;
+    }
+
     private function createTask(string $class) : DeploymentTaskInterface
     {
         return ClassHelper::requireObjectInstanceOf(
@@ -152,11 +169,7 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
                 continue;
             }
 
-            $classes = ClassHelper::findClassesInFolder($folder, true, DeploymentTaskInterface::class);
-
-            foreach ($classes as $class) {
-                $tasks[] = $class->getNameNS();
-            }
+            array_push($tasks, ...AppFactory::findClassesInFolder($folder, true, DeploymentTaskInterface::class));
         }
 
         return $tasks;

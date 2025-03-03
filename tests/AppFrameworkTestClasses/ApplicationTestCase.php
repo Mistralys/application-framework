@@ -19,6 +19,7 @@ use Application_Session_Base;
 use Application_User;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
 use AppUtils\ImageHelper\ImageFormats\Formats\JPEGImage;
 use AppUtils\ImageHelper\ImageFormats\Formats\PNGImage;
@@ -186,8 +187,6 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         return Localization::getAppLocaleByName($name);
     }
 
-
-
     protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
     {
         $countries = AppFactory::createCountries();
@@ -203,6 +202,15 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         }
 
         return $countries->createNewCountry($iso, $label);
+    }
+
+    /**
+     * Gets the path to the root folder of the bundled test application.
+     * @return FolderInfo
+     */
+    protected function getTestAppFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/../application')->requireExists();
     }
 
     // endregion

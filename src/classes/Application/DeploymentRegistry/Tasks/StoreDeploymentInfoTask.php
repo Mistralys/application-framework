@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\DeploymentRegistry\Tasks;
 
 use Application\DeploymentRegistry;
+use Application\DeploymentRegistry\DeploymentTaskInterface;
 use Application_Driver;
 use AppUtils\Microtime;
 use Application\DeploymentRegistry\BaseDeployTask;
@@ -27,6 +28,11 @@ class StoreDeploymentInfoTask extends BaseDeployTask
     public function getID() : string
     {
         return self::TASK_NAME;
+    }
+
+    public function getPriority(): int
+    {
+        return DeploymentTaskInterface::SYSTEM_BASE_PRIORITY;
     }
 
     public function getDescription(): string

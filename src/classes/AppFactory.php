@@ -327,7 +327,7 @@ class AppFactory
      * accesses. The cache uses the application version as a key, so
      * it is automatically invalidated when the application is updated.
      *
-     * NOTE: The cache is automatically disabled in development mode.
+     * > NOTE: The cache is automatically disabled in development mode.
      *
      * @param FolderInfo $folder
      * @param bool $recursive
@@ -336,7 +336,7 @@ class AppFactory
      *
      * @see ClassCacheHandler
      */
-    public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
     {
         return ClassCacheHandler::findClassesInFolder($folder, $recursive, $baseClass);
     }
