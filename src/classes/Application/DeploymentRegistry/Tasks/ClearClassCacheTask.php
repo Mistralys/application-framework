@@ -10,6 +10,7 @@ namespace Application\DeploymentRegistry\Tasks;
 
 use Application\AppFactory\ClassCacheHandler;
 use Application\DeploymentRegistry\BaseDeployTask;
+use Application\DeploymentRegistry\DeploymentTaskInterface;
 
 /**
  * Clears the class cache. While a new deployment will
@@ -22,6 +23,11 @@ use Application\DeploymentRegistry\BaseDeployTask;
 class ClearClassCacheTask extends BaseDeployTask
 {
     public const TASK_NAME = 'ClearClassCache';
+
+    public function getPriority() : int
+    {
+        return DeploymentTaskInterface::SYSTEM_BASE_PRIORITY + 8000;
+    }
 
     public function getID() : string
     {

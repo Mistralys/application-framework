@@ -10,6 +10,7 @@ namespace Application\DeploymentRegistry\Tasks;
 
 use Application\AppFactory;
 use Application\DeploymentRegistry\BaseDeployTask;
+use Application\DeploymentRegistry\DeploymentTaskInterface;
 use Application\Driver\VersionInfo;
 
 /**
@@ -28,6 +29,14 @@ class StoreCurrentVersionTask extends BaseDeployTask
     protected function _process(): void
     {
         AppFactory::createVersionInfo()->storeCurrentVersion();
+    }
+
+    public function getPriority(): int
+    {
+        // Uses the highest priority to ensure it runs first,
+        // as many cache operations and checks depend on the
+        // framework version.
+        return DeploymentTaskInterface::SYSTEM_BASE_PRIORITY + 9000;
     }
 
     public function getDescription(): string
