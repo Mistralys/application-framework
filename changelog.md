@@ -1,3 +1,7 @@
+## v5.7.2 - AdminURL update
+- AdminURL: Now extending AppUtil's `URLBuilder` class.
+- Dependencies: Bumped up AppUtils to [v3.1.3](https://github.com/Mistralys/application-utils/releases/tag/3.1.3).
+
 ## v5.7.1 - Formable type update
 - Formable: Changed methods requiring element instances to accept nodes instead.
 
