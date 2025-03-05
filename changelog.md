@@ -1,4 +1,4 @@
-## v5.7.2 - AdminURL update
+## v5.7.3 - AdminURL update
 - AdminURL: Fixed the `create()` method not returning the correct instance.
 - Dependencies: Bumped up AppUtils to [v3.1.4](https://github.com/Mistralys/application-utils/releases/tag/3.1.4).
 
