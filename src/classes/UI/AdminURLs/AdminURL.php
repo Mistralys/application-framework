@@ -29,6 +29,10 @@ use function AppUtils\parseURL;
  * @package User Interface
  * @subpackage Admin URLs
  * @see AdminURLInterface
+ *
+ * @method static AdminURL create(array $params = array())
+ * @method static AdminURL createFromURL(string $url)
+ * @method static AdminURL createFromURLInfo(URLInfo $info)
  */
 class AdminURL extends URLBuilder implements AdminURLInterface
 {
