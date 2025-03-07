@@ -32,22 +32,6 @@ use AppUtils\FileHelper\SerializedFile;
 class ClassCacheHandler
 {
     /**
-     * @var array<string,array<int,string>>
-     */
-    private static array $classCache = array();
-
-    private static ?ClassRepositoryManager $manager = null;
-
-    private static function createManager() : ClassRepositoryManager
-    {
-        if(!isset(self::$manager)) {
-            self::$manager = ClassRepositoryManager::create(self::getCacheFolder());
-        }
-
-        return self::$manager;
-    }
-
-    /**
      * Uses the class helper to find classes in the target folder.
      * The results are cached to avoid unnecessary file system
      * accesses. The cache uses the application version as a key, so
@@ -63,7 +47,7 @@ class ClassCacheHandler
     public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
     {
         if(self::isCacheEnabled()) {
-            return self::createManager()->findClassesInFolder($folder, $recursive, $baseClass)->getClasses();
+            return ClassHelper::getRepositoryManager()->findClassesInFolder($folder, $recursive, $baseClass)->getClasses();
         }
 
         $result = array();
@@ -81,7 +65,7 @@ class ClassCacheHandler
 
     public static function clearClassCache() : void
     {
-        self::createManager()->clearCache();
+        ClassHelper::getRepositoryManager()->clearCache();
     }
 
     private static ?bool $enabled = null;
@@ -121,7 +105,7 @@ class ClassCacheHandler
 
     public static function getCacheSize() : int
     {
-        $file = self::createManager()->getCacheFile();
+        $file = ClassHelper::getRepositoryManager()->getCacheFile();
 
         if($file->exists()) {
             return $file->getSize();
