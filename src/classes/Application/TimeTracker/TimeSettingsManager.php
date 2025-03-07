@@ -253,6 +253,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
     private function injectType(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
     {
         $el = $this->addElementSelect($setting->getName(), t('Type'));
+        $el->addClass('input-xlarge');
 
         foreach(TimeEntryTypes::getInstance()->getAll() as $type) {
             $el->addOption($type->getLabel(), $type->getID());
