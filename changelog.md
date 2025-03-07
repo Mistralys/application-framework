@@ -1,3 +1,6 @@
+## v7.7.5 - Miscellaneous tweaks
+- AdminURL: Fixed the return type for `AdminURL::create()` to make PHPStan happy.
+
 ## v5.7.4 - Class cache update
 - AppFactory: Now setting the `ClassHelper` cache during bootstrap to enable this for all use-cases.
 - Dependencies: Bumped up AppUtils core to [v2.3.7](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.7).
