@@ -3,6 +3,17 @@
 - DBHelper: Added an abstract list builder for DBHelper collections.
 - ListBuilder: Added a trait for list screens via a list builder.
 
+## v7.7.5 - Miscellaneous tweaks
+- AdminURL: Fixed the return type for `AdminURL::create()` to make PHPStan happy.
+
+## v5.7.4 - Class cache update
+- AppFactory: Now setting the `ClassHelper` cache during bootstrap to enable this for all use-cases.
+- Dependencies: Bumped up AppUtils core to [v2.3.7](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.7).
+
+## v5.7.3 - AdminURL update
+- AdminURL: Fixed the `create()` method not returning the correct instance.
+- Dependencies: Bumped up AppUtils to [v3.1.4](https://github.com/Mistralys/application-utils/releases/tag/3.1.4).
+
 ## v5.7.2 - AdminURL update
 - AdminURL: Now extending AppUtil's `URLBuilder` class.
 - Dependencies: Bumped up AppUtils to [v3.1.3](https://github.com/Mistralys/application-utils/releases/tag/3.1.3).

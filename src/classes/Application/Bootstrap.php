@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory\ClassCacheHandler;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FileInfo\ExtensionClassRegistry;
 use AppUtils\FileHelper\JSONFile;
 use Composer\Autoload\ClassLoader;
@@ -260,6 +262,7 @@ class Application_Bootstrap
         self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
+        self::initClassLoading();
 
         self::$initializing = false;
         self::$initialized = true;
@@ -280,6 +283,13 @@ class Application_Bootstrap
         Application::log('Bootstrap | Registering shutdown handler.');
 
         register_shutdown_function(array(self::class, 'handleShutDown'));
+    }
+
+    private static function initClassLoading() : void
+    {
+        Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
+
+        ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
     }
 
     public static function convertException(Throwable $e) : Application_Exception
