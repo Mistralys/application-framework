@@ -313,7 +313,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
             $url->inheritParam($var);
         }
 
-        foreach($this->_getHiddenVars() as $name => $value) {
+        foreach($this->getHiddenVars() as $name => $value) {
             $url->auto($name, $value);
         }
 
