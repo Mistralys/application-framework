@@ -10,6 +10,7 @@ namespace DBHelper\Admin;
 
 use Application\Collection\Admin\BaseRecordSelectionTieIn;
 use Application\Collection\CollectionItemInterface;
+use Application\Interfaces\HiddenVariablesInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -58,5 +59,16 @@ abstract class BaseDBRecordSelectionTieIn
     protected function getEmptySelectionText() : string
     {
         return t('No %1$s records are available.', $this->getCollection()->getRecordLabel());
+    }
+
+    public function injectHiddenVars(HiddenVariablesInterface $subject) : self
+    {
+        $record = $this->getRecord();
+
+        if($record !== null) {
+            $subject->addHiddenVar($this->getCollection()->getRecordRequestPrimaryName(), (string)$record->getID());
+        }
+
+        return $this;
     }
 }
