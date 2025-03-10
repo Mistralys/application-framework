@@ -63,10 +63,8 @@ abstract class BaseDBRecordSelectionTieIn
 
     public function injectHiddenVars(HiddenVariablesInterface $subject) : self
     {
-        $record = $this->getRecord();
-
-        if($record !== null) {
-            $subject->addHiddenVar($this->getCollection()->getRecordRequestPrimaryName(), (string)$record->getID());
+        foreach($this->getHiddenVars() as $name => $value) {
+            $subject->addHiddenVar($name, $value);
         }
 
         return $this;
