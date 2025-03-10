@@ -60,13 +60,4 @@ abstract class BaseDBRecordSelectionTieIn
     {
         return t('No %1$s records are available.', $this->getCollection()->getRecordLabel());
     }
-
-    public function injectHiddenVars(HiddenVariablesInterface $subject) : self
-    {
-        foreach($this->getHiddenVars() as $name => $value) {
-            $subject->addHiddenVar($name, $value);
-        }
-
-        return $this;
-    }
 }
