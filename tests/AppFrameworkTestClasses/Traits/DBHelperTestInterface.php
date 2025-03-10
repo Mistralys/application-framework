@@ -10,6 +10,7 @@ namespace AppFrameworkTestClasses\Traits;
 
 use TestDriver\TestDBRecords\TestDBCollection;
 use TestDriver\TestDBRecords\TestDBRecord;
+use TestDriver\TestDBRecords\TestDBRecordSelectionTieIn;
 
 /**
  * @package Application
@@ -26,4 +27,5 @@ interface DBHelperTestInterface
 
     public function setUpDBHelperTestTrait(): void;
     public function createTestRecord(?string $label=null, ?string $alias=null) : TestDBRecord;
+    public function createTestDBRecordTieIn() : TestDBRecordSelectionTieIn;
 }

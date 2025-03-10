@@ -9,8 +9,11 @@ declare(strict_types=1);
 namespace AppFrameworkTestClasses\Traits;
 
 use DBHelper;
+use TestDriver\Area\TestingScreen;
+use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBCollection;
 use TestDriver\TestDBRecords\TestDBRecord;
+use TestDriver\TestDBRecords\TestDBRecordSelectionTieIn;
 
 /**
  * @package Application
@@ -39,5 +42,12 @@ trait DBHelperTestTrait
             $label ?? 'Test Record '.$this->getTestCounter('test-records'),
             $alias ?? 'test-record-'.$this->getTestCounter('test-records')
         );
+    }
+
+    public function createTestDBRecordTieIn() : TestDBRecordSelectionTieIn
+    {
+        $screen = ClassFactory::createDriver()->getScreenByPath(TestingScreen::URL_NAME);
+
+        return new TestDBRecordSelectionTieIn($screen);
     }
 }
