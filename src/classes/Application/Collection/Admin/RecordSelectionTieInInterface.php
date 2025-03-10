@@ -12,6 +12,7 @@ use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Collection\CollectionItemInterface;
 use Application\Interfaces\HiddenVariablesInterface;
+use AppUtils\Interfaces\StringableInterface;
 use Closure;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -37,6 +38,18 @@ interface RecordSelectionTieInInterface
      * @return string
      */
     public function getRequestPrimaryVarName(): string;
+
+    /**
+     * Gets all hidden variables required for the
+     * record selection and the current admin screen.
+     *
+     * > NOTE: Empty values are pruned from the result,
+     * > and the variables are sorted alphabetically by
+     * > key for consistency.
+     *
+     * @return array<string,string|int|StringableInterface|NULL>
+     */
+    public function getHiddenVars() : array;
 
     /**
      * Whether the record selection can require specific user rights.
