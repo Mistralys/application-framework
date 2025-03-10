@@ -120,15 +120,6 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     }
 
     /**
-     * @param CollectionItemInterface $record
-     * @return array<string,string|int|StringableInterface>
-     */
-    protected function getRecordRequestVars(CollectionItemInterface $record) : array
-    {
-        return array($this->getRequestPrimaryVarName(), $record->getID());
-    }
-
-    /**
      * @param HiddenVariablesInterface $subject
      * @return $this
      */
