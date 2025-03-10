@@ -6,6 +6,7 @@ namespace AppFrameworkTestClasses;
 
 use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
+use AppFrameworkTestClasses\Traits\MythologyTestInterface;
 use Application;
 use Application\AppFactory;
 use Application\Interfaces\ChangelogableInterface;
@@ -221,12 +222,21 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         AppFactory::createLogger()->reset();
         Application_Session_Base::setRedirectsEnabled(true);
 
+        $this->setUpTraits();
+    }
+
+    private function setUpTraits() : void
+    {
         if($this instanceof ImageMediaTestInterface) {
             $this->setUpImageTestCase();
         }
 
         if($this instanceof DBHelperTestInterface) {
             $this->setUpDBHelperTestTrait();
+        }
+
+        if($this instanceof MythologyTestInterface) {
+            $this->setUpMythologyTestTrait();
         }
     }
 

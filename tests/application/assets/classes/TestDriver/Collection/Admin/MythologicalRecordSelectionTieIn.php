@@ -22,6 +22,10 @@ use UI_Bootstrap_BigSelection_Item_Regular;
  */
 class MythologicalRecordSelectionTieIn extends BaseRecordSelectionTieIn
 {
+    public const HIDDEN_VAR_NAME = 'mythology-var';
+    public const HIDDEN_VAR_VALUE = 'mythology-value';
+    public const HIDDEN_VAR_EMPTY_NAME = 'empty-mythology-var';
+
     private MythologyRecordCollection $collection;
 
     protected function init(): void
@@ -32,6 +36,14 @@ class MythologicalRecordSelectionTieIn extends BaseRecordSelectionTieIn
     protected function recordIDExists($id): bool
     {
         return $this->collection->idExists((string)$id);
+    }
+
+    public function _getHiddenVars(): array
+    {
+        return array(
+            self::HIDDEN_VAR_NAME => self::HIDDEN_VAR_VALUE,
+            self::HIDDEN_VAR_EMPTY_NAME => ''
+        );
     }
 
     protected function getRecordByID($id): CollectionItemInterface

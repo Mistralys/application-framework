@@ -3,7 +3,9 @@
 - DBHelper: Added an abstract list builder for DBHelper collections.
 - ListBuilder: Added a trait for list screens via a list builder.
 
-## v7.7.5 - Miscellaneous tweaks
+## v5.7.5 - Screen Tie-In improvement
+- Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 
+- Screen Tie-Ins: Added the `injectHiddenVars()` method.
 - AdminURL: Fixed the return type for `AdminURL::create()` to make PHPStan happy.
 
 ## v5.7.4 - Class cache update
