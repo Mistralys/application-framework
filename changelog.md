@@ -1,8 +1,6 @@
-## v7.7.6 - Screen Tie-In improvement
+## v5.7.5 - Screen Tie-In improvement
 - Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 
 - Screen Tie-Ins: Added the `injectHiddenVars()` method.
-
-## v7.7.5 - Miscellaneous tweaks
 - AdminURL: Fixed the return type for `AdminURL::create()` to make PHPStan happy.
 
 ## v5.7.4 - Class cache update
