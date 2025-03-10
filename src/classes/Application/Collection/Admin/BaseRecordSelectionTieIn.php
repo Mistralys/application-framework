@@ -134,12 +134,7 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      */
     public function injectHiddenVars(HiddenVariablesInterface $subject): self
     {
-        $record = $this->getRecord();
-
-        if($record !== null) {
-            $subject->addHiddenVars($this->getRecordRequestVars($record));
-            $subject->addHiddenVars($this->_getHiddenVars());
-        }
+        $subject->addHiddenVars($this->getHiddenVars());
 
         return $this;
     }
