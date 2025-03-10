@@ -47,7 +47,7 @@ final class TagCollectionRegistryTests
 
     public function test_getDBTestByUniqueID() : void
     {
-        $record = $this->createTestRecord();
+        $record = $this->createTestDBRecord();
         $uniqueID = $record->getTagManager()->getUniqueID();
 
         $found = $this->tagsCollection->getTaggableByUniqueID($uniqueID);

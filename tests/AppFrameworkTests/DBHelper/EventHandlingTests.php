@@ -12,7 +12,7 @@ final class EventHandlingTests extends DBHelperTestCase
 {
     public function test_unregisteredKeyModified(): void
     {
-        $record = $this->createTestRecord('Old Label', 'old-alias');
+        $record = $this->createTestDBRecord('Old Label', 'old-alias');
         $called = false;
 
         $record->onKeyModified(function (KeyModifiedEvent $event) use (&$called): void {
@@ -32,7 +32,7 @@ final class EventHandlingTests extends DBHelperTestCase
 
     public function test_registeredKeyModified(): void
     {
-        $record = $this->createTestRecord('Old Label', 'old-alias');
+        $record = $this->createTestDBRecord('Old Label', 'old-alias');
         $called = false;
 
         $record->onKeyModified(function (KeyModifiedEvent $event) use (&$called): void {
@@ -52,7 +52,7 @@ final class EventHandlingTests extends DBHelperTestCase
 
     public function test_customKeyModified() : void
     {
-        $record = $this->createTestRecord();
+        $record = $this->createTestDBRecord();
         $called = false;
 
         $record->onKeyModified(function (KeyModifiedEvent $event) use (&$called): void {

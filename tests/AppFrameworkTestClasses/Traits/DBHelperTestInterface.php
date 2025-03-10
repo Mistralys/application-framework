@@ -26,6 +26,6 @@ interface DBHelperTestInterface
     public const TEST_RECORDS_COL_ALIAS = TestDBCollection::COL_ALIAS;
 
     public function setUpDBHelperTestTrait(): void;
-    public function createTestRecord(?string $label=null, ?string $alias=null) : TestDBRecord;
+    public function createTestDBRecord(?string $label=null, ?string $alias=null) : TestDBRecord;
     public function createTestDBRecordTieIn() : TestDBRecordSelectionTieIn;
 }

@@ -36,7 +36,7 @@ trait DBHelperTestTrait
         DBHelper::resetTrackedQueries();
     }
 
-    public function createTestRecord(?string $label=null, ?string $alias=null) : TestDBRecord
+    public function createTestDBRecord(?string $label=null, ?string $alias=null) : TestDBRecord
     {
         return TestDBCollection::getInstance()->createTestRecord(
             $label ?? 'Test Record '.$this->getTestCounter('test-records'),

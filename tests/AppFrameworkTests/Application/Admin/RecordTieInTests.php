@@ -48,7 +48,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
     public function test_getSelectedRecord() : void
     {
         $tieIn = $this->createTestDBRecordTieIn();
-        $testRecord = $this->createTestRecord();
+        $testRecord = $this->createTestDBRecord();
 
         // Simulate the record being selected in the request
         $_REQUEST[TestDBCollection::REQUEST_PRIMARY_NAME] = $testRecord->getID();
@@ -76,7 +76,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
     public function test_primaryValueIsAddedToTheURL() : void
     {
         $tieIn = $this->createTestDBRecordTieIn();
-        $testRecord = $this->createTestRecord();
+        $testRecord = $this->createTestDBRecord();
 
         // Simulate the record being selected in the request
         $_REQUEST[TestDBCollection::REQUEST_PRIMARY_NAME] = $testRecord->getID();
@@ -109,7 +109,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
     public function test_primaryValueCanBeCombinedWithInheritVar() : void
     {
         $tieIn = $this->createTestDBRecordTieIn();
-        $testRecord = $this->createTestRecord();
+        $testRecord = $this->createTestDBRecord();
 
         // Simulate the record being selected in the request
         $_REQUEST[TestDBCollection::REQUEST_PRIMARY_NAME] = $testRecord->getID();
@@ -125,7 +125,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
     public function test_ancestryHandling() : void
     {
-        $testRecord = $this->createTestRecord();
+        $testRecord = $this->createTestDBRecord();
         $parentTieIn = $this->createTestDBRecordTieIn();
         $childTieIn = new MythologicalRecordSelectionTieIn($parentTieIn->getScreen(), null, $parentTieIn);
 
