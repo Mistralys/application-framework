@@ -73,6 +73,11 @@ class MythologyRecordCollection implements StringCollectionInterface
         return array();
     }
 
+    public function getRandom() : MythologicalRecord
+    {
+        return $this->getByID(array_rand($this->items));
+    }
+
     protected function _dispose(): void
     {
     }
