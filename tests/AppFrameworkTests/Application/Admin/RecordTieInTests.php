@@ -7,21 +7,25 @@ namespace AppFrameworkTests\Application\Admin;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
 use AppFrameworkTestClasses\Traits\DBHelperTestTrait;
+use AppFrameworkTestClasses\Traits\MythologyTestInterface;
+use AppFrameworkTestClasses\Traits\MythologyTestTrait;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
 use TestDriver\Collection\Admin\MythologicalRecordSelectionTieIn;
+use TestDriver\Collection\MythologyRecordCollection;
 use TestDriver\TestDBRecords\TestDBCollection;
 use TestDriver\TestDBRecords\TestDBRecordSelectionTieIn;
 
-final class RecordTieInTests extends ApplicationTestCase implements DBHelperTestInterface
+final class RecordTieInTests extends ApplicationTestCase implements DBHelperTestInterface, MythologyTestInterface
 {
     use DBHelperTestTrait;
+    use MythologyTestTrait;
 
     // region: _Tests
 
     public function test_enabledCallback() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
 
         $this->assertTrue($tieIn->isEnabled());
 
@@ -34,7 +38,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
     public function test_noRecordSelectedByDefault() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
 
         $this->assertFalse($tieIn->isRecordSelected());
         $this->assertNull($tieIn->getRecordID());
@@ -43,7 +47,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
     public function test_getSelectedRecord() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
         $testRecord = $this->createTestRecord();
 
         // Simulate the record being selected in the request
@@ -58,7 +62,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
     public function test_inheritRequestVars() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
 
         $this->assertNull($tieIn->getURL()->getParam('inherit'));
 
@@ -71,7 +75,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
 
     public function test_primaryValueIsAddedToTheURL() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
         $testRecord = $this->createTestRecord();
 
         // Simulate the record being selected in the request
@@ -81,9 +85,30 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
         $this->assertSame($testRecord->getID(), (int)$tieIn->getURL()->getParam(TestDBCollection::REQUEST_PRIMARY_NAME));
     }
 
+    public function test_hiddenVariablesArePresent() : void
+    {
+        $tieIn = $this->createTestRecordTieIn();
+        $testRecord = $this->createTestMythologyRecord();
+
+        // Simulate the record being selected in the request
+        $_REQUEST[MythologyRecordCollection::REQUEST_VAR_NAME] = $testRecord->getID();
+
+        $expected = array(
+            MythologicalRecordSelectionTieIn::HIDDEN_VAR_NAME => MythologicalRecordSelectionTieIn::HIDDEN_VAR_VALUE,
+            MythologyRecordCollection::REQUEST_VAR_NAME => $testRecord->getID()
+        );
+
+        ksort($expected); // Hidden vars are always sorted alphabetically
+
+        $this->assertSame(
+            $expected,
+            $tieIn->getHiddenVars()
+        );
+    }
+
     public function test_primaryValueCanBeCombinedWithInheritVar() : void
     {
-        $tieIn = $this->createTestTieIn();
+        $tieIn = $this->createTestDBRecordTieIn();
         $testRecord = $this->createTestRecord();
 
         // Simulate the record being selected in the request
@@ -101,7 +126,7 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
     public function test_ancestryHandling() : void
     {
         $testRecord = $this->createTestRecord();
-        $parentTieIn = $this->createTestTieIn();
+        $parentTieIn = $this->createTestDBRecordTieIn();
         $childTieIn = new MythologicalRecordSelectionTieIn($parentTieIn->getScreen(), null, $parentTieIn);
 
         $this->assertSame($parentTieIn, $childTieIn->getParent());
@@ -114,17 +139,6 @@ final class RecordTieInTests extends ApplicationTestCase implements DBHelperTest
         $this->assertFalse($parentTieIn->isEnabled());
         $this->assertTrue($childTieIn->isEnabled());
         $this->assertSame($testRecord->getID(), (int)$childTieIn->getURL()->getParam(TestDBCollection::REQUEST_PRIMARY_NAME));
-    }
-
-    // endregion
-
-    // region: Support methods
-
-    public function createTestTieIn() : TestDBRecordSelectionTieIn
-    {
-        $screen = ClassFactory::createDriver()->getScreenByPath(TestingScreen::URL_NAME);
-
-        return new TestDBRecordSelectionTieIn($screen);
     }
 
     // endregion
