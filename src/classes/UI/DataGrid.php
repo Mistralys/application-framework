@@ -1130,10 +1130,11 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $this->executeCallbacks();
 
+        $totalEntries = count($entries);
         $emptyDisplay = 'block';
         $tableDisplay = 'none';
         $dropperDisplay = 'block';
-        if (!empty($entries)) {
+        if ($entries > 0) {
             $this->entries = $this->filterAndSortEntries($entries);
             $emptyDisplay = 'none';
             $tableDisplay = 'table';
@@ -1206,7 +1207,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             '<div id="' . $this->getFormID('empty') . '" style="display:' . $emptyDisplay . '">' .
                 $this->renderEmptyMessage().
             '</div>' .
-            '<table class="' . implode(' ', $this->tableClasses) . '" id="' . $this->getFormID('table') . '" style="display:' . $tableDisplay . '">' .
+            $this->createTableTag($totalEntries > 0)->renderOpen().
                 $this->renderHeader() .
                 $this->renderBody() .
                 $this->renderFooter() .
@@ -1226,6 +1227,19 @@ class UI_DataGrid implements HiddenVariablesInterface
         '</div>';
 
         return $html;
+    }
+
+    private function createTableTag(bool $hasEntries) : HTMLTag
+    {
+        $tableDisplay = 'none';
+        if ($hasEntries) {
+            $tableDisplay = 'table';
+        }
+
+        return HTMLTag::create('table')
+            ->id($this->getFormID('table'))
+            ->addClasses($this->tableClasses)
+            ->style('display', $tableDisplay);
     }
 
    /**
@@ -2818,5 +2832,17 @@ class UI_DataGrid implements HiddenVariablesInterface
     public function getFormTarget() : ?string
     {
         return $this->formTarget;
+    }
+
+    /**
+     * Turns off the default behavior of tables to fill 100%
+     * of the available space, making the grid use only the
+     * space that its columns require.
+     *
+     * @return $this
+     */
+    public function makeAutoWidth() : self
+    {
+        return $this->addTableClass('auto-width');
     }
 }
