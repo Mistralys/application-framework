@@ -13,6 +13,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
+use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
 use UI\DataGrid\GridConfigurator;
 use function AppLocalize\tex;
@@ -1072,6 +1073,16 @@ class UI_DataGrid implements HiddenVariablesInterface
         return $this;
     }
 
+    private function createFormTag() : HTMLTag
+    {
+        return HTMLTag::create('form')
+            ->id($this->getFormID())
+            ->attr('method', 'post')
+            ->addClass('form-inline')
+            ->attr('target', $this->getFormTarget())
+            ->attr('action', $this->getFormAction());
+    }
+
     /**
      * Renders the grid with the specified set of data rows.
      *
@@ -1119,10 +1130,11 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $this->executeCallbacks();
 
+        $totalEntries = count($entries);
         $emptyDisplay = 'block';
         $tableDisplay = 'none';
         $dropperDisplay = 'block';
-        if (!empty($entries)) {
+        if ($entries > 0) {
             $this->entries = $this->filterAndSortEntries($entries);
             $emptyDisplay = 'none';
             $tableDisplay = 'table';
@@ -1187,7 +1199,7 @@ class UI_DataGrid implements HiddenVariablesInterface
                 ));
 
                 $html .=
-                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . APP_URL.'/'.$this->dispatcher . '">' .
+                    $this->createFormTag()->renderOpen().
                     $this->renderHiddenVars();
             }
 
@@ -1195,7 +1207,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             '<div id="' . $this->getFormID('empty') . '" style="display:' . $emptyDisplay . '">' .
                 $this->renderEmptyMessage().
             '</div>' .
-            '<table class="' . implode(' ', $this->tableClasses) . '" id="' . $this->getFormID('table') . '" style="display:' . $tableDisplay . '">' .
+            $this->createTableTag($totalEntries > 0)->renderOpen().
                 $this->renderHeader() .
                 $this->renderBody() .
                 $this->renderFooter() .
@@ -1215,6 +1227,19 @@ class UI_DataGrid implements HiddenVariablesInterface
         '</div>';
 
         return $html;
+    }
+
+    private function createTableTag(bool $hasEntries) : HTMLTag
+    {
+        $tableDisplay = 'none';
+        if ($hasEntries) {
+            $tableDisplay = 'table';
+        }
+
+        return HTMLTag::create('table')
+            ->id($this->getFormID('table'))
+            ->addClasses($this->tableClasses)
+            ->style('display', $tableDisplay);
     }
 
    /**
@@ -2775,5 +2800,49 @@ class UI_DataGrid implements HiddenVariablesInterface
         $prefix = $this->resolveSettingName('');
 
         Application::getUser()->resetSettings($prefix);
+    }
+
+    /**
+     * Makes the grid's form be submitted into a new tab.
+     * Shorthand for setting the form's target to `_blank`.
+     *
+     * @return $this
+     */
+    public function enableSubmitInNewTab() : self
+    {
+        return $this->setFormTarget('_blank');
+    }
+
+    protected function getFormAction() : string
+    {
+        return APP_URL.'/'.$this->dispatcher;
+    }
+
+    private ?string $formTarget = null;
+
+    public function setFormTarget(?string $target) : self
+    {
+        if(!empty($target)) {
+            $this->formTarget = $target;
+        }
+
+        return $this;
+    }
+
+    public function getFormTarget() : ?string
+    {
+        return $this->formTarget;
+    }
+
+    /**
+     * Turns off the default behavior of tables to fill 100%
+     * of the available space, making the grid use only the
+     * space that its columns require.
+     *
+     * @return $this
+     */
+    public function makeAutoWidth() : self
+    {
+        return $this->addTableClass('auto-width');
     }
 }
