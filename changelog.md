@@ -1,3 +1,6 @@
+## v5.7.6 - DataGrid enhancement
+- DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
+
 ## v5.7.5 - Screen Tie-In improvement
 - Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 
 - Screen Tie-Ins: Added the `injectHiddenVars()` method.
