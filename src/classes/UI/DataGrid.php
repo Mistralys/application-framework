@@ -13,6 +13,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
+use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
 use UI\DataGrid\GridConfigurator;
 use function AppLocalize\tex;
@@ -1072,6 +1073,16 @@ class UI_DataGrid implements HiddenVariablesInterface
         return $this;
     }
 
+    private function createFormTag() : HTMLTag
+    {
+        return HTMLTag::create('form')
+            ->id($this->getFormID())
+            ->attr('method', 'post')
+            ->addClass('form-inline')
+            ->attr('target', $this->getFormTarget())
+            ->attr('action', $this->getFormAction());
+    }
+
     /**
      * Renders the grid with the specified set of data rows.
      *
@@ -1187,7 +1198,7 @@ class UI_DataGrid implements HiddenVariablesInterface
                 ));
 
                 $html .=
-                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . $this->getFormAction() . '">' .
+                    $this->createFormTag()->renderOpen().
                     $this->renderHiddenVars();
             }
 
@@ -2779,24 +2790,33 @@ class UI_DataGrid implements HiddenVariablesInterface
 
     /**
      * Makes the grid's form be submitted into a new tab.
+     * Shorthand for setting the form's target to `_blank`.
      *
-     * @param bool $enabled
      * @return $this
      */
-    public function enableSubmitInNewTab(bool $enabled=true) : self
+    public function enableSubmitInNewTab() : self
     {
-        $this->submitNewTab = $enabled;
-        return $this;
+        return $this->setFormTarget('_blank');
     }
-
-    private bool $submitNewTab = false;
 
     protected function getFormAction() : string
     {
-        if($this->submitNewTab) {
-            return '_blank';
+        return APP_URL.'/'.$this->dispatcher;
+    }
+
+    private ?string $formTarget = null;
+
+    public function setFormTarget(?string $target) : self
+    {
+        if(!empty($target)) {
+            $this->formTarget = $target;
         }
 
-        return APP_URL.'/'.$this->dispatcher;
+        return $this;
+    }
+
+    public function getFormTarget() : ?string
+    {
+        return $this->formTarget;
     }
 }
