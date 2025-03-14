@@ -1187,7 +1187,7 @@ class UI_DataGrid implements HiddenVariablesInterface
                 ));
 
                 $html .=
-                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . APP_URL.'/'.$this->dispatcher . '">' .
+                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . $this->getFormAction() . '">' .
                     $this->renderHiddenVars();
             }
 
@@ -2775,5 +2775,28 @@ class UI_DataGrid implements HiddenVariablesInterface
         $prefix = $this->resolveSettingName('');
 
         Application::getUser()->resetSettings($prefix);
+    }
+
+    /**
+     * Makes the grid's form be submitted into a new tab.
+     *
+     * @param bool $enabled
+     * @return $this
+     */
+    public function enableSubmitInNewTab(bool $enabled=true) : self
+    {
+        $this->submitNewTab = $enabled;
+        return $this;
+    }
+
+    private bool $submitNewTab = false;
+
+    protected function getFormAction() : string
+    {
+        if($this->submitNewTab) {
+            return '_blank';
+        }
+
+        return APP_URL.'/'.$this->dispatcher;
     }
 }
