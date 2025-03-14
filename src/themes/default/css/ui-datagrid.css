@@ -29,6 +29,10 @@
     margin: 0;
 }
 
+.table.auto-width{
+    width: auto !important;
+}
+
 .datagrid .column-headers TH {
     vertical-align: top;
     position: relative;
