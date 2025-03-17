@@ -1658,17 +1658,13 @@ var application =
             '</p>';
         }
 
-        var dialog = this.createGenericDialog(t('An error occurred.'), content);
-        
-        dialog
-        .SetIcon(UI.Icon().Warning())
-        .MakeDangerous()
-        .EnablePageDetails()
-        .Shown(function() {
-        	application.closeAllDialogs(true, [dialog]);
-        });
-        
-        return dialog;
+        return this.createGenericDialog(t('An error occurred.'), content)
+            .SetIcon(UI.Icon().Warning())
+            .MakeDangerous()
+            .EnablePageDetails()
+            .Shown(function() {
+                application.closeAllDialogs(true, [dialog]);
+            });
     },
 
     /**
