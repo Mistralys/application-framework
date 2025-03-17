@@ -6,6 +6,7 @@ namespace Application\TimeTracker\Admin\Screens\ListScreen;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_Submode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
@@ -61,6 +62,7 @@ class BaseGlobalListScreen extends Application_Admin_Area_Mode_Submode implement
 
     protected function _handleCustomActions(): void
     {
+        TimeUIManager::setLastUsedList(TimeUIManager::LIST_SCREEN_GLOBAL);
     }
 
     protected function _handleSidebarTop(): void
