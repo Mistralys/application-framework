@@ -830,7 +830,7 @@ function in_array(needle, haystack, argStrict) {
  * - Is an empty string
  * - Has 0 length
  * 
- * Note: A numeric 0 is not considered empty.
+ * > Note: A numeric 0 is not considered empty.
  * 
  * @param subject
  * @returns {Boolean}
