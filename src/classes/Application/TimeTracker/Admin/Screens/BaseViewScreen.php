@@ -7,6 +7,7 @@ namespace Application\TimeTracker\Admin\Screens;
 use Application\Admin\Area\TimeTracker\ViewScreen\BaseStatusScreen;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\Traits\AllowableMigrationTrait;
@@ -64,7 +65,9 @@ abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionReco
 
     protected function _handleBreadcrumb(): void
     {
-        $this->breadcrumb->appendArea($this->area);
+        $this->breadcrumb->appendItem($this->area->getNavigationTitle())
+            ->makeLinked(TimeUIManager::getBackToListURL());
+        
         $this->breadcrumb->appendItem($this->record->getLabel())
             ->makeLinked($this->record->adminURL()->status());
     }
