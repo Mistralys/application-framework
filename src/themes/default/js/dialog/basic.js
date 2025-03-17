@@ -75,6 +75,8 @@ var Dialog_Basic =
 	Show:function()
 	{
 		if(!this.rendered) {
+			this.log('Show | Not rendered yet, rendering...');
+
 			var dialog = this;
 			this.Render();
 			UI.RefreshTimeout(function() {
@@ -83,6 +85,8 @@ var Dialog_Basic =
 			});
 			return this;
 		}
+
+		this.log('Show | Dialog is ready, showing...');
 		
 		this.dialog.modal('show');
 		this.HideAlerts();
@@ -121,6 +125,8 @@ var Dialog_Basic =
 		if(this.rendering) {
 			return;
 		}
+
+		this.log('Render | Starting the render...');
 		
 		this.rendering = true;
 		
@@ -151,6 +157,9 @@ var Dialog_Basic =
 		$.each(this.classes, function(idx, className) {
 			dialog.addClass(className);
 		});
+
+		console.log(this.dialog);
+		this.log('Render | Complete.');
 	},
 	
    /**
@@ -598,6 +607,8 @@ var Dialog_Basic =
     */
 	PostRender:function()
 	{
+		this.log('Render | Executing post-render tasks...');
+
 		this._PostRender();
 		this.rendered = true;
 		this.rendering = false;
