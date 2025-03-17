@@ -6,6 +6,7 @@ namespace Application\TimeTracker\Admin\Screens\ListScreen;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application_Admin_Area_Mode_Submode;
 use AppUtils\ConvertHelper;
@@ -17,6 +18,7 @@ use UI;
 use UI\DataGrid\ListBuilder\ListBuilderScreenInterface;
 use UI\DataGrid\ListBuilder\ListBuilderScreenTrait;
 use UI\Interfaces\ListBuilderInterface;
+use UI_Renderable_Interface;
 
 class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
 {
@@ -70,7 +72,7 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
             ->addContextElement($this->renderDateNavigation());
     }
 
-    private function renderDateNavigation() : \UI_Renderable_Interface
+    private function renderDateNavigation() : UI_Renderable_Interface
     {
         $content =
             $this->ui->createButtonGroup()
@@ -101,6 +103,8 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
 
     protected function _handleCustomActions(): void
     {
+        TimeUIManager::setLastUsedList(TimeUIManager::LIST_SCREEN_DAY);
+
         $this->date = Microtime::createNow();
 
         if($this->request->hasParam(self::REQUEST_VAR_DATE)) {
