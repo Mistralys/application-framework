@@ -87,6 +87,8 @@ var Dialog_Basic =
 		}
 
 		this.log('Show | Dialog is ready, showing...');
+
+		console.log(this.dialog);
 		
 		this.dialog.modal('show');
 		this.HideAlerts();
@@ -158,7 +160,6 @@ var Dialog_Basic =
 			dialog.addClass(className);
 		});
 
-		console.log(this.dialog);
 		this.log('Render | Complete.');
 	},
 	
@@ -624,6 +625,8 @@ var Dialog_Basic =
 		});
 		
 		this._Start();
+
+		this.log('Render | All done.');
 	},
 	
    /**
