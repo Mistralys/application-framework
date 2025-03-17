@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens\ViewScreen;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application_Admin_Area_Mode_Submode_CollectionEdit;
@@ -54,6 +55,6 @@ class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionE
 
     public function getBackOrCancelURL(): string
     {
-        return (string)AppFactory::createTimeTracker()->adminURL()->list();
+        return (string)TimeUIManager::getBackToListURL();
     }
 }
