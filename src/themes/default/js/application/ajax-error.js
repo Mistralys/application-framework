@@ -31,6 +31,11 @@ var Application_AJAX_Error =
      */
     init:function(ajax, message, code, details, trace, data, autoLog)
     {
+        // Handle cases where data is undefined
+        if(isEmpty(data)) {
+            data = null;
+        }
+
         this.message = message;
         this.code = code;
         this.details = details;
@@ -67,11 +72,17 @@ var Application_AJAX_Error =
         return this.details;
     },
 
+    /**
+     * @return {Object|null}
+     */
     GetData:function()
     {
         return this.data;
     },
 
+    /**
+     * @return {String}
+     */
     GetMethodName:function()
     {
         return this.ajax.GetMethodName();
@@ -84,7 +95,7 @@ var Application_AJAX_Error =
 
     IsServerException:function()
     {
-        return this.data !== null && 'isExceptionData' in this.data;
+        return this.data !== null && this.data !== 'undefined' && 'isExceptionData' in this.data;
     },
 
     /**
