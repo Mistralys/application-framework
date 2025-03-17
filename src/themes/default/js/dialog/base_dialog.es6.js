@@ -57,11 +57,21 @@ class BaseDialog
     Show()
     {
         if(!this.rendered) {
+            this.log('Show | Not rendered yet, rendering...');
             this.Handle_Render();
             return this;
         }
 
-        this.dialog.modal('show');
+        this.log('Show | Dialog is ready, showing...');
+
+        // Using $() here to handle cases where bootstrap has been
+        // reinitialized in the page (by re-including the js file),
+        // which would cause the dialog reference to be invalid.
+        //
+        // This used to cause a `modal is not a function` error.
+        //
+        $(this.dialog).modal('show');
+
         this.HideAlerts();
         this.Handle_Shown();
 
@@ -114,6 +124,8 @@ class BaseDialog
             return;
         }
 
+        this.log('Render | Starting the render...');
+
         this.rendering = true;
 
         let footer = this.RenderFooter();
@@ -143,6 +155,8 @@ class BaseDialog
         $.each(this.classes, function(idx, className) {
             self.addClass(className);
         });
+
+        this.log('Render | Complete.');
     }
 
     /**
@@ -627,6 +641,8 @@ class BaseDialog
      */
     PostRender()
     {
+        this.log('Render | Executing post-render tasks...');
+
         this._PostRender();
         this.rendered = true;
         this.rendering = false;
@@ -642,6 +658,8 @@ class BaseDialog
         });
 
         this._Start();
+
+        this.log('Render | All done.');
     }
 
     /**
@@ -810,11 +828,25 @@ class BaseDialog
         // dialog, which then prevents the tooltip from being closed
         UI.CloseAllTooltips();
 
-        this._Handle_Shown();
+        var self = this;
 
-        if(this.eventHandlers.shown.length > 0) {
-            for(let i=0; i<this.eventHandlers.shown.length; i++) {
-                this.eventHandlers.shown[i].call(undefined, this);
+        if(this.eventHandlers.shown.length > 0)
+        {
+            this.log(sprintf('Shown | Found [%s] event handlers.', this.eventHandlers.shown.length));
+
+            for(var i=0; i<this.eventHandlers.shown.length; i++)
+            {
+                this.log(sprintf('Shown | - Calling handler [#%s]', i));
+
+                try
+                {
+                    this.eventHandlers.shown[i].call(undefined, self);
+                }
+                catch (e)
+                {
+                    this.log('Shown | - Error calling handler: ' + e.message);
+                    console.log(this.eventHandlers.shown[i]);
+                }
             }
         }
     }
