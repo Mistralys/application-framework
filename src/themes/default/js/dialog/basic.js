@@ -88,7 +88,7 @@ var Dialog_Basic =
 
 		this.log('Show | Dialog is ready, showing...');
 
-		$(this.dialog).modal('show');
+		this.dialog.modal('show');
 
 		this.HideAlerts();
 		this.Handle_Shown();

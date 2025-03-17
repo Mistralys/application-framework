@@ -64,13 +64,7 @@ class BaseDialog
 
         this.log('Show | Dialog is ready, showing...');
 
-        // Using $() here to handle cases where bootstrap has been
-        // reinitialized in the page (by re-including the js file),
-        // which would cause the dialog reference to be invalid.
-        //
-        // This used to cause a `modal is not a function` error.
-        //
-        $(this.dialog).modal('show');
+        this.dialog.modal('show');
 
         this.HideAlerts();
         this.Handle_Shown();
