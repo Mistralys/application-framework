@@ -1662,7 +1662,7 @@ var application =
             .SetIcon(UI.Icon().Warning())
             .MakeDangerous()
             .EnablePageDetails()
-            .Shown(function() {
+            .Shown(function(dialog) {
                 application.closeAllDialogs(true, [dialog]);
             });
     },
