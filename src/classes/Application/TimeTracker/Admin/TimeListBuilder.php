@@ -17,8 +17,11 @@ use AppUtils\Microtime;
 use Closure;
 use DBHelper\Admin\BaseCollectionListBuilder;
 use DBHelper_BaseCollection;
+use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 use UI_DataGrid;
+use UI_DataGrid_Action;
 
 class TimeListBuilder extends BaseCollectionListBuilder
 {
@@ -115,9 +118,25 @@ class TimeListBuilder extends BaseCollectionListBuilder
             ->setCallback(Closure::fromCallable(array($this, 'deleteEntries')));
     }
 
-    private function deleteEntries() : void
+    private function deleteEntries(UI_DataGrid_Action $action) : void
     {
+        $action->createRedirectMessage($this->resolveRedirectURL())
+            ->single(t('The time entry %1$s has been deleted successfully at %2$s.', sb()->bold('$label'), '$time'))
+            ->multiple(t('%1$s time entries have been deleted successfully at %2$s.', sb()->bold('$amount'), '$time'))
+            ->none(t('No time entries selected that could be deleted.'))
+            ->processDeleteDBRecords(AppFactory::createTimeTracker())
+            ->redirect();
+    }
 
+    private function resolveRedirectURL() : AdminURLInterface
+    {
+        $collection = AppFactory::createTimeTracker();
+
+        if($this->screen instanceof DayListScreen) {
+            return $collection->adminURL()->dayList();
+        }
+
+        return $collection->adminURL()->list();
     }
 
     protected function preRender(): void
