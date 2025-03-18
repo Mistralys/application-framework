@@ -126,11 +126,14 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
 
     protected function _handleSidebarTop(): void
     {
+        $this->sidebar->addButton('create', t('Create new entry').'...')
+            ->setIcon(UI::icon()->add())
+            ->link(AppFactory::createTimeTracker()->adminURL()->create());
+
+        $this->sidebar->addSeparator();
     }
 
     protected function _handleSidebarBottom(): void
     {
     }
-
-
 }
