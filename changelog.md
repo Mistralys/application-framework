@@ -7,6 +7,8 @@
 - DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
 - DataGrids: Added `setFormTarget()` and `getFormTarget()`.
 - DataGrids: Added the `makeAutoWidth()` method so the grid uses only the width its columns need.
+- Tests: Added the utility method `saveTestFile()`.
+- Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
 
 ## v5.7.5 - Screen Tie-In improvement
 - Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 

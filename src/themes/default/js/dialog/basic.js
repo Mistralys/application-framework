@@ -77,18 +77,19 @@ var Dialog_Basic =
 		if(!this.rendered) {
 			this.log('Show | Not rendered yet, rendering...');
 
-			var dialog = this;
+			var self = this;
 			this.Render();
 			UI.RefreshTimeout(function() {
-				dialog.PostRender();
-				dialog.Show();
+				self.PostRender();
+				self.Show();
 			});
 			return this;
 		}
 
 		this.log('Show | Dialog is ready, showing...');
-		
+
 		this.dialog.modal('show');
+
 		this.HideAlerts();
 		this.Handle_Shown();
 
@@ -158,7 +159,6 @@ var Dialog_Basic =
 			dialog.addClass(className);
 		});
 
-		console.log(this.dialog);
 		this.log('Render | Complete.');
 	},
 	
@@ -624,6 +624,8 @@ var Dialog_Basic =
 		});
 		
 		this._Start();
+
+		this.log('Render | All done.');
 	},
 	
    /**
@@ -757,6 +759,8 @@ var Dialog_Basic =
     */
 	Handle_Shown:function()
 	{
+		this.log('Shown | Executing shown tasks...');
+
 		this.isShown = true;
 
 		// fix for clicking an element with a tooltip to open the
@@ -764,12 +768,30 @@ var Dialog_Basic =
 		UI.CloseAllTooltips();
 
 		this._Handle_Shown();
-		
-		if(this.eventHandlers.shown.length > 0) {
-			for(var i=0; i<this.eventHandlers.shown.length; i++) {
-				this.eventHandlers.shown[i].call(undefined, this);
+
+		var self = this;
+
+		if(this.eventHandlers.shown.length > 0)
+		{
+			this.log(sprintf('Shown | Found [%s] event handlers.', this.eventHandlers.shown.length));
+
+			for(var i=0; i<this.eventHandlers.shown.length; i++)
+			{
+				this.log(sprintf('Shown | - Calling handler [#%s]', i));
+
+				try
+				{
+					this.eventHandlers.shown[i].call(undefined, self);
+				}
+				catch (e)
+				{
+					this.log('Shown | - Error calling handler: ' + e.message);
+					console.log(this.eventHandlers.shown[i]);
+				}
 			}
 		}
+
+		this.log('Shown | All done.');
 	},
 	
    /**
