@@ -67,7 +67,7 @@ abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionReco
     {
         $this->breadcrumb->appendItem($this->area->getNavigationTitle())
             ->makeLinked(TimeUIManager::getBackToListURL());
-        
+
         $this->breadcrumb->appendItem($this->record->getLabel())
             ->makeLinked($this->record->adminURL()->status());
     }
