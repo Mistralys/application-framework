@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionCreate;
 use DBHelper_BaseRecord;
@@ -49,9 +50,14 @@ abstract class BaseCreateScreen extends Application_Admin_Area_Mode_CollectionCr
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
+    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    {
+        return $this->getBackOrCancelURL();
+    }
+
     public function getBackOrCancelURL(): string
     {
-        return (string)AppFactory::createTimeTracker()->adminURL()->list();
+        return (string)TimeUIManager::getBackToListURL();
     }
 
     public function getRequiredRight(): string
