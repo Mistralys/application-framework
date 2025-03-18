@@ -28,6 +28,7 @@ use AppUtils\ImageHelper\ImageFormats\Formats\SVGImage;
 use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
 use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 use DBHelper;
+use Mistralys\AppFrameworkTests\TestClasses\TestOutputFile;
 use PHPUnit\Framework\TestCase;
 use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
@@ -238,6 +239,17 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         if($this instanceof MythologyTestInterface) {
             $this->setUpMythologyTestTrait();
         }
+    }
+
+    /**
+     * @param string $content
+     * @param string|null $extension If no extension is specified, uses {@see Application::DEFAULT_TEST_FILE_EXTENSION}.
+     * @param string|null $name If no name is specified, generates a unique name.
+     * @return TestOutputFile
+     */
+    public function saveTestFile(string $content, ?string $extension = null, ?string $name = null): TestOutputFile
+    {
+        return new TestOutputFile($content, $extension, $name);
     }
 
     // region Custom assertions
