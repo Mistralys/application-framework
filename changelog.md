@@ -4,6 +4,8 @@
 - DataGrids: Added the `makeAutoWidth()` method so the grid uses only the width its columns need.
 - DataGrids: Added `clientCommands()` to generate client-side statements.
 - DataGrids: Added `clientCommands()` to grid entries as well.
+- DataGrids: Now marking rows as active when the checkbox is checked.
+- DataGrids: Improved layout of sorted cells with hover and active rows.
 - Tests: Added the utility method `saveTestFile()`.
 - BigSelection: Added the possibility to add meta-controls to items with `addMetaControl()`.
 - Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
