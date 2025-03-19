@@ -49,11 +49,19 @@
     top: -16px;
 }
 
-.role-cell.sorted {
+.table .role-cell.sorted {
     background: var(--color-grid-bg-sorted);
 }
 
-.role-cell .icon-sort {
+.table-hover tbody tr:hover>td.sorted {
+    background: var(--color-grid-bg-sorted-hover);
+}
+
+.table TR.active .role-cell.sorted{
+    background: var(--color-grid-bg-sorted-active);
+}
+
+.table .role-cell .icon-sort {
     width: 11px;
     color: var(--color-grid-icon-sort);
 }
