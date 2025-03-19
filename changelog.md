@@ -5,6 +5,7 @@
 - DataGrids: Added `clientCommands()` to generate client-side statements.
 - DataGrids: Added `clientCommands()` to grid entries as well.
 - Tests: Added the utility method `saveTestFile()`.
+- BigSelection: Added the possibility to add meta-controls to items with `addMetaControl()`.
 - Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
 
 ### Deprecations
