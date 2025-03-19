@@ -668,12 +668,10 @@ function naturalSort (a, b)
  * ScrollTo function: scrolls to the specified DOM element.
  * Can be an existing DOM element, or a jQuery selector.
  * 
- * Deprecated: use the UI methods ScrollToElement or ScrollToOffset instead.
- * 
  * @param {DOMElement|string} target
  * @param {Object} [options]
  * @param {Number} [options.delay] The time the scrolling should take, in microsenconds. Defaults to the application.scrollToDelay setting.
- * @deprecated
+ * @deprecated Use the UI methods {@link UI.ScrollToElement()} or {@link UI.ScrollToOffset()} instead.
  */
 function scrollTo(target, options)
 {
