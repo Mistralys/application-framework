@@ -211,10 +211,18 @@ class UI_Datagrid extends UI_Renderable_HTML
 	}
 
 	/**
-	 * @param {jQuery} checkboxEl
+	 * @param {HTMLElement} checkboxEl
 	 */
 	Handle_SelectionChanged(checkboxEl)
 	{
+		var el = $(checkboxEl);
+
+		if(el.prop('checked')) {
+			el.closest('TR').addClass('active');
+		} else {
+			el.closest('TR').removeClass('active');
+		}
+
 		if(this.selectAllActive) {
 			this.ToggleSelectAll();
 		}

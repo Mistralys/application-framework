@@ -3,12 +3,22 @@
 - DBHelper: Added an abstract list builder for DBHelper collections.
 - ListBuilder: Added a trait for list screens via a list builder.
 
-## v5.7.6 - DataGrid enhancement
+## v5.7.6 - DataGrid enhancement (Deprecation-XS)
 - DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
 - DataGrids: Added `setFormTarget()` and `getFormTarget()`.
 - DataGrids: Added the `makeAutoWidth()` method so the grid uses only the width its columns need.
+- DataGrids: Added `clientCommands()` to generate client-side statements.
+- DataGrids: Added `clientCommands()` to grid entries as well.
+- DataGrids: Now marking rows as active when the checkbox is checked.
+- DataGrids: Improved layout of sorted cells with hover and active rows.
 - Tests: Added the utility method `saveTestFile()`.
+- BigSelection: Added the possibility to add meta-controls to items with `addMetaControl()`.
 - Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
+
+### Deprecations
+
+- `DataGrid::getClientSubmitStatement()` => use `clientCommands()` instead.
+- `DataGrid::getClientToggleSelectionStatement()` => use `clientCommands()` instead.
 
 ## v5.7.5 - Screen Tie-In improvement
 - Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 

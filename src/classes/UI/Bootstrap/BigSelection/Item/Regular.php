@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use AppUtils\AttributeCollection;
+use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -9,14 +13,16 @@ use UI\AdminURLs\AdminURLInterface;
  */
 class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_Item
 {
-    const ATTRIBUTE_DESCRIPTION = 'description';
-    const ATTRIBUTE_HREF = 'href';
-    const ATTRIBUTE_ONCLICK = 'onclick';
+    public const ATTRIBUTE_DESCRIPTION = 'description';
+    public const ATTRIBUTE_HREF = 'href';
+    public const ATTRIBUTE_ONCLICK = 'onclick';
+
+    protected string $label = '';
 
     /**
-     * @var string
+     * @var array<int,array{control:string,attributes:AttributeCollection|null}>
      */
-    protected $label = '';
+    protected array $metaControls = array();
 
     /**
      * Changes the label after instantiating the item.
@@ -74,18 +80,66 @@ class UI_Bootstrap_BigSelection_Item_Regular extends UI_Bootstrap_BigSelection_I
 
         ?>
         <li class="<?php echo implode(' ', $this->classes) ?>"<?php echo $searchAtt ?>>
+            <?php $this->renderMetaControls() ?>
             <a<?php echo compileAttributes($anchorAtts) ?> class="bigselection-anchor">
-        			<span class="bigselection-label">
-        				<?php echo $this->renderLabel() ?>
-    				</span>
+                <span class="bigselection-label">
+                    <?php echo $this->renderLabel() ?>
+                </span>
                 <span class="bigselection-description">
-    					<?php echo $this->getAttribute(self::ATTRIBUTE_DESCRIPTION) ?>
-    				</span>
+                    <?php echo $this->getAttribute(self::ATTRIBUTE_DESCRIPTION) ?>
+                </span>
             </a>
         </li>
         <?php
 
         return OutputBuffering::get();
+    }
+
+    /**
+     * Adds a control to the meta area of the item (typically floating on the right side).
+     *
+     * @param string|StringableInterface $control
+     * @param AttributeCollection|null $attributes Optional attributes for the meta-control element.
+     * @return $this
+     */
+    public function addMetaControl($control, ?AttributeCollection $attributes=null) : self
+    {
+        $this->metaControls[] = array(
+            'control' => (string)$control,
+            'attributes' => $attributes
+        );
+
+        return $this;
+    }
+
+    protected function renderMetaControls() : void
+    {
+        if(empty($this->metaControls)) {
+            return;
+        }
+
+        ?>
+        <ul class="bigselection-meta-controls unstyled">
+            <?php
+            foreach($this->metaControls as $control)
+            {
+                if(isset($control['attributes'])) {
+                    $attributes = $control['attributes']->render();
+                } else {
+                    $attributes = AttributeCollection::create();
+                }
+
+                $attributes->addClass('bigselection-meta-control');
+
+                ?>
+                <li <?php echo $attributes ?>>
+                    <?php echo $control['control'] ?>
+                </li>
+                <?php
+            }
+            ?>
+        </ul>
+        <?php
     }
 
     protected function resolveSearchWords() : string
