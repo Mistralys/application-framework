@@ -25,9 +25,11 @@ use UI_DataGrid_Entry;
 class EntryClientCommands
 {
     private string $checkboxID;
+    private UI_DataGrid_Entry $entry;
 
     public function __construct(UI_DataGrid_Entry $entry)
     {
+        $this->entry = $entry;
         $this->checkboxID = $entry->getCheckboxID();
     }
 
@@ -66,6 +68,18 @@ class EntryClientCommands
 TPL;
 
         return sprintf($cmd, $this->getCheckboxSelector());
+    }
+
+    /**
+     * JS command to scroll to this data grid row in the page.
+     * @return string
+     */
+    public function scrollTo() : string
+    {
+        return sprintf(
+            "UI.ScrollToElement(%s);",
+            $this->entry->getID()
+        );
     }
 
     /**
