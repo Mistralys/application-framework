@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link UI_DataGrid} class.
- *
- * @package Application
- * @subpackage UserInterface
- * @see UI_DataGrid
+ * @package User Interface
+ * @subpackage Data Grids
  */
 
 use Application\AppFactory;
@@ -15,6 +12,7 @@ use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
 use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
+use UI\DataGrid\GridClientCommands;
 use UI\DataGrid\GridConfigurator;
 use function AppLocalize\tex;
 
@@ -23,8 +21,8 @@ use function AppLocalize\tex;
  * like applying custom actions to entries, allowing the user to reorder
  * list items, and more.
  *
- * @package Application
- * @subpackage UserInterface
+ * @package User Interface
+ * @subpackage Data Grids
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class UI_DataGrid implements HiddenVariablesInterface
@@ -732,21 +730,40 @@ class UI_DataGrid implements HiddenVariablesInterface
     	return 'grid'.str_replace('-', '_', $this->id);
     }
 
+    /**
+     * @param string $actionName
+     * @return string
+     * @deprecated Use {@see self::clientCommands()} instead.
+     */
     public function getClientSubmitStatement(string $actionName) : string
     {
-        return sprintf(
-            "%s.Submit('%s')",
-            $this->getClientObjectName(),
-            $actionName
-        );
+        return $this->clientCommands()->submitAction($actionName);
     }
 
+    /**
+     * @return string
+     * @deprecated Use {@see self::clientCommands()} instead.
+     */
     public function getClientToggleSelectionStatement() : string
     {
-        return sprintf(
-            "%s.ToggleSelection()",
-            $this->getClientObjectName()
-        );
+        return $this->clientCommands()->toggleSelection();
+    }
+
+    private ?GridClientCommands $clientCommands = null;
+
+    /**
+     * Gets the helper class used to access client-side commands
+     * related to this data grid.
+     *
+     * @return GridClientCommands
+     */
+    public function clientCommands() : GridClientCommands
+    {
+        if(!isset($this->clientCommands)) {
+            $this->clientCommands = new GridClientCommands($this);
+        }
+
+        return $this->clientCommands;
     }
 
    /**
@@ -1576,7 +1593,7 @@ class UI_DataGrid implements HiddenVariablesInterface
 
             if($this->multiSelect && $this->countPages() > 1)
             {
-                $toggleStatement = $this->getClientObjectName().'.ToggleSelectAll()';
+                $toggleStatement = $this->clientCommands()->toggleSelectAll();
 
                 $html .=
                 '<tr class="actions actions-selectall">' .
