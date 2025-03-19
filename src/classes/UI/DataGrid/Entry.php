@@ -5,6 +5,7 @@
  */
 
 use AppUtils\ConvertHelper;
+use AppUtils\HTMLTag;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Traits\ClassableTrait;
 use UI\DataGrid\EntryClientCommands;
@@ -247,34 +248,45 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
     public function render() : string
     {
+        return (string)HTMLTag::create('tr')
+            ->id($this->getID())
+            ->addClasses($this->getClasses())
+            ->attr('data-refid', $this->getReferenceID())
+            ->setContent($this->grid->renderCells($this));
+    }
+
+    /**
+     * If a primary field is present in the grid, adds the
+     * `data-refid` attribute to the row, containing the value
+     * of the primary field for the entry. This is used on the
+     * client side to access the primary value.
+     *
+     * @return string
+     * @throws UI_DataGrid_Exception
+     */
+    public function getReferenceID() : string
+    {
         $primary = $this->grid->getPrimaryField();
 
-        $attribs = array(
-            'class' => $this->classesToString(),
-        );
-        
         // if the primary key name is set, we are in a mode where this
         // is required.
-        if (!empty($primary)) {
-            if(!isset($this->data[$primary])) {
-                throw new Application_Exception(
-                    'Missing primary key value',
-                    sprintf(
-                        'Could not find the primary key [%s] in the data record. Only the keys [%s] were present.',
-                        $primary,
-                        implode(', ', array_keys($this->data))
-                    ),
-                    self::ERROR_MISSING_PRIMARY_VALUE
-                );
-            }
-            
-            $attribs['data-refid'] = $this->data[$primary];
+        if (empty($primary)) {
+            return '';
         }
 
-        return
-            '<tr '.compileAttributes($attribs).'>' .
-                $this->grid->renderCells($this) .
-            '</tr>';
+        if(isset($this->data[$primary])) {
+            return(string)$this->data[$primary];
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Missing primary key value',
+            sprintf(
+                'Could not find the primary key [%s] in the data record. Only the keys [%s] were present.',
+                $primary,
+                implode(', ', array_keys($this->data))
+            ),
+            self::ERROR_MISSING_PRIMARY_VALUE
+        );
     }
 
     // region: Array access interface
