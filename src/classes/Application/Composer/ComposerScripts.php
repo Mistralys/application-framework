@@ -94,7 +94,7 @@ class ComposerScripts
         // loads the unit test bootstrapper. In an application, this is not
         // the case so we load the composer bootstrapper to ensure that everything
         // is available, like the database.
-        if(!Application_Bootstrap::isInitialized()) {
+        if(!Application_Bootstrap::isBooted()) {
             Application_Bootstrap::bootClass(ComposerScriptBootstrap::class);
         }
     }
