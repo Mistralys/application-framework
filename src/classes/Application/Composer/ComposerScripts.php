@@ -10,7 +10,9 @@ namespace Application\Composer;
 
 use Application;
 use Application\AppFactory\ClassCacheHandler;
+use Application\Bootstrap\ComposerScriptBootstrap;
 use Application\CacheControl\CacheManager;
+use Application_Bootstrap;
 use Application_Exception;
 use AppUtils\FileHelper\FileInfo;
 
@@ -32,6 +34,8 @@ class ComposerScripts
      */
     public static function clearClassCache() : void
     {
+        self::init();
+
         echo 'Clearing class cache...';
         ClassCacheHandler::clearClassCache();
         echo 'DONE.'.PHP_EOL;
@@ -39,10 +43,14 @@ class ComposerScripts
 
     public static function clearCaches() : void
     {
+        self::init();
+
         echo 'Clearing all caches...';
         CacheManager::getInstance()->clearAll();
         echo 'DONE.'.PHP_EOL;
     }
+
+    private static bool $initialized = false;
 
     /**
      * Loads the bootstrap file for the application.
@@ -59,6 +67,12 @@ class ComposerScripts
      */
     public static function init() : void
     {
+        if(self::$initialized) {
+            return;
+        }
+
+        self::$initialized = true;
+
         if(Application::isInstalledAsDependency()) {
             $bootstrap = Application::detectRootFolder().'/bootstrap.php';
         } else {
@@ -75,7 +89,13 @@ class ComposerScripts
         }
 
         require_once (string)$file;
+
+        // When not installed as a dependency, the bootstrapper automatically
+        // loads the unit test bootstrapper. In an application, this is not
+        // the case so we load the composer bootstrapper to ensure that everything
+        // is available, like the database.
+        if(!Application_Bootstrap::isInitialized()) {
+            Application_Bootstrap::bootClass(ComposerScriptBootstrap::class);
+        }
     }
 }
-
-ComposerScripts::init();
