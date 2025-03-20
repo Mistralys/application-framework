@@ -81,6 +81,8 @@ class Application_Bootstrap
         $class = APP_CLASS_NAME.'_Bootstrap_'.$screenID;
         self::bootClass($class, $params, $displayException);
     }
+
+    private static bool $booted = false;
     
    /**
     * Boots an admin screen using its class name.
@@ -123,6 +125,8 @@ class Application_Bootstrap
             
             $screen->boot();
 
+            self::$booted = true;
+
             // Display the page content
             ob_end_flush();
         }
@@ -142,6 +146,15 @@ class Application_Bootstrap
                 throw $e;
             }
         }
+    }
+
+    /**
+     * Whether the bootstrapper has been booted.
+     * @return bool
+     */
+    public static function isBooted() : bool
+    {
+        return self::$booted;
     }
 
     /**
