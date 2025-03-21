@@ -1172,12 +1172,10 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $totalEntries = count($entries);
         $emptyDisplay = 'block';
-        $tableDisplay = 'none';
         $dropperDisplay = 'block';
-        if ($entries > 0) {
+        if ($totalEntries > 0) {
             $this->entries = $this->filterAndSortEntries($entries);
             $emptyDisplay = 'none';
-            $tableDisplay = 'table';
             $dropperDisplay = 'none';
         }
 
@@ -1320,10 +1318,6 @@ class UI_DataGrid implements HiddenVariablesInterface
         // list, so they are passed on.
         foreach($this->actions as $action)
         {
-            if(!$action instanceof UI_DataGrid_Action) {
-                continue;
-            }
-
             $params = $action->getParams();
             $actionName = $action->getName();
             foreach($params as $name => $value) {
@@ -2861,6 +2855,10 @@ class UI_DataGrid implements HiddenVariablesInterface
 
     private ?string $formTarget = null;
 
+    /**
+     * @param string|null $target
+     * @return $this
+     */
     public function setFormTarget(?string $target) : self
     {
         if(!empty($target)) {

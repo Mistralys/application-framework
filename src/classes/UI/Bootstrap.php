@@ -211,7 +211,6 @@ abstract class UI_Bootstrap extends UI_Renderable
      *
      * @param string $type
      * @return UI_Interfaces_Bootstrap
-     * @throws Application_Exception
      */
     public function createChild(string $type) : UI_Interfaces_Bootstrap
     {

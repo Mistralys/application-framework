@@ -80,7 +80,7 @@ class ResponseError
     public function getAllCodes() : array
     {
         $exception = $this->getException();
-        $codes = array($this->getCode());
+        $codes = array((string)$this->getCode());
 
         if($exception !== null) {
             $this->getExceptionCodesRecursive($exception, $codes);

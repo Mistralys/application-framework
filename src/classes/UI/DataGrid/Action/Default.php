@@ -6,6 +6,6 @@ class UI_DataGrid_Action_Default extends UI_DataGrid_Action
 {
     protected function init() : void
     {
-        $this->attributes['onclick'] = $this->grid->clientCommands()->submitAction($this->name, true);
+        $this->attributes['onclick'] = $this->grid->clientCommands()->submitAction($this->name);
     }
 }
