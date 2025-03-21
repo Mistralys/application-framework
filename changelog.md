@@ -1,3 +1,11 @@
+## v5.7.7 - DataGrid form target change
+- DataGrids: Removed setting the form target for the whole grid.
+
+Background for this change: Setting the form target for the whole
+grid caused regular grid functions like sorting to also open in a 
+new tab. This was not the intended behavior and has been removed
+in favor of setting it only for specific list actions.
+
 ## v5.7.6 - DataGrid enhancement (Deprecation-XS)
 - DataGrids: Added `setFormTarget()` and `getFormTarget()`.
 - DataGrids: Added `enableSubmitInNewTab()` to set the form target to `_blank`.
