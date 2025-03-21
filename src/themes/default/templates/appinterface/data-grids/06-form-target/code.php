@@ -13,24 +13,19 @@ $grid->enableMultiSelect('id');
 $grid->addHiddenScreenVars();
 $grid->addHiddenVar(Application_Admin_Area_Devel_Appinterface::REQUEST_PARAM_EXAMPLE_ID, $activeExampleID);
 
-// Make the grid's actions open in a new tab by default.
-$grid->enableSubmitInNewTab();
-
-$grid->addAction('submit-new', t('Submit (%1$s)', t('new tab')))
+$grid->addAction('submit-self', t('Submit'))
     ->setCallback('collectSubmittedGridValues');
 
-// The form target can be overridden on a per-action basis.
-$grid->addAction('submit-self', t('Submit (%1$s)', t('same tab')))
-    ->setFormTarget('_self')
+$grid->addAction('submit-new', t('Submit (%1$s)', t('new tab')))
+    ->setFormTarget('_blank')
+    ->setCallback('collectSubmittedGridValues');
+
+$grid->addConfirmAction('confirm-self', t('Confirm'), t('Please confirm.'))
     ->setCallback('collectSubmittedGridValues');
 
 $grid->addConfirmAction('confirm-new', t('Confirm (%1$s)', t('new tab')), t('Please confirm.'))
+    ->setFormTarget('_blank')
     ->setCallback('collectSubmittedGridValues');
-
-$grid->addConfirmAction('confirm-self', t('Confirm (%1$s)', t('same tab')), t('Please confirm.'))
-    ->setFormTarget('_self')
-    ->setCallback('collectSubmittedGridValues');
-
 
 // Display the grid
 echo $grid->render(array(

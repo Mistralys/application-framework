@@ -1,10 +1,7 @@
-The target of a data grid's form can be set with `setFormTarget()`. 
-Setting this to `_blank` will cause all grid actions to be submitted
-in a new browser tab. The utility method `enableSubmitInNewTab()`
-used in the example below is shorthand for this.
+The target of a data grid action can be set with `setFormTarget()`. 
+Setting this to `_blank` will cause the grid's form to be submitted
+in a new browser tab. 
 
-The grid's actions can override this individually. For example, the
-following grid has been set to open in a new tab. However, some actions 
-in the grid have been configured to open in the same tab.
-
-Use the action menu to see this in action.
+To illustrate, some actions in the following grid have been set to 
+open in a new tab. Use the action menu to see this in action.
+The values selected in the grid will be shown in a UI message.
