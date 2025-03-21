@@ -15,3 +15,7 @@ echo "-------------------------------------------------------"
 echo ""
 
 $BinFolder/phpstan analyse -l $AnalysisLevel -c $ConfigFile --memory-limit=$MemoryLimit > $OutputFile
+
+echo ""
+echo "Saved to $OutputFile."
+echo ""
