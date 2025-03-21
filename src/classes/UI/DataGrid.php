@@ -1119,7 +1119,6 @@ class UI_DataGrid implements HiddenVariablesInterface
             ->id($this->getFormID())
             ->attr('method', 'post')
             ->addClass('form-inline')
-            ->attr('target', $this->getFormTarget())
             ->attr('action', $this->getFormAction());
     }
 
@@ -2837,40 +2836,9 @@ class UI_DataGrid implements HiddenVariablesInterface
         Application::getUser()->resetSettings($prefix);
     }
 
-    /**
-     * Makes the grid's form be submitted into a new tab.
-     * Shorthand for setting the form's target to `_blank`.
-     *
-     * @return $this
-     */
-    public function enableSubmitInNewTab() : self
-    {
-        return $this->setFormTarget('_blank');
-    }
-
     protected function getFormAction() : string
     {
         return APP_URL.'/'.$this->dispatcher;
-    }
-
-    private ?string $formTarget = null;
-
-    /**
-     * @param string|null $target
-     * @return $this
-     */
-    public function setFormTarget(?string $target) : self
-    {
-        if(!empty($target)) {
-            $this->formTarget = $target;
-        }
-
-        return $this;
-    }
-
-    public function getFormTarget() : ?string
-    {
-        return $this->formTarget;
     }
 
     /**
