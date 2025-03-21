@@ -112,11 +112,37 @@ class UI_Datagrid extends UI_Renderable_HTML
     * The actions are determined serverside when multi-actions
     * are enabled.
     *
+	* @param {String} actionName
+	* @param {HTMLElement|null} actionElement Optional: The anchor of the action entry. Used by the action links for the data attributes.
     */
-	Submit(actionName)
+	Submit(actionName, actionElement)
 	{
+		var restoreTarget = null;
+
+		if(actionElement !== null)
+		{
+			var target = $(actionElement).attr('data-form-target');
+			var form = this.GetFormElement();
+
+			if(!isEmpty(target)) {
+				this.log(sprintf('Submit | Action [%s] | Has speficic target [%s], using this.', actionName, target));
+				restoreTarget = form.attr('target');
+				form.attr('target', target);
+			}
+		}
+
+		this.log(sprintf('Submit | Action [%s] | Submitting the form.', actionName));
+
 		this.GetFormElement('action').val(actionName);
 		this.GetFormElement().submit();
+
+		// Restore the original target attribute, as we may
+		// be staying on this page if the action opens in a
+		// new tab.
+		if(!isEmpty(restoreTarget)) {
+			this.log(sprintf('Submit | Action [%s] | Restoring original form target [%s].', actionName, restoreTarget));
+			form.attr('target', restoreTarget);
+		}
 	}
 
 	/**
