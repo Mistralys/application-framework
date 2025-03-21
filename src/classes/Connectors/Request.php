@@ -745,7 +745,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         HTTP_Request2::METHOD_GET => array(200),
         HTTP_Request2::METHOD_DELETE => array(200, 204),
         HTTP_Request2::METHOD_PUT => array(201, 202),
-        HTTP_Request2::METHOD_POST => array(200, 202)
+        HTTP_Request2::METHOD_POST => array(200, 201, 202)
     );
     
    /**

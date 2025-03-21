@@ -84,7 +84,7 @@ abstract class Application_User
 
    /**
     * Stores the user setting values
-    * @var array
+    * @var array<string,mixed>
     */
     protected array $settings = array();
 
@@ -406,16 +406,9 @@ abstract class Application_User
 
         $this->log('Loading settings.');
 
-        $data = $this->storage->load();
-
-        if (!is_array($data))
+        foreach ($this->storage->load() as $name => $value)
         {
-            $this->logError('The stored settings data is not an array.');
-            return;
-        }
-
-        foreach ($data as $name => $value)
-        {
+            $name = (string)$name;
             $this->settings[$name] = $this->validateSetting($name, $value);
         }
 
@@ -543,7 +536,7 @@ abstract class Application_User
     *
     * @param int $user_id
     * @return Application_User
-    * @throws Application_Exception|DBHelper_Exception
+    * @throws Application_Exception
     * @deprecated Use {@see Application::createUser()} instead.
     */
     public static function createByID(int $user_id) : Application_User
@@ -561,8 +554,8 @@ abstract class Application_User
     }
 
     /**
-     * Creates the dummy user that is used in the simulated session
-     * mode, where the authentication layer is not used. It is not
+     * Creates the stub user used in the simulated session mode,
+     * where the authentication layer is not used. It is not
      * used in any other cases.
      *
      * @return Application_User
@@ -731,7 +724,7 @@ abstract class Application_User
 
     /**
      * Sets the user's rights.
-     * @param string|string[] $rights Comma-separated rights list, or indexed array with right names.
+     * @param string|string[]|mixed $rights Comma-separated rights list, or indexed array with right names. Any other value types are ignored.
      */
     public function setRights($rights) : void
     {

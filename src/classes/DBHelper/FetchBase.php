@@ -17,25 +17,18 @@ declare(strict_types=1);
  */
 abstract class DBHelper_FetchBase
 {
-   /**
-    * @var string
-    */
-    protected $table;
-    
-   /**
-    * @var integer
-    */
-    protected static $placeholderCounter = 0;
+    protected string $table;
+    protected static int $placeholderCounter = 0;
 
    /**
-    * @var string[]mixed
+    * @var array<int|string,mixed>
     */
-    protected $data = array();
+    protected array $data = array();
     
    /**
     * @var string[]
     */
-    protected $where = array();
+    protected array $where = array();
     
     public function __construct(string $table)
     {
@@ -43,13 +36,16 @@ abstract class DBHelper_FetchBase
     }
     
    /**
-    * 
     * @param string $column
-    * @param string|number $value
+    * @param string|int|float|null $value
     * @return $this
     */
-    public function whereValue(string $column, $value)
+    public function whereValue(string $column, $value) : self
     {
+        if($value === null) {
+            return $this->whereNull($column);
+        }
+
         $placeholder = $this->createPlaceholder();
         
         $this->data[$placeholder] = $value;
@@ -66,13 +62,12 @@ abstract class DBHelper_FetchBase
     * match the specified value.
     * 
     * @param string $column
-    * @param string|null|number $value
+    * @param string|null|int|float $value
     * @return $this
     */
-    public function whereValueNot(string $column, $value)
+    public function whereValueNot(string $column, $value) : self
     {
-        if(is_null($value))
-        {
+        if(is_null($value)) {
             return $this->whereNotNull($column);
         }
         
@@ -93,7 +88,7 @@ abstract class DBHelper_FetchBase
     * @param array<string,mixed> $values
     * @return $this
     */
-    public function whereValues(array $values)
+    public function whereValues(array $values) : self
     {
         foreach($values as $column => $value)
         {
@@ -104,12 +99,12 @@ abstract class DBHelper_FetchBase
     }
     
    /**
-    * Adds a where column is null statement.
+    * Adds a where column `is null` statement.
     * 
     * @param string $column
     * @return $this
     */
-    public function whereNull(string $column)
+    public function whereNull(string $column) : self
     {
         return $this->addWhere(sprintf(
             '    %s IS NULL',
@@ -118,12 +113,12 @@ abstract class DBHelper_FetchBase
     }
     
    /**
-    * Adds a where column is not null statement.
+    * Adds a where column `is not null` statement.
     * 
     * @param string $column
     * @return $this
     */
-    public function whereNotNull(string $column)
+    public function whereNotNull(string $column) : self
     {
         return $this->addWhere(sprintf(
             '    %s IS NOT NULL',
@@ -137,7 +132,7 @@ abstract class DBHelper_FetchBase
     * @param string $where
     * @return $this
     */
-    protected function addWhere(string $where)
+    protected function addWhere(string $where) : self
     {
         $this->where[] = $where;
         
@@ -184,7 +179,7 @@ abstract class DBHelper_FetchBase
      * @param array $values
      * @return $this
      */
-    public function whereValueIN(string $name, array $values)
+    public function whereValueIN(string $name, array $values) : self
     {
         return $this->buildIN('IN', $name, $values);
     }
@@ -194,12 +189,18 @@ abstract class DBHelper_FetchBase
      * @param array $values
      * @return $this
      */
-    public function whereValueNOT_IN(string $name, array $values)
+    public function whereValueNOT_IN(string $name, array $values) : self
     {
         return $this->buildIN('NOT IN', $name, $values);
     }
 
-    private function buildIN(string $type, string $name, array $values)
+    /**
+     * @param string $type
+     * @param string $name
+     * @param array<string|int,mixed> $values
+     * @return $this
+     */
+    private function buildIN(string $type, string $name, array $values) : self
     {
         $in = array();
 

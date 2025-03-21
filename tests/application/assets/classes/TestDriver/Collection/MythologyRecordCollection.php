@@ -19,7 +19,7 @@ use Application_Traits_Loggable;
  * used to showcase the usage of the interface in a test environment.
  *
  * @package TestDriver
- * @supackage Collection
+ * @subpackage Collection
  */
 class MythologyRecordCollection implements StringCollectionInterface
 {
@@ -94,11 +94,18 @@ class MythologyRecordCollection implements StringCollectionInterface
         return isset($this->items[$record_id]);
     }
 
+    /**
+     * @param string|int $record_id
+     * @return MythologicalRecord
+     */
     public function getByID($record_id): StringCollectionItemInterface
     {
         return $this->items[(string)$record_id];
     }
 
+    /**
+     * @return MythologicalRecord[]
+     */
     public function getAll() : array
     {
         return array_values($this->items);

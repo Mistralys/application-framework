@@ -110,12 +110,12 @@ class Application_Driver_AdminInfo implements OptionableInterface
         }
         
         // skip non-skeleton classes and wizard steps
-        if(!$class->isSublassOf(Application_Admin_Skeleton::class)) {
+        if(!$class->isSubclassOf(Application_Admin_Skeleton::class)) {
             $this->log('<span style="color:#cc0000">'.$className.'@'.$relpath.': Does not extend admin skeleton.</span>');
             return;
         }
         
-        if($class->isSublassOf(Application_Admin_Wizard_Step::class)) {
+        if($class->isSubclassOf(Application_Admin_Wizard_Step::class)) {
             $this->log('<span style="color:#cc0000">'.$className.'@'.$relpath.': Wizard step class.</span>');
             return;
         }

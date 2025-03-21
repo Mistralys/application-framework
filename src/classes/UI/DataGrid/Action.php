@@ -33,11 +33,12 @@ abstract class UI_DataGrid_Action
      * @var array<string,string>
      */
     protected array $attributes = array(
-        'href' => 'javascript:void(0);'
+        'href' => '#'
     );
 
     protected string $id;
     protected UI $ui;
+    private ?string $formTarget = null;
 
     /**
      * @param UI_DataGrid $grid
@@ -225,9 +226,14 @@ abstract class UI_DataGrid_Action
     protected function renderAttributes() : string
     {
         $this->attributes['id'] = $this->getID();
+        $this->attributes['data-action'] = $this->getName();
         
         if(!empty($this->classes)) {
             $this->attributes['class'] = $this->classesToString();
+        }
+
+        if(!empty($this->formTarget)) {
+            $this->attributes['data-form-target'] = $this->formTarget;
         }
         
         if(isset($this->jsMethod)) {
@@ -252,9 +258,17 @@ abstract class UI_DataGrid_Action
             $varName = 'gcm'.nextJSID();
             $funcName = 'gcf'.nextJSID();
             $this->ui->addJavascriptHeadVariable('var '.$varName, $this->confirmMessage['message']);
-            $this->ui->addJavascriptHead('function '.$funcName.'() {'.$this->attributes['onclick'].';}');
+            $this->ui->addJavascriptHead(sprintf(
+                '/**'.PHP_EOL.
+                ' * Grid action [%s] confirm function'.PHP_EOL.
+                ' */'.PHP_EOL.
+                'function %s() {%s;}',
+                $this->getName(),
+                $funcName,
+                rtrim($this->attributes['onclick'], ';')
+            ));
             
-            $dialog ='application.createConfirmationDialog('.$varName.', '.$funcName.')';
+            $dialog ='application.createConfirmationDialog(/*message*/ '.$varName.', /*function*/ '.$funcName.')';
             if($this->hasClass('action-danger')) {
                 $dialog .= '.MakeDangerous()';
             }
@@ -270,19 +284,18 @@ abstract class UI_DataGrid_Action
             $this->attributes['title'] = $this->tooltip;
             JSHelper::tooltipify($this->getID());
         }
-        
-        $items = array();
-        foreach ($this->attributes as $name => $value) {
-            $items[] = $name . '="' . $value . '"';
+
+        if(!empty($this->attributes['onclick'])) {
+            $this->attributes['onclick'] = rtrim($this->attributes['onclick']).';return false;';
         }
 
-        return ' ' . implode(' ', $items);
+        return compileAttributes($this->attributes);
     }
 
     /**
      * @var bool
      */
-    protected $lastBatch = false;
+    protected bool $lastBatch = false;
     
    /**
     * Checks whether this is the last batch of actions to
@@ -521,5 +534,23 @@ abstract class UI_DataGrid_Action
     public function createRedirectMessage($redirectURL) : UI_DataGrid_RedirectMessage
     {
         return new UI_DataGrid_RedirectMessage($this, $redirectURL);
+    }
+
+    /**
+     * Sets the form's target to use if this action is executed,
+     * overriding the target set on the main data grid.
+     *
+     * This allows each action to be submitted differently as
+     * needed. For example, the grid itself may be set to open
+     * in a new tab, but a specific action may need to open in
+     * the same tab.
+     *
+     * @param string|NULL $target
+     * @return self
+     */
+    public function setFormTarget(?string $target) : self
+    {
+        $this->formTarget = $target;
+        return $this;
     }
 }

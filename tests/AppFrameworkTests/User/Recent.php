@@ -75,7 +75,6 @@ final class User_RecentTest extends UserTestCase
 
         $category = $recent->getCategoryByAlias(NewsCollection::RECENT_ITEMS_CATEGORY);
 
-        $this->assertNotNull($category);
         $this->assertEquals(NewsCollection::RECENT_ITEMS_CATEGORY, $category->getAlias());
     }
 

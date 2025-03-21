@@ -25,9 +25,11 @@ use UI_DataGrid;
 class GridClientCommands
 {
     private string $objectName;
+    private UI_DataGrid $grid;
 
     public function __construct(UI_DataGrid $grid)
     {
+        $this->grid = $grid;
         $this->objectName = $grid->getClientObjectName();
     }
 
@@ -40,12 +42,26 @@ class GridClientCommands
         return $this->objectName;
     }
 
+    /**
+     * @param string $actionName
+     * @return string
+     */
     public function submitAction(string $actionName) : string
     {
+        $action = $this->grid->getActionByName($actionName);
+
+        // The action anchor element is added using the ID
+        // selector, because this statement may be added
+        // anywhere in the page, so `this` cannot be used.
+        //
+        // An example is the confirmation dialog, which moves
+        // this call into an anonymous function called when the
+        // dialog is confirmed.
         return sprintf(
-            "%s.Submit('%s')",
+            "%s.Submit('%s', $('#%s'))",
             $this->objectName,
-            $actionName
+            $actionName,
+            $action->getID()
         );
     }
 

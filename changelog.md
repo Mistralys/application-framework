@@ -3,6 +3,17 @@
 - DBHelper: Added an abstract list builder for DBHelper collections.
 - ListBuilder: Added a trait for list screens via a list builder.
 
+## v5.7.8 - Connector update
+- Connectors: Added `201` as accepted status code for POST requests ([#76](https://github.com/Mistralys/application-framework/pull/76)) - thanks @danielioinos.
+
+## v5.7.7 - DataGrid form target change
+- DataGrids: Removed setting the form target for the whole grid.
+
+Background for this change: Setting the form target for the whole
+grid caused regular grid functions like sorting to also open in a 
+new tab. This was not the intended behavior and has been removed
+in favor of setting it only for specific list actions.
+
 ## v5.7.6 - DataGrid enhancement (Deprecation-XS)
 - DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
 - DataGrids: Added `setFormTarget()` and `getFormTarget()`.

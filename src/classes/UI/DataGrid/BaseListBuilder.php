@@ -371,9 +371,6 @@ abstract class BaseListBuilder
     /**
      * @param UI_Page_Sidebar $sidebar
      * @return $this
-     * @throws Application_Exception
-     * @throws DriverException
-     * @throws UI_Exception#
      */
     public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {
