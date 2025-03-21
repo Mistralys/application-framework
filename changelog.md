@@ -1,3 +1,6 @@
+## v5.7.8 - Connector update
+- Connectors: Added `201` as accepted status code for POST requests ([#76](https://github.com/Mistralys/application-framework/pull/76)) - thanks @danielioinos.
+
 ## v5.7.7 - DataGrid form target change
 - DataGrids: Removed setting the form target for the whole grid.
 
