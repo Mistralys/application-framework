@@ -1,14 +1,19 @@
 ## v5.7.6 - DataGrid enhancement (Deprecation-XS)
-- DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
 - DataGrids: Added `setFormTarget()` and `getFormTarget()`.
+- DataGrids: Added `enableSubmitInNewTab()` to set the form target to `_blank`.
 - DataGrids: Added the `makeAutoWidth()` method so the grid uses only the width its columns need.
 - DataGrids: Added `clientCommands()` to generate client-side statements.
 - DataGrids: Added `clientCommands()` to grid entries as well.
 - DataGrids: Now marking rows as active when the checkbox is checked.
 - DataGrids: Improved layout of sorted cells with hover and active rows.
+- DataGrids: Actions can now choose to override the grid's form target.
+- DataGrids: Improved the click handling somewhat of the grid's actions.
+- DataGrids: An exception is now thrown when adding actions with an existing name.
+- DataGrids: Added action-related utility methods like `actionExists()`.
 - Tests: Added the utility method `saveTestFile()`.
 - BigSelection: Added the possibility to add meta-controls to items with `addMetaControl()`.
 - Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
+- Composer: Fixed the scripts failing when run from an application because no screen was booted.
 
 ### Deprecations
 
