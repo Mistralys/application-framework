@@ -6,6 +6,7 @@ namespace AppFrameworkTests\MarkdownParser;
 
 use Application\MarkdownRenderer;
 use Application\MarkdownRenderer\CustomTags\MediaTag;
+use Application_Media_Document_Image;
 use Mistralys\AppFrameworkTests\TestClasses\MediaTestCase;
 
 final class ParseTests extends MediaTestCase
@@ -23,6 +24,40 @@ final class ParseTests extends MediaTestCase
         $this->assertSame(78, $tag->getWidth());
         $this->assertNull($tag->getDocument());
         $this->assertStringContainsString('not found', $tag->render());
+    }
+
+    public function test_parseMediaWithClass() : void
+    {
+        $image = $this->createTestImage();
+
+        $text = '{media: '.$image->getID().' class="my-class"}';
+
+        $tags = MediaTag::findTags($text);
+
+        $this->assertCount(1, $tags);
+        $tag = $tags[0];
+        $this->assertSame(array('my-class', 'visual'), $tag->getClasses());
+        $this->assertStringContainsString('class="my-class visual"', $tag->render());
+    }
+
+    /**
+     * When turning off the thumbnail, the image source should be the full image.
+     */
+    public function test_parseMediaNoThumbnail() : void
+    {
+        $image = $this->createTestImage();
+
+        $text = '{media: '.$image->getID().' width="78" thumbnail="no"}';
+
+        $tags = MediaTag::findTags($text);
+
+        $this->assertCount(1, $tags);
+        $tag = $tags[0];
+        $image = $tag->getDocument();
+        $this->assertInstanceOf(Application_Media_Document_Image::class, $image);
+        $this->assertFalse($tag->isThumbnail());
+        $this->assertStringContainsString('width="78"', $tag->render());
+        $this->assertStringContainsString(sprintf('src="%s"', $image->getThumbnailURL()), $tag->render());
     }
 
     public function test_parseMediaDocumentExists() : void
