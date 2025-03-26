@@ -3,6 +3,12 @@
 - DBHelper: Added an abstract list builder for DBHelper collections.
 - ListBuilder: Added a trait for list screens via a list builder.
 
+## v5.7.9 - News update
+- News: Improved styling of articles somewhat for readability.
+- Markdown: Added the `class` attribute to `{media}` tags.
+- Markdown: Added the boolean `thumbnail` attribute to `{media}` tags to turn off thumbnail generation.
+- Markdown: Updated text styling somewhat for readability.
+
 ## v5.7.8 - Connector update
 - Connectors: Added `201` as accepted status code for POST requests ([#76](https://github.com/Mistralys/application-framework/pull/76)) - thanks @danielioinos.
 

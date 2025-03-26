@@ -26,6 +26,11 @@ abstract class BaseCustomTag implements RenderableInterface
         $this->params = $params;
     }
 
+    public function getAttributes() : AttributeCollection
+    {
+        return $this->params;
+    }
+
     public function getMatchedText(): string
     {
         return $this->matchedText;

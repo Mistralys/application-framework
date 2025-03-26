@@ -2,7 +2,8 @@
 .markdown H2,
 .markdown H3 {
     padding: 0;
-    margin: 1rem 0 1rem 0;
+    margin: 1rem 0 1.8rem 0;
+    font-weight: var(--font-weight-bold);
 }
 
 .markdown H1 {
