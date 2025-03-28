@@ -83,10 +83,7 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
                 UI::button(t('Next day').' '.UI::icon()->next())
                     ->link($this->timeTracker->adminURL()->dayList($this->nextDay))
             )
-            ->addButton(
-                UI::button(t('Today'))
-                    ->link($this->timeTracker->adminURL()->dayList())
-            ).
+            ->addButton($this->getButtonToday()).
         HTMLTag::create('div')
             ->addClass('input-append')
             ->style('margin-left', '20px')
@@ -101,15 +98,39 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
         return sb()->html($content);
     }
 
+    protected function getButtonToday() : \UI_Button
+    {
+        $btn = UI::button(t('Today'))
+            ->link($this->timeTracker->adminURL()->dayList())
+            ->setTooltip(t('Jump to today'));
+
+        if(!$this->date->isToday()) {
+            $btn->makePrimary();
+        }
+
+        return $btn;
+    }
+
+    protected function resolveLastUsedDate() : Microtime
+    {
+        $stored = $this->getSetting('last_used_date');
+        if(!empty($stored)) {
+            return Microtime::createFromString($stored);
+        }
+
+        return Microtime::createNow();
+    }
+
     protected function _handleCustomActions(): void
     {
         TimeUIManager::setLastUsedList(TimeUIManager::LIST_SCREEN_DAY);
 
-        $this->date = Microtime::createNow();
+        $this->date = $this->resolveLastUsedDate();
 
         if($this->request->hasParam(self::REQUEST_VAR_DATE)) {
             try {
                 $this->date = Microtime::createFromString((string)$this->request->getParam(self::REQUEST_VAR_DATE));
+                $this->setSetting('last_used_date', $this->date->getISODate());
             } catch (Throwable $e) {
 
             }
