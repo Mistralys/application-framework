@@ -6,6 +6,7 @@ namespace Application\TimeTracker;
 
 use Application\AppFactory;
 use Application\MarkdownRenderer;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
@@ -102,7 +103,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $group->registerSetting(self::SETTING_DATE)
             ->makeRequired()
             ->setStorageName(TimeTrackerCollection::COL_DATE)
-            ->setDefaultValue(Microtime::createNow()->format('Y-m-d'))
+            ->setDefaultValue(TimeUIManager::getLastUsedDate()->format('Y-m-d'))
             ->setCallback(Closure::fromCallable(array($this, 'injectDate')));
     }
 
