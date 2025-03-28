@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Time Tracker
+ * @subpackage Entries
+ */
 
 declare(strict_types=1);
 
@@ -6,8 +10,16 @@ namespace Application\TimeTracker;
 
 use DBHelper_BaseCollection;
 use Application\TimeTracker\Admin\TrackerAdminURLs;
+use DBHelper_BaseRecord;
 use TestDriver\TestDBRecords\TestDBCollection;
 
+/**
+ * @package Time Tracker
+ * @subpackage Entries
+ *
+ * @method TimeEntry[] getAll()
+ * @method TimeEntry getByID($record_id)
+ */
 class TimeTrackerCollection extends DBHelper_BaseCollection
 {
     public const TABLE_NAME = 'time_tracker_entries';
@@ -22,6 +34,7 @@ class TimeTrackerCollection extends DBHelper_BaseCollection
     public const COL_COMMENTS = 'comments';
     public const COL_USER_ID = 'user_id';
     public const REQUEST_PARAM_ENTRY = 'time-entry';
+    public const DATE_FORMAT = 'Y-m-d';
 
     public function getRecordTypeName(): string
     {
