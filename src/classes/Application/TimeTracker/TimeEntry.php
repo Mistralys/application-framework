@@ -1,20 +1,30 @@
 <?php
+/**
+ * @package Time Tracker
+ * @subpackage Entries
+ */
 
 declare(strict_types=1);
 
 namespace Application\TimeTracker;
 
+use Application;
 use Application\MarkdownRenderer;
 use Application\TimeTracker\Admin\EntryAdminURLs;
 use Application\TimeTracker\Types\TimeEntryType;
 use Application\TimeTracker\Types\TimeEntryTypes;
+use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\DateTimeHelper\DurationStringInfo;
-use DateTime;
+use AppUtils\Microtime;
 use DBHelper_BaseRecord;
 use function AppUtils\parseDurationString;
 
+/**
+ * @package Time Tracker
+ * @subpackage Entries
+ */
 class TimeEntry extends DBHelper_BaseRecord
 {
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
@@ -35,9 +45,19 @@ class TimeEntry extends DBHelper_BaseRecord
         return (string)$label;
     }
 
-    public function getDate() : DateTime
+    public function getUserID() : int
     {
-        return $this->getRecordDateKey(TimeTrackerCollection::COL_DATE);
+        return $this->getRecordIntKey(TimeTrackerCollection::COL_USER_ID);
+    }
+
+    public function getUser() : Application_User
+    {
+        return Application::createUser($this->getUserID());
+    }
+
+    public function getDate() : Microtime
+    {
+        return Microtime::createFromDate($this->getRecordDateKey(TimeTrackerCollection::COL_DATE));
     }
 
     public function getStartTime() : DaytimeStringInfo
