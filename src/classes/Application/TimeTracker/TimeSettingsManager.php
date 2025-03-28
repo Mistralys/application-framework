@@ -30,6 +30,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
     public const SETTING_DURATION = 'duration';
     public const SETTING_TICKET = 'ticket';
     public const SETTING_COMMENTS = 'comments';
+    public const FORMAT_PLACEHOLDER = '$format';
 
     public function __construct(Application_Formable $formable, ?TimeEntry $record = null)
     {
@@ -171,36 +172,37 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
 
     private function injectDate(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
     {
-        $el = $this->addElementISODate($setting->getName(), t('Date'));
-
-        return $el;
+        return $this->addElementISODate($setting->getName(), t('Date'));
     }
 
     private function injectStartTime(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
     {
-        $el = $this->addElementText($setting->getName(), t('Start time'));
-        $el->addFilterTrim();
-        $el->addClass('input-small');
-        $el->setComment(sb()
-            ->t(
-                'Enter the time when the task started in the format %1$s.',
-                sb()->code('14:30')
-            )
+        return $this->createTimeElement(
+            $setting,
+            t('Start time'),
+            t('Enter the time when the task started in the format %1$s.', self::FORMAT_PLACEHOLDER)
         );
-
-        return $el;
     }
 
     private function injectEndTime(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
     {
-        $el = $this->addElementText($setting->getName(), t('End time'));
+        return $this->createTimeElement(
+            $setting,
+            t('End time'),
+            t('Enter the time when the task ended in the format %1$s.', self::FORMAT_PLACEHOLDER)
+        );
+    }
+
+    private function createTimeElement(Application_Formable_RecordSettings_Setting $setting, string $label, string $description) : HTML_QuickForm2_Node
+    {
+        $el = $this->addElementText($setting->getName(), $label);
         $el->addFilterTrim();
         $el->addClass('input-small');
         $el->setComment(sb()
-            ->t(
-                'Enter the time when the task ended in the format %1$s.',
-                sb()->code('16:15')
-            )
+            ->add(str_replace(self::FORMAT_PLACEHOLDER, sb()->code('14:30'), $description))
+            ->nl()
+            ->t('For ease of typing, you can use the following divider characters:')
+            ->add('<code>'.implode('</code><code>', DaytimeStringInfo::ALLOWED_SEPARATOR_CHARS).'</code>')
         );
 
         return $el;
