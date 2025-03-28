@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\TimeTracker\Admin\Screens\BaseCreateScreen;
+use Application\TimeTracker\Admin\Screens\BaseExportScreen;
+use Application\TimeTracker\Admin\Screens\BaseImportScreen;
 use Application\TimeTracker\Admin\Screens\BaseListScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseDayListScreen;
@@ -26,6 +28,25 @@ class TrackerAdminURLs
     {
         return $this->base()
             ->mode(BaseListScreen::URL_NAME);
+    }
+
+    public function export() : AdminURLInterface
+    {
+        return $this->base()
+            ->mode(BaseExportScreen::URL_NAME);
+    }
+
+    public function exportConfirm() : AdminURLInterface
+    {
+        return $this->base()
+            ->mode(BaseExportScreen::URL_NAME)
+            ->bool(BaseExportScreen::REQUEST_PARAM_CONFIRM, true);
+    }
+
+    public function import() : AdminURLInterface
+    {
+        return $this->base()
+            ->mode(BaseImportScreen::URL_NAME);
     }
 
     public function globalList() : AdminURLInterface
