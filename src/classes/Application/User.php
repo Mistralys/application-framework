@@ -15,6 +15,8 @@ use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsRightsTrait;
 use Application\Tags\TagsRightsInterface;
 use Application\Tags\TagsRightsTrait;
+use Application\TimeTracker\User\TimeTrackerRightsInterface;
+use Application\TimeTracker\User\TimeTrackerRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
 use Application\User\Roles\RoleCollection;

@@ -87,6 +87,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/changelog-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/php-sprintf-parser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/application-utils-image" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/shuchkin/simplexlsx" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/shuchkin/simplexlsxgen" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

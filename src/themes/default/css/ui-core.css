@@ -1229,6 +1229,11 @@ H3.page-abstract {
     left: auto;
 }
 
+/* Remove the margin from form appends that make them shift vertically */
+.title-right .input-append {
+    margin-bottom: 0;
+}
+
 /* endregion */
 
 /* -------------------------------------------------------------------

@@ -1520,7 +1520,7 @@ class UI_Form extends UI_Renderable
         $el = $this->resolveContainer($container)->addText($name);
         $el->addFilterTrim();
         $el->setLabel($label);
-        $el->addClass('input-xlarge');
+        $el->addClass('input-small');
 
         $this->addRuleISODate($el);
 

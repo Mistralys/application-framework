@@ -21,6 +21,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
+use Application\TimeTracker\TimeTrackerCollection;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -42,7 +43,6 @@ use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper\FolderInfo;
-use AppUtils\FileHelper\SerializedFile;
 use DBHelper;
 use DeeplHelper;
 use UI;
@@ -260,6 +260,14 @@ class AppFactory
     public static function createCacheManager() : CacheManager
     {
         return CacheManager::getInstance();
+    }
+
+    public static function createTimeTracker() : TimeTrackerCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            TimeTrackerCollection::class,
+            DBHelper::createCollection(TimeTrackerCollection::class)
+        );
     }
 
     // endregion

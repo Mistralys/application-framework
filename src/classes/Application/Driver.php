@@ -682,7 +682,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Keys in the array are the area URL names.
      * @var Application_Admin_Area[]
      */
-    protected $enabledAreas;
+    protected array $enabledAreas;
 
     protected bool $prepared = false;
 
@@ -704,6 +704,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (!Application::isUIEnabled())
         {
+            $this->log('Prepare | UI is disabled, skipping UI-related tasks.');
             return;
         }
 
@@ -711,9 +712,12 @@ abstract class Application_Driver implements Application_Driver_Interface
         foreach ($areaIDs as $areaID)
         {
             $area = $this->createArea($areaID);
-            if ($this->appset->isAreaEnabled($area))
-            {
+
+            if ($this->appset->isAreaEnabled($area)) {
+                $this->log('Prepare | Area [%s] | Setting as enabled.', $areaID);
                 $this->enabledAreas[$areaID] = $area;
+            } else {
+                $this->log('Prepare | Area [%s] | Disabled as per appset.', $areaID);
             }
         }
     }

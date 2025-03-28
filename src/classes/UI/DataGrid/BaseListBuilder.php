@@ -256,6 +256,13 @@ abstract class BaseListBuilder
         $this->user = Application_Driver::getInstance()->getUser();
         $this->hasRecords = $this->getFilterCriteria()->countUnfiltered() > 0;
         $this->listID = $listID;
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
 
     public function getUI(): UI
