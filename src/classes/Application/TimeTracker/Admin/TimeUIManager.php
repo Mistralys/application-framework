@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
+use AppUtils\Microtime;
 use UI\AdminURLs\AdminURLInterface;
 
 class TimeUIManager
@@ -12,6 +13,7 @@ class TimeUIManager
     public const LIST_SCREEN_GLOBAL = 'global';
     public const LIST_SCREEN_DAY = 'day';
     public const SETTING_LAST_USED_LIST = 'time_tracker_last_used_list';
+    public const SETTING_LAST_USED_DATE = 'last_used_date';
 
     public static function setLastUsedList(string $listType) : void
     {
@@ -26,6 +28,21 @@ class TimeUIManager
         }
 
         return self::LIST_SCREEN_GLOBAL;
+    }
+
+    public static function getLastUsedDate() : Microtime
+    {
+        $stored = AppFactory::createDriver()->getSettings()->get(self::SETTING_LAST_USED_DATE);
+        if(!empty($stored)) {
+            return Microtime::createFromString($stored);
+        }
+
+        return Microtime::createNow();
+    }
+
+    public static function setLastUsedDate(Microtime $date) : void
+    {
+        AppFactory::createDriver()->getSettings()->set(self::SETTING_LAST_USED_DATE, $date->getISODate());
     }
 
     public static function getBackToListURL() : AdminURLInterface
