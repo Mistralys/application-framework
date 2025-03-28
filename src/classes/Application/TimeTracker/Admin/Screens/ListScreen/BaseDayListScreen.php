@@ -18,6 +18,7 @@ use UI;
 use UI\DataGrid\ListBuilder\ListBuilderScreenInterface;
 use UI\DataGrid\ListBuilder\ListBuilderScreenTrait;
 use UI\Interfaces\ListBuilderInterface;
+use UI_Button;
 use UI_Renderable_Interface;
 
 class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
@@ -98,10 +99,10 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
         return sb()->html($content);
     }
 
-    protected function getButtonToday() : \UI_Button
+    protected function getButtonToday() : UI_Button
     {
         $btn = UI::button(t('Today'))
-            ->link($this->timeTracker->adminURL()->dayList())
+            ->link($this->timeTracker->adminURL()->dayList(Microtime::createNow()))
             ->setTooltip(t('Jump to today'));
 
         if(!$this->date->isToday()) {
@@ -111,26 +112,16 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
         return $btn;
     }
 
-    protected function resolveLastUsedDate() : Microtime
-    {
-        $stored = $this->getSetting('last_used_date');
-        if(!empty($stored)) {
-            return Microtime::createFromString($stored);
-        }
-
-        return Microtime::createNow();
-    }
-
     protected function _handleCustomActions(): void
     {
         TimeUIManager::setLastUsedList(TimeUIManager::LIST_SCREEN_DAY);
 
-        $this->date = $this->resolveLastUsedDate();
+        $this->date = TimeUIManager::getLastUsedDate();
 
         if($this->request->hasParam(self::REQUEST_VAR_DATE)) {
             try {
                 $this->date = Microtime::createFromString((string)$this->request->getParam(self::REQUEST_VAR_DATE));
-                $this->setSetting('last_used_date', $this->date->getISODate());
+                TimeUIManager::setLastUsedDate($this->date);
             } catch (Throwable $e) {
 
             }
