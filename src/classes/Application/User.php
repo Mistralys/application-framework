@@ -48,14 +48,12 @@ abstract class Application_User
     Application_Interfaces_Loggable,
     MediaRightsInterface,
     NewsRightsInterface,
-    TagsRightsInterface,
-    TimeTrackerRightsInterface
+    TagsRightsInterface
 {
     use Application_Traits_Loggable;
     use MediaRightsTrait;
     use NewsRightsTrait;
     use TagsRightsTrait;
-    use TimeTrackerRightsTrait;
 
     public const ERROR_CREATE_METHOD_NOT_IMPLEMENTED = 20001;
     public const ERROR_CREATE_SYSTEMUSER_METHOD_NOT_IMPLEMENTED = 20002;
@@ -994,7 +992,6 @@ abstract class Application_User
         $this->registerNewsRights($group);
         $this->registerTagRights($group);
         $this->registerMediaRights($group);
-        $this->registerTimeTrackingRights($group);
 
         $group->registerRight(self::RIGHT_DEVELOPER, t('Developer'))
             ->actionAdministrate()

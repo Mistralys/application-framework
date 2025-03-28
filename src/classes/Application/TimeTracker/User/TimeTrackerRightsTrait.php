@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Time Tracker
+ * @subpackage User
+ */
 
 declare(strict_types=1);
 
@@ -8,11 +12,28 @@ use Application_User_Rights;
 use Application_User_Rights_Group;
 use Closure;
 
+/**
+ * Trait used to implement the rights for the Time Tracker module.
+ *
+ * @package Time Tracker
+ * @subpackage User
+ *
+ * @see TimeTrackerRightsInterface
+ */
 trait TimeTrackerRightsTrait
 {
     public function canEditTimeEntries() : bool
     {
         return $this->can(TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES);
+    }
+
+    protected function registerTimeTrackerGroup(Application_User_Rights $manager) : void
+    {
+        $manager->registerGroup(
+            TimeTrackerRightsInterface::GROUP_TIME_TRACKING,
+            t('Time Tracker'),
+            Closure::fromCallable(array($this, 'registerTimeTrackingRights'))
+        );
     }
 
     protected function registerTimeTrackingRights(Application_User_Rights_Group $group) : void
