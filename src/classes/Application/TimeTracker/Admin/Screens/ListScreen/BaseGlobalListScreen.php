@@ -76,5 +76,16 @@ class BaseGlobalListScreen extends Application_Admin_Area_Mode_Submode implement
 
     protected function _handleSidebarBottom(): void
     {
+        $this->sidebar->addSeparator();
+
+        $this->sidebar->addButton('export', t('Export').'...')
+            ->setIcon(UI::icon()->export())
+            ->setTooltip(t('Go to the export screen to download the time entries.'))
+            ->link(AppFactory::createTimeTracker()->adminURL()->export());
+
+        $this->sidebar->addButton('import', t('Import').'...')
+            ->setIcon(UI::icon()->import())
+            ->setTooltip(t('Go to the import screen to upload time entries.'))
+            ->link(AppFactory::createTimeTracker()->adminURL()->import());
     }
 }
