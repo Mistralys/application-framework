@@ -8,6 +8,7 @@ use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
+use Application\TimeTracker\User\TimeTrackerRightsInterface;
 use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use DBHelper_BaseRecord;
 
@@ -27,7 +28,7 @@ class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionE
 
     public function isUserAllowedEditing(): bool
     {
-        return $this->user->canEditTimeEntries();
+        return $this->user instanceof TimeTrackerRightsInterface && $this->user->canEditTimeEntries();
     }
 
     public function isEditable(): bool
