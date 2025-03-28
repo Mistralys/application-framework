@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c6bbb86fff4e00e53d73186e9e91375",
+    "content-hash": "2349c112b51b42b370929c77fdf532a1",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1477,16 +1477,16 @@
         },
         {
             "name": "mistralys/application-utils-core",
-            "version": "2.3.8",
+            "version": "2.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils-core.git",
-                "reference": "c356a7334085044e23ecc5c07ca8f5a66850f13e"
+                "reference": "be6ee286e96d5c3479d32b2e9a7819e3ad8bda40"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils-core/zipball/c356a7334085044e23ecc5c07ca8f5a66850f13e",
-                "reference": "c356a7334085044e23ecc5c07ca8f5a66850f13e",
+                "url": "https://api.github.com/repos/Mistralys/application-utils-core/zipball/be6ee286e96d5c3479d32b2e9a7819e3ad8bda40",
+                "reference": "be6ee286e96d5c3479d32b2e9a7819e3ad8bda40",
                 "shasum": ""
             },
             "require": {
@@ -1533,9 +1533,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils-core/issues",
-                "source": "https://github.com/Mistralys/application-utils-core/tree/2.3.8"
+                "source": "https://github.com/Mistralys/application-utils-core/tree/2.3.9"
             },
-            "time": "2025-03-28T07:07:44+00:00"
+            "time": "2025-03-28T09:43:10+00:00"
         },
         {
             "name": "mistralys/application-utils-image",
@@ -4080,6 +4080,113 @@
                 "source": "https://github.com/samacs/simple_html_dom/tree/master"
             },
             "time": "2018-11-08T03:30:17+00:00"
+        },
+        {
+            "name": "shuchkin/simplexlsx",
+            "version": "1.1.13",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shuchkin/simplexlsx.git",
+                "reference": "71a5e3d40d14e33161f8a40b3fd02de542218ef0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shuchkin/simplexlsx/zipball/71a5e3d40d14e33161f8a40b3fd02de542218ef0",
+                "reference": "71a5e3d40d14e33161f8a40b3fd02de542218ef0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-libxml": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "ext-zlib": "*",
+                "php": ">=5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/SimpleXLSX.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Shuchkin (SMSPILOT)",
+                    "email": "sergey.shuchkin@gmail.com",
+                    "homepage": "https://github.com/shuchkin"
+                }
+            ],
+            "description": "Parse and retrieve data from Excel XLSx files. MS Excel 2007 workbooks PHP reader.",
+            "homepage": "https://github.com/shuchkin/simplexlsx",
+            "keywords": [
+                "backend",
+                "excel",
+                "parser",
+                "php",
+                "reader",
+                "xlsx"
+            ],
+            "support": {
+                "issues": "https://github.com/shuchkin/simplexlsx/issues",
+                "source": "https://github.com/shuchkin/simplexlsx/tree/1.1.13"
+            },
+            "time": "2024-12-21T13:32:13+00:00"
+        },
+        {
+            "name": "shuchkin/simplexlsxgen",
+            "version": "1.4.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/shuchkin/simplexlsxgen.git",
+                "reference": "b697b98533e9d573b49ff2e0a27258b59dcfc7b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/shuchkin/simplexlsxgen/zipball/b697b98533e9d573b49ff2e0a27258b59dcfc7b3",
+                "reference": "b697b98533e9d573b49ff2e0a27258b59dcfc7b3",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-zlib": "*",
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/SimpleXLSXGen.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sergey Shuchkin (SMSPILOT)",
+                    "email": "sergey.shuchkin@gmail.com",
+                    "homepage": "https://shuchkin.ru/"
+                }
+            ],
+            "description": "Export data to Excel XLSx file. PHP XLSX generator.",
+            "homepage": "https://github.com/shuchkin/simplexlsxgen",
+            "keywords": [
+                "backend",
+                "creator",
+                "excel",
+                "generator",
+                "php",
+                "writer",
+                "xlsx"
+            ],
+            "support": {
+                "issues": "https://github.com/shuchkin/simplexlsxgen/issues",
+                "source": "https://github.com/shuchkin/simplexlsxgen/tree/1.4.14"
+            },
+            "time": "2025-03-06T18:40:23+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
