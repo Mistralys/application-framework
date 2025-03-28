@@ -1,3 +1,8 @@
+-- SQL required by the Time Tracker module.
+--
+-- Sets up the necessary tables and indexes.
+--
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
