@@ -86,10 +86,12 @@ class TimeListBuilder extends BaseCollectionListBuilder
         }
 
         $grid->addColumn(self::COL_START_TIME, t('Start'))
+            ->setSortable(false, TimeTrackerCollection::COL_TIME_START)
             ->setCompact()
             ->setNowrap();
 
         $grid->addColumn(self::COL_END_TIME, t('End'))
+            ->setSortable(false, TimeTrackerCollection::COL_TIME_END)
             ->setCompact()
             ->setNowrap();
 
