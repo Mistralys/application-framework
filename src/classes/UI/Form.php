@@ -672,7 +672,7 @@ class UI_Form extends UI_Renderable
                 continue;
             }
 
-            if(method_exists($element, 'hasErrors') && $element->hasErrors()) {
+            if($element->hasErrors()) {
                 $collection[] = $element;
             }
         }
