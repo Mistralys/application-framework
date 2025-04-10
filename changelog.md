@@ -1,3 +1,10 @@
+## v5.8.1 - String builder enhancements
+- StringBuilder: Modified the `reference()` method for a nicer output.
+- StringBuilder: `codeCopy()` now handles empty values better.
+- StringBuilder: Added `hr()`.
+- StringBuilder: Added `heading()` and `h1()` through `h3()`.
+- Interface Refs: Improved the text style references.
+
 ## v5.8.0 - Time tracker
 - TimeTracker: Added the time tracker management.
 - DBHelper: Added an abstract list builder for DBHelper collections.
