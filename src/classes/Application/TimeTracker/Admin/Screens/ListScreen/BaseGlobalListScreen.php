@@ -23,8 +23,6 @@ class BaseGlobalListScreen extends Application_Admin_Area_Mode_Submode implement
     public const URL_NAME = 'global';
     public const LIST_ID = 'time-entries-global';
 
-    private TimeListBuilder $grid;
-
     public function getURLName(): string
     {
         return self::URL_NAME;

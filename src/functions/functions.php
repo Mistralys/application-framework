@@ -12,6 +12,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
@@ -1018,7 +1019,7 @@ function sb() : UI_StringBuilder
  * Ensures that the subject is scalar or a renderable,
  * and converts it to a string.
  *
- * @param mixed|UI_Renderable_Interface $subject
+ * @param mixed|StringableInterface $subject
  * @return string
  * @throws UI_Exception
  *

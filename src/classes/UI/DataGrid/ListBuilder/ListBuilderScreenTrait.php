@@ -1,12 +1,21 @@
 <?php
+/**
+ * @package User Interface
+ * @subpackage List Builder
+ */
 
 declare(strict_types=1);
 
 namespace UI\DataGrid\ListBuilder;
 
+use UI\Interfaces\ListBuilderInterface;
 use UI_Themes_Theme_ContentRenderer;
 
 /**
+ * Trait used to help implement the {@see ListBuilderScreenInterface}.
+ *
+ * @package User Interface
+ * @subpackage List Builder
  * @see ListBuilderScreenInterface
  */
 trait ListBuilderScreenTrait
@@ -18,7 +27,7 @@ trait ListBuilderScreenTrait
     {
         $this->_handleSidebarTop();
 
-        $settings = $this->grid->getFilterSettings();
+        $settings = $this->getBuilder()->getFilterSettings();
         if($settings !== null) {
             $this->sidebar->addFilterSettings($settings);
         }
@@ -26,12 +35,21 @@ trait ListBuilderScreenTrait
         $this->_handleSidebarBottom();
     }
 
+    protected ?ListBuilderInterface $grid = null;
+
+    public function getBuilder() : ListBuilderInterface
+    {
+        if(!isset($this->grid)) {
+            $this->grid = $this->createListBuilder()
+                ->setListID($this->getListID());
+        }
+
+        return $this->grid;
+    }
+
     protected function _handleActions(): bool
     {
         $this->_handleCustomActions();
-
-        $this->grid = $this->createListBuilder()
-            ->setListID($this->getListID());
 
         return true;
     }
@@ -41,7 +59,7 @@ trait ListBuilderScreenTrait
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         return $this->renderer
-            ->appendContent($this->grid)
+            ->appendContent($this->getBuilder())
             ->makeWithSidebar();
     }
 
