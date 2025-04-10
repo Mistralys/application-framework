@@ -8,7 +8,9 @@
  */
 
 use AppUtils\AttributeCollection;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\StringBuilder;
+use testsuites\DBHelper\RecordTests;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -288,16 +290,28 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * Formats a text as code, and adds a button beside it to
+     * Formats a text as code, and adds a button next to it to
      * copy the text to the clipboard.
      *
      * @param string|number|UI_Renderable_Interface $string
+     * @param string|null $emptyText The text to display if the string is empty.
      * @return UI_StringBuilder
      * @throws Application_Exception
      * @throws UI_Exception
      */
-    public function codeCopy($string) : UI_StringBuilder
+    public function codeCopy($string, ?string $emptyText=null) : UI_StringBuilder
     {
+        $string = (string)$string;
+
+        if(empty($string))
+        {
+            if(empty($emptyText)) {
+                $emptyText = t('empty');
+            }
+
+            return $this->muted(sb()->parentheses($emptyText));
+        }
+
         $jsID = nextJSID();
         $ui = $this->getUI();
 
@@ -335,6 +349,65 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
                 $jsID.'-status',
                 t('Text copied successfully.')
             );
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function reference($string, ?AttributeCollection $attributes=null): self
+    {
+        return $this->spanned($string, 'text-reference', $attributes);
+    }
+
+    /**
+     * @return $this
+     */
+    public function hr() : self
+    {
+        return $this->html('<hr>');
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h1($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(1, $string, $attributes);
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h2($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(2, $string, $attributes);
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h3($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(3, $string, $attributes);
+    }
+
+    /**
+     * @param int $level
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function heading(int $level, $string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->tag('h'.$level, $string, $attributes);
     }
 
     public function render() : string
