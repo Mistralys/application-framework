@@ -426,6 +426,10 @@ TD.nowrap {
 .text-inverted{color: var(--color-text-inverted);}
 .muted{color: var(--color-text-muted);}
 
+.text-reference{
+    font-weight: var(--font-weight-bold);
+}
+
 .text-tooltip{
     cursor: help;
     text-decoration: underline;
