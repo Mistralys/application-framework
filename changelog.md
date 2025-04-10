@@ -1,15 +1,13 @@
-## v5.8.1 - String builder enhancements
+## v5.8.0 - Time tracker
+- TimeTracker: Added the time tracker management.
+- DBHelper: Added an abstract list builder for DBHelper collections.
+- ListBuilder: Added a trait for list screens via a list builder.
 - StringBuilder: Modified the `reference()` method for a nicer output.
 - StringBuilder: `codeCopy()` now handles empty values better.
 - StringBuilder: Added `hr()`.
 - StringBuilder: Added `heading()` and `h1()` through `h3()`.
 - Interface Refs: Improved the text style references.
 - Tests: Added the test application to the PHPStan analysis to fix unused trait messages and
-
-## v5.8.0 - Time tracker
-- TimeTracker: Added the time tracker management.
-- DBHelper: Added an abstract list builder for DBHelper collections.
-- ListBuilder: Added a trait for list screens via a list builder.
 - Dependencies: Updated AppUtils Core to [v2.3.8](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.8).
 - Dependencies: Updated AppUtils Core to [v2.3.9](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.9).
 - Dependencies: Updated AppUtils Core to [v2.3.10](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.10).
