@@ -6,6 +6,11 @@ parameters:
         - ../../src
         - ../AppFrameworkTestClasses
         - ../AppFrameworkTests
+        - ../application/assets
+        - ../application/ajax
+        - ../application/api
+        - ../application/themes/default/templates
+        - ../application/xml
     dynamicConstantNames:
         - APP_ROOT
         - APP_TESTS_RUNNING
