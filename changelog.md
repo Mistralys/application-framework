@@ -4,6 +4,7 @@
 - StringBuilder: Added `hr()`.
 - StringBuilder: Added `heading()` and `h1()` through `h3()`.
 - Interface Refs: Improved the text style references.
+- Tests: Added the test application to the PHPStan analysis to fix unused trait messages and
 
 ## v5.8.0 - Time tracker
 - TimeTracker: Added the time tracker management.
