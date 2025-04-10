@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\User;
 
+use Application_User_Interface;
+
 /**
  * Interface for the rights of the Time Tracker module.
  *
@@ -19,7 +21,7 @@ namespace Application\TimeTracker\User;
  *
  * @see TimeTrackerRightsTrait
  */
-interface TimeTrackerRightsInterface
+interface TimeTrackerRightsInterface extends Application_User_Interface
 {
     public const GROUP_TIME_TRACKING = 'TimeTracking';
 

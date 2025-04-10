@@ -63,9 +63,9 @@ class MythologyRecordCollection implements StringCollectionInterface
         $this->items[$id] = new MythologicalRecord($id, $label);
     }
 
-    public function getFilterCriteria()
+    public function getFilterCriteria() : MythologyFilterCriteria
     {
-
+        return new MythologyFilterCriteria();
     }
 
     public function getChildDisposables(): array

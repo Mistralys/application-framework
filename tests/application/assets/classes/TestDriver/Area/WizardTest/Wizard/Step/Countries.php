@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
-
+/**
+ * @property TestDriver_Area_WizardTest_Wizard $wizard
+ */
 class TestDriver_Area_WizardTest_Wizard_Step_Countries extends TestDriver_Area_WizardTest_Wizard_Step
 {
-   /**
-    * @var Application_Countries
-    */
-    protected $countries;
+    protected Application_Countries $countries;
 
     public function render() : string
     {
@@ -47,13 +46,12 @@ class TestDriver_Area_WizardTest_Wizard_Step_Countries extends TestDriver_Area_W
 
     public function _process() : bool
     {
-        $preselected = $this->wizard->getPreselectedCountryID();
-        $selected = $this->countries->getByID($preselected);
+        $preselected = $this->wizard->getPreselectedCountry();
 
-        if($selected)
+        if($preselected !== null)
         {
-            $this->setData('country_id', $selected->getID());
-            $this->setComplete(true);
+            $this->setData('country_id', $preselected->getID());
+            $this->setComplete();
             return true;
         }
 

@@ -8,6 +8,7 @@ use Application\FilterSettings\SettingDef;
 use Application\FilterSettingsInterface;
 use Application\Tags\Taggables\FilterCriteria\TaggableFilterCriteriaInterface;
 use Application\Tags\Taggables\TagCollectionInterface;
+use Application\Tags\TagRecord;
 
 interface TagFilterSettingsInterface extends FilterSettingsInterface
 {
@@ -17,6 +18,9 @@ interface TagFilterSettingsInterface extends FilterSettingsInterface
 
     public function getTagSetting() : ?SettingDef;
 
+    /**
+     * @return TagRecord[]
+     */
     public function getSelectedTags() : array;
 
     /**

@@ -199,7 +199,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $el->addFilterTrim();
         $el->addClass('input-small');
         $el->setComment(sb()
-            ->add(str_replace(self::FORMAT_PLACEHOLDER, sb()->code('14:30'), $description))
+            ->add(str_replace(self::FORMAT_PLACEHOLDER, (string)sb()->code('14:30'), $description))
             ->nl()
             ->t('For ease of typing, you can use the following divider characters:')
             ->add('<code>'.implode('</code><code>', DaytimeStringInfo::ALLOWED_SEPARATOR_CHARS).'</code>')

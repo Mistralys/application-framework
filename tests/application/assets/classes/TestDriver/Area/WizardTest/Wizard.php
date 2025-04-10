@@ -102,9 +102,22 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     {
     }
 
-    public function getPreselectedCountryID()
+    public function getPreselectedCountryID() : int
     {
-        return $this->getWizardSetting('country_id');
+        return (int)$this->getWizardSetting('country_id');
+    }
+
+    public function getPreselectedCountry() : ?Application_Countries_Country
+    {
+        $collection = AppFactory::createCountries();
+        $id = $this->getPreselectedCountryID();
+
+        if($id > 0 && $collection->idExists($id))
+        {
+            return $collection->getByID($id);
+        }
+
+        return null;
     }
 
     public function initSteps(string $reason) : void

@@ -74,6 +74,8 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
 
     private function getScreenList() : array
     {
+        $result = array();
+
         foreach($this->getScreenClasses() as $className) {
             $result[] = array(
                 'label' => $className::getTestLabel(),
@@ -81,9 +83,18 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
             );
         }
 
-        usort($result, static function(array $a, array $b) : int {
-            return strnatcasecmp($a['label'], $b['label']);
-        });
+        usort(
+            $result,
+            /**
+             * @param array{label:string,urlName:string} $a
+             * @param array{label:string,urlName:string} $b
+             * @return int
+             */
+            static function(array $a, array $b) : int
+            {
+                return strnatcasecmp($a['label'], $b['label']);
+            }
+        );
 
         return $result;
     }

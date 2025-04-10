@@ -11,10 +11,12 @@ use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
+use TestDriver\TestDBRecords\TestDBRecord;
 use TestDriver\TestDBRecords\TestSettingsManagerExtended;
 
 /**
  * @see TestSettingsManagerExtended
+ * @property TestDBRecord $record
  */
 class CollectionCreateManagerExtendedScreen
     extends Application_Admin_Area_Mode_CollectionCreate
