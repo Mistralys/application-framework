@@ -1,3 +1,7 @@
+## v5.8.1 - Small tweaks
+- TimeTracker: Made times clickable to select the row.
+- ListBuilder: `collectEntry()` can now return an entry instance. 
+
 ## v5.8.0 - Time tracker
 - TimeTracker: Added the time tracker management.
 - DBHelper: Added an abstract list builder for DBHelper collections.
