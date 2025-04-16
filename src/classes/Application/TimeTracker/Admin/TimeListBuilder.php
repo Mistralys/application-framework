@@ -22,6 +22,7 @@ use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI_DataGrid;
 use UI_DataGrid_Action;
+use UI_DataGrid_Entry;
 
 class TimeListBuilder extends BaseCollectionListBuilder
 {
@@ -145,7 +146,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
     {
     }
 
-    protected function collectEntry(object $record): array
+    protected function collectEntry(object $record): UI_DataGrid_Entry
     {
         $timeEntry = ClassHelper::requireObjectInstanceOf(
             TimeEntry::class,
@@ -156,16 +157,19 @@ class TimeListBuilder extends BaseCollectionListBuilder
 
         $this->totalDuration += $timeEntry->getDuration()->getTotalSeconds();
 
-        return array(
-            self::COL_ID => $timeEntry->getID(),
-            self::COL_DATE => sb()->link(ConvertHelper::date2listLabel($timeEntry->getDate(), false, true), $timeEntry->adminURL()->status()),
-            self::COL_DURATION => $this->renderDuration($timeEntry, $duration),
-            self::COL_START_TIME => $timeEntry->getStartTime()->toReadable(),
-            self::COL_END_TIME => $timeEntry->getEndTime()->toReadable(),
-            self::COL_TYPE => $timeEntry->getType()->getLabel(),
-            self::COL_TICKET => $timeEntry->renderTicket(),
-            self::COL_COMMENTS => $timeEntry->renderComments()
-        );
+        $grid = $this->getDataGrid();
+        $entry = $grid->createEntry(array());
+
+        $entry->setColumnValue(self::COL_ID, $timeEntry->getID());
+        $entry->setColumnValue(self::COL_DATE, sb()->link(ConvertHelper::date2listLabel($timeEntry->getDate(), false, true), $timeEntry->adminURL()->status()));
+        $entry->setColumnValue(self::COL_DURATION, $this->renderDuration($timeEntry, $duration));
+        $entry->setColumnValue(self::COL_END_TIME, $entry->renderCheckboxLabel($timeEntry->getEndTime()->toReadable()));
+        $entry->setColumnValue(self::COL_START_TIME, $entry->renderCheckboxLabel($timeEntry->getStartTime()->toReadable()));
+        $entry->setColumnValue(self::COL_TYPE, $timeEntry->getType()->getLabel());
+        $entry->setColumnValue(self::COL_TICKET, $timeEntry->renderTicket());
+        $entry->setColumnValue(self::COL_COMMENTS, $timeEntry->renderComments());
+
+        return $entry;
     }
 
     private function renderDuration(TimeEntry $timeEntry, DurationStringInfo $duration) : string
