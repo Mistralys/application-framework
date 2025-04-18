@@ -1,3 +1,7 @@
+## v5.9.0 - Application launcher
+- AppLauncher: Added the application launcher system.
+- Themes: Added the `ThemeFile` class to access theme image files.
+
 ## v5.8.1 - Small tweaks
 - TimeTracker: Made times clickable to select the row.
 - ListBuilder: `collectEntry()` can now return an entry instance. 
