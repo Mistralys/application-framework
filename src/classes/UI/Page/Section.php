@@ -969,7 +969,7 @@ abstract class UI_Page_Section
      * @return $this
      * @see UI_Page_Sidebar::getItems()
      */
-    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null) : self
+    public function registerPosition(?UI_Page_Sidebar_ItemInterface $prev=null, ?UI_Page_Sidebar_ItemInterface $next=null) : self
     {
         $this->previousSibling = $prev;
         $this->nextSibling = $next;

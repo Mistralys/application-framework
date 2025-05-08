@@ -216,7 +216,7 @@ interface FilterSettingsInterface
      * @return HTML_QuickForm2_Element_InputText
      * @throws BaseClassHelperException
      */
-    public function addElementText(string $setting, HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_InputText;
+    public function addElementText(string $setting, ?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_InputText;
 
     /**
      * Adds a switch (boolean) element.

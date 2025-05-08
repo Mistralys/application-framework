@@ -224,7 +224,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * @param string|NULL $dataKeyName The name of the data key to sort: use this if it is not the same as the column name.
      * @return UI_DataGrid_Column
      */
-    public function setSortable(bool $default=false, string $dataKeyName=null) : UI_DataGrid_Column
+    public function setSortable(bool $default=false, ?string $dataKeyName=null) : UI_DataGrid_Column
     {
         if(empty($dataKeyName)) {
             $dataKeyName = $this->getDataKey();
@@ -534,7 +534,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return !empty($orderBy) && $orderBy === $this->getOrderKey();
     }
     
-    protected function renderAttributes($isHeader, $value=null, UI_DataGrid_Entry $entry=null)
+    protected function renderAttributes($isHeader, $value=null, ?UI_DataGrid_Entry $entry=null) : string
     {
         $objectName = $this->getObjectName();
         
@@ -584,7 +584,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return ' ' . compileAttributes($attributes);
     }
     
-    protected function resolveID(bool $isHeader, UI_DataGrid_Entry $entry=null) : string
+    protected function resolveID(bool $isHeader, ?UI_DataGrid_Entry $entry=null) : string
     {
         $objectName = $this->getObjectName();
         

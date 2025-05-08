@@ -2513,9 +2513,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     * entries.
     *
     * @param string|StringableInterface $clientsideHandler The name of a clientside variable holding the droppable events handler object
+    * @param string|NULL $primaryKeyName The name of the primary key in the records. Optional only if set separately.
     * @return $this
     */
-    public function makeEntriesDroppable($clientsideHandler, $primaryKeyName=null) : self
+    public function makeEntriesDroppable($clientsideHandler, ?string $primaryKeyName=null) : self
     {
         if (!empty($primaryKeyName)) {
             $this->setPrimaryName($primaryKeyName);

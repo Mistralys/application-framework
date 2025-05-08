@@ -197,7 +197,7 @@ abstract class Application_FilterSettings
      * @param string|null $label Defaults to "Search".
      * @return void
      */
-    protected function registerSearchSetting(?string $setting=null, string $label=null) : void
+    protected function registerSearchSetting(?string $setting=null, ?string $label=null) : void
     {
         if(empty($label)) {
             $label = t('Search');
@@ -275,7 +275,7 @@ abstract class Application_FilterSettings
      * @return SettingDef
      * @throws UI_Exception
      */
-    protected function registerSetting(string $name, $label, $default=null, string $customClass=null) : SettingDef
+    protected function registerSetting(string $name, $label, $default=null, ?string $customClass=null) : SettingDef
     {
         $this->log('RegisterSettings | Registered setting [%s].', $name);
 
@@ -784,7 +784,7 @@ abstract class Application_FilterSettings
         );
     }
 
-    public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addElementText(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_InputText::class,
