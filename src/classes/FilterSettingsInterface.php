@@ -143,7 +143,7 @@ interface FilterSettingsInterface
      * @throws UI_Themes_Exception
      * @throws FileHelper_Exception
      */
-    public function addMore(HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_InputText;
+    public function addMore(?HTML_QuickForm2_Container $container = null): HTML_QuickForm2_Element_InputText;
 
     /**
      * Adds a multiselect element.

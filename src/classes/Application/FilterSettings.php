@@ -603,7 +603,7 @@ abstract class Application_FilterSettings
 
     // region: Form elements
 
-    public function addMore(HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addMore(?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         if($this->hasMore) {
             throw new Application_Exception(
