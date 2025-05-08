@@ -532,14 +532,14 @@ class Application_LockManager extends DBHelper_BaseCollection
     }
     
    /**
-    * Injects the javascript required for the lock manager support. This 
+    * Injects the JavaScript required for the lock manager support. This
     * is static because it is required even if the lock manager is disabled:
     * When it is enabled, the actual manager instance is specified as parameter.
     * 
     * @param UI $ui
-    * @param Application_LockManager $manager
+    * @param Application_LockManager|NULL $manager
     */
-    public static function injectJS(UI $ui, Application_LockManager $manager=null)
+    public static function injectJS(UI $ui, ?Application_LockManager $manager=null) : void
     {
         $ui->addJavascript('LockManager.js');
         $ui->addStylesheet('ui-locking.css');

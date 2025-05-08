@@ -453,9 +453,9 @@ class Application_Sets_Set
     * @param Application_Sets_Set|NULL $excludeSet
     * @return boolean
     */
-    public static function callback_validateID($setID, Application_Sets_Set $excludeSet=null)
+    public static function callback_validateID(string $setID, ?Application_Sets_Set $excludeSet=null) : bool
     {
-        if($excludeSet && $setID == $excludeSet->getID()) {
+        if($excludeSet && $setID === $excludeSet->getID()) {
             return true;
         }
         

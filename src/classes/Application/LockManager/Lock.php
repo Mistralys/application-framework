@@ -158,7 +158,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         return AppUtils\ConvertHelper::interval2string($this->getTimeToUnlock());
     }
     
-    public function updateActive(DateTime $lastActivity=null)
+    public function updateActive(?DateTime $lastActivity=null)
     {
         if(!$lastActivity) {
             $lastActivity = new DateTime();
@@ -192,7 +192,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * 
     * @return Application_LockManager_Lock
     */
-    public function extend(DateTime $lastActivity=null)
+    public function extend(?DateTime $lastActivity=null)
     {
         $extended = new DateTime();
         $extended->add(Application_LockManager::getExpiryDelay());
@@ -437,9 +437,9 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * removes the lock. If a user is specified to transfer the lock
     * to, it is transferred and all messages removed.
     * 
-    * @param Application_User $transferTo
+    * @param Application_User|NULL $transferTo
     */
-    public function release(Application_User $transferTo=null)
+    public function release(?Application_User $transferTo=null): void
     {
         DBHelper::requireTransaction('Release a page lock');
 

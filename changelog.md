@@ -2,6 +2,15 @@
 - AppLauncher: Added the application launcher system.
 - Themes: Added the `ThemeFile` class to access theme image files.
 
+## v5.8.3 - PHP8.4 deprecation fix
+- PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+
+## v5.8.2 - String builder and CSS classes
+- UI: Added the `CSSClasses` enum class as a reference for available CSS class names.
+- UI: Added the `right-developer` class.
+- StringBuilder: Added `developer()` for dev-only text.
+- StringBuilder: Using class constants where applicable.
+
 ## v5.8.1 - Small tweaks
 - TimeTracker: Made times clickable to select the row.
 - ListBuilder: `collectEntry()` can now return an entry instance. 

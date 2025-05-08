@@ -30,17 +30,17 @@ abstract class UI_Page_Sidebar_Item extends UI_Renderable implements UI_Renderab
     {
         return $this->page->createTemplate($templateIDOrClass);
     }
-    
-   /**
-    * Registers the position of the item in the sidebar. Called automatically
-    * by the sidebar before it is rendered.
-    * 
-    * @param UI_Page_Sidebar_ItemInterface $prev
-    * @param UI_Page_Sidebar_ItemInterface $next
-    * @return UI_Page_Sidebar_Item
-    * @see UI_Page_Sidebar::getItems()
-    */
-    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null)
+
+    /**
+     * Registers the position of the item in the sidebar. Called automatically
+     * by the sidebar before it is rendered.
+     *
+     * @param UI_Page_Sidebar_ItemInterface|null $prev
+     * @param UI_Page_Sidebar_ItemInterface|null $next
+     * @return $this
+     * @see UI_Page_Sidebar::getItems()
+     */
+    public function registerPosition(?UI_Page_Sidebar_ItemInterface $prev=null, ?UI_Page_Sidebar_ItemInterface $next=null) : self
     {
         $this->previousSibling = $prev;
         $this->nextSibling = $next;
@@ -78,13 +78,13 @@ abstract class UI_Page_Sidebar_Item extends UI_Renderable implements UI_Renderab
 interface UI_Page_Sidebar_ItemInterface
 {
     public function isSeparator();
-    
-   /**
-    * @param UI_Page_Sidebar_ItemInterface $prev
-    * @param UI_Page_Sidebar_ItemInterface $next
-    * @return UI_Page_Sidebar_ItemInterface
-    */
-    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null);
+
+    /**
+     * @param UI_Page_Sidebar_ItemInterface|null $prev
+     * @param UI_Page_Sidebar_ItemInterface|null $next
+     * @return $this
+     */
+    public function registerPosition(?UI_Page_Sidebar_ItemInterface $prev=null, ?UI_Page_Sidebar_ItemInterface $next=null) : self;
     
     public function getPreviousSibling();
     

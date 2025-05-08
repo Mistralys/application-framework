@@ -140,7 +140,7 @@ class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Selec
      * @param VisualSelectOption[]|NULL $result
      * @return VisualSelectOption[]
      */
-    public function getOptionsFlat(array $options=null, array $result=null) : array
+    public function getOptionsFlat(?array $options=null, ?array $result=null) : array
     {
         $initial = false;
         
