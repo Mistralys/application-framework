@@ -1,3 +1,6 @@
+## v5.8.3 - PHP8.4 deprecation fix
+- PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+
 ## v5.8.2 - String builder and CSS classes
 - UI: Added the `CSSClasses` enum class as a reference for available CSS class names.
 - UI: Added the `right-developer` class.
