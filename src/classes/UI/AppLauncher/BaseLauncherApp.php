@@ -16,7 +16,7 @@ abstract class BaseLauncherApp implements LauncherAppInterface
     public function getLogoImage(): ThemeImage
     {
         if(!isset($this->logoImage)) {
-            $this->logoImage = ThemeImage::create(AppLauncher::THEME_FOLDER.'/'.$this->_getLogoFileName().'.png');
+            $this->logoImage = ThemeImage::create(AppLauncher::THEME_IMAGE_FOLDER.'/'.$this->_getLogoFileName().'.png');
         }
 
         return $this->logoImage;
