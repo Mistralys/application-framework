@@ -1,3 +1,15 @@
+# Application Framework Changelog
+
+## v5.8.4 - Session CLI handling
+- Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
+- PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+
+### PHP8.4 update progress
+
+Notices have mostly been fixed. One remaining issue is the PhpCAS package,
+which has no PHP8.4 support yet. The session fix in this version makes it
+at least possible to run the tests on PHP8.4.
+
 ## v5.8.3 - PHP8.4 deprecation fix
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
 
