@@ -8,10 +8,13 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\User\LayoutWidths;use AppUtils\ClassHelper;
+use Application\User\LayoutWidths;
+use AppUtils\ClassHelper;
 use AppUtils\OutputBuffering;
+use UI\AppLauncher\AppLauncher;
 use UI\Event\PageRendered;
 use UI\Page\Navigation\QuickNavigation;
+use UI\Themes\ThemeImage;
 
 /**
  * Main template for the frame skeleton of all pages.
@@ -22,6 +25,7 @@ use UI\Page\Navigation\QuickNavigation;
  *
  * @see template_default_frame_sidebar
  * @see template_default_frame_header_user_menu
+ * @see template_default_frame_header_appswitcher
  */
 class template_default_frame extends UI_Page_Template_Custom
 {
@@ -33,13 +37,20 @@ class template_default_frame extends UI_Page_Template_Custom
     protected function generateOutput() : void
     {
 
+
+
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title><?php echo $this->page->resolveTitle() ?></title>
-    <link rel="shortcut icon" href="favicon.ico"/>
-    <?php echo '{HEADER_INCLUDES}'; ?>    
+    <?php if(isset($this->favicon)) { ?>
+        <link rel="shortcut icon"
+              type="<?php echo $this->favicon->getMimeType() ?>"
+              href="<?php echo $this->favicon->getURL() ?>"
+        >
+    <?php } ?>
+    <?php echo '{HEADER_INCLUDES}'; ?>
 </head>
 <body class="<?php echo implode(' ', $this->getBodyClasses()) ?>">
 
@@ -66,6 +77,7 @@ class template_default_frame extends UI_Page_Template_Custom
     </div>
 </footer>
 
+{APP_LAUNCHER}
 {QUERY_SUMMARY}
 
 </body>
@@ -82,6 +94,7 @@ class template_default_frame extends UI_Page_Template_Custom
     private Application_Ratings $ratings;
     private AdminScreenInterface $screen;
     private ?Application_LockManager $lockManager;
+    private ?ThemeImage $favicon = null;
     
     protected function preRender() : void
     {
@@ -92,10 +105,11 @@ class template_default_frame extends UI_Page_Template_Custom
         
         $this->ratings = AppFactory::createRatings();
         $this->ratings->injectJS($this->ui);
+        $this->favicon = UI::getInstance()->getTheme()->resolveFavicon();
         
         $this->resolveVariables();
     }
-    
+
     private function resolveVariables() : void
     {
         $contentHTML = $this->getVar('html.content');
@@ -113,6 +127,7 @@ class template_default_frame extends UI_Page_Template_Custom
             '{CONSOLE}' => $this->page->renderConsole(),
             '{CONTENT}' => $contentHTML,
             '{QUERY_SUMMARY}' => $this->renderQuerySummary(),
+            '{APP_LAUNCHER}' => AppLauncher::getInstance()->render(),
             
             // must always be the last items
             '{HEADER}' => $this->header->render(),
