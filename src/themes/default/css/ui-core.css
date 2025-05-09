@@ -64,6 +64,12 @@ BODY.dev-user .right-developer{
 
 #app-mainnav .brand > IMG{
     height: 34px;
+    border: solid 1px transparent;
+}
+
+#app-mainnav .brand:hover > IMG{
+    height: 34px;
+    border: solid 1px var(--color-border-active);
 }
 
 #app-mainnav .navbar-main > LI > A{
