@@ -109,7 +109,7 @@ class ResponseError
      * @return string[]
      * @throws ConvertHelper_Exception
      */
-    protected function getExceptionCodesRecursive(ThrowableInfo $info, array &$result=null) : array
+    protected function getExceptionCodesRecursive(ThrowableInfo $info, ?array &$result=null) : array
     {
         $result[] = (string)$info->getCode();
 

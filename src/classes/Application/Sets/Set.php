@@ -68,7 +68,7 @@ class Application_Sets_Set
         return $this->defaultArea;
     }
     
-    public static function createSettingsForm(Application_Formable $formable, Application_Sets_Set $set = null)
+    public static function createSettingsForm(Application_Formable $formable, ?Application_Sets_Set $set = null)
     {
         $driver = Application_Driver::getInstance();
         $areas = $driver->getAdminAreaObjects(true);
@@ -94,7 +94,8 @@ class Application_Sets_Set
             $formable->addHiddenVar('set_id', $set->getID());
         }
         
-        $formable->addElementHeader(t('Application set settings'), null, null, false);
+        $formable->addSection(t('Application set settings'))
+            ->expand();
         
         $id = $formable->addElementText(self::SETTING_ID, t('ID'));
         $id->addClass('input-xlarge');
@@ -116,8 +117,9 @@ class Application_Sets_Set
             $def->addOption($area->getTitle(), $area->getID());
         }
 
-        $formable->addElementHeader(t('Enabled administration areas'), null, null, false);
-        
+        $formable->addSection(t('Enabled administration areas'))
+            ->expand();
+
         foreach($areas as $area) 
         {
             // core areas cannot be disabled
@@ -154,9 +156,9 @@ class Application_Sets_Set
     * @param HTML_QuickForm2_Element_Switch $el
     * @param Application_Admin_Area[] $areas Dependencies
     */
-    public static function callback_validateEnabled($value, Application_Formable $formable, HTML_QuickForm2_Element_Switch $el, $areas)
+    public static function callback_validateEnabled($value, Application_Formable $formable, HTML_QuickForm2_Element_Switch $el, array $areas): bool
     {
-        if(!AppUtils\ConvertHelper::string2bool($value)) {
+        if(!ConvertHelper::string2bool($value)) {
             return true;
         }
         

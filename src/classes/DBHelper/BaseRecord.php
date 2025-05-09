@@ -330,7 +330,7 @@ abstract class DBHelper_BaseRecord
      * @return DateTime|null
      * @throws Exception
      */
-    public function getRecordDateKey(string $name, DateTime $default=null) : ?DateTime
+    public function getRecordDateKey(string $name, ?DateTime $default=null) : ?DateTime
     {
         $value = $this->getRecordKey($name);
         if($value !== null) {

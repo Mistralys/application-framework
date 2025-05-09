@@ -133,10 +133,10 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * @param string $value
     * @param string $defaultValue
     * @param boolean $isStructural
-    * @param Application_CustomProperties_Presets_Preset $preset
+    * @param Application_CustomProperties_Presets_Preset|NULL $preset
     * @return Application_CustomProperties_Property
     */
-    public function addProperty($label, $name, $value, $defaultValue='', $isStructural=false, Application_CustomProperties_Presets_Preset $preset=null)
+    public function addProperty(string $label, string $name, string $value, string $defaultValue='', bool $isStructural=false, ?Application_CustomProperties_Presets_Preset $preset=null) : Application_CustomProperties_Property
     {
         $preset_id = null;
         if($preset) {
@@ -148,7 +148,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
             'name' => ConvertHelper::transliterate($name),
             'value' => $value,
             'default_value' => $defaultValue,
-            'is_structural' => AppUtils\ConvertHelper::bool2string($isStructural, true),
+            'is_structural' => ConvertHelper::bool2string($isStructural, true),
             'preset_id' => $preset_id
         ));
         
