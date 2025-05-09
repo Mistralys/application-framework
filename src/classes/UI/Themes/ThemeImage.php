@@ -1,15 +1,31 @@
 <?php
+/**
+ * @package UserInterface
+ * @subpackage Themes
+ */
 
 declare(strict_types=1);
 
 namespace UI\Themes;
 
 use Application\AppFactory;
+use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use UI_Themes_Exception;
+use UI_Themes_Theme;
 use function AppUtils\parseVariable;
 
+/**
+ * Utility class to handle theme images.
+ *
+ * ## Usage
+ *
+ * 1. Create an instance via {@see self::create()}.
+ *
+ * @package UserInterface
+ * @subpackage Themes
+ */
 class ThemeImage
 {
     private string $relativePath;
@@ -20,14 +36,50 @@ class ThemeImage
      * @var array<string, ThemeImage>
      */
     private static array $instances = array();
+    private UI_Themes_Theme $theme;
 
-    public function __construct(string $relativePath)
+    public function __construct(string $relativeOrAbsolutePath)
     {
-        $this->relativePath = $relativePath;
+        $this->theme = AppFactory::createDriver()->getTheme();
+
+        if(file_exists($relativeOrAbsolutePath)) {
+            $this->relativePath = $this->relativizePath($relativeOrAbsolutePath);
+        } else {
+            $this->relativePath = $relativeOrAbsolutePath;
+        }
     }
 
     /**
-     * @param string|ThemeImage|mixed $filePath
+     * Converts an absolute image path to a relative one
+     * starting from the theme's {@see UI_Themes_Theme::FILE_TYPE_GRAPHIC}
+     * image folder.
+     *
+     * @param string $path
+     * @return string
+     * @throws UI_Themes_Exception
+     */
+    private function relativizePath(string $path) : string
+    {
+        $path = FileHelper::normalizePath($path);
+        $parts = ConvertHelper::explodeTrim('themes/'.$this->theme->getID().'/'.UI_Themes_Theme::FILE_TYPE_GRAPHIC, $path);
+
+        if(count($parts) === 2) {
+            return ltrim($parts[1], '/');
+        }
+
+        throw new UI_Themes_Exception(
+            'Unrecognized theme file path provided.',
+            sprintf(
+                'Path [%s] does not contain the theme ID [%s].',
+                $path,
+                $this->theme->getID()
+            ),
+            UI_Themes_Exception::ERROR_UNRECOGNIZED_THEME_PATH
+        );
+    }
+
+    /**
+     * @param string|ThemeImage|mixed $filePath Can be an absolute path, relative path, or an existing instance.
      * @return self
      * @throws UI_Themes_Exception
      */
@@ -84,7 +136,7 @@ class ThemeImage
     public function getFile() : FileInfo
     {
         if(!isset($this->file)) {
-            $this->file = FileInfo::factory(AppFactory::createDriver()->getTheme()->getTemplatePath($this->relativePath));
+            $this->file = FileInfo::factory($this->theme->getImagePath($this->relativePath));
         }
 
         return $this->file;
@@ -93,9 +145,14 @@ class ThemeImage
     public function getURL() : string
     {
         if(!isset($this->url)) {
-            $this->url = AppFactory::createDriver()->getTheme()->getTemplateURL($this->relativePath);
+            $this->url = $this->theme->getImageURL($this->relativePath);
         }
 
         return $this->url;
+    }
+
+    public function getMimeType() : string
+    {
+        return $this->getFile()->getMimeType();
     }
 }
