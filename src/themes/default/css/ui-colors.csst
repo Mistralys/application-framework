@@ -43,6 +43,7 @@
     --color-accent-highlight-20: rgba(255,255,255,0.2);
     --color-accent-highlight-60: rgba(255, 255, 255, 0.6);
     --color-accent-highlight-50: rgba(255, 255, 255, 0.5);
+    --color-accent-nav: #001b41;
 
     /* endregion */
 
@@ -61,6 +62,7 @@
     --color-bg-success-xl: var(--color-accent-success);
     --color-bg-code: var(--color-bg-highlight);
     --color-bg-active: var(--color-accent-primary);
+    --color-bg-app-launcher: var(--color-accent-nav);
     --color-border-code: #e1e1e8;
     --color-border-warning: var(--color-accent-warning-s);
     --color-border-danger: var(--color-accent-danger);
@@ -112,7 +114,7 @@
     --color-badge-inverted-bg: var(--color-accent-inactive-xl);
     --color-badge-inverted-text: var(--color-text-inverted);
 
-    --color-mainnav-bg: #001b41;
+    --color-mainnav-bg: var(--color-accent-nav);
     --color-mainnav-shadow: var(--color-accent-shadow-75);
     --color-mainnav-gradient-start: #042C65;
     --color-mainnav-gradient-end: var(--color-mainnav-bg);
