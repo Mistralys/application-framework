@@ -1,46 +1,71 @@
 <?php
+/**
+ * @package UserInterface
+ * @subpackage Templates
+ * @see  template_default_frame_header
+ */
 
-    /* @var $this UI_Page_Template */
+declare(strict_types=1);
 
-    $configFile = $this->driver->getConfigFolder().'/appswitcher.php';
-    if(!file_exists($configFile)) {
-        echo 
-        '<ul class="nav navbar-nav">'.
-            '<li>'.
-                '<a href="'.APP_URL.'" class="brand" title="'.$this->driver->getAppNameShort().'">'.
-                    '<img src="'.imageURL('logo-navigation-standalone.png').'" alt=""/>'.
-                '</a>'.
-            '</li>'.
-        '</ul>';
-        
-        return;
+use AppUtils\HTMLTag;
+use UI\AppLauncher\AppLauncher;
+use UI\CSSClasses;
+
+/**
+ * Application logo image, with the AppLauncher functionality
+ * if enabled.
+ *
+ * @package UserInterface
+ * @subpackage Templates
+ * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ */
+class template_default_frame_header_appswitcher extends UI_Page_Template_Custom
+{
+    private AppLauncher $launcher;
+
+    protected function generateOutput() : void
+    {
+        $anchor = $this->getLogoAnchor();
+
+        ?>
+            <ul class="nav navbar-nav">
+                <li>
+                    <?php echo $anchor->renderOpen() ?>
+                        <img src="<?php echo imageURL('logo-navigation-standalone.png') ?>"
+                             alt="<?php pt('Logo of the %1$s app.', $this->driver->getAppNameShort()) ?>"
+                        >
+                    <?php echo $anchor->renderClose() ?>
+                </li>
+            </ul>
+        <?php
     }
-    
-    require_once $configFile;
 
-    if(!isset($apps) || !is_array($apps)) {
-        echo $this->renderErrorMessage(t('No apps defined in the configuration file.'));
-        return;
+    private function getLogoAnchor() : HTMLTag
+    {
+        $tag = HTMLTag::create('a')
+            ->addClass('brand')
+            ->id(nextJSID());
+
+        // No launcher apps defined or enabled: We link to the
+        // user's configured starting page (no page = user's page).
+        if (!$this->launcher->isEnabled()) {
+            return $tag
+                ->href(APP_URL)
+                ->attr('title', t('Open your configured starting page for the %1$s app.', $this->driver->getAppNameShort()));
+        }
+
+        AppLauncher::injectJS($this->ui);
+
+        JSHelper::tooltipify($tag->attributes->getAttribute('id'), JSHelper::TOOLTIP_BOTTOM);
+
+        return $tag
+            ->addClass(CSSClasses::CLICKABLE)
+            ->attr('title', t('Open the app launcher to choose from the available applications.'))
+            ->attr('onclick', $this->launcher->getJSOpen().';return false;');
     }
-    
-    $html = 
-    '<ul class="nav navbar-nav navbar-appswitcher">'.
-        '<li class="dropdown">'.
-            '<a href="'.APP_URL.'" data-toggle="dropdown" id="applauncher" class="brand" title="'.$this->driver->getAppNameShort().'">'.
-                '<img src="'.imageURL('logo-navigation.png').'" alt="" onmouseover="this.src=\''.imageURL('logo-navigation-over.png').'\'" onmouseout="this.src=\''.imageURL('logo-navigation.png').'\'"/>'.
-            '</a>'.
-            '<ul class="dropdown-menu" role="menu" aria-labelledby="applauncher">';
-                foreach($apps as $appDef) {
-                    $html .=
-                    '<li>'.
-                        '<a href="'.$appDef['url'].'" title="'.$appDef['longName'].'">'.
-                            $appDef['shortName'].
-                        '</a>'.
-                    '</li>';
-                }
-                $html .=
-           '</ul>'.
-        '</li>'.
-    '</ul>';
-    
-    echo $html;
+
+    protected function preRender(): void
+    {
+        $this->launcher = AppLauncher::getInstance();
+    }
+}
