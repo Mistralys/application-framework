@@ -50,6 +50,19 @@ class ComposerScripts
         echo 'DONE.'.PHP_EOL;
     }
 
+    public static function buildRelease() : void
+    {
+        self::init();
+
+        echo 'Building release.';
+
+        echo '- Updating CSS files...';
+        Application\Development\CSSGen::create()->generateAll();
+        echo 'DONE.'.PHP_EOL;
+
+        echo 'All done.'.PHP_EOL;
+    }
+
     private static bool $initialized = false;
 
     /**
