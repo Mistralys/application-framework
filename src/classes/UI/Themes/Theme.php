@@ -1,5 +1,7 @@
 <?php
 
+use UI\Themes\ThemeImage;
+
 abstract class UI_Themes_Theme
 {
     public const ERROR_RESOURCE_FILE_NOT_FOUND = 27401;
@@ -327,5 +329,26 @@ abstract class UI_Themes_Theme
     public function createContentRenderer(UI $ui) : UI_Themes_Theme_ContentRenderer
     {
         return new UI_Themes_Theme_ContentRenderer($ui);
+    }
+
+    public function resolveFavicon() : ?ThemeImage
+    {
+        $fileNames = array(
+            'favicon.ico',
+            'favicon.svg',
+            'favicon.png',
+            'logo_big.png'
+        );
+
+        foreach($fileNames as $fileName)
+        {
+            $location = $this->findResource($fileName, self::FILE_TYPE_GRAPHIC);
+
+            if (!is_null($location)) {
+                return ThemeImage::create($this->getResourcePath(self::FILE_TYPE_GRAPHIC, $fileName, $location));
+            }
+        }
+
+        return null;
     }
 }
