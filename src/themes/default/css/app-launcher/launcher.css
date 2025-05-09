@@ -1,0 +1,9 @@
+#app-launcher-container{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-bg-app-launcher);
+    z-index: 10000;
+}
