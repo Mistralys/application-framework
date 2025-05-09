@@ -1,6 +1,9 @@
 ## v5.9.0 - Application launcher
 - AppLauncher: Added the application launcher system.
 - Themes: Added the `ThemeFile` class to access theme image files.
+- Themes: Now automatically resolving the favicon image to use.
+- Composer: Added the `build-release` command.
+- UI: Now updating generated CSS files when building a release.
 
 ## v5.8.3 - PHP8.4 deprecation fix
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
