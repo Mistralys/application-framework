@@ -1428,4 +1428,21 @@ class UI
     {
         return boot_constant(BaseConfigRegistry::JAVASCRIPT_MINIFIED) === true;
     }
+
+    /**
+     * Adds a listener for the page rendered event, which
+     * is called once the whole page to be sent to the browser
+     * has been rendered. It allows modifying the HTML code
+     * before it is sent to the browser.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_Listener
+     */
+    public static function onPageRendered(callable $listener) : Application_EventHandler_Listener
+    {
+        return Application_EventHandler::addListener(
+            self::EVENT_PAGE_RENDERED,
+            $listener
+        );
+    }
 }
