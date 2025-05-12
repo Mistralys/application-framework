@@ -3,6 +3,10 @@
 ## v5.8.3 - Session CLI handling
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+- Formable: Added `onClientFormRendered()` to react to the rendered HTML markup.
+- Sections: Fixed the collapse buttons not appearing in client forms.
+- Events: Added a trait for HTML processing events.
+- UI: Added `onPageRendered()` to add event listeners.
 
 ### PHP8.4 update progress
 
