@@ -55,6 +55,7 @@ class UI
     private const SESSION_VAR_APP_MESSAGES = 'application_messages';
     public const DUMMY_INSTANCE_ID = '__dummy_ui';
     public const EVENT_PAGE_RENDERED = 'pageRendered';
+    public const APP_INSTANCE_PREFIX = 'app-';
 
     private Application $app;
     private Application_Session $session;
@@ -160,7 +161,7 @@ class UI
     */
     public static function createInstance(Application $app) : UI
     {
-        $key = 'app-'.$app->getID();
+        $key = self::APP_INSTANCE_PREFIX .$app->getID();
         if(!isset(self::$instances[$key])) {
             self::$instances[$key] = new UI($key, $app);
         }
@@ -224,6 +225,11 @@ class UI
         return self::getInstance();
     }
 
+    public static function selectDefaultInstance() : void
+    {
+        self::$activeInstanceID = self::APP_INSTANCE_PREFIX.AppFactory::createDriver()->getApplication()->getID();
+    }
+
    /**
     * Restores the previously selected UI instance after
     * switching to another UI instance using the
@@ -237,6 +243,7 @@ class UI
         if(isset(self::$previousKey))
         {
             self::$activeInstanceID = self::$previousKey;
+            return;
         }
 
         if($ignoreErrors)
