@@ -39,11 +39,10 @@ use function AppUtils\parseVariable;
  */
 class UI
 {
-    public const ERROR_CANNOT_SELECT_DUMMY_INSTANCE = 39747001;
+    public const ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN = 39747001;
     public const ERROR_NO_UI_INSTANCE_AVAILABLE_YET = 39747002;
     public const ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE = 39747003;
     public const ERROR_NOT_A_RENDERABLE = 39747005;
-    public const ERROR_INVALID_BOOTSTRAP_ELEMENT = 39747006;
     public const ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN = 39747007;
 
     public const MESSAGE_TYPE_SUCCESS = 'success';
@@ -53,7 +52,6 @@ class UI
     public const MESSAGE_TYPE_INFO = 'info';
 
     private const SESSION_VAR_APP_MESSAGES = 'application_messages';
-    public const DUMMY_INSTANCE_ID = '__dummy_ui';
     public const EVENT_PAGE_RENDERED = 'pageRendered';
     public const APP_INSTANCE_PREFIX = 'app-';
 
@@ -170,19 +168,6 @@ class UI
         return self::$instances[$key];
     }
     
-   /**
-    * Selects a stub UI instance that can be used
-    * in parallel to the main UI class.
-    *
-    * @return UI
-    * @throws Application_Exception
-    * @deprecated Use {@see self::selectInstance()} instead.
-    */
-    public static function selectDummyInstance() : UI
-    {
-        return self::selectInstance(self::DUMMY_INSTANCE_ID);
-    }
-
     /**
      * Selects a UI instance that can be used in parallel
      * to the main UI instance.
@@ -205,8 +190,8 @@ class UI
         if(empty(self::$instances)) {
             throw new Application_Exception(
                 'No main UI instance created yet',
-                'Tried selecting a dummy UI instance before the main instance has been created.',
-                self::ERROR_CANNOT_SELECT_DUMMY_INSTANCE
+                'Tried selecting a UI instance before the main instance has been created.',
+                self::ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN
             );
         }
 
