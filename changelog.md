@@ -11,6 +11,8 @@
 - UI: Added `selectDefaultInstance()`.
 - UI: `selectInstance()` now accepts freeform instance names.
 - UI: Removed the obsolete `selectDummyInstance()` method.
+- Composer: Set PHP7.4 as the target platform, but allow installing on PHP8.
+- Dependencies: Updated HTML QuickForm to [v2.3.6](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.6).
 
 ### PHP8.4 update progress
 
