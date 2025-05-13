@@ -75,7 +75,7 @@
     "mistralys/deepl-xml-translator": ">=2.0.2",
     "mistralys/subsetsum": ">=1.0.2",
     "mistralys/markdown-viewer": ">=1.3.1",
-    "mistralys/html_quickform2": ">=2.3.3",
+    "mistralys/html_quickform2": ">=2.3.6",
     "mistralys/version-parser": ">=2.1.1",
     "pear/http_request2": "^v2.5.1",
     "phpmailer/phpmailer": "^v6.9.1",
