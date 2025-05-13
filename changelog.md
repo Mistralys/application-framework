@@ -10,16 +10,13 @@
 - UI: Added `onPageRendered()` to add event listeners.
 - UI: Added `selectDefaultInstance()`.
 - UI: `selectInstance()` now accepts freeform instance names.
+- UI: Removed the obsolete `selectDummyInstance()` method.
 
 ### PHP8.4 update progress
 
 Notices have mostly been fixed. One remaining issue is the PhpCAS package,
 which has no PHP8.4 support yet. The session fix in this version makes it
 at least possible to run the tests on PHP8.4.
-
-### Deprecations
-
-- `UI::selectDummyInstance()` is deprecated and will be removed in the future.
 
 ## v5.8.2 - String builder and CSS classes
 - UI: Added the `CSSClasses` enum class as a reference for available CSS class names.
