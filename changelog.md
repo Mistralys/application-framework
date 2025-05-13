@@ -4,15 +4,22 @@
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
 - Formable: Added `onClientFormRendered()` to react to the rendered HTML markup.
+- Formable: Fixed JS head statements not being collected due to wrong call order.
 - Sections: Fixed the collapse buttons not appearing in client forms.
 - Events: Added a trait for HTML processing events.
 - UI: Added `onPageRendered()` to add event listeners.
+- UI: Added `selectDefaultInstance()`.
+- UI: `selectInstance()` now accepts freeform instance names.
 
 ### PHP8.4 update progress
 
 Notices have mostly been fixed. One remaining issue is the PhpCAS package,
 which has no PHP8.4 support yet. The session fix in this version makes it
 at least possible to run the tests on PHP8.4.
+
+### Deprecations
+
+- `UI::selectDummyInstance()` is deprecated and will be removed in the future.
 
 ## v5.8.2 - String builder and CSS classes
 - UI: Added the `CSSClasses` enum class as a reference for available CSS class names.
