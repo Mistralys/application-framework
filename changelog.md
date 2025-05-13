@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v5.8.3 - Session CLI handling
+## v5.8.3 - Fixes and PHP8.4 
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
 - Formable: Added `onClientFormRendered()` to react to the rendered HTML markup.
