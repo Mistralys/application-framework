@@ -16,9 +16,9 @@ use UI_Page_Section;
  * Offers methods to access the section instances to fetch
  * information about them.
  *
- * NOTE: This makes the most sense to be used at the end of
- * the request, when all sections are known. Look at the
- * event {@see PageRendered} for example.
+ * > NOTE: This makes the most sense to be used at the end of
+ * > the request, when all sections are known. Look at the
+ * > event {@see PageRendered} for example.
  *
  * @package Application
  * @subpackage UserInterface
