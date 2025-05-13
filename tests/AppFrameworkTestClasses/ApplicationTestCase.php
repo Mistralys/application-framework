@@ -222,8 +222,15 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         Localization::selectAppLocale('en_UK');
         AppFactory::createLogger()->reset();
         Application_Session_Base::setRedirectsEnabled(true);
+        UI::selectDefaultInstance();
 
         $this->setUpTraits();
+
+        // A script somewhere resets this to ~512MB in the middle of
+        // the tests, so that the phpunit.xml setting is ignored.
+        // Searches did not turn up anything meaningful, so this was
+        // the best interim solution.
+        Application::setMemoryLimit(900, 'Test');
     }
 
     private function setUpTraits() : void
