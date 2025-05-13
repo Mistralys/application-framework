@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace UI\Page\Section;
 
 use Application\Formable\Event\ClientFormRenderedEvent;
-use Application_EventHandler;
 use Application_Formable;
 use Closure;
 use UI;
@@ -40,10 +39,12 @@ class GroupControls implements UI_Renderable_Interface
     private UI_Bootstrap_ButtonGroup $btnGroup;
     private string $id;
     private int $displayThreshold = 2;
+    private UI $ui;
 
-    public function __construct(?string $group = null)
+    public function __construct(UI $ui, ?string $group = null)
     {
         $this->id = 'SGC'.nextJSID();
+        $this->ui = $ui;
         $this->group = $group;
 
         $this->btnExpand = UI::button(t('Expand all'))
@@ -52,7 +53,7 @@ class GroupControls implements UI_Renderable_Interface
         $this->btnCollapse = UI::button(t('Collapse all'))
             ->setIcon(UI::icon()->collapse());
 
-        $this->btnGroup = $this->getUI()->createButtonGroup()
+        $this->btnGroup = $this->ui->createButtonGroup()
             ->setID($this->id)
             ->addButton($this->btnExpand)
             ->addButton($this->btnCollapse);
