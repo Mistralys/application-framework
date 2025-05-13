@@ -43,6 +43,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     public const EVENT_CLIENT_FORM_RENDERED = ClientFormRenderedEvent::EVENT_NAME;
     public const CLIENT_FORM_FLAG = 'is-client-form';
+    public const CLIENT_FORM_UI_PREFIX = 'client-form-';
 
     protected UI_Form $formableForm;
     protected ?HTML_QuickForm2_Container $formableContainer = null;
@@ -55,9 +56,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * These require the `JSID` to be set and ensure that any
      * unnecessary elements are stripped.
      *
-     * Additionally, a stub UI object is used to capture only
+     * Additionally, a dedicated UI object is used to capture only
      * the JavaScript required by the form, so it can be sent
-     * along with the form.
+     * along with the form. This gets the name {@see self::CLIENT_FORM_UI_PREFIX}
+     * followed by the form name.
      *
      * @param string $name
      * @param array<string,mixed> $defaultData
@@ -67,11 +69,13 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      */
     protected function createClientForm(string $name, array $defaultData=array()) : UI_Form
     {
-        $ui = UI::selectDummyInstance();
+        // Note: The UI instance is applied to the formable
+        // itself once initFormable() is called.
+        $ui = UI::selectInstance(self::CLIENT_FORM_UI_PREFIX .$name);
 
         $form = $ui->createForm($name, $defaultData);
         $form->getForm()
-        ->setAttribute(self::CLIENT_FORM_FLAG, 'yes');
+            ->setAttribute(self::CLIENT_FORM_FLAG, 'yes');
 
         return $form;
     }
@@ -702,9 +706,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     private function renderClientFormable() : string
     {
-        $html =
-            $this->formableForm->getUI()->renderHeadIncludes().
-            $this->formableForm->renderHorizontal();
+        // WARNING: The order of these statements is important.
+        // Rendering the form can add additional head includes,
+        // so it must come first.
+        $html = $this->formableForm->renderHorizontal();
+        $html = $this->formableForm->getUI()->renderHeadIncludes().$html;
 
         $event = ClassHelper::requireObjectInstanceOf(
             ClientFormRenderedEvent::class,
