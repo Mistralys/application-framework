@@ -1206,7 +1206,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-fonts.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-colors.css', 'all', $counter--);
-        $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
+        $this->ui->addStylesheet(UI_Page_Section::STYLESHEET_FILE, 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-dialogs.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-icons.css', 'all', $counter--);
