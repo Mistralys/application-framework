@@ -36,9 +36,9 @@ abstract class UI_Renderable implements UI_Renderable_Interface
 
    /**
     * The unique key of the UI instance.
-    * @var int
+    * @var string
     */
-    protected int $uiKey;
+    protected string $uiKey;
 
     public function __construct(?UI_Page $page=null)
     {
@@ -132,7 +132,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
     {
         $tpl = $this->createTemplate($templateID);
         $tpl->setVars($params);
-        
+
         return $tpl->render();
     }
 
