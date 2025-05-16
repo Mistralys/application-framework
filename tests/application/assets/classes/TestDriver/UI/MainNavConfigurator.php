@@ -17,6 +17,7 @@ use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
 use Application_Admin_Area_Welcome;
 use Application_Admin_TranslationsArea;
+use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TestingScreen;
@@ -43,6 +44,7 @@ class MainNavConfigurator extends NavConfigurator
         $menu
             ->addAreaChained(Application_Admin_Area_Settings::URL_NAME)
             ->addSeparator()
+            ->addAreaChained(CountriesScreen::URL_NAME)
             ->addAreaChained(BaseNewsScreen::URL_NAME)
             ->addAreaChained(BaseMediaLibraryScreen::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)

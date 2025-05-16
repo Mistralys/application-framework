@@ -11,6 +11,7 @@ use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
+use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
@@ -52,7 +53,8 @@ class TestDriver extends Application_Driver
             BaseMediaLibraryScreen::URL_NAME => MediaLibraryScreen::class,
             TestingScreen::URL_NAME => TestingScreen::class,
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
-            BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class
+            BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
+            CountriesScreen::URL_NAME => CountriesScreen::class,
         );
 
         if(TagCollection::tableExists()) {
