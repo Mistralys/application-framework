@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "edd2178845f7aa6b5685712723edd003",
+    "content-hash": "2fd9a686d5903cfc8d8c38f657817338",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1307,16 +1307,16 @@
         },
         {
             "name": "mistralys/application-localization",
-            "version": "1.5.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-localization.git",
-                "reference": "2600cb9a1fef79294e47f830532ae0a87e923308"
+                "reference": "e72145c19000b7363e1e6c2717088d2ccde1863c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-localization/zipball/2600cb9a1fef79294e47f830532ae0a87e923308",
-                "reference": "2600cb9a1fef79294e47f830532ae0a87e923308",
+                "url": "https://api.github.com/repos/Mistralys/application-localization/zipball/e72145c19000b7363e1e6c2717088d2ccde1863c",
+                "reference": "e72145c19000b7363e1e6c2717088d2ccde1863c",
                 "shasum": ""
             },
             "require": {
@@ -1332,9 +1332,10 @@
                 "php": ">=7.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12",
-                "phpunit/phpunit": "8.2.5"
+                "phpstan/phpstan": ">=0.12",
+                "phpunit/phpunit": ">=9.6"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "files": [
@@ -1361,9 +1362,9 @@
             "description": "PHP and Javascript localization library.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-localization/issues",
-                "source": "https://github.com/Mistralys/application-localization/tree/1.5.0"
+                "source": "https://github.com/Mistralys/application-localization/tree/main"
             },
-            "time": "2024-10-22T14:05:08+00:00"
+            "time": "2025-05-16T14:35:10+00:00"
         },
         {
             "name": "mistralys/application-utils",
@@ -6404,6 +6405,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "ccampbell/mousetrap": 20,
+        "mistralys/application-localization": 20,
         "roave/security-advisories": 20,
         "shark/simple_html_dom": 20
     },
