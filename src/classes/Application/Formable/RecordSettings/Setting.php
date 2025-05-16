@@ -275,10 +275,10 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
     
    /**
     * Sets a custom callback to use to inject the element.
-    * 
-    * @param callable $callback
-    * @param array $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
-    * @return Application_Formable_RecordSettings_Setting
+    *
+    * @param callable(Application_Formable_RecordSettings_Setting) : HTML_QuickForm2_Node $callback
+    * @param array<int,mixed> $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
+    * @return $this
     */
     public function setCallback(callable $callback, array $arguments=array()) : Application_Formable_RecordSettings_Setting
     {
