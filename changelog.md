@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.9.0 - Country management
+- Wizards: Added the possibility to specify step classes, loosening the class structure.
+
 ## v5.8.3 - Fixes and PHP8.4 
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
