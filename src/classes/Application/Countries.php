@@ -5,9 +5,12 @@
  * @subpackage Countries
  */
 
+use Application\Countries\Admin\MainAdminURLs;
 use Application\Countries\CountriesCollection;
 use Application\Countries\CountryException;
+use Application\Countries\CountrySettingsManager;
 use Application\Countries\Event\IgnoredCountriesUpdatedEvent;
+use Application\Countries\FilterSettings;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Languages;
 use Application\Languages\Language;
@@ -76,7 +79,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordFilterSettingsClassName() : string
     {
-        return '';
+        return FilterSettings::class;
     }
     
     public function getRecordSearchableColumns() : array
@@ -601,4 +604,20 @@ class Application_Countries extends DBHelper_BaseCollection
     }
 
     // endregion
+
+    private ?MainAdminURLs $adminURLs = null;
+
+    public function adminURL() : MainAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new MainAdminURLs();
+        }
+
+        return $this->adminURLs;
+    }
+
+    public function createSettingsManager(Application_Formable $formable, ?Application_Countries_Country $country) : CountrySettingsManager
+    {
+        return new CountrySettingsManager($formable, $country);
+    }
 }
