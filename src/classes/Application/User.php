@@ -22,7 +22,7 @@ use Application\User\LayoutWidths;
 use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Locale;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -797,7 +797,7 @@ abstract class Application_User
         return $this;
     }
 
-    public function getUILocale() : Localization_Locale
+    public function getUILocale() : LocaleInterface
     {
         return Localization::getAppLocaleByName($this->getUILocaleName());
     }
@@ -813,7 +813,7 @@ abstract class Application_User
         return Localization::getAppLocaleName();
     }
 
-    public function setUILocale(Localization_Locale $locale) : self
+    public function setUILocale(LocaleInterface $locale) : self
     {
         $this->setSetting(self::SETTING_UI_LOCALE, $locale->getName());
         return $this;

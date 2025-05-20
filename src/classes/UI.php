@@ -111,7 +111,7 @@ class UI
     * Retrieves this UI object's instance key, which is unique
     * to each UI object.
     * 
-    * @return int
+    * @return string
     */
     public function getInstanceKey() : string
     {

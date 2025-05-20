@@ -36,6 +36,10 @@ trait HTMLProcessingEventTrait
         return $this->getArgumentString($this->getHTMLArgumentIndex());
     }
 
+    /**
+     * @param string $html
+     * @return $this
+     */
     public function setHTML(string $html) : self
     {
         return $this->setArgument($this->getHTMLArgumentIndex(), $html);

@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCriteria_DatabaseExtended
 {
-    const JOIN_FEEDBACK = 'feedback';
-    const JOIN_OPTIONAL_TABLE = 'table_optional_join';
-    const JOIN_LAST_USED_VERSION = 'join_last_used_version';
+    public const JOIN_FEEDBACK = 'feedback';
+    public const JOIN_OPTIONAL_TABLE = 'table_optional_join';
+    public const JOIN_LAST_USED_VERSION = 'join_last_used_version';
 
-    const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
-    const CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
-    const CUSTOM_COL_TEXT = 'text';
-    const CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
+    public const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
+    public const CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
+    public const CUSTOM_COL_TEXT = 'text';
+    public const CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
 
     /**
      * Enables the custom column, which automatically
      * adds it to the select statement, and ensures
      * joins get added as well.
+     *
+     * @return $this
      */
-    public function enableFeedbackText()
+    public function enableFeedbackText() : self
     {
-        $this->withCustomColumn(self::CUSTOM_COL_TEXT);
+        return $this->withCustomColumn(self::CUSTOM_COL_TEXT);
     }
 
     /**
@@ -29,30 +31,39 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
      * required join will not be present, but the method
      * {@see Application_FilterCriteria_DatabaseExtended::buildQuery()}
      * handles this case.
+     *
+     * @return $this
      */
-    public function addFeedbackManually()
+    public function addFeedbackManually() : self
     {
-        $this->addSelectColumn($this->getColFeedbackText()->getPrimarySelectValue());
+        return $this->addSelectColumn($this->getColFeedbackText()->getPrimarySelectValue());
     }
 
-    public function addFeedbackTextToSelect() : void
+    /**
+     * @return $this
+     */
+    public function addFeedbackTextToSelect() : self
     {
         $this->addSelectStatement($this->getColFeedbackText()->getPrimarySelectValue(), false);
+        return $this;
     }
 
-    public function orderByFeedbackText()
+    /**
+     * @return $this
+     */
+    public function orderByFeedbackText() : self
     {
-        $this->setOrderBy($this->getColFeedbackText()->getOrderByValue());
+        return $this->setOrderBy($this->getColFeedbackText()->getOrderByValue());
     }
 
-    protected function getSelect()
+    protected function getSelect() : array
     {
         return array(
             $this->getColEmail()
         );
     }
 
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
         return array(
             $this->getColEmail()
@@ -64,7 +75,7 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         return (string)$this->statement('{users}.{email}');
     }
 
-    protected function getQuery()
+    protected function getQuery() : DBHelper_StatementBuilder
     {
         return $this->statement(
             "SELECT 

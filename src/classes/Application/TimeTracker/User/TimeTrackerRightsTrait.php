@@ -22,10 +22,10 @@ use Closure;
  */
 trait TimeTrackerRightsTrait
 {
-    public function canEditTimeEntries() : bool
-    {
-        return $this->can(TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES);
-    }
+    public function canEditTimeEntries() : bool { return $this->can(TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES); }
+    public function canViewTimeEntries() : bool { return $this->can(TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES); }
+    public function canDeleteTimeEntries() : bool { return $this->can(TimeTrackerRightsInterface::RIGHT_DELETE_TIME_ENTRIES); }
+    public function canCreateTimeEntries() : bool { return $this->can(TimeTrackerRightsInterface::RIGHT_CREATE_TIME_ENTRIES); }
 
     protected function registerTimeTrackerGroup(Application_User_Rights $manager) : void
     {

@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@see HTML_QuickForm2_Element_HTMLDateTimePicker} class.
- *
  * @package User Interface
  * @subpackage Form Elements
- * @see HTML_QuickForm2_Element_HTMLDateTimePicker
  */
 
 use AppUtils\ClassHelper;
@@ -257,17 +254,18 @@ class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Contain
         $date = $this->datePicker->getDate();
         $time = $this->timePicker->getTime();
 
-        // Handled by the required rule
+        // No values selected at all: Handled by the required rule
         if($date === null && $time === null) {
             return true;
         }
 
+        // Only date set
         if($this->timeOptional && $date !== null && $time === null) {
             return true;
         }
 
-        if(($date !== null || $time !== null) && ($date === null || $time === null))
-        {
+        // Date and time must be set
+        if($date === null || $time === null){
             $this->setError(t('Please enter a date and a time.'));
             return false;
         }

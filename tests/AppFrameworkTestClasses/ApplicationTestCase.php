@@ -10,27 +10,16 @@ use AppFrameworkTestClasses\Traits\MythologyTestInterface;
 use Application;
 use Application\AppFactory;
 use Application\Interfaces\ChangelogableInterface;
-use Application\Tags\TagCollection;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
-use Application_Media_Document;
-use Application_Media_Document_Image;
 use Application_Session_Base;
 use Application_User;
-use AppUtils\FileHelper;
-use AppUtils\FileHelper\FileInfo;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\FileHelper\FolderInfo;
-use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
-use AppUtils\ImageHelper\ImageFormats\Formats\JPEGImage;
-use AppUtils\ImageHelper\ImageFormats\Formats\PNGImage;
-use AppUtils\ImageHelper\ImageFormats\Formats\SVGImage;
-use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
-use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 use DBHelper;
 use Mistralys\AppFrameworkTests\TestClasses\TestOutputFile;
 use PHPUnit\Framework\TestCase;
-use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
@@ -177,7 +166,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         return Application::createUser($newUser->getID());
     }
 
-    protected function createTestLocale(string $name = ''): Localization_Locale
+    protected function createTestLocale(string $name = ''): LocaleInterface
     {
         if (empty($name)) {
             $names = DBHelper::createFetchMany('locales_application')
