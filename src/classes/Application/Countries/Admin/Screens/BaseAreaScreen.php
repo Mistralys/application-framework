@@ -65,4 +65,9 @@ abstract class BaseAreaScreen extends Application_Admin_Area
     {
         $this->renderer->getTitle()->setIcon($this->getNavigationIcon());
     }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendArea($this);
+    }
 }

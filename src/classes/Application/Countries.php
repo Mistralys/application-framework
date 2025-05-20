@@ -14,6 +14,7 @@ use Application\Countries\FilterSettings;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Languages;
 use Application\Languages\Language;
+use AppLocalize\Localization\Country\CountryGB;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
@@ -533,7 +534,7 @@ class Application_Countries extends DBHelper_BaseCollection
      * @var array<string,string>
      */
     private array $isoConversions = array(
-        self::COUNTRY_GB => self::COUNTRY_UK
+        CountryGB::ISO_CODE => CountryGB::ISO_ALIAS_UK
     );
 
     public function convertISO(string $iso) : string

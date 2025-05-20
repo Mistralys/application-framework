@@ -58,9 +58,21 @@ abstract class BaseCreateScreen extends Application_Admin_Wizard
 
     public function getSuccessMessage(): string
     {
-        return t('The country has been created successfully at %1$s.',
+        $country = $this->getStepConfirm()->getCreatedCountry();
+
+        return t('The country %1$s has been created successfully at %2$s.',
+            sb()->reference($country->getLabel()),
             sb()->time()
         );
+    }
+
+    public function getSuccessURL(): string
+    {
+        return (string)$this
+            ->getStepConfirm()
+            ->getCreatedCountry()
+            ->adminURL()
+            ->status();
     }
 
     protected function processCancelCleanup(): void
@@ -73,6 +85,14 @@ abstract class BaseCreateScreen extends Application_Admin_Wizard
         $this->addStep(SourceCountrySelectionStep::STEP_NAME, SourceCountrySelectionStep::class);
         $this->addStep(CountrySettingsStep::STEP_NAME, CountrySettingsStep::class);
         $this->addStep(ConfirmStep::STEP_NAME, ConfirmStep::class);
+    }
+
+    public function getStepConfirm() : ConfirmStep
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            ConfirmStep::class,
+            $this->getStep(ConfirmStep::STEP_NAME)
+        );
     }
 
     public function getStepSourceCountry() : SourceCountrySelectionStep

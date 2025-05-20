@@ -7,11 +7,14 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use Application\Countries\Admin\CountryAdminURLs;
 use Application\Languages;
 use Application\Languages\Language;
 use Application\Languages\LanguageException;
 use AppLocalize\Localization;
+use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
+use AppLocalize\Localization\Country\CountryGB;
 use AppLocalize\Localization\Currencies\CurrencyInterface;
 
 /**
@@ -43,6 +46,11 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public function getLabel() : string
     {
         $label = $this->getRecordKey(self::COL_LABEL);
+
+        // If the label matches the invariant one, use the translated label instead.
+        if($label === $this->country->getLabelInvariant()) {
+            return $this->country->getLabel();
+        }
         
         if($this->isInvariant()) {
             $label = '('.$label.')';
@@ -96,7 +104,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
      * @var array<string,string>
      */
     private array $isoToAlpha2 = array(
-        Application_Countries::COUNTRY_UK => Application_Countries::COUNTRY_GB
+        CountryGB::ISO_ALIAS_UK => CountryGB::ISO_CODE
     );
 
    /**
@@ -117,46 +125,16 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     }
    
    /**
-    * Primary language by country
-    * @var array<string,string>
-    * @see https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
-    */
-    public const COUNTRY_LANGUAGES = array(
-        Application_Countries::COUNTRY_AT => Languages::LANG_DE,
-        Application_Countries::COUNTRY_CA => Languages::LANG_EN,
-        Application_Countries::COUNTRY_DE => Languages::LANG_DE,
-        Application_Countries::COUNTRY_ES => Languages::LANG_ES,
-        Application_Countries::COUNTRY_FR => Languages::LANG_FR,
-        Application_Countries::COUNTRY_IT => Languages::LANG_IT,
-        Application_Countries::COUNTRY_MX => Languages::LANG_ES,
-        Application_Countries::COUNTRY_PL => Languages::LANG_PL,
-        Application_Countries::COUNTRY_RO => Languages::LANG_RO,
-        Application_Countries::COUNTRY_UK => Languages::LANG_EN,
-        Application_Countries::COUNTRY_GB => Languages::LANG_EN,
-        Application_Countries::COUNTRY_US => Languages::LANG_EN
-    );
-
-   /**
     * Retrieves the lowercase two-letter language code for
     * the country. Note that this only returns the main 
     * language used in the country if it has several
     * official ones.
     * 
-    * @throws Application_Exception
     * @return string
     */
     public function getLanguageCode() : string
     {
-        $iso = $this->getISO();
-        if(isset(self::COUNTRY_LANGUAGES[$iso])) {
-            return self::COUNTRY_LANGUAGES[$iso];
-        }
-        
-        throw new Application_Exception(
-            sprintf('Unknown language code for country [%s]', $iso),
-            '',
-            self::ERROR_UNKNOWN_LANGUAGE_CODE
-        );
+        return $this->getLocalizationLocale()->getLanguageCode();
     }
     
    /**
@@ -166,12 +144,26 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function getLocaleCode() : string
     {
-        return $this->getLanguageCode().'_'.strtoupper($this->getAlpha2());
+        return $this->getLocalizationLocale()->getName();
+
     }
 
     public function getLocale() : \Application\Locales\Locale
     {
         return AppFactory::createLocales()->getByID($this->getLocaleCode());
+    }
+
+    private ?Localization\Locales\LocaleInterface $localizationLocale = null;
+
+    public function getLocalizationLocale() : Localization\Locales\LocaleInterface
+    {
+        if(!isset($this->localizationLocale)) {
+            $this->localizationLocale = CountryCollection::getInstance()
+                ->getByISO($this->getISO())
+                ->getMainLocale();
+        }
+
+        return $this->localizationLocale;
     }
     
    /**
@@ -226,5 +218,16 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public function isCountryIndependent() : bool
     {
         return $this->isInvariant();
+    }
+
+    private ?CountryAdminURLs $adminURLs = null;
+
+    public function adminURL() : CountryAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new CountryAdminURLs($this);
+        }
+
+        return $this->adminURLs;
     }
 }

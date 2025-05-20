@@ -10,7 +10,12 @@ use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionRecord;
 use Application_Countries;
+use Application_Countries_Country;
+use UI;
 
+/**
+ * @property Application_Countries_Country $record
+ */
 abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionRecord
 {
     use AllowableMigrationTrait;
@@ -50,5 +55,27 @@ abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionReco
     public function getDefaultSubmode(): string
     {
         return BaseStatusScreen::URL_NAME;
+    }
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer->setTitle($this->record->getLabel());
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendItem($this->record->getLabel())
+            ->makeLinked($this->record->adminURL()->view());
+    }
+
+    protected function _handleSubnavigation(): void
+    {
+        $urls = $this->record->adminURL();
+
+        $this->subnav->addURL(t('Status'), $urls->status())
+            ->setIcon(UI::icon()->status());
+
+        $this->subnav->addURL(t('Settings'), $urls->settings())
+            ->setIcon(UI::icon()->settings());
     }
 }

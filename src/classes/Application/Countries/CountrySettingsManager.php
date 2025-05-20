@@ -60,9 +60,13 @@ class CountrySettingsManager extends Application_Formable_RecordSettings_Extende
 
     private function injectLabel(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
     {
-        $el = $this->addElementText($setting->getName(), t('Label'));
+        $el = $this->addElementText($setting->getName(), t('Invariant label'));
         $el->addFilterTrim();
         $el->addClass(CSSClasses::INPUT_XLARGE);
+        $el->setComment(sb()
+            ->t('The label of the country, in invariant language (English).')
+            ->t('It will be translated automatically to the selected user interface language.')
+        );
 
         $this->makeLengthLimited($el, 0, 80);
         $this->addRuleLabel($el);

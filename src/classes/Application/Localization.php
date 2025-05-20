@@ -1,16 +1,13 @@
 <?php
 /**
- * File containing the class {@see Application_Localization}.
- *
  * @package Application
  * @subpackage Localization
- * @see Application_Localization
  */
 
 declare(strict_types=1);
 
 use AppLocalize\Localization;
-use AppLocalize\Localization_Exception;
+use AppLocalize\Localization\LocalizationException;
 use AppLocalize\Localization_Scanner_StringHash;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
@@ -181,8 +178,7 @@ class Application_Localization
      * localization files are automatically refreshed with each release.
      *
      * @param Application_Driver $driver
-     * @throws Application_Exception
-     * @throws Localization_Exception
+     * @throws LocalizationException
      */
     protected static function initCacheKey(Application_Driver $driver) : void
     {
@@ -264,11 +260,17 @@ class Application_Localization
 
     public static function injectJS(Localization_Scanner_StringHash $hash) : void
     {
+        $text = $hash->getText();
+        $value = '';
+        if($text !== null) {
+            $value = $text->getText();
+        }
+
         UI::getInstance()->addJavascriptHead(
             sprintf(
                 "translator.addStringInfo('%1s', '%0s', '%0s', '%0s')",
                 $hash->getHash(),
-                addslashes($hash->getText()->getText()),
+                addslashes($value),
                 addslashes($hash->getTranslatedText()),
                 ''
             )

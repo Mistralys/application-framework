@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin\Screens\Create;
 
+use Application\AppFactory;
+use Application_Countries_Country;
 use Application_Interfaces_Admin_Wizard_Step_Confirmation;
 use Application_Traits_Admin_Wizard_Step_Confirmation;
 use UI_PropertiesGrid;
@@ -12,9 +14,9 @@ class ConfirmStep extends BaseCreateStep implements Application_Interfaces_Admin
 {
     use Application_Traits_Admin_Wizard_Step_Confirmation;
 
-    public function render(): string
+    public function getID(): string
     {
-        return 'Confirm';
+        return self::STEP_NAME;
     }
 
     protected function preProcess(): void
@@ -33,11 +35,22 @@ class ConfirmStep extends BaseCreateStep implements Application_Interfaces_Admin
 
     protected function createReferenceID(): string
     {
-        // TODO: Implement createReferenceID() method.
+        $country = $this->countries->createNewCountry(
+            $this->wizard->getStepSourceCountry()->requireCountry()->getCode(),
+            $this->wizard->getStepSettings()->getCountryLabel()
+        );
+
+        return (string)$country->getID();
     }
 
     protected function populateSummaryGrid(UI_PropertiesGrid $grid): void
     {
-        // TODO: Implement populateSummaryGrid() method.
+        $grid->add(t('Country'), strtoupper($this->wizard->getStepSourceCountry()->requireCountry()->getCode()));
+        $grid->add(t('Label'), $this->wizard->getStepSettings()->getCountryLabel());
+    }
+
+    public function getCreatedCountry() : Application_Countries_Country
+    {
+        return AppFactory::createCountries()->getCountryByID((int)$this->getReferenceID());
     }
 }

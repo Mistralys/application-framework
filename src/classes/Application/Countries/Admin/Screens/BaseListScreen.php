@@ -94,7 +94,7 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
 
     protected function _handleSidebar(): void
     {
-        $this->sidebar->addButton('create-country', t('Create new...'))
+        $this->sidebar->addButton('create-country', t('Create country...'))
             ->setIcon(UI::icon()->add())
             ->link(AppFactory::createCountries()->adminURL()->create());
 
