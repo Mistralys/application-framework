@@ -70,6 +70,12 @@ abstract class Application_Session_Base implements Application_Session
      */
     public function __construct()
     {
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
 
     final public function start() : self

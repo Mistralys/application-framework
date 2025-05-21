@@ -6,12 +6,16 @@ namespace Application\TimeTracker\Admin\Screens\ViewScreen;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
 use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use DBHelper_BaseRecord;
 
+/**
+ * @property TimeEntry $record
+ */
 class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
 {
     public const URL_NAME = 'settings';

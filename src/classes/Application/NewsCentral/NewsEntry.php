@@ -12,7 +12,7 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_User;
 use Application_Users_User;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Locale;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use DateTime;
 use DBHelper_BaseRecord;
 use NewsCentral\Entries\EntryCategoriesManager;
@@ -84,7 +84,7 @@ class NewsEntry extends DBHelper_BaseRecord
         return $this->getRecordStringKey(NewsCollection::COL_LOCALE);
     }
 
-    public function getLocale() : Localization_Locale
+    public function getLocale() : LocaleInterface
     {
         return Localization::getContentLocaleByName($this->getLocaleID());
     }

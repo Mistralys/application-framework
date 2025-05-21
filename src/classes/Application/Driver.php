@@ -1330,7 +1330,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // only add the language file if the selected locale is not the default one.
         if (!$locale->isNative())
         {
-            $this->ui->addJavascript('localization/locale-' . $locale->getShortName() . '.js', $counter--);
+            $this->ui->addJavascript('localization/locale-' . $locale->getLanguageCode() . '.js', $counter--);
         }
 
         // -----------------------------------------------------------

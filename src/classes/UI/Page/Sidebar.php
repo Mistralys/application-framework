@@ -8,6 +8,7 @@
  */
 
 use Application\Revisionable\RevisionableInterface;
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Handles the sidebar in the application's UI. Provides an API to easily
@@ -87,7 +88,7 @@ class UI_Page_Sidebar implements
      * Collapses the sidebar.
      * @return $this
      */
-    public function makeCollapsed()
+    public function makeCollapsed() : self
     {
         $this->collapsed = true;
         return $this;
@@ -150,7 +151,7 @@ class UI_Page_Sidebar implements
      * @param string|UI_Renderable_Interface|int|float $title
      * @return UI_Page_Sidebar_Item_Button
      */
-    public function addButton(string $name, $title = '')
+    public function addButton(string $name, $title = ''): UI_Page_Sidebar_Item_Button
     {
         $item = $this->createButton($name, $title);
         $this->items[] = $item;
@@ -160,10 +161,10 @@ class UI_Page_Sidebar implements
     
     /**
      * @param string $name
-     * @param string $title
+     * @param string|StringableInterface|NULL $title
      * @return UI_Page_Sidebar_Item_DropdownButton
      */
-    public function addDropdownButton($name, $title=null)
+    public function addDropdownButton(string $name, $title=null): UI_Page_Sidebar_Item_DropdownButton
     {
         $item = $this->createDropdownButton($name, $title);
         $this->items[] = $item;
@@ -197,13 +198,12 @@ class UI_Page_Sidebar implements
     */
     public function hasButton(string $name) : bool
     {
-        $total = count($this->items);
-        for($i=0; $i < $total; $i++) {
-            if($this->items[$i] instanceof UI_Page_Sidebar_Item_Button && $this->items[$i]->getName() == $name) {
+        foreach ($this->items as $item) {
+            if($item instanceof UI_Page_Sidebar_Item_Button && $item->getName() === $name) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -273,7 +273,7 @@ class UI_Page_Sidebar implements
     * Creates a sidebar section
     * @return UI_Page_Section
     */
-    public function addSection()
+    public function addSection(): UI_Page_Section
     {
         $section = $this->page->createSidebarSection();
         
@@ -304,10 +304,10 @@ class UI_Page_Sidebar implements
      * Adds the content of any template to the sidebar.
      * 
      * @param string $templateID
-     * @param array $params
+     * @param array<string,mixed> $params
      * @return UI_Page_Sidebar_Item_Template
      */
-    public function addTemplate($templateID, $params = array())
+    public function addTemplate(string $templateID, array $params = array()): UI_Page_Sidebar_Item_Template
     {
         $item = new UI_Page_Sidebar_Item_Template($this, $templateID, $params);
         $this->items[] = $item;
@@ -337,16 +337,12 @@ class UI_Page_Sidebar implements
     }
 
     /**
-     * @param string $content
+     * @param string|StringableInterface|NULL $content
      * @throws InvalidArgumentException
      * @return UI_Page_Sidebar_Item_Custom
      */
-    public function addCustom($content)
+    public function addCustom($content) : UI_Page_Sidebar_Item_Custom
     {
-        if (!is_string($content)) {
-            throw new InvalidArgumentException('You may only use strings as custom sidebar content, ' . gettype($content) . 'given.');
-        }
-
         $item = new UI_Page_Sidebar_Item_Custom($this, $content);
         $this->items[] = $item;
 
@@ -360,7 +356,7 @@ class UI_Page_Sidebar implements
     * @param bool $dismissable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addInfoMessage($message, bool $icon=false, bool $dismissable=false)
+    public function addInfoMessage($message, bool $icon=false, bool $dismissable=false) : UI_Page_Sidebar_Item_Message
     {
         return $this->addMessage($message, UI::MESSAGE_TYPE_INFO, $icon, $dismissable);
     }
@@ -372,7 +368,7 @@ class UI_Page_Sidebar implements
     * @param bool $dismissable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addErrorMessage($message, bool $icon=false, bool $dismissable=false)
+    public function addErrorMessage($message, bool $icon=false, bool $dismissable=false) : UI_Page_Sidebar_Item_Message
     {
         return $this->addMessage($message, UI::MESSAGE_TYPE_ERROR, $icon, $dismissable);
     }
@@ -384,7 +380,7 @@ class UI_Page_Sidebar implements
     * @param bool $dismissable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addSuccessMessage($message, bool $icon=false, bool $dismissable=false)
+    public function addSuccessMessage($message, bool $icon=false, bool $dismissable=false): UI_Page_Sidebar_Item_Message
     {
         return $this->addMessage($message, UI::MESSAGE_TYPE_SUCCESS, $icon, $dismissable);
     }
@@ -396,7 +392,7 @@ class UI_Page_Sidebar implements
      * @param bool $dismissable
      * @return UI_Page_Sidebar_Item_Message
      */
-    public function addWarningMessage($message, bool $icon=false, bool $dismissable=false)
+    public function addWarningMessage($message, bool $icon=false, bool $dismissable=false): UI_Page_Sidebar_Item_Message
     {
         return $this->addMessage($message, UI::MESSAGE_TYPE_WARNING, $icon, $dismissable);
     }
@@ -409,7 +405,7 @@ class UI_Page_Sidebar implements
     * @param bool $dismissable
     * @return UI_Page_Sidebar_Item_Message
     */
-    public function addMessage($message, $type = UI::MESSAGE_TYPE_INFO, bool $icon=false, bool $dismissable=false)
+    public function addMessage($message, string $type = UI::MESSAGE_TYPE_INFO, bool $icon=false, bool $dismissable=false): UI_Page_Sidebar_Item_Message
     {
         $item = new UI_Page_Sidebar_Item_Message($this, $message, $type, $icon, $dismissable);
         
@@ -466,7 +462,7 @@ class UI_Page_Sidebar implements
         for($i=0; $i < $total; $i++) {
             $item = $items[$i];
 
-            if($item->isSeparator() && $previous && $previous->isSeparator()) {
+            if($previous && $item->isSeparator() && $previous->isSeparator()) {
                 continue;
             }
 
@@ -513,26 +509,38 @@ class UI_Page_Sidebar implements
         return $this->page->getUI();
     }
 
-    public function makeLarger()
+    /**
+     * @return $this
+     */
+    public function makeLarger() : self
     {
-        $this->addClass('large');
+        return $this->addClass('large');
     }
 
-    public function addClass($name)
+    /**
+     * @param string $name
+     * @return $this
+     */
+    public function addClass(string $name) : self
     {
-        if (!in_array($name, $this->classes)) {
+        if (!in_array($name, $this->classes, true)) {
             $this->classes[] = $name;
         }
+
+        return $this;
     }
 
-    public function getClasses()
+    /**
+     * @return string[]
+     */
+    public function getClasses() : array
     {
         return $this->classes;
     }
 
-    public function isLarge()
+    public function isLarge() : bool
     {
-        return in_array('large', $this->classes);
+        return in_array('large', $this->classes, true);
     }
     
    /**
@@ -541,7 +549,7 @@ class UI_Page_Sidebar implements
     * 
     * @return UI_Page_Sidebar_Item_DeveloperPanel
     */
-    public function addDeveloperPanel()
+    public function addDeveloperPanel(): UI_Page_Sidebar_Item_DeveloperPanel
     {
         $panel = new UI_Page_Sidebar_Item_DeveloperPanel($this);
         $this->items[] = $panel;
@@ -549,7 +557,7 @@ class UI_Page_Sidebar implements
         return $panel;
     }
     
-    public function addFilterSettings(Application_FilterSettings $settings, $title=null)
+    public function addFilterSettings(Application_FilterSettings $settings, $title=null): UI_Page_Sidebar_Item_Template
     {
         return $this->addTemplate(
             'sidebar.filter-settings',

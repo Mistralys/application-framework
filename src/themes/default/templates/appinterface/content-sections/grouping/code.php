@@ -10,7 +10,7 @@ for($g=1; $g <= 2; $g++)
     $group = 'Group ' . $g;
 
     // Display the collapse controls for the group
-    echo UI_Page_Section::createGroupControls($group)
+    echo UI_Page_Section::createGroupControls($ui, $group)
         ->makeMini()
         ->setDisplayThreshold(3)
         ->setStyle('margin-bottom', '0.5rem')

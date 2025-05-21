@@ -29,4 +29,9 @@ interface TimeTrackerRightsInterface extends Application_User_Interface
     public const RIGHT_EDIT_TIME_ENTRIES = 'EditTimeEntries';
     public const RIGHT_DELETE_TIME_ENTRIES = 'DeleteTimeEntries';
     public const RIGHT_CREATE_TIME_ENTRIES = 'ViewTimeFilters';
+
+    public function canViewTimeEntries() : bool;
+    public function canEditTimeEntries() : bool;
+    public function canDeleteTimeEntries() : bool;
+    public function canCreateTimeEntries() : bool;
 }

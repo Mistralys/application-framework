@@ -404,13 +404,11 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         );
         
         $result = array();
-        if(is_array($entries)) {
-            $messaging = Application::createMessaging();
-            foreach($entries as $message_id) {
-                $result[] = $messaging->getByID((int)$message_id);
-            }
+        $messaging = Application::createMessaging();
+        foreach($entries as $message_id) {
+            $result[] = $messaging->getByID((int)$message_id);
         }
-        
+
         return $result;
     }
     

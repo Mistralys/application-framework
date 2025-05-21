@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_FilterSettings} class.
- *
  * @package Application
  * @subpackage Filtering
- * @see Application_FilterSettings
  */
 
 declare(strict_types=1);
@@ -724,10 +721,6 @@ abstract class Application_FilterSettings
 
     public function addElementCountry(string $setting, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_Select
     {
-        if(!is_array($options)) {
-            $options = array();
-        }
-
         $options = array_merge(
             array(
                 'with-invariant' => true,
