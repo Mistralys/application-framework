@@ -6,6 +6,8 @@ namespace AppFrameworkTests\Countries;
 
 use Application\AppFactory;
 use Application_Countries;
+use AppLocalize\Localization\Country\CountryFR;
+use AppLocalize\Localization\Country\CountryPL;
 use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
 final class IgnoreTests extends CountriesTestCase
@@ -17,16 +19,16 @@ final class IgnoreTests extends CountriesTestCase
      */
     public function test_setIgnored() : void
     {
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_FR, 'France');
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_PL, 'Poland');
+        $this->countries->createNewCountry(CountryFR::ISO_CODE, 'France');
+        $this->countries->createNewCountry(CountryPL::ISO_CODE, 'Poland');
 
         $this->assertCount(2, $this->countries->getAll());
 
-        $this->countries->setCountryIgnored(Application_Countries::COUNTRY_PL);
+        $this->countries->setCountryIgnored(CountryPL::ISO_CODE);
 
         $this->assertCount(1, $this->countries->getAll());
-        $this->assertISONotExists(Application_Countries::COUNTRY_PL);
-        $this->assertISOExists(Application_Countries::COUNTRY_FR);
+        $this->assertISONotExists(CountryPL::ISO_CODE);
+        $this->assertISOExists(CountryFR::ISO_CODE);
     }
 
     /**
@@ -35,25 +37,25 @@ final class IgnoreTests extends CountriesTestCase
      */
     public function test_getByISO() : void
     {
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_FR, 'France');
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_PL, 'Poland');
+        $this->countries->createNewCountry(CountryFR::ISO_CODE, 'France');
+        $this->countries->createNewCountry(CountryPL::ISO_CODE, 'Poland');
 
-        $pl = $this->countries->getByISO(Application_Countries::COUNTRY_PL);
+        $pl = $this->countries->getByISO(CountryPL::ISO_CODE);
 
         $this->assertSame('Poland', $pl->getLabel());
     }
 
     public function test_languagesAreAlsoIgnored() : void
     {
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_FR, 'France');
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_PL, 'Poland');
+        $this->countries->createNewCountry(CountryFR::ISO_CODE, 'France');
+        $this->countries->createNewCountry(CountryPL::ISO_CODE, 'Poland');
 
         $languages = AppFactory::createLanguages();
 
         $this->assertCount(2, $this->countries->getAll());
         $this->assertCount(2, $languages->getAll());
 
-        $this->countries->setCountryIgnored(Application_Countries::COUNTRY_PL);
+        $this->countries->setCountryIgnored(CountryPL::ISO_CODE);
 
         $this->assertCount(1, $languages->getAll());
 
@@ -64,15 +66,15 @@ final class IgnoreTests extends CountriesTestCase
 
     public function test_localesAreAlsoIgnored() : void
     {
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_FR, 'France');
-        $this->countries->createNewCountry(Application_Countries::COUNTRY_PL, 'Poland');
+        $this->countries->createNewCountry(CountryFR::ISO_CODE, 'France');
+        $this->countries->createNewCountry(CountryPL::ISO_CODE, 'Poland');
 
         $locales = AppFactory::createLocales();
 
         $this->assertCount(2, $this->countries->getAll());
         $this->assertCount(2, $locales->getAll());
 
-        $this->countries->setCountryIgnored(Application_Countries::COUNTRY_PL);
+        $this->countries->setCountryIgnored(CountryPL::ISO_CODE);
 
         $this->assertCount(1, $locales->getAll());
 
