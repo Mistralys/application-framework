@@ -9,8 +9,8 @@ declare(strict_types=1);
 
 namespace Application\Admin;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Exception;
-use Application_Admin_ScreenInterface;
 use Throwable;
 
 /**
@@ -24,9 +24,9 @@ use Throwable;
  */
 class ScreenException extends Application_Admin_Exception
 {
-    private Application_Admin_ScreenInterface $screen;
+    private AdminScreenInterface $screen;
 
-    public function __construct(Application_Admin_ScreenInterface $screen, string $message, string $developerInfo = '', int $code = 0, ?Throwable $previous = null)
+    public function __construct(AdminScreenInterface $screen, string $message, string $developerInfo = '', int $code = 0, ?Throwable $previous = null)
     {
         $this->screen = $screen;
 
@@ -35,7 +35,7 @@ class ScreenException extends Application_Admin_Exception
         parent::__construct($message, $developerInfo, $code, $previous);
     }
 
-    public function getScreen() : Application_Admin_ScreenInterface
+    public function getScreen() : AdminScreenInterface
     {
         return $this->screen;
     }

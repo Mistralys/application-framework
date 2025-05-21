@@ -35,7 +35,7 @@ interface Application_Interfaces_Disposable extends Application_Interfaces_Event
      * in the disposable. These automatically get disposed along
      * with the disposable.
      *
-     * @return Application_Interfaces_Disposable[]|array Only disposables in the list are used, so this can contain anything to avoid having to do type checks.
+     * @return array<int,Application_Interfaces_Disposable|object> Only disposables in the list are used, so this can contain anything to avoid having to do type checks.
      */
     public function getChildDisposables() : array;
 }

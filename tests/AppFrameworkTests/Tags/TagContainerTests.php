@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application Tests
- * @subpackage Tagging
+ * @package Tagging
+ * @subpackage Tests
  */
 
 declare(strict_types=1);
@@ -15,8 +15,8 @@ use Mistralys\AppFrameworkTests\TestClasses\TaggingTestCase;
  * {@see TestDBTagConnector}, which is used to retrieve records
  * directly of the correct type.
  *
- * @package Application Tests
- * @subpackage Tagging
+ * @package Tagging
+ * @subpackage Tests
  */
 final class TagContainerTests extends TaggingTestCase
 {

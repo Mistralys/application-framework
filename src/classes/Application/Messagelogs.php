@@ -7,6 +7,8 @@
  * @see Application_Messagelogs
  */
 
+use Application\AppFactory;
+
 /**
  * Used to add and retrieve messages stored stored in the
  * database, in the `app_messagelog` table. This is intended
@@ -25,17 +27,26 @@
  */
 class Application_Messagelogs extends DBHelper_BaseCollection
 {
-    const MESSAGELOG_INFORMATION = 'info';
-    const MESSAGELOG_ERROR = 'error';
-    const MESSAGELOG_WARNING = 'warning';
-    
+    public const MESSAGELOG_INFORMATION = 'info';
+    public const MESSAGELOG_ERROR = 'error';
+    public const MESSAGELOG_WARNING = 'warning';
+    public const MESSAGE_TYPES = array(
+        self::MESSAGELOG_INFORMATION,
+        self::MESSAGELOG_ERROR,
+        self::MESSAGELOG_WARNING
+    );
+    public const COL_MESSAGE = 'message';
+    public const COL_CATEGORY = 'category';
+    public const TABLE_NAME = 'app_messagelog';
+    public const PRIMARY_NAME = 'log_id';
+
     /**
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getRecordClassName()
      */
     public function getRecordClassName() : string
     {
-        return 'Application_Messagelogs_Log';
+        return Application_Messagelogs_Log::class;
     }
 
     /**
@@ -44,12 +55,12 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      */
     public function getRecordFiltersClassName() : string
     {
-        return 'Application_Messagelogs_FilterCriteria';
+        return Application_Messagelogs_FilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName() : string
     {
-        return 'Application_Messagelogs_FilterSettings';
+        return Application_Messagelogs_FilterSettings::class;
     }
     
     /**
@@ -73,8 +84,8 @@ class Application_Messagelogs extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'message' => t('Message'),
-            'category' => t('Category')
+            self::COL_MESSAGE => t('Message'),
+            self::COL_CATEGORY => t('Category')
         );
     }
 
@@ -84,7 +95,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      */
     public function getRecordTableName() : string
     {
-        return 'app_messagelog';
+        return self::TABLE_NAME;
     }
 
     /**
@@ -93,7 +104,7 @@ class Application_Messagelogs extends DBHelper_BaseCollection
      */
     public function getRecordPrimaryName() : string
     {
-        return 'log_id';
+        return self::PRIMARY_NAME;
     }
 
     /**
@@ -105,31 +116,40 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         return 'appmessagelog';
     }
     
-    public function getAvailableCategories()
+    public function getAvailableCategories() : array
+    {
+        return array_map('strval', $this->getDistinctValues(self::COL_CATEGORY));
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAvailableTypes() : array
+    {
+        return array_map('strval', $this->getDistinctValues('type'));
+    }
+
+    /**
+     * @return int[]
+     */
+    public function getAvailableUserIDs() : array
+    {
+        return array_map('intval', $this->getDistinctValues('user_id'));
+    }
+
+    private function getDistinctValues(string $keyName) : array
     {
         return DBHelper::fetchAllKey(
-            'category', 
+            $keyName,
             "SELECT DISTINCT
-                `category`
+                `".$keyName."`
             FROM
                 `".$this->getRecordTableName()."`
             ORDER BY
-                `category` ASC"
+                `".$keyName."` ASC"
         );
     }
-    
-    public function getAvailableTypes()
-    {
-        return DBHelper::fetchAllKey(
-            'type',
-            "SELECT DISTINCT
-                `type`
-            FROM
-                `".$this->getRecordTableName()."`
-            ORDER BY
-                `type` ASC"
-            );
-    }
+
     /**
      * {@inheritDoc}
      * @see DBHelper_BaseCollection::getCollectionLabel()
@@ -200,9 +220,43 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         return $this->createNewRecord(array(
             'date' => date('Y-m-d H:i:s'),
             'type' => $type,
-            'message' => $message,
-            'category' => $category,
+            self::COL_MESSAGE => $message,
+            self::COL_CATEGORY => $category,
             'user_id' => $user->getID()
         ));
+    }
+
+    public function generateDeveloperTestEntries() : void
+    {
+        DBHelper::requireTransaction('Generate message log developer test entries');
+
+        $users = array();
+        foreach(AppFactory::createUsers()->getAll() as $appUser) {
+            $users[] = $appUser->getUserInstance();
+        }
+
+        $categories = array(
+            'Deleted a record',
+            'Exported a product list',
+            'Dumped the database',
+            'Ran a complex search',
+            'Did something fishy',
+            'Uploaded a document',
+            'Ran the temporary storage cleanup',
+            'Reset the application cache',
+            'Generated message log entries',
+            'Found true love',
+            'Tried to build a perpetual motion machine',
+            'Found the answer'
+        );
+
+        for($i=0; $i < 142; $i++) {
+            $this->logMessage(
+                self::MESSAGE_TYPES[array_rand(self::MESSAGE_TYPES)],
+                'Generated developer test message #'.$i,
+                $categories[array_rand($categories)],
+                $users[array_rand($users)]
+            );
+        }
     }
 }

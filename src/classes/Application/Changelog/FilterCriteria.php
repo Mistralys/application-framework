@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\Microtime;
+
 class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Database
 {
     protected Application_Changelog $changelog;
@@ -15,7 +17,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
 
         $this->changelog = $changelog;
     }
-    
+
     protected function getQuery() : string
     {
         $primary = $this->changelog->getPrimary();
@@ -82,6 +84,42 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
     }
 
     /**
+     * @param string $name
+     * @param string|int $value
+     * @return $this
+     */
+    public function limitByCustomField(string $name, $value) : self
+    {
+        $placeholder = $this->generatePlaceholder($value);
+        $this->addWhere('chlog.`'.$name.'`='.$placeholder);
+        return $this;
+    }
+
+    /**
+     * @param Microtime $dateTo
+     * @return $this
+     */
+    public function limitByDateTo(Microtime $dateTo) : self
+    {
+        $value = $dateTo->getMySQLDate();
+        $placeholder = $this->generatePlaceholder($value);
+        $this->addWhere('chlog.`'.Application_Changelog::COL_DATE.'`<='.$placeholder);
+        return $this;
+    }
+
+    /**
+     * @param Microtime $dateFrom
+     * @return $this
+     */
+    public function limitByDateFrom(Microtime $dateFrom) : self
+    {
+        $value = $dateFrom->getMySQLDate();
+        $placeholder = $this->generatePlaceholder($value);
+        $this->addWhere('chlog.`'.Application_Changelog::COL_DATE.'`>='.$placeholder);
+        return $this;
+    }
+
+    /**
      * @return Application_Changelog_Entry[]
      * @throws Application_Exception
      * @throws DBHelper_Exception
@@ -93,7 +131,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $items = array();
         $entries = $this->getItems();
         foreach($entries as $entry) {
-            $items[] = $this->changelog->getByID((int)$entry['changelog_id']);
+            $items[] = $this->changelog->getByID((int)$entry[Application_Changelog::COL_PRIMARY_ID]);
         }
         
         $this->objects = false;

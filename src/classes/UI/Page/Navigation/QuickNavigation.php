@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace UI\Page\Navigation;
 
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_EventHandler;
 use Application_Interfaces_Loggable;
@@ -33,7 +33,7 @@ class QuickNavigation implements Application_Interfaces_Loggable
     public const NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
 
     private ?UI_Page_Navigation $navigation = null;
-    private ?Application_Admin_ScreenInterface $workScreen = null;
+    private ?AdminScreenInterface $workScreen = null;
     private UI_Page_Header $header;
 
     /**
@@ -126,7 +126,7 @@ class QuickNavigation implements Application_Interfaces_Loggable
         return $this->getContainerByScreen(Application_Driver::getInstance()->getActiveScreen());
     }
 
-    private function requireContainerByScreen(Application_Admin_ScreenInterface $screen) : ScreenItemsContainer
+    private function requireContainerByScreen(AdminScreenInterface $screen) : ScreenItemsContainer
     {
          $container = $this->getContainerByScreen($screen);
 
@@ -145,7 +145,7 @@ class QuickNavigation implements Application_Interfaces_Loggable
          );
     }
 
-    protected function getContainerByScreen(Application_Admin_ScreenInterface $screen) : ?ScreenItemsContainer
+    protected function getContainerByScreen(AdminScreenInterface $screen) : ?ScreenItemsContainer
     {
         $path = $screen->getURLPath();
 
@@ -156,12 +156,12 @@ class QuickNavigation implements Application_Interfaces_Loggable
         return null;
     }
 
-    public function setWorkScreen(Application_Admin_ScreenInterface $screen) : void
+    public function setWorkScreen(AdminScreenInterface $screen) : void
     {
         $this->workScreen = $screen;
     }
 
-     private function getWorkScreen() : Application_Admin_ScreenInterface
+     private function getWorkScreen() : AdminScreenInterface
      {
          if(isset($this->workScreen)) {
              return $this->workScreen;

@@ -152,10 +152,12 @@ class RevisionableRecord
 
     public function getAdminStatusURL(array $params = array()): string
     {
+        return '';
     }
 
     public function getAdminChangelogURL(array $params = array()): string
     {
+        return '';
     }
 
     // endregion

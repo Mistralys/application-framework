@@ -18,6 +18,13 @@
  */
 class Application_AjaxMethods_LockingGetStatus extends Application_LockManager_AjaxMethod
 {
+    public const METHOD_NAME = 'LockingGetStatus';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         if(!isset($this->record)) 

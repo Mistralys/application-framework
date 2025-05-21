@@ -7,6 +7,13 @@ declare(strict_types=1);
  */
 class Application_AjaxMethods_KeepAlive extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'KeepAlive';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->sendResponse(array(

@@ -1,6 +1,10 @@
 <?php
 
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord extends Application_Admin_Area_Mode_Submode_Action
+use Application\Interfaces\Admin\MissingRecordInterface;
+
+abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord
+    extends Application_Admin_Area_Mode_Submode_Action
+    implements MissingRecordInterface
 {
     /**
      * @var DBHelper_BaseCollection
@@ -14,8 +18,6 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
     
     abstract protected function createCollection() : DBHelper_BaseCollection;
     
-    abstract protected function getRecordMissingURL() : string;
-
     protected function init() : void
     {
         $this->collection = $this->createCollection();
@@ -90,10 +92,9 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
     * key value to the form's hidden variables. Also adds
     * the parent record's ID if present. 
     * 
-    * @param string $name
-    * @param array $defaultData
+    * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData=array()) : self
+    public function createFormableForm(string $name, $defaultData=array()) : self
     {
         parent::createFormableForm($name, $defaultData);
         
@@ -107,7 +108,7 @@ abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord exten
         
         if($collection->hasParentCollection())
         {
-            $parent = $collection->getParentRecord();
+            $parent = $collection->requireParentRecord();
             
             $this->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
         }

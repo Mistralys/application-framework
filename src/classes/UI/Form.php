@@ -1,14 +1,12 @@
 <?php
 /**
- * File containing the {@see UI_Form} class.
- *
  * @package Application
  * @subpackage Forms
- * @see UI_Form
  */
 
 declare(strict_types=1);
 
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -49,6 +47,7 @@ class UI_Form extends UI_Renderable
     public const ERROR_INVALID_DATEPICKER_ELEMENT = 45524015;
     public const ERROR_CANNOT_CREATE_ELEMENT = 45524016;
     public const ERROR_COULD_NOT_SUBMIT_FORM = 45524017;
+    public const ERROR_ELEMENT_NOT_FOUND = 45524018;
 
     /**
      * Stores the string that form element IDs get prefixed with.
@@ -63,6 +62,7 @@ class UI_Form extends UI_Renderable
     public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
 
 
+
     protected string $id;
     protected HTML_QuickForm2 $form;
     protected HTML_QuickForm2_DataSource_Array $defaultDataSource;
@@ -74,26 +74,19 @@ class UI_Form extends UI_Renderable
      * @param UI $ui
      * @param string $formID
      * @param string $method
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @throws FormException
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
-    public function __construct(UI $ui, string $formID, string $method, array $defaultData = array())
+    public function __construct(UI $ui, string $formID, string $method, $defaultData = array())
     {
         parent::__construct($ui->getPage());
 
         $this->registerCustomElements();
         $this->registerCustomRules();
 
-        if(!is_array($defaultData)) {
-            throw new FormException(
-                'Invalid form data',
-                sprintf(
-                    'The default form data must be an array, [%s] given.',
-                    gettype($defaultData)
-                ),
-                self::ERROR_INVALID_FORM_DATA
-            );
+        if($defaultData instanceof ArrayDataCollection) {
+            $defaultData = $defaultData->getData();
         }
 
         $this->id = $formID;
@@ -459,22 +452,40 @@ class UI_Form extends UI_Renderable
      * matches the specified name.
      *
      * @param string $name
-     * @return HTML_QuickForm2_Element|null
+     * @return HTML_QuickForm2_Node|null
      * @throws BaseClassHelperException
      */
-    public function getElementByName(string $name) : ?HTML_QuickForm2_Element
+    public function getElementByName(string $name) : ?HTML_QuickForm2_Node
     {
         $elements = $this->form->getElementsByName($name);
 
         if(!empty($elements))
         {
             return ClassHelper::requireObjectInstanceOf(
-                HTML_QuickForm2_Element::class,
+                HTML_QuickForm2_Node::class,
                 $elements[0]
             );
         }
 
         return null;
+    }
+
+    public function requireElementByName(string $name) : HTML_QuickForm2_Node
+    {
+        $element = $this->getElementByName($name);
+
+        if($element !== null) {
+            return $element;
+        }
+
+        throw new FormException(
+            'Required element not found',
+            sprintf(
+                'The form element with the name [%s] was not found.',
+                $name
+            ),
+            self::ERROR_ELEMENT_NOT_FOUND
+        );
     }
 
     public function getValue($elementID)
@@ -658,7 +669,7 @@ class UI_Form extends UI_Renderable
                 continue;
             }
 
-            if(method_exists($element, 'hasErrors') && $element->hasErrors()) {
+            if($element->hasErrors()) {
                 $collection[] = $element;
             }
         }
@@ -1506,7 +1517,7 @@ class UI_Form extends UI_Renderable
         $el = $this->resolveContainer($container)->addText($name);
         $el->addFilterTrim();
         $el->setLabel($label);
-        $el->addClass('input-xlarge');
+        $el->addClass('input-small');
 
         $this->addRuleISODate($el);
 
@@ -1955,13 +1966,13 @@ class UI_Form extends UI_Renderable
      * @param HTML_QuickForm2_Node $element
      * @param callable $callback
      * @param string $errorMessage
-     * @param array<int,mixed> $arguments Arguments for the callback, as an indexed array of parameters.
+     * @param mixed|array<int,mixed>|NULL $arguments Arguments for the callback, as an indexed array of parameters or a single value.
      * @return HTML_QuickForm2_Rule_Callback
      *
      * @throws BaseClassHelperException
      * @throws HTML_QuickForm2_Exception
      */
-    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, $arguments=null) : HTML_QuickForm2_Rule_Callback
     {
         $rule = ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Rule_Callback::class,
@@ -1972,12 +1983,17 @@ class UI_Form extends UI_Renderable
             )
         );
 
-        if(!is_array($arguments)) {
-            // this is to ensure the arguments are always passed on
-            // and in the correct order, even if the arguments should
-            // be null, since this may be intentional (There was an
-            // empty check here before, which caused issues).
-            $arguments = array($arguments);
+        if(!empty($arguments))
+        {
+            if (!is_array($arguments)) {
+                // this is to ensure the arguments are always passed on
+                // and in the correct order, even if the arguments should
+                // be null, since this may be intentional (There was an
+                // empty check here before, which caused issues).
+                $arguments = array($arguments);
+            }
+        } else {
+            $arguments = array();
         }
 
         $arguments[] = $rule;

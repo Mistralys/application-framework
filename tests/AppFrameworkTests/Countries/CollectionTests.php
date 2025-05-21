@@ -42,7 +42,7 @@ final class CollectionTests extends CountriesTestCase
 
         $collection = $this->countries->getCollection();
 
-        $this->assertContains($invariant->getISO(), $collection->getISOs());
+        $this->assertContains($invariant->getISO(), $collection->getISOs(), print_r($collection->getISOs(), true));
         $this->assertContains($invariant->getID(), $collection->getIDs());
         $this->assertContains($invariant, $collection->getAll());
 
@@ -98,5 +98,21 @@ final class CollectionTests extends CountriesTestCase
         $collection->addISO($de->getISO());
 
         $this->assertTrue($collection->hasCountry($de));
+    }
+
+    /**
+     * Test used to verify a bug where the instances were different.
+     * @link https://github.com/Mistralys/application-framework/issues/37
+     */
+    public function test_consistentInstances() : void
+    {
+        $this->createTestCountry('gb');
+
+        $this->countries->resetCollection();
+
+        $countryA = $this->countries->getByISO('gb');
+        $countryB = $this->countries->getByID($countryA->getID());
+
+        $this->assertSame($countryA, $countryB);
     }
 }

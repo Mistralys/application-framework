@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\Interfaces\StringableInterface;
 
 /**
@@ -160,17 +161,17 @@ class Application_Countries_Navigator extends UI_Renderable
 
     public function setURLParamMode() : Application_Countries_Navigator
     {
-        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE);
+        return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_MODE);
     }
 
     public function setURLParamSubmode() : Application_Countries_Navigator
     {
-        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE);
+        return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_SUBMODE);
     }
 
     public function setURLParamAction() : Application_Countries_Navigator
     {
-        return $this->setURLParamByRequest(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION);
+        return $this->setURLParamByRequest(AdminScreenInterface::REQUEST_PARAM_ACTION);
     }
 
     /**

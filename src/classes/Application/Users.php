@@ -1,13 +1,11 @@
 <?php
 /**
- * Class containing the {@link Application_Users} class.
- * 
  * @package Application
  * @subpackage Users
- * @see Application_Users
  */
 
 use Application\Exception\DisposableDisposedException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
 use AppUtils\ClassHelper;
@@ -15,10 +13,10 @@ use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 
 /**
- * User management class: allows retrieving and modifiying the
+ * User management class: allows retrieving and modifying the
  * users available in the database. This is not like the 
  * {@link Application_User} class, which only handles the user
- * which is currently logged in. 
+ * that is currently logged in.
  *
  * @package Application
  * @subpackage Users
@@ -27,14 +25,18 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
  * 
  * @method Application_Users_User|NULL getByKey(string $key, string $value)
  * @method Application_Users_User createNewRecord(array $data = array(), bool $silent = false, array $options = array())
+ * @method Application_Users_User[] getAll()
  */
 class Application_Users extends DBHelper_BaseCollection
 {
-    public const TABLE_USER_EMAILS = 'user_emails';
     public const TABLE_NAME = 'known_users';
     public const TABLE_USER_SETTINGS = Application_User_Storage_DB::TABLE_NAME;
 
     public const PRIMARY_NAME = 'user_id';
+    public const COL_EMAIL = 'email';
+    public const COL_FIRSTNAME = 'firstname';
+    public const COL_LASTNAME = 'lastname';
+    public const COL_FOREIGN_ID = 'foreign_id';
 
     /**
      * {@inheritDoc}
@@ -65,7 +67,7 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getRecordDefaultSortKey() : string
     {
-        return 'email';
+        return self::COL_EMAIL;
     }
 
     /**
@@ -75,9 +77,9 @@ class Application_Users extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'firstname' => t('First name'),
-            'lastname' => t('Last name'),
-            'email' => t('E-mail address')
+            self::COL_FIRSTNAME => t('First name'),
+            self::COL_LASTNAME => t('Last name'),
+            self::COL_EMAIL => t('E-mail address')
         );
     }
 
@@ -136,24 +138,11 @@ class Application_Users extends DBHelper_BaseCollection
 
     public function getByEmail(string $email) : ?Application_Users_User
     {
-        $user = $this->getByKey('email', $email);
+        $user = $this->getByKey(self::COL_EMAIL, $email);
 
         if($user !== null)
         {
             return $user;
-        }
-
-        // TODO Remove this once the table has been created everywhere.
-        if(DBHelper::tableExists(self::TABLE_USER_EMAILS))
-        {
-            $id = DBHelper::createFetchKey(self::PRIMARY_NAME, self::TABLE_USER_EMAILS)
-                ->whereValue('email', $email)
-                ->fetchInt();
-
-            if ($id > 0)
-            {
-                return $this->getByID($id);
-            }
         }
 
         return null;
@@ -162,15 +151,15 @@ class Application_Users extends DBHelper_BaseCollection
     public function createNewUser(string $email, string $firstname, string $lastname, string $foreignID='') : Application_Users_User
     {
         return $this->createNewRecord(array(
-            'email' => $email,
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'foreign_id' => $foreignID
+            self::COL_EMAIL => $email,
+            self::COL_FIRSTNAME => $firstname,
+            self::COL_LASTNAME => $lastname,
+            self::COL_FOREIGN_ID => $foreignID
         ));
     }
 
     /**
-     * @param int $record_id
+     * @param int|string $record_id
      * @return Application_Users_User
      *
      * @throws DisposableDisposedException
@@ -178,12 +167,17 @@ class Application_Users extends DBHelper_BaseCollection
      * @throws ClassNotImplementsException
      * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelper_BaseRecord
     {
         return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,
             parent::getByID($record_id)
         );
+    }
+
+    public function getSystemUser() : Application_Users_User
+    {
+        return $this->getByID(Application::USER_ID_SYSTEM);
     }
 
     public function initSystemUsers() : void
@@ -192,8 +186,11 @@ class Application_Users extends DBHelper_BaseCollection
 
         foreach($ids as $id)
         {
-            $user = Application::createUser($id);
-            $this->initSystemUser($user);
+            $this->log(sprintf('User [%s] | Processing', $id));
+
+            // This works because the `createUser()` method does not query
+            // the database for the system users: It uses hardwired data.
+            $this->initSystemUser(Application::createUser($id));
         }
     }
 
@@ -225,10 +222,10 @@ class Application_Users extends DBHelper_BaseCollection
                 $this->getRecordTableName(),
                 array(
                     $this->getRecordPrimaryName() => $userID,
-                    'email' => $user->getEmail(),
-                    'firstname' => $user->getFirstname(),
-                    'lastname' => $user->getLastname(),
-                    'foreign_id' => $user->getForeignID()
+                    self::COL_EMAIL => $user->getEmail(),
+                    self::COL_FIRSTNAME => $user->getFirstname(),
+                    self::COL_LASTNAME => $user->getLastname(),
+                    self::COL_FOREIGN_ID => $user->getForeignID()
                 )
             );
 
@@ -256,8 +253,8 @@ class Application_Users extends DBHelper_BaseCollection
      */
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = Application_Admin_Area_Mode_Users::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()

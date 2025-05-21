@@ -8,6 +8,13 @@ use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_LookupItems extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'LookupItems';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON() : void
     {
         $payload = array();

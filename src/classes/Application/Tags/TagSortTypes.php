@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Tagging
+ * @subpackage Collection
+ */
 
 declare(strict_types=1);
 
@@ -8,8 +12,8 @@ use AppUtils\Collections\BaseStringPrimaryCollection;
 use DBHelper;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @method TagSortType getByID(string $id)
  * @method TagSortType[] getAll()

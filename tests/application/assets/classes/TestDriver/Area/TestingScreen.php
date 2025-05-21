@@ -64,6 +64,14 @@ class TestingScreen extends Application_Admin_Area
             ->getTitle()
             ->setText($this->getTitle())
             ->setIcon(UI::icon()->developer());
+
+        $sub = $this->getActiveSubscreen();
+        if(isset($sub)) {
+            $this->renderer->setSubtitle(sb()
+                ->t('Test:')
+                ->add($sub->getTitle())
+            );
+        }
     }
 
     protected function _handleBreadcrumb(): void

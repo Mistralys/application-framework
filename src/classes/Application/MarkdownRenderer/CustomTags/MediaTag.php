@@ -8,8 +8,12 @@ use Application\AppFactory;
 use Application\MarkdownRenderer;
 use Application\MarkdownRenderer\BaseCustomTag;
 use Application_Media_Document;
+use Application_Media_Document_Image;
+use AppUtils\ArrayDataCollection;
 use AppUtils\AttributeCollection;
+use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
+use Dom\Attr;
 
 /**
  * Detects media tags:
@@ -17,9 +21,12 @@ use AppUtils\HTMLTag;
  * <code>{media: 42}</code>
  * <code>{media: 42 width="400"}</code>
  * <code>{media: 42 title="Optional image title attribute"}</code>
+ * <code>{media: 42 thumbnail="no"}</code>
+ * <code>{media: 42 class="custom-style"}</code>
  */
 class MediaTag extends BaseCustomTag
 {
+    public const DEFAULT_VISUAL_CLASS_NAME = 'visual';
     private int $mediaID;
 
     public function __construct(string $matchedText, int $mediaID, AttributeCollection $params)
@@ -108,13 +115,46 @@ class MediaTag extends BaseCustomTag
 
         $tag = HTMLTag::create('img')
             ->setSelfClosing()
-            ->addClass('visual')
-            ->attr('src', $document->getThumbnailURL($this->getWidth()))
+            ->addClasses($this->getClasses())
+            ->attr('width', (string)$this->getWidth())
+            ->attr('src', $this->resolveURL($document))
             ->attr('alt', $document->getName())
             ->attr('title', (string)$this->getTitle());
 
         return (string)HTMLTag::create('a')
             ->attr('href', $document->getThumbnailURL())
             ->setContent($tag);
+    }
+
+    public function getClasses() : array
+    {
+        $classes = array(self::DEFAULT_VISUAL_CLASS_NAME);
+
+        array_push($classes, ...$this->params->getClasses());
+
+        $classes = array_unique($classes);
+
+        sort($classes);
+
+        return $classes;
+    }
+
+    protected function resolveURL(Application_Media_Document $document) : string
+    {
+        if(!$document instanceof Application_Media_Document_Image) {
+            return $document->getThumbnailURL($this->getWidth());
+        }
+
+        if($this->isThumbnail()) {
+            return $document->getThumbnailURL($this->getWidth());
+        }
+
+        return $document->getThumbnailURL();
+    }
+
+    public function isThumbnail() : bool
+    {
+        $value = $this->getAttribute('thumbnail');
+        return $value !== 'no' && $value !== 'false';
     }
 }

@@ -358,8 +358,6 @@ abstract class Application_RevisionableStateless
             );
         }
 
-        $this->clearChangelogQueue();
-
         $this->lastTransaction = null;
         $this->transactionActive = true;
         $this->requiresNewRevision = false;

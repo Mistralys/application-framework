@@ -6,6 +6,13 @@ use AppUtils\ConvertHelper;
 
 class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'GetChangelogRevisions';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON() : void
     {
         $revisionableTypes = $this->driver->getRevisionableTypes();

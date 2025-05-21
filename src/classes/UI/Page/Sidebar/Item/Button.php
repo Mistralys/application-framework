@@ -10,6 +10,9 @@
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\Traits\ClassableTrait;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Interfaces\ActivatableInterface;
+use UI\Interfaces\ButtonLayoutInterface;
+use UI\Traits\ButtonLayoutTrait;
 use function AppUtils\parseVariable;
 
 /**
@@ -38,6 +41,7 @@ class UI_Page_Sidebar_Item_Button
     use Application_Traits_Iconizable;
     use ClassableTrait;
     use UI_Traits_ClientConfirmable;
+    use ButtonLayoutTrait;
 
     protected string $title = '';
     protected string $name;
@@ -47,7 +51,6 @@ class UI_Page_Sidebar_Item_Button
     protected string $state = 'enabled';
     protected string $style = 'normal';
     protected string $onclick = '';
-    protected ?string $design = null;
     protected string $id;
     protected string $formName = '';
     protected string $disabledTooltip = '';
@@ -225,79 +228,6 @@ class UI_Page_Sidebar_Item_Button
         );
     }
 
-    /**
-     * @return $this
-     */
-    public function makePrimary() : self
-    {
-        return $this->setDesign('primary');
-    }
-
-    /**
-     * @return $this
-     */
-    public function makeInverse() : self
-    {
-        return $this->setDesign('inverse');
-    }
-
-    /**
-     * @return $this
-     */
-    public function makeInfo() : self
-    {
-        return $this->setDesign('info');
-    }
-
-    /**
-     * @param string $design
-     * @return $this
-     */
-    private function setDesign(string $design) : self
-    {
-        $this->design = $design;
-
-        return $this;
-    }
-
-    /**
-     * @return $this
-     */
-    public function makeDangerous() : self
-    {
-        return $this->setDesign('danger');
-    }
-    
-    /**
-     * @return $this
-     */
-    public function makeSuccess() : self
-    {
-        return $this->setDesign('success');
-    }
-
-    /**
-     * Transforms the button into a button styled
-     * for a warning before an action.
-     *
-     * @return $this
-     */
-    public function makeWarning() : self
-    {
-        return $this->setDesign('warning');
-    }
-
-    /**
-     * Transforms the button into a developer button
-     * that only developers have access to.
-     *
-     * @return $this
-     */
-    public function makeDeveloper() : self
-    {
-        return $this->setDesign('developer');
-    }
-
     public function setOnClick(string $statement) : self
     {
         $this->onclick = $statement;
@@ -367,7 +297,7 @@ class UI_Page_Sidebar_Item_Button
     
     public function isDangerous() : bool
     {
-        return $this->design === 'danger';
+        return $this->layout === ButtonLayoutInterface::LAYOUT_DANGER;
     }
 
     /**
@@ -409,7 +339,7 @@ class UI_Page_Sidebar_Item_Button
             'javascript' => $this->javascript,
             'style' => $this->style,
             'onclick' => $this->onclick,
-            'design' => $this->design,
+            'design' => $this->resolveLayout(),
             'loadingText' => $this->loadingText,
             'locked' => $this->isLocked()
         ));
@@ -497,5 +427,27 @@ class UI_Page_Sidebar_Item_Button
     public function getLabel() : string
     {
         return $this->title;
+    }
+
+    /**
+     * @param bool $active
+     * @return $this
+     */
+    public function makeActive(bool $active = true): self
+    {
+        return $this;
+    }
+
+    /**
+     * @return false
+     */
+    public function isActive(): bool
+    {
+        return false;
+    }
+
+    protected function resolveLayout(): string
+    {
+        return $this->layout;
     }
 }

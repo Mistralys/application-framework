@@ -7,6 +7,8 @@
  * @see UI_Bootstrap_Tabs
  */
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * Bootstrap tabs container.
  * 
@@ -183,7 +185,7 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
      */
     public function selectBySubmode() : UI_Bootstrap_Tabs
     {
-        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE);
+        return $this->selectByRequestVar(AdminScreenInterface::REQUEST_PARAM_SUBMODE);
     }
 
     /**
@@ -194,7 +196,7 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
      */
     public function selectByAction() : UI_Bootstrap_Tabs
     {
-        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION);
+        return $this->selectByRequestVar(AdminScreenInterface::REQUEST_PARAM_ACTION);
     }
 
     /**
@@ -205,7 +207,7 @@ class UI_Bootstrap_Tabs extends UI_Bootstrap
      */
     public function selectByMode() : UI_Bootstrap_Tabs
     {
-        return $this->selectByRequestVar(Application_Admin_ScreenInterface::REQUEST_PARAM_MODE);
+        return $this->selectByRequestVar(AdminScreenInterface::REQUEST_PARAM_MODE);
     }
 
     public function selectTab(UI_Bootstrap_Tab $target) : UI_Bootstrap_Tabs

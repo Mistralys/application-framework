@@ -14,6 +14,7 @@ use Application\AppFactory;
 use Application\DeploymentRegistry;
 use Application_Admin_Area_Mode;
 use AppUtils\ConvertHelper;
+use Mistralys\AppFrameworkDocs\DocumentationHub;
 use UI;
 
 /**
@@ -85,7 +86,7 @@ abstract class BaseDeploymentHistoryScreen extends Application_Admin_Area_Mode
                 ->t('This requires the deployment callback script to be called whenever the application is deployed.')
                 ->t(
                     'See the %1$sdocumentation%2$s for details.',
-                    sb()->linkOpen(APP_FRAMEWORK_DOCUMENTATION_URL, true),
+                    sb()->linkOpen(DocumentationHub::getPageLink()->deploying(), true),
                     sb()->linkClose()
                 )
             );

@@ -10,8 +10,7 @@ use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TaggableInterface;
 use Application\Tags\Taggables\TaggableTrait;
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
@@ -123,7 +122,7 @@ abstract class Application_Media_Document
             )
         );
 
-        return self::create($media_id);
+        return AppFactory::createMedia()->getByID($media_id);
     }
 
     protected ?string $path = null;
@@ -276,15 +275,14 @@ abstract class Application_Media_Document
     }
 
     /**
-     * Creates a media file by its ID.
+     * Creates a media file by its ID. Uses a query to determine
+     * the media type before instantiating the document.
      *
      * @param int $media_id
      * @return Application_Media_Document
      *
      * @throws MediaException
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     * @throws ConvertHelper_Exception
+     * @throws BaseClassHelperException
      * @throws DBHelper_Exception
      */
     public static function create(int $media_id) : Application_Media_Document
@@ -565,6 +563,11 @@ abstract class Application_Media_Document
     abstract public function injectMetadata(UI_PropertiesGrid $grid) : void;
 
     // region: Tagging
+
+    public function getTaggableLabel(): string
+    {
+        return $this->getName();
+    }
 
     public function getTagCollection(): TagCollectionInterface
     {

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Admin;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Exception;
-use Application_Admin_ScreenInterface;
 use Application_User;
 
 /**
@@ -48,7 +48,7 @@ abstract class BaseScreenRights implements ScreenRightsInterface
      * right registered. Use {@see self::screenExists()} to
      * check if a screen has a right registered.
      *
-     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string $screen
      * @return string
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
@@ -60,13 +60,13 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     }
 
     /**
-     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string $screen
      * @return string
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
     private function resolveScreenClass($screen) : string
     {
-        if($screen instanceof Application_Admin_ScreenInterface) {
+        if($screen instanceof AdminScreenInterface) {
             return get_class($screen);
         }
 
@@ -84,7 +84,7 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     /**
      * Returns whether a screen class has a right registered.
      *
-     * @param Application_Admin_ScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string $screen
      * @return bool
      * @throws Application_Admin_Exception
      */

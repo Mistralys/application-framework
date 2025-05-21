@@ -13,6 +13,14 @@
     padding-bottom: 2rem;
 }
 
+.example-output > H2.example{
+    line-height: normal;
+    border-bottom: dotted 1px var(--color-border);
+    padding-bottom: 0.2rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
 .example-navigation{
     margin-bottom: 1rem;
 }

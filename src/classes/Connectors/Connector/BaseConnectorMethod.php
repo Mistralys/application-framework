@@ -13,6 +13,7 @@ namespace Connectors\Connector;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use Connectors_Connector;
+use Connectors_Request_Method;
 use Connectors_Request_URL;
 use Connectors_Response;
 
@@ -63,6 +64,19 @@ abstract class BaseConnectorMethod implements Application_Interfaces_Loggable
         $request = new Connectors_Request_URL(
             $this->connector,
             $this->connector->getURL() . '/' . $endpoint
+        );
+
+        $request->setHTTPMethod($this->getHTTPMethod());
+
+        return $request;
+    }
+
+    protected function createMethodRequest(string $methodName) : Connectors_Request_Method
+    {
+        $request = new Connectors_Request_Method(
+            $this->connector,
+            $this->connector->getURL(),
+            $methodName
         );
 
         $request->setHTTPMethod($this->getHTTPMethod());

@@ -1,13 +1,28 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Traits
+ */
 
+use AppUtils\Interfaces\StringableInterface;
+
+/**
+ * Trait used to implement the interface {@see Application_Interfaces_Validatable}.
+ *
+ * @package Application
+ * @subpackage Traits
+ *
+ * @see Application_Interfaces_Validatable
+ */
 trait Application_Traits_Validatable
 {
+    protected ?string $validationMessage = null;
+    protected ?int $validationCode = null;
+
     /**
-     * @var string|NULL
+     * @var array<string,mixed>
      */
-    protected $validationMessage = null;
-    
-    protected $validationOptions;
+    protected array $validationOptions;
 
     abstract protected function _isValid() : bool;
     
@@ -15,14 +30,14 @@ trait Application_Traits_Validatable
     * Overwritable: use to initialize the default option values,
     * if any.
     * 
-    * @return array
+    * @return array<string,mixed>
     */
     public function getValidationOptionDefaults() : array
     {
         return array();
     }
     
-    public function setValidationOption($name, $value) : void 
+    public function setValidationOption(string $name, $value) : void
     {
         if(!isset($this->validationOptions)) {
             $this->validationOptions = $this->getValidationOptionDefaults();
@@ -30,7 +45,12 @@ trait Application_Traits_Validatable
         
         $this->validationOptions[$name] = $value;
     }
-    
+
+    /**
+     * @param string $name
+     * @param mixed|NULL $default
+     * @return mixed|null
+     */
     public function getValidationOption(string $name, $default=null)
     {
         if(!isset($this->validationOptions)) {
@@ -50,10 +70,17 @@ trait Application_Traits_Validatable
         
         return $this->_isValid();
     }
-    
-    protected function setValidationError($message) : bool
+
+    /**
+     * @param string|number|StringableInterface $message
+     * @param int|null $code
+     * @return bool
+     * @throws UI_Exception
+     */
+    protected function setValidationError($message, ?int $code=null) : bool
     {
-        $this->validationMessage = $message;
+        $this->validationMessage = toString($message);
+        $this->validationCode = $code;
         
         return false;
     }
@@ -61,5 +88,10 @@ trait Application_Traits_Validatable
     public function getValidationMessage() : ?string
     {
         return $this->validationMessage;
+    }
+
+    public function getValidationCode() : ?int
+    {
+        return $this->validationCode;
     }
 }

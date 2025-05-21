@@ -38,6 +38,11 @@ trait Application_Session_AuthTypes_CAS
     abstract public function getLastnameField() : string;
     abstract public function getForeignIDField() : string;
 
+    public function getAuthTypeID() : string
+    {
+        return Application_Session_AuthTypes_CASInterface::TYPE_ID;
+    }
+
     private ?CAS_Client $client = null;
 
     public function getClient() : CAS_Client
@@ -109,7 +114,7 @@ trait Application_Session_AuthTypes_CAS
      *
      * @throws Application_Exception
      */
-    protected function handleLogin() : Application_Users_User
+    protected function sendAuthenticationCallbacks() : Application_Users_User
     {
         $client = $this->getClient();
 

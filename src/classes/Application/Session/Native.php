@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Session_Native} class.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_Native
  */
 
 use AppUtils\NamedClosure;
@@ -26,10 +23,23 @@ abstract class Application_Session_Native extends Application_Session_Base
      * @var array<string,string>
      */
     private static array $options = array();
+    private bool $enabled = true;
+
+    protected function init(): void
+    {
+        $this->enabled = !isCLI();
+    }
 
     protected function _start(): void
     {
-        $this->log('Starting session.');
+        $name = $this->getName();
+
+        if(!$this->enabled) {
+            $this->log('Start | IGNORE | Session handling is not enabled.');
+            return;
+        }
+
+        $this->log('Start | Using session name [%s].', $name);
 
         // Temporarily set an error handler to catch session
         // initialization errors, so they can be converted
@@ -39,9 +49,13 @@ abstract class Application_Session_Native extends Application_Session_Base
             array($this, 'callback_sessionStartError')
         ));
 
+        session_name($name);
         session_start(self::$options);
 
         restore_error_handler();
+
+        $this->log('Start | Initial session payload:');
+        $this->logData($_SESSION);
     }
 
     private function callback_sessionStartError(int $code, string $msg, string $file, int $line) : bool
@@ -57,22 +71,31 @@ abstract class Application_Session_Native extends Application_Session_Base
         throw $ex;
     }
 
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
+    }
+
     public function getID() : string
     {
+        if(!$this->enabled) {
+            return 'not-started';
+        }
+
         return session_id();
     }
 
     /**
      * Sets a session option.
      *
-     * NOTE: Must be used before the session is started.
-     * Has no effect afterwards.
+     * > NOTE: Must be used before the session is started.
+     * > Has no effect afterward.
      *
-     * Example:
+     * ## Example
      *
-     * <pre>
+     * ```php
      * Application_Session_Native::setOption('cookie_lifetime', '60');
-     * </pre>
+     * ```
      *
      * @param string $name
      * @param string $value
@@ -103,24 +126,18 @@ abstract class Application_Session_Native extends Application_Session_Base
         return '';
     }
 
-    protected function handleLogout(array $clearKeys=array()) : void
+    protected function _destroy() : void
     {
-        foreach($clearKeys as $name) {
-            $this->unsetValue($name);
+        if($this->enabled) {
+            session_destroy();
+            return;
         }
-    }
 
-    abstract public function getPrefix() : string;
-
-    public function getNameWithPrefix(string $name) : string
-    {
-        return $this->getPrefix().$name;
+        $_SESSION = array();
     }
 
     public function getValue(string $name, $default = null)
     {
-        $name = $this->getNameWithPrefix($name);
-
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
         }
@@ -130,24 +147,16 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     public function setValue(string $name, $value) : void
     {
-        $name = $this->getNameWithPrefix($name);
-
         $_SESSION[$name] = $value;
     }
 
     public function valueExists(string $name) : bool
     {
-        $name = $this->getNameWithPrefix($name);
-
         return isset($_SESSION[$name]);
     }
 
     public function unsetValue(string $name) : void
     {
-        $name = $this->getNameWithPrefix($name);
-
-        if ($this->valueExists($name)) {
-            unset($_SESSION[$name]);
-        }
+        unset($_SESSION[$name]);
     }
 }

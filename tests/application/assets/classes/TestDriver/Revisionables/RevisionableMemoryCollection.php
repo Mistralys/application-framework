@@ -9,6 +9,8 @@ use Application\Revisionable\RevisionableInterface;
 use Application_RevisionableCollection;
 use Application_Traits_Disposable;
 use Application_Traits_Eventable;
+use TestDriver\Revisionables\Storage\RevisionableStorage;
+use TestDriver\Revisionables\Storage\RevisionCopy;
 
 class RevisionableMemoryCollection extends Application_RevisionableCollection
 {
@@ -50,17 +52,17 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
 
     public function getRecordFiltersClassName(): string
     {
-        return '';
+        return RevisionableFilterCriteria::class;
     }
 
     public function getRecordFilterSettingsClassName(): string
     {
-        return '';
+        return RevisionableFilterSettings::class;
     }
 
     public function getRevisionsStorageClass(): string
     {
-        return '';
+        return RevisionableStorage::class;
     }
 
     public function getAdminListURL(array $params = array()): string
@@ -70,7 +72,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
 
     public function getAdminURLParams(): array
     {
-        return '';
+        return array();
     }
 
     public function getRecordReadableNameSingular(): string
@@ -85,7 +87,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
 
     public function getRecordCopyRevisionClass(): string
     {
-        return '';
+        return RevisionCopy::class;
     }
 
     public function getRecordSearchableColumns(): array

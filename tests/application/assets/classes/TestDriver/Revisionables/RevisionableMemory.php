@@ -144,7 +144,16 @@ class RevisionableMemory extends Application_RevisionableStateless
 
     public function getChangelogItemPrimary(): array
     {
-        return array('primary');
+        return array(
+            'primary' => $this->getID()
+        );
+    }
+
+    public function getChangelogItemInsertColumns(): array
+    {
+        return array(
+            'primary' => $this->getID()
+        );
     }
 
     public function getChangelogEntryText(string $type, array $data = array()): string

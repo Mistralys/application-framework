@@ -126,14 +126,17 @@ var Application_CustomProperties_Dialog_List =
 	
 	Handle_PropertyAdded:function(property)
 	{
-		this.grid.AppendEntry({
+		const entry = this.grid.AppendEntry({
 			'property_id':property.GetID(),
 			'name':property.GetNameForList(),
 			'label':property.GetLabelForList(),
 			'value':property.GetValueForList(),
 			'actions':property.RenderListActions(screen)
-		})
-		.SetTag('property', property);
+		});
+
+		if(entry instanceof UI_DataGrid_Entry) {
+			entry.SetTag('property', property);
+		}
 	},
 	
 	DialogEditValue:function(property)

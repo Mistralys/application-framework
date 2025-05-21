@@ -8,7 +8,9 @@
  */
 
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
 use UI\AdminURLs\AdminURLInterface;
@@ -30,17 +32,18 @@ use UI\AdminURLs\AdminURLInterface;
  * @see Application_Admin_Area_Mode_Submode
  * @see Application_Admin_Area_Mode_Submode_Action
  *
- * @see Application_Admin_ScreenInterface
+ * @see AdminScreenInterface
  * @see Application_Traits_Admin_Screen
  */
 abstract class Application_Admin_Skeleton
     extends Application_Formable
     implements
-    Application_Admin_ScreenInterface,
+    AdminScreenInterface,
     Application_Interfaces_Admin_LockableScreen
 {
     use Application_Traits_Loggable;
     use ScreenAccessTrait;
+    use Application_Traits_Eventable;
 
     public const ERROR_NO_LOCKING_PRIMARY = 13001;
     public const ERROR_NO_LOCK_LABEL_METHOD_PRESENT = 13002;
@@ -58,7 +61,7 @@ abstract class Application_Admin_Skeleton
     protected UI_Page_Breadcrumb $breadcrumb;
     protected Application_Session $session;
     protected ?Application_LockManager $lockManager = null;
-    protected ?Application_Admin_ScreenInterface $parentScreen = null;
+    protected ?AdminScreenInterface $parentScreen = null;
     protected static bool $simulationStarted = false;
 
     protected ?UI_Page_Help $help = null;
@@ -76,14 +79,14 @@ abstract class Application_Admin_Skeleton
     */
     protected bool $adminMode = true;
     
-    public function __construct(Application_Driver $driver, ?Application_Admin_ScreenInterface $parent=null)
+    public function __construct(Application_Driver $driver, ?AdminScreenInterface $parent=null)
     {
         $this->driver = $driver;
         $this->user = $this->driver->getUser();
         $this->request = $this->driver->getRequest();
         $this->session = Application::getSession();
         $this->parentScreen = $parent;
-        
+
         if($this->adminMode) {
             $this->startUI();
             $this->startSimulation();
@@ -480,10 +483,10 @@ abstract class Application_Admin_Skeleton
      * be required, this only adds the mode / submode / action values.
      *
      * @param string $id
-     * @param array $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return UI_Form
      */
-    protected function configureForm($id, $defaultData = array())
+    protected function configureForm(string $id, $defaultData = array()) : UI_Form
     {
         $form = $this->ui->createForm($id, $defaultData);
         $form->addHiddenVars($this->getPageParams());
@@ -674,13 +677,23 @@ abstract class Application_Admin_Skeleton
         self::$simulationStarted = true;
 
         header('Content-Type:text/html; charset=UTF-8');
-        AppFactory::createLogger()->enableHTML()->logModeEcho();
+        $logger = AppFactory::createLogger();
+        $logger->enableHTML()->logModeEcho();
+
+        $entries = $logger->getLog();
+        $logger->clearLog();
         
-        Application::logHeader('Simulation mode active');
-        Application::log('Memory usage: '.memory_get_usage(true));
-        Application::log('Request variables:');
-        Application::logData($_REQUEST);
-        Application::log('');
+        $logger->logHeader('Simulation mode active');
+        $logger->log('Memory usage: '.memory_get_usage(true));
+        $logger->log('Request variables:');
+        $logger->logData($_REQUEST);
+        $logger->log('');
+
+        $logger->logHeader('System log entries');
+        foreach($entries as $entry) {
+            $logger->log($entry);
+        }
+
         return true;
     }
     
@@ -928,7 +941,7 @@ abstract class Application_Admin_Skeleton
         return $grid;
     }
     
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         return $this->driver->getActiveScreen();
     }

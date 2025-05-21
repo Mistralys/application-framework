@@ -45,7 +45,7 @@ class WhatsNewTests extends ApplicationTestCase
 
             foreach($items as $item)
             {
-                $this->assertNotEmpty($item->getCategory());
+                $this->assertNotEmpty($item->getCategory()->getLabel());
                 $this->assertNotEmpty($item->getText());
             }
         }

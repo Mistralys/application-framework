@@ -21,4 +21,5 @@ interface TaggableInterface
     public function adminURLTagging() : AdminURL;
     public function getTagCollection() : TagCollectionInterface;
     public function isTaggingEnabled() : bool;
+    public function getTaggableLabel() : string;
 }

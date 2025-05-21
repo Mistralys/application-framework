@@ -56,7 +56,15 @@ interface Application_User_Interface
     public function setBoolSetting(string $name, bool $value) : void;
     public function getBoolSetting(string $name, bool $default=false) : bool;
 
-    public function resetSettings() : void;
+    /**
+     * Resets all settings, or a set of settings when
+     * a prefix is given. In this case, only settings
+     * that begin with this prefix will be reset.
+     *
+     * @param string|null $prefix
+     * @return void
+     */
+    public function resetSettings(?string $prefix=null) : void;
     
     public function removeSetting(string $name) : void;
 }

@@ -11,6 +11,7 @@ namespace Application\Locales;
 use Application\AppFactory;
 use Application\Languages\Language;
 use Application_Countries_Country;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
 /**
@@ -32,22 +33,28 @@ class Locale implements StringPrimaryRecordInterface
     private string $countryISO;
     private ?Language $language = null;
     private ?Application_Countries_Country $country = null;
-    private ?string $label = null;
+    private LocaleInterface $locale;
 
-    public function __construct(string $localeID)
+    public function __construct(LocaleInterface $locale)
     {
-        $this->localeID = $localeID;
-
-        $parts = explode('_', $localeID);
-        $this->langISO = strtolower($parts[0]);
-        $this->countryISO = strtolower($parts[1]);
+        $this->locale = $locale;
+        $this->localeID = $locale->getID();
+        $this->langISO = $locale->getLanguageCode();
+        $this->countryISO = $locale->getCountryCode();
     }
 
+    /**
+     * @return string The locale ID, e.g., `en_US`.
+     *
+     */
     public function getID(): string
     {
         return $this->localeID;
     }
 
+    /**
+     * @return string The locale code, e.g., `en_US`.
+     */
      public function getCode() : string
      {
          return $this->getID();
@@ -55,22 +62,20 @@ class Locale implements StringPrimaryRecordInterface
 
     public function getLabel(): string
     {
-        if (!isset($this->label)) {
-            $this->label = sprintf(
-                '%s (%s)',
-                $this->getLanguage()->getLabel(),
-                strtoupper($this->getCountry()->getISO())
-            );
-        }
-
-        return $this->label;
+        return $this->locale->getLabel();
     }
 
+    /**
+     * @return string The ISO code of the language, e.g., `en`.
+     */
     public function getLangISO(): string
     {
         return $this->langISO;
     }
 
+    /**
+     * @return string The ISO code of the country, e.g., `US`.
+     */
     public function getCountryISO(): string
     {
         return $this->countryISO;

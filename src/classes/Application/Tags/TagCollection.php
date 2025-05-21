@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -10,8 +10,9 @@ namespace Application\Tags;
 
 use Application\AppFactory;
 use Application\Area\BaseTagsScreen;
-use Application_Admin_ScreenInterface;
 use Application\Exception\DisposableDisposedException;
+use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Tags\Taggables\TaggableInterface;
 use Application_Formable;
 use Application\Area\Tags\BaseCreateTagScreen;
 use Application\Area\Tags\BaseTagListScreen;
@@ -20,10 +21,11 @@ use AppUtils\ClassHelper\BaseClassHelperException;
 use DBHelper;
 use DBHelper_BaseCollection;
 use DBHelper_Exception;
+use UI;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  *
  * @method TagCriteria getFilterCriteria()
  * @method TagFilterSettings getFilterSettings()
@@ -110,7 +112,7 @@ class TagCollection extends DBHelper_BaseCollection
      * @return TagRecord
      *
      * @throws BaseClassHelperException
-     * @throws \Application\Exception\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
     public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()) : TagRecord
@@ -172,6 +174,26 @@ class TagCollection extends DBHelper_BaseCollection
         return $this->getAdminCreateURL($params);
     }
 
+    public function injectJS() : void
+    {
+        UI::getInstance()->addJavascript('ui/tags/tagging-dialog.js');
+    }
+
+    public function createCollectionRegistry() : TagCollectionRegistry
+    {
+        return TagCollectionRegistry::getInstance();
+    }
+
+    public function getTaggableByUniqueID(string $uniqueID) : TaggableInterface
+    {
+        return $this->createCollectionRegistry()->getTaggableByUniqueID($uniqueID);
+    }
+
+    public function uniqueIDExists(string $uniqueID) : bool
+    {
+        return $this->createCollectionRegistry()->uniqueIDExists($uniqueID);
+    }
+
     protected function _registerKeys(): void
     {
         $this->keys->register(self::COL_LABEL)
@@ -183,7 +205,7 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseTagsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseTagsScreen::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);
@@ -191,14 +213,14 @@ class TagCollection extends DBHelper_BaseCollection
 
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseTagListScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseTagListScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateTagScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateTagScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

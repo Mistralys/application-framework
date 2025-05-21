@@ -2,9 +2,11 @@
 
 abstract class Application_Admin_Area_Devel_Errorlog extends Application_Admin_Area_Mode
 {
+    public const URL_NAME = 'errorlog';
+
     public function getURLName() : string
     {
-        return 'errorlog';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string

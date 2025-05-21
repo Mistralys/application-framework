@@ -5,8 +5,10 @@
  * @see UI
  */
 
+use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -27,7 +29,7 @@ use function AppUtils\parseVariable;
 
 /**
  * UI management class that handles display-related
- * functions like including javascript files and the
+ * functions like including JavaScript files and the
  * like.
  *
  * @package UserInterface
@@ -37,11 +39,10 @@ use function AppUtils\parseVariable;
  */
 class UI
 {
-    public const ERROR_CANNOT_SELECT_DUMMY_INSTANCE = 39747001;
+    public const ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN = 39747001;
     public const ERROR_NO_UI_INSTANCE_AVAILABLE_YET = 39747002;
     public const ERROR_CANNOT_SELECT_PREVIOUS_INSTANCE = 39747003;
     public const ERROR_NOT_A_RENDERABLE = 39747005;
-    public const ERROR_INVALID_BOOTSTRAP_ELEMENT = 39747006;
     public const ERROR_CANNOT_SET_PAGE_INSTANCE_AGAIN = 39747007;
 
     public const MESSAGE_TYPE_SUCCESS = 'success';
@@ -51,12 +52,12 @@ class UI
     public const MESSAGE_TYPE_INFO = 'info';
 
     private const SESSION_VAR_APP_MESSAGES = 'application_messages';
-    public const DUMMY_INSTANCE_ID = -1;
     public const EVENT_PAGE_RENDERED = 'pageRendered';
+    public const APP_INSTANCE_PREFIX = 'app-';
 
     private Application $app;
     private Application_Session $session;
-    private int $instanceKey;
+    private string $instanceKey;
     private UI_Themes $themes;
     private bool $deferMessages = false;
     private static bool $formsInitDone = false;
@@ -66,7 +67,7 @@ class UI
     private static int $bootstrapVersion = 2;
 
     /**
-     * Stores javascript statements to run when the
+     * Stores JavaScript statements to run when the
      * page has loaded (included in the jQuery.ready()
      * function call).
      *
@@ -76,7 +77,7 @@ class UI
     private array $onloadJS = array();
 
     /**
-     * Stores javascript statements to run in the page
+     * Stores JavaScript statements to run in the page
      * head.
      *
      * @var string[]
@@ -91,13 +92,13 @@ class UI
 
     /**
      * Note that the UI object is created automatically by
-     * the application, you do not have to do this manually.
+     * the application. You do not have to do this manually.
      *
-     * @param int $instanceKey
+     * @param string $instanceKey
      * @param Application $app
      * @throws Application_Exception
      */
-    protected function __construct(int $instanceKey, Application $app)
+    protected function __construct(string $instanceKey, Application $app)
     {
         $this->instanceKey = $instanceKey;
         $this->app = $app;
@@ -110,9 +111,9 @@ class UI
     * Retrieves this UI object's instance key, which is unique
     * to each UI object.
     * 
-    * @return int
+    * @return string
     */
-    public function getInstanceKey() : int
+    public function getInstanceKey() : string
     {
         return $this->instanceKey;   
     }
@@ -121,10 +122,12 @@ class UI
      * Retrieves the currently selected UI instance. A UI instance
      * is created automatically be the application when it is instantiated,
      * after that this can be called to retrieve the active instance.
-     * 
+     *
+     * @see self::selectInstance()
+     *
      * @return UI
      * @throws UI_Exception
-     * @see selectDummyInstance()
+     *
      */
     public static function getInstance() : UI
     {
@@ -140,11 +143,11 @@ class UI
         );
     }
 
-    private static ?int $previousKey = null;
-    private static ?int $activeInstanceID = null;
+    private static ?string $previousKey = null;
+    private static ?string $activeInstanceID = null;
     
    /**
-    * @var array<int,UI>
+    * @var array<string,UI>
     */
     private static array $instances = array();
     
@@ -156,7 +159,7 @@ class UI
     */
     public static function createInstance(Application $app) : UI
     {
-        $key = $app->getID();
+        $key = self::APP_INSTANCE_PREFIX .$app->getID();
         if(!isset(self::$instances[$key])) {
             self::$instances[$key] = new UI($key, $app);
         }
@@ -165,49 +168,57 @@ class UI
         return self::$instances[$key];
     }
     
-   /**
-    * Selects a dummy UI instance that can be used
-    * in parallel to the main UI class.
-    * 
-    * This is useful for example when creating forms
-    * to be sent via AJAX: to send only the javascript
-    * required by the forms a dummy UI object is used
-    * to capture only the javascript and styles added
-    * by the form elements. 
-    * 
-    * @return UI
-    * @throws Application_Exception
-    */
-    public static function selectDummyInstance() : UI
+    /**
+     * Selects a UI instance that can be used in parallel
+     * to the main UI instance.
+     *
+     * Any JavaScript or styles added to this instance
+     * will only be included when the instance is used,
+     * and will not be available in the main instance.
+     *
+     * One use-case is for client-side forms: They use
+     * a dedicated UI instance to collect the necessary
+     * JavaScript and includes.
+     *
+     * @param string $instanceName
+     * @return UI
+     * @throws Application_Exception
+     * @throws UI_Exception
+     */
+    public static function selectInstance(string $instanceName) : UI
     {
         if(empty(self::$instances)) {
             throw new Application_Exception(
                 'No main UI instance created yet',
-                'Tried selecting a dummy UI instance before the main instance has been created.',
-                self::ERROR_CANNOT_SELECT_DUMMY_INSTANCE
+                'Tried selecting a UI instance before the main instance has been created.',
+                self::ERROR_CANNOT_SELECT_INSTANCE_BEFORE_MAIN
             );
         }
-        
-        if(!isset(self::$instances[self::DUMMY_INSTANCE_ID])) {
-            $key = key(self::$instances);
-            $ui = new UI(self::DUMMY_INSTANCE_ID, self::$instances[$key]->getApplication());
-            $ui->setPage($ui->createPage('dummy'));
-            self::$instances[self::DUMMY_INSTANCE_ID] = $ui;
+
+        if(!isset(self::$instances[$instanceName])) {
+            $ui = new UI($instanceName, AppFactory::createDriver()->getApplication());
+            $ui->setPage($ui->createPage('ui-stub-'.$instanceName));
+            self::$instances[$instanceName] = $ui;
         }
 
-        if(self::$activeInstanceID !== self::DUMMY_INSTANCE_ID)
+        if(self::$activeInstanceID !== $instanceName)
         {
             self::$previousKey = self::$activeInstanceID;
-            self::$activeInstanceID = self::DUMMY_INSTANCE_ID;
+            self::$activeInstanceID = $instanceName;
         }
-        
+
         return self::getInstance();
+    }
+
+    public static function selectDefaultInstance() : void
+    {
+        self::$activeInstanceID = self::APP_INSTANCE_PREFIX.AppFactory::createDriver()->getApplication()->getID();
     }
 
    /**
     * Restores the previously selected UI instance after
-    * switching to another UI instance, for example using
-    * the {@link selectDummyInstance()} method.
+    * switching to another UI instance using the
+    * {@see self::selectInstance()} method.
     *
     * @param boolean $ignoreErrors Whether to ignore errors when no previous instance is present
     * @throws Application_Exception
@@ -217,6 +228,7 @@ class UI
         if(isset(self::$previousKey))
         {
             self::$activeInstanceID = self::$previousKey;
+            return;
         }
 
         if($ignoreErrors)
@@ -381,7 +393,7 @@ class UI
         if($addSemicolon) {
         	$statement = rtrim($statement, ';') . ';';
         }
-        
+
         $this->headJS[] = $statement;
 
         return $this;
@@ -771,12 +783,13 @@ class UI
      *    if it is rendered to string, if {@see TooltipInfo::injectAttributes()}
      *    is called, or if {@see TooltipInfo::injectJS()} is called.
      *
-     * @param string|int|float|StringableInterface|NULL $content
+     * @param string|int|float|StringableInterface|TooltipInfo|NULL $content
      * @return TooltipInfo
+     * @throws UI_Exception
      */
     public static function tooltip($content) : TooltipInfo
     {
-        return new TooltipInfo($content);
+        return TooltipInfo::create($content);
     }
 
     /**
@@ -877,11 +890,11 @@ class UI
      * object to make handling forms easier within the application.
      *
      * @param string $id
-     * @param array<string,mixed> $defaultData
+     * @param array<string,mixed>|ArrayDataCollection $defaultData
      * @return UI_Form
      * @see createGetForm()
      */
-    public function createForm(string $id, array $defaultData = array()) : UI_Form
+    public function createForm(string $id, $defaultData = array()) : UI_Form
     {
         self::initForms();
 
@@ -941,10 +954,10 @@ class UI
     }
 
     /**
-     * @param string $label
+     * @param string|int|float|StringableInterface|NULL $label
      * @return UI_Bootstrap_ButtonDropdown
      */
-    public function createButtonDropdown(string $label='') : UI_Bootstrap_ButtonDropdown
+    public function createButtonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
     {
         $dropDown = new UI_Bootstrap_ButtonDropdown($this);
         $dropDown->setLabel($label);
@@ -1111,6 +1124,16 @@ class UI
     	return new UI_Button($label);
     }
 
+    /**
+     * @param string|int|float|StringableInterface|NULL $label
+     * @return UI_Bootstrap_ButtonDropdown
+     * @throws UI_Exception
+     */
+    public static function buttonDropdown($label=null) : UI_Bootstrap_ButtonDropdown
+    {
+        return self::getInstance()->createButtonDropdown($label);
+    }
+
     public function createPropertiesGrid(string $id='') : UI_PropertiesGrid
     {
         return new UI_PropertiesGrid($this->getPage(), $id);
@@ -1181,7 +1204,10 @@ class UI
     
     public function addJquery() : void
     {
-        $this->addJavascript('jquery.min.js', 9000);
+        $prio = 9000;
+
+        $this->addJavascript('jquery.min.js', $prio);
+        $this->addJavascript('jquery-custom-extensions.js', $prio-1);
     }
     
     /**
@@ -1412,5 +1438,22 @@ class UI
     public static function isJavascriptMinified() : bool
     {
         return boot_constant(BaseConfigRegistry::JAVASCRIPT_MINIFIED) === true;
+    }
+
+    /**
+     * Adds a listener for the page rendered event, which
+     * is called once the whole page to be sent to the browser
+     * has been rendered. It allows modifying the HTML code
+     * before it is sent to the browser.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_Listener
+     */
+    public static function onPageRendered(callable $listener) : Application_EventHandler_Listener
+    {
+        return Application_EventHandler::addListener(
+            self::EVENT_PAGE_RENDERED,
+            $listener
+        );
     }
 }

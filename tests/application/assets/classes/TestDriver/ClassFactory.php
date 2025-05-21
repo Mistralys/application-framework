@@ -12,7 +12,7 @@ class ClassFactory extends AppFactory
 {
     public static function createTestDBCollection() : TestDBCollection
     {
-        return self::createClassInstance(TestDBCollection::class);
+        return TestDBCollection::getInstance();
     }
 
     public static function createRevisionableCollection() : RevisionableCollection

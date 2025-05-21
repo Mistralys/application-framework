@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 class Application_User_ScreenTracker
 {
     const SETTING_SCREEN_COUNTER = 'tracker_screen_counter';
@@ -16,7 +18,7 @@ class Application_User_ScreenTracker
         $this->user = $user;
     }
 
-    public function handleScreenAccessed(Application_Admin_ScreenInterface $screen) : void
+    public function handleScreenAccessed(AdminScreenInterface $screen) : void
     {
         $counters = $this->user->getArraySetting(self::SETTING_SCREEN_COUNTER);
         $path = $screen->getURLPath();

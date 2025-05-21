@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-use Application\AppFactory;
+use Application\AppFactory\ClassCacheHandler;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
+use AppUtils\ClassHelper;
+use AppUtils\FileHelper\FileInfo\ExtensionClassRegistry;
+use AppUtils\FileHelper\JSONFile;
 use Composer\Autoload\ClassLoader;
 
 const APP_DEVEL_SQL_MODE = 'REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,ONLY_FULL_GROUP_BY,ANSI,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_ENGINE_SUBSTITUTION';
-const APP_FRAMEWORK_DOCUMENTATION_URL = 'https://github.com/Mistralys/application-framework/blob/main/docs/Documentation.md';
 
 /**
  * Must be loaded manually, because autoloading is not ready
@@ -79,6 +81,8 @@ class Application_Bootstrap
         $class = APP_CLASS_NAME.'_Bootstrap_'.$screenID;
         self::bootClass($class, $params, $displayException);
     }
+
+    private static bool $booted = false;
     
    /**
     * Boots an admin screen using its class name.
@@ -90,6 +94,11 @@ class Application_Bootstrap
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        // Allow the request log to make changes to the session
+        if($class === Application_Bootstrap_Screen_RequestLog::class) {
+            Application_Bootstrap_Screen_RequestLog::init();
+        }
+
         // start so we can capture the page's content
         ob_start();
 
@@ -116,6 +125,8 @@ class Application_Bootstrap
             
             $screen->boot();
 
+            self::$booted = true;
+
             // Display the page content
             ob_end_flush();
         }
@@ -135,6 +146,15 @@ class Application_Bootstrap
                 throw $e;
             }
         }
+    }
+
+    /**
+     * Whether the bootstrapper has been booted.
+     * @return bool
+     */
+    public static function isBooted() : bool
+    {
+        return self::$booted;
     }
 
     /**
@@ -251,12 +271,19 @@ class Application_Bootstrap
         self::initAutoLoader();
         self::initIncludePath();
         self::initShutdownHandler();
+        self::initFileTypes();
         self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
+        self::initClassLoading();
 
         self::$initializing = false;
         self::$initialized = true;
+    }
+
+    private static function initFileTypes() : void
+    {
+        ExtensionClassRegistry::registerExtensionClass(Application_ErrorLog::LOG_TRACE_EXTENSION, JSONFile::class);
     }
 
     public static function isInitialized() : bool
@@ -269,6 +296,13 @@ class Application_Bootstrap
         Application::log('Bootstrap | Registering shutdown handler.');
 
         register_shutdown_function(array(self::class, 'handleShutDown'));
+    }
+
+    private static function initClassLoading() : void
+    {
+        Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
+
+        ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
     }
 
     public static function convertException(Throwable $e) : Application_Exception

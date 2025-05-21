@@ -12,6 +12,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\FileHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
 
@@ -264,10 +265,11 @@ function isContentTypeHTML()
  * be switched to plain text.
  *
  * @param Throwable $e
+ * @return never
  */
-function displayError(Throwable $e) : void
+function displayError(Throwable $e)
 {
-    $develinfo = false;
+    $develinfo = true;
     $output = ob_get_clean();
 
     if($e instanceof Application_Exception) {
@@ -276,7 +278,7 @@ function displayError(Throwable $e) : void
 
     try
     {
-        if(Application::isSessionReady()) {
+        if(Application::isUserReady()) {
             $user = Application::getUser();
             $develinfo = $user->isDeveloper();
         }
@@ -1017,7 +1019,7 @@ function sb() : UI_StringBuilder
  * Ensures that the subject is scalar or a renderable,
  * and converts it to a string.
  *
- * @param mixed|UI_Renderable_Interface $subject
+ * @param mixed|StringableInterface $subject
  * @return string
  * @throws UI_Exception
  *
@@ -1080,7 +1082,7 @@ function ensureType(string $className, object $object, int $code=0)
  * NOTE: It is automatically enabled when unit tests are
  * running, or if the application runs in a development
  * environment.
- * 
+ *
  * @return bool
  */
 function isDevelMode() : bool
@@ -1093,7 +1095,11 @@ function isDevelMode() : bool
         return true;
     }
 
-    return Application::isDevelEnvironment();
+    if(Application::isUserReady()) {
+        return Application::getUser()->isDeveloperModeEnabled();
+    }
+
+    return false;
 }
 
 /**

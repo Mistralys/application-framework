@@ -18,6 +18,11 @@ use UI\Tree\TreeRenderer;
  */
 trait TagCollectionTrait
 {
+    public function getID() : string
+    {
+        return $this->getCollectionID();
+    }
+
     private ?TagConnector $tagConnector = null;
 
     public function getTagConnector() : TagConnector
@@ -92,7 +97,7 @@ trait TagCollectionTrait
 
     public function createTagTree(?UI $ui=null) : TreeNode
     {
-        $rootTag = AppFactory::createMedia()->requireRootTag();
+        $rootTag = $this->requireRootTag();
 
         $rootNode = new TreeNode($ui, $rootTag->getLabel());
 

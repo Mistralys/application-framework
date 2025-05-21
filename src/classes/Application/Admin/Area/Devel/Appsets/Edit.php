@@ -2,11 +2,13 @@
 
 use Application\AppFactory;
 
-class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_Mode_Submode
+abstract class Application_Admin_Area_Devel_Appsets_Edit extends Application_Admin_Area_Mode_Submode
 {
+    public const URL_NAME = 'edit';
+
     public function getURLName() : string
     {
-        return 'edit';
+        return self::URL_NAME;
     }
 
     public function getTitle() : string

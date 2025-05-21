@@ -11,8 +11,32 @@ $section->addSubsection()
     ->collapse();
 
 $section->addSubsection()
-    ->setTitle('Second subsection')
+    ->setTitle('With context buttons')
     ->setContent('<p>Some content here.</p>')
+    ->addContextButton(
+        UI::button(t('Edit'))
+            ->setIcon(UI::icon()->edit())
+    )
+    ->addContextButton(
+        UI::button(t('Delete'))
+            ->makeDangerous()
+            ->setIcon(UI::icon()->delete())
+    )
+    ->collapse();
+
+$section->addSubsection()
+    ->setTitle('Tagline and buttons')
+    ->setTagline('Section title tagline')
+    ->setContent('<p>Some content here.</p>')
+    ->addContextButton(
+        UI::button(t('Edit'))
+            ->setIcon(UI::icon()->edit())
+    )
+    ->addContextButton(
+        UI::button(t('Delete'))
+            ->makeDangerous()
+            ->setIcon(UI::icon()->delete())
+    )
     ->collapse();
 
 echo $section;

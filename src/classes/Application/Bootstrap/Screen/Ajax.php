@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 {
+    public const DISPATCHER = 'ajax/';
+
     public function getDispatcher() : string
     {
-        return 'ajax/';
+        return self::DISPATCHER;
     }
     
     protected function _boot() : void
@@ -19,11 +21,6 @@ class Application_Bootstrap_Screen_Ajax extends Application_Bootstrap_Screen
 
         try
         {
-            $ajax->addMethodsFromFolder(
-                $this->driver->getClassesFolder().'/AjaxMethods', 
-                APP_CLASS_NAME.'_AjaxMethods'
-            );
-            
             $ajax->process();
         }
         catch(Exception $e)

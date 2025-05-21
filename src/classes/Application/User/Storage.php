@@ -48,8 +48,15 @@ abstract class Application_User_Storage
      * @return array<string,string>
      */
     abstract public function load() : array;
-    
-    abstract public function reset() : void;
+
+    /**
+     * Resets all settings, or a set of settings when
+     * a prefix is provided.
+     *
+     * @param string|null $prefix
+     * @return void
+     */
+    abstract public function reset(?string $prefix=null) : void;
 
     /**
      * @param array<string,string> $data

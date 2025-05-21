@@ -7,6 +7,8 @@
  * @see Application_Sets_Set
  */
 
+use AppUtils\ConvertHelper;
+
 /**
  * Container for a single application set. Provides an API
  * for accessing set information and manipulating it. Use the
@@ -22,8 +24,13 @@ class Application_Sets_Set
     public const ERROR_FORMABLE_NOT_VALID = 12801;
     
     public const ERROR_INVALID_DEFAULT_AREA = 12802;
-    
-   /**
+    public const KEY_DEFAULT_AREA = 'defaultArea';
+    public const KEY_ID = 'id';
+
+    public const SETTING_ID = 'id';
+    public const KEY_ENABLED = 'enabled';
+
+    /**
     * @var string
     */
     protected $id;
@@ -61,7 +68,7 @@ class Application_Sets_Set
         return $this->defaultArea;
     }
     
-    public static function createSettingsForm(Application_Formable $formable, Application_Sets_Set $set = null)
+    public static function createSettingsForm(Application_Formable $formable, ?Application_Sets_Set $set = null)
     {
         $driver = Application_Driver::getInstance();
         $areas = $driver->getAdminAreaObjects(true);
@@ -74,10 +81,10 @@ class Application_Sets_Set
                 $defaultValues['area_'.$area->getID()] = 'true';
             }
         } else {
-            $defaultValues['id'] = $set->getID();
+            $defaultValues[self::SETTING_ID] = $set->getID();
             $defaultValues['default_area'] = $set->getDefaultArea()->getID();
             foreach($areas as $area) {
-                $defaultValues['area_'.$area->getID()] = AppUtils\ConvertHelper::bool2string($set->isAreaEnabled($area));
+                $defaultValues['area_'.$area->getID()] = ConvertHelper::bool2string($set->isAreaEnabled($area));
             }
         }
         
@@ -87,9 +94,10 @@ class Application_Sets_Set
             $formable->addHiddenVar('set_id', $set->getID());
         }
         
-        $formable->addElementHeader(t('Application set settings'), null, null, false);
+        $formable->addSection(t('Application set settings'))
+            ->expand();
         
-        $id = $formable->addElementText('id', t('ID'));
+        $id = $formable->addElementText(self::SETTING_ID, t('ID'));
         $id->addClass('input-xlarge');
         $id->setComment(t('The ID of the application set, which is used to reference it in the code.'));
         $formable->addRuleAlias($id);
@@ -109,8 +117,9 @@ class Application_Sets_Set
             $def->addOption($area->getTitle(), $area->getID());
         }
 
-        $formable->addElementHeader(t('Enabled administration areas'), null, null, false);
-        
+        $formable->addSection(t('Enabled administration areas'))
+            ->expand();
+
         foreach($areas as $area) 
         {
             // core areas cannot be disabled
@@ -138,7 +147,7 @@ class Application_Sets_Set
             }
         }
         
-        $formable->setDefaultElement('id');
+        $formable->setDefaultElement(self::SETTING_ID);
         
     }
 
@@ -147,9 +156,9 @@ class Application_Sets_Set
     * @param HTML_QuickForm2_Element_Switch $el
     * @param Application_Admin_Area[] $areas Dependencies
     */
-    public static function callback_validateEnabled($value, Application_Formable $formable, HTML_QuickForm2_Element_Switch $el, $areas)
+    public static function callback_validateEnabled($value, Application_Formable $formable, HTML_QuickForm2_Element_Switch $el, array $areas): bool
     {
-        if(!AppUtils\ConvertHelper::string2bool($value)) {
+        if(!ConvertHelper::string2bool($value)) {
             return true;
         }
         
@@ -228,7 +237,7 @@ class Application_Sets_Set
         $areas = $driver->getAdminAreaObjects(false);
         foreach($areas as $area) {
             $value = $values['area_'.$area->getID()];
-            if(AppUtils\ConvertHelper::string2bool($value)) {
+            if(ConvertHelper::string2bool($value)) {
                 $enabled[] = $area;
             }
         }
@@ -236,7 +245,7 @@ class Application_Sets_Set
         $sets = Application_Sets::getInstance();
         
         return $sets->createNew(
-            $values['id'], 
+            $values[self::SETTING_ID],
             $driver->createArea($values['default_area']), 
             $enabled
         );
@@ -272,9 +281,9 @@ class Application_Sets_Set
     public function toArray()
     {
         return array(
-            'id' => $this->getID(),
-            'defaultArea' => $this->defaultArea->getID(),
-            'enabled' => array_keys($this->enabled)
+            self::KEY_ID => $this->getID(),
+            self::KEY_DEFAULT_AREA => $this->defaultArea->getID(),
+            self::KEY_ENABLED => array_keys($this->enabled)
         );
     }
     
@@ -287,25 +296,24 @@ class Application_Sets_Set
     public static function fromArray(array $data) : Application_Sets_Set
     {
         $driver = Application_Driver::getInstance();
-        $areas = array_values($driver->getAdminAreas());
-        
-        if(!in_array($data['defaultArea'], $areas)) {
+
+        if(!$driver->areaExists($data[self::KEY_DEFAULT_AREA])) {
             throw new Application_Exception(
                 'Invalid default area in appset.',
                 sprintf(
                     'The default area [%s] in appset [%s] does not exist. Available areas are [%s].',
-                    $data['defaultArea'],
-                    $data['id'],
-                    implode(', ', $areas)
+                    $data[self::KEY_DEFAULT_AREA],
+                    $data[self::KEY_ID],
+                    implode(', ', array_keys($driver->getAdminAreas()))
                 ),
                 self::ERROR_INVALID_DEFAULT_AREA
             );
         }
         
-        $set = new Application_Sets_Set($data['id'], $driver->createArea($data['defaultArea']));
+        $set = new Application_Sets_Set($data[self::KEY_ID], $driver->createArea($data[self::KEY_DEFAULT_AREA]));
         
-        foreach($data['enabled'] as $areaID) {
-            if(in_array($areaID, $areas)) {
+        foreach($data[self::KEY_ENABLED] as $areaID) {
+            if($driver->areaExists($areaID)) {
                 $set->enableArea($driver->createArea($areaID));
             }
         }
@@ -425,9 +433,9 @@ class Application_Sets_Set
         $sets = Application_Sets::getInstance();
         $driver = Application_Driver::getInstance();
         
-        if($formValues['id'] != $this->id) {
-            $sets->handle_renameSet($this, $formValues['id']);
-            $this->id = $formValues['id'];
+        if($formValues[self::SETTING_ID] !== $this->id) {
+            $sets->handle_renameSet($this, $formValues[self::SETTING_ID]);
+            $this->id = $formValues[self::SETTING_ID];
         }
         
         $this->defaultArea = $driver->createArea($formValues['default_area']);
@@ -436,7 +444,7 @@ class Application_Sets_Set
         
         $areas = $driver->getAdminAreaObjects(false);
         foreach($areas as $area) {
-            if(AppUtils\ConvertHelper::string2bool($formValues['area_'.$area->getID()])) {
+            if(ConvertHelper::string2bool($formValues['area_'.$area->getID()])) {
                 $this->enableArea($area);
             }
         }
@@ -447,9 +455,9 @@ class Application_Sets_Set
     * @param Application_Sets_Set|NULL $excludeSet
     * @return boolean
     */
-    public static function callback_validateID($setID, Application_Sets_Set $excludeSet=null)
+    public static function callback_validateID(string $setID, ?Application_Sets_Set $excludeSet=null) : bool
     {
-        if($excludeSet && $setID == $excludeSet->getID()) {
+        if($excludeSet && $setID === $excludeSet->getID()) {
             return true;
         }
         

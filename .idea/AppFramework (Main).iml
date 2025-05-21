@@ -2,6 +2,7 @@
 <module type="WEB_MODULE" version="4">
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/spec" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/composer" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-message" />
@@ -84,8 +85,16 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/event-dispatcher" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/css-crush/css-crush" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/copilot/chatSessions" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/changelog-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/php-sprintf-parser" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/application-utils-image" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/shuchkin/simplexlsx" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/shuchkin/simplexlsxgen" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mck89/peast" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/mistralys/application-utils-result-handling" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="@types/jquery" level="application" />
   </component>
 </module>

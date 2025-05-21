@@ -4,6 +4,13 @@ use Application\AppFactory;
 
 class Application_AjaxMethods_RatingSetComments extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'RatingSetComments';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->startTransaction();

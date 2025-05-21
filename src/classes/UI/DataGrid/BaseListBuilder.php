@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace UI\DataGrid;
 
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_Admin_ScreenInterface;
 use Application_Driver;
 use Application_Exception;
 use Application_FilterSettings;
@@ -23,6 +23,7 @@ use DateTime;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
+use UI_DataGrid_Entry;
 use UI_DataGrid_Exception;
 use UI_Exception;
 use UI_Page_Sidebar;
@@ -51,7 +52,8 @@ abstract class BaseListBuilder
     // region Z - Abstract methods
 
     abstract protected function createFilterCriteria(): FilterCriteriaInterface;
-    abstract protected function configureFilters(): void;
+    abstract protected function configureFilters(FilterCriteriaInterface $filterCriteria): void;
+    abstract protected function configureFilterSettings(Application_FilterSettings $filterSettings): void;
     abstract protected function configureColumns(UI_DataGrid $grid): void;
     abstract protected function configureActions(UI_DataGrid $grid): void;
     abstract protected function resolveRecord(array $itemData): object;
@@ -60,9 +62,9 @@ abstract class BaseListBuilder
 
     /**
      * @param object $record
-     * @return array<string,mixed>
+     * @return array<string,mixed>|UI_DataGrid_Entry
      */
-    abstract protected function collectEntry(object $record): array;
+    abstract protected function collectEntry(object $record);
 
     // endregion
 
@@ -123,31 +125,23 @@ abstract class BaseListBuilder
 
         $this->filters = $this->createFilterCriteria();
 
-        $this->configureFilters();
-
         return $this->filters;
     }
 
-    /**
-     * Can be null if there are no records to filter.
-     *
-     * @param array<string,mixed>|null $settingValues
-     * @return Application_FilterSettings|NULL
-     * @throws Application_Exception
-     * @throws UI_Exception
-     * @throws DriverException
-     */
-    public function getFilterSettings(?array $settingValues = null): ?Application_FilterSettings
+    public function getFilterSettings(): ?Application_FilterSettings
     {
         if (!$this->hasRecords) {
             return null;
         }
 
-        if (!isset($this->filterSettings)) {
-            $this->filterSettings = $this->createFilterSettings()
-                ->setID($this->listID)
-                ->setSettings($settingValues);
+        if (isset($this->filterSettings)) {
+            return $this->filterSettings;
         }
+
+        $filterSettings = $this->createFilterSettings()
+            ->setID($this->listID);
+
+        $this->filterSettings = $filterSettings;
 
         return $this->filterSettings;
     }
@@ -157,7 +151,10 @@ abstract class BaseListBuilder
         $filters = $this->getFilterCriteria();
         $settings = $this->getFilterSettings();
 
+        $this->configureFilters($filters);
+
         if ($settings) {
+            $this->configureFilterSettings($settings);
             $settings->configureFilters($filters);
         }
 
@@ -238,7 +235,7 @@ abstract class BaseListBuilder
     protected ?UI_DataGrid $dataGrid = null;
     protected string $listID;
     protected ?FilterCriteriaInterface $filters = null;
-    protected Application_Admin_ScreenInterface $screen;
+    protected AdminScreenInterface $screen;
     protected bool $debug = false;
     protected bool $advancedMode = false;
 
@@ -253,13 +250,20 @@ abstract class BaseListBuilder
     protected array $hiddenVars = array();
 
 
-    public function __construct(Application_Admin_ScreenInterface $screen, string $listID = '')
+    public function __construct(AdminScreenInterface $screen, string $listID = '')
     {
         $this->screen = $screen;
         $this->ui = $screen->getRenderer()->getUI();
         $this->user = Application_Driver::getInstance()->getUser();
         $this->hasRecords = $this->getFilterCriteria()->countUnfiltered() > 0;
         $this->listID = $listID;
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
     }
 
     public function getUI(): UI
@@ -297,6 +301,10 @@ abstract class BaseListBuilder
         $this->configureActions($grid);
     }
 
+    /**
+     * @return array<int,array<string,mixed>|UI_DataGrid_Entry>
+     * @throws Application_Exception
+     */
     protected function collectEntries(): array
     {
         $settings = $this->getFilterSettings();
@@ -305,9 +313,12 @@ abstract class BaseListBuilder
             return array();
         }
 
-        $settings->addHiddenVars($this->hiddenVars);
-
         $filters = $this->getFilterCriteria();
+        $this->configureFilters($filters);
+
+        $settings->addHiddenVars($this->hiddenVars);
+        $this->configureFilterSettings($settings);
+
         $grid = $this->getDataGrid();
 
         $grid->configure($settings, $filters);
@@ -365,9 +376,6 @@ abstract class BaseListBuilder
     /**
      * @param UI_Page_Sidebar $sidebar
      * @return $this
-     * @throws Application_Exception
-     * @throws DriverException
-     * @throws UI_Exception#
      */
     public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {

@@ -26,6 +26,7 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
 
     public const DISPATCHER = 'requestlog.php';
     public const SESSION_AUTH_PARAM = 'requestlog_authenticated';
+    public const CONST_REQUEST_LOG_RUNNING = 'APP_REQUEST_LOG_RUNNING';
 
     private Application_RequestLog $log;
 
@@ -35,15 +36,32 @@ class Application_Bootstrap_Screen_RequestLog extends Application_Bootstrap_Scre
 
     private array $persistVars = array();
 
-    public function getDispatcher()
+    public function getDispatcher() : string
     {
         return self::DISPATCHER;
+    }
+
+    /**
+     * This is called at the very beginning of the request when
+     * using the request log screen. It allows setting a constant
+     * that can be checked in other parts of the application to
+     * determine if the request log is currently being used.
+     *
+     * The main use of the constant is in the session handling,
+     * see {@see Application_Session_Native::getName()}.
+     *
+     * @return void
+     */
+    public static function init() : void
+    {
+        define(self::CONST_REQUEST_LOG_RUNNING, true);
     }
 
     protected function _boot()
     {
         $this->disableAuthentication();
         $this->createEnvironment();
+        $this->disableKeepAlive();
 
         if(!defined('APP_REQUEST_LOG_PASSWORD'))
         {

@@ -7,8 +7,11 @@
  * @see UI_HTMLElement
  */
 
+use AppUtils\AttributeCollection;
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\ClassableTrait;
+use UI\TooltipInfo;
 
 /**
  * Base class for dynamically generated HTML UI elements. Offers
@@ -29,7 +32,7 @@ abstract class UI_HTMLElement extends UI_Renderable
     
     protected array $styles = array();
     
-    protected bool $tooltip = false;
+    protected ?TooltipInfo $tooltip = null;
     
     protected function initRenderable() : void
     {
@@ -44,7 +47,7 @@ abstract class UI_HTMLElement extends UI_Renderable
     * @param string $value
     * @return $this
     */
-    public function setAttribute($name, $value)
+    public function setAttribute(string $name, $value) : self
     {
         $this->attributes[$name] = $value;
         return $this;
@@ -101,31 +104,25 @@ abstract class UI_HTMLElement extends UI_Renderable
     * 
     * @return string
     */
-    protected function renderAttributes()
+    protected function renderAttributes() : string
     {
-        $atts = $this->compileAttributes();
-        return AppUtils\ConvertHelper::array2attributeString($atts);
+        return $this->compileAttributes()->render();
     }
     
-    protected function compileAttributes()
+    protected function compileAttributes() : AttributeCollection
     {
-        $atts = $this->attributes;
-        $classes = $this->classes;
+        $attributes = AttributeCollection::create($this->attributes);
+        $attributes->addClasses($this->classes);
         
-        if($this->tooltip) {
-            $classes[] = 'help';
-            JSHelper::tooltipify($this->getAttribute('id'));
+        if($this->tooltip !== null) {
+            $this->tooltip->attachToID($this->getAttribute('id'));
+            $this->tooltip->injectJS();
+            $attributes->addClass('help');
         }
-        
-        if(!empty($classes)) {
-            $atts['class'] = implode(' ', $classes);
-        }
-        
-        if(!empty($this->styles)) {
-            $atts['style'] = compileStyles($this->styles);
-        } 
-        
-        return $atts;
+
+        $attributes->styles->setStyles($this->styles);
+
+        return $attributes;
     }
     
    /**
@@ -138,18 +135,19 @@ abstract class UI_HTMLElement extends UI_Renderable
     {
         return $this->setAttribute('title', $title);
     }
-    
-   /**
-    * Sets a tooltip for the element, which will be shown
-    * as a tooltip popup when the user hovers over it.
-    * 
-    * @param string|number|UI_Renderable_Interface $tooltip
-    * @return $this
-    */
-    public function setTooltip($tooltip)
+
+    /**
+     * Sets a tooltip for the element, which will be shown
+     * as a tooltip popup when the user hovers over it.
+     *
+     * @param string|number|StringableInterface|TooltipInfo|NULL $tooltip
+     * @return $this
+     * @throws UI_Exception
+     */
+    public function setTooltip($tooltip) : self
     {
-        $this->tooltip = true;
-        return $this->setAttribute('title', toString($tooltip));
+        $this->tooltip = UI::tooltip($tooltip);
+        return $this->setAttribute('title', $this->tooltip->getContent());
     }
     
     public function getTooltip() : string

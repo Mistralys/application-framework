@@ -58,30 +58,35 @@ class Application_Messaging extends DBHelper_BaseCollection
    /**
     * Retrieves a message by its ID.
     * 
-    * @param int $message_id
+    * @param int|string $record_id
     * @return Application_Messaging_Message
     */
-    public function getByID(int $message_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelper_BaseRecord
     {
-        if(isset($this->messages[$message_id])) {
-            return $this->messages[$message_id];
+        $record_id = (int)$record_id;
+
+        if(isset($this->messages[$record_id])) {
+            return $this->messages[$record_id];
         }
         
-        $message = new Application_Messaging_Message($message_id, $this);
-        $this->messages[$message_id] = $message;
+        $message = new Application_Messaging_Message($record_id, $this);
+        $this->messages[$record_id] = $message;
         
         return $message;
     }
-    
-    protected static $priorities;
+
+    /**
+     * @var array<string,string>|null
+     */
+    protected static ?array $priorities = null;
 
    /**
     * Retrieves a list of all available priorities with their
-    * human readable labels.
+    * human-readable labels.
     * 
-    * @return string[]
+    * @return array<string,string>
     */
-    public static function getPriorities()
+    public static function getPriorities() : array
     {
         if(!isset(self::$priorities)) {
             self::$priorities = array(

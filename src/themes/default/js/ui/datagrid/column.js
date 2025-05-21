@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Container for a single column in a datagrid, offering easy access
  * to the column's information. Also provides a simple API for hiding
@@ -8,52 +10,18 @@
  * @class
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-var UI_Datagrid_Column = 
+class UI_Datagrid_Column 
 {
    /**
-    * @property {UI_Datagrid}
-    */
-	'Grid':null,
-	
-   /**
-    * The column's number in the grid, sequential.
-    * @property {Integer}
-    */
-	'Number':null,
-	
-   /**
-    * The column's role, used to determine whether it can be hidden.
-    * @property {String}
-    */
-	'Role':null,
-	
-	'Type':null,
-	
-   /**
-    * The data key corresponding to this column.
-    * @property {String}
-    */
-	'DataKey':null,
-	
-	'Label':null,
-	
-	'hidden':null,
-	'align':null,
-	'compact':null,
-	'editable':null,
-	'editableClassName':null,
-
-   /**
-    * Constructor. 
-    * 
     * @param {UI_Datagrid} grid
     * @param {String} key The name of the key for the value of the column
     * @param {String} title The title of the column 
     * @param {String} id
+	* @param {String} type
     * @param {Integer} number
     * @param {String} role For example "cell", "actions", "heading"
     */
-	init:function(grid, key, title, id, type, number, role)
+	constructor(grid, key, title, id, type, number, role)
 	{
 		this.Type = type;
 		this.Grid = grid;
@@ -68,128 +36,127 @@ var UI_Datagrid_Column =
 		this.editableClassName = null;
 		this.jsID = id;
 		this.compact = false;
-	},
+	}
 	
    /**
     * Retrieves the name of the column (the name of the corresponding data key)
     * @return {String}
     */
-	GetName:function()
+	GetName()
 	{
 		return this.DataKey;
-	},
+	}
 	
    /**
     * Sets the role of the column to actions.
-    * @return {UI_DataGrid_Column}
+    * @return {this}
     */
-	RoleActions:function()
+	RoleActions()
 	{
 		this.role = 'actions';
 		return this;
-	},
+	}
 	
-	IsActions:function()
+	IsActions()
 	{
-		if(this.role == 'actions') {
-			return true;
-		}
-		
-		return false;
-	},
+		return this.role === 'actions';
+	}
 	
    /**
     * Sets the column's title.
     * @param {String} title
-    * @returns {UI_Datagrid_Column}
+    * @returns {this}
     */
-	SetTitle:function(title)
+	SetTitle(title)
 	{
 		this.Title = title;
 		return this;
-	},
+	}
 	
    /**
     * Checks whether this column can be hidden. 
     *
     * @return {Boolean}
     */
-	IsHideable:function()
+	IsHideable()
 	{
-		if(this.Role=='cell') {
-			return true;
-		}
-		
-		return false;
-	},
+		return this.Role === 'cell';
+	}
 	
    /**
     * Hides the column. Note: does NOT check if the column is hideable.
-
     */
-	Hide:function()
+	Hide()
 	{
 		$('#datagrid-'+this.Grid.id+'-table .column-'+this.Number).hide();
 		this.hidden = true;
-	},
+	}
 	
    /**
     * Shows the column. It does not need to have been hidden prior to this.
-
     */
-	Show:function()
+	Show()
 	{
 		$('#datagrid-'+this.Grid.id+'-table .column-'+this.Number).show();
 		this.hidden = false;
-	},
+	}
 	
    /**
     * Checks whether the column is currently hidden.
     *
     * @return {Boolean}
     */
-	IsHidden:function()
+	IsHidden()
 	{
 		return this.hidden;
-	},
+	}
 	
-	IsCell:function()
+	IsCell()
 	{
-		if(this.Role=='cell') {
-			return true;
-		}
-		
-		return false;
-	},
-	
-	AlignCenter:function()
+		return this.Role === 'cell';
+	}
+
+	/**
+	 * @return {this}
+	 */
+	AlignCenter()
 	{
 		this.align = 'center';
 		return this;
-	},
-	
-	AlignRight:function()
+	}
+
+	/**
+	 * @return {this}
+	 */
+	AlignRight()
 	{
 		this.align = 'right';
 		return this;
-	},
-	
-	MakeCompact:function()
+	}
+
+	/**
+	 * @return {this}
+	 */
+	MakeCompact()
 	{
 		this.compact = true;
 		return this;
-	},
-	
-	Render:function(entry)
+	}
+
+	/**
+	 * @param {UI_DataGrid_Entry} entry
+	 * @return {string}
+	 */
+	Render(entry)
 	{
-		var entryJSID = nextJSID(); // the column JSID is always the same for the column
-		var cellData = entry.GetData();
-		var content = '';
-		var classes = [];
+		const entryJSID = nextJSID(); // the column JSID is always the same for the column
+		const cellData = entry.GetData();
+		let content;
+		const classes = [];
 		classes.push('role-' + this.Role);
 		classes.push('align-' + this.align);
 		
-		if(this.Type=='MultiSelect') {
+		if(this.Type === 'MultiSelect') {
 			content = '<input type="checkbox" name="datagrid_items[]" value="' + cellData[this.Grid.GetPrimaryName()] + '"/>';
 		} else {
 			content = cellData[this.DataKey];
@@ -200,43 +167,49 @@ var UI_Datagrid_Column =
 			content = '';
 		}
 
-		var atts = {};
+		const attributes = {};
 		if(this.editable) {
 			classes.push('editable');
 		}
 		
-		atts['id'] = entryJSID;
-		atts['class'] = classes.join(' ');
+		attributes['id'] = entryJSID;
+		attributes['class'] = classes.join(' ');
 		
-		var column = this;
+		const column = this;
 		UI.RefreshTimeout(function() {
 			column.PostRender(entry, entryJSID);
 		});
 		
-		return '<td' + UI.CompileAttributes(atts) + '>' + content + '</td>';
-	},
-	
-	PostRender:function(entry, entryJSID)
+		return '<td' + UI.CompileAttributes(attributes) + '>' + content + '</td>';
+	}
+
+	/**
+	 *
+	 * @param {UI_DataGrid_Entry} entry
+	 * @param {Number} entryJSID
+	 */
+	PostRender(entry, entryJSID)
 	{
-		var column = this;
-		var el = $('#'+entryJSID);
-		
+		const column = this;
+		const el = $('#' + entryJSID);
+
 		el.click(function() {
 			column.Handle_Click(el, entry);
 		});
-	},
+	}
 	
-	RenderHeader:function()
+	RenderHeader()
 	{
-		var classes = [];
+		const classes = [];
 		classes.push('role-' + this.Role);
 		classes.push('align-' + this.align);
 
-		var styles = {};
-		var atts = {};
-		
-		if(this.Type=='MultiSelect') {
-			content = ''; // FIXME
+		const styles = {};
+		const attributes = {};
+		let content = this.Title;
+
+		if(this.Type === 'MultiSelect') {
+			//content = ''; // FIXME
 		} else {
 			classes.push('column-' + this.Number);
 		}
@@ -245,11 +218,11 @@ var UI_Datagrid_Column =
 			styles['width'] = '1%';
 		}
 		
-		atts['class'] = classes.join(' ');
-		atts['style'] = UI.CompileStyles(styles);
+		attributes['class'] = classes.join(' ');
+		attributes['style'] = UI.CompileStyles(styles);
 		
-		return '<th '+UI.CompileAttributes(atts)+'>'+this.Title+'</th>';
-	},
+		return '<th '+UI.CompileAttributes(attributes)+'>'+content+'</th>';
+	}
 	
    /**
     * Set server-side: makes the cells in this column editable via click,
@@ -257,21 +230,25 @@ var UI_Datagrid_Column =
     * handles saving changes.
     * 
     * @param {String} handlerClassName
-    * @return {UI_DataGrid_Column}
+    * @return {this}
     */
-	SetEditable:function(handlerClassName)
+	SetEditable(handlerClassName)
 	{
 		this.editable = true;
 		this.editableClassName = handlerClassName;
 		return this;
-	},
+	}
 	
-	IsEditable:function()
+	IsEditable()
 	{
 		return this.editable;
-	},
-	
-	Handle_Click:function(cell, entry)
+	}
+
+	/**
+	 * @param {jQuery} cell
+	 * @param {UI_DataGrid_Entry} entry
+	 */
+	Handle_Click(cell, entry)
 	{
 		if(this.IsActions()) {
 			return;
@@ -282,12 +259,12 @@ var UI_Datagrid_Column =
 		}
 		
 		if(isEmpty(entry)) {
-			var primary = cell.parent().attr('data-refid');
-			if(typeof(primary)=='undefined' || primary==null) {
+			const primary = String(cell.parent().attr('data-refid'));
+			if(isEmpty(primary)) {
 				return;
 			}
 			
-			var entry = this.Grid.GetEntry(primary);
+			entry = this.Grid.GetEntry(primary);
 			if(!entry) {
 				console.log('No entry for ['+primary+']!');
 				return;
@@ -295,29 +272,33 @@ var UI_Datagrid_Column =
 		}
 		
 		if(this.IsEditable()) {
-			var handler = new window[this.editableClassName](this.Grid, this, entry, cell); 
+			const handler = new window[this.editableClassName](this.Grid, this, entry, cell);
 			handler.Start();
 			return;
 		}
 		
 		entry.Handle_ColumnClicked(this);
-	},
-	
-    elementID: function (part) 
+	}
+
+	/**
+	 * @param {String|null} part
+	 * @return {String|string}
+	 */
+    elementID(part=null)
     {
-        if (typeof(part) == 'undefined') {
-            return this.jsID;
-        }
+        if (typeof part === 'undefined' || part === null) {
+			return this.jsID;
+		}
 
         return this.jsID + '_' + part;
-    },
-
-    element: function (part) 
-    {
-        var id = this.elementID(part);
-        return $('#' + id);
     }
 
-};
-
-UI_Datagrid_Column = Class.extend(UI_Datagrid_Column);
+	/**
+	 * @param {String|null} part
+	 * @return {jQuery|HTMLElement}
+	 */
+    element(part=null)
+    {
+        return $('#' + this.elementID(part));
+    }
+}

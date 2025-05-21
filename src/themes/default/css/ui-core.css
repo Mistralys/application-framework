@@ -22,6 +22,23 @@ BODY {
     cursor: pointer;
 }
 
+/**
+ * Can be added to optional visual elements that are only relevant
+ * for developers, or for users with developer mode enabled.
+ *
+ * **WARNING**: Use this only for non-critical visual elements.
+ * Assume that users can enable this class at any time. It must not
+ * give access to developer-only features.
+ */
+.right-developer{
+    display: none;
+}
+
+BODY.devel-mode .right-developer,
+BODY.dev-user .right-developer{
+    display: inline-block;
+}
+
 /* --------------------------------------------------------------
    NAVIGATION
 -----------------------------------------------------------------*/
@@ -202,7 +219,7 @@ BODY.with-quicknav{
 }
 
 #content_frame {
-    padding: 0 0 26px 0;
+    padding: 0.5rem 0 0 0;
     position: relative;
 }
 
@@ -333,11 +350,6 @@ DIV.log > CODE {
     color: var(--color-text);
 }
 
-.dropdown-menu.height-mini {
-    height: 80px;
-    overflow: auto;
-}
-
 .back_link {
     float: left;
     margin: 4px 26px 0 0;
@@ -439,6 +451,10 @@ TD.nowrap {
 .text-muted{color: var(--color-text-muted);}
 .text-inverted{color: var(--color-text-inverted);}
 .muted{color: var(--color-text-muted);}
+
+.text-reference{
+    font-weight: var(--font-weight-bold);
+}
 
 .text-tooltip{
     cursor: help;
@@ -608,6 +624,11 @@ PRE.console {
 
 /* region: Menus, Dropdowns */
 
+.dropdown-menu.height-mini {
+    height: 80px;
+    overflow: auto;
+}
+
 /* Fix for submenus nested in dropup menus */
 .dropdown-submenu.dropdown .dropdown-menu {
     bottom: auto !important;
@@ -666,6 +687,11 @@ UL.dropdown-menu .header {
 
 .dropdown-menu LI {
     text-align: left;
+}
+
+.dropdown-menu > LI.empty-menu{
+    padding: 0 8px;
+    color: var(--color-text-muted);
 }
 
 .dropdown-menu .danger A{
@@ -851,7 +877,22 @@ TABLE.layout-only TD{
     border-top-color: #fff;
 }
 
-.whatsnew-cavtegory {
+/*
+ * Labels can have a "help" cursor if they have a tooltip assigned,
+ * so we ensure that the label looks clickable.
+ */
+A > .label,
+A > .badge{
+    cursor: pointer !important;
+}
+
+A > .label:hover,
+A > .badge:hover{
+    background: var(--color-btn-primary-bg);
+    color: var(--color-btn-primary-text);
+}
+
+.whatsnew-category {
     text-transform: uppercase;
     font-size: 13px !important;
     color: var(--color-text-secondary);
@@ -1230,6 +1271,11 @@ H3.page-abstract {
     left: auto;
 }
 
+/* Remove the margin from form appends that make them shift vertically */
+.title-right .input-append {
+    margin-bottom: 0;
+}
+
 /* endregion */
 
 /* -------------------------------------------------------------------
@@ -1277,6 +1323,10 @@ H3.page-abstract {
 .badge-dropdown {
     display: inline-block;
     position: relative;
+}
+
+.badge-dropdown > .badge > .caret {
+    vertical-align: middle;
 }
 
 /* endregion */

@@ -232,6 +232,13 @@ abstract class Application_RevisionableCollection_DBRevisionable
     public function getChangelogItemPrimary(): array
     {
         return array(
+            $this->collection->getPrimaryKeyName() => $this->getID()
+        );
+    }
+
+    public function getChangelogItemInsertColumns(): array
+    {
+        return array(
             $this->collection->getPrimaryKeyName() => $this->getID(),
             $this->collection->getRevisionKeyName() => $this->getRevision()
         );

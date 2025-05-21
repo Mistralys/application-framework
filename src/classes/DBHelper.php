@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the {@link DBHelper} class.
  * @package Helpers
  * @subpackage DBHelper
- * @see DBHelper
  */
 
+use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -15,6 +14,7 @@ use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
 use DBHelper\Exception\CLIErrorRenderer;
 use DBHelper\Exception\HTMLErrorRenderer;
+use DBHelper\TrackedQuery;
 use function AppUtils\parseVariable;
 
 /**
@@ -93,11 +93,6 @@ class DBHelper
      */
     protected static ?array $activeQuery = null;
     
-    public static function isQueryTrackingEnabled() : bool
-    {
-        return boot_constant(BaseConfigRegistry::TRACK_QUERIES) === true;
-    }
-
     /**
      * Executes a query string with the specified variables.
      *
@@ -308,7 +303,7 @@ class DBHelper
     * @param string|DBHelper_StatementBuilder $statementOrBuilder
     * @param array<string,mixed> $variables
     * @return string
-    * @throws DBHelper_Exception|ConvertHelper_Exception|JsonException
+    * @throws DBHelper_Exception
     */
     public static function insert($statementOrBuilder, array $variables = array()) : string
     {
@@ -330,9 +325,7 @@ class DBHelper
      * @param array $variables
      * @return int
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
-     * @throws JsonException
      */
     public static function insertInt($statementOrBuilder, array $variables=array()) : int
     {
@@ -341,13 +334,16 @@ class DBHelper
 
     /**
      * Registers a query by adding it to the internal queries cache.
-     * They can be retrieved using the {@link getQueries()} method,
-     * and the last query that was run can be retrieved using the
+     *
+     * The last query that was run can always be retrieved using the
      * {@link getSQL()} and {@link getSQLHighlighted()} methods.
+     *
+     * Additionally, if query tracking is enabled, detailed information
+     * on each query is then available via the {@link getQueries()} method.
      *
      * @param int $operationType
      * @param string|DBHelper_StatementBuilder $statementOrBuilder
-     * @param array $variables
+     * @param array<string,string> $variables
      * @param bool $result
      */
     protected static function registerQuery(int $operationType, $statementOrBuilder, array $variables, bool $result) : void
@@ -361,9 +357,8 @@ class DBHelper
         }
 
         if(self::isQueryTrackingEnabled()) {
-            $time = microtime(true)-self::$startTime;
-            self::$queries[] = array((string)$statementOrBuilder, $variables, $time, $operationType);
-        } 
+            self::addTrackedQuery($operationType, $statementOrBuilder, $variables);
+        }
     }
 
     /**
@@ -478,7 +473,6 @@ class DBHelper
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function update($statementOrBuilder, array $variables = array()) : bool
@@ -589,7 +583,7 @@ class DBHelper
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return array<int,array<string,string>>
-     * @throws DBHelper_Exception|ConvertHelper_Exception
+     * @throws DBHelper_Exception
      */
     public static function fetchAll($statementOrBuilder, array $variables = array()) : array
     {
@@ -668,17 +662,22 @@ class DBHelper
         return $limitSQL . PHP_EOL;
     }
 
+    // region: Query tracking
+
     /**
-     * @var array<int,array<int,mixed>>
+     * @var TrackedQuery[]
      */
     protected static array $queries = array();
 
    /**
     * Retrieves all queries executed so far, optionally restricted
     * to only the specified types.
+    *
+    * > NOTE: Only available if the tracking of queries is enabled,
+    * > see {@see self::isQueryTrackingEnabled()}.
     * 
     * @param int[] $types
-    * @return array
+    * @return TrackedQuery[]
     */
     public static function getQueries(array $types=array()) : array
     {
@@ -687,32 +686,68 @@ class DBHelper
         }
         
         $queries = array();
-        $total = count(self::$queries);
-        for($i=0; $i<$total; $i++) {
-            if(in_array(self::$queries[$i][3], $types)) {
-                $queries[] = self::$queries[$i];
+        foreach(self::$queries as $query) {
+            if(in_array($query->getOperationTypeID(), $types)) {
+                $queries[] = $query;
             }
         }
-        
+
         return $queries;
     }
-    
+
+    public static function isQueryTrackingEnabled() : bool
+    {
+        return self::$queryTracking === true || AppConfig::isQueryTrackingEnabled();
+    }
+
+    private static bool $queryTracking = false;
+
+    public static function setQueryTrackingEnabled(bool $enabled) : void
+    {
+        self::$queryTracking = $enabled === true;
+    }
+
+    public static function enableQueryTracking() : void
+    {
+        self::setQueryTrackingEnabled(true);
+    }
+
+    public static function disableQueryTracking() : void
+    {
+        self::setQueryTrackingEnabled(false);
+    }
+
+    private static function addTrackedQuery(int $operationType, $statementOrBuilder, array $variables) : void
+    {
+        self::$queries[] = new TrackedQuery(
+            $statementOrBuilder,
+            $variables,
+            microtime(true)-self::$startTime,
+            $operationType
+        );
+    }
+
    /**
     * Retrieves information about all queries made up to this point,
     * but only write operations.
     * 
-    * @return array
+    * @return TrackedQuery[]
     */
     public static function getWriteQueries() : array
     {
         return self::getQueries(DBHelper_OperationTypes::getWriteTypes());
     }
-    
+
+    /**
+     * @return TrackedQuery[]
+     */
     public static function getSelectQueries() : array
     {
         return self::getQueries(array(DBHelper_OperationTypes::TYPE_SELECT));
     }
-    
+
+    // endregion
+
     public static function countSelectQueries() : int
     {
         return self::$queryCountRead;
@@ -732,6 +767,11 @@ class DBHelper
     }
 
     /**
+     * @var string[]|null
+     */
+    private static ?array $tablesList = null;
+
+    /**
      * Retrieves a list of all tables present in the
      * database; Only shows the tables that the user
      * has access to. Returns an indexed array with
@@ -739,17 +779,23 @@ class DBHelper
      *
      * @throws DBHelper_Exception
      * @return string[]
+     * @cached
      */
     public static function getTablesList() : array
     {
-        $entries = self::fetchAll('SHOW TABLES');
-        
-        $list = array();
-        foreach ($entries as $entry) {
-            $list[] = $entry[key($entry)];
+        if(isset(self::$tablesList)) {
+            return self::$tablesList;
         }
 
-        return $list;
+        $entries = self::fetchAll('SHOW TABLES');
+
+        self::$tablesList = array();
+
+        foreach ($entries as $entry) {
+            self::$tablesList[] = $entry[key($entry)];
+        }
+
+        return self::$tablesList;
     }
 
     /**
@@ -916,7 +962,7 @@ class DBHelper
         );
         
         self::$activeDB = self::getDB();
-        
+
         self::triggerEvent('Init');
     }
 
@@ -1548,7 +1594,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return string[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKey(string $key, $statementOrBuilder, array $variables=array()) : array
@@ -1575,7 +1620,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return int[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKeyInt(string $key, $statementOrBuilder, array $variables=array()) : array
@@ -2072,5 +2116,10 @@ SQL;
     public static function escapeTableColumn(string $table, string $name) : string
     {
         return self::escapeName($table).'.'.self::escapeName($name);
+    }
+
+    public static function resetTrackedQueries() : void
+    {
+        self::$queries = array();
     }
 }

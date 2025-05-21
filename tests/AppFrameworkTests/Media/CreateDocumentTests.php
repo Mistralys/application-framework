@@ -11,7 +11,7 @@ final class CreateDocumentTests extends MediaTestCase
 {
     public function test_createFromFile() : void
     {
-        $file = $this->getExampleImagePath();
+        $file = $this->getExamplePNGPath();
 
         $document = $this->media->createFromFile('example-image', FileInfo::factory($file));
         $documentPath = $document->getPath();
@@ -25,7 +25,7 @@ final class CreateDocumentTests extends MediaTestCase
 
     public function test_createImageFromFile() : void
     {
-        $file = $this->getExampleImagePath();
+        $file = $this->getExamplePNGPath();
 
         $document = $this->media->createImageFromFile('example-image', FileInfo::factory($file));
         $documentPath = $document->getPath();

@@ -8,6 +8,7 @@
  */
 
 use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
 
 /**
  * Manages the collection of custom properties for the specified
@@ -38,7 +39,9 @@ use AppUtils\ClassHelper;
  */
 class Application_CustomProperties extends DBHelper_BaseCollection
 {
-   /**
+    public const TABLE_NAME = 'custom_properties';
+    public const PRIMARY_NAME = 'property_id';
+    /**
     * @var Application_Interfaces_Propertizable
     */
     protected $record;
@@ -56,7 +59,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         $this->setForeignKey('owner_type', $this->ownerType);
         $this->setForeignKey('owner_key', $this->ownerKey);
         
-        $this->setIDTable('custom_properties');
+        $this->setIDTable(self::TABLE_NAME);
     }
     
    /**
@@ -119,7 +122,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     
     public function getRecordPrimaryName() : string
     {
-        return 'property_id';
+        return self::PRIMARY_NAME;
     }
     
    /**
@@ -130,10 +133,10 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * @param string $value
     * @param string $defaultValue
     * @param boolean $isStructural
-    * @param Application_CustomProperties_Presets_Preset $preset
+    * @param Application_CustomProperties_Presets_Preset|NULL $preset
     * @return Application_CustomProperties_Property
     */
-    public function addProperty($label, $name, $value, $defaultValue='', $isStructural=false, Application_CustomProperties_Presets_Preset $preset=null)
+    public function addProperty(string $label, string $name, string $value, string $defaultValue='', bool $isStructural=false, ?Application_CustomProperties_Presets_Preset $preset=null) : Application_CustomProperties_Property
     {
         $preset_id = null;
         if($preset) {
@@ -142,10 +145,10 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         
         $property = $this->createNewRecord(array(
             'label' => $label,
-            'name' => $name,
+            'name' => ConvertHelper::transliterate($name),
             'value' => $value,
             'default_value' => $defaultValue,
-            'is_structural' => AppUtils\ConvertHelper::bool2string($isStructural, true),
+            'is_structural' => ConvertHelper::bool2string($isStructural, true),
             'preset_id' => $preset_id
         ));
         
@@ -313,7 +316,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
                 DBHelper::insertOrUpdate(
                     'custom_properties_data', 
                     $record, 
-                    array('property_id', 'owner_type', 'owner_key')
+                    array(self::PRIMARY_NAME, 'owner_type', 'owner_key')
                 );
             }
 

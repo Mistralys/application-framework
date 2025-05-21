@@ -1,6 +1,8 @@
 <?php
 
-interface Application_Interfaces_Admin_Wizardable extends Application_Admin_ScreenInterface
+use Application\Interfaces\Admin\AdminScreenInterface;
+
+interface Application_Interfaces_Admin_Wizardable extends AdminScreenInterface
 {
     public const ADMIN_WIZARD_ERROR_UNKNOWN_STEP = 557001;
     public const ADMIN_WIZARD_ERROR_STEP_ALREADY_EXISTS = 557002;

@@ -23,6 +23,7 @@ class KeepAlive
 {
     constructor()
     {
+        this.enabled = true;
         this.interval = 120;
         this.intervalInstance = null;
         this.target = null;
@@ -38,7 +39,7 @@ class KeepAlive
      */
     Start()
     {
-        if (this.intervalInstance !== null) {
+        if (this.intervalInstance !== null || !this.enabled) {
             return;
         }
 
@@ -52,6 +53,11 @@ class KeepAlive
             },
             (1000 * this.interval)
         );
+    }
+
+    Disable()
+    {
+        this.enabled = false;
     }
 
     /**
@@ -96,7 +102,7 @@ class KeepAlive
 
     HandleRequest()
     {
-        if (this.requestRunning) {
+        if (this.requestRunning || !this.enabled) {
             return;
         }
 

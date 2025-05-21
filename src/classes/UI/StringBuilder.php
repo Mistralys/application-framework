@@ -8,8 +8,11 @@
  */
 
 use AppUtils\AttributeCollection;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\StringBuilder;
+use testsuites\DBHelper\RecordTests;
 use UI\AdminURLs\AdminURLInterface;
+use UI\CSSClasses;
 
 /**
  * Extension to the app utils StringBuilder class, with
@@ -56,10 +59,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      */
     public function info($string) : UI_StringBuilder
     {
-        return $this->sf(
-            '<span class="text-info">%s</span>',
-            toString($string)
-        );
+        return $this->spanned($string, CSSClasses::TEXT_INFO);
     }
     
    /**
@@ -79,7 +79,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     */
     public function muted($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'muted');
+        return $this->spanned($string, CSSClasses::TEXT_MUTED);
     }
     
    /**
@@ -101,12 +101,12 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     */
     public function danger($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-error');
+        return $this->spanned($string, CSSClasses::TEXT_ERROR);
     }
 
     public function dangerXXL($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-error-xxl');
+        return $this->spanned($string, CSSClasses::TEXT_ERROR_XXL);
     }
     
    /**
@@ -117,7 +117,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     */
     public function warning($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-warning');
+        return $this->spanned($string, CSSClasses::TEXT_WARNING);
     }
 
     /**
@@ -128,7 +128,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      */
     public function success($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-success');
+        return $this->spanned($string, CSSClasses::TEXT_SUCCESS);
     }
 
     /**
@@ -139,7 +139,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      */
     public function inverted($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-inverted');
+        return $this->spanned($string, CSSClasses::TEXT_INVERTED);
     }
 
     /**
@@ -151,18 +151,19 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      */
     public function secondary($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'text-secondary');
+        return $this->spanned($string, CSSClasses::TEXT_SECONDARY);
     }
 
    /**
-    * Adds a monospace-styled text.
+    * Adds a monospace-styled text by giving it the
+    * class {@link CSSClasses::TEXT_MONOSPACE}.
     * 
     * @param string|number|UI_Renderable_Interface $string
     * @return $this
     */
     public function mono($string) : UI_StringBuilder
     {
-        return $this->spanned($string, 'monospace');
+        return $this->spanned($string, CSSClasses::TEXT_MONOSPACE);
     }
 
     /**
@@ -273,10 +274,10 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
      */
     public function clickable($string, string $statement, $tooltip='') : UI_StringBuilder
     {
-        $result = sb()->sf(
-            '<span class="clickable" onclick="%s">%s</span>',
-            $statement,
-            toString($string)
+        $result = sb()->spanned(
+            $string,
+            CSSClasses::CLICKABLE,
+            AttributeCollection::create()->attr('onclick', $statement)
         );
 
         if(empty($tooltip))
@@ -288,16 +289,28 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     }
 
     /**
-     * Formats a text as code, and adds a button beside it to
+     * Formats a text as code, and adds a button next to it to
      * copy the text to the clipboard.
      *
      * @param string|number|UI_Renderable_Interface $string
+     * @param string|null $emptyText The text to display if the string is empty.
      * @return UI_StringBuilder
      * @throws Application_Exception
      * @throws UI_Exception
      */
-    public function codeCopy($string) : UI_StringBuilder
+    public function codeCopy($string, ?string $emptyText=null) : UI_StringBuilder
     {
+        $string = (string)$string;
+
+        if(empty($string))
+        {
+            if(empty($emptyText)) {
+                $emptyText = t('empty');
+            }
+
+            return $this->muted(sb()->parentheses($emptyText));
+        }
+
         $jsID = nextJSID();
         $ui = $this->getUI();
 
@@ -330,11 +343,103 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
                 ->setTooltip(t('Copies the text to the clipboard.'))
                 ->setIcon(UI::icon()->copy())
             )
-            ->sf(
-                '<span class="text-success" id="%s" style="display: none">%s</span>',
-                $jsID.'-status',
-                t('Text copied successfully.')
+            ->spanned(
+                t('Text copied successfully.'),
+                CSSClasses::TEXT_SUCCESS,
+                AttributeCollection::create()
+                    ->id($jsID.'-status')
+                    ->style('display', 'none', false)
             );
+    }
+
+    /**
+     * Highlight parts of a text that refer to concepts,
+     * names or the like using the class {@see CSSClasses::TEXT_REFERENCE}.
+     *
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function reference($string, ?AttributeCollection $attributes=null): self
+    {
+        return $this->spanned($string, CSSClasses::TEXT_REFERENCE, $attributes);
+    }
+
+    /**
+     * @return $this
+     */
+    public function hr() : self
+    {
+        return $this->html('<hr>');
+    }
+
+    /**
+     * Content shown only for developer users, or in devel mode.
+     *
+     * This is added as an inline-block `<div>` element to allow
+     * nesting other block-level elements. This can be overridden
+     * by passing a custom `display` style in the attributes.
+     *
+     * @param string|number|StringableInterface $content
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function developer($content, ?AttributeCollection $attributes=null) : self
+    {
+        if(!Application::getUser()->isDeveloper()) {
+            return $this;
+        }
+
+        $attribs = AttributeCollection::createAuto($attributes);
+
+        $attribs->addClass(CSSClasses::RIGHT_DEVELOPER);
+
+        if(empty($attribs->getStyles()->getStyle('display'))) {
+            $attribs->style('display', 'inline-block', false);
+        }
+
+        return $this->tag('div', $content, $attribs);
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h1($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(1, $string, $attributes);
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h2($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(2, $string, $attributes);
+    }
+
+    /**
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function h3($string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->heading(3, $string, $attributes);
+    }
+
+    /**
+     * @param int $level
+     * @param string|number|StringableInterface $string
+     * @param AttributeCollection|null $attributes
+     * @return $this
+     */
+    public function heading(int $level, $string, ?AttributeCollection $attributes=null) : self
+    {
+        return $this->tag('h'.$level, $string, $attributes);
     }
 
     public function render() : string

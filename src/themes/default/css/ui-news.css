@@ -1,5 +1,10 @@
 .news-article {
     margin-bottom: 2.4rem;
+    line-height: 168%;
+}
+
+.news-article HR{
+    margin: 2rem 0;
 }
 
 .news-article-title {
@@ -45,4 +50,9 @@
 
 .news-article-body IMG.visual {
     border: solid 1px var(--color-border);
+    margin: 0.6rem 0;
+}
+
+.news-article-body IMG.visual:hover {
+    border: solid 1px var(--color-border-active);
 }

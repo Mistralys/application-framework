@@ -1,17 +1,27 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Events
+ */
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
-use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 
+/**
+ * Specialized offline event class used to handle an offline
+ * event that can wake up listeners and trigger them.
+ *
+ * @package Application
+ * @subpackage Events
+ */
 class Application_EventHandler_OfflineEvents_OfflineEvent
 {
     public const ERROR_CANNOT_FIND_CLASS_LOCATION = 97201;
-    public const ERROR_COULD_NOT_DETECT_LISTENER_CLASS = 97202;
 
     private string $eventName;
 
@@ -94,22 +104,26 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
 
         if($this->eventClass !== null)
         {
-            $folderName = getClassTypeName($this->eventClass);
+            $eventName = $this->getEventName();
 
             $this->listenerFolders[] = FolderInfo::factory(sprintf(
                 '%s/assets/classes/%s/OfflineEvents/%s',
                 APP_ROOT,
                 APP_CLASS_NAME,
-                $folderName
+                $eventName
             ));
 
-            $this->listenerFolders[] = FolderInfo::factory(__DIR__.'/../../OfflineEvents/'.$folderName);
+            $this->listenerFolders[] = FolderInfo::factory(__DIR__.'/../../OfflineEvents/'.$eventName);
         }
 
         return $this->listenerFolders;
     }
 
     /**
+     * Gets all listeners registered for this event.
+     *
+     * NOTE: This is sorted by priority and ID.
+     *
      * @return Application_EventHandler_OfflineEvents_OfflineListener[]
      */
     public function getListeners() : array
@@ -127,17 +141,30 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
 
         $this->listenersLoaded = true;
 
-        foreach($this->getListenerNames() as $name)
+        foreach($this->getListenerClasses() as $class)
         {
-            $this->listeners[] = $this->createListener($name);
+            $this->listeners[] = $this->createListener($class);
         }
+
+        // Sort the listeners by priority and ID if no
+        // priority is set.
+        usort($this->listeners, static function(Application_EventHandler_OfflineEvents_OfflineListener $a, Application_EventHandler_OfflineEvents_OfflineListener $b) : int {
+            $prioA = $a->getPriority();
+            $prioB = $b->getPriority();
+
+            if($prioA > 0 || $prioB > 0) {
+                return ($prioA <=> $prioB) * -1;
+            }
+
+            return $a->getID() <=> $b->getID();
+        });
     }
 
     /**
      * @return string[]
      * @throws FileHelper_Exception
      */
-    public function getListenerNames() : array
+    public function getListenerClasses() : array
     {
         $names = array();
 
@@ -147,7 +174,7 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
                 continue;
             }
 
-            array_push($names, ...FileHelper::createFileFinder($folder)->getPHPClassNames());
+            array_push($names, ...AppFactory::findClassesInFolder($folder, true, Application_EventHandler_OfflineEvents_OfflineListener::class));
         }
 
         return $names;
@@ -198,54 +225,17 @@ class Application_EventHandler_OfflineEvents_OfflineEvent
     }
 
     /**
-     * @param string $name
+     * @param class-string $className
      * @return Application_EventHandler_OfflineEvents_OfflineListener
      *
      * @throws BaseClassHelperException
      * @throws Throwable
      */
-    private function createListener(string $name) : Application_EventHandler_OfflineEvents_OfflineListener
+    private function createListener(string $className) : Application_EventHandler_OfflineEvents_OfflineListener
     {
-        $classes = array(
-            sprintf(
-                '%s_OfflineEvents_%sEvent_%s',
-               APP_CLASS_NAME,
-                $this->eventName,
-                $name
-            ),
-            'Application_OfflineEvents_'.$this->eventName.'Event_'.$name,
-        );
-
-        $className = null;
-        foreach($classes as $class) {
-            $resolved = ClassHelper::resolveClassName($class);
-            if($resolved !== null) {
-                $className = $resolved;
-                break;
-            }
-        }
-
-        if($className !== null) {
-            return ClassHelper::requireObjectInstanceOf(
-                Application_EventHandler_OfflineEvents_OfflineListener::class,
-                new $className($this)
-            );
-        }
-
-        throw new Application_Exception(
-            'Could not detect offline event listener class.',
-            sprintf(
-                'Offline event: %s'.PHP_EOL.
-                'Listener files have been found, but no matching classes could be found.'.PHP_EOL.
-                'Listener names:'.PHP_EOL.
-                '- %s'.PHP_EOL.
-                'Tried to find the following classes:'.PHP_EOL.
-                '- %s',
-                $this->eventName,
-                implode(PHP_EOL.'- ', $this->getListenerNames()),
-                implode(PHP_EOL.'- ', $classes)
-            ),
-            self::ERROR_COULD_NOT_DETECT_LISTENER_CLASS
+        return ClassHelper::requireObjectInstanceOf(
+            Application_EventHandler_OfflineEvents_OfflineListener::class,
+            new $className($this)
         );
     }
 }

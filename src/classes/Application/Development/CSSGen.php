@@ -10,9 +10,8 @@ namespace Application\Development;
 
 use Application\Admin\Area\Devel\BaseCSSGenScreen;
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Devel;
-use Application_Admin_ScreenInterface;
-use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -71,8 +70,8 @@ class CSSGen extends BaseStringPrimaryCollection
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCSSGenScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Devel::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCSSGenScreen::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);

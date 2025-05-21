@@ -16,8 +16,8 @@ use Application\Admin\Area\News\BaseCreateArticleScreen;
 use Application\Admin\Area\News\BaseNewsListScreen;
 use Application\Admin\Area\News\BaseReadNewsScreen;
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\NewsCentral\Categories\CategoriesCollection;
-use Application_Admin_ScreenInterface;
 use Application_Formable;
 use Application_User;
 use AppUtils\BaseException;
@@ -44,6 +44,8 @@ use NewsCentral\Entries\NewsArticle;
  */
 class NewsCollection extends DBHelper_BaseCollection
 {
+    public const RECENT_ITEMS_CATEGORY = 'recent_news';
+
     public const PRIMARY_NAME = 'news_id';
     public const TABLE_NAME = 'app_news';
     public const TABLE_NAME_ENTRY_CATEGORIES = 'app_news_entry_categories';
@@ -265,35 +267,35 @@ EOT;
 
     public function getAdminListURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseNewsListScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseNewsListScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateArticleURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateArticleScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateArticleScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminCreateAlertURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateAlertScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateAlertScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseNewsScreen::URL_NAME;
 
         return AppFactory::createRequest()->buildURL($params);
     }
 
     public function getLiveReadURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseReadNewsScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

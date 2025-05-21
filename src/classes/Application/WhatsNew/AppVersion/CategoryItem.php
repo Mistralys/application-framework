@@ -193,7 +193,7 @@ class CategoryItem
         $result = array();
         preg_match_all('/{image:[ ]*(.+)}|{image[ ]*([0-9]+)(%|px):[ ]*(.+)}/U', $this->text, $result, PREG_PATTERN_ORDER);
 
-        if (!isset($result[1]) && isset($result[1][0]))
+        if (empty($result[1]) && !empty($result[1][0]))
         {
             return;
         }

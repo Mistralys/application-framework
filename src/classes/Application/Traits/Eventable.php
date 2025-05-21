@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 
 /**
@@ -117,16 +119,36 @@ trait Application_Traits_Eventable
     }
 
     /**
+     * Like {@see self::triggerEvent()}, but returns the
+     * correct instance return type for the event class.
+     *
+     * @template ClassInstanceType
+     * @param string $eventName
+     * @param class-string<ClassInstanceType> $eventClass
+     * @param array<mixed> $args
+     * @return ClassInstanceType|NULL Returns `null` if no listeners have been added, or if events have been disabled.
+     *
+     * @throws Application_Exception
+     */
+    protected function triggerEventClass(string $eventName, string $eventClass, array $args=array())
+    {
+        $event = $this->triggerEvent($eventName, $args, $eventClass);
+
+        if($event instanceof $eventClass) {
+            return $event;
+        }
+
+        return null;
+    }
+
+    /**
      * Triggers the specified event: creates the event, and executes
      * all listeners that have been added for it.
-     *
-     * Returns null if no listeners have been added, or if events
-     * have been disabled.
      *
      * @param string $eventName
      * @param mixed[] $args
      * @param string $eventClass
-     * @return Application_EventHandler_EventableEvent|null
+     * @return Application_EventHandler_EventableEvent|null Returns `null` if no listeners have been added, or if events have been disabled.
      * @throws Application_Exception
      */
     protected function triggerEvent(string $eventName, array $args=array(), string $eventClass = '') : ?Application_EventHandler_EventableEvent

@@ -14,8 +14,15 @@
  * @subpackage Custom properties
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_AjaxMethods_CustomPropertySave extends Application_AjaxMethod_CustomProperties
+class Application_AjaxMethods_CustomPropertySave extends BaseCustomPropertiesMethod
 {
+    public const METHOD_NAME = 'CustomPropertySave';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         //$this->forceStartSimulation();

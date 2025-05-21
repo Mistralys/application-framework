@@ -95,12 +95,19 @@ trait RevisionableChangelogTrait
      */
     public function getChangelog() : Application_Changelog
     {
-        $changelog = $this->revisions->getKey('__changelog');
+        $changelog = $this->revisions->getPrivateKey('changelog');
 
-        if(!$changelog instanceof Application_Changelog) {
-            $changelog = new Application_Changelog($this);
-            $this->revisions->setKey('__changelog', $changelog);
+        if($changelog instanceof Application_Changelog) {
+            return $changelog;
         }
+
+        $changelog = new Application_Changelog($this);
+
+        $changelog->onQueueCommitted(function () {
+            $this->clearChangelogQueue();
+        });
+
+        $this->revisions->setPrivateKey('changelog', $changelog);
 
         return $changelog;
     }

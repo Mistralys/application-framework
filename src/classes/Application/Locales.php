@@ -6,7 +6,11 @@ namespace Application;
 
 use Application\Languages\Language;
 use Application\Locales\Locale;
+use AppLocalize\Localization;
+use AppLocalize\Localization\Locale\en_US;
+use AppLocalize\Localization\Locales\LocalesCollection;
 use AppUtils\Collections\BaseStringPrimaryCollection;
+use AppUtils\Collections\CollectionException;
 
 /**
  * Locale collection class, used to fetch information on the
@@ -65,9 +69,14 @@ class Locales extends BaseStringPrimaryCollection
 
     public function getDefaultID(): string
     {
-        return self::LOCALE_EN_US;
+        return en_US::LOCALE_NAME;
     }
 
+    /**
+     * @param string $localeCode The locale code, e.g., `en_US`.
+     * @return Locale
+     * @throws CollectionException
+     */
     public function getByCode(string $localeCode) : Locale
     {
         return $this->getByID($localeCode);
@@ -82,9 +91,9 @@ class Locales extends BaseStringPrimaryCollection
         $locales = array();
         $iso = $language->getISO();
 
-        foreach($this->getAll() as $locale) {
-            if($locale->getLangISO() === $iso) {
-                $locales[] = $locale;
+        foreach(AppFactory::createCountries()->getAll() as $country) {
+            if($country->getLanguageCode() === $iso) {
+                $locales[] = $country->getLocale();
             }
         }
 
@@ -93,10 +102,8 @@ class Locales extends BaseStringPrimaryCollection
 
     protected function registerItems(): void
     {
-        $countries = AppFactory::createCountries()->getAll(false);
-
-        foreach($countries as $country) {
-            $this->registerItem(new Locale($country->getLocaleCode()));
+        foreach(AppFactory::createCountries()->getAll() as $country) {
+            $this->registerItem(new Locale($country->getLocalizationLocale()));
         }
     }
 }

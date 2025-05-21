@@ -16,6 +16,7 @@ use Application\Exception\UnexpectedInstanceException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
@@ -71,6 +72,11 @@ class Application
     public const EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
 
     public const REQUEST_VAR_SIMULATION = 'simulate_only';
+    public const REQUEST_VAR_QUERY_SUMMARY = 'query_summary';
+    public const STORAGE_FOLDER_NAME = 'storage';
+    public const TEMP_FOLDER_NAME = 'temp';
+    public const CACHE_FOLDER_NAME = 'cache';
+    public const DEFAULT_TEST_FILE_EXTENSION = 'tmp';
 
     private UI $ui;
     private ?Application_Driver $driver = null;
@@ -342,7 +348,7 @@ class Application
      * @return Application_Session
      * @see Application::isSessionReady()
      *
-     * @throws Application_Exception
+     * @throws Application_Session_Exception
      * @see Application::ERROR_SESSION_NOT_AVAILABLE_YET
      */
     public static function getSession() : Application_Session
@@ -352,7 +358,7 @@ class Application
             return self::$session;
         }
 
-        throw new Application_Exception(
+        throw new Application_Session_Exception(
             'Session not available yet',
             'The session instance has not been created yet.',
             self::ERROR_SESSION_NOT_AVAILABLE_YET
@@ -361,7 +367,7 @@ class Application
 
     /**
      * @return Application_User
-     * @throws Application_Exception
+     * @throws Application_Session_Exception
      * @see Application::ERROR_NO_USER_PRIOR_TO_SESSION
      */
     public static function getUser() : Application_User
@@ -464,6 +470,65 @@ class Application
         return self::$develEnvironment;
     }
 
+    // 1: src/
+    // 2: {packageName}/
+    // 3: {vendorName}/
+    // 4: vendor
+    // 5: root
+    //                                             1  2  3  4  5
+    private const ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../../';
+
+    // 1: src/
+    // 2: root
+    //                                          1  2
+    private const ROOT_PATH_PACKAGE = __DIR__.'/../../';
+
+    private static ?bool $isInstalledAsDependency = null;
+
+    /**
+     * Checks whether the application is installed as a
+     * Composer dependency in a `vendor` folder.
+     *
+     * @return bool
+     */
+    public static function isInstalledAsDependency() : bool
+    {
+        if(!isset(self::$isInstalledAsDependency)) {
+            self::$isInstalledAsDependency = is_dir(self::ROOT_PATH_DEPENDENCY.'/vendor');
+        }
+
+        return self::$isInstalledAsDependency;
+    }
+
+    private static ?FolderInfo $rootFolder = null;
+
+    /**
+     * Automatically detects the framework's root folder
+     * depending on whether it is installed as a dependency.
+     *
+     * > NOTE: This does not work for the test application,
+     * > since it does not follow the usual folder structure.
+     *
+     * @return FolderInfo
+     * @throws FileHelper_Exception
+     */
+    public static function detectRootFolder() : FolderInfo
+    {
+        if(isset(self::$rootFolder)) {
+            return self::$rootFolder;
+        }
+
+        if(self::isInstalledAsDependency()) {
+            $root = FolderInfo::factory(self::ROOT_PATH_DEPENDENCY);
+        } else {
+            $root = FolderInfo::factory(self::ROOT_PATH_PACKAGE);
+        }
+
+        self::$rootFolder = $root->requireExists();
+
+        return self::$rootFolder;
+    }
+
     /**
      * Returns the global instance of the API manager class,
      * creating it as needed.
@@ -484,30 +549,48 @@ class Application
      */
     public static function getTempFolder() : string
     {
-        return self::getStorageSubfolderPath('temp');
+        return self::getStorageSubfolderPath(self::TEMP_FOLDER_NAME);
+    }
+
+    public static function getTempFolderURL() : string
+    {
+        return self::getStorageSubfolderURL(self::TEMP_FOLDER_NAME);
     }
 
     public static function getCacheFolder() : string
     {
-        return self::getStorageSubfolderPath('cache');
+        return self::getStorageSubfolderPath(self::CACHE_FOLDER_NAME);
     }
 
     /**
      * Generates a temporary file path.
      *
-     * Note: the file is not created. This just creates a file path.
+     * > Note: the file is not created. This just creates a file path.
      *
-     * @param string $name Specific name to use (without extension), or auto-generated if empty.
-     * @param string $extension The extension to use
+     * @param string|NULL $name Specific name to use (without extension), or auto-generated if empty.
+     * @param string|NULL $extension The extension to use, if empty {@see self::DEFAULT_TEST_FILE_EXTENSION} is used.
      */
-    public static function getTempFile(string $name = '', string $extension = 'tmp') : string
+    public static function getTempFile(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
     {
-        if (empty($name))
-        {
+        return self::getTempFolder() . '/' . self::resolveTempFileName($name, $extension);
+    }
+
+    public static function getTempFileURL(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
+    {
+        return self::getTempFolderURL() . '/' . self::resolveTempFileName($name, $extension);
+    }
+
+    private static function resolveTempFileName(?string $name = null, ?string $extension = self::DEFAULT_TEST_FILE_EXTENSION) : string
+    {
+        if (empty($name)) {
             $name = md5('tmp' . microtime(true));
         }
 
-        return self::getTempFolder() . '/' . $name . '.' . $extension;
+        if(empty($extension)) {
+            $extension = self::DEFAULT_TEST_FILE_EXTENSION;
+        }
+
+        return $name . '.' . $extension;
     }
 
     /**
@@ -524,7 +607,7 @@ class Application
             return self::$storageFolder;
         }
 
-        self::$storageFolder = APP_ROOT . '/storage';
+        self::$storageFolder = APP_ROOT . '/'. self::STORAGE_FOLDER_NAME;
 
         try
         {
@@ -599,6 +682,16 @@ class Application
         self::$knownStorageFolders[$subfolderName] = $folder;
 
         return $folder;
+    }
+
+    public static function getStorageSubfolderURL(string $subfolderName) : string
+    {
+        return sprintf(
+            '%s/%s/%s',
+            APP_URL,
+            self::STORAGE_FOLDER_NAME,
+            $subfolderName
+        );
     }
 
     /**
@@ -852,42 +945,16 @@ class Application
         return AppFactory::createErrorLog();
     }
 
-    private static $exited = false;
-
-    public static function isExited() : bool
-    {
-        return self::$exited;
-    }
-
     /**
+     * Exit the application and handle shutdown tasks.
      * @return never
-     * @todo Handle shutdown tasks here.
      */
     public static function exit(string $reason = '')
     {
-        self::$exited = true;
-
-        /* TODO: Review the exit bypass handling
-        if (self::$exitEnabled)
-        {
-
-        }
-        */
-
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
         Application_Bootstrap::handleShutDown();
-
         exit;
-    }
-
-    public static function setExitEnabled(bool $enabled = true) : bool
-    {
-        $previous = self::$exitEnabled;
-
-        self::$exitEnabled = $enabled;
-
-        return $previous;
     }
 
     /**
@@ -1010,12 +1077,18 @@ class Application
             );
         }
 
+        $message = sprintf('Redirected to [%s]', $url);
+
+        if(isCLI()) {
+            self::exit($message);
+        }
+
         $simulation = self::isSimulation();
 
         if (!$simulation && !headers_sent())
         {
             header('Location:' . $url);
-            self::exit(sprintf('Redirected to [%s]', $url));
+            self::exit($message);
         }
 
         ?>
@@ -1206,25 +1279,12 @@ class Application
             return true;
         }
 
-        $result = DBHelper::fetchKey(
-            'user_id',
-            "SELECT
-                user_id
-            FROM
-                known_users
-            WHERE
-                user_id=:user_id",
-            array(
-                'user_id' => $userID
-            )
-        );
-
-        return $result !== null;
+        return AppFactory::createUsers()->idExists($userID);
     }
 
     /**
      * Retrieves the data set from the database for the
-     * specified user ID. Also handles dummy and system
+     * specified user ID. Also handles stub and system
      * user data.
      *
      * @param int $userID
@@ -1306,7 +1366,12 @@ class Application
 
     public static function isSessionReady() : bool
     {
-        return isset(self::$session);
+        return isset(self::$session) && self::$session->isStarted();
+    }
+
+    public static function isUserReady() : bool
+    {
+        return self::isSessionReady() && self::getSession()->getUser() !== null;
     }
 
     public static function isSystemUserID(int $userID) : bool

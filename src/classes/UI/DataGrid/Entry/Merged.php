@@ -13,7 +13,7 @@ class UI_DataGrid_Entry_Merged extends UI_DataGrid_Entry
         $this->makeNonSortable();
     }
     
-    public function render()
+    public function render() : string
     {
         $this->addClass('row-merged');
         

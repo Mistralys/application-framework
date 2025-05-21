@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 
 declare(strict_types=1);
@@ -24,8 +24,8 @@ use JsonException;
  * its ID can be different on each installation. Using
  * the registry, it can be identified reliably.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Collection
  */
 class TagRegistry
 {

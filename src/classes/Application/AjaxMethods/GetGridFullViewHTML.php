@@ -28,10 +28,17 @@ declare(strict_types=1);
  */
 class Application_AjaxMethods_GetGridFullViewHTML extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'GetGridFullViewHTML';
+
     /**
      * @var Application_AjaxMethods_GetGridFullViewHTML_Grid[]
      */
     private $grids = array();
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
 
     public function processJSON()
     {

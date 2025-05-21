@@ -10,6 +10,8 @@
  */
 var UI =
 {
+	'ERROR_CANNOT_FIND_REQUIRED_ELEMENT': 171101,
+
 	'BOOTSTRAP_VERSION':null, // Set serverside
 		
    /**
@@ -127,14 +129,25 @@ var UI =
 			ui.position.top -= $(document).scrollTop();
 		}
 	},
+
+	/**
+	 *
+	 * @param {String|jQuery} elementOrSelector
+	 * @constructor
+	 */
+	HideTooltip:function(elementOrSelector)
+	{
+		$(elementOrSelector).tooltip('hide');
+	},
 	
    /**
     * Adds a tooltip to the specified element selector or
     * jQuery DOM element instance, using the global tooltip
     * settings.
     * 
-    * @param {String|jQueryElement} elementOrSelector
-    * @param {Boolean} [htmlAllowed=false] Whether HTML is allowed 
+    * @param {String|jQuery} elementOrSelector
+    * @param {Boolean} [htmlAllowed=false] Whether HTML is allowed
+	* @param {String|null} [placement='top'] The placement of the tooltip.
     */
 	MakeTooltip:function(elementOrSelector, htmlAllowed, placement)
 	{
@@ -166,7 +179,7 @@ var UI =
 		 * https://github.com/twbs/bootstrap/issues/6942
 		 * 
 		 * Added the stop propagation of the events, but this is
-		 * not a catch all. 
+		 * not a catch-all.
 		 */
 		el.tooltip({
 			'html':htmlAllowed,
@@ -551,11 +564,14 @@ var UI =
 	
 	Start:function()
 	{
+		const body = $('body');
 		if (document.createElement("detect").style.zoom === "") {
-			$('body').addClass('zoomable');
+			body.addClass('zoomable');
 		} else {
-			$('body').addClass('non-zoomable');
+			body.addClass('non-zoomable');
 		}
+
+		body.css('padding-top', $('#app-mainnav').height()+'px');
 		
 		$('form').submit(function() {
 			UI.formSubmitting = true;
@@ -570,7 +586,7 @@ var UI =
 			var sections = UI.GetGroupSections(group);
 			var last = sections[sections.length-1];
 			last.SetLast();
-		}); 
+		});
 	},
 	
 	IsFormSubmitting:function()
@@ -712,5 +728,27 @@ var UI =
 	GetTheme:function()
 	{
 		return this.theme;
+	},
+
+	/**
+	 * @param {String} selector
+	 * @return {*|jQuery|HTMLElement}
+	 */
+	RequireElement(selector)
+	{
+		const el = $(selector);
+
+		if(el.length === 1) {
+			return el;
+		}
+
+		throw new ApplicationException(
+			'Cannot find element by selector.',
+			sprintf(
+				'Could not find an element by the selector [%s].',
+				selector
+			),
+			this.ERROR_CANNOT_FIND_REQUIRED_ELEMENT
+		);
 	}
 };

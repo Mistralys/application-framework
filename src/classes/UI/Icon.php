@@ -132,6 +132,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function cache() : self { return $this->setType('memory', 'fas'); }
+    /**
+     * @return $this
+     */
     public function calendar() : self { return $this->setType('calendar'); }
     /**
      * @return $this
@@ -797,6 +801,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      * @return $this
      */
     public function time() : self { return $this->setType('clock'); }
+    /**
+     * @return $this
+     */
+    public function timeTracker() : self { return $this->setType('biohazard', 'fas'); }
     /**
      * @return $this
      */

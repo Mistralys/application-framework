@@ -24,3 +24,8 @@ const TESTS_BASE_URL = 'http://127.0.0.1/application-framework';
  *                      This requires the <code>test-cas-config.php</code> to be present.
  */
 const TESTS_SESSION_TYPE = 'NoAuth';
+
+/**
+ * List of email addresses to send system emails to.
+ */
+const TESTS_SYSTEM_EMAIL_RECIPIENTS = 'name@host.domain';

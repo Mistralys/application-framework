@@ -6,6 +6,8 @@
  * @see DBHelper_BaseRecord
  */
 
+use Application\Collection\CollectionItemInterface;
+use Application\Collection\IntegerCollectionItemInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
@@ -20,7 +22,11 @@ use DBHelper\BaseRecord\Event\KeyModifiedEvent;
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseRecord implements Application_CollectionItemInterface, Application_Interfaces_Loggable, Application_Interfaces_Disposable
+abstract class DBHelper_BaseRecord
+    implements
+    IntegerCollectionItemInterface,
+    Application_Interfaces_Loggable,
+    Application_Interfaces_Disposable
 {
     use Application_Traits_Loggable;
     use Application_Traits_Disposable;
@@ -29,54 +35,38 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
     public const ERROR_RECORD_DOES_NOT_EXIST = 13301;
     public const ERROR_RECORD_KEY_UNKNOWN = 13302;
 
-    public const DUMMY_ID = -1;
+    /**
+     * @deprecated Use {@see self::STUB_ID} instead.
+     */
+    public const DUMMY_ID = self::STUB_ID;
+    public const STUB_ID = -1;
 
     /**
      * @var array<string,mixed>|NULL
      */
     protected ?array $recordData = null;
-
-    /**
-     * @var string
-     */
-    protected $recordTypeName;
-
-    /**
-     * @var string
-     */
-    protected $recordTable;
-
-    /**
-     * @var string
-     */
-    protected $recordPrimaryName;
-
-    /**
-     * @var bool
-     */
-    protected $isDummy = false;
+    protected string $recordTypeName;
+    protected string $recordTable;
+    protected string $recordPrimaryName;
+    protected bool $isDummy = false;
    
    /**
     * @var string[]
     */
-    protected $customModified = array();
+    protected array $customModified = array();
     
    /**
     * @var DBHelper_BaseCollection
     */
     protected $collection;
 
-    /**
-     * @var int
-     */
-    protected $recordID;
-
+    protected int $recordID;
     protected string $instanceID;
     protected static int $instanceCounter = 0;
     protected string $parentPrimaryName;
 
     /**
-     * @param int $primary_id
+     * @param int|string $primary_id
      * @param DBHelper_BaseCollection $collection
      * @throws Application_Exception|DBHelper_Exception
      */
@@ -89,10 +79,10 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
         $this->parentPrimaryName = $collection->getParentPrimaryName();
         $this->recordTypeName = $collection->getRecordTypeName();
-        $this->recordID = $primary_id;
+        $this->recordID = (int)$primary_id;
         $this->instanceID = (string)self::$instanceCounter;
 
-        if($primary_id === self::DUMMY_ID)
+        if($this->recordID === self::STUB_ID)
         {
             $this->constructDummy();
             return;
@@ -118,7 +108,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
         $this->isDummy = true;
 
         $this->recordData = array(
-            $this->recordPrimaryName => self::DUMMY_ID
+            $this->recordPrimaryName => self::STUB_ID
         );
 
         $this->recordKeys = array_keys($this->recordData);
@@ -340,7 +330,7 @@ abstract class DBHelper_BaseRecord implements Application_CollectionItemInterfac
      * @return DateTime|null
      * @throws Exception
      */
-    public function getRecordDateKey(string $name, DateTime $default=null) : ?DateTime
+    public function getRecordDateKey(string $name, ?DateTime $default=null) : ?DateTime
     {
         $value = $this->getRecordKey($name);
         if($value !== null) {

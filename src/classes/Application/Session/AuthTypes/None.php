@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the trait {@see Application_Session_AuthTypes_None}.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_AuthTypes_None
  */
 
 declare(strict_types=1);
@@ -13,9 +10,9 @@ use Application\AppFactory;
 use Hybridauth\User\Profile;
 
 /**
- * Use this as drop-in trait for the application's session class
+ * Use this as a drop-in trait for the application's session class
  * when the application does not require any authentication: it
- * uses the system user to simulate the logged in user.
+ * uses the system user to simulate the logged-in user.
  *
  * @package Application
  * @subpackage Sessions
@@ -36,27 +33,14 @@ trait Application_Session_AuthTypes_None
         Application_User::RIGHT_QA_TESTER
     );
 
-    protected function handleLogin() : Application_Users_User
+    public function getAuthTypeID() : string
     {
-        return AppFactory::createUsers()
-            ->getByID(Application::USER_ID_SYSTEM);
+        return Application_Session_AuthTypes_NoneInterface::TYPE_ID;
     }
 
-    /**
-     * @return array<string,array<int,string>>
-     */
-    public function getRightPresets() : array
+    protected function sendAuthenticationCallbacks() : Application_Users_User
     {
-        return array(
-            self::ADMIN_PRESET_ID => array(
-                Application_User::RIGHT_LOGIN,
-                Application_User::RIGHT_DEVELOPER
-            ),
-            self::QA_TESTING_PRESET_ID => array(
-                Application_User::RIGHT_LOGIN,
-                Application_User::RIGHT_QA_TESTER
-            )
-        );
+        return AppFactory::createUsers()->getSystemUser();
     }
 
     public function isRegistrationEnabled(): bool
@@ -64,12 +48,7 @@ trait Application_Session_AuthTypes_None
         return false;
     }
 
-    public function fetchRights(Application_Users_User $user): array
-    {
-        return $this->fixedRights;
-    }
-
-    public function fetchSimulatedRights() : array
+    public function fetchRights(Application_User $user): array
     {
         return $this->fixedRights;
     }
@@ -77,5 +56,11 @@ trait Application_Session_AuthTypes_None
     public function getRightsString() : string
     {
         return implode(',', $this->fixedRights);
+    }
+
+    protected function redirectToReturnURI() : void
+    {
+        // Do nothing: Without authentication, there is no need to redirect
+        // to a return URI, as there are no callbacks between services.
     }
 }

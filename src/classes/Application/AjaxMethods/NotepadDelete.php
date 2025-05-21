@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_NotepadDelete extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'NotepadDelete';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->notepad->deleteNote($this->note);

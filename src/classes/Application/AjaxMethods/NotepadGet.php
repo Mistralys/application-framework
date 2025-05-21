@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 class Application_AjaxMethods_NotepadGet extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'NotepadGet';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->sendResponse($this->note->serialize());

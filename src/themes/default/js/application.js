@@ -29,6 +29,7 @@ var application =
     'contentLocales': {},
     'contentLocale': '',
     'units': [],
+    'logLines':[],
     'strings': {},
     'deletionDelay': '',
     'scrollToDelay': 900,
@@ -162,7 +163,9 @@ var application =
     	}
     	
     	this.setupDone = true;
-    	
+
+        this.errorLogger = new ErrorLogger();
+
         this.registerLoggingCategory('misc', t('Miscellaneous / Uncategorized'), true);
         this.registerLoggingCategory('ui', t('User interface related'), true);
         this.registerLoggingCategory('data', t('Modification of data records'), true);
@@ -176,8 +179,6 @@ var application =
      * server-side with the page's onload.
      */
     start: function () {
-
-        this.handle_JavaScriptError();
 
         this.readCookies();
 
@@ -1657,17 +1658,13 @@ var application =
             '</p>';
         }
 
-        var dialog = this.createGenericDialog(t('An error occurred.'), content);
-        
-        dialog
-        .SetIcon(UI.Icon().Warning())
-        .MakeDangerous()
-        .EnablePageDetails()
-        .Shown(function() {
-        	application.closeAllDialogs(true, [dialog]);
-        });
-        
-        return dialog;
+        return this.createGenericDialog(t('An error occurred.'), content)
+            .SetIcon(UI.Icon().Warning())
+            .MakeDangerous()
+            .EnablePageDetails()
+            .Shown(function(dialog) {
+                application.closeAllDialogs(true, [dialog]);
+            });
     },
 
     /**
@@ -1919,7 +1916,7 @@ var application =
     },
 
     /**
-     * Adds a clientside logging message that is logged to the
+     * Adds a clientside logging message logged to the
      * browser's console.
      *
      * @param {String} source The source of the logging message, e.g. "Application"
@@ -1944,18 +1941,20 @@ var application =
             category = 'misc';
         }
 
-        if (!application.isLoggingActive(category)) {
-            return;
-        }
-
         var indent = '';
         if (this.logIndent > 0) {
             indent = Array(this.logIndent + 1).join('  ');
         }
 
         var text = indent + category.toUpperCase() + ' | ' + source + ' | ' + message;
-        
-        if(category=='error') {
+
+        this.logLines.push(text);
+
+        if (!application.isLoggingActive(category)) {
+            return;
+        }
+
+        if(category==='error') {
         	console.error(text);
         	return;
         }
@@ -1982,6 +1981,14 @@ var application =
 	{
 		this.log(source, message, 'error');
 	},
+
+    /**
+     * Retrieves all messages logged up to this point.
+     * @return {String[]}
+     */
+    getLoggedLines: function () {
+        return this.logLines;
+    },
 
     'logIndent': 0,
 
@@ -2055,48 +2062,6 @@ var application =
         return new Dialog_Generic(title, content);
     },
 
-    handle_JavaScriptError:function()
-    {
-        window.onerror = function(errorMsg, url, lineNumber, column, errorObj) 
-        {
-        	var code = 0;
-        	var type = 'Error';
-        	var details = '';
-        	
-        	if(!isEmpty(errorObj))
-    		{
-        		type = 'Exception';
-        		
-        		if(errorObj instanceof ApplicationException) 
-            	{
-            		code = errorObj.GetCode();
-            		type = 'ApplicationException';
-            		details = errorObj.GetDeveloperInfo();
-            		errorMsg = errorObj.GetMessage();
-            	}
-    		}
-        	
-            application.log('A javaScript error occurred: '+errorMsg, 'error');
-
-            var payload = {
-        		'code':code,
-        		'type':type,
-                'message': errorMsg,
-                'details':details,
-                'referer':window.location.href,
-                'source': url,
-                'line': lineNumber,
-                'column': column
-            };
-            
-            $.ajax({
-                'dataType': 'json',
-                'url': application.getAjaxURL('AddJSErrorLog'),
-                'data': payload
-            });
-        }
-    },
-
     dialogSaveComments:function(message, confirmHandler)
     {
     	var dialog = this.createDialogSaveComments(message, confirmHandler);
@@ -2136,7 +2101,7 @@ var application =
     * Automatically called by every dialog to register it in
     * the collection.
     * 
-    * @param {Dialog_Basic|TabbedDialog} dialog
+    * @param {Dialog_Basic|TabbedDialog|BaseDialog} dialog
     */
     registerDialog:function(dialog)
     {

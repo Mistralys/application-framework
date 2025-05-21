@@ -14,8 +14,15 @@
  * @subpackage Custom properties
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class Application_AjaxMethods_CustomPropertyDelete extends Application_AjaxMethod_CustomProperties
+class Application_AjaxMethods_CustomPropertyDelete extends BaseCustomPropertiesMethod
 {
+    public const METHOD_NAME = 'CustomPropertyDelete';
+
+    public function getMethodName() : string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         //$this->forceStartSimulation();

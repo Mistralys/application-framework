@@ -37,25 +37,10 @@ class template_default_requestlog_file_selection extends UI_Page_Template_Custom
         echo $this->renderCleanFrame(OutputBuffering::get());
     }
 
-    /**
-     * @var Application_RequestLog_LogItems_Hour
-     */
-    private $hour;
-
-    /**
-     * @var UI_DataGrid
-     */
-    private $grid;
-
-    /**
-     * @var Application_RequestLog_FileFilterSettings
-     */
-    private $form;
-
-    /**
-     * @var Application_Bootstrap_Screen_RequestLog
-     */
-    private $screen;
+    private Application_RequestLog_LogItems_Hour $hour;
+    private UI_DataGrid $grid;
+    private Application_RequestLog_FileFilterSettings $form;
+    private Application_Bootstrap_Screen_RequestLog $screen;
 
     protected function preRender(): void
     {
@@ -99,6 +84,15 @@ class template_default_requestlog_file_selection extends UI_Page_Template_Custom
         $this->grid->configure($this->form, $criteria);
 
         $files = $criteria->getFilesForGrid($this->grid);
+
+        // Sort from most recent to oldest
+        usort($files, static function(Application_RequestLog_LogFile $a, Application_RequestLog_LogFile $b) {
+            if($a->getFileInfo()->getTime() > $b->getFileInfo()->getTime()) {
+                return 1;
+            }
+
+            return -1;
+        });
 
         foreach($files as $file)
         {

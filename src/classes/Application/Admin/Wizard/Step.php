@@ -1,12 +1,14 @@
 <?php
 /**
- * Class containing the {@link Application_Admin_Wizard_Step} class.
- *
  * @package Application
  * @subpackage Administration
- * @see Application_Admin_Wizard_Step
  */
 
+declare(strict_types=1);
+
+use Application\Interfaces\Admin\AdminScreenInterface;
+use AppUtils\ClassHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OutputBuffering;
 use UI\Page\Navigation\QuickNavigation;
 use function AppUtils\parseVariable;
@@ -24,42 +26,25 @@ use function AppUtils\parseVariable;
  */
 abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 {
-    public const ERROR_STEP_MUST_RETURN_BOOLEAN_VALUE = 558001;
     public const ERROR_CANNOT_UPDATE_FROM_UNMONITORED_STEP = 558002;
     public const ERROR_UNHANDLED_STEP_UPDATE = 558003;
     public const ERROR_STEP_MUST_BE_COMPLETE_FOR_OPERATION = 558004;
-    public const ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS = 558005;
 
-   /**
-    * @var Application_Interfaces_Admin_Wizardable
-    */
-    protected $wizard;
-
-   /**
-    * The step number in the queue
-    * @var integer
-    */
-    protected $number;
+    protected Application_Interfaces_Admin_Wizardable $wizard;
+    protected int $number;
+    protected string $id;
+    protected string $instanceID;
+    protected bool $updateRequired = false;
 
    /**
     * @var array<string,mixed>
     */
-    protected $data;
+    protected array $data;
 
    /**
     * @var string[]
     */
-    protected $monitoredSteps;
-
-   /**
-    * @var string
-    */
-    protected $id;
-
-   /**
-    * @var string
-    */
-    protected $instanceID;
+    protected array $monitoredSteps;
 
    /**
     * @param Application_Interfaces_Admin_Wizardable $wizard
@@ -75,7 +60,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         $this->data = $data;
         $this->instanceID = nextJSID();
         $this->monitoredSteps = $this->getMonitoredSteps();
-        $this->id = str_replace($this->wizard->getClassBase().'_Step_', '', get_class($this));
+        $this->id = ClassHelper::getClassTypeName($this);
 
         if(!isset($this->data)) {
             $this->data = $this->getDefaultData();
@@ -160,22 +145,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
 
         $this->log(sprintf('Process | Processed: [%s].', parseVariable($result)));
 
-        if(!is_bool($result)) {
-            throw new Application_Exception(
-                'Not a boolean value',
-                sprintf(
-                    'The [_process] method of a step must return a boolean value in step class [%s].',
-                    get_class($this)
-                ),
-                self::ERROR_STEP_MUST_RETURN_BOOLEAN_VALUE
-            );
-        }
-
         // processing was successful
         if($result)
         {
             // The step has not been completed before:
-            // we set it to completed.
+            // we set it to complete.
             if(!$this->isComplete()) {
                 $this->setComplete();
             }
@@ -203,10 +177,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return array();
     }
 
-   /**
-    * The URL to switch to this step.
-    * @return string
-    */
+    /**
+     * The URL to switch to this step.
+     * @param array<string,int|float|string|StringableInterface> $params
+     * @return string
+     */
     public function getURL(array $params=array()) : string
     {
         $params['step'] = $this->getID();
@@ -267,7 +242,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @param boolean $complete
     * @return $this
     */
-    public function setComplete(bool $complete=true)
+    public function setComplete(bool $complete=true) : self
     {
         $this->data['completed'] = $complete;
         return $this;
@@ -279,7 +254,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @see Application_Formable::createFormableForm()
     * @inheritDoc
     */
-    public function createFormableForm(string $name, array $defaultData = array()) : self
+    public function createFormableForm(string $name, $defaultData = array()) : self
     {
         parent::createFormableForm($name, $defaultData);
 
@@ -407,8 +382,6 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return t('Confirms the wizard session, and executes all planned tasks.');
     }
 
-    protected $updateRequired = false;
-
    /**
     * Sets a data key. This should be used when the step has been submitted,
     * as it checks if the data has been modified. If it has been modified,
@@ -419,7 +392,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     * @param mixed $value
     * @return $this
     */
-    protected function setData(string $name, $value)
+    protected function setData(string $name, $value): self
     {
         $old = null;
         if(isset($this->data[$name])) {
@@ -444,7 +417,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     *
     * @param Application_Admin_Wizard_Step $step
     */
-    public function handle_stepUpdated(Application_Admin_Wizard_Step $step)
+    public function handle_stepUpdated(Application_Admin_Wizard_Step $step): void
     {
         if(!$this->isComplete()) {
             return;
@@ -503,7 +476,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     */
     public function isMonitoring(Application_Admin_Wizard_Step $step) : bool
     {
-        return in_array($step->getID(), $this->monitoredSteps);
+        return in_array($step->getID(), $this->monitoredSteps, true);
     }
 
     /**
@@ -570,7 +543,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
    /**
     * Creates a data grid compatible for use with the
     * wizard step: since steps are created and re-created
-    * on the fly, the ID is an issue for example, since those
+    * on the fly, the ID is an issue, for example, since those
     * must usually be unique.
     *
     * Also adds all necessary hidden variables for the current
@@ -608,7 +581,11 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->wizard->getSessionID().'-'.$this->getID();
     }
 
-    public function getParent()
+    /**
+     * Gets the parent step name of this step.
+     * @return string|NULL
+     */
+    public function getParent() : ?string
     {
         return null;
     }
@@ -668,7 +645,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     /**
      * @var array<int,array{icon:UI_Icon|null,label:string,value:string}>
      */
-    protected $completedSteps = array();
+    protected array $completedSteps = array();
 
     protected function registerCompletedStep(string $label, string $value, ?UI_Icon $icon) : void
     {
@@ -740,7 +717,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
         return $this->getTitle();
     }
 
-    public function getParentScreen() : ?Application_Admin_ScreenInterface
+    public function getParentScreen() : ?AdminScreenInterface
     {
         return $this->wizard;
     }
@@ -757,21 +734,110 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
     public function handleSubnavigation(UI_Page_Navigation $subnav) : void {}
     public function handleQuickNavigation(QuickNavigation $navigation) : void {}
 
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeSidebarHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeBreadcrumbHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onActionsHandled(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onContentRendered(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @param callable $listener
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    public function onBeforeContentRendered(callable $listener): Application_EventHandler_EventableListener
+    {
+        $this->unsupportedWizardStepAction();
+    }
+
     public function isUserAllowed() : bool {return true; }
     public function isArea(): bool { return false; }
     public function handleHelp(UI_Page_Help $help) : void {}
 
     public function getActiveSubscreenID(): ?string { return null; }
-    public function getActiveSubscreen(): ?Application_Admin_ScreenInterface {return null;}
+    public function getActiveSubscreen(): ?AdminScreenInterface {return null;}
     public function hasSubscreen(string $id): bool { return false; }
     public function getSubscreenIDs(): array { return array(); }
     public function hasSubscreens(): bool { return false; }
-    public function getSubscreenByID(string $id, bool $adminMode): Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode): AdminScreenInterface
     {
-        throw new Application_Exception(
-            'Wizard steps have no subscreens.',
-            'Cannot get a subscreen by its ID, wizard steps have no subscreens.',
-            self::ERROR_WIZARD_STEPS_HAVE_NO_SUBSCREENS
+        $this->unsupportedWizardStepAction();
+    }
+
+    /**
+     * @return never
+     * @throws Application_Admin_WizardException {@see Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION}
+     */
+    private function unsupportedWizardStepAction() : void
+    {
+        throw new Application_Admin_WizardException(
+            'Unsupported wizard step action',
+            'Wizard steps do not support actions.',
+            Application_Admin_WizardException::ERROR_UNSUPPORTED_STEP_ACTION
         );
     }
 

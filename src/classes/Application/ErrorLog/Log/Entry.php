@@ -166,23 +166,9 @@ abstract class Application_ErrorLog_Log_Entry
             return '';
         }
 
-        $log = \AppUtils\FileHelper::readLines($this->getApplogPath());
+        $log = FileHelper::readLines($this->getApplogPath());
         
-        $keep = array();
-        foreach($log as $line) 
-        {
-            $line = trim($line);
-            if(empty($line)) {
-                continue;
-            }
-            
-            $tokens = explode('|', $line);
-            array_shift($tokens);
-            
-            $keep[] = implode('<span class="muted">|</span>', $tokens);
-        }
-        
-        return '<div>'.implode('</div><div>', $keep).'</div>';
+        return '<div>'.implode('</div><div>', $log).'</div>';
     }
     
     public function getAdminApplogURL(array $params=array()) : string

@@ -1,10 +1,14 @@
 <?php
 
-class Application_Admin_Area_Devel_Appsets extends Application_Admin_Area_Mode
+declare(strict_types=1);
+
+abstract class Application_Admin_Area_Devel_Appsets extends Application_Admin_Area_Mode
 {
+    public const URL_NAME = 'appsets';
+
     public function getURLName() : string
     {
-        return 'appsets';
+        return self::URL_NAME;
     }
     
     public function getTitle() : string

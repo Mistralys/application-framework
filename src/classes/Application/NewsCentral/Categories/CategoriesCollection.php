@@ -12,7 +12,7 @@ namespace Application\NewsCentral\Categories;
 use Application\Admin\Area\News\BaseCategoriesListScreen;
 use Application\Admin\Area\News\BaseCreateCategoryScreen;
 use Application\AppFactory;
-use Application_Admin_ScreenInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Formable;
 use DBHelper_BaseCollection;
 
@@ -105,7 +105,7 @@ class CategoriesCollection extends DBHelper_BaseCollection
 
     public function getAdminListURL(array $params=array()): string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCategoriesListScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCategoriesListScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }
@@ -117,7 +117,7 @@ class CategoriesCollection extends DBHelper_BaseCollection
 
     public function getAdminCreateURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = BaseCreateCategoryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = BaseCreateCategoryScreen::URL_NAME;
 
         return $this->getAdminURL($params);
     }

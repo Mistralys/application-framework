@@ -13,8 +13,9 @@ use AppUtils\ConvertHelper;
 
 /**
  * Database-specific filter criteria base class: allows
- * selecting data from tables in the database, with database-
- * specific methods for handling JOIN statements and the like.
+ * selecting data from tables in the database, with
+ * database-specific methods for handling JOIN statements
+ * and the like.
  *
  * NOTE: For new projects, it is recommended to use the
  * {@see Application_FilterCriteria_DatabaseExtended} class,
@@ -35,73 +36,61 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     public const ERROR_JOIN_ALREADY_ADDED = 710008;
     public const ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT = 710009;
 
-    const DEFAULT_SELECT = 'SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
+    public const DEFAULT_SELECT = <<<'EOT'
+SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}
+EOT;
 
-
-    /**
-     * @var string
-     */
-    protected $placeholderPrefix = 'PH';
+    protected string $placeholderPrefix = 'PH';
 
     /**
      * @var array<array<string,mixed>>
      */
-    protected $queries = array();
+    protected array $queries = array();
 
     /**
      * @var array<string,string|DBHelper_StatementBuilder>
      */
-    protected $columnSelects = array();
+    protected array $columnSelects = array();
 
-    /**
-     * @var bool
-     */
-    protected $distinct = false;
-
-    /**
-     * @var int
-     */
-    protected $placeholderCounter = 0;
+    protected bool $distinct = false;
+    protected int $placeholderCounter = 0;
 
     /**
      * @var array<string,array<mixed>>
      */
-    protected $placeholderHashes = array();
+    protected array $placeholderHashes = array();
 
     /**
      * @var string[]
      */
-    protected $havings = array();
+    protected array $havings = array();
 
     /**
      * @var array<string,string|DBHelper_StatementBuilder>
      */
-    protected $groupBy = array();
+    protected array $groupBy = array();
 
     protected ?string $selectAlias = null;
 
-    /**
-     * @var DBHelper_StatementBuilder_ValuesContainer|NULL
-     */
-    protected $statementValues;
+    protected ?DBHelper_StatementBuilder_ValuesContainer $statementValues = null;
 
     /**
      * @var array<string,DBHelper_StatementBuilder>
      */
-    protected $selectStatements = array();
+    protected array $selectStatements = array();
 
     /**
      * @var string[]
      */
-    protected $where = array();
+    protected array $where = array();
 
     /**
-     * Counts the amount of matching records,
+     * Counts the number of matching records,
      * according to the current filter criteria.
      *
-     * NOTE: use the <code>countUnfiltered()</code>
-     * method to count all records, without matching
-     * the current criteria.
+     * > NOTE: use the {@see self::countUnfiltered()}
+     * > method to count all records, without matching
+     * > the current criteria.
      *
      * @return int
      * @throws Application_Exception
@@ -115,7 +104,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $count = 0;
         $total = count($items);
         for($i=0; $i < $total; $i++) {
-            $count = $count + $items[$i]['count'];
+            $count += $items[$i]['count'];
         }
 
         return $count;
@@ -226,7 +215,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     protected function addDistinctKeyword($query) : string
     {
-        $query = strval($query);
+        $query = (string)$query;
 
         if($this->isCount || !$this->distinct) {
             return $query;
@@ -239,7 +228,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $result = array();
         preg_match_all('/SELECT[ ]*DISTINCT|SELECT/sU', $query, $result, PREG_PATTERN_ORDER);
 
-        if(empty($result) || !isset($result[0][0])) {
+        if(empty($result[0][0])) {
             throw new Application_Exception(
                 'SELECT keyword missing in the query.',
                 'The query does not seem to have any SELECT keyword: '.$query,
@@ -249,7 +238,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
 
         // the distinct keyword has already been added
         $keyword = $result[0][0];
-        if(stristr($keyword, 'distinct')) {
+        if(stripos($keyword, 'distinct') !== false) {
             return $query;
         }
 
@@ -259,15 +248,14 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $endPos = $startPos + strlen($keyword);
         $start = substr($query, 0, $endPos);
         $end = substr($query, $endPos);
-        $query = $start.' DISTINCT '.$end;
 
-        return $query;
+        return $start.' DISTINCT '.$end;
     }
 
     /**
      * Retrieves the select statement for the query, which
      * is used in the <code>{WHAT}</code> variable in the query.
-     * When fetching the amount of records, this is automatically
+     * When fetching the number of records, this is automatically
      * replaced with a count statement.
      *
      * <b>Examples</b>
@@ -328,25 +316,20 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @var array<string,string>
      */
-    protected $placeholders = array();
+    protected array $placeholders = array();
 
     /**
-     * Stores placeholders to replace with variables in the query.
-     * For placeholders that should not be reset with each query,
-     * set the persistent parameter to true.
+     * Stores placeholders to replace it with variables in the query.
      *
      * @param string|int|float $value
      * @param string $name
      * @return $this
      */
-    public function addPlaceholder(string $name, $value)
+    public function addPlaceholder(string $name, $value) : self
     {
-        if (!substr($name, 0) == ':')
-        {
-            $name = ':' . $name;
-        }
+        $name = ':' . ltrim($name, ':');
 
-        $this->placeholders[$name] = strval($value);
+        $this->placeholders[$name] = (string)$value;
 
         return $this;
     }
@@ -357,7 +340,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @return array<string,string>
      */
-    protected function getQueryVariables()
+    public function getQueryVariables() : array
     {
         return $this->placeholders;
     }
@@ -365,7 +348,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @return $this
      */
-    protected function resetQueryVariables()
+    public function resetQueryVariables() : self
     {
         $this->placeholders = array();
         return $this;
@@ -495,11 +478,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @throws Application_Exception
      */
-    public function addWhere($statement)
+    public function addWhere($statement) : self
     {
-        $statement = strval($statement);
+        $statement = (string)$statement;
 
-        if(empty($statement) || $statement == '()') {
+        if(empty($statement) || $statement === '()') {
             throw new Application_Exception(
                 'Invalid where statement',
                 sprintf(
@@ -1028,8 +1011,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return (string)$name;
         }
 
-        if(substr($name, 0, 1) == '`' || substr($name, 0, 2) == Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX)
-        {
+        if($name === '') {
+            return '';
+        }
+
+        if($name[0] === '`' || strpos($name, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === 0) {
             return $name;
         }
 
@@ -1041,9 +1027,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * will return the same placeholder name for every same value
      * within the same request.
      *
-     * Returns the placeholder name.
-     *
-     * @param string|int|float|null $value
+     * @param string|int|float|null $value Placeholder name with prepended `:`.
      * @return string
      */
     public function generatePlaceholder($value) : string
@@ -1258,7 +1242,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             // meaning in SQL and will not give the expected results
             $term = str_replace('_', '\_', $term);
 
-            if($term=='NOT' || $term==t('NOT')) {
+            if($term === 'NOT' || $term === t('NOT')) {
                 $like = false;
                 continue;
             }
@@ -1266,7 +1250,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             $connector = $this->getConnector($term);
             if ($connector) {
                 // search terms may not start with a connector
-                if($i==0) {
+                if($i===0) {
                     $this->addWarning('The search terms may not start with a logical operator.');
                     continue;
                 }
@@ -1330,11 +1314,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected function canAddTableAlias(string $field) : bool
     {
         return
-            !strstr($field, '.')
+            strpos($field, '.') === false
                 &&
-            !strstr($field, '\\')
+            strpos($field, '\\') === false
                 &&
-            !strstr($field, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX);
+            strpos($field, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === false;
     }
 
     protected function buildOrderby() : string
@@ -1344,7 +1328,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return '';
         }
 
-        $field = $this->orderField;
+        $field = (string)$this->orderField;
+
+        if($field === '') {
+            return '';
+        }
 
         // leave the name be if it has a dot (meaning it has a table or alias specified)
         if($this->canAddTableAlias($field))
@@ -1352,7 +1340,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             $field = $this->quoteColumnName($this->orderField);
 
             // add the table alias if it is present
-            if(isset($this->selectAlias) && substr($field, 0, 1) != '\\') {
+            if(isset($this->selectAlias) && $field[0] !== '\\') {
                 $field = $this->selectAlias.'.'.$field;
             }
         }
@@ -1493,7 +1481,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|DBHelper_StatementBuilder $fieldName
      * @param string $orderDir
      * @return $this
-     * @throws Application_Exception
      */
     public function setOrderBy($fieldName, string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING) : self
     {

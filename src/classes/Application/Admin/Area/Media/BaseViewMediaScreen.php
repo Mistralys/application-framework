@@ -29,7 +29,7 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
         return AppFactory::createMediaCollection();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
     }
@@ -86,6 +86,15 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
 
     protected function _handleHelp(): void
     {
+        $this->user->getRecent()->getCategoryByAlias(MediaCollection::RECENT_ITEMS_CATEGORY)
+            ->addEntry(
+                MediaCollection::RECENT_ITEMS_CATEGORY.$this->record->getID(),
+                (string)sb()
+                    ->add($this->record->getMediaDocument()->getTypeIcon())
+                    ->add($this->record->getLabel()),
+                (string)$this->record->adminURL()->view()
+            );
+
         $this->renderer
             ->getTitle()
             ->setText($this->record->getLabel())

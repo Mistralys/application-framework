@@ -29,6 +29,10 @@
     margin: 0;
 }
 
+.table.auto-width{
+    width: auto !important;
+}
+
 .datagrid .column-headers TH {
     vertical-align: top;
     position: relative;
@@ -45,11 +49,19 @@
     top: -16px;
 }
 
-.role-cell.sorted {
+.table .role-cell.sorted {
     background: var(--color-grid-bg-sorted);
 }
 
-.role-cell .icon-sort {
+.table-hover tbody tr:hover>td.sorted {
+    background: var(--color-grid-bg-sorted-hover);
+}
+
+.table TR.active .role-cell.sorted{
+    background: var(--color-grid-bg-sorted-active);
+}
+
+.table .role-cell .icon-sort {
     width: 11px;
     color: var(--color-grid-icon-sort);
 }
@@ -224,6 +236,11 @@ TABLE.table TR.row-type-warning > TD {
 
 TABLE.table.table-hover TR.row-type-warning:hover > TD {
     background-color: var(--color-bg-warning-hover) !important;
+}
+
+TABLE.table .grid-check-label{
+    margin: 0;
+    padding: 0;
 }
 
 /** -------------------------------------------------------------------------

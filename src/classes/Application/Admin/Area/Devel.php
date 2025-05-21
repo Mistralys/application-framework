@@ -1,8 +1,11 @@
 <?php
 
 use Application\Admin\Area\BaseNewsScreen;
+use Application\Admin\Area\Devel\BaseAppConfigScreen;
+use Application\Admin\Area\Devel\BaseCacheControlScreen;
 use Application\Admin\Area\Devel\BaseCSSGenScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
+use AppUtils\Interfaces\StringableInterface;
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
 {
@@ -85,14 +88,34 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         $this->registerCoreItem('maintenance', t('Maintenance'), t('Tools'), $category);
     }
     
-    protected function registerAppInterface($category=null)
+    protected function registerAppInterface(?string $category=null) : void
     {
-        $this->registerCoreItem('appinterface', t('Interface refs'), t('References'), $category);
+        $this->registerCoreItem(
+            Application_Admin_Area_Devel_Appinterface::URL_NAME,
+            t('Interface refs'),
+            t('References'),
+            $category
+        );
     }
-    
-    protected function registerAppSets($category=null)
+
+    protected function registerCacheControl(?string $category=null) : void
     {
-        $this->registerCoreItem('appsets', t('Appsets'), t('Settings'), $category);
+        $this->registerCoreItem(
+            BaseCacheControlScreen::URL_NAME,
+            t('Cache control'),
+            t('Tools'),
+            $category
+        );
+    }
+
+    protected function registerAppSets(?string $category=null) : void
+    {
+        $this->registerCoreItem(
+            Application_Admin_Area_Devel_Appsets::URL_NAME,
+            t('Appsets'),
+            t('Settings'),
+            $category
+        );
     }
     
     protected function registerErrorLog($category=null)
@@ -127,7 +150,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     protected function registerAppLogs(?string $category=null) : void
     {
         if(Application::isDatabaseEnabled()) {
-            $this->registerCoreItem('messagelog', t('Message log'), t('Logs'), $category);
+            $this->registerCoreItem(BaseMessageLogScreen::URL_NAME, t('Message log'), t('Logs'), $category);
         }
     }
 
@@ -138,9 +161,24 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         }
     }
 
-    protected function registerAppSettings($category=null)
+    protected function registerAppSettings(?string $category=null) : void
     {
-        $this->registerCoreItem('appsettings', t('Application settings'), t('Settings'), $category);
+        $this->registerCoreItem(
+            Application_Admin_Area_Devel_AppSettings::URL_NAME,
+            t('Application settings'),
+            t('Settings'),
+            $category
+        );
+    }
+
+    protected function registerAppConfig(?string $category=null) : void
+    {
+        $this->registerCoreItem(
+            BaseAppConfigScreen::URL_NAME,
+            t('Application configuration'),
+            t('Settings'),
+            $category
+        );
     }
 
     protected function registerCSSGenerator($category=null) : void
@@ -168,7 +206,7 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
     * @param string $defaultCategory
     * @param string|NULL $categoryLabel
     */
-    protected function registerCoreItem(string $urlName, string $label, string $defaultCategory, ?string $categoryLabel=null)
+    protected function registerCoreItem(string $urlName, string $label, string $defaultCategory, ?string $categoryLabel=null) : void
     {
         if(empty($categoryLabel)) {
             $categoryLabel = $defaultCategory;

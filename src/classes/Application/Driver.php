@@ -1,20 +1,21 @@
 <?php
 /**
- * File containing the {@link Application_Driver} class.
- *
- * @see Application_Driver
  * @package Application
+ * @subpackage Driver
  */
 
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\Driver\VersionInfo;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\WhatsNew;
 use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use Mistralys\VersionParser\VersionParser;
 use UI\AdminURLs\AdminURLInterface;
@@ -28,7 +29,7 @@ use UI\Page\Navigation\NavConfigurator;
  * {@see Application_Bootstrap_Screen::initDriver()}.
  *
  * @package Application
- * @subpackage Core
+ * @subpackage Driver
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class Application_Driver implements Application_Driver_Interface
@@ -81,10 +82,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @var array<string,string>
      */
     protected array $screensChain = array(
-        Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE => Application_Admin_Area::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_MODE => Application_Admin_Area_Mode::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE => Application_Admin_Area_Mode_Submode::class,
-        Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION => Application_Admin_Area_Mode_Submode_Action::class
+        AdminScreenInterface::REQUEST_PARAM_PAGE => Application_Admin_Area::class,
+        AdminScreenInterface::REQUEST_PARAM_MODE => Application_Admin_Area_Mode::class,
+        AdminScreenInterface::REQUEST_PARAM_SUBMODE => Application_Admin_Area_Mode_Submode::class,
+        AdminScreenInterface::REQUEST_PARAM_ACTION => Application_Admin_Area_Mode_Submode_Action::class
     );
 
     public function __construct(Application $app)
@@ -290,40 +291,24 @@ abstract class Application_Driver implements Application_Driver_Interface
         return Application::getSession();
     }
 
-    /**
-     * Retrieves the application's numeric version, e.g. "3.3.7".
-     * If the version has a release name appended, it is stripped
-     * off, e.g. "3.3.7-alpha" will return "3.3.7".
-     *
-     * @return string
-     * @throws DriverException
-     * @see Application_Driver::getExtendedVersion()
-     */
-    public function getVersion() : string
+    final public function getExtendedVersion() : string
     {
-        $driver = self::getInstance();
-        $version = trim($driver->getExtendedVersion());
-
-        if (strpos($version, '-') !== false)
-        {
-            $tokens = explode('-', $version);
-
-            return array_shift($tokens);
-        }
-
-        return $version;
+        return $this->getVersionInfo()->getFullVersion();
     }
 
-    /**
-     * Retrieves the application's minor version, e.g. "3.3.0"
-     * The patch version (last part) is always zero.
-     *
-     * @return string
-     */
-    public function getMinorVersion() : string
+    final public function getVersionInfo() : VersionInfo
     {
-        return (string)VersionParser::create($this->getExtendedVersion())
-            ->getMinorVersion();
+        return AppFactory::createVersionInfo();
+    }
+
+    final public function getVersion() : string
+    {
+        return $this->getVersionInfo()->getParser()->getVersion();
+    }
+
+    final public function getMinorVersion() : string
+    {
+        return (string)$this->getVersionInfo()->getParser()->getMinorVersion();
     }
 
     public function getRequest() : Application_Request
@@ -481,6 +466,13 @@ abstract class Application_Driver implements Application_Driver_Interface
         );
 
         return $this->areas[$key];
+    }
+
+    public function areaExists(string $name): bool
+    {
+        $this->buildAreasIndex();
+
+        return isset($this->areaIndex[$name]) || in_array($name, $this->areaIndex, true);
     }
 
     protected function buildAreasIndex() : void
@@ -690,7 +682,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Keys in the array are the area URL names.
      * @var Application_Admin_Area[]
      */
-    protected $enabledAreas;
+    protected array $enabledAreas;
 
     protected bool $prepared = false;
 
@@ -712,6 +704,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         if (!Application::isUIEnabled())
         {
+            $this->log('Prepare | UI is disabled, skipping UI-related tasks.');
             return;
         }
 
@@ -719,9 +712,12 @@ abstract class Application_Driver implements Application_Driver_Interface
         foreach ($areaIDs as $areaID)
         {
             $area = $this->createArea($areaID);
-            if ($this->appset->isAreaEnabled($area))
-            {
+
+            if ($this->appset->isAreaEnabled($area)) {
+                $this->log('Prepare | Area [%s] | Setting as enabled.', $areaID);
                 $this->enabledAreas[$areaID] = $area;
+            } else {
+                $this->log('Prepare | Area [%s] | Disabled as per appset.', $areaID);
             }
         }
     }
@@ -1010,10 +1006,10 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves the currently active administration screen instance.
      *
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      * @throws DriverException
      */
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         return $this->getActiveArea()->getActiveScreen();
     }
@@ -1079,22 +1075,56 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->configureScriptIncludes();
         $this->configureScripts();
 
-        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
-        $minorVersion = $this->getMinorVersion();
+        $this->checkVersionChanged();
+    }
 
-        // handle the what's new? Dialog: only if the user has used the
-        // app before and his last used version does not fit the current one.
-        if ($lastVersion !== $minorVersion)
-        {
-            $this->ui->addInfoMessage(t(
-                '%1$s has been updated to v%2$s. %3$s.',
-                $this->getAppNameShort(),
-                $this->getVersion(),
-                "<a href=\"javascript:void(0);\" onclick=\"application.dialogWhatsnew('" . $lastVersion . "')\">" . t('See what\'s new') . "</a>"
-            ));
+    /**
+     * Checks the application version the current user last used.
+     * If the version has changed since the last visit, a message
+     * is displayed to view the changes.
+     *
+     * @return void
+     * @throws DriverException
+     * @throws UI_Exception
+     */
+    private function checkVersionChanged() : void
+    {
+        $lastVersion = $this->user->getSetting(self::SETTING_USER_LAST_USED_VERSION);
+        $currentVersion = $this->getExtendedVersion();
+
+        // User is here for the first time: We don't have to show
+        // the what's new dialog.
+        if(empty($lastVersion)) {
+            $this->saveCurrentVersion();
+            return;
         }
 
-        $this->user->setSetting(self::SETTING_USER_LAST_USED_VERSION, $minorVersion);
+        // Ignore if the version has not changed since the user's last visit.
+        if ($lastVersion === $currentVersion) {
+            return;
+        }
+
+        $this->ui->addInfoMessage(t(
+            '%1$s has been updated to v%2$s. %3$s.',
+            $this->getAppNameShort(),
+            $this->getVersion(),
+            sprintf(
+                "<a href=\"#\" onclick=\"application.dialogWhatsnew('%s');return false;\">%s</a>",
+                $lastVersion,
+                t('See what\'s new')
+            )
+        ));
+
+        $this->saveCurrentVersion();
+    }
+
+    /**
+     * Saves the current application version to the user's settings.
+     * @return void
+     */
+    private function saveCurrentVersion() : void
+    {
+        $this->user->setSetting(self::SETTING_USER_LAST_USED_VERSION, $this->getExtendedVersion());
         $this->user->saveSettings();
     }
 
@@ -1120,7 +1150,6 @@ abstract class Application_Driver implements Application_Driver_Interface
         $this->ui->addJavascriptHeadVariable('application.appName', $this->getAppName());
         $this->ui->addJavascriptHeadVariable('application.demoMode', Application::isDemoMode());
         $this->ui->addJavascriptHeadStatement('application.keepAlive.SetInterval', $this->getKeepAliveInterval());
-        $this->ui->addJavascriptHead('application.handle_JavaScriptError()');
 
         if (isset($this->activeArea))
         {
@@ -1177,7 +1206,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         $this->ui->addStylesheet('ui-core.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-fonts.css', 'all', $counter--);
-        $this->ui->addStylesheet('ui-sections.css', 'all', $counter--);
+        $this->ui->addStylesheet(UI_Page_Section::STYLESHEET_FILE, 'all', $counter--);
         $this->ui->addStylesheet('ui-sidebar.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-dialogs.css', 'all', $counter--);
         $this->ui->addStylesheet('ui-icons.css', 'all', $counter--);
@@ -1213,9 +1242,12 @@ abstract class Application_Driver implements Application_Driver_Interface
         'global_functions.js',
         'application/keep_alive.js',
         'application.js',
+        'application/error_logger.js',
         'application/logger.js',
         'application/exception.js',
-        'application/base_renderable.js',
+        '_deprecated/base_renderable.js',
+        'ui/renderable/base.js',
+        'ui/renderable/html.js',
         'application/ajax.js',
         'application/ajax-error.js',
         'sidebar.js',
@@ -1227,6 +1259,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // -----------------------------------------------------------
 
         'ui.js',
+        'ui/element-ids.js',
         'ui/icon.js',
         'ui/label.js',
         'ui/text.js',
@@ -1249,6 +1282,7 @@ abstract class Application_Driver implements Application_Driver_Interface
 
         'dialog.js',
         'dialog/basic.js',
+        'dialog/base_dialog.es6.js',
         'dialog/generic.js',
         'dialog/select_items.js',
         'dialog/confirmation.js',
@@ -1302,7 +1336,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         // only add the language file if the selected locale is not the default one.
         if (!$locale->isNative())
         {
-            $this->ui->addJavascript('localization/locale-' . $locale->getShortName() . '.js', $counter--);
+            $this->ui->addJavascript('localization/locale-' . $locale->getLanguageCode() . '.js', $counter--);
         }
 
         // -----------------------------------------------------------
@@ -1454,11 +1488,11 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Determines the name of the URL parameter to use for the
      * screen, by checking which screen type it is an instance of.
      *
-     * @param Application_Admin_ScreenInterface $screen
+     * @param AdminScreenInterface $screen
      * @return string
      * @throws DriverException
      */
-    public function resolveURLParam(Application_Admin_ScreenInterface $screen) : string
+    public function resolveURLParam(AdminScreenInterface $screen) : string
     {
         foreach ($this->screensChain as $paramName => $class)
         {
@@ -1483,9 +1517,9 @@ abstract class Application_Driver implements Application_Driver_Interface
      * Retrieves an administration screen instance by its path.
      *
      * @param string $path e.g. "products.edit.settings"
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      */
-    public function getScreenByPath(string $path, bool $adminMode=true) : ?Application_Admin_ScreenInterface
+    public function getScreenByPath(string $path, bool $adminMode=true) : ?AdminScreenInterface
     {
         $tokens = explode('.', $path);
         $screen = $this->createArea(array_shift($tokens));

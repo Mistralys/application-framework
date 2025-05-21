@@ -1,22 +1,22 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Admin Screens
  */
 
 declare(strict_types=1);
 
 namespace Application\Tags\AdminScreens;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Tags\Taggables\TaggableInterface;
-use Application_Admin_ScreenInterface;
 
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Admin Screens
  * @see RecordTaggingScreenTrait
  */
-interface RecordTaggingScreenInterface extends Application_Admin_ScreenInterface
+interface RecordTaggingScreenInterface extends AdminScreenInterface
 {
     public const SETTING_TAGS = 'tags';
     public const REQUEST_VAR_CLEAR_ALL = 'clear';

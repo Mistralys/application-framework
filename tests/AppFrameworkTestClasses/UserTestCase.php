@@ -27,6 +27,8 @@ abstract class UserTestCase extends ApplicationTestCase
         // In CLI mode, this will always be the system user.
         $this->user = Application::getUser();
 
+        $this->user->getRecent()->clearHistories();
+
         // Ensure we start with a pristine user instance.
         $this->user->clearCache();
     }

@@ -830,5 +830,13 @@
   "tree": {
     "icon": "sitemap",
     "type": "fas"
+  },
+  "cache": {
+    "icon": "memory",
+    "type": "fas"
+  },
+  "time-tracker": {
+    "icon": "biohazard",
+    "type": "fas"
   }
 }

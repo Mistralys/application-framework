@@ -31,7 +31,6 @@ final class DisposingTests extends RevisionableTestCase
         $storage->setPrivateKey('sub-dependent', $subDependent); // disposable and dependent on the revisionable
         $storage->setPrivateKey('sub-dependent-no-match', $subDependentNoMatch); // disposable and dependent on the revisionable, but with a different revision
 
-        $this->assertNotNull($storage);
         $this->assertFalse($storage->isDisposed());
         $this->assertContains($storage, $record->getChildDisposables());
 

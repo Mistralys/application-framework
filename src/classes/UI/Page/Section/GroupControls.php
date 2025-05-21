@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 namespace UI\Page\Section;
 
-use Application_EventHandler;
+use Application\Formable\Event\ClientFormRenderedEvent;
+use Application_Formable;
 use Closure;
 use UI;
 use UI\Event\PageRendered;
@@ -30,16 +31,20 @@ class GroupControls implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
+    public const CONTROLS_PREFIX = 'GROUP_CONTROLS_';
+
     private ?string $group;
     private UI_Button $btnExpand;
     private UI_Button $btnCollapse;
     private UI_Bootstrap_ButtonGroup $btnGroup;
     private string $id;
     private int $displayThreshold = 2;
+    private UI $ui;
 
-    public function __construct(?string $group = null)
+    public function __construct(UI $ui, ?string $group = null)
     {
         $this->id = 'SGC'.nextJSID();
+        $this->ui = $ui;
         $this->group = $group;
 
         $this->btnExpand = UI::button(t('Expand all'))
@@ -48,7 +53,7 @@ class GroupControls implements UI_Renderable_Interface
         $this->btnCollapse = UI::button(t('Collapse all'))
             ->setIcon(UI::icon()->collapse());
 
-        $this->btnGroup = $this->getUI()->createButtonGroup()
+        $this->btnGroup = $this->ui->createButtonGroup()
             ->setID($this->id)
             ->addButton($this->btnExpand)
             ->addButton($this->btnCollapse);
@@ -128,7 +133,7 @@ class GroupControls implements UI_Renderable_Interface
 
     public function getPlaceholder() : string
     {
-        return '{GROUP_CONTROLS_'.$this->getID().'}';
+        return '{'.self::CONTROLS_PREFIX.$this->getID().'}';
     }
 
     public function render(): string
@@ -137,15 +142,32 @@ class GroupControls implements UI_Renderable_Interface
         // the whole page has been rendered. This makes it possible
         // to ensure that only sections that have been rendered in
         // the page are included in the group controls.
-        Application_EventHandler::addListener(
-            UI::EVENT_PAGE_RENDERED,
-            Closure::fromCallable(array($this, 'onPageRendered'))
-        );
+        UI::onPageRendered(Closure::fromCallable(array(
+            $this,
+            'handlePageRendered'
+        )));
+
+        // Same thing for forms destined to be used clientside:
+        // They are rendered separately without triggering the
+        // page rendered event, so we need to add a separate
+        // listener as well.
+        Application_Formable::onClientFormRendered(Closure::fromCallable(array(
+            $this,
+            'handleClientFormRendered'
+        )));
 
         return $this->getPlaceholder();
     }
 
-    private function onPageRendered(PageRendered $event) : void
+    private function handlePageRendered(PageRendered $event) : void
+    {
+        $event->replace(
+            $this->getPlaceholder(),
+            $this->renderPlaceholderReplacement()
+        );
+    }
+
+    private function handleClientFormRendered(ClientFormRenderedEvent $event) : void
     {
         $event->replace(
             $this->getPlaceholder(),

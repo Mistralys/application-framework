@@ -9,13 +9,16 @@ declare(strict_types=1);
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
+use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
+use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
+use TestDriver\Area\TimeTrackerScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\WelcomeScreen;
 use TestDriver\CustomIcon;
@@ -40,29 +43,25 @@ class TestDriver extends Application_Driver
     public function getAdminAreas() : array
     {
         $areas = array(
-            Application_Admin_Area_Welcome::URL_NAME_WELCOME => getClassTypeName(WelcomeScreen::class),
-            Application_Admin_Area_Devel::URL_NAME => getClassTypeName(TestDriver_Area_Devel::class),
-            Application_Admin_Area_Settings::URL_NAME => getClassTypeName(TestDriver_Area_Settings::class),
-            Application_Admin_TranslationsArea::URL_NAME => getClassTypeName(TranslationsScreen::class),
-            TestDriver_Area_WizardTest::URL_NAME => getClassTypeName(TestDriver_Area_WizardTest::class),
-            QuickNavScreen::URL_NAME => getClassTypeName(QuickNavScreen::class),
-            BaseNewsScreen::URL_NAME => getClassTypeName(NewsScreen::class),
-            BaseMediaLibraryScreen::URL_NAME => getClassTypeName(MediaLibraryScreen::class),
-            TestingScreen::URL_NAME => getClassTypeName(TestingScreen::class),
-            RevisionableScreen::URL_NAME => getClassTypeName(RevisionableScreen::class),
+            Application_Admin_Area_Welcome::URL_NAME_WELCOME => WelcomeScreen::class,
+            Application_Admin_Area_Devel::URL_NAME => TestDriver_Area_Devel::class,
+            Application_Admin_Area_Settings::URL_NAME => TestDriver_Area_Settings::class,
+            Application_Admin_TranslationsArea::URL_NAME => TranslationsScreen::class,
+            TestDriver_Area_WizardTest::URL_NAME => TestDriver_Area_WizardTest::class,
+            QuickNavScreen::URL_NAME => QuickNavScreen::class,
+            BaseNewsScreen::URL_NAME => NewsScreen::class,
+            BaseMediaLibraryScreen::URL_NAME => MediaLibraryScreen::class,
+            TestingScreen::URL_NAME => TestingScreen::class,
+            RevisionableScreen::URL_NAME => RevisionableScreen::class,
+            BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
+            CountriesScreen::URL_NAME => CountriesScreen::class,
         );
 
         if(TagCollection::tableExists()) {
-            $areas[BaseTagsScreen::URL_NAME] = getClassTypeName(TagsScreen::class);
+            $areas[BaseTagsScreen::URL_NAME] = TagsScreen::class;
         }
 
         return $areas;
-    }
-
-    public function areaExists(string $name) : bool
-    {
-        $areas = $this->getAdminAreas();
-        return isset($areas[$name]);
     }
 
     /**
@@ -111,10 +110,5 @@ class TestDriver extends Application_Driver
     public function getPageParams(UI_Page $page) : array
     {
         return array();
-    }
-
-    public function getExtendedVersion() : string
-    {
-        return '1.0.0';
     }
 }

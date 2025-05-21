@@ -11,11 +11,17 @@ namespace Application;
 
 use Application;
 use Application\AppFactory\AppFactoryException;
+use Application\AppFactory\ClassCacheHandler;
+use Application\CacheControl\CacheManager;
+use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
+use Application\Driver\VersionInfo;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
+use Application\TimeTracker\TimeTrackerCollection;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -36,6 +42,7 @@ use Application_Uploads;
 use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\FileHelper\FolderInfo;
 use DBHelper;
 use DeeplHelper;
 use UI;
@@ -169,6 +176,11 @@ class AppFactory
         );
     }
 
+    public static function createVersionInfo() : VersionInfo
+    {
+        return VersionInfo::getInstance();
+    }
+
     public function createDriverSettings() : DriverSettings
     {
         return Application_Driver::createSettings();
@@ -223,6 +235,41 @@ class AppFactory
         return Application_EventHandler::createOfflineEvents();
     }
 
+    public static function createSystemMailer() : SystemMailer
+    {
+        return self::createClassInstance(SystemMailer::class);
+    }
+
+    /**
+     * Creates a new instance of the developer changelog manager.
+     *
+     * @return DevChangelog
+     * @throws AppFactoryException
+     */
+    public static function createDevChangelog() : DevChangelog
+    {
+        return self::createClassInstance(DevChangelog::class);
+    }
+
+    /**
+     * Creates / gets the global cache manager instance used
+     * to manage all cache locations in the application.
+     *
+     * @return CacheManager
+     */
+    public static function createCacheManager() : CacheManager
+    {
+        return CacheManager::getInstance();
+    }
+
+    public static function createTimeTracker() : TimeTrackerCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            TimeTrackerCollection::class,
+            DBHelper::createCollection(TimeTrackerCollection::class)
+        );
+    }
+
     // endregion
 
     // region: X - Support methods
@@ -272,6 +319,26 @@ class AppFactory
                 $e
             );
         }
+    }
+
+    /**
+     * Uses the class helper to find classes in the target folder.
+     * The results are cached to avoid unnecessary file system
+     * accesses. The cache uses the application version as a key, so
+     * it is automatically invalidated when the application is updated.
+     *
+     * > NOTE: The cache is automatically disabled in development mode.
+     *
+     * @param FolderInfo $folder
+     * @param bool $recursive
+     * @param string|null $baseClass
+     * @return class-string[]
+     *
+     * @see ClassCacheHandler
+     */
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
+    {
+        return ClassCacheHandler::findClassesInFolder($folder, $recursive, $baseClass);
     }
 
     // endregion

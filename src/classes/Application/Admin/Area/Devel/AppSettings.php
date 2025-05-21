@@ -9,6 +9,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
 
@@ -23,6 +24,7 @@ use AppUtils\OutputBuffering;
 abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mode
 {
     public const URL_NAME = 'appsettings';
+    public const SETTING_TYPE_STRING = 'string';
     protected string $formName = 'devel_app_settings';
     protected UI_DataGrid $datagrid;
     protected string $elDataKeyID = '';
@@ -179,13 +181,13 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
     {
         $this->registerSetting(
             UI_MarkupEditorInfo::SETTING_NAME_MARKUP_EDITOR_ID,
-            'string',
+            self::SETTING_TYPE_STRING,
             t('The ID of the markup editor to use.')
         );
 
         $this->registerSetting(
             Application_Driver::APP_SETTING_KEEP_ALIVE_INTERVAL,
-            'string',
+            self::SETTING_TYPE_STRING,
             (string)sb()
                 ->t('The interval in which the authentication keep-alive process is run.')
                 ->t(

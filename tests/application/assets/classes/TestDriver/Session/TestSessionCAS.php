@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace TestDriver\Session;
 
 use Application\Session\NativeCASSession;
-use Application_Users_User;
+use Application_User;
 
 /**
  * Test session class for CAS authentication. Used to
@@ -20,16 +20,6 @@ use Application_Users_User;
  */
 class TestSessionCAS extends NativeCASSession
 {
-    /**
-     * @var array<string,array<int,string>>
-     */
-    protected array $rightPresets = array(
-        self::ADMIN_PRESET_ID => array(
-            'Login',
-            'Developer'
-        ),
-    );
-
     /**
      * @var array<int,string>
      */
@@ -43,9 +33,9 @@ class TestSessionCAS extends NativeCASSession
      */
     protected int $defaultSimulatedUser = 2;
 
-    public function getPrefix(): string
+    protected function _getName(): string
     {
-        return 'appframework_test_';
+        return 'appframework_test';
     }
 
     public function getEmailField(): string
@@ -68,7 +58,7 @@ class TestSessionCAS extends NativeCASSession
         return TESTS_CAS_FIELD_FOREIGN_ID;
     }
 
-    public function fetchRights(Application_Users_User $user): array
+    public function fetchRights(Application_User $user): array
     {
         return array();
     }

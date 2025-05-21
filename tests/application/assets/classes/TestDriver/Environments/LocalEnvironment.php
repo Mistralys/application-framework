@@ -23,6 +23,7 @@ class LocalEnvironment extends BaseEnvironmentConfig
 
     protected function configureCustomSettings(): void
     {
+        $this->config->setTrackQueries(false);
     }
 
     protected function setUpEnvironment(): void

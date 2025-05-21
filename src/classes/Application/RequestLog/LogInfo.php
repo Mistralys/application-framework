@@ -2,30 +2,22 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\FileHelper;
 use AppUtils\Microtime;
 
 class Application_RequestLog_LogInfo
 {
-    /**
-     * @var string
-     */
-    private $sidecarPath;
+    private string $sidecarPath;
+    private Microtime $time;
+    private bool $loaded = false;
+    private ?string $screenPath = null;
 
     /**
-     * @var array
+     * @var array<string|int,mixed>
      */
-    private $data;
+    private array $data;
 
-    /**
-     * @var Microtime
-     */
-    private $time;
-
-    /**
-     * @var bool
-     */
-    private $loaded = false;
 
     public function __construct(string $sidecarPath)
     {
@@ -142,11 +134,6 @@ class Application_RequestLog_LogInfo
         return $this->getDataString(Application_RequestLog_LogWriter::KEY_SESSION_ID);
     }
 
-    /**
-     * @var string|NULL
-     */
-    private ?string $screenPath;
-
     public function getScreenPath() : string
     {
         if(isset($this->screenPath))
@@ -165,21 +152,21 @@ class Application_RequestLog_LogInfo
         $requestVars = $this->getRequestVars();
         $path = array();
 
-        if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE]))
+        if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_PAGE]))
         {
-            $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE];
+            $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_PAGE];
 
-            if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE]))
+            if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_MODE]))
             {
-                $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE];
+                $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_MODE];
 
-                if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE]))
+                if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_SUBMODE]))
                 {
-                    $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE];
+                    $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_SUBMODE];
 
-                    if(isset($requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION]))
+                    if(isset($requestVars[AdminScreenInterface::REQUEST_PARAM_ACTION]))
                     {
-                        $path[] = $requestVars[Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION];
+                        $path[] = $requestVars[AdminScreenInterface::REQUEST_PARAM_ACTION];
                     }
                 }
             }

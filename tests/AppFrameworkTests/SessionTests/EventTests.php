@@ -6,7 +6,7 @@ namespace AppFrameworkTests\SessionTests;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\OfflineEvents\SessionInstantiatedEvent;
-use TestDriver\OfflineEvents\SessionInstantiatedEvent\TestSessionInstantiatedListener;
+use TestDriver\OfflineEvents\SessionInstantiated\TestSessionInstantiatedListener;
 
 /**
  * Ensures that the expected session events have been triggered.

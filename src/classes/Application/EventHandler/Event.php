@@ -214,4 +214,18 @@ class Application_EventHandler_Event
     {
         $this->selectedListener = null;
     }
+
+    /**
+     * Sets the argument at the specified index to the specified value.
+     * The index is Zero-Based.
+     *
+     * @param int $index
+     * @param mixed $value
+     * @return $this
+     */
+    protected function setArgument(int $index, $value) : self
+    {
+        $this->args[$index] = $value;
+        return $this;
+    }
 }

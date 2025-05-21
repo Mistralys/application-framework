@@ -58,6 +58,9 @@ abstract class UI_Page_Section
     public const STYLE_DANGEROUS = 'dangerous';
     public const PROPERTY_VISUAL_STYLE = 'visual-style';
     public const DEFAULT_GROUP = 'default';
+    public const TYPE_SUBSECTION = 'content-subsection';
+    public const PROPERTY_CONTENT_INDENTED = 'content-indented';
+    public const STYLESHEET_FILE = 'ui-sections.css';
 
     protected string $templateName = 'frame.content.section';
 
@@ -116,6 +119,29 @@ abstract class UI_Page_Section
         }
 
         return null;
+    }
+
+    public function isSubsection() : bool
+    {
+        return $this->getProperty('type') === self::TYPE_SUBSECTION;
+    }
+
+    /**
+     * If enabled, the section's content will be indented to visually
+     * separate it from the rest of the page. Default is to keep all
+     * content left.
+     *
+     * @param bool $indented
+     * @return $this
+     */
+    public function makeContentIndented(bool $indented=true) : self
+    {
+        return $this->setProperty(self::PROPERTY_CONTENT_INDENTED,$indented);
+    }
+
+    public function isContentIndented() : bool
+    {
+        return $this->getProperty(self::PROPERTY_CONTENT_INDENTED) === true;
     }
 
     /**
@@ -421,7 +447,7 @@ abstract class UI_Page_Section
         }
 
         // The stylesheet needs to be loaded, even if this section is not displayed.
-        $this->ui->addStylesheet('ui-sections.css');
+        $this->ui->addStylesheet(self::STYLESHEET_FILE);
 
         // end capturing in case we're still capturing content
         $this->endCapture();
@@ -770,7 +796,7 @@ abstract class UI_Page_Section
     {
         $this->removeClass('content-section');
         $this->addClass('content-subsection');
-        $this->setProperty('type', 'content-subsection');
+        $this->setProperty('type', self::TYPE_SUBSECTION);
         
         return $this;
     }
@@ -789,12 +815,13 @@ abstract class UI_Page_Section
      * Creates a button group that can be used to expand and collapse
      * all sections of the specified section group.
      *
+     * @param UI $ui
      * @param string|NULL $group A group name. If NULL, the default group is used.
      * @return GroupControls
      */
-    public static function createGroupControls(?string $group=null) : GroupControls
+    public static function createGroupControls(UI $ui, ?string $group=null) : GroupControls
     {
-        return new GroupControls($group);
+        return new GroupControls($ui, $group);
     }
 
     public function getJSExpand() : string
@@ -944,7 +971,7 @@ abstract class UI_Page_Section
      * @return $this
      * @see UI_Page_Sidebar::getItems()
      */
-    public function registerPosition(UI_Page_Sidebar_ItemInterface $prev=null, UI_Page_Sidebar_ItemInterface $next=null) : self
+    public function registerPosition(?UI_Page_Sidebar_ItemInterface $prev=null, ?UI_Page_Sidebar_ItemInterface $next=null) : self
     {
         $this->previousSibling = $prev;
         $this->nextSibling = $next;

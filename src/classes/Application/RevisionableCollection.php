@@ -6,6 +6,7 @@ use Application\AppFactory;
 use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
+use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -115,13 +116,18 @@ abstract class Application_RevisionableCollection
         return array_keys($columns);
     }
 
-   /**
-    * @return Application_RevisionableCollection_FilterCriteria
-    */
-    public function getFilterCriteria() : Application_RevisionableCollection_FilterCriteria
+    /**
+     * @return RevisionableFilterCriteriaInterface
+     * @throws BaseClassHelperException
+     */
+    public function getFilterCriteria() : RevisionableFilterCriteriaInterface
     {
         $class = $this->getRecordFiltersClassName();
-        return new $class($this);
+
+        return ClassHelper::requireObjectInstanceOf(
+            RevisionableFilterCriteriaInterface::class,
+            new $class($this)
+        );
     }
     
    /**
@@ -215,23 +221,29 @@ abstract class Application_RevisionableCollection
         return $this->createDummyRecord()->getInitialState();
     }
     
-    public function idExists(int $record_id) : bool
+    public function idExists($record_id) : bool
     {
-        return $this->getCurrentRevision($record_id) !== null;
+        return $this->getCurrentRevision((int)$record_id) !== null;
     }
-    
+
+    /**
+     * @return RevisionableInterface[]
+     * @throws BaseClassHelperException
+     */
     public function getAll() : array
     {
         return $this->getFilterCriteria()->getItemsObjects();
     }
     
    /**
-    * @var RevisionableInterface[]|NULL
+    * @var array<int,RevisionableInterface>|NULL
     */
     protected ?array $cachedItems = null;
     
-    public function getByID(int $record_id) : RevisionableInterface
+    public function getByID($record_id) : RevisionableInterface
     {
+        $record_id = (int)$record_id;
+
         if(!isset($this->cachedItems)) {
             $this->cachedItems = array();
         }
@@ -590,9 +602,10 @@ abstract class Application_RevisionableCollection
         
         AppFactory::createMessageLog()->addInfo(
             t(
-                'Destroyed the %1$s %2$s.',
+                'Destroyed the %1$s %2$s (%3$s).',
                 $this->getRecordReadableNameSingular(),
-                $revisionable->getLabel()
+                $revisionable->getLabel(),
+                t('Identification:', $revisionable->getIdentification())
             ),
             t('Revisionables')
         );

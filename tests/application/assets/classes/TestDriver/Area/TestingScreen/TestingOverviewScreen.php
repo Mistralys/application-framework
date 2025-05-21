@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Admin_Area_Mode;
-use Application_Admin_ScreenInterface;
+use AppUtils\FileHelper\FolderInfo;
+use AppUtils\FileHelper_Exception;
+use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Area\TestingScreen;
 use TestDriver\ClassFactory;
 
@@ -43,30 +47,62 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
         $list = $this->ui->createBigSelection()
             ->makeSmall();
 
-        $list->addLink(
-            CollectionCreateBasicScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateBasicScreen::URL_NAME)
-        );
-
-        $list->addLink(
-            CollectionCreateManagerLegacyScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateManagerLegacyScreen::URL_NAME)
-        );
-
-        $list->addLink(
-            CollectionCreateManagerExtendedScreen::getTestLabel(),
-            $this->getTestURL(CollectionCreateManagerExtendedScreen::URL_NAME)
-        );
+        foreach($this->getScreenList() as $screenDef) {
+            $list->addLink(
+                $screenDef['label'],
+                $this->getTestURL($screenDef['urlName'])
+            );
+        }
 
         return $this->renderer
             ->appendContent($list)
             ->makeWithoutSidebar();
     }
 
+    /**
+     * @return class-string<TestingScreenInterface>[]
+     * @throws FileHelper_Exception
+     */
+    private function getScreenClasses() : array
+    {
+        return AppFactory::findClassesInFolder(
+            FolderInfo::factory(__DIR__),
+            true,
+            TestingScreenInterface::class
+        );
+    }
+
+    private function getScreenList() : array
+    {
+        $result = array();
+
+        foreach($this->getScreenClasses() as $className) {
+            $result[] = array(
+                'label' => $className::getTestLabel(),
+                'urlName' => $className::URL_NAME
+            );
+        }
+
+        usort(
+            $result,
+            /**
+             * @param array{label:string,urlName:string} $a
+             * @param array{label:string,urlName:string} $b
+             * @return int
+             */
+            static function(array $a, array $b) : int
+            {
+                return strnatcasecmp($a['label'], $b['label']);
+            }
+        );
+
+        return $result;
+    }
+
     protected function getTestURL(string $testURLName, array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = TestingScreen::URL_NAME;
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_MODE] = $testURLName;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = TestingScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_MODE] = $testURLName;
 
         return ClassFactory::createRequest()->buildURL($params);
     }

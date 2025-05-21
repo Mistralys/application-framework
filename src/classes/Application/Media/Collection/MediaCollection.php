@@ -6,18 +6,15 @@ namespace Application\Media\Collection;
 
 use Application;
 use Application\Admin\Area\BaseMediaLibraryScreen;
-use Application\Admin\Area\Media\BaseCreateMediaScreen;
-use Application\Admin\Area\Media\BaseImageGalleryScreen;
-use Application\Admin\Area\Media\BaseMediaListScreen;
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaAdminURLs;
 use Application\Media\MediaTagConnector;
+use Application\OfflineEvents\RegisterTagCollectionsEvent\RegisterMediaTagsListener;
 use Application\Tags\TagCollection;
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
-use Application\Tags\Taggables\TagConnector;
 use Application\Tags\TagRecord;
-use Application_Admin_ScreenInterface;
 use Application_Formable;
 use Application_Media;
 use AppUtils\Microtime;
@@ -31,8 +28,11 @@ use DBHelper_BaseCollection;
  */
 class MediaCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
+    public const COLLECTION_ID = 'media';
+
     use TagCollectionTrait;
 
+    public const RECENT_ITEMS_CATEGORY = 'recent_media';
     public const TABLE_NAME = 'media';
     public const PRIMARY_NAME = 'media_id';
     public const MEDIA_TYPE = 'media';
@@ -45,6 +45,16 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     public const COL_SIZE = 'file_size';
     public const COL_KEYWORDS = 'keywords';
     public const COL_DESCRIPTION = 'description';
+
+    public function getCollectionID(): string
+    {
+        return self::COLLECTION_ID;
+    }
+
+    public function getCollectionRegistrationClass(): string
+    {
+        return RegisterMediaTagsListener::class;
+    }
 
     private static ?bool $hasSizeColumn = null;
 
@@ -139,7 +149,7 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
 
     public function getAdminURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = BaseMediaLibraryScreen::URL_NAME;
 
         return AppFactory::createRequest()
             ->buildURL($params);
@@ -208,6 +218,16 @@ class MediaCollection extends DBHelper_BaseCollection implements TagCollectionIn
     }
 
     // region: Tagging
+
+    public function getTaggableTypeLabel() : string
+    {
+        return t('Media document');
+    }
+
+    public function getTaggableByID(int $id): MediaRecord
+    {
+        return $this->getByID($id);
+    }
 
     public function getTagConnectorClass(): ?string
     {

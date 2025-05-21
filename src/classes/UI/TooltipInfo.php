@@ -12,7 +12,9 @@ namespace UI;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
 use AppUtils\AttributeCollection;
+use AppUtils\Interfaces\StringableInterface;
 use JSHelper;
+use UI_Exception;
 use UI_Renderable_Interface;
 use UI_Traits_RenderableGeneric;
 
@@ -47,10 +49,29 @@ class TooltipInfo
     private string $placement;
     private string $elementID = '';
 
+    /**
+     * @param string|number|StringableInterface|NULL $content
+     * @param string $placement
+     * @throws UI_Exception
+     */
     public function __construct($content, string $placement=JSHelper::TOOLTIP_TOP)
     {
         $this->content = toString($content);
         $this->placement = $placement;
+    }
+
+    /**
+     * @param string|number|StringableInterface|TooltipInfo|NULL $content
+     * @return TooltipInfo
+     * @throws UI_Exception
+     */
+    public static function create($content) : TooltipInfo
+    {
+        if($content instanceof TooltipInfo) {
+            return $content;
+        }
+
+        return new TooltipInfo($content);
     }
 
     public function makeTop() : self

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper_MimeTypes;
 use AppUtils\ThrowableInfo;
 
 /**
@@ -24,12 +25,14 @@ class Application_ErrorLog
 {
     public const ERROR_UNKNOWN_LOG = 42701;
 
-    const LOG_TYPE_EXCEPTION = 'Exception';
-    const LOG_TYPE_AJAX = 'AJAX';
-    const LOG_TYPE_JAVASCRIPT = 'JavaScript';
-    const LOG_TYPE_GENERAL = 'General';
-    
-   /**
+    public const LOG_TYPE_EXCEPTION = 'Exception';
+    public const LOG_TYPE_AJAX = 'AJAX';
+    public const LOG_TYPE_JAVASCRIPT = 'JavaScript';
+    public const LOG_TYPE_GENERAL = 'General';
+
+    public const LOG_TRACE_EXTENSION = 'trace';
+
+    /**
     * @var string
     */
     private $folder;
@@ -275,8 +278,8 @@ class Application_ErrorLog
     {
         $request = Application_Driver::getInstance()->getRequest();
         
-        $params['page'] = 'devel';
-        $params['mode'] = 'errorlog';
+        $params['page'] = Application_Admin_Area_Devel::URL_NAME;
+        $params['mode'] = Application_Admin_Area_Devel_Errorlog::URL_NAME;
         
         return $request->buildURL($params);
     }
@@ -338,10 +341,10 @@ class Application_ErrorLog
         
         try
         {
-            if(Application::isSessionReady())
-            {
-                $user = Application::getUser();
-                $userID = $user->getID();
+            $userID = 'Unauthenticated';
+
+            if(Application::isUserReady()) {
+                $userID = Application::getUser()->getID();
             }
         }
         catch (Application_Exception $e)
@@ -365,12 +368,15 @@ class Application_ErrorLog
         
         if($writeLog)
         {
-            $log = AppFactory::createLogger()->getLog();
-
-            error_log(implode(PHP_EOL, $log), 3, $this->getLogFilePath($logID.'.log'));
+            $this->writeLogfile($logID, AppFactory::createLogger()->getLog());
         }
         
         return $logID;
+    }
+
+    public function writeLogfile(string $logID, array $lines) : void
+    {
+        error_log(implode(PHP_EOL, $lines), 3, $this->getLogFilePath($logID.'.log'));
     }
     
     public function getLogFilePath(string $fileName, int $year=0, int $month=0) : string
@@ -414,8 +420,8 @@ class Application_ErrorLog
     
     public function logTrace(string $logID, ThrowableInfo $info) : void
     {
-        $path = $this->getLogFilePath($logID.'.trace');
-        
+        $path = $this->getLogFilePath($logID.'.'.self::LOG_TRACE_EXTENSION);
+
         FileHelper::saveAsJSON($info->serialize(), $path);
     }
     

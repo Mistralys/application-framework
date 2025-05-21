@@ -26,14 +26,18 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function getID() : string;
 
     /**
-     * Prefix used to store session values.
-     *
-     * It is prefixed to session variable names to avoid
-     * conflicts with other session variables.
+     * Name used to identify the session, and keep values
+     * separate between different scripts and applications.
      *
      * @return string
      */
-    public function getPrefix() : string;
+    public function getName() : string;
+
+    /**
+     * Retrieves the type of authentication the session uses, e.g. {@see Application_Session_AuthTypes_NoneInterface::TYPE_ID}.
+     * @return string
+     */
+    public function getAuthTypeID() : string;
 
     /**
      * Fetches the currently authenticated user. If this is empty,
@@ -44,10 +48,20 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function getUser() : ?Application_User;
 
     /**
-     * Force the authentication of the user (only done if no user is authenticated yet).
+     * Starts the user authentication process.
+     *
+     * This must only be called once. Use {@see Application::isUserReady()}
+     * to check if a user has already been authenticated.
+     *
+     * NOTE: In the usual workflow of the application,
+     * this method is called automatically by the bootstrap
+     * for the current screen, see {@see Application_Bootstrap_Screen::authenticateUser()}.
+     *
      * @return Application_User
      */
     public function authenticate() : Application_User;
+
+    public function isStarted() : bool;
 
     /**
      * Like {@see self::getUser()}, but triggers the authentication process
@@ -61,10 +75,10 @@ interface Application_Session extends Application_Interfaces_Eventable
     /**
      * Fetches a list of all rights available for the specified user.
      *
-     * @param Application_Users_User $user
+     * @param Application_User $user
      * @return string[]
      */
-    public function fetchRights(Application_Users_User $user) : array;
+    public function fetchRights(Application_User $user) : array;
 
     /**
      * Whether user registration is enabled.
@@ -114,6 +128,14 @@ interface Application_Session extends Application_Interfaces_Eventable
      */
     public function getRightPreset() : string;
 
+    /**
+     * Gets the name of the currently active simulated
+     * session rights preset.
+     *
+     * @return string The preset name or an empty string if none.
+     */
+    public function getPresetBySession() : string;
+
     public function getRightsString() : string;
 
     /**
@@ -125,22 +147,16 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function fetchSimulatedRights() : array;
 
     /**
-     * Retrieves a list of all available right presets, as an associative
-     * array with preset name => roles string pairs.
+     * Retrieves a list of all available right role presets.
      *
-     * Example:
-     *
-     * array(
-     *     'Admin' => array('AddRecord', 'DeleteRecord', 'PublishRecord'),
-     *     'Reader' => array('ViewRecord')
-     * )
-     *
-     * @return array<string,array<int,string>>
+     * @return Application_User_Rights_Role[]
      */
     public function getRightPresets() : array;
 
     /**
      * @param int $reasonID
+     * @return void|never Will exit the application if redirects are enabled.
+     * @see Application_Session_Base::setRedirectsEnabled()
      */
     public function logOut(int $reasonID=0) : void;
 
@@ -184,7 +200,17 @@ interface Application_Session extends Application_Interfaces_Eventable
     public function onSessionStarted(callable $callback) : Application_EventHandler_EventableListener;
 
     /**
+     * Starts the session. It is then available, but no user has yet
+     * been authenticated. For this, the {@see self::authenticate()} method
+     * must be called.
+     *
      * @return $this
      */
     public function start() : self;
+
+    /**
+     * Destroys the session.
+     * @return self
+     */
+    public function destroy() : self;
 }

@@ -14,8 +14,13 @@ use Application_Request;
 use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper_Exception;
 use AppUtils\ImageHelper;
+use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
+use AppUtils\ImageHelper\ImageFormats\Formats\SVGImage;
+use AppUtils\ImageHelper\ImageFormats\FormatsCollection;
+use AppUtils\ImageHelper\ImageFormats\ImageFormatInterface;
 use AppUtils\ImageHelper_Exception;
 
 trait DocumentTrait
@@ -54,7 +59,7 @@ trait DocumentTrait
         $sourcePath = $this->getThumbnailSourcePath();
         $source = ImageHelper::createFromFile($sourcePath);
 
-        if($source->isVector()) {
+        if(!$this->supportsThumbnails()) {
             return $sourcePath;
         }
 
@@ -118,7 +123,7 @@ trait DocumentTrait
         $sourcePath = $this->getThumbnailSourcePath();
         $source = $this->getThumbnailSourceImage();
 
-        if($source->isVector()) {
+        if(!$this->supportsThumbnails()) {
             return $sourcePath;
         }
 
@@ -132,6 +137,29 @@ trait DocumentTrait
         }
 
         return $targetFile;
+    }
+
+    public function getImageFormat() : ImageFormatInterface
+    {
+        return FormatsCollection::getInstance()->getByExtension($this->getExtension());
+    }
+
+    public function supportsThumbnails() : bool
+    {
+        return self::formatSupportsThumbnails($this->getImageFormat(), $this->getPath());
+    }
+
+    public static function formatSupportsThumbnails(ImageFormatInterface $format, string $filePath) : bool
+    {
+        if($format->isVector()) {
+            return false;
+        }
+
+        if($format instanceof GIFImage && $format->fileHasAnimation(FileInfo::factory($filePath))) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -204,16 +232,16 @@ trait DocumentTrait
 
     /**
      * @return bool
-     * @deprecated Use {@see self::isVector()} instead.
+     * @deprecated Use {@see self::getImageFormat()} instead.
      */
     public function isTypeSVG() : bool
     {
-        return $this->isVector();
+        return $this->getImageFormat() instanceof SVGImage;
     }
 
     public function isVector() : bool
     {
-        return strtolower($this->getExtension()) === 'svg';
+        return $this->getImageFormat()->isVector();
     }
 
     /**

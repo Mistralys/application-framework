@@ -7,7 +7,10 @@
  * @see Application_User
  */
 
+use Application\Countries\Rights\CountryRightsInterface;
+use Application\Countries\Rights\CountryRightsTrait;
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaRightsInterface;
 use Application\Media\MediaRightsTrait;
 use Application\NewsCentral\NewsRightsInterface;
@@ -16,9 +19,10 @@ use Application\Tags\TagsRightsInterface;
 use Application\Tags\TagsRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
+use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Locale;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -44,13 +48,14 @@ abstract class Application_User
     Application_Interfaces_Loggable,
     MediaRightsInterface,
     NewsRightsInterface,
-    TagsRightsInterface
+    TagsRightsInterface,
+    CountryRightsInterface
 {
     use Application_Traits_Loggable;
     use MediaRightsTrait;
     use NewsRightsTrait;
     use TagsRightsTrait;
-
+    use CountryRightsTrait;
     public const ERROR_CREATE_METHOD_NOT_IMPLEMENTED = 20001;
     public const ERROR_CREATE_SYSTEMUSER_METHOD_NOT_IMPLEMENTED = 20002;
     public const ERROR_NO_ROLES_DEFINED = 20003;
@@ -78,7 +83,7 @@ abstract class Application_User
 
    /**
     * Stores the user setting values
-    * @var array
+    * @var array<string,mixed>
     */
     protected array $settings = array();
 
@@ -292,12 +297,12 @@ abstract class Application_User
         return true;
     }
 
-    public function resetSettings() : void
+    public function resetSettings(?string $prefix=null) : void
     {
         $this->settingsLoaded = false;
         $this->settings = array();
 
-        $this->storage->reset();
+        $this->storage->reset($prefix);
     }
 
     protected function validateSetting(string $name, string $value) : string
@@ -400,16 +405,9 @@ abstract class Application_User
 
         $this->log('Loading settings.');
 
-        $data = $this->storage->load();
-
-        if (!is_array($data))
+        foreach ($this->storage->load() as $name => $value)
         {
-            $this->logError('The stored settings data is not an array.');
-            return;
-        }
-
-        foreach ($data as $name => $value)
-        {
+            $name = (string)$name;
             $this->settings[$name] = $this->validateSetting($name, $value);
         }
 
@@ -537,7 +535,7 @@ abstract class Application_User
     *
     * @param int $user_id
     * @return Application_User
-    * @throws Application_Exception|DBHelper_Exception
+    * @throws Application_Exception
     * @deprecated Use {@see Application::createUser()} instead.
     */
     public static function createByID(int $user_id) : Application_User
@@ -555,8 +553,8 @@ abstract class Application_User
     }
 
     /**
-     * Creates the dummy user that is used in the simulated session
-     * mode, where the authentication layer is not used. It is not
+     * Creates the stub user used in the simulated session mode,
+     * where the authentication layer is not used. It is not
      * used in any other cases.
      *
      * @return Application_User
@@ -681,7 +679,7 @@ abstract class Application_User
         return $this;
     }
 
-    public function handleScreenAccessed(Application_Admin_ScreenInterface $screen)
+    public function handleScreenAccessed(AdminScreenInterface $screen)
     {
         $this->getScreenTracker()->handleScreenAccessed($screen);
         return $this;
@@ -725,7 +723,7 @@ abstract class Application_User
 
     /**
      * Sets the user's rights.
-     * @param string|string[] $rights Comma-separated rights list, or indexed array with right names.
+     * @param string|string[]|mixed $rights Comma-separated rights list, or indexed array with right names. Any other value types are ignored.
      */
     public function setRights($rights) : void
     {
@@ -783,10 +781,6 @@ abstract class Application_User
 
     public function isDeveloperModeEnabled() : bool
     {
-        if(!$this->isDeveloper()) {
-            return false;
-        }
-
         return $this->getBoolSetting(self::SETTING_DEVELOPER_MODE);
     }
 
@@ -803,7 +797,7 @@ abstract class Application_User
         return $this;
     }
 
-    public function getUILocale() : Localization_Locale
+    public function getUILocale() : LocaleInterface
     {
         return Localization::getAppLocaleByName($this->getUILocaleName());
     }
@@ -819,7 +813,7 @@ abstract class Application_User
         return Localization::getAppLocaleName();
     }
 
-    public function setUILocale(Localization_Locale $locale) : self
+    public function setUILocale(LocaleInterface $locale) : self
     {
         $this->setSetting(self::SETTING_UI_LOCALE, $locale->getName());
         return $this;
@@ -911,7 +905,7 @@ abstract class Application_User
 
     public function getAdminSettingsURL(array $params=array()) : string
     {
-        $params[Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Settings::URL_NAME;
+        $params[AdminScreenInterface::REQUEST_PARAM_PAGE] = Application_Admin_Area_Settings::URL_NAME;
 
         return Application_Driver::getInstance()
             ->getRequest()
@@ -944,6 +938,9 @@ abstract class Application_User
         self::$rightsManager
             ->getRightByID(self::RIGHT_DEVELOPER)
             ->grantRights(...self::$rightsManager->getRights()->getIDs());
+
+        $collection = new RoleCollection(self::$rightsManager);
+        $collection->register();
 
         $this->registerRoles(self::$rightsManager);
 
@@ -996,6 +993,7 @@ abstract class Application_User
         $this->registerNewsRights($group);
         $this->registerTagRights($group);
         $this->registerMediaRights($group);
+        $this->registerCountryRights($group);
 
         $group->registerRight(self::RIGHT_DEVELOPER, t('Developer'))
             ->actionAdministrate()

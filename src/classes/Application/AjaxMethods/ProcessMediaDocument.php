@@ -1,9 +1,14 @@
 <?php
 
-require_once 'Application/Media.php';
-
 class Application_AjaxMethods_ProcessMediaDocument extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'ProcessMediaDocument';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public function processJSON()
     {
         $this->request->registerParam('document_id')->setInteger();

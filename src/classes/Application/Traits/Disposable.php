@@ -25,7 +25,7 @@ trait Application_Traits_Disposable
      */
     public function dispose() : void
     {
-        if($this->disposableDisposed) {
+        if($this->disposableDisposed || $this->disposableDisposing) {
             return;
         }
 

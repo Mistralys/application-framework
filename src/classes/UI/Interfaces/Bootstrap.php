@@ -1,26 +1,21 @@
 <?php
 
-use AppUtils\Interfaces\ClassableInterface;
+declare(strict_types=1);
 
-interface UI_Interfaces_Bootstrap extends ClassableInterface, UI_Renderable_Interface
+use AppUtils\Interfaces\ClassableInterface;
+use UI\Interfaces\NamedItemInterface;
+
+interface UI_Interfaces_Bootstrap
+    extends
+    ClassableInterface,
+    UI_Renderable_Interface,
+    NamedItemInterface
 {
     public const ERROR_CHILD_NAME_ALREADY_EXISTS = 18601;
     public const ERROR_NOT_A_CHILD_ELEMENT_OF_PARENT = 18602;
     public const ERROR_INVALID_CHILD_ELEMENT = 18603;
     
     public function __construct(UI $ui);
-    
-    /**
-     * Sets the element's name, which can be used to retrieve it when used in collections.
-     * @param string $name
-     * @return UI_Bootstrap
-     */
-    public function setName(string $name) : self;
-    
-   /**
-    * @return string
-    */
-    public function getName() : string;
     
    /**
     * @param string $name

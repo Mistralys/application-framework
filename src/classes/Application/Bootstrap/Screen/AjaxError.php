@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
 use AppUtils\ImageHelper;
 
 class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Screen
 {
+    public const DISPATCHER = 'ajax/error.php';
+
     public function getDispatcher() : string
     {
-        return 'ajax/error.php';
+        return self::DISPATCHER;
     }
 
     /**
@@ -24,13 +28,23 @@ class Application_Bootstrap_Screen_AjaxError extends Application_Bootstrap_Scree
         
         $request = $this->driver->getRequest();
         
-        $url = $request->registerParam('url')->setURL()->get();
-        $method = $request->registerParam('method')->setAlnum()->get();
-        $message = $request->registerParam('message')->addStringFilter()->addHTMLSpecialcharsFilter()->get();
-        $details = $request->registerParam('details')->addStringFilter()->addHTMLSpecialcharsFilter()->get();
-        $code = $request->registerParam('code')->setAlnum()->get();
-        $payload = $request->getJSON('payload');
-        $data = $request->getJSON('data');
+        $url = (string)$request->registerParam('url')->setURL()->get();
+        $method = (string)$request->registerParam('method')->setAlnum()->get();
+        $message = (string)$request->registerParam('message')->addStringFilter()->addHTMLSpecialcharsFilter()->get();
+        $details = (string)$request->registerParam('details')->addStringFilter()->addHTMLSpecialcharsFilter()->get();
+        $code = (int)$request->registerParam('code')->setInteger()->get();
+        $payload = array();
+        $data = array();
+
+        $reqPayload = $request->getJSON('payload');
+        if(is_array($reqPayload)) {
+            $payload = $reqPayload;
+        }
+
+        $reqData = $request->getJSON('data');
+        if(is_array($reqData)) {
+            $data = $reqData;
+        }
 
         ConvertHelper::arrayRemoveKeys($payload, $this->excludeVars);
         

@@ -8,6 +8,7 @@ use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\BaseEnvironmentsConfig;
 use Application\Environments\Environment;
 use TestDriver\Environments\LocalEnvironment;
+use const TESTS_SYSTEM_EMAIL_RECIPIENTS;
 
 class EnvironmentsConfig extends BaseEnvironmentsConfig
 {
@@ -34,6 +35,11 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
     protected function getSystemName(): string
     {
         return 'Application Framework';
+    }
+
+    protected function getSystemEmailRecipients(): string
+    {
+        return TESTS_SYSTEM_EMAIL_RECIPIENTS;
     }
 
     protected function getContentLocales(): array

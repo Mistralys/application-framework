@@ -1,17 +1,22 @@
 <?php
 /**
- * File containing the {@link Application_Countries_Country} class.
  * @package Maileditor
  * @subpackage Countries
  */
 
+declare(strict_types=1);
+
 use Application\AppFactory;
+use Application\Countries\Admin\CountryAdminURLs;
+use Application\Countries\Rights\CountryScreenRights;
 use Application\Languages;
 use Application\Languages\Language;
 use Application\Languages\LanguageException;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Country;
-use AppLocalize\Localization_Currency;
+use AppLocalize\Localization\Countries\CountryCollection;
+use AppLocalize\Localization\Countries\CountryInterface;
+use AppLocalize\Localization\Country\CountryGB;
+use AppLocalize\Localization\Currencies\CurrencyInterface;
 
 /**
  * Country data type; handles an individual country and its information.
@@ -24,22 +29,25 @@ class Application_Countries_Country extends DBHelper_BaseRecord
 {
     public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
 
+    /**
+     * @deprecated Use the ISO instead, which is more reliable: {@see self::COUNTRY_INDEPENDENT_ISO}
+     */
     public const COUNTRY_INDEPENDENT_ID = 9999;
     public const COUNTRY_INDEPENDENT_ISO = 'zz';
     public const COL_ISO = 'iso';
     public const COL_LABEL = 'label';
 
-    protected Localization_Country $country;
+    protected CountryInterface $country;
 
     protected function init() : void
     {
-        $this->country = Localization::createCountry($this->getISO());
+        $this->country = Localization::createCountries()->getByISO($this->getISO());
     }
     
     public function getLabel() : string
     {
         $label = $this->getRecordKey(self::COL_LABEL);
-        
+
         if($this->isInvariant()) {
             $label = '('.$label.')';
         }
@@ -58,9 +66,21 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $label;
     }
     
-    public function getIconLabel() : string
+    public function getIconLabel(bool $linked=false, bool $localized=false) : string
     {
-        return $this->getIcon().' '.$this->getLocalizedLabel();
+        if($localized) {
+            $label = $this->getLocalizedLabel();
+        } else {
+            $label = $this->getLabel();
+        }
+
+        if($linked) {
+            return (string)sb()
+                ->add($this->getIcon())
+                ->linkRight($label, $this->adminURL()->status(), CountryScreenRights::SCREEN_STATUS);
+        }
+
+        return $this->getIcon().' '.$label;
     }
     
    /**
@@ -79,23 +99,20 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function getISO(bool $emptyIfInvariant=false) : string
     {
-        if($this->isInvariant())
-        {
-            if($emptyIfInvariant) {
-                return '';
-            }
+        $iso = $this->getRecordKey(self::COL_ISO);
 
-            return self::COUNTRY_INDEPENDENT_ISO;
+        if($emptyIfInvariant && $iso === self::COUNTRY_INDEPENDENT_ISO) {
+            return '';
         }
-        
-        return $this->getRecordKey(self::COL_ISO);
+
+        return CountryCollection::getInstance()->filterCode($iso);
     }
 
     /**
      * @var array<string,string>
      */
     private array $isoToAlpha2 = array(
-        Application_Countries::COUNTRY_UK => Application_Countries::COUNTRY_GB
+        CountryGB::ISO_ALIAS_UK => CountryGB::ISO_CODE
     );
 
    /**
@@ -116,46 +133,16 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     }
    
    /**
-    * Primary language by country
-    * @var array<string,string>
-    * @see https://wiki.openstreetmap.org/wiki/Nominatim/Country_Codes
-    */
-    public const COUNTRY_LANGUAGES = array(
-        Application_Countries::COUNTRY_AT => Languages::LANG_DE,
-        Application_Countries::COUNTRY_CA => Languages::LANG_EN,
-        Application_Countries::COUNTRY_DE => Languages::LANG_DE,
-        Application_Countries::COUNTRY_ES => Languages::LANG_ES,
-        Application_Countries::COUNTRY_FR => Languages::LANG_FR,
-        Application_Countries::COUNTRY_IT => Languages::LANG_IT,
-        Application_Countries::COUNTRY_MX => Languages::LANG_ES,
-        Application_Countries::COUNTRY_PL => Languages::LANG_PL,
-        Application_Countries::COUNTRY_RO => Languages::LANG_RO,
-        Application_Countries::COUNTRY_UK => Languages::LANG_EN,
-        Application_Countries::COUNTRY_GB => Languages::LANG_EN,
-        Application_Countries::COUNTRY_US => Languages::LANG_EN
-    );
-
-   /**
     * Retrieves the lowercase two-letter language code for
     * the country. Note that this only returns the main 
-    * language used in the country, if it has several
+    * language used in the country if it has several
     * official ones.
     * 
-    * @throws Application_Exception
     * @return string
     */
     public function getLanguageCode() : string
     {
-        $iso = $this->getISO();
-        if(isset(self::COUNTRY_LANGUAGES[$iso])) {
-            return self::COUNTRY_LANGUAGES[$iso];
-        }
-        
-        throw new Application_Exception(
-            sprintf('Unknown language code for country [%s]', $iso),
-            '',
-            self::ERROR_UNKNOWN_LANGUAGE_CODE
-        );
+        return $this->getLocalizationLocale()->getLanguageCode();
     }
     
    /**
@@ -165,12 +152,26 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function getLocaleCode() : string
     {
-        return $this->getLanguageCode().'_'.strtoupper($this->getAlpha2());
+        return $this->getLocalizationLocale()->getName();
+
     }
 
     public function getLocale() : \Application\Locales\Locale
     {
         return AppFactory::createLocales()->getByID($this->getLocaleCode());
+    }
+
+    private ?Localization\Locales\LocaleInterface $localizationLocale = null;
+
+    public function getLocalizationLocale() : Localization\Locales\LocaleInterface
+    {
+        if(!isset($this->localizationLocale)) {
+            $this->localizationLocale = CountryCollection::getInstance()
+                ->getByISO($this->getISO())
+                ->getMainLocale();
+        }
+
+        return $this->localizationLocale;
     }
     
    /**
@@ -192,9 +193,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     
    /**
     * The currency used in this country.
-    * @return Localization_Currency
+    * @return CurrencyInterface
     */
-    public function getCurrency() : Localization_Currency
+    public function getCurrency() : CurrencyInterface
     {
         return $this->country->getCurrency();
     }
@@ -203,7 +204,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
      * {@inheritDoc}
      * @see DBHelper_BaseRecord::recordRegisteredKeyModified()
      */
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
     
@@ -215,7 +216,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     */
     public function isInvariant() : bool
     {
-        return $this->getID() === self::COUNTRY_INDEPENDENT_ID;
+        return $this->getISO() === self::COUNTRY_INDEPENDENT_ISO;
     }
     
    /**
@@ -225,5 +226,16 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     public function isCountryIndependent() : bool
     {
         return $this->isInvariant();
+    }
+
+    private ?CountryAdminURLs $adminURLs = null;
+
+    public function adminURL() : CountryAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new CountryAdminURLs($this);
+        }
+
+        return $this->adminURLs;
     }
 }

@@ -39,9 +39,9 @@ class Application_Messagelogs_FilterCriteria extends DBHelper_BaseFilterCriteria
     
    /**
     * @param integer $user_id
-    * @return Application_Messagelogs_FilterCriteria
+    * @return $this
     */
-    public function selectUser($user_id)
+    public function selectUser(int $user_id) : self
     {
         return $this->selectCriteriaValue('user_ids', $user_id);
     }

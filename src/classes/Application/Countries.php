@@ -5,12 +5,17 @@
  * @subpackage Countries
  */
 
+use Application\Countries\Admin\MainAdminURLs;
 use Application\Countries\CountriesCollection;
 use Application\Countries\CountryException;
+use Application\Countries\CountrySettingsManager;
 use Application\Countries\Event\IgnoredCountriesUpdatedEvent;
+use Application\Countries\FilterSettings;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Languages;
 use Application\Languages\Language;
+use AppLocalize\Localization\Countries\CountryCollection;
+use AppLocalize\Localization\Country\CountryGB;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
 
@@ -32,7 +37,7 @@ class Application_Countries extends DBHelper_BaseCollection
 {
     public const ERROR_UNKNOWN_ISO_CODE = 21901;
     public const ERROR_INVALID_COUNTRY_ID = 21902;
-    public const ERROR_INVALID_ISO_CODE = 21903;
+    public const ERROR_CANNOT_USE_ALIAS_FOR_CREATION = 21903;
     public const ERROR_ISO_ALREADY_EXISTS = 21904;
 
     public const PRIMARY_NAME = 'country_id';
@@ -40,19 +45,6 @@ class Application_Countries extends DBHelper_BaseCollection
     public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
 
     protected static ?Application_Countries $instance = null;
-
-    public const COUNTRY_DE = 'de';
-    public const COUNTRY_AT = 'at';
-    public const COUNTRY_UK = 'uk';
-    public const COUNTRY_GB = 'gb';
-    public const COUNTRY_CA = 'ca';
-    public const COUNTRY_FR = 'fr';
-    public const COUNTRY_IT = 'it';
-    public const COUNTRY_ES = 'es';
-    public const COUNTRY_PL = 'pl';
-    public const COUNTRY_RO = 'ro';
-    public const COUNTRY_MX = 'mx';
-    public const COUNTRY_US = 'us';
 
     public function getRecordDefaultSortKey() : string
     {
@@ -76,7 +68,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordFilterSettingsClassName() : string
     {
-        return '';
+        return FilterSettings::class;
     }
     
     public function getRecordSearchableColumns() : array
@@ -129,12 +121,12 @@ class Application_Countries extends DBHelper_BaseCollection
     }
     
    /**
-    * Retrieves the country independent meta entry.
+    * Retrieves the country independent meta-entry.
     * @return Application_Countries_Country
     */
-    public function getInvariantCountry()
+    public function getInvariantCountry() : Application_Countries_Country
     {
-        return $this->getByID(Application_Countries_Country::COUNTRY_INDEPENDENT_ID);
+        return $this->getByISO(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO);
     }
 
     /**
@@ -222,7 +214,7 @@ class Application_Countries extends DBHelper_BaseCollection
 
     public function getCollection() : CountriesCollection
     {
-        return CountriesCollection::create($this->getFilterCriteria()->getItemsObjects());
+        return CountriesCollection::create($this->getAll());
     }
 
     /**
@@ -295,9 +287,17 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function isoExists(string $iso) : bool
     {
-        $iso = strtolower($iso);
-        
-        return in_array($iso, $this->getSupportedISOs());
+        $iso = CountryCollection::getInstance()->filterCode($iso);
+
+        foreach($this->getAll() as $country)
+        {
+            if($country->getISO() === $iso || $country->getAlpha2() === $iso)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
    /**
@@ -309,17 +309,12 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function getSupportedISOs(bool $includeInvariant=true) : array
     {
-        $countries = $this->getAll();
+        $countries = $this->getAll($includeInvariant);
         
         $result = array();
         
         foreach($countries as $country)
         {
-            if(!$includeInvariant && $country->isCountryIndependent())
-            {
-                continue;
-            }
-
             $result[] = $country->getISO();
             $result[] = $country->getAlpha2();
         }
@@ -353,9 +348,9 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function getByISO(string $iso) : Application_Countries_Country
     {
-        $iso = strtolower($iso);
+        $iso = CountryCollection::getInstance()->filterCode($iso);
         $all = $this->getAll();
-        
+
         foreach($all as $country)
         {
             if($country->getISO() === $iso || $country->getAlpha2() === $iso)
@@ -460,13 +455,26 @@ class Application_Countries extends DBHelper_BaseCollection
     * whose selection is persisted in the user
     * settings.
     * 
-    * @param string $id A freeform ID to tie the country selection to: used to namespace the setting under which the country is stored.
+    * @param string $id A freeform ID to tie the country selection to: This is used to namespace the setting under which the country is stored.
     * @param string $baseURL The base URL to use, to which the country selection parameter will be appended.
+    * @param int[] $limitToCountries List of country IDs to limit the selection to.
     * @return Application_Countries_ButtonBar
     */
-    public static function createButtonBar(string $id, string $baseURL) : Application_Countries_ButtonBar
+    public static function createButtonBar(string $id, string $baseURL, array $limitToCountries=array()) : Application_Countries_ButtonBar
     {
-        return new Application_Countries_ButtonBar($id, $baseURL);
+        return new Application_Countries_ButtonBar($id, $baseURL, $limitToCountries);
+    }
+
+    public function createInvariantCountry() : Application_Countries_Country
+    {
+        if($this->isoExists(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO)) {
+            return $this->getByISO(Application_Countries_Country::COUNTRY_INDEPENDENT_ISO);
+        }
+
+        return $this->createNewCountry(
+            Application_Countries_Country::COUNTRY_INDEPENDENT_ISO,
+            'Country independent'
+        );
     }
 
     public function createNewCountry(string $iso, string $label) : Application_Countries_Country
@@ -479,20 +487,24 @@ class Application_Countries extends DBHelper_BaseCollection
             );
         }
 
-        return $this->createNewRecord(array(
-            Application_Countries_Country::COL_ISO => $this->convertISO($iso),
-            Application_Countries_Country::COL_LABEL => $label
-        ));
+        $collection = CountryCollection::getInstance();
+        $iso = $collection->filterCode($iso);
+
+        $this->validateISO($iso);
+
+        return $this->createNewRecord(
+            array(
+                Application_Countries_Country::COL_ISO => $iso,
+                Application_Countries_Country::COL_LABEL => $label
+            )
+        );
     }
 
     protected function _registerKeys() : void
     {
         $this->keys->register(Application_Countries_Country::COL_ISO)
             ->makeRequired()
-            ->setValidation(NamedClosure::fromClosure(
-                Closure::fromCallable(array($this, 'validateISO')),
-                array($this, 'validateISO')
-            ));
+            ->setValidation(Closure::fromCallable(array($this, 'validateISO')));
 
         $this->keys->register(Application_Countries_Country::COL_LABEL)
             ->makeRequired();
@@ -500,27 +512,43 @@ class Application_Countries extends DBHelper_BaseCollection
 
     private function validateISO(string $iso) : void
     {
-        if($this->convertISO($iso) === $iso)
+        $iso = strtolower($iso);
+        $collection = CountryCollection::getInstance();
+        $aliases = $collection->getAliases();
+
+        if(isset($aliases[$iso]))
         {
-            return;
+            throw new CountryException(
+                'Cannot use specified ISO code for a country.',
+                sprintf(
+                    'Use the code [%s] instead, which supports being accessed as [%s] as well.',
+                    $aliases[$iso],
+                    $iso
+                ),
+                self::ERROR_CANNOT_USE_ALIAS_FOR_CREATION
+            );
         }
 
-        throw new CountryException(
-            'Cannot use specified ISO code for a country.',
-            sprintf(
-                'Use the code [%s] instead, which supports being accessed as [%s] as well.',
-                $this->convertISO($iso),
-                $iso
-            ),
-            self::ERROR_INVALID_ISO_CODE
-        );
+        if(!$collection->isoExists($iso)) {
+            throw new CountryException(
+                'Unsupported country ISO code',
+                sprintf(
+                    'The ISO code [%s] is not on the list of supported system countries. '.PHP_EOL.
+                    'Available countries are: '.PHP_EOL.
+                    '- %s',
+                    $iso,
+                    implode(PHP_EOL.'- ', $collection->getIDs())
+                ),
+                self::ERROR_UNKNOWN_ISO_CODE
+            );
+        }
     }
 
     /**
      * @var array<string,string>
      */
     private array $isoConversions = array(
-        self::COUNTRY_GB => self::COUNTRY_UK
+        CountryGB::ISO_ALIAS_UK => CountryGB::ISO_CODE
     );
 
     public function convertISO(string $iso) : string
@@ -591,4 +619,20 @@ class Application_Countries extends DBHelper_BaseCollection
     }
 
     // endregion
+
+    private ?MainAdminURLs $adminURLs = null;
+
+    public function adminURL() : MainAdminURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new MainAdminURLs();
+        }
+
+        return $this->adminURLs;
+    }
+
+    public function createSettingsManager(Application_Formable $formable, ?Application_Countries_Country $country) : CountrySettingsManager
+    {
+        return new CountrySettingsManager($formable, $country);
+    }
 }

@@ -1,16 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Traits_Admin_Wizard_CreateDBRecordStep} class.
- *
  * @package Application
  * @subpackage Traits
- * @see Application_Traits_Admin_Wizard_CreateDBRecordStep
  */
 
 declare(strict_types=1);
 
 use AppUtils\BaseException;
-use AppUtils\ConvertHelper_Exception;
 
 /**
  * Step in a record creation wizard: Confirm the selection, and
@@ -38,12 +34,22 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
      */
     abstract protected function getSettingValues() : array;
 
+    /**
+     * Can be overridden to perform additional actions after the record has been created.
+     *
+     * NOTE: A DB transaction is still active at this point.
+     *
+     * @param DBHelper_BaseRecord $record
+     * @return void
+     * @overridable
+     */
+    protected function _onRecordCreated(DBHelper_BaseRecord $record) : void
+    {
+    }
+
     // endregion
 
-    /**
-     * @var Application_Formable_RecordSettings_Extended
-     */
-    private $settingsManager;
+    private Application_Formable_RecordSettings_Extended $settingsManager;
 
     public function getLabel() : string
     {
@@ -146,6 +152,8 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
         $record = $this->settingsManager->createRecord();
 
         $this->log(sprintf('Created record with ID [%s].', $record->getID()));
+
+        $this->_onRecordCreated($record);
 
         return $record;
     }

@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_FilterSettings} class.
- *
  * @package Application
  * @subpackage Filtering
- * @see Application_FilterSettings
  */
 
 declare(strict_types=1);
@@ -13,6 +10,7 @@ use Application\AppFactory;
 use Application\Driver\DriverException;
 use Application\FilterSettings\SettingDef;
 use Application\FilterSettingsInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Traits\HiddenVariablesTrait;
 use AppUtils\ClassHelper;
@@ -36,6 +34,8 @@ abstract class Application_FilterSettings
     public const ERROR_SETTING_ALREADY_REGISTERED = 450006;
 
     public const SETTING_PREFIX = 'filter_settings_';
+    public const REQUEST_VAR_RESET = 'reset';
+    public const REQUEST_VAR_APPLY = 'apply';
 
     protected string $id;
     protected string $jsID;
@@ -194,7 +194,7 @@ abstract class Application_FilterSettings
      * @param string|null $label Defaults to "Search".
      * @return void
      */
-    protected function registerSearchSetting(?string $setting=null, string $label=null) : void
+    protected function registerSearchSetting(?string $setting=null, ?string $label=null) : void
     {
         if(empty($label)) {
             $label = t('Search');
@@ -272,7 +272,7 @@ abstract class Application_FilterSettings
      * @return SettingDef
      * @throws UI_Exception
      */
-    protected function registerSetting(string $name, $label, $default=null, string $customClass=null) : SettingDef
+    protected function registerSetting(string $name, $label, $default=null, ?string $customClass=null) : SettingDef
     {
         $this->log('RegisterSettings | Registered setting [%s].', $name);
 
@@ -366,13 +366,13 @@ abstract class Application_FilterSettings
 
         $values = $this->form->getValues();
 
-        if($this->request->getBool('reset')) {
+        if($this->request->getBool(self::REQUEST_VAR_RESET)) {
             $values = $this->getDefaultSettings();
         }
         
         // remove all unneeded request parameters to avoid them
         // being present in the refresh URL.
-        $toRemove = array_merge(array('reset', 'apply', $this->form->getTrackingName()), array_keys($this->definitions));
+        $toRemove = array_merge(array(self::REQUEST_VAR_RESET, self::REQUEST_VAR_APPLY, $this->form->getTrackingName()), array_keys($this->definitions));
         $this->request->removeParams($toRemove);
         
         $url = $this->request->buildRefreshURL();
@@ -465,6 +465,10 @@ abstract class Application_FilterSettings
         return $this;
     }
 
+    /**
+     * @param array<string,scalar|array>|null $settings
+     * @return $this
+     */
     public function setSettings(?array $settings) : self
     {
         if($settings === null) {
@@ -478,6 +482,12 @@ abstract class Application_FilterSettings
         return $this;
     }
 
+    /**
+     * @param string $name
+     * @param bool $enabled
+     * @return $this
+     * @throws Application_Exception
+     */
     public function setSettingEnabled(string $name, bool $enabled) : self
     {
         $this->requireSetting($name)->setEnabled($enabled);
@@ -504,10 +514,10 @@ abstract class Application_FilterSettings
         $this->form->addClass('filter-form');
         
         $autoAddVars = array(
-            Application_Admin_ScreenInterface::REQUEST_PARAM_PAGE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_MODE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_SUBMODE,
-            Application_Admin_ScreenInterface::REQUEST_PARAM_ACTION
+            AdminScreenInterface::REQUEST_PARAM_PAGE,
+            AdminScreenInterface::REQUEST_PARAM_MODE,
+            AdminScreenInterface::REQUEST_PARAM_SUBMODE,
+            AdminScreenInterface::REQUEST_PARAM_ACTION
         );
         
         foreach($autoAddVars as $varName) {
@@ -542,16 +552,16 @@ abstract class Application_FilterSettings
         
         $html =
         '<div class="filters-actions btn-toolbar">'.
-        '<div class="btn-group">'.
-        UI::button(t('Apply'))
-        ->setIcon(UI::icon()->filter())
-        ->makeSubmit('apply', 'yes')
-        ->makeSmall().' '.
-        UI::button(t('Reset'))
-        ->setIcon(UI::icon()->reset())
-        ->makeSubmit('reset', 'yes')
-        ->makeSmall().
-        '</div>'.
+            '<div class="btn-group">'.
+                UI::button(t('Apply'))
+                    ->setIcon(UI::icon()->filter())
+                    ->makeSubmit(self::REQUEST_VAR_APPLY, 'yes')
+                    ->makeSmall().' '.
+                UI::button(t('Reset'))
+                    ->setIcon(UI::icon()->reset())
+                    ->makeSubmit(self::REQUEST_VAR_RESET, 'yes')
+                    ->makeSmall().
+            '</div>'.
         '</div>';
         
         $this->form->addHTML($html);
@@ -590,7 +600,7 @@ abstract class Application_FilterSettings
 
     // region: Form elements
 
-    public function addMore(HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addMore(?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         if($this->hasMore) {
             throw new Application_Exception(
@@ -711,10 +721,6 @@ abstract class Application_FilterSettings
 
     public function addElementCountry(string $setting, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_Select
     {
-        if(!is_array($options)) {
-            $options = array();
-        }
-
         $options = array_merge(
             array(
                 'with-invariant' => true,
@@ -771,7 +777,7 @@ abstract class Application_FilterSettings
         );
     }
 
-    public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addElementText(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_InputText::class,

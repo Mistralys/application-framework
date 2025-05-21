@@ -2,6 +2,13 @@
 
 class Application_AjaxMethods_DeleteListFilter extends Application_AjaxMethod
 {
+    public const METHOD_NAME = 'DeleteListFilter';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
     public const ERROR_INVALID_FILTER_ID = 470001;
     public const ERROR_INVALID_SETTINGS_ID = 470002;
     

@@ -278,7 +278,6 @@ class RequestTests extends ApplicationTestCase
         $endpointError = $error->getEndpointError();
         $exception = $endpointError->getException();
 
-        $this->assertNotNull($endpointError);
         $this->assertNotNull($exception);
         $this->assertSame(42, $endpointError->getCode());
         $this->assertSame(452, $exception->getCode());

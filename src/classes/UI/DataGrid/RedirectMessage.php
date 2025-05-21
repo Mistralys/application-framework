@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use Application\Driver\DriverException;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -39,10 +40,7 @@ class UI_DataGrid_RedirectMessage
         'multiple' => ''
     );
     
-   /**
-    * @var Application_Admin_ScreenInterface
-    */
-    protected $screen;
+    protected AdminScreenInterface $screen;
     
    /**
     * @var string[]

@@ -47,7 +47,7 @@ class UI_DataGrid_Column_MultiSelect extends UI_DataGrid_Column
                 type="checkbox"
                 name="datagrid_items[]"
                 value="<?php echo $primary ?>"
-                onchange="<?php echo $objectName ?>.Handle_SelectionChanged($(this))"
+                onchange="<?php echo $objectName ?>.Handle_SelectionChanged(this)"
                 <?php
                 if($entry->isSelected()) {
                     echo ' checked="checked"';

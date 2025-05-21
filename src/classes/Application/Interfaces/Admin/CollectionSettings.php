@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use Application\Interfaces\Admin\AdminScreenInterface;
+
 /**
  * Interface for admin screens that display a settings form for
  * a DB item collection record.
@@ -19,7 +21,7 @@ declare(strict_types=1);
  *
  * @see Application_Traits_Admin_CollectionSettings
  */
-interface Application_Interfaces_Admin_CollectionSettings extends Application_Admin_ScreenInterface
+interface Application_Interfaces_Admin_CollectionSettings extends AdminScreenInterface
 {
     public const ERROR_UNKNOWN_SETTING_KEY = 17901;
     public const ERROR_MISSING_REQUIRED_METHOD = 17902;
@@ -75,7 +77,7 @@ interface Application_Interfaces_Admin_CollectionSettings extends Application_Ad
 
     public function isEditMode() : bool;
 
-    public function getDeleteScreen() : ?Application_Admin_ScreenInterface;
+    public function getDeleteScreen() : ?AdminScreenInterface;
 
     /**
      * @return array<string,mixed>

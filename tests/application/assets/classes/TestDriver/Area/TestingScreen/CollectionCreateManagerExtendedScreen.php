@@ -4,24 +4,27 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use TestDriver\Admin\TestingScreenInterface;
+use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
+use TestDriver\TestDBRecords\TestDBRecord;
 use TestDriver\TestDBRecords\TestSettingsManagerExtended;
 
 /**
  * @see TestSettingsManagerExtended
+ * @property TestDBRecord $record
  */
-class CollectionCreateManagerExtendedScreen extends Application_Admin_Area_Mode_CollectionCreate
+class CollectionCreateManagerExtendedScreen
+    extends Application_Admin_Area_Mode_CollectionCreate
+    implements TestingScreenInterface
 {
-    public const URL_NAME = 'collection-create-manager-ex';
+    use TestingScreenTrait;
 
-    public function getURLName() : string
-    {
-        return self::URL_NAME;
-    }
+    public const URL_NAME = 'collection-create-manager-ex';
 
     public function createCollection() : TestDBCollection
     {
@@ -41,21 +44,6 @@ class CollectionCreateManagerExtendedScreen extends Application_Admin_Area_Mode_
     public function getBackOrCancelURL(): string
     {
         return $this->getURL();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->isDeveloper();
-    }
-
-    public function getNavigationTitle(): string
-    {
-        return self::getTestLabel();
-    }
-
-    public function getTitle(): string
-    {
-        return self::getTestLabel();
     }
 
     public static function getTestLabel() : string

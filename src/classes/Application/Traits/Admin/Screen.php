@@ -7,10 +7,21 @@
  * @see Application_Traits_Admin_Screen
  */
 
+use Application\Admin\ScreenEvents;
+use Application\Admin\Screens\Events\ActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
+use Application\Admin\Screens\Events\BeforeBreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\BeforeContentRenderedEvent;
+use Application\Admin\Screens\Events\BeforeSidebarHandledEvent;
+use Application\Admin\Screens\Events\BreadcrumbHandledEvent;
+use Application\Admin\Screens\Events\ContentRenderedEvent;
+use Application\Admin\Screens\Events\SidebarHandledEvent;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Interfaces\RenderableInterface;
 use UI\Page\Navigation\QuickNavigation;
 
 /**
@@ -50,7 +61,7 @@ use UI\Page\Navigation\QuickNavigation;
  * @see Application_Admin_Area_Mode_Submode
  * @see Application_Admin_Area_Mode_Submode_Action
  * 
- * @see Application_Admin_ScreenInterface
+ * @see AdminScreenInterface
  * 
  * @property Application_Driver $driver
  */
@@ -69,19 +80,19 @@ trait Application_Traits_Admin_Screen
     * Caches subscreen IDs.
     * @var string[]|NULL
     */
-    protected $subscreenIDs;
+    protected ?array $subscreenIDs = null;
     
     /**
      * Stores subscreen instances that have been loaded.
-     * @var Application_Admin_ScreenInterface[]
+     * @var AdminScreenInterface[]
      */
-    protected $subscreens = array();
+    protected array $subscreens = array();
     
    /**
     * Caches the screen's URL param name.
     * @var string|NULL
     */
-    protected $urlParam;
+    protected ?string $urlParam = null;
     
    /**
     * Caches the screen's log prefix.
@@ -93,7 +104,7 @@ trait Application_Traits_Admin_Screen
     * Caches the screen's URL path.
     * @var string|NULL
     */
-    protected $urlPath;
+    protected ?string $urlPath = null;
     
     protected ?string $activeSubscreenID = null;
 
@@ -104,22 +115,22 @@ trait Application_Traits_Admin_Screen
 
    /**
     * Caches the screen's parent screens stack.
-    * @var Application_Admin_ScreenInterface[]|NULL
+    * @var AdminScreenInterface[]|NULL
     */
-    protected $parentScreens;
+    protected ?array $parentScreens = null;
     
    /**
     * Caches the screen's ID path.
     * @var string|NULL
     * @see Application_Traits_Admin_Screen::getIDPath()
     */
-    protected $idPath;
+    protected ?string $idPath = null;
     
    /**
     * Caches the name of the subscreen's URL parameter.
     * @var string|NULL
     */
-    protected $subscreenURLParam;
+    protected ?string $subscreenURLParam = null;
 
     protected QuickNavigation $quickNav;
     
@@ -150,9 +161,15 @@ trait Application_Traits_Admin_Screen
         }
         
         $this->log('Handling actions | Executing before actions.');
-        
+
         $this->_handleBeforeActions();
-        
+
+        $eventBefore = $this->triggerBeforeActionsHandled();
+        if($eventBefore !== null && $eventBefore->isCancelled()) {
+            $this->log('Handling Actions | Cancelled by the before actions event.');
+            return false;
+        }
+
         $this->log('Handling actions | Executing actions.');
         
         if($this->_handleActions() === false)
@@ -160,24 +177,168 @@ trait Application_Traits_Admin_Screen
             return false;
         }
 
-        if($this->hasSubscreens())
-        {
-            $this->log('Handling actions | Handling subscreen.');
+        $this->triggerActionsHandled();
 
-            $sub = $this->getActiveSubscreen();
-            if($sub !== null)
-            {
-                $this->log('Handling actions | Executing subscreen actions.');
-                $sub->handleActions();
-            }
+        if(!$this->hasSubscreens()) {
+            return true;
         }
-        
+
+        $this->log('Handling actions | Handling sub-screen.');
+
+        $sub = $this->getActiveSubscreen();
+        if($sub !== null)
+        {
+            $this->log('Handling actions | Executing sub-screen actions.');
+            $sub->handleActions();
+        }
+
         return true;
     }
 
     protected function _handleBeforeActions() : void
     {
     }
+
+    // region: Event handling
+
+    public function onBeforeActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeActionsHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+
+    public function onSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            SidebarHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBeforeSidebarHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeSidebarHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BreadcrumbHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBeforeBreadcrumbHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeBreadcrumbHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onActionsHandled(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            ActionsHandledEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            ContentRenderedEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    public function onBeforeContentRendered(callable $listener) : Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(
+            BeforeContentRenderedEvent::EVENT_NAME,
+            $listener
+        );
+    }
+
+    private function triggerBeforeActionsHandled() : ?BeforeActionsHandledEvent
+    {
+        return $this->triggerEventClass(
+            BeforeActionsHandledEvent::EVENT_NAME,
+            BeforeActionsHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerActionsHandled() : void
+    {
+        $this->triggerEventClass(
+            ActionsHandledEvent::EVENT_NAME,
+            ActionsHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerContentRendered(bool $hasContent) : ?ContentRenderedEvent
+    {
+        return $this->triggerEventClass(
+            ContentRenderedEvent::EVENT_NAME,
+            ContentRenderedEvent::class,
+            array($this, $hasContent)
+        );
+    }
+
+    private function triggerBeforeContentRendered() : ?BeforeContentRenderedEvent
+    {
+        return $this->triggerEventClass(
+            BeforeContentRenderedEvent::EVENT_NAME,
+            BeforeContentRenderedEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBeforeSidebarHandled() : void
+    {
+        $this->triggerEventClass(
+            BeforeSidebarHandledEvent::EVENT_NAME,
+            BeforeSidebarHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerSidebarHandled() : void
+    {
+        $this->triggerEventClass(
+            SidebarHandledEvent::EVENT_NAME,
+            SidebarHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBreadcrumbHandled() : void
+    {
+        $this->triggerEventClass(
+            BreadcrumbHandledEvent::EVENT_NAME,
+            BreadcrumbHandledEvent::class,
+            array($this)
+        );
+    }
+
+    private function triggerBeforeBreadcrumbHandled() : void
+    {
+        $this->triggerEventClass(
+            BeforeBreadcrumbHandledEvent::EVENT_NAME,
+            BeforeBreadcrumbHandledEvent::class,
+            array($this)
+        );
+    }
+
+    // endregion
 
     /**
      * @return bool
@@ -268,7 +429,11 @@ trait Application_Traits_Admin_Screen
     */
     public function handleBreadcrumb() : void
     {
+        $this->triggerBeforeBreadcrumbHandled();
+
         $this->_handleUIMethod(array($this, 'handleBreadcrumb')[1]);
+
+        $this->triggerBreadcrumbHandled();
     }
 
     /**
@@ -288,7 +453,11 @@ trait Application_Traits_Admin_Screen
     {
         $this->sidebar = $sidebar;
 
+        $this->triggerBeforeSidebarHandled();
+
         $this->_handleUIMethodObject(array($this, 'handleSidebar')[1], $sidebar);
+
+        $this->triggerSidebarHandled();
     }
 
     protected function _handleSidebar() : void
@@ -395,38 +564,50 @@ trait Application_Traits_Admin_Screen
             $this->log('Render content | User not authorized.');
             return $this->renderUnauthorized();
         }
-        
-        $content = $this->_renderContent();
-        if(!empty($content))
-        {
-            $this->log('Render content | Using the area\'s own content.');
+
+        $content = $this->renderOwnContent();
+        $hasOwnContent = !empty($content);
+
+        $this->triggerContentRendered($hasOwnContent);
+
+        if($hasOwnContent) {
             return $content;
         }
-        
-        if($this->hasSubscreens())
+
+        $subScreen = $this->getActiveSubscreen();
+
+        if($subScreen)
         {
-            $subscreen = $this->getActiveSubscreen();
-            
-            if($subscreen)
-            {
-                $this->log('Render content | Rending subscreen content.');
-                return $subscreen->renderContent();
-            }
+            $this->log('Render content | Rending sub-screen content.');
+            return $subScreen->renderContent();
         }
-        {
-            $this->log('RenderContent | No subscreens present.');
-        }
-        
-        $this->log('Render content | No content has been rendered.');
+
         return '';
     }
 
     /**
-     * @return string|UI_Renderable_Interface
+     * Determines the rendered content for this screen,
+     * excluding its sub-screens.
+     *
+     * @return string
+     */
+    private function renderOwnContent() : string
+    {
+        $event = $this->triggerBeforeContentRendered();
+
+        if($event !== null && $event->replacesContent()) {
+            return $event->getContent();
+        }
+
+        return (string)$this->_renderContent();
+    }
+
+    /**
+     * @return string|RenderableInterface|UI_Themes_Theme_ContentRenderer|NULL Return NULL or an empty string if the screen has nothing to display.
      */
     protected function _renderContent()
     {
-        return '';
+        return null;
     }
 
    /**
@@ -475,7 +656,7 @@ trait Application_Traits_Admin_Screen
         throw new Application_Admin_Exception(
             'No sidebar available at this time.',
             '',
-            Application_Admin_ScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
+            AdminScreenInterface::ERROR_SIDEBAR_NOT_AVAILABLE_YET
         );
     }
 
@@ -521,7 +702,7 @@ trait Application_Traits_Admin_Screen
         throw new Application_Admin_Exception(
             'Administration screen has no area.',
             'Path to screen: '.$this->getURLPath(),
-            Application_Admin_ScreenInterface::ERROR_SCREEN_HAS_NO_AREA
+            AdminScreenInterface::ERROR_SCREEN_HAS_NO_AREA
         );
     }
     
@@ -540,7 +721,7 @@ trait Application_Traits_Admin_Screen
     * this screen, with the area at the top. If this is the 
     * area, the array will have only the area.
     * 
-    * @return Application_Admin_ScreenInterface[]
+    * @return AdminScreenInterface[]
     */
     public function getParentScreens()
     {
@@ -680,9 +861,9 @@ trait Application_Traits_Admin_Screen
    /**
     * Retrieves the currently active administration screen.
     * 
-    * @return Application_Admin_ScreenInterface
+    * @return AdminScreenInterface
     */
-    public function getActiveScreen() : Application_Admin_ScreenInterface
+    public function getActiveScreen() : AdminScreenInterface
     {
         $target = $this->getArea();
         
@@ -743,7 +924,7 @@ trait Application_Traits_Admin_Screen
                 throw new UI_Exception(
                     'Cannot instantiate admin screen.',
                     'An exception occurred when creating the screen.',
-                    Application_Admin_ScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
+                    AdminScreenInterface::ERROR_CANNOT_INSTANTIATE_SCREEN,
                     $e
                 );
             }
@@ -786,7 +967,7 @@ trait Application_Traits_Admin_Screen
         return !empty($screenID);
     }
     
-    public function getSubscreenByID(string $id, bool $adminMode) : Application_Admin_ScreenInterface
+    public function getSubscreenByID(string $id, bool $adminMode) : AdminScreenInterface
     {
         return $this->createSubscreen($id, $adminMode);
     }
@@ -794,10 +975,10 @@ trait Application_Traits_Admin_Screen
     /**
      * @param string $id
      * @param bool $adminMode
-     * @return Application_Admin_ScreenInterface
+     * @return AdminScreenInterface
      * @throws Application_Exception
      */
-    protected function createSubscreen(string $id, bool $adminMode) : Application_Admin_ScreenInterface
+    protected function createSubscreen(string $id, bool $adminMode) : AdminScreenInterface
     {
         $screenID = $this->requireValidSubscreenID($id);
         $key = $screenID.'.'.ConvertHelper::boolStrict2string($adminMode);
@@ -815,7 +996,7 @@ trait Application_Traits_Admin_Screen
         return $screen;
     }
 
-    protected function createSubscreenInstance(string $screenID, bool $adminMode) : Application_Admin_ScreenInterface
+    protected function createSubscreenInstance(string $screenID, bool $adminMode) : AdminScreenInterface
     {
         $class = ClassHelper::requireResolvedClass(sprintf(
             '%s_%s',
@@ -830,7 +1011,7 @@ trait Application_Traits_Admin_Screen
         }
 
         $instance = ClassHelper::requireObjectInstanceOf(
-            Application_Admin_ScreenInterface::class,
+            AdminScreenInterface::class,
             new $class($this->driver, $this)
         );
 
@@ -974,7 +1155,7 @@ trait Application_Traits_Admin_Screen
                     get_class($this),
                     implode(', ', $names)
                 ),
-                Application_Admin_ScreenInterface::ERROR_MISSING_URL_PARAMETER
+                AdminScreenInterface::ERROR_MISSING_URL_PARAMETER
             );
         }
         
@@ -993,7 +1174,7 @@ trait Application_Traits_Admin_Screen
         return '';
     }
     
-    public function getActiveSubscreen() : ?Application_Admin_ScreenInterface
+    public function getActiveSubscreen() : ?AdminScreenInterface
     {
         $id = $this->getActiveSubscreenID();
         
@@ -1005,7 +1186,7 @@ trait Application_Traits_Admin_Screen
         return null;
     }
 
-    public function getParentScreen() : ?Application_Admin_ScreenInterface
+    public function getParentScreen() : ?AdminScreenInterface
     {
         return $this->parentScreen;
     }

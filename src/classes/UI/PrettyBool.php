@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\Interfaces\StringableInterface;
+use UI\TooltipInfo;
 
 class UI_PrettyBool implements UI_Renderable_Interface
 {
@@ -84,6 +86,8 @@ class UI_PrettyBool implements UI_Renderable_Interface
      * @var string
      */
     private $iconFalse;
+    private ?TooltipInfo $tooltipTrue = null;
+    private ?TooltipInfo $tooltipFalse = null;
 
     /**
      * @param string|bool $boolean
@@ -142,11 +146,13 @@ class UI_PrettyBool implements UI_Renderable_Interface
         if($this->bool)
         {
             $label->setLabel($this->labelTrue);
+            $label->setTooltip($this->tooltipTrue);
             $icon = UI::icon()->ok();
         }
         else
         {
             $label->setLabel($this->labelFalse);
+            $label->setTooltip($this->tooltipFalse);
             $icon = UI::icon()->disabled();
         }
 
@@ -380,4 +386,16 @@ class UI_PrettyBool implements UI_Renderable_Interface
         return $this;
     }
 
+    /**
+     * @param string|number|StringableInterface|TooltipInfo|NULL $tooltipTrue
+     * @param string|number|StringableInterface|TooltipInfo|NULL $tooltipFalse
+     * @return self
+     * @throws UI_Exception
+     */
+    public function setTooltip($tooltipTrue, $tooltipFalse) : self
+    {
+        $this->tooltipTrue = UI::tooltip($tooltipTrue);
+        $this->tooltipFalse = UI::tooltip($tooltipFalse);
+        return $this;
+    }
 }

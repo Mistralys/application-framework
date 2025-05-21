@@ -1,12 +1,11 @@
 <?php
 /**
- * File containing the {@link DBHelper_BaseCollection} class.
  * @package Application
  * @subpackage DBHelper
- * @see DBHelper_BaseCollection
  */
 
 use Application\AppFactory;
+use Application\Collection\IntegerCollectionInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
@@ -35,7 +34,7 @@ use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
  * @subpackage DBHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseCollection implements Application_CollectionInterface
+abstract class DBHelper_BaseCollection implements IntegerCollectionInterface
 {
     use Application_Traits_Disposable;
     use Application_Traits_Eventable;
@@ -59,7 +58,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
     public const VALUE_UNDEFINED = '__undefined';
 
-    protected string $recordIDTable;
+    protected ?string $recordIDTable;
 
     /**
      * @var class-string
@@ -94,6 +93,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @var DBHelper_BaseRecord[]
      */
     protected array $records = array();
+    private ?string $recordIDTablePrimaryName = null;
 
     /**
     * NOTE: classes extending this class may not create
@@ -410,6 +410,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     protected function setForeignKey(string $name, string $value) : self
     {
         $this->foreignKeys[$name] = $value;
+
+        $this->invalidateMemoryCache();
+
         return $this;
     }
     
@@ -468,13 +471,15 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     /**
      * Retrieves a record by its ID.
      *
-     * @param integer $record_id
+     * @param int|string $record_id
      * @return DBHelper_BaseRecord
      * @throws DisposableDisposedException
      * @throws DBHelper_Exception
      */
-    public function getByID(int $record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelper_BaseRecord
     {
+        $record_id = (int)$record_id;
+
         $this->requireNotDisposed('Get a record by its ID.');
 
         if(isset($this->records[$record_id])) {
@@ -525,8 +530,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     *
     * NOTE: Records that were already loaded are disposed,
     * and may not be used anymore.
+    *
+    * @return $this
     */
-    public function resetCollection() : void
+    public function resetCollection() : self
     {
         $this->log(sprintf('Resetting the collection. [%s] records were loaded.', count($this->records)));
 
@@ -543,6 +550,18 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         {
             $this->parentRecord = $this->parentRecord->getCollection()->getByID($this->parentRecord->getID());
         }
+
+        $this->invalidateMemoryCache();
+
+        return $this;
+    }
+
+    private function invalidateMemoryCache() : void
+    {
+        $this->log('Invalidating the internal memory cache.');
+
+        $this->allRecords = null;
+        $this->idLookup = array();
     }
 
     /**
@@ -676,6 +695,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * @var array<int,bool>
+     */
+    private array $idLookup = array();
+
+    /**
      * Checks whether a record with the specified ID exists in the database.
      *
      * @param integer|string|NULL $record_id
@@ -689,11 +713,15 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->requireNotDisposed('Check if record ID exists.');
 
         $record_id = (int)$record_id;
-        
+
+        if(isset($this->idLookup[$record_id])) {
+            return $this->idLookup[$record_id];
+        }
+
         if(isset($this->records[$record_id])) {
             return true;
         }
-        
+
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
         
@@ -715,11 +743,13 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             $where
         );
 
-        return $id !== null;
+        $this->idLookup[$record_id] = $id !== null;
+
+        return $this->idLookup[$record_id];
     }
 
     /**
-     * Creates a dummy record of this collection, which can
+     * Creates a stub record of this collection, which can
      * be used to access the API that may not be available
      * statically.
      *
@@ -732,7 +762,7 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             return $this->dummyRecord;
         }
         
-        $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::DUMMY_ID);
+        $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::STUB_ID);
         
         if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
             throw new Application_Exception(
@@ -750,18 +780,29 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * @var DBHelper_BaseRecord[]|null
+     */
+    private ?array $allRecords = null;
+
+    /**
      * Retrieves all records from the database, ordered by the default sorting key.
      *
      * @return DBHelper_BaseRecord[]
-     *
+     * @cached
      */
     public function getAll() : array
     {
-        return $this->getFilterCriteria()->getItemsObjects();
+        if(isset($this->allRecords)) {
+            return $this->allRecords;
+        }
+
+        $this->allRecords = $this->getFilterCriteria()->getItemsObjects();
+
+        return $this->allRecords;
     }
 
     /**
-     * Counts the amount of records in total.
+     * Counts the number of records in total.
      * @return int
      * @throws Application_Exception
      * @throws DisposableDisposedException
@@ -840,6 +881,8 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         );
     }
 
+    public const OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
+
     /**
      * Creates a new record with the specified data.
      *
@@ -860,6 +903,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
      * @param array<string,mixed> $options Options that are passed on to the record's
      *                       onCreated() method, and which can be used for
      *                       custom initialization routines.
+     *                       Official options are:
+     *                       - {@see self::OPTION_CUSTOM_RECORD_ID}: Specify a custom
+     *                         ID to use for the record. Can fail if this is not available.
      * @return DBHelper_BaseRecord
      * @throws DisposableDisposedException
      * @throws DBHelper_Exception
@@ -891,15 +937,26 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
             );
         }
 
+        $customID = null;
+        if(isset($options[self::OPTION_CUSTOM_RECORD_ID])) {
+            $customID = (int)$options[self::OPTION_CUSTOM_RECORD_ID];
+        }
+
         // use a special table for generating the record id?
-        if(isset($this->recordIDTable)) 
+        if(isset($this->recordIDTable))
         {
+            $primary = 'DEFAULT';
+            if($customID !== null) {
+                $primary = $customID;
+            }
+
             $record_id = (int)DBHelper::insert(sprintf(
                 "INSERT INTO
                     `%s`
-                SET `%s` = DEFAULT",
+                SET `%s` = %s",
                 $this->recordIDTable,
-                $this->recordPrimaryName
+                $this->recordIDTablePrimaryName,
+                $primary
             ));
             
             $data[$this->recordPrimaryName] = $record_id;
@@ -911,6 +968,10 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         } 
         else 
         {
+            if($customID !== null) {
+                $data[$this->recordPrimaryName] = $customID;
+            }
+
             $record_id = (int)DBHelper::insertDynamic(
                 $this->recordTable,
                 $data
@@ -918,6 +979,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         }
 
         $this->log(sprintf('Created with ID [%s].', $record_id));
+
+        $this->idLookup[$record_id] = true;
+        $this->allRecords = null;
 
         $record = $this->getByID($record_id);
         
@@ -934,6 +998,11 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         $this->triggerAfterCreateRecord($record, $context);
         
         return $record;
+    }
+
+    public function hasRecordIDTable(): bool
+    {
+        return isset($this->recordIDTable);
     }
 
     /**
@@ -1223,11 +1292,21 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
     }
 
     /**
+     * Sets the table that should be used to generate new record
+     * primary key values. A new row is inserted here when
+     * adding new records to the collection, to determine their
+     * primary key value.
+     *
+     * It must be a table with an auto-increment key and no other
+     * mandatory columns.
+     *
      * @param string $tableName
+     * @param string|NULL $primaryName Optional: Use if this is not the collection's primary key name.
      */
-    protected function setIDTable(string $tableName) : void
+    protected function setIDTable(string $tableName, ?string $primaryName=null) : void
     {
         $this->recordIDTable = $tableName;
+        $this->recordIDTablePrimaryName = $primaryName ?? $this->recordPrimaryName;
     }
 
     /**
@@ -1269,6 +1348,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
         
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
+
+        $this->idLookup[$record_id] = false;
+        $this->allRecords = null;
 
         if(isset($this->records[$record_id])) 
         {
@@ -1343,7 +1425,9 @@ abstract class DBHelper_BaseCollection implements Application_CollectionInterfac
 
      protected function _dispose() : void
      {
-         unset($this->dummyRecord);
+         $this->dummyRecord = null;
+
+         $this->invalidateMemoryCache();
      }
 
      public function getChildDisposables() : array

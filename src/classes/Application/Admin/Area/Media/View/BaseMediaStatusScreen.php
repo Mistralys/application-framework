@@ -35,7 +35,7 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
         return AppFactory::createMediaCollection();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
     }

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Admin Screens
  */
 
 declare(strict_types=1);
@@ -11,7 +11,6 @@ namespace Application\Tags\AdminScreens;
 use Application\AppFactory;
 use Application\Tags\Taggables\Taggable;
 use Application\Tags\Taggables\TaggableInterface;
-use AppUtils\Interfaces\StringableInterface;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
@@ -25,8 +24,8 @@ use UI_Themes_Theme_ContentRenderer;
  * 2. Use this trait.
  * 3. Call the method {@see handleTaggableActions()} in the action method.
  *
- * @package Application
- * @subpackage Tags
+ * @package Tagging
+ * @subpackage Admin Screens
  * @see RecordTaggingScreenInterface
  */
 trait RecordTaggingScreenTrait
@@ -165,7 +164,20 @@ trait RecordTaggingScreenTrait
             (string)$record->getTagRecordPrimaryValue()
         );
 
+        $this->_handleHiddenFormVars();
+
         $this->injectTagTree();
+    }
+
+    /**
+     * Overridable method to allow the screen to add any hidden
+     * form variables that may be required.
+     *
+     * @return void
+     */
+    protected function _handleHiddenFormVars() : void
+    {
+
     }
 
     public function getTagManager() : Taggable

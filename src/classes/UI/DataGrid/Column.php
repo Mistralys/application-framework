@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 class UI_DataGrid_Column implements UI_Interfaces_Conditional
 {
     use UI_Traits_Conditional;
@@ -17,41 +19,21 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     public const OPTION_WIDTH_TYPE = 'width-type';
     public const OPTION_TOOLTIP = 'tooltip';
     public const OPTION_ALIGN = 'align';
+    public const ROLE_ACTIONS = 'actions';
+    public const ROLE_HEADING = 'heading';
+    public const ROLE_CELL = 'cell';
 
-    /**
-    * @var UI_DataGrid
-    */
-    protected $grid;
-
-    /**
-     * @var string
-     */
-    protected $dataKey;
-
-    /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var int
-     */
-    protected $number;
-
-   /**
-    * @var UI
-    */
-    protected $ui;
-
-    /**
-     * @var UI_DataGrid_Column_UserSettings|NULL
-     */
-    protected $userSettings;
+    protected UI_DataGrid $grid;
+    protected string $dataKey;
+    protected string $title;
+    protected int $number;
+    protected UI $ui;
+    protected ?ColumnSettingStorage $userSettings = null;
 
     /**
      * @var array{sortable:bool,sortKey:string|null,sortCallback:callable|null,sortDataColumn:string|NULL,align:string,nowrap:bool,hidden:bool,width:null|int,width-type:string,tooltip:string}
      */
-    protected $options = array(
+    protected array $options = array(
         self::OPTION_ALIGN => 'left',
         self::OPTION_SORTABLE => false,
         self::OPTION_SORT_KEY => null,
@@ -129,7 +111,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     /**
      * @var string[]
      */
-    protected $classes = array();
+    protected array $classes = array();
     
    /**
     * Adds a class that will be added to all cells in this column.
@@ -139,7 +121,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     */
     public function addClass(string $class) : UI_DataGrid_Column
     {
-        if(!in_array($class, $this->classes)) {
+        if(!in_array($class, $this->classes, true)) {
             $this->classes[] = $class;
         }
         
@@ -242,7 +224,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      * @param string|NULL $dataKeyName The name of the data key to sort: use this if it is not the same as the column name.
      * @return UI_DataGrid_Column
      */
-    public function setSortable(bool $default=false, string $dataKeyName=null) : UI_DataGrid_Column
+    public function setSortable(bool $default=false, ?string $dataKeyName=null) : UI_DataGrid_Column
     {
         if(empty($dataKeyName)) {
             $dataKeyName = $this->getDataKey();
@@ -381,7 +363,11 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     }
 
     /**
-     * Sets the column as hidden: use this to hide ID columns for example.
+     * Sets the column as hidden.
+     *
+     * Can be used to hide ID columns, for example.
+     *
+     * NOTE: This is a column option
      *
      * @return $this
      */
@@ -417,12 +403,28 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     }
 
     /**
-     * Checks whether this column is hidden.
+     * Checks whether this column is hidden (either via
+     * the option or by the user in their configuration).
+     *
      * @return boolean
+     * @see self::isHiddenForUser()
      */
     public function isHidden() : bool
     {
-        return $this->isHiddenForUser() || $this->options[self::OPTION_HIDDEN];
+        return $this->isHiddenForUser() || $this->isHiddenByOption();
+    }
+
+    /**
+     * Whether this column has been specifically hidden using
+     * {@see self::setHidden()} (as compared to hidden by the
+     * user in the grid's configuration).
+     *
+     * @return bool
+     * @see self::isHiddenForUser()
+     */
+    public function isHiddenByOption() : bool
+    {
+        return $this->options[self::OPTION_HIDDEN];
     }
 
     public function renderCell(UI_DataGrid_Entry $entry) : string
@@ -532,7 +534,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return !empty($orderBy) && $orderBy === $this->getOrderKey();
     }
     
-    protected function renderAttributes($isHeader, $value=null, UI_DataGrid_Entry $entry=null)
+    protected function renderAttributes($isHeader, $value=null, ?UI_DataGrid_Entry $entry=null) : string
     {
         $objectName = $this->getObjectName();
         
@@ -582,7 +584,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         return ' ' . compileAttributes($attributes);
     }
     
-    protected function resolveID(bool $isHeader, UI_DataGrid_Entry $entry=null) : string
+    protected function resolveID(bool $isHeader, ?UI_DataGrid_Entry $entry=null) : string
     {
         $objectName = $this->getObjectName();
         
@@ -605,25 +607,21 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      *
      * @param integer $position
      * @return $this
+     * @deprecated Use the custom ordering instead.
      */
     public function moveTo(int $position) : UI_DataGrid_Column
     {
-        $this->grid->moveColumn($this, $position);
-
         return $this;
     }
 
-    /**
-     * @var string
-     */
-    protected $role = 'cell';
+    protected string $role = self::ROLE_CELL;
 
     /**
      * @return $this
      */
     public function roleHeading() : UI_DataGrid_Column
     {
-    	return $this->setRole('heading');
+    	return $this->setRole(self::ROLE_HEADING);
     }
 
     /**
@@ -631,7 +629,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
      */
     public function roleActions() : UI_DataGrid_Column
     {
-    	return $this->setRole('actions');
+    	return $this->setRole(self::ROLE_ACTIONS);
     }
 
     /**
@@ -654,10 +652,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     	return $this->role;
     }
 
-    /**
-     * @var string|NULL
-     */
-    protected $cachedObjectName = null;
+    protected ?string $cachedObjectName = null;
     
     public function getObjectName() : string
     {
@@ -708,15 +703,8 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
         }
     }
 
-    /**
-     * @var bool
-     */
-    protected $editable = false;
-
-    /**
-     * @var string
-     */
-    protected $editableClientClass = '';
+    protected bool $editable = false;
+    protected string $editableClientClass = '';
     
    /**
     * Makes this column editable: requires a clientside handler object
@@ -758,11 +746,7 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
     */
     public function isAction() : bool
     {
-        if($this->role === 'actions') {
-            return true;
-        }
-        
-        return false;
+        return $this->role === self::ROLE_ACTIONS;
     }
     
    /**
@@ -795,20 +779,20 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
 
     public function setHiddenForUser(bool $hidden, ?Application_User $user=null) : UI_DataGrid_Column
     {
-        $this->getUserSettings()->setHiddenForUser($hidden, $user);
+        $this->createSettingStorage()->setHiddenForUser($hidden, $user);
         return $this;
     }
 
     public function isHiddenForUser(?Application_User $user=null) : bool
     {
-        return $this->getUserSettings()->isHiddenForUser($user);
+        return $this->createSettingStorage()->isHiddenForUser($user);
     }
 
-    private function getUserSettings() : UI_DataGrid_Column_UserSettings
+    private function createSettingStorage() : ColumnSettingStorage
     {
         if(!isset($this->userSettings))
         {
-            $this->userSettings = new UI_DataGrid_Column_UserSettings($this);
+            $this->userSettings = new ColumnSettingStorage($this);
         }
 
         return $this->userSettings;
@@ -833,5 +817,29 @@ class UI_DataGrid_Column implements UI_Interfaces_Conditional
             ),
             self::ERROR_UNKNOWN_OPTION_NAME
         );
+    }
+
+    /**
+     * Sets a custom ordering index for the column.
+     * @param int $order
+     * @return $this
+     */
+    public function setOrder(int $order) : self
+    {
+        $this->createSettingStorage()->setOrder($order);
+        return $this;
+    }
+
+    /**
+     * Used for ordering the column using a custom, user-based
+     * order. If no custom order has been specified, uses
+     * {@see self::getNumber()}, the order in which the column
+     * was added to the grid.
+     *
+     * @return int
+     */
+    public function getOrder() : int
+    {
+        return $this->createSettingStorage()->getOrder();
     }
 }

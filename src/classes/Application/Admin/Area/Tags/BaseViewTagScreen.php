@@ -78,7 +78,7 @@ abstract class BaseViewTagScreen extends Application_Admin_Area_Mode_CollectionR
         return AppFactory::createTags();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return $this->createCollection()->getAdminURL();
     }

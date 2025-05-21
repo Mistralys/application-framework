@@ -4,38 +4,34 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses;
 
+use AppFrameworkTestClasses\Traits\DBHelperTestInterface;
+use AppFrameworkTestClasses\Traits\ImageMediaTestInterface;
+use AppFrameworkTestClasses\Traits\MythologyTestInterface;
 use Application;
 use Application\AppFactory;
 use Application\Interfaces\ChangelogableInterface;
-use Application\Tags\TagCollection;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
-use Application_Media_Document;
-use Application_Media_Document_Image;
+use Application_Session_Base;
 use Application_User;
-use AppUtils\FileHelper;
-use AppUtils\FileHelper\FileInfo;
+use AppLocalize\Localization\Locales\LocaleInterface;
+use AppUtils\FileHelper\FolderInfo;
 use DBHelper;
+use Mistralys\AppFrameworkTests\TestClasses\TestOutputFile;
 use PHPUnit\Framework\TestCase;
-use AppLocalize\Localization_Locale;
 use AppLocalize\Localization;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
 use UI;
 use UI_Page;
 
-abstract class ApplicationTestCase extends TestCase
+abstract class ApplicationTestCase extends TestCase implements ApplicationTestCaseInterface
 {
     /**
      * @var array<string,int>
      */
     private static array $counter = array();
-
-    /**
-     * @var Application_Media_Document[]
-     */
-    protected array $testMedia = array();
 
     protected function logHeader(string $testName): void
     {
@@ -66,14 +62,9 @@ abstract class ApplicationTestCase extends TestCase
     {
         $this->clearTransaction();
         $this->disableLogging();
-        $this->clearTestMedia();
-    }
 
-    protected function clearTestMedia(): void
-    {
-        foreach($this->testMedia as $media)
-        {
-            FileHelper::deleteFile($media->getPath());
+        if($this instanceof ImageMediaTestInterface) {
+            $this->tearDownImageTestCase();
         }
     }
 
@@ -175,7 +166,7 @@ abstract class ApplicationTestCase extends TestCase
         return Application::createUser($newUser->getID());
     }
 
-    protected function createTestLocale(string $name = ''): Localization_Locale
+    protected function createTestLocale(string $name = ''): LocaleInterface
     {
         if (empty($name)) {
             $names = DBHelper::createFetchMany('locales_application')
@@ -185,20 +176,6 @@ abstract class ApplicationTestCase extends TestCase
         }
 
         return Localization::getAppLocaleByName($name);
-    }
-
-    public function createTestImage(string $name='example-image') : Application_Media_Document_Image
-    {
-        $file = $this->getExampleImagePath();
-
-        $document = AppFactory::createMedia()->createImageFromFile($name, FileInfo::factory($file));
-        $documentPath = $document->getPath();
-
-        $this->assertFileExists($documentPath);
-
-        $this->testMedia[] = $document;
-
-        return $document;
     }
 
     protected function createTestCountry(string $iso, string $label='') : Application_Countries_Country
@@ -218,29 +195,57 @@ abstract class ApplicationTestCase extends TestCase
         return $countries->createNewCountry($iso, $label);
     }
 
+    /**
+     * Gets the path to the root folder of the bundled test application.
+     * @return FolderInfo
+     */
+    protected function getTestAppFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/../application')->requireExists();
+    }
+
     // endregion
 
     protected function setUp(): void
     {
         Localization::selectAppLocale('en_UK');
-
         AppFactory::createLogger()->reset();
+        Application_Session_Base::setRedirectsEnabled(true);
+        UI::selectDefaultInstance();
 
-        $this->testMedia = array();
+        $this->setUpTraits();
+
+        // A script somewhere resets this to ~512MB in the middle of
+        // the tests, so that the phpunit.xml setting is ignored.
+        // Searches did not turn up anything meaningful, so this was
+        // the best interim solution.
+        Application::setMemoryLimit(900, 'Test');
     }
 
-    protected function getMediaStoragePath() : string
+    private function setUpTraits() : void
     {
-        return __DIR__.'/../files/Media';
+        if($this instanceof ImageMediaTestInterface) {
+            $this->setUpImageTestCase();
+        }
+
+        if($this instanceof DBHelperTestInterface) {
+            $this->setUpDBHelperTestTrait();
+        }
+
+        if($this instanceof MythologyTestInterface) {
+            $this->setUpMythologyTestTrait();
+        }
     }
 
-    protected function getExampleImagePath() : string
+    /**
+     * @param string $content
+     * @param string|null $extension If no extension is specified, uses {@see Application::DEFAULT_TEST_FILE_EXTENSION}.
+     * @param string|null $name If no name is specified, generates a unique name.
+     * @return TestOutputFile
+     */
+    public function saveTestFile(string $content, ?string $extension = null, ?string $name = null): TestOutputFile
     {
-        $file = $this->getMediaStoragePath() . '/example-image.png';
-
-        $this->assertFileExists($file);
-
-        return $file;
+        return new TestOutputFile($content, $extension, $name);
     }
 
     // region Custom assertions

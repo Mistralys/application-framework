@@ -1,12 +1,7 @@
 <?php
 /**
-* File containing the {@see TestDriver\CustomIcon} class.
-*
 * @package TestDriver
 * @subpackage User Interface
-* @see TestDriver\CustomIcon
-*
-* @template-version 1
 */
 
 declare(strict_types=1);

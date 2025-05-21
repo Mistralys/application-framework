@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Application\Interfaces\Admin;
 
 use Application\Traits\Admin\ScreenAccessTrait;
-use Application_Admin_ScreenInterface;
 
 /**
  * Interface for classes that can return a subject administration
@@ -25,5 +24,5 @@ use Application_Admin_ScreenInterface;
  */
 interface ScreenAccessInterface
 {
-    public function getAdminScreen() : Application_Admin_ScreenInterface;
+    public function getAdminScreen() : AdminScreenInterface;
 }

@@ -7,6 +7,8 @@ use Application\Media\ImageDocumentInterface;
 use Application\Media\ImageDocumentTrait;
 use Application\Media\MediaException;
 use AppUtils\BaseException;
+use AppUtils\FileHelper\FileInfo;
+use AppUtils\ImageHelper\ImageFormats\Formats\GIFImage;
 use AppUtils\ImageHelper_Size;
 use AppUtils\ImageHelper;
 
@@ -135,7 +137,23 @@ class Application_Media_Document_Image extends Application_Media_Document
     public function injectMetadata(UI_PropertiesGrid $grid) : void
     {
         $dimensions = $this->getDimensions();
+        $format = $this->getImageFormat();
+
+        $gFormat = $grid->add(t('Image format'), strtoupper($format->getID()));
+        if($this->isAnimatedGIF()) {
+            $gFormat->setComment(t('Animated: will never be resampled to preserve the animation.'));
+        }
 
         $grid->add(t('Image size'), $dimensions->toReadableString());
+    }
+
+    public function isAnimatedGIF() : bool
+    {
+        $format = $this->getImageFormat();
+
+        return
+            $format instanceof GIFImage
+            &&
+            $format->fileHasAnimation(FileInfo::factory($this->getPath()));
     }
 }

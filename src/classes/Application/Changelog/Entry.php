@@ -1,6 +1,7 @@
 <?php
 
 use Application\Interfaces\ChangelogableInterface;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 
 class Application_Changelog_Entry
@@ -17,8 +18,18 @@ class Application_Changelog_Entry
     * @var array<string,mixed>|NULL
     */
     protected ?array $dataDecoded = null;
-    
-    public function __construct(ChangelogableInterface $owner, int $id, int $authorID, string $type, string $date, string $data)
+    private ArrayDataCollection $dbEntry;
+
+    /**
+     * @param ChangelogableInterface $owner
+     * @param int $id
+     * @param int $authorID
+     * @param string $type
+     * @param string $date
+     * @param string $data Custom JSON-based data for the entry.
+     * @param array $dbEntry The entire database columns (used to access any custom columns there may be).
+     */
+    public function __construct(ChangelogableInterface $owner, int $id, int $authorID, string $type, string $date, string $data, array $dbEntry)
     {
         $this->owner = $owner;
         $this->id = $id;
@@ -26,6 +37,7 @@ class Application_Changelog_Entry
         $this->date = $date;
         $this->type = $type;
         $this->data = $data;
+        $this->dbEntry = ArrayDataCollection::create($dbEntry);
     }
     
    /**
@@ -127,6 +139,11 @@ class Application_Changelog_Entry
         }
         
         return $this->author;
+    }
+
+    public function getDBEntry() : ArrayDataCollection
+    {
+        return $this->dbEntry;
     }
     
     public function getAuthorName() : string

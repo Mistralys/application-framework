@@ -27,7 +27,7 @@ class BaseTagTreeScreen extends Application_Admin_Area_Mode_Submode_CollectionRe
         return AppFactory::createTags();
     }
 
-    protected function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string
     {
         return $this->createCollection()->getAdminListURL();
     }
