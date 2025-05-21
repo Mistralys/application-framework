@@ -17,6 +17,8 @@
     --accent-secondary-l: #5b5b5b;
     --accent-secondary-xl: #333;
     --accent-grid-hover: #dce2ec;
+    --accent-grid-sorted-hover: #e2ebf4;
+    --accent-grid-sorted-active: #e2ebf4;
     --accent-grid-highlight: #f7fbff;
     --accent-text: rgba(0,0,0,.75);
     --accent-text-inverted: #fff;
