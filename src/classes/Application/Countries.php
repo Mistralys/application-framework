@@ -14,6 +14,7 @@ use Application\Countries\FilterSettings;
 use Application\Exception\UnexpectedInstanceException;
 use Application\Languages;
 use Application\Languages\Language;
+use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Country\CountryGB;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
@@ -36,7 +37,7 @@ class Application_Countries extends DBHelper_BaseCollection
 {
     public const ERROR_UNKNOWN_ISO_CODE = 21901;
     public const ERROR_INVALID_COUNTRY_ID = 21902;
-    public const ERROR_INVALID_ISO_CODE = 21903;
+    public const ERROR_CANNOT_USE_ALIAS_FOR_CREATION = 21903;
     public const ERROR_ISO_ALREADY_EXISTS = 21904;
 
     public const PRIMARY_NAME = 'country_id';
@@ -44,19 +45,6 @@ class Application_Countries extends DBHelper_BaseCollection
     public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
 
     protected static ?Application_Countries $instance = null;
-
-    public const COUNTRY_DE = 'de';
-    public const COUNTRY_AT = 'at';
-    public const COUNTRY_UK = 'uk';
-    public const COUNTRY_GB = 'gb';
-    public const COUNTRY_CA = 'ca';
-    public const COUNTRY_FR = 'fr';
-    public const COUNTRY_IT = 'it';
-    public const COUNTRY_ES = 'es';
-    public const COUNTRY_PL = 'pl';
-    public const COUNTRY_RO = 'ro';
-    public const COUNTRY_MX = 'mx';
-    public const COUNTRY_US = 'us';
 
     public function getRecordDefaultSortKey() : string
     {
@@ -299,9 +287,17 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function isoExists(string $iso) : bool
     {
-        $iso = strtolower($iso);
-        
-        return in_array($iso, $this->getSupportedISOs());
+        $iso = CountryCollection::getInstance()->filterCode($iso);
+
+        foreach($this->getAll() as $country)
+        {
+            if($country->getISO() === $iso || $country->getAlpha2() === $iso)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
    /**
@@ -352,9 +348,9 @@ class Application_Countries extends DBHelper_BaseCollection
     */
     public function getByISO(string $iso) : Application_Countries_Country
     {
-        $iso = strtolower($iso);
+        $iso = CountryCollection::getInstance()->filterCode($iso);
         $all = $this->getAll();
-        
+
         foreach($all as $country)
         {
             if($country->getISO() === $iso || $country->getAlpha2() === $iso)
@@ -491,9 +487,14 @@ class Application_Countries extends DBHelper_BaseCollection
             );
         }
 
+        $collection = CountryCollection::getInstance();
+        $iso = $collection->filterCode($iso);
+
+        $this->validateISO($iso);
+
         return $this->createNewRecord(
             array(
-                Application_Countries_Country::COL_ISO => $this->convertISO($iso),
+                Application_Countries_Country::COL_ISO => $iso,
                 Application_Countries_Country::COL_LABEL => $label
             )
         );
@@ -503,10 +504,7 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         $this->keys->register(Application_Countries_Country::COL_ISO)
             ->makeRequired()
-            ->setValidation(NamedClosure::fromClosure(
-                Closure::fromCallable(array($this, 'validateISO')),
-                array($this, 'validateISO')
-            ));
+            ->setValidation(Closure::fromCallable(array($this, 'validateISO')));
 
         $this->keys->register(Application_Countries_Country::COL_LABEL)
             ->makeRequired();
@@ -514,27 +512,43 @@ class Application_Countries extends DBHelper_BaseCollection
 
     private function validateISO(string $iso) : void
     {
-        if($this->convertISO($iso) === $iso)
+        $iso = strtolower($iso);
+        $collection = CountryCollection::getInstance();
+        $aliases = $collection->getAliases();
+
+        if(isset($aliases[$iso]))
         {
-            return;
+            throw new CountryException(
+                'Cannot use specified ISO code for a country.',
+                sprintf(
+                    'Use the code [%s] instead, which supports being accessed as [%s] as well.',
+                    $aliases[$iso],
+                    $iso
+                ),
+                self::ERROR_CANNOT_USE_ALIAS_FOR_CREATION
+            );
         }
 
-        throw new CountryException(
-            'Cannot use specified ISO code for a country.',
-            sprintf(
-                'Use the code [%s] instead, which supports being accessed as [%s] as well.',
-                $this->convertISO($iso),
-                $iso
-            ),
-            self::ERROR_INVALID_ISO_CODE
-        );
+        if(!$collection->isoExists($iso)) {
+            throw new CountryException(
+                'Unsupported country ISO code',
+                sprintf(
+                    'The ISO code [%s] is not on the list of supported system countries. '.PHP_EOL.
+                    'Available countries are: '.PHP_EOL.
+                    '- %s',
+                    $iso,
+                    implode(PHP_EOL.'- ', $collection->getIDs())
+                ),
+                self::ERROR_UNKNOWN_ISO_CODE
+            );
+        }
     }
 
     /**
      * @var array<string,string>
      */
     private array $isoConversions = array(
-        CountryGB::ISO_CODE => CountryGB::ISO_ALIAS_UK
+        CountryGB::ISO_ALIAS_UK => CountryGB::ISO_CODE
     );
 
     public function convertISO(string $iso) : string
