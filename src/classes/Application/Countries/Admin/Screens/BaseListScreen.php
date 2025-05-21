@@ -9,6 +9,7 @@ use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode_CollectionList;
 use Application_Countries_Country;
+use Application_Countries_FilterCriteria;
 use AppUtils\ClassHelper;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
@@ -16,6 +17,9 @@ use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Entry;
 
+/**
+ * @property Application_Countries_FilterCriteria $filters
+ */
 class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
 {
     use AllowableMigrationTrait;
@@ -59,7 +63,7 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
             $record
         );
 
-        $item = $this->grid->createEntry(array());
+        $item = $this->grid->createEntry();
 
         $item->setColumnValue(self::COL_LABEL, $country->getIconLabel(true));
         $item->setColumnValue(self::COL_ISO, sb()->code($country->getISO()));
@@ -77,12 +81,12 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
     protected function configureColumns(): void
     {
         $this->grid->addColumn(self::COL_ISO, t('ISO'))
-            ->setSortable(true, Application_Countries_Country::COL_ISO)
+            ->setSortingString()
             ->setCompact()
             ->setNowrap();
 
         $this->grid->addColumn(self::COL_LABEL, t('Label'))
-            ->setSortable(false, Application_Countries_Country::COL_LABEL);
+            ->setSortingString();
 
         $this->grid->addColumn(self::COL_CURRENCY, t('Currency'));
         $this->grid->addColumn(self::COL_LANGUAGE, t('Official language'));
@@ -98,6 +102,11 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
         $this->sidebar->addSeparator();
 
         parent::_handleSidebar();
+    }
+
+    protected function configureFilters(): void
+    {
+        $this->filters->excludeInvariant();
     }
 
     protected function configureActions(): void
