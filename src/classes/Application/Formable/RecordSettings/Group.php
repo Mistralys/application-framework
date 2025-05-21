@@ -1,13 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSettings_Group} class.
- *
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSettings_Group
  */
 
 declare(strict_types=1);
+
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Handles setting groups, which are used to visually group
@@ -25,35 +24,23 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
     public const ERROR_ELEMENT_METHOD_INVALID_RETURN_VALUE = 44902;
     public const ERROR_INVALID_CALLBACK = 44903;
     
-   /**
-    * @var string
-    */
-    protected $label;
+    protected string $label;
 
    /**
     * @var array<string,Application_Formable_RecordSettings_Setting>
     */
     protected array $settings = array();
     
-   /**
-    * @var Application_Formable_RecordSettings
-    */
-    protected $manager;
+    protected Application_Formable_RecordSettings $manager;
+    
+    protected string $abstract = '';
     
    /**
-    * @var string
+    * @var array<int,array{callback:callable,arguments:array<int,mixed>}>
     */
-    protected $abstract = '';
+    protected array $onInjected = array();
     
-   /**
-    * @var array
-    */
-    protected $onInjected = array();
-    
-   /**
-    * @var boolean
-    */
-    protected $expanded = false;
+    protected bool $expanded = false;
     
     public function __construct(Application_Formable_RecordSettings $manager, string $label)
     {
@@ -94,10 +81,14 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
         
         return $setting;
     }
-    
-    public function setAbstract(string $abstract)  : Application_Formable_RecordSettings_Group
+
+    /**
+     * @param string|StringableInterface|NULL $abstract
+     * @return $this
+     */
+    public function setAbstract($abstract)  : Application_Formable_RecordSettings_Group
     {
-        $this->abstract = $abstract;
+        $this->abstract = toString($abstract);
         
         return $this;
     }
@@ -125,7 +116,7 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
 
         foreach($this->settings as $setting)
         {
-            if($setting->isVirtual() && !$includeVirtual)
+            if(!$includeVirtual && $setting->isVirtual())
             {
                 continue;
             }
@@ -163,15 +154,27 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
     * 
     * The callback gets the following arguments:
     * 
-    * # The group instance
-    * # The form header instance
-    * # Any additional arguments given in the arguments array
+    * 1. The group instance ({@see Application_Formable_RecordSettings_Group})
+    * 2. The form section instance ({@see UI_Page_Section})
+    * 3. Any additional arguments given in the argument array
+    *
+    * ## Callback prototype:
+    *
+    * ```php
+    * function(
+    *     Application_Formable_RecordSettings_Group $group,
+    *     UI_Page_Section $header,
+    *     mixed $arg1,
+    *     mixed $arg2,
+    *     ...
+    * )
+    * ```
     * 
     * @param callable $callback
-    * @param array $arguments
+    * @param array<int,mixed> $arguments
     * @return Application_Formable_RecordSettings_Group
     */
-    public function onInjected($callback, array $arguments=array()) : Application_Formable_RecordSettings_Group
+    public function onInjected(callable $callback, array $arguments=array()) : Application_Formable_RecordSettings_Group
     {
         Application::requireCallableValid($callback, self::ERROR_INVALID_CALLBACK);
         
@@ -185,7 +188,7 @@ class Application_Formable_RecordSettings_Group implements Application_Interface
     
     protected function injectHeader() : void
     {
-        $header = $this->manager->addElementHeaderII($this->label);
+        $header = $this->manager->addSection($this->label);
         
         $header->setAbstract($this->abstract);
         
