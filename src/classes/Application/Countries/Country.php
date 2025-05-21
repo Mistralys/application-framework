@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Countries\Admin\CountryAdminURLs;
+use Application\Countries\Rights\CountryScreenRights;
 use Application\Languages;
 use Application\Languages\Language;
 use Application\Languages\LanguageException;
@@ -70,8 +71,14 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $label;
     }
     
-    public function getIconLabel() : string
+    public function getIconLabel(bool $linked=false) : string
     {
+        if($linked) {
+            return (string)sb()
+                ->add($this->getIcon())
+                ->linkRight($this->getLocalizedLabel(), $this->adminURL()->status(), CountryScreenRights::SCREEN_STATUS);
+        }
+
         return $this->getIcon().' '.$this->getLocalizedLabel();
     }
     
@@ -97,7 +104,7 @@ class Application_Countries_Country extends DBHelper_BaseRecord
             return '';
         }
 
-        return $iso;
+        return CountryCollection::getInstance()->filterCode($iso);
     }
 
     /**
