@@ -9,6 +9,8 @@
     --accent-secondary-xl: #8798b7;
 
     --accent-grid-hover: #2d3139;
+    --accent-grid-sorted-hover: #e2ebf4;
+    --accent-grid-sorted-active: #e2ebf4;
     --accent-grid-highlight: #2d2f3b;
 
     --accent-text: #93A5B4;

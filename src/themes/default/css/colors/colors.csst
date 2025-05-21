@@ -124,6 +124,8 @@
     --color-grid-row-bg-hover: var(--accent-grid-hover);
     --color-grid-border: var(--accent-borders);
     --color-grid-bg-sorted: var(--accent-grid-highlight);
+    --color-grid-bg-sorted-hover: var(--accent-grid-sorted-hover);
+    --color-grid-bg-sorted-active: var(--accent-grid-sorted-active);
     --color-grid-icon-sort: var(--accent-secondary-s);
     --color-grid-icon-sort-hover: var(--color-link-hover);
     --color-grid-icon-sort-active: var(--color-text-warning);
