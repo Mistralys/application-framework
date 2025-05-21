@@ -15,6 +15,7 @@ parameters:
         - APP_ROOT
         - APP_TESTS_RUNNING
         - APP_FRAMEWORK_TESTS
+        - TESTSUITE_DB_PORT
     ignoreErrors:
         -
             message: '#this might not be defined.#'

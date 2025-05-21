@@ -99,4 +99,20 @@ final class CollectionTests extends CountriesTestCase
 
         $this->assertTrue($collection->hasCountry($de));
     }
+
+    /**
+     * Test used to verify a bug where the instances were different.
+     * @link https://github.com/Mistralys/application-framework/issues/37
+     */
+    public function test_consistentInstances() : void
+    {
+        $this->createTestCountry('gb');
+
+        $this->countries->resetCollection();
+
+        $countryA = $this->countries->getByISO('gb');
+        $countryB = $this->countries->getByID($countryA->getID());
+
+        $this->assertSame($countryA, $countryB);
+    }
 }

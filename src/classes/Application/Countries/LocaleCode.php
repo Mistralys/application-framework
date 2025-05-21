@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Countries\CountryException;
+use AppUtils\ConvertHelper;
 
 class Application_Countries_LocaleCode
 {
@@ -30,9 +31,9 @@ class Application_Countries_LocaleCode
      */
     private function parse() : void
     {
-        $parts = explode('_', strtolower($this->code));
+        $parts = ConvertHelper::explodeTrim('_', strtolower($this->code));
 
-        if($parts !== false && count($parts) == 2) {
+        if(count($parts) === 2) {
             $this->countryISO = $parts[1];
             $this->languageCode = $parts[0];
             return;

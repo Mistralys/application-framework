@@ -1,9 +1,7 @@
 <?php
 /**
- * File containing the {@link DBHelper} class.
  * @package Helpers
  * @subpackage DBHelper
- * @see DBHelper
  */
 
 use Application\ConfigSettings\AppConfig;
@@ -327,9 +325,7 @@ class DBHelper
      * @param array $variables
      * @return int
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
-     * @throws JsonException
      */
     public static function insertInt($statementOrBuilder, array $variables=array()) : int
     {
@@ -1598,7 +1594,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return string[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKey(string $key, $statementOrBuilder, array $variables=array()) : array
@@ -1625,7 +1620,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return int[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKeyInt(string $key, $statementOrBuilder, array $variables=array()) : array

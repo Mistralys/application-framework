@@ -25,10 +25,13 @@ abstract class Application_Session_Native extends Application_Session_Base
     private static array $options = array();
     private bool $enabled = true;
 
-    protected function _start(): void
+    protected function init(): void
     {
         $this->enabled = !isCLI();
+    }
 
+    protected function _start(): void
+    {
         $name = $this->getName();
 
         if(!$this->enabled) {
@@ -66,6 +69,11 @@ abstract class Application_Session_Native extends Application_Session_Base
         $ex->setErrorDetails($code, $msg, $file, $line);
 
         throw $ex;
+    }
+
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
     }
 
     public function getID() : string

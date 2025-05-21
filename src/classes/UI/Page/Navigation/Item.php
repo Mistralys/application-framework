@@ -1,10 +1,10 @@
 <?php
 /**
- * File containing the {@link UI_Page_Navigation_Item} class.
  * @package Application
  * @subpackage UserInterface
- * @see UI_Page_Navigation_Item
  */
+
+declare(strict_types=1);
 
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Traits\ClassableTrait;
@@ -187,23 +187,18 @@ abstract class UI_Page_Navigation_Item
      * active state, or to active if not specified.
      *
      * @param bool $active
-     * @throws InvalidArgumentException
      * @see isActive()
      * @return $this
      */
     public function setActive(bool $active = true) : self
     {
-        if (!is_bool($active)) {
-            throw new InvalidArgumentException('Invalid value for setActive, boolean expected, ' . gettype($active) . ' given.');
-        }
-
         $this->active = $active;
         return $this;
     }
 
     /**
      * Sets the group for the navigation element: grouped elements
-     * are displayed as a sub-menu with items, the title being the
+     * are displayed as a submenu with items, the title being the
      * label of the menu.
      *
      * @param string $title

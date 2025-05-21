@@ -1,7 +1,5 @@
 <?php
 /**
- * File containing the interface {@see Application_Interfaces_Admin_Wizard_Step_Confirmation}.
- *
  * @package Application
  * @subpackage Wizards
  * @see Application_Interfaces_Admin_Wizard_Step_Confirmation
@@ -20,9 +18,9 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Admin_Wizard_Step_Confirmation
 {
-    const STEP_NAME = 'Confirm';
-    const FORM_NAME = 'wizard_confirmation';
-    const PARAM_REFERENCE_ID = 'reference_id';
+    public const STEP_NAME = 'Confirm';
+    public const FORM_NAME = 'wizard_confirmation';
+    public const PARAM_REFERENCE_ID = 'reference_id';
     public const ERROR_NO_REFERENCE_ID_SET = 95001;
 
     public function getReferenceID() : string;

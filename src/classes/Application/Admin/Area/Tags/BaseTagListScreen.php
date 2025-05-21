@@ -162,7 +162,7 @@ abstract class BaseTagListScreen extends Application_Admin_Area_Mode_CollectionL
 
     protected function _handleSidebar(): void
     {
-        $this->sidebar->addButton('create-tag', t('Create new...'))
+        $this->sidebar->addButton('create-tag', t('Create tag...'))
             ->setIcon(UI::icon()->add())
             ->makeLinked($this->createCollection()->getAdminCreateURL())
             ->makePrimary();

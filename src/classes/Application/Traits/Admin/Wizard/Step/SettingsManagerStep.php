@@ -50,11 +50,16 @@ trait Application_Traits_Admin_Wizard_SettingsManagerStep
     {
         $values = $this->getDataKey(Application_Interfaces_Admin_Wizard_SettingsManagerStep::KEY_FORM_VALUES);
 
-        if(is_array($values))
+        if(!is_array($values))
         {
-            return $values;
+            $values = array();
         }
 
+        return array_merge($values, $this->getDefaultFormValues());
+    }
+
+    public function getDefaultFormValues() : array
+    {
         return array();
     }
 

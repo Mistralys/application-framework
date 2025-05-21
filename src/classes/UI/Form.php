@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@see UI_Form} class.
- *
  * @package Application
  * @subpackage Forms
- * @see UI_Form
  */
 
 declare(strict_types=1);
@@ -1969,13 +1966,13 @@ class UI_Form extends UI_Renderable
      * @param HTML_QuickForm2_Node $element
      * @param callable $callback
      * @param string $errorMessage
-     * @param array<int,mixed> $arguments Arguments for the callback, as an indexed array of parameters.
+     * @param mixed|array<int,mixed>|NULL $arguments Arguments for the callback, as an indexed array of parameters or a single value.
      * @return HTML_QuickForm2_Rule_Callback
      *
      * @throws BaseClassHelperException
      * @throws HTML_QuickForm2_Exception
      */
-    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, array $arguments=array()) : HTML_QuickForm2_Rule_Callback
+    public function addRuleCallback(HTML_QuickForm2_Node $element, callable $callback, string $errorMessage, $arguments=null) : HTML_QuickForm2_Rule_Callback
     {
         $rule = ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Rule_Callback::class,
@@ -1986,12 +1983,17 @@ class UI_Form extends UI_Renderable
             )
         );
 
-        if(!is_array($arguments)) {
-            // this is to ensure the arguments are always passed on
-            // and in the correct order, even if the arguments should
-            // be null, since this may be intentional (There was an
-            // empty check here before, which caused issues).
-            $arguments = array($arguments);
+        if(!empty($arguments))
+        {
+            if (!is_array($arguments)) {
+                // this is to ensure the arguments are always passed on
+                // and in the correct order, even if the arguments should
+                // be null, since this may be intentional (There was an
+                // empty check here before, which caused issues).
+                $arguments = array($arguments);
+            }
+        } else {
+            $arguments = array();
         }
 
         $arguments[] = $rule;

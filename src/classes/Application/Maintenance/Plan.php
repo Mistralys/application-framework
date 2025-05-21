@@ -1,6 +1,6 @@
 <?php
 
-use AppLocalize\Localization_Locale;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
 
@@ -74,7 +74,7 @@ class Application_Maintenance_Plan
         return false;
     }
     
-    public function hasInfoText(?Localization_Locale $locale=null)
+    public function hasInfoText(?LocaleInterface $locale=null)
     {
         if(!$locale) {
             $locale = Localization::getAppLocale();
@@ -84,7 +84,7 @@ class Application_Maintenance_Plan
         return isset($this->infoTexts[$name]);
     }
     
-    public function getInfoText(?Localization_Locale $locale=null) : string
+    public function getInfoText(?LocaleInterface $locale=null) : string
     {
         if(!$locale) 
         {
@@ -99,7 +99,7 @@ class Application_Maintenance_Plan
         return '';
     }
     
-    public function setInfoText(Localization_Locale $locale, string $text) : Application_Maintenance_Plan
+    public function setInfoText(LocaleInterface $locale, string $text) : Application_Maintenance_Plan
     {
         $this->infoTexts[$locale->getName()] = $text;
         return $this;

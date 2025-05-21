@@ -72,4 +72,11 @@ class CSSClasses
     public const TEXT_SECONDARY = 'text-secondary';
     public const TEXT_INVERTED = 'text-inverted';
     public const TEXT_INFO = 'text-info';
+
+    public const INPUT_XLARGE = 'input-xlarge';
+    public const INPUT_LARGE = 'input-large';
+    public const INPUT_XXLARGE = 'input-xxlarge';
+    public const INPUT_XSMALL = 'input-mini';
+    public const INPUT_SMALL = 'input-small';
+    public const INPUT_MEDIUM = 'input-medium';
 }

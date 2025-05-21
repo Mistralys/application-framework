@@ -1481,7 +1481,6 @@ EOT;
      * @param string|DBHelper_StatementBuilder $fieldName
      * @param string $orderDir
      * @return $this
-     * @throws Application_Exception
      */
     public function setOrderBy($fieldName, string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING) : self
     {

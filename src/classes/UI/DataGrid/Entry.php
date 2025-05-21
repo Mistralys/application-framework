@@ -7,6 +7,7 @@
 use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\ClassableTrait;
 use UI\DataGrid\EntryClientCommands;
 use UI\DataGrid\GridClientCommands;
@@ -32,11 +33,15 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     private bool $countable = true;
 
     /**
-     * @var array<int|string,mixed>
+     * @var array<string, string|int|float|StringableInterface|NULL>
      */
     protected array $data;
 
-    public function __construct(UI_DataGrid $grid, $data)
+    /**
+     * @param UI_DataGrid $grid
+     * @param array<string, string|int|float|StringableInterface|NULL> $data
+     */
+    public function __construct(UI_DataGrid $grid, array $data)
     {
         $this->id = nextJSID();
         $this->grid = $grid;

@@ -1469,10 +1469,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     * Creates an entry object for the grid: these are used internally
     * to handle individual rows in the table.
     *
-    * @param array $data Associative array with key => value pairs for columns in the row.
+    * @param array<string, string|int|float|StringableInterface|NULL> $data Associative array with key => value pairs for columns in the row.
     * @return UI_DataGrid_Entry
     */
-    public function createEntry(array $data) : UI_DataGrid_Entry
+    public function createEntry(array $data=array()) : UI_DataGrid_Entry
     {
         return new UI_DataGrid_Entry($this, $data);
     }

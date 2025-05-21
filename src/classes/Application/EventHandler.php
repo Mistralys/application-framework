@@ -22,7 +22,6 @@ class Application_EventHandler
 {
     public const ERROR_INVALID_EVENT_CLASS = 13801;
     public const ERROR_MISSING_EVENT_CLASS = 13802;
-    public const ERROR_INVALID_CALLBACK = 13803;
     public const ERROR_UNKNOWN_LISTENER = 13804;
 
    /**
@@ -85,7 +84,7 @@ class Application_EventHandler
      * Triggers the specified event, calling all registered listeners.
      *
      * @param string $eventName
-     * @param array<int,mixed> $args Indexed array of arguments.
+     * @param mixed|array<int,mixed>|NULL $args Indexed array of arguments or a single argument to pass to the event.
      * @param string $class The name of the event class to use. Allows specifying a custom class for this event, which must extend the base event class.
      * @return Application_EventHandler_Event
      * @throws Application_EventHandler_Exception
@@ -93,10 +92,14 @@ class Application_EventHandler
      * @see Application_EventHandler::ERROR_MISSING_EVENT_CLASS
      * @see Application_EventHandler::ERROR_INVALID_EVENT_CLASS
      */
-    public static function trigger(string $eventName, array $args=array(), string $class=Application_EventHandler_Event::class)
+    public static function trigger(string $eventName, $args=null, string $class=Application_EventHandler_Event::class): Application_EventHandler_Event
     {
-        if(!is_array($args)) {
-            $args = array($args);
+        if(!empty($args)) {
+            if (!is_array($args)) {
+                $args = array($args);
+            }
+        } else {
+            $args = array();
         }
 
         // PHP8 fix for call_user_func_array using associative array

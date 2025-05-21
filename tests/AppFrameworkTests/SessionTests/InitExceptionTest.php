@@ -19,21 +19,14 @@ class InitExceptionTest extends ApplicationTestCase
     public function test_startSession() : void
     {
         $this->assertTrue(headers_sent(), 'Headers must already have been sent.');
+        $this->assertTrue(isCLI());
 
-        try
-        {
-            // Attempt to start a new session, which must fail because
-            // headers have already been sent at this point.
-            $session = new TestDriver_Session();
-            $session->start();
-        }
-        catch (Application_Session_Exception $e)
-        {
-            $this->assertSame(Application_Session_Native::ERROR_CANNOT_START_SESSION, $e->getCode());
-            $this->assertSame(Application_Session_Native::SESSION_HEADERS_ALREADY_SENT, $e->getErrorCode());
-            return;
-        }
+        $session = new TestDriver_Session();
 
-        $this->fail('No exception thrown.');
+        $this->assertFalse($session->isEnabled(), 'In CLI mode, the session must not be enabled.');
+
+        $session->start();
+
+        $this->addToAssertionCount(1);
     }
 }

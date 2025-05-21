@@ -33,7 +33,7 @@ class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableLis
 
     public function getBackOrCancelURL(): string
     {
-        // TODO: Implement getBackOrCancelURL() method.
+        return APP_URL;
     }
 
     public function isUserAllowed(): bool

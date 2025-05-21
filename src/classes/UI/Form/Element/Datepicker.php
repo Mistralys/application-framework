@@ -1,11 +1,13 @@
 <?php
 /**
- * File containing the {@see HTML_QuickForm2_Element_Datepicker} class.
- *
  * @package User Interface
  * @subpackage Form Elements
- * @see HTML_QuickForm2_Element_Datepicker
  */
+
+declare(strict_types=1);
+
+use AppLocalize\Localization;
+use AppUtils\ConvertHelper\JSONConverter;
 
 /**
  * Bootstrap-based datepicker element for selecting dates.
@@ -19,7 +21,7 @@
  */
 class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputText
 {
-    protected $clientOptions = array(
+    protected array $clientOptions = array(
         'format' => 'dd/mm/yy',
         'todayBtn' => 'linked',
         'clearBtn' => true,
@@ -43,30 +45,28 @@ class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputTe
         $ui->addJavascript('bootstrap-datepicker.min.js');
         $ui->addStylesheet('bootstrap-datepicker.min.css');
         
-        $this->clientOptions['language'] = \AppLocalize\Localization::getAppLocale()->getShortName();
+        $this->clientOptions['language'] = Localization::getAppLocale()->getLanguageCode();
         
         $ui->addJavascriptOnload(sprintf(
             "$('#%s').datepicker(%s)",
             $id,
-            json_encode($this->clientOptions)
+            JSONConverter::var2json($this->clientOptions)
         ));
-        
-        $html = 
+
+        return
         '<div class="input-append input-date">'.
             parent::__toString().
             '<span class="add-on" onclick="$(\'#'.$id.'\').focus()">'.
                 UI::icon()->calendar().
             '</span>'.
         '</div>';
-        
-        return $html;
     }
     
     public function getPlaceholder()
     {
         $placeholder = $this->clientOptions['format'];
         
-        switch(\AppLocalize\Localization::getAppLocale()->getShortName()) {
+        switch(Localization::getAppLocale()->getLanguageCode()) {
             case 'de':
                 $replaces = array(
                     'd' => 't',
@@ -80,9 +80,9 @@ class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputTe
         return $placeholder;
     }
     
-    const REGEX_DATE = '%\A[0-9]{2}/[0-9]{2}/[0-9]{2}\z%m';
+    public const REGEX_DATE = '%\A[0-9]{2}/[0-9]{2}/[0-9]{2}\z%m';
     
-    public function getRegex()
+    public function getRegex() : string
     {
         return self::REGEX_DATE;
     }
@@ -91,17 +91,17 @@ class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputTe
     * Retrieves a date object for a value of the element,
     * or null otherwise (if the value is empty, for ex.).
     * 
-    * @param string $value
+    * @param string|NULL $value
     * @return null|DateTime
     */
-    public function getDate($value)
+    public function getDate(?string $value) : ?DateTime
     {
         if(empty($value)) {
             return null;
         }
         
         $tokens = explode('/', $value);
-        $date = new DateTime(sprintf('20%s-%s-%s', $tokens[2], $tokens[1], $tokens[0]));
-        return $date;
+
+        return new DateTime(sprintf('20%s-%s-%s', $tokens[2], $tokens[1], $tokens[0]));
     }
 }

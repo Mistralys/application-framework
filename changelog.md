@@ -1,15 +1,27 @@
 # Application Framework Changelog
 
-## v5.9.0 - Application launcher
-- AppLauncher: Added the application launcher system.
-- Themes: Added the `ThemeFile` class to access theme image files.
-- Themes: Now automatically resolving the favicon image to use.
-- Composer: Added the `build-release` command.
-- UI: Now updating generated CSS files when building a release.
+## v5.9.0 - Country management
+- Wizards: Added the possibility to specify step classes, loosening the class structure.
+- Countries: Added the country management screens.
+- Countries: Added user rights to manage countries.
+- Countries: Improved country ISO code alias handling (`uk` and `gb`).
+- Dependencies: Updated AppUtils Core to [v2.3.11](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.11).
+- Dependencies: Updated AppUtils Collections to [v1.1.5](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.5).
+- Dependencies: Updated AppLocalize to [v2.0.0](https://github.com/Mistralys/application-localization/releases/tag/2.0.0).
 
-## v5.8.3 - Session CLI handling
+## v5.8.3 - Fixes and PHP8.4 
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
 - PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+- Formable: Added `onClientFormRendered()` to react to the rendered HTML markup.
+- Formable: Fixed JS head statements not being collected due to wrong call order.
+- Sections: Fixed the collapse buttons not appearing in client forms.
+- Events: Added a trait for HTML processing events.
+- UI: Added `onPageRendered()` to add event listeners.
+- UI: Added `selectDefaultInstance()`.
+- UI: `selectInstance()` now accepts freeform instance names.
+- UI: Removed the obsolete `selectDummyInstance()` method.
+- Composer: Set PHP7.4 as the target platform, but allow installing on PHP8.
+- Dependencies: Updated HTML QuickForm to [v2.3.6](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.6).
 
 ### PHP8.4 update progress
 

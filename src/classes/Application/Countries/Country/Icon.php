@@ -7,7 +7,7 @@ class Application_Countries_Country_Icon extends UI_Renderable
     protected Application_Countries_Country $country;
 
     /**
-     * @var array<int,bool>
+     * @var array<string,bool>
      */
     protected static array $cssLoaded = array();
     

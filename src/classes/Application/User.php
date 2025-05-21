@@ -7,6 +7,8 @@
  * @see Application_User
  */
 
+use Application\Countries\Rights\CountryRightsInterface;
+use Application\Countries\Rights\CountryRightsTrait;
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Media\MediaRightsInterface;
@@ -15,14 +17,12 @@ use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsRightsTrait;
 use Application\Tags\TagsRightsInterface;
 use Application\Tags\TagsRightsTrait;
-use Application\TimeTracker\User\TimeTrackerRightsInterface;
-use Application\TimeTracker\User\TimeTrackerRightsTrait;
 use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
 use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
 use AppLocalize\Localization;
-use AppLocalize\Localization_Locale;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -48,13 +48,14 @@ abstract class Application_User
     Application_Interfaces_Loggable,
     MediaRightsInterface,
     NewsRightsInterface,
-    TagsRightsInterface
+    TagsRightsInterface,
+    CountryRightsInterface
 {
     use Application_Traits_Loggable;
     use MediaRightsTrait;
     use NewsRightsTrait;
     use TagsRightsTrait;
-
+    use CountryRightsTrait;
     public const ERROR_CREATE_METHOD_NOT_IMPLEMENTED = 20001;
     public const ERROR_CREATE_SYSTEMUSER_METHOD_NOT_IMPLEMENTED = 20002;
     public const ERROR_NO_ROLES_DEFINED = 20003;
@@ -796,7 +797,7 @@ abstract class Application_User
         return $this;
     }
 
-    public function getUILocale() : Localization_Locale
+    public function getUILocale() : LocaleInterface
     {
         return Localization::getAppLocaleByName($this->getUILocaleName());
     }
@@ -812,7 +813,7 @@ abstract class Application_User
         return Localization::getAppLocaleName();
     }
 
-    public function setUILocale(Localization_Locale $locale) : self
+    public function setUILocale(LocaleInterface $locale) : self
     {
         $this->setSetting(self::SETTING_UI_LOCALE, $locale->getName());
         return $this;
@@ -992,6 +993,7 @@ abstract class Application_User
         $this->registerNewsRights($group);
         $this->registerTagRights($group);
         $this->registerMediaRights($group);
+        $this->registerCountryRights($group);
 
         $group->registerRight(self::RIGHT_DEVELOPER, t('Developer'))
             ->actionAdministrate()
