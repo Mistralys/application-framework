@@ -26,7 +26,6 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
     public const COL_CURRENCY = 'currency';
     public const COL_LANGUAGE = 'language';
     public const COL_LOCALE_CODE = 'locale_code';
-    public const COL_CURRENCY_SYMBOL = 'currency_symbol';
 
     public function getURLName(): string
     {
@@ -62,12 +61,11 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
 
         $item = $this->grid->createEntry(array());
 
-        $item->setColumnValue(self::COL_LABEL, $country->getIconLabel());
+        $item->setColumnValue(self::COL_LABEL, $country->getIconLabel(true));
         $item->setColumnValue(self::COL_ISO, sb()->code($country->getISO()));
 
         $currency = $country->getCurrency();
         $item->setColumnValue(self::COL_CURRENCY, $currency->getPlural());
-        $item->setColumnValue(self::COL_CURRENCY_SYMBOL, sb()->mono($currency->getSymbol()));
 
         $lang = $country->getLanguage();
         $item->setColumnValue(self::COL_LANGUAGE, $lang->getLabel());
@@ -78,7 +76,7 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
 
     protected function configureColumns(): void
     {
-        $this->grid->addColumn(self::COL_ISO, t('ISO code'))
+        $this->grid->addColumn(self::COL_ISO, t('ISO'))
             ->setSortable(true, Application_Countries_Country::COL_ISO)
             ->setCompact()
             ->setNowrap();
@@ -87,9 +85,8 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
             ->setSortable(false, Application_Countries_Country::COL_LABEL);
 
         $this->grid->addColumn(self::COL_CURRENCY, t('Currency'));
-        $this->grid->addColumn(self::COL_CURRENCY_SYMBOL, t('Symbol'))->setCompact();
         $this->grid->addColumn(self::COL_LANGUAGE, t('Official language'));
-        $this->grid->addColumn(self::COL_LOCALE_CODE, t('Locale code'));
+        $this->grid->addColumn(self::COL_LOCALE_CODE, t('Locale'));
     }
 
     protected function _handleSidebar(): void
