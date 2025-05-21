@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.10.0 - Dark mode
+- UI: Added dark mode support for the application.
+- DataGrids: Fixed selecting a row serverside not adding the `active` class.
+
 ## v5.9.0 - Country management
 - Wizards: Added the possibility to specify step classes, loosening the class structure.
 - Countries: Added the country management screens.
