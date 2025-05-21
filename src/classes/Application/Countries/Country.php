@@ -48,11 +48,6 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     {
         $label = $this->getRecordKey(self::COL_LABEL);
 
-        // If the label matches the invariant one, use the translated label instead.
-        if($label === $this->country->getLabelInvariant()) {
-            return $this->country->getLabel();
-        }
-        
         if($this->isInvariant()) {
             $label = '('.$label.')';
         }
@@ -71,15 +66,21 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $label;
     }
     
-    public function getIconLabel(bool $linked=false) : string
+    public function getIconLabel(bool $linked=false, bool $localized=false) : string
     {
+        if($localized) {
+            $label = $this->getLocalizedLabel();
+        } else {
+            $label = $this->getLabel();
+        }
+
         if($linked) {
             return (string)sb()
                 ->add($this->getIcon())
-                ->linkRight($this->getLocalizedLabel(), $this->adminURL()->status(), CountryScreenRights::SCREEN_STATUS);
+                ->linkRight($label, $this->adminURL()->status(), CountryScreenRights::SCREEN_STATUS);
         }
 
-        return $this->getIcon().' '.$this->getLocalizedLabel();
+        return $this->getIcon().' '.$label;
     }
     
    /**
