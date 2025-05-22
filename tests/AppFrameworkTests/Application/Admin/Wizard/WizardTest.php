@@ -2,6 +2,7 @@
 
 namespace testsuites\Application\Admin\Wizard;
 
+use Application_Countries;
 use Application_Driver;
 use AppUtils\ConvertHelper;
 use AppFrameworkTestClasses\ApplicationTestCase;
@@ -15,6 +16,9 @@ final class WizardTest extends ApplicationTestCase
     {
         parent::setUp();
         $this->startTransaction();
+
+        $this->cleanUpTables(array(Application_Countries::TABLE_NAME));
+
         $driver = Application_Driver::getInstance();
         $screen = $driver->getScreenByPath('wizardtest.wizard');
 
