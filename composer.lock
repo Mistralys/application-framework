@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "29e142eec0b3d5068d1d57d32a3d3230",
+    "content-hash": "bec63c1627ada1beee07d8e7748071da",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1480,16 +1480,16 @@
         },
         {
             "name": "mistralys/application-utils-collections",
-            "version": "1.1.5",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils-collections.git",
-                "reference": "9836bbbae87304a7993dfa23df1d7ce982a6af16"
+                "reference": "ec3f76a6ed8a07528cedc0c4348d46af5b7cfe8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils-collections/zipball/9836bbbae87304a7993dfa23df1d7ce982a6af16",
-                "reference": "9836bbbae87304a7993dfa23df1d7ce982a6af16",
+                "url": "https://api.github.com/repos/Mistralys/application-utils-collections/zipball/ec3f76a6ed8a07528cedc0c4348d46af5b7cfe8e",
+                "reference": "ec3f76a6ed8a07528cedc0c4348d46af5b7cfe8e",
                 "shasum": ""
             },
             "require": {
@@ -1521,9 +1521,9 @@
             "description": "Interfaces, traits and classes for handling static item collections, similar to Enums and with useful getter methods.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils-collections/issues",
-                "source": "https://github.com/Mistralys/application-utils-collections/tree/1.1.5"
+                "source": "https://github.com/Mistralys/application-utils-collections/tree/1.1.6"
             },
-            "time": "2025-05-20T05:53:17+00:00"
+            "time": "2025-05-22T05:55:29+00:00"
         },
         {
             "name": "mistralys/application-utils-core",
@@ -4195,16 +4195,16 @@
         },
         {
             "name": "shuchkin/simplexlsx",
-            "version": "1.1.13",
+            "version": "1.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shuchkin/simplexlsx.git",
-                "reference": "71a5e3d40d14e33161f8a40b3fd02de542218ef0"
+                "reference": "00006719a4d5df6426fa86c6586a5804941e8c38"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shuchkin/simplexlsx/zipball/71a5e3d40d14e33161f8a40b3fd02de542218ef0",
-                "reference": "71a5e3d40d14e33161f8a40b3fd02de542218ef0",
+                "url": "https://api.github.com/repos/shuchkin/simplexlsx/zipball/00006719a4d5df6426fa86c6586a5804941e8c38",
+                "reference": "00006719a4d5df6426fa86c6586a5804941e8c38",
                 "shasum": ""
             },
             "require": {
@@ -4243,9 +4243,9 @@
             ],
             "support": {
                 "issues": "https://github.com/shuchkin/simplexlsx/issues",
-                "source": "https://github.com/shuchkin/simplexlsx/tree/1.1.13"
+                "source": "https://github.com/shuchkin/simplexlsx/tree/1.1.14"
             },
-            "time": "2024-12-21T13:32:13+00:00"
+            "time": "2025-05-21T14:34:33+00:00"
         },
         {
             "name": "shuchkin/simplexlsxgen",
@@ -4960,16 +4960,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.16",
+            "version": "2.1.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "b8c1cf533cba0c305d91c6ccd23f3dd0566ba5f9"
+                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/b8c1cf533cba0c305d91c6ccd23f3dd0566ba5f9",
-                "reference": "b8c1cf533cba0c305d91c6ccd23f3dd0566ba5f9",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/89b5ef665716fa2a52ecd2633f21007a6a349053",
+                "reference": "89b5ef665716fa2a52ecd2633f21007a6a349053",
                 "shasum": ""
             },
             "require": {
@@ -5014,7 +5014,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-16T09:40:10+00:00"
+            "time": "2025-05-21T20:55:28+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
