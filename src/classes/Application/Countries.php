@@ -1,18 +1,16 @@
 <?php
 /**
- * File containing the {@link Application_Countries} class.
  * @package Maileditor
  * @subpackage Countries
  */
+
+declare(strict_types=1);
 
 use Application\Countries\Admin\MainAdminURLs;
 use Application\Countries\CountriesCollection;
 use Application\Countries\CountryException;
 use Application\Countries\CountrySettingsManager;
-use Application\Countries\Event\IgnoredCountriesUpdatedEvent;
 use Application\Countries\FilterSettings;
-use Application\Exception\UnexpectedInstanceException;
-use Application\Languages;
 use Application\Languages\Language;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Country\CountryGB;
@@ -43,12 +41,13 @@ class Application_Countries extends DBHelper_BaseCollection
     public const PRIMARY_NAME = 'country_id';
     public const TABLE_NAME = 'countries';
     public const REQUEST_PARAM_ID = self::PRIMARY_NAME;
+    public const RECORD_TYPE_NAME = 'country';
 
     protected static ?Application_Countries $instance = null;
 
     public function getRecordDefaultSortKey() : string
     {
-        return 'label';
+        return Application_Countries_Country::COL_LABEL;
     }
 
     public function getRecordRequestPrimaryName() : string
@@ -74,8 +73,8 @@ class Application_Countries extends DBHelper_BaseCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'label' => t('Label'), 
-            'iso' => t('Two-letter country code')
+            Application_Countries_Country::COL_LABEL => t('Label'),
+            Application_Countries_Country::COL_ISO => t('Two-letter country code')
         );
     }
     
@@ -86,7 +85,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
     public function getRecordTypeName() : string
     {
-        return 'country';
+        return self::RECORD_TYPE_NAME;
     }
     
     public function getRecordTableName() : string
@@ -134,11 +133,17 @@ class Application_Countries extends DBHelper_BaseCollection
      * and returns the created form element.
      *
      * @param UI_Form $form
-     * @param string $fieldName
-     * @param string $fieldLabel
+     * @param string|null $fieldName
+     * @param string|null $fieldLabel
+     * @param bool $required
+     * @param bool $pleaseSelect
+     * @param bool $withInvariant
      * @return HTML_QuickForm2_Element_Select
+     * @throws HTML_QuickForm2_Exception
+     * @throws HTML_QuickForm2_InvalidArgumentException
+     * @throws UI_Exception
      */
-    public function injectCountrySelector(UI_Form $form, $fieldName=null, $fieldLabel = null, $required = true, $pleaseSelect = true, $withInvariant=true)
+    public function injectCountrySelector(UI_Form $form, ?string $fieldName=null, ?string $fieldLabel = null, bool $required = true, bool $pleaseSelect = true, bool $withInvariant=true): HTML_QuickForm2_Element_Select
     {
         /* @var $country Application_Countries_Country */
 
@@ -274,7 +279,7 @@ class Application_Countries extends DBHelper_BaseCollection
     
    /**
     * Checks whether the two-letter country ISO code
-    * exists. In case of the UK, both "uk" and "gb"
+    * exists. In the case of the UK, both "uk" and "gb"
     * are supported.
     *  
     * @param string $iso
