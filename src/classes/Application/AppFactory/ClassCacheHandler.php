@@ -14,6 +14,7 @@ use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\SerializedFile;
 
@@ -66,8 +67,9 @@ class ClassCacheHandler
 
     public static function clearClassCache() : void
     {
-        ClassHelper::getRepositoryManager()->clearCache();
-        Localization::clearClassCache();
+        foreach(self::getRepositories() as $repository) {
+            $repository->clearCache();
+        }
     }
 
     private static ?bool $enabled = null;
@@ -107,12 +109,37 @@ class ClassCacheHandler
 
     public static function getCacheSize() : int
     {
-        $file = ClassHelper::getRepositoryManager()->getCacheFile();
-
-        if($file->exists()) {
-            return $file->getSize();
+        $size = 0;
+        foreach(self::getCacheFiles() as $file) {
+            if($file->exists()) {
+                $size += $file->getSize();
+            }
         }
 
-        return 0;
+        return $size;
+    }
+
+    /**
+     * @return FileInfo[]
+     */
+    public static function getCacheFiles() : array
+    {
+        $result = array();
+        foreach(self::getRepositories() as $repository) {
+            $result[] = $repository->getCacheFile();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return ClassRepositoryManager[]
+     */
+    public static function getRepositories() : array
+    {
+        return array(
+            ClassHelper::getRepositoryManager(),
+            Localization::getClassRepository()
+        );
     }
 }
