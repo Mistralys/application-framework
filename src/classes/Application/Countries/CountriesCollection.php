@@ -344,4 +344,14 @@ class CountriesCollection
     {
         return $this->hasID($country->getID());
     }
+
+    /**
+     * Checks whether the collection contains the specified country ID.
+     * @param int $id
+     * @return bool
+     */
+    public function idExists(int $id) : bool
+    {
+        return in_array($id, $this->getIDs());
+    }
 }
