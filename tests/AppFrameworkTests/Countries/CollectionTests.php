@@ -115,4 +115,13 @@ final class CollectionTests extends CountriesTestCase
 
         $this->assertSame($countryA, $countryB);
     }
+
+    public function test_getLocale() : void
+    {
+        $at = $this->createTestCountry('at');
+
+        $locale = $at->getLocale();
+
+        $this->assertSame('de_AT', $locale->getCode());
+    }
 }
