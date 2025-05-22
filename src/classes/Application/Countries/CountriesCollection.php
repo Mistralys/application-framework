@@ -58,6 +58,10 @@ class CountriesCollection
         return $this;
     }
 
+    /**
+     * @param Application_Countries_Country $country
+     * @return $this
+     */
     public function addCountry(Application_Countries_Country $country) : self
     {
         $id = $country->getID();
@@ -78,6 +82,36 @@ class CountriesCollection
     public function countCountries() : int
     {
         return count($this->countries);
+    }
+
+    /**
+     * @param Application_Countries_Country $country
+     * @return $this
+     */
+    public function removeCountry(Application_Countries_Country $country) : self
+    {
+        $id = $country->getID();
+
+        if(isset($this->countries[$id]))
+        {
+            unset($this->countries[$id]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Application_Countries_Country[] $countries
+     * @return $this
+     */
+    public function removeCountries(array $countries) : self
+    {
+        foreach($countries as $country)
+        {
+            $this->removeCountry($country);
+        }
+
+        return $this;
     }
 
     /**
