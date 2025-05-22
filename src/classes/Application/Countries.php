@@ -194,15 +194,10 @@ class Application_Countries extends DBHelper_BaseCollection
         );
 
         $result = array();
-        $filter = !empty(self::$ignoreCountries);
 
         foreach($countries as $country)
         {
             if($includeInvariant === false && $country->isCountryIndependent()) {
-                continue;
-            }
-
-            if($filter === true && isset(self::$ignoreCountries[$country->getISO()])) {
                 continue;
             }
 
@@ -565,60 +560,6 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         return strlen($iso) === 2 && ctype_alpha($iso);
     }
-
-    // region: Ignoring countries
-
-    public const EVENT_IGNORED_COUNTRIES_UPDATED = 'IgnoredCountriesUpdated';
-
-    /**
-     * @var array<string,bool>
-     */
-    private static array $ignoreCountries = array();
-
-    public function setCountryIgnored(string $iso, bool $ignored=true) : void
-    {
-        if(!$ignored && isset(self::$ignoreCountries[$iso]))
-        {
-            unset(self::$ignoreCountries[$iso]);
-            $this->triggerCountryIgnoreUpdated();
-        }
-        else if($ignored && !isset(self::$ignoreCountries[$iso]))
-        {
-            self::$ignoreCountries[$iso] = true;
-            $this->triggerCountryIgnoreUpdated();
-        }
-    }
-
-    public function clearIgnored() : void
-    {
-        if(!empty(self::$ignoreCountries)) {
-            self::$ignoreCountries = array();
-            $this->triggerCountryIgnoreUpdated();
-        }
-    }
-
-    public static function isCountryIgnored(string $iso) : bool
-    {
-        return isset(self::$ignoreCountries[$iso]);
-    }
-
-    private function triggerCountryIgnoreUpdated() : void
-    {
-        $this->triggerEvent(
-            self::EVENT_IGNORED_COUNTRIES_UPDATED,
-            array(
-                $this
-            ),
-            IgnoredCountriesUpdatedEvent::class
-        );
-    }
-
-    public function onIgnoredCountriesUpdated(callable $listener) : Application_EventHandler_EventableListener
-    {
-        return $this->addEventListener(self::EVENT_IGNORED_COUNTRIES_UPDATED, $listener);
-    }
-
-    // endregion
 
     private ?MainAdminURLs $adminURLs = null;
 

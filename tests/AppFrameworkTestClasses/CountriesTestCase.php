@@ -32,7 +32,6 @@ abstract class CountriesTestCase extends ApplicationTestCase
         $this->countries = Application_Countries::getInstance();
 
         $this->countries->resetCollection();
-        $this->countries->clearIgnored();
     }
 
     protected function deleteAllCountries() : void

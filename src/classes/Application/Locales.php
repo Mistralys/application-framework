@@ -17,8 +17,8 @@ use AppUtils\Collections\CollectionException;
  * available locales in the system (based on the available
  * countries).
  *
- * NOTE: The available locales are adjusted automatically
- * based on changes in the country collection.
+ * > NOTE: The available locales are adjusted automatically
+ * > based on changes in the country collection.
  *
  * @package Application
  * @subpackage Countries
@@ -29,18 +29,6 @@ use AppUtils\Collections\CollectionException;
  */
 class Locales extends BaseStringPrimaryCollection
 {
-    public const LOCALE_EN_US = 'en_US';
-    public const LOCALE_EN_GB = 'en_GB';
-    public const LOCALE_EN_UK = 'en_UK';
-    public const LOCALE_DE_DE = 'de_DE';
-    public const LOCALE_DE_AT = 'de_AT';
-    public const LOCALE_FR_FR = 'fr_FR';
-    public const LOCALE_IT_IT = 'it_IT';
-    public const LOCALE_ES_ES = 'es_ES';
-    public const LOCALE_ES_MX = 'es_MX';
-    public const LOCALE_PL_PL = 'pl_PL';
-    public const LOCALE_RO_RO = 'ro_RO';
-
     private static ?Locales $instance = null;
 
     public static function getInstance() : Locales
@@ -57,7 +45,6 @@ class Locales extends BaseStringPrimaryCollection
         $countries = AppFactory::createCountries();
 
         // Register events to reset the collection when the countries change
-        $countries->onIgnoredCountriesUpdated(array($this, 'reset'));
         $countries->onAfterCreateRecord(array($this, 'reset'));
         $countries->onAfterDeleteRecord(array($this, 'reset'));
     }
