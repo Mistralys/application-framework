@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the class {@see \Application\Countries\CountriesCollection}.
- *
  * @package Application
  * @subpackage Countries
- * @see \Application\Countries\CountriesCollection
  */
 
 declare(strict_types=1);
@@ -35,7 +32,7 @@ class CountriesCollection
     private Application_Countries $collection;
     private bool $excludeInvariant = false;
 
-    private function __construct(array $countries=array())
+    protected function __construct(array $countries=array())
     {
         $this->collection = Application_Countries::getInstance();
 
