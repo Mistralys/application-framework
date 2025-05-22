@@ -8,6 +8,7 @@
 - CacheControl: Added the localization cache to the cache control.
 - Dependencies: Updated AppUtils Core to [v2.3.11](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.11).
 - Dependencies: Updated AppUtils Collections to [v1.1.5](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.5).
+- Dependencies: Updated AppUtils Collections to [v1.1.6](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.6).
 - Dependencies: Updated AppLocalize to [v2.0.0](https://github.com/Mistralys/application-localization/releases/tag/2.0.0).
 
 ## v5.8.3 - Fixes and PHP8.4 
