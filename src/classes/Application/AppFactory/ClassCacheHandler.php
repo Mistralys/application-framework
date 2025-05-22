@@ -10,6 +10,7 @@ namespace Application\AppFactory;
 
 use Application;
 use Application\AppFactory;
+use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
 use AppUtils\FileHelper;
@@ -66,6 +67,7 @@ class ClassCacheHandler
     public static function clearClassCache() : void
     {
         ClassHelper::getRepositoryManager()->clearCache();
+        Localization::clearClassCache();
     }
 
     private static ?bool $enabled = null;
