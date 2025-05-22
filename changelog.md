@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v5.9.0 - Country management
+## v5.9.0 - Country management (Breaking-S)
 - Wizards: Added the possibility to specify step classes, loosening the class structure.
 - Countries: Added the country management screens.
 - Countries: Added user rights to manage countries.
@@ -10,6 +10,18 @@
 - Dependencies: Updated AppUtils Collections to [v1.1.5](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.5).
 - Dependencies: Updated AppUtils Collections to [v1.1.6](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.6).
 - Dependencies: Updated AppLocalize to [v2.0.0](https://github.com/Mistralys/application-localization/releases/tag/2.0.0).
+
+### Breaking changes
+
+The feature to ignore countries has been permanently retired.
+If your application uses this feature, you must remove the
+related method calls. We recommend using a static analysis
+tool like PHPStan to find all usages.
+
+I decided to retire it because while it was a quick solution
+for some use cases, it was not stable enough and caused issues
+in other situations. The application must decide for itself
+which countries are relevant depending on the use case.
 
 ## v5.8.3 - Fixes and PHP8.4 
 - Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
