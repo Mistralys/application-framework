@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Countries;
 
+use Application\AppFactory;
 use Application_Countries;
 use Application_Countries_Country;
 
@@ -353,5 +354,22 @@ class CountriesCollection
     public function idExists(int $id) : bool
     {
         return in_array($id, $this->getIDs());
+    }
+
+    /**
+     * Attempts to find a country available in the collection
+     * from the current request, using the standard request
+     * parameter {@see Application_Countries::REQUEST_PARAM_ID}.
+     * 
+     * @return Application_Countries_Country|null
+     */
+    public function getByRequest() : ?Application_Countries_Country
+    {
+        $country = AppFactory::createCountries()->getByRequest();
+        if($country !== null && $this->hasCountry($country)) {
+            return $country;
+        }
+
+        return null;
     }
 }
