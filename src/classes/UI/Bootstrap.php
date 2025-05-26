@@ -13,10 +13,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     use ClassableTrait;
     use UI_Traits_Conditional;
     
-   /**
-    * @var string
-    */    
-    protected string $name;
+    protected ?string $name = null;
     
    /**
     * @var UI_Bootstrap[]
@@ -48,7 +45,7 @@ abstract class UI_Bootstrap extends UI_Renderable
         return $this;
     }
     
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -60,7 +57,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     */
     public function isNamed(string $name) : bool
     {
-        return $this->name === $name;
+        return isset($this->name) && $this->name === $name;
     }
 
     public function getID() : string
@@ -80,7 +77,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     /**
      * @var array<string,string>
      */
-    protected $attributes = array();
+    protected array $attributes = array();
 
     /**
      * @param string $name
