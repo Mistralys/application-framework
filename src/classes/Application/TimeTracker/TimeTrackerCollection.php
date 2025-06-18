@@ -31,6 +31,7 @@ class TimeTrackerCollection extends DBHelper_BaseCollection
     public const COL_DURATION = 'duration';
     public const COL_TYPE = 'type';
     public const COL_TICKET = 'ticket';
+    public const COL_PROCESSED = 'processed';
     public const COL_COMMENTS = 'comments';
     public const COL_USER_ID = 'user_id';
     public const REQUEST_PARAM_ENTRY = 'time-entry';
