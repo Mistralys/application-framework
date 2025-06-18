@@ -75,6 +75,17 @@ class TimeEntry extends DBHelper_BaseRecord
         return parseDurationString($this->getRecordIntKey(TimeTrackerCollection::COL_DURATION));
     }
 
+    public function isProcessed() : bool
+    {
+        return $this->getRecordBooleanKey(TimeTrackerCollection::COL_PROCESSED);
+    }
+
+    public function setProcessed(bool $processed) : self
+    {
+        $this->setRecordBooleanKey(TimeTrackerCollection::COL_PROCESSED, $processed);
+        return $this;
+    }
+
     public function getTypeID() : string
     {
         return $this->getRecordStringKey(TimeTrackerCollection::COL_TYPE);
