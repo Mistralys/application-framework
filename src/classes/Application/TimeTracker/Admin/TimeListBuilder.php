@@ -23,6 +23,7 @@ use UI\AdminURLs\AdminURLInterface;
 use UI_DataGrid;
 use UI_DataGrid_Action;
 use UI_DataGrid_Entry;
+use UI_DataGrid_RedirectMessage;
 
 class TimeListBuilder extends BaseCollectionListBuilder
 {
@@ -32,6 +33,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
     public const COL_TYPE = 'type';
     public const COL_TICKET = 'ticket';
     public const COL_ID = 'id';
+    public const COL_PROCESSED = 'processed';
     public const COL_COMMENTS = 'comments';
     public const COL_DATE = 'date';
     public const COL_DAY = 'day';
@@ -99,6 +101,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
         $grid->addColumn(self::COL_DURATION, t('Duration'))->setSortable();
         $grid->addColumn(self::COL_TYPE, t('Type'));
         $grid->addColumn(self::COL_TICKET, t('Ticket'));
+        $grid->addColumn(self::COL_PROCESSED, t('Processed?'))->setCompact();
         $grid->addColumn(self::COL_COMMENTS, t('Comments'));
 
         $grid->addSumsRow()->makeCallback(
@@ -119,6 +122,16 @@ class TimeListBuilder extends BaseCollectionListBuilder
             ->makeDangerous()
             ->makeConfirm(t('Do you really want to delete the selected entries?'))
             ->setCallback(Closure::fromCallable(array($this, 'deleteEntries')));
+
+        $grid->addSeparatorAction();
+
+        $grid->addAction('set_processed', t('Set processed'))
+            ->setIcon(UI::icon()->yes())
+            ->setCallback(Closure::fromCallable(array($this, 'setEntriesProcessed')));
+
+        $grid->addAction('set_unprocessed', t('Set not processed'))
+            ->setIcon(UI::icon()->no())
+            ->setCallback(Closure::fromCallable(array($this, 'setEntriesNotProcessed')));
     }
 
     private function deleteEntries(UI_DataGrid_Action $action) : void
@@ -129,6 +142,46 @@ class TimeListBuilder extends BaseCollectionListBuilder
             ->none(t('No time entries selected that could be deleted.'))
             ->processDeleteDBRecords(AppFactory::createTimeTracker())
             ->redirect();
+    }
+
+    private function setEntriesProcessed(UI_DataGrid_Action $action) : void
+    {
+        $redirect = $action->createRedirectMessage($this->resolveRedirectURL())
+            ->single(t('The time entry %1$s has been successfully marked as processed at %2$s.', sb()->bold('$label'), '$time'))
+            ->multiple(t('%1$s time entries have been successfully marked as processed at %2$s.', sb()->bold('$amount'), '$time'))
+            ->none(t('No time entries selected that could be marked as processed.'));
+
+        $this->setProcessedFlag($redirect, $action->getSelectedValues(), true);
+
+        $redirect->redirect();
+    }
+
+    private function setEntriesNotProcessed(UI_DataGrid_Action $action) : void
+    {
+        $redirect = $action->createRedirectMessage($this->resolveRedirectURL())
+            ->single(t('The time entry %1$s has been successfully marked as not processed at %2$s.', sb()->bold('$label'), '$time'))
+            ->multiple(t('%1$s time entries have been successfully marked as not processed at %2$s.', sb()->bold('$amount'), '$time'))
+            ->none(t('No time entries selected that could be marked as not processed.'));
+
+        $this->setProcessedFlag($redirect, $action->getSelectedValues(), false);
+
+        $redirect->redirect();
+    }
+
+    private function setProcessedFlag(UI_DataGrid_RedirectMessage $redirect, array $ids, bool $processed) : void
+    {
+        $this->screen->startTransaction();
+
+        foreach($ids as $id) {
+            $redirect->addAffected($this->getCollection()
+                ->getByID((int)$id)
+                ->setProcessed($processed)
+                ->saveChained()
+                ->getLabel()
+            );
+        }
+
+        $this->screen->endTransaction();
     }
 
     private function resolveRedirectURL() : AdminURLInterface
@@ -167,6 +220,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
         $entry->setColumnValue(self::COL_START_TIME, $entry->renderCheckboxLabel($timeEntry->getStartTime()->toReadable()));
         $entry->setColumnValue(self::COL_TYPE, $timeEntry->getType()->getLabel());
         $entry->setColumnValue(self::COL_TICKET, $timeEntry->renderTicket());
+        $entry->setColumnValue(self::COL_PROCESSED, UI::prettyBool($timeEntry->isProcessed())->makeYesNo());
         $entry->setColumnValue(self::COL_COMMENTS, $timeEntry->renderComments());
 
         return $entry;
