@@ -27,6 +27,14 @@ use function AppUtils\parseDurationString;
  */
 class TimeEntry extends DBHelper_BaseRecord
 {
+    public static function duration2hoursDec(DurationStringInfo $duration) : string
+    {
+        return sprintf(
+            '%s h',
+            $duration->getTotalHoursDec()
+        );
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
     }
@@ -96,14 +104,24 @@ class TimeEntry extends DBHelper_BaseRecord
         return TimeEntryTypes::getInstance()->getByID($this->getTypeID());
     }
 
-    public function getTicket() : string
+    public function getTicketID() : string
     {
         return $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET);
     }
 
+    public function getTicketURL() : string
+    {
+        return $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET_URL);
+    }
+
     public function renderTicket() : string
     {
-        return MarkdownRenderer::create()->render($this->getTicket());
+        $url = $this->getTicketURL();
+        if(!empty($url)) {
+            return (string)sb()->link($this->getTicketID(), $url, true);
+        }
+
+        return $this->getTicketID();
     }
 
     public function getComments() : string

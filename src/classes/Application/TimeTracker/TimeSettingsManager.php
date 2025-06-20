@@ -31,6 +31,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
     public const SETTING_TICKET = 'ticket';
     public const SETTING_COMMENTS = 'comments';
     public const FORMAT_PLACEHOLDER = '$format';
+    public const SETTING_TICKET_URL = 'ticketURL';
 
     public function __construct(Application_Formable $formable, ?TimeEntry $record = null)
     {
@@ -96,6 +97,10 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $group->registerSetting(self::SETTING_TICKET)
             ->setStorageName(TimeTrackerCollection::COL_TICKET)
             ->setCallback(Closure::fromCallable(array($this, 'injectTicket')));
+
+        $group->registerSetting(self::SETTING_TICKET_URL)
+            ->setStorageName(TimeTrackerCollection::COL_TICKET_URL)
+            ->setCallback(Closure::fromCallable(array($this, 'injectTicketURL')));
 
         $group->registerSetting(self::SETTING_COMMENTS)
             ->setStorageName(TimeTrackerCollection::COL_COMMENTS)
@@ -272,12 +277,17 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $el = $this->addElementText($setting->getName(), t('Ticket'));
         $el->addFilterTrim();
         $el->addClass('input-xxlarge');
-        $el->setComment(sb()
-            ->t('The related ticket reference, if any.')
-            ->nl()
-            ->note()
-            ->t('You can use %1$s syntax to add a link.', MarkdownRenderer::getName())
-        );
+        $el->setComment(t('The related ticket number, if any.'));
+
+        return $el;
+    }
+
+    private function injectTicketURL(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
+    {
+        $el = $this->addElementText($setting->getName(), t('Ticket link'));
+        $el->addFilterTrim();
+        $el->addClass('input-xxlarge');
+        $el->setComment(t('Link to the ticket in the ticketing system, if relevant.'));
 
         return $el;
     }
