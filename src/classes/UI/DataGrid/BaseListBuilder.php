@@ -266,6 +266,11 @@ abstract class BaseListBuilder
 
     }
 
+    public function getGridID(): string
+    {
+        return $this->listID;
+    }
+
     public function getUI(): UI
     {
         return $this->screen->getUI();
@@ -326,8 +331,8 @@ abstract class BaseListBuilder
         $grid->addHiddenVars($this->screen->getPageParams());
 
         $items = $filters->getItems();
-        $entries = array();
 
+        $entries = array();
         foreach ($items as $item) {
             $entries[] = $this->collectEntry($this->resolveRecord($item));
         }
