@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.10.0 - Time Tracker Time Spans
+- TimeTracker: Added the time span management.
+- TimeTracker: Added a summary of durations by ticket number.
+- TimeTracker: Added a separate form field for the ticket URL.
+
 ## v5.9.0 - Country management (Breaking-M)
 - Wizards: Added the possibility to specify step classes, loosening the class structure.
 - Countries: Added the country management screens.
