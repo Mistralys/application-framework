@@ -8,6 +8,7 @@ use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeSettingsManager;
+use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
 use Application_Admin_Area_Mode_Submode_CollectionEdit;
@@ -61,5 +62,10 @@ class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionE
     public function getBackOrCancelURL(): string
     {
         return (string)TimeUIManager::getBackToListURL();
+    }
+
+    protected function _handleBeforeSidebar() : void
+    {
+        (new SidebarSpans($this->record->getDate(), $this->sidebar))->addItems();
     }
 }

@@ -14,4 +14,7 @@ class TimeTrackerScreenRights
     public const SCREEN_VIEW = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
     public const SCREEN_EXPORT = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
     public const SCREEN_IMPORT = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
+    public const SCREEN_TIME_SPANS_EDIT = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
+    public const SCREEN_TIME_SPANS_LIST = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
+    public const SCREEN_TIME_SPANS_CREATE = TimeTrackerRightsInterface::RIGHT_CREATE_TIME_ENTRIES;
 }

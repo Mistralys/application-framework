@@ -7,6 +7,8 @@ namespace Application\TimeTracker\Admin\Screens\ListScreen;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\TimeSpans\SidebarSpans;
+use Application\TimeTracker\TimeSpans\TimeSpanRecord;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application_Admin_Area_Mode_Submode;
 use AppUtils\ConvertHelper;
@@ -57,7 +59,17 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
     public function createListBuilder(): ListBuilderInterface
     {
         return (new TimeListBuilder($this))
-            ->enableDayMode($this->date);
+            ->enableDayMode($this->date)
+            ->enableSummary();
+    }
+
+    /**
+     * @param TimeListBuilder $builder
+     * @return string
+     */
+    protected function _renderBelowList(ListBuilderInterface $builder): string
+    {
+        return $builder->renderTicketSummary();
     }
 
     protected function _handleHelp(): void
@@ -143,6 +155,15 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
             ->link(AppFactory::createTimeTracker()->adminURL()->create());
 
         $this->sidebar->addSeparator();
+
+        $this->addSidebarTimeSpans();
+
+        $this->sidebar->addSeparator();
+    }
+
+    private function addSidebarTimeSpans() : void
+    {
+        (new SidebarSpans($this->date, $this->sidebar))->addItems();
     }
 
     protected function _handleSidebarBottom(): void

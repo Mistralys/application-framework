@@ -6,6 +6,8 @@ namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
 use Application\Interfaces\FilterCriteriaInterface;
+use Application\TimeTracker\Admin\ListBuilder\SummarizedTicket;
+use Application\TimeTracker\Admin\ListBuilder\TicketSummaryRenderer;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeFilterCriteria;
 use Application\TimeTracker\TimeTrackerCollection;
@@ -36,7 +38,6 @@ class TimeListBuilder extends BaseCollectionListBuilder
     public const COL_PROCESSED = 'processed';
     public const COL_COMMENTS = 'comments';
     public const COL_DATE = 'date';
-    public const COL_DAY = 'day';
 
     public const MODE_DAY = 'day';
     public const MODE_GLOBAL = 'global';
@@ -46,6 +47,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
     private string $mode = self::DEFAULT_MODE;
     private ?Microtime $fixedDate = null;
     private int $totalDuration = 0;
+    private bool $summaryEnabled = false;
 
     /**
      * @return TimeTrackerCollection
@@ -65,6 +67,48 @@ class TimeListBuilder extends BaseCollectionListBuilder
     public function isDayMode() : bool
     {
         return $this->mode === self::MODE_DAY;
+    }
+
+    /**
+     * Enables the summary table below the list with a
+     * tally of total durations per task ticket.
+     *
+     * @param bool $enabled
+     * @return $this
+     */
+    public function enableSummary(bool $enabled=true) : self
+    {
+        $this->summaryEnabled = $enabled;
+        return $this;
+    }
+
+    public function isSummaryEnabled() : bool
+    {
+        return $this->summaryEnabled;
+    }
+
+    /**
+     * Renders a summary table below the list that shows the total
+     * duration per same ticket.
+     *
+     * > **NOTE**: Must be called after the list has been rendered,
+     * > as it depends on the entries that have been collected during
+     * > the rendering process.
+     *
+     * @return string
+     */
+    public function renderTicketSummary() : string
+    {
+        if(empty($this->summaryEntries) || !$this->isSummaryEnabled()) {
+            return '';
+        }
+
+        $renderer = (new TicketSummaryRenderer($this->summaryEntries))
+            ->setGridID($this->getGridID().'_summary');
+
+        $this->summaryEntries = array();
+
+        return (string)$renderer;
     }
 
     protected function configureFilters(FilterCriteriaInterface $filterCriteria): void
@@ -199,12 +243,21 @@ class TimeListBuilder extends BaseCollectionListBuilder
     {
     }
 
+    /**
+     * @var TimeEntry[]
+     */
+    private array $summaryEntries = array();
+
     protected function collectEntry(object $record): UI_DataGrid_Entry
     {
         $timeEntry = ClassHelper::requireObjectInstanceOf(
             TimeEntry::class,
             $record
         );
+
+        if($this->summaryEnabled) {
+            $this->summaryEntries[] = $timeEntry;
+        }
 
         $duration = $timeEntry->getDuration();
 
@@ -228,8 +281,6 @@ class TimeListBuilder extends BaseCollectionListBuilder
 
     private function renderDuration(TimeEntry $timeEntry, DurationStringInfo $duration) : string
     {
-        $fractionalHour = number_format($duration->getTotalSeconds() / 3600, 2);
-
         $text = sb();
         if($this->isDayMode()) {
             $text->link($duration->getNormalized(), $timeEntry->adminURL()->settings());
@@ -238,7 +289,8 @@ class TimeListBuilder extends BaseCollectionListBuilder
         }
 
         return (string)$text
-            ->muted(' &#160; '.$fractionalHour.' h');
+            ->add('&#160;')
+            ->muted(TimeEntry::duration2hoursDec($duration));
     }
 
     public function getFullViewTitle(): string

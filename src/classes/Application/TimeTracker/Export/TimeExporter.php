@@ -153,7 +153,7 @@ class TimeExporter
 
     private function getValueTicket(TimeEntry $entry) : string
     {
-        return $entry->getTicket();
+        return $entry->getTicketID();
     }
 
     private function getValueComments(TimeEntry $entry) : string

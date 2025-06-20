@@ -57,5 +57,6 @@ abstract class BaseListScreen extends Application_Admin_Area_Mode
 
         $this->subnav->addURL(t('Global'), $urls->globalList());
         $this->subnav->addURL(t('Day'), $urls->dayList());
+        $this->subnav->addURL(t('Time Spans'), $urls->timeSpans());
     }
 }
