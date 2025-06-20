@@ -1220,8 +1220,12 @@ function statementBuilder(string $statementTemplate, ?DBHelper_StatementBuilder_
     return $builder;
 }
 
-function statementValues() : DBHelper_StatementBuilder_ValuesContainer
+function statementValues(?DBHelper_StatementBuilder_ValuesContainer $container=null) : DBHelper_StatementBuilder_ValuesContainer
 {
+    if($container !== null) {
+        return $container;
+    }
+
     return new DBHelper_StatementBuilder_ValuesContainer();
 }
 
