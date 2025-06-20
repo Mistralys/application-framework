@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker;
 
+use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use DBHelper_BaseCollection;
 use Application\TimeTracker\Admin\TrackerAdminURLs;
 use DBHelper_BaseRecord;
@@ -31,6 +32,7 @@ class TimeTrackerCollection extends DBHelper_BaseCollection
     public const COL_DURATION = 'duration';
     public const COL_TYPE = 'type';
     public const COL_TICKET = 'ticket';
+    public const COL_TICKET_URL = 'ticket_url';
     public const COL_PROCESSED = 'processed';
     public const COL_COMMENTS = 'comments';
     public const COL_USER_ID = 'user_id';
@@ -109,5 +111,16 @@ class TimeTrackerCollection extends DBHelper_BaseCollection
     public function getRecordProperties(): array
     {
         return array();
+    }
+
+    private ?TimeSpanCollection $timeSpans = null;
+
+    public function createTimeSpans() : TimeSpanCollection
+    {
+        if (!isset($this->timeSpans)) {
+            $this->timeSpans = new TimeSpanCollection();
+        }
+
+        return $this->timeSpans;
     }
 }
