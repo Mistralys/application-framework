@@ -1,20 +1,18 @@
 # Application Framework Changelog
 
-## v5.10.1 - Minor fixes
-- UI: Fixed a PHPDoc that broke the method chaining in `UI_Bootstrap::setName()`.
-
 ## v5.10.0 - Time Tracker Time Spans (Breaking-S)
 - TimeTracker: Added the time span management.
 - TimeTracker: Added a summary of durations by ticket number.
 - TimeTracker: Added a separate form field for the ticket URL.
+- UI: Fixed a PHPDoc that broke the method chaining in `UI_Bootstrap::setName()`.
 
 ### Breaking changes
 
 This change only affects the Time Tracker. If you do not use it, 
 no changes are required. Otherwise, the following SQL update script 
-to be run:
+must be run:
 
-[2025-06-19-time-tracker.sql](docs/sql/2025-06-19-time-tracker.sql).
+[2025-06-19-time-tracker.sql](/docs/sql/2025-06-19-time-tracker.sql).
 
 ## v5.9.0 - Country management (Breaking-M)
 - Wizards: Added the possibility to specify step classes, loosening the class structure.
