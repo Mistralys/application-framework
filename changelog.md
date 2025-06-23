@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.10.1 - Minor fixes
+- UI: Fixed a PHPDoc that broke the method chaining in `UI_Bootstrap::setName()`.
+
 ## v5.10.0 - Time Tracker Time Spans (Breaking-S)
 - TimeTracker: Added the time span management.
 - TimeTracker: Added a summary of durations by ticket number.
