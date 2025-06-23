@@ -1,10 +1,20 @@
 <?php
+/**
+ * @package User Interface
+ * @subpackage Bootstrap
+ */
 
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 use AppUtils\Traits\ClassableTrait;
 
+/**
+ * Abstract class for Bootstrap elements in the User Interface.
+ *
+ * @package User Interface
+ * @subpackage Bootstrap
+ */
 abstract class UI_Bootstrap extends UI_Renderable
     implements
     UI_Interfaces_Bootstrap,
@@ -37,7 +47,7 @@ abstract class UI_Bootstrap extends UI_Renderable
    /**
     * Sets the element's name, which can be used to retrieve it when used in collections.
     * @param string $name
-    * @return UI_Bootstrap
+    * @return $this
     */
     public function setName(string $name) : self
     {
@@ -122,7 +132,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     /**
      * @var array<string,string>
      */
-    protected $styles = array();
+    protected array $styles = array();
 
     /**
      * @param string $name
