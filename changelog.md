@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.10.1 - Language label fix
+- Localization: Fixed getting the language label throwing an exception.
+
 ## v5.10.0 - Time Tracker Time Spans (Breaking-S)
 - TimeTracker: Added the time span management.
 - TimeTracker: Added a summary of durations by ticket number.
