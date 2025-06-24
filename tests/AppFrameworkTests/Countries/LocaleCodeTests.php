@@ -34,6 +34,11 @@ final class LocaleCodeTests extends CountriesTestCase
         );
     }
 
+    public function test_getLanguageLabel() : void
+    {
+        $this->assertSame('Finnish (Finland)', $this->createTestCountry('fi')->getLanguage()->getLabel());
+    }
+
     protected function setUp() : void
     {
         parent::setUp();
