@@ -1,12 +1,18 @@
 <?php
+/**
+ * @package Application Tests
+ * @subpackage Connectors
+ */
 
 declare(strict_types=1);
 
 namespace AppFrameworkTests\Connectors;
 
 use Application_Exception;
+use AppUtils\ConvertHelper\JSONConverter;
 use Connectors\Response\ResponseEndpointError;
 use Connectors\Connector\StubConnector;
+use Connectors_Request;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
 use Connectors_Response;
@@ -15,11 +21,37 @@ use HTTP_Request2_Response;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use function AppUtils\parseThrowable;
 
+/**
+ * @package Application Tests
+ * @subpackage Connectors
+ */
 class RequestTests extends ApplicationTestCase
 {
     // region: _Tests
 
-    public const BASE_ENDPOINT_URL = 'https://endpoint';
+    public const BASE_ENDPOINT_URL = APP_URL.'/request-tests/endpoint-json-200.php';
+
+    public function test_adapterSockets() : void
+    {
+        $this->assertValidResponse(
+            (new Connectors_Request_URL(
+                new StubConnector(),
+                self::BASE_ENDPOINT_URL
+            ))
+                ->useSockets()
+        );
+    }
+
+    public function test_adapterCURL() : void
+    {
+        $this->assertValidResponse(
+            (new Connectors_Request_URL(
+                new StubConnector(),
+                self::BASE_ENDPOINT_URL
+            ))
+                ->useCURL()
+        );
+    }
 
     public function test_disableCache() : void
     {
@@ -431,6 +463,27 @@ EOT;
             $url ?? self::BASE_ENDPOINT_URL,
             $method ?? 'TestMethod'
         );
+    }
+
+    private function assertValidResponse(Connectors_Request $request) : void
+    {
+        $response = $request
+            ->makePOST()
+            ->setBody(JSONConverter::var2json(array(
+                'foo' => 'bar'
+            )))
+            ->getData();
+
+        $this->assertSame(200, $response->getStatusCode());
+
+        $body = $response->getBody();
+        $this->assertJson($body);
+
+        $responseData = JSONConverter::json2var($body);
+        $this->assertIsArray($responseData);
+
+        $this->assertArrayHasKey('data', $responseData);
+        $this->assertSame(array('foo' => 'bar'), $responseData['data']);
     }
 
     private Connectors_Request_URL $requestClass;
