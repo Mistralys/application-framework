@@ -632,6 +632,27 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $ex;
     }
 
+    public const ADAPTER_CURL = 'curl';
+    public const ADAPTER_SOCKETS = 'socket';
+
+    private string $adapter = self::ADAPTER_CURL;
+
+    public function useCURL() : self
+    {
+        return $this->setAdapter(self::ADAPTER_CURL);
+    }
+
+    public function useSockets() : self
+    {
+        return $this->setAdapter(self::ADAPTER_SOCKETS);
+    }
+
+    public function setAdapter(string $adapter) : self
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
     /**
      * Creates and configures the HTTP request instance used
      * to send the request.
@@ -648,11 +669,8 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $this->log(sprintf('Live requests: [%s] (turn on in simulation mode with parameter live-requests=yes)', bool2string($this->connector->isLiveRequestsEnabled())));
         
         $req = new HTTP_Request2($this->buildURL(), $this->HTTPMethod);
-        $req->setAdapter('curl');
-        $req->setConfig('follow_redirects', true);
-        $req->setConfig('ssl_verify_peer', false);
-        $req->setConfig('ssl_verify_host', false);
-        
+        $this->configureAdapter($req);
+
         if(!empty($this->headers))
         {
             foreach($this->headers as $name => $value)
@@ -736,7 +754,18 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         
         return $req;
     }
-    
+
+    private function configureAdapter(HTTP_Request2 $req) : void
+    {
+        $this->log('Using the adapter [%s] for the request.', $this->adapter);
+
+        $req->setAdapter($this->adapter);
+
+        $req->setConfig('follow_redirects', true);
+        $req->setConfig('ssl_verify_peer', false);
+        $req->setConfig('ssl_verify_host', false);
+    }
+
    /**
     * Valid HTTP response codes by request method.
     * @var array<string,array<int,int>>
