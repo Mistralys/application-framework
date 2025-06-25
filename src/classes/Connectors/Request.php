@@ -7,7 +7,9 @@
 declare(strict_types=1);
 
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\FileHelper_Exception;
 use Connectors\Request\RequestSerializer;
@@ -407,12 +409,47 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
 
     /**
+     * Sets the body of the request from a JSON string or a data array.
+     * Automatically sets the matching content type.
+     *
+     * @param string|array|ArrayDataCollection $json
+     * @return $this
+     */
+    public function setBodyJSON($json) : self
+    {
+        if($json instanceof ArrayDataCollection) {
+            $json = JSONConverter::var2json($json->getData());
+        } else if(is_array($json)) {
+            $json = JSONConverter::var2json($json);
+        }
+
+        return $this
+            ->setBody($json)
+            ->setContentType('application/json; charset=utf-8');
+    }
+
+    /**
      * @param string $mime
      * @return $this
      */
     public function setContentType(string $mime) : self
     {
         return $this->setHeader('Content-Type', $mime);
+    }
+
+    public const AUTH_SCHEME_BASIC = 'Basic';
+    public const AUTH_SCHEME_DIGEST = 'Digest';
+
+    /**
+     * Sets the `Authorization` request header.
+     *
+     * @param string $scheme The auth scheme to use, e.g. {@see self::AUTH_SCHEME_BASIC} or {@see self::AUTH_SCHEME_DIGEST}.
+     * @param string $value The value matching the selected auth scheme.
+     * @return $this
+     */
+    public function setAuthorization(string $scheme, string $value) : self
+    {
+        return $this->setHeader('Authorization', $scheme.' '.$value);
     }
     
    /**
