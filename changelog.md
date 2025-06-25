@@ -1,7 +1,10 @@
 # Application Framework Changelog
 
-## v5.10.2 - Request fix
+## v5.10.2 - Request improvements
 - Connectors: Allowing response code `200` for `PUT` requests.
+- Connectors: Added the request methods `useSockets()` and `useCURL()` (default).
+- Connectors: Added the request method `setAuthorization()`.
+- Connectors: Added the request method `setBodyJSON()`.
 
 ## v5.10.1 - Language label fix
 - Localization: Fixed getting the language label throwing an exception.
