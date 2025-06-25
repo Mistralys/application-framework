@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.10.2 - Request fix
+- Connectors: Allowing response code `200` for `PUT` requests.
+
 ## v5.10.1 - Language label fix
 - Localization: Fixed getting the language label throwing an exception.
 
