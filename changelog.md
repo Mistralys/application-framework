@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.10.3 - Filter Criteria tweak
+- FilterCriteria: Fixed replacing query placeholders in `getQueries()`.
+
 ## v5.10.2 - Request improvements
 - Connectors: Allowing response code `200` for `PUT` requests.
 - Connectors: Added the request methods `useSockets()` and `useCURL()` (default).
