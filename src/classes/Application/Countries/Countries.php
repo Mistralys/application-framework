@@ -13,6 +13,7 @@ use Application\Countries\CountrySettingsManager;
 use Application\Countries\FilterSettings;
 use Application\Languages\Language;
 use AppLocalize\Localization\Countries\CountryCollection;
+use AppLocalize\Localization\Countries\CountryInterface;
 use AppLocalize\Localization\Country\CountryGB;
 use AppUtils\NamedClosure;
 use function AppUtils\parseVariable;
@@ -117,6 +118,50 @@ class Application_Countries extends DBHelper_BaseCollection
     public function getCountryByID(int $country_id) : Application_Countries_Country
     {
         return $this->getByID($country_id);
+    }
+
+    /**
+     * Resolves the country from the specified subject, which can be
+     * a country ID, ISO code, or a country instance.
+     *
+     * @param Application_Countries_Country|CountryInterface|int|string $subject
+     * @return Application_Countries_Country
+     * @throws CountryException
+     */
+    public function resolveCountry($subject) : Application_Countries_Country
+    {
+        if($subject instanceof Application_Countries_Country) {
+            return $subject;
+        }
+
+        if($subject instanceof CountryInterface) {
+            return $this->getByLocalizationCountry($subject);
+        }
+
+        if(is_numeric($subject)) {
+            return $this->getByID((int)$subject);
+        }
+
+        if(is_string($subject)) {
+            return $this->getByISO($subject);
+        }
+
+        throw new CountryException(
+            'Invalid country subject',
+            'The specified country subject is not a valid country ID, ISO code or country instance.',
+            self::ERROR_INVALID_COUNTRY_ID
+        );
+    }
+
+    /**
+     * Retrieves a country by its localization country instance.
+     *
+     * @param CountryInterface $country
+     * @return Application_Countries_Country
+     */
+    public function getByLocalizationCountry(CountryInterface $country) : Application_Countries_Country
+    {
+        return $this->getByISO($country->getCode());
     }
     
    /**
