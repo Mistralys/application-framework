@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.10.4 - Country improvements
+- Countries: Added `resolveCountry()` that accepts a range of values.
+- Countries: Added `getByLocalizationCountry()`.
+
 ## v5.10.3 - Filter Criteria tweak
 - FilterCriteria: Fixed replacing query placeholders in `getQueries()`.
 
