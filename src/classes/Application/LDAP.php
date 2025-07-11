@@ -100,6 +100,11 @@ class Application_LDAP implements Application_Interfaces_Loggable
         ));
     }
 
+    public function getConfig() : Application_LDAP_Config
+    {
+        return $this->config;
+    }
+
     /**
      * @param bool $debug
      * @return $this
