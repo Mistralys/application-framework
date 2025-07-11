@@ -35,11 +35,24 @@ class Application_LDAP_Config
             $port = null;
         }
 
-        $this->host = $host;
+        $this->host = $this->filterHost($host);
         $this->port = $port;
         $this->dn = $dn;
         $this->username = $username;
         $this->password = $password;
+    }
+
+    private function filterHost(string $host): string
+    {
+        // Remove any trailing slashes or spaces
+        $host = trim(rtrim($host, '/ '));
+
+        if(str_contains($host, '://')) {
+            // Remove the scheme if present
+            $host = substr($host, strpos($host, '://') + 3);
+        }
+
+        return $host;
     }
 
     public function getProtocolVersion(): int
