@@ -55,6 +55,19 @@ final class ConfigTests extends LDAPTestCase
         $this->assertStringContainsString('ldap://', $config->getURI(), 'URI should use ldap:// protocol.');
     }
 
+    public function test_normalizeHost() : void
+    {
+        $config = new Application_LDAP_Config(
+            'ldaps://ldap.example.com/',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
+
+        $this->assertSame('ldap.example.com', $config->getHost());
+    }
+
     /**
      * The application configuration settings must match
      * the LDAP integration tests configuration, as they
