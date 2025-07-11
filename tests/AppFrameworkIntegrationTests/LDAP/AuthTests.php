@@ -8,7 +8,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkIntegrationTests\LDAP;
 
-use AppFrameworkTestClasses\ApplicationTestCase;
+use AppFrameworkTestClasses\LDAP\LDAPTestCase;
+use Application;
 use Application_LDAP;
 use Application_LDAP_Config;
 
@@ -23,7 +24,7 @@ use Application_LDAP_Config;
  * @package LDAP
  * @subpackage Integration Tests
  */
-final class AuthTests extends ApplicationTestCase
+final class AuthTests extends LDAPTestCase
 {
     // region: _Tests
 
@@ -66,6 +67,18 @@ final class AuthTests extends ApplicationTestCase
         $this->assertSame(array('DeleteProducts', 'EditProducts', 'ViewProducts'), $rights);
     }
 
+    /**
+     * The test application uses the same LDAP configuration as
+     * the LDAP test cases, so it must give the same results as
+     * the internal configuration tests.
+     */
+    public function test_applicationConfigSettings() : void
+    {
+        $rights = Application::createLDAP()->getRights('awilliams');
+
+        $this->assertSame(array('EditProducts', 'ViewProducts'), $rights);
+    }
+
     // endregion
 
     // region: Support methods
@@ -73,15 +86,15 @@ final class AuthTests extends ApplicationTestCase
     protected function createLDAPConfig(bool $debug=false) : Application_LDAP_Config
     {
         return (new Application_LDAP_Config(
-            '127.0.0.1',
-            9689, // Custom port for testing
-            'dc=mokapi,dc=io',
-            'uid=awilliams,dc=mokapi,dc=io',
-            'foo123'
+            self::LDAP_HOST,
+            self::LDAP_PORT,
+            self::LDAP_DN,
+            self::LDAP_USERNAME,
+            self::LDAP_PASSWORD
         ))
-            ->setSSLEnabled(false)
             ->setDebug($debug)
-            ->setMemberSuffix(',dc=mokapi,dc=io')
+            ->setSSLEnabled(self::LDAP_SSL_ENABLED)
+            ->setMemberSuffix(self::LDAP_MEMBER_SUFFIX)
             ->setProtocolVersion(3);
     }
 
