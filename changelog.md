@@ -6,6 +6,9 @@
 - LDAP: Allowing port to be set to `null` to use the default port.
 - LDAP: Added integration tests using Mokapi to set up a mock LDAP server.
 - LDAP: Added the debug config setting to debug LDAP connections.
+- LDAP: Added a configuration option to turn off SSL connections.
+- LDAP: The configuration now allows turning on detailed LDAP debugging messages.
+- LDAP: Added a search filter failsafe to return only role-matching rights.
 
 ## v5.10.4 - Country improvements
 - Countries: Added `resolveCountry()` that accepts a range of values.
