@@ -17,4 +17,5 @@ class TimeTrackerScreenRights
     public const SCREEN_TIME_SPANS_EDIT = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
     public const SCREEN_TIME_SPANS_LIST = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
     public const SCREEN_TIME_SPANS_CREATE = TimeTrackerRightsInterface::RIGHT_CREATE_TIME_ENTRIES;
+    public const SCREEN_GLOBAL_SETTINGS = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
 }
