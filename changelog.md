@@ -9,6 +9,7 @@
 - LDAP: Added a configuration option to turn off SSL connections.
 - LDAP: The configuration now allows turning on detailed LDAP debugging messages.
 - LDAP: Added a search filter failsafe to return only role-matching rights.
+- Environments: Added `setLDAPSSLEnabled()` to toggle SSL connections.
 
 ## v5.10.4 - Country improvements
 - Countries: Added `resolveCountry()` that accepts a range of values.
