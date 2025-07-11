@@ -72,7 +72,6 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/promises" />
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/guzzle" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
       <path value="$PROJECT_DIR$/vendor/apereo/phpcas" />
       <path value="$PROJECT_DIR$/vendor/psr/log" />
       <path value="$PROJECT_DIR$/vendor/lipis/flag-icons" />
@@ -114,6 +113,7 @@
       <path value="$PROJECT_DIR$/vendor/mistralys/jtokenizer" />
       <path value="$PROJECT_DIR$/vendor/mistralys/application-localization" />
       <path value="$PROJECT_DIR$/vendor/mistralys/application-utils" />
+      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">
