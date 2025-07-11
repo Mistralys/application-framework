@@ -12,8 +12,10 @@ class TimeUIManager
 {
     public const LIST_SCREEN_GLOBAL = 'global';
     public const LIST_SCREEN_DAY = 'day';
-    public const SETTING_LAST_USED_LIST = 'time_tracker_last_used_list';
-    public const SETTING_LAST_USED_DATE = 'last_used_date';
+    public const SETTING_PREFIX = 'time_tracker_';
+    public const SETTING_LAST_USED_LIST = self::SETTING_PREFIX.'last_used_list';
+    public const SETTING_LAST_USED_DATE = self::SETTING_PREFIX.'last_used_date';
+    public const SETTING_BASE_TICKET_URL = self::SETTING_PREFIX.'base_ticket_url';
 
     public static function setLastUsedList(string $listType) : void
     {
@@ -52,5 +54,21 @@ class TimeUIManager
         }
 
         return AppFactory::createTimeTracker()->adminURL()->list();
+    }
+
+    public static function setBaseTicketURL(string $url) : void
+    {
+        AppFactory::createDriver()->getSettings()->set(self::SETTING_BASE_TICKET_URL, $url);
+    }
+
+    private static ?string $baseTicketURL = null;
+
+    public static function getBaseTicketURL() : string
+    {
+        if(!isset(self::$baseTicketURL)) {
+            self::$baseTicketURL = AppFactory::createDriver()->getSettings()->get(self::SETTING_BASE_TICKET_URL);
+        }
+
+        return self::$baseTicketURL;
     }
 }
