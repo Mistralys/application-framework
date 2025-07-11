@@ -1024,15 +1024,15 @@ class Application
 
     public static function createLDAP() : Application_LDAP
     {
-        $conf = new Application_LDAP_Config(
-            APP_LDAP_HOST,
-            (int)APP_LDAP_PORT,
-            APP_LDAP_DN,
-            APP_LDAP_USERNAME,
-            APP_LDAP_PASSWORD
-        );
-
-        $conf->setMemberSuffix(APP_LDAP_MEMBER_SUFFIX);
+        $conf = (new Application_LDAP_Config(
+            AppConfig::getLDAPHost(),
+            AppConfig::getLDAPPort(),
+            AppConfig::getLDAPDN(),
+            AppConfig::getLDAPUsername(),
+            AppConfig::getLDAPPassword()
+        ))
+            ->setMemberSuffix(AppConfig::getLDAPMemberSuffix())
+            ->setSSLEnabled(AppConfig::isLDAPSSLEnabled());
 
         return new Application_LDAP($conf);
     }
