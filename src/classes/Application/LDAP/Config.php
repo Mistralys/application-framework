@@ -15,8 +15,9 @@ declare(strict_types=1);
  */
 class Application_LDAP_Config
 {
-    public const DEFAULT_PORT = 389;
     public const DEFAULT_PROTOCOL_VERSION = 3;
+    public const DEFAULT_PORT_SSL_DISABLED = 389;
+    public const DEFAULT_PORT_SSL_ENABLED = 636;
 
     private string $host;
     private ?int $port;
@@ -112,7 +113,15 @@ class Application_LDAP_Config
 
     public function getPort(): int
     {
-        return $this->port ?? self::DEFAULT_PORT;
+        if(isset($this->port)) {
+            return $this->port;
+        }
+
+        if($this->ssl) {
+            return self::DEFAULT_PORT_SSL_ENABLED;
+        }
+
+        return self::DEFAULT_PORT_SSL_DISABLED;
     }
 
     /**
