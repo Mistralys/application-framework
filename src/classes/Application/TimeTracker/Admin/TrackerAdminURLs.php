@@ -11,6 +11,7 @@ use Application\TimeTracker\Admin\Screens\BaseListScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseDayListScreen;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
+use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalSettingsScreen;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseTimeSpansListScreen;
 use AppUtils\Microtime;
 use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
@@ -71,6 +72,12 @@ class TrackerAdminURLs
     {
         return $this->list()
             ->submode(BaseTimeSpansListScreen::URL_NAME);
+    }
+
+    public function globalSettings() : AdminURLInterface
+    {
+        return $this->list()
+            ->submode(BaseGlobalSettingsScreen::URL_NAME);
     }
 
     public function base() : AdminURLInterface
