@@ -1,5 +1,12 @@
 # Application Framework Changelog
 
+## v5.10.5 - LDAP fixes
+- LDAP: Now automatically switching between ldap function resource and class return types.
+- LDAP: Fixed deprecated usage of `ldap_connect` in PHP8.4.
+- LDAP: Allowing port to be set to `null` to use the default port.
+- LDAP: Added integration tests using Mokapi to set up a mock LDAP server.
+- LDAP: Added the debug config setting to debug LDAP connections.
+
 ## v5.10.4 - Country improvements
 - Countries: Added `resolveCountry()` that accepts a range of values.
 - Countries: Added `getByLocalizationCountry()`.
