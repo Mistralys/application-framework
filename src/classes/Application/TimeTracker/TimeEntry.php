@@ -11,6 +11,7 @@ namespace Application\TimeTracker;
 use Application;
 use Application\MarkdownRenderer;
 use Application\TimeTracker\Admin\EntryAdminURLs;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\Types\TimeEntryType;
 use Application\TimeTracker\Types\TimeEntryTypes;
 use Application_User;
@@ -27,6 +28,8 @@ use function AppUtils\parseDurationString;
  */
 class TimeEntry extends DBHelper_BaseRecord
 {
+    public const PLACEHOLDER_TICKET_ID = '$ticketID';
+
     public static function duration2hoursDec(DurationStringInfo $duration) : string
     {
         return sprintf(
@@ -111,7 +114,21 @@ class TimeEntry extends DBHelper_BaseRecord
 
     public function getTicketURL() : string
     {
-        return $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET_URL);
+        $url = $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET_URL);
+        if(!empty($url)) {
+            return $url;
+        }
+
+        $ticketID = $this->getTicketID();
+        if(empty($ticketID)) {
+            return '';
+        }
+
+        return str_replace(
+            self::PLACEHOLDER_TICKET_ID,
+            $this->getTicketID(),
+            TimeUIManager::getBaseTicketURL()
+        );
     }
 
     public function renderTicket() : string
