@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v5.10.5 - LDAP fixes
+## v5.10.5 - LDAP fixes and improvements
 - LDAP: Now automatically switching between ldap function resource and class return types.
 - LDAP: Fixed deprecated usage of `ldap_connect` in PHP8.4.
 - LDAP: Allowing port to be set to `null` to use the default port.
