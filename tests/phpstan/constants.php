@@ -1,13 +1,16 @@
 <?php
 
-define('APP_LDAP_HOST', '');
-define('APP_LDAP_USERNAME', '');
-define('APP_LDAP_PORT', 0);
-define('APP_LDAP_DN', '');
-define('APP_LDAP_PASSWORD', '');
-define('APP_LDAP_MEMBER_SUFFIX', '');
+declare(strict_types=1);
 
-define('APP_ENVIRONMENT', '');
+const APP_LDAP_HOST = '';
+const APP_LDAP_USERNAME = '';
+const APP_LDAP_PORT = null;
+const APP_LDAP_SSL_ENABLED = true;
+const APP_LDAP_DN = '';
+const APP_LDAP_PASSWORD = '';
+const APP_LDAP_MEMBER_SUFFIX = '';
+
+const APP_ENVIRONMENT = '';
 
 const APP_CAS_HOST = 'login.cas-host.example';
 const APP_CAS_PORT = 443;
