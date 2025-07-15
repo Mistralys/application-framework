@@ -11,6 +11,7 @@ namespace AppFrameworkTests\LDAP;
 use AppFrameworkTestClasses\LDAP\LDAPTestCase;
 use Application;
 use Application\ConfigSettings\AppConfig;
+use Application\LDAP\LDAPException;
 use Application_LDAP_Config;
 
 /**
@@ -34,7 +35,8 @@ final class ConfigTests extends LDAPTestCase
         $this->assertSame(636, $config->getPort(), 'Default port should be 389 when not specified.');
         $this->assertSame(3, $config->getProtocolVersion(), 'Default protocol version should be 3.');
         $this->assertTrue($config->isSSLEnabled(), 'Default SSL setting should be true.');
-        $this->assertStringContainsString('ldaps://', $config->getURI(), 'URI should use ldaps:// protocol.');
+        $this->assertEquals('ldaps://127.0.0.1:636', $config->getURI());
+        $this->assertEquals('ldaps://127.0.0.1', $config->getHostURI());
     }
 
     public function test_defaultsNoSSL() : void
@@ -52,7 +54,8 @@ final class ConfigTests extends LDAPTestCase
         $this->assertSame(389, $config->getPort(), 'Default port should be 389 when not specified.');
         $this->assertSame(3, $config->getProtocolVersion(), 'Default protocol version should be 3.');
         $this->assertFalse($config->isSSLEnabled(), 'Default SSL setting should be false.');
-        $this->assertStringContainsString('ldap://', $config->getURI(), 'URI should use ldap:// protocol.');
+        $this->assertEquals('ldap://127.0.0.1:389', $config->getURI());
+        $this->assertEquals('ldap://127.0.0.1', $config->getHostURI());
     }
 
     public function test_normalizeHost() : void
@@ -66,6 +69,32 @@ final class ConfigTests extends LDAPTestCase
         );
 
         $this->assertSame('ldap.example.com', $config->getHost());
+    }
+
+    public function test_detectSSLFromHost() : void
+    {
+        $config = new Application_LDAP_Config(
+            'ldap://ldap.example.com/',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
+
+        $this->assertFalse($config->isSSLEnabled(), 'SSL should be disabled for ldap:// scheme.');
+    }
+
+    public function test_invalidHost() : void
+    {
+        $this->expectExceptionCode(LDAPException::ERROR_INVALID_HOST);
+
+        new Application_LDAP_Config(
+            'invalid',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
     }
 
     /**
