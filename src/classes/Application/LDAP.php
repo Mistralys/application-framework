@@ -61,12 +61,12 @@ class Application_LDAP implements Application_Interfaces_Loggable
         putenv("LDAPTLS_REQCERT=never");
 
         if(PHP_MAJOR_VERSION >= 8 && PHP_MINOR_VERSION >= 4) {
-            $result = ldap_connect($config->getURI());
+            $result = ldap_connect($this->config->getURI());
         }
         else{
             $result = ldap_connect(
-                APP_LDAP_HOST,
-                APP_LDAP_PORT
+                $this->config->getHost(),
+                $this->config->getPort()
             );
         }
 
