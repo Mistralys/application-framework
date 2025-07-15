@@ -43,7 +43,7 @@ class Application_LDAP implements Application_Interfaces_Loggable
     private Application_LDAP_Config $config;
 
     /**
-     * @var resource|LDAP\Connection|NULL
+     * @var resource|LDAP\Connection
      */
     protected $connection;
 
