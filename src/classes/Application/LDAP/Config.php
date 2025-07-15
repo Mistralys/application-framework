@@ -47,6 +47,12 @@ class Application_LDAP_Config
 
     private function filterHost(string $host): string
     {
+        if(!str_contains($host, '://')) {
+            // If the host does not contain a scheme, we assume it's a plain host.
+            // We will add the scheme later based on whether SSL is enabled or not.
+            $host = 'ldaps://' . $host;
+        }
+
         $info = parseURL($host);
 
         if(!$info->isValid()) {
