@@ -57,24 +57,31 @@ class Application_LDAP implements Application_Interfaces_Loggable
 
         $this->log('Starting new connection.');
 
+        $this->configureConnection();
+    }
+
+    private function configureConnection(bool $fallback=false) : void
+    {
+        $this->log('ConfigureConnection | Setting up the connection configuration.');
+
         // Workaround for LDAPS issues
         putenv("LDAPTLS_REQCERT=never");
 
-        if(PHP_MAJOR_VERSION >= 8 && PHP_MINOR_VERSION >= 4) {
+        if(PHP_MAJOR_VERSION >= 8 && PHP_MINOR_VERSION >= 4)
+        {
+            $this->log('ConfigureConnection | Using PHP 8.4+ connection using URI [%s].', $this->config->getURI());
             $result = ldap_connect($this->config->getURI());
         }
-        else{
-            $result = ldap_connect(
-                $this->config->getHost(),
-                $this->config->getPort()
-            );
+        else
+        {
+            $result = $this->connectPHP7($fallback);
         }
 
         if (!is_resource($result) && !class_exists(self::CONNECTION_CLASS) && !is_a($result, self::CONNECTION_CLASS)) {
             throw new Application_Exception(
-                'LDAP connection failed',
+                'LDAP connection configuration failed',
                 sprintf(
-                    'Connect call failed on [%1s:%2s]. '.PHP_EOL.
+                    'LDAP `connect` function call failed on [%1s:%2s]. '.PHP_EOL.
                     'This does not mean the actual connection failed, just the configuration. '.PHP_EOL.
                     'Connect return type: [%3$s]. ',
                     $this->config->getHost(),
@@ -85,19 +92,46 @@ class Application_LDAP implements Application_Interfaces_Loggable
             );
         }
 
+        $this->connection = $result;
+
         ldap_set_option(
-            $result,
+            $this->connection,
             LDAP_OPT_PROTOCOL_VERSION,
             $this->config->getProtocolVersion()
         );
 
-        $this->connection = $result;
-
         $this->log(sprintf(
-            'Configuration OK | User [%s] | Base DN [%s]',
+            'ConfigureConnection | OK | User [%s] | Base DN [%s]',
             $this->config->getUsername(),
             $this->config->getDn()
         ));
+    }
+
+    /**
+     * @param bool $fallback Whether to use the fallback host configuration.
+     * @return false|resource
+     */
+    private function connectPHP7(bool $fallback = false)
+    {
+        $host = $this->config->getHostURI();
+        $port = $this->config->getPort();
+
+        // Depending on the LDAP + PHP combination, the host may
+        // have to be specified without the scheme.
+        if($fallback) {
+            $host = $this->config->getHost();
+        }
+
+        $this->log(
+            'ConfigureConnection | Using PHP 7.x connection using host [%s] and port [%s].',
+            $host,
+            $port
+        );
+
+        return @ldap_connect(
+            $host,
+            $port
+        );
     }
 
     public function getConfig() : Application_LDAP_Config
@@ -117,6 +151,15 @@ class Application_LDAP implements Application_Interfaces_Loggable
 
     private bool $isBound = false;
 
+    private function _bind() : bool
+    {
+        return @ldap_bind(
+            $this->connection,
+            $this->config->getUsername(),
+            $this->config->getPassword()
+        );
+    }
+
     /**
      * Starts the actual connection to the LDAP server.
      *
@@ -128,35 +171,42 @@ class Application_LDAP implements Application_Interfaces_Loggable
             return;
         }
 
-        $this->log('Binding to LDAP server.');
+        $this->log('Binding | Connecting to the LDAP server.');
 
         $this->isBound = true;
 
         if ($this->debug) {
-            $this->log('Debugging enabled, setting LDAP debug level to 7.');
-            ldap_set_option($this->connection, LDAP_OPT_DEBUG_LEVEL, 7);
+            $this->log('Binding | Debugging enabled, setting LDAP debug level to 7.');
+            // Setting the option only works without specifying the connection resource
+            ldap_set_option(null, LDAP_OPT_DEBUG_LEVEL, 7);
         }
 
-        $result = ldap_bind(
-            $this->connection,
-            $this->config->getUsername(),
-            $this->config->getPassword()
-        );
-
-        if($result !== false)
+        if($this->_bind() !== false)
         {
-            $this->log('Binding was successful.');
+            $this->log('Binding | OK, connection established.');
+            return;
+        }
+
+        $this->log('Binding | Connection failed, trying fallback method.');
+
+        // Retry with the fallback connection configuration.
+        $this->configureConnection(true);
+
+        if($this->_bind() !== false)
+        {
+            $this->log('Binding | OK, connection established.');
             return;
         }
 
         $message = ldap_error($this->connection);
 
+        $this->logError('Binding | Connection failed with message [%s].', $message);
+
         throw new Application_Exception(
             'LDAP binding failed',
             sprintf(
-                'Could not bind ldap on [%1$s:%2$s] (the connection failed). Native error message: %3$s',
-                $this->config->getHost(),
-                $this->config->getPort(),
+                'Could not bind ldap on [%1$s] (the connection failed). Native error message: %2$s',
+                $this->config->getURI(),
                 $message
             ),
             self::ERROR_BINDING_FAILED
