@@ -89,7 +89,7 @@ final class ConfigTests extends LDAPTestCase
         $this->expectExceptionCode(LDAPException::ERROR_INVALID_HOST);
 
         new Application_LDAP_Config(
-            'invalid',
+            '//////',
             null,
             'dc=mokapi,dc=io',
             'uid=awilliams,dc=mokapi,dc=io',
