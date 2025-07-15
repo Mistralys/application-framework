@@ -6,6 +6,9 @@
 
 declare(strict_types=1);
 
+use Application\LDAP\LDAPException;
+use function AppUtils\parseURL;
+
 /**
  * Configuration utility for LDAP connections. Used to set
  * connection parameters such as the host, port, and credentials.
@@ -44,15 +47,27 @@ class Application_LDAP_Config
 
     private function filterHost(string $host): string
     {
-        // Remove any trailing slashes or spaces
-        $host = trim(rtrim($host, '/ '));
+        $info = parseURL($host);
 
-        if(str_contains($host, '://')) {
-            // Remove the scheme if present
-            $host = substr($host, strpos($host, '://') + 3);
+        if(!$info->isValid()) {
+            throw new LDAPException(
+                'Invalid LDAP host',
+                sprintf(
+                    'The provided LDAP host [%s] is not valid. '.PHP_EOL.
+                    'Validation message: '.PHP_EOL.
+                    '%s',
+                    $host,
+                    $info->getErrorMessage()
+                ),
+                LDAPException::ERROR_INVALID_HOST
+            );
         }
 
-        return $host;
+        if($info->getScheme() === 'ldap') {
+            $this->setSSLEnabled(false);
+        }
+
+        return $info->getHost();
     }
 
     public function getProtocolVersion(): int
@@ -85,16 +100,30 @@ class Application_LDAP_Config
      */
     public function getURI() : string
     {
+        return sprintf(
+            '%s:%d',
+            $this->getHostURI(),
+            $this->getPort()
+        );
+    }
+
+    /**
+     * Returns the URI of the LDAP server, without the port, in the format
+     * `ldap://host`.
+     *
+     * @return string
+     */
+    public function getHostURI() : string
+    {
         $scheme = 'ldap';
         if($this->ssl) {
             $scheme = 'ldaps';
         }
 
         return sprintf(
-            '%s://%s:%d',
+            '%s://%s',
             $scheme,
-            $this->getHost(),
-            $this->getPort()
+            $this->getHost()
         );
     }
 
