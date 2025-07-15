@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.10.7 - LDAP PHP7 fix extended
+- LDAP: Added a fallback way to connect to LDAP servers in PHP7.
+- LDAP: Now handling host connections with or without an LDAP scheme.
+- LDAP: The config SSL setting is now inherited from the host if specified with a scheme. 
+
 ## v5.10.6 - LDAP PHP7 fix
 - LDAP: Fixed wrong settings used to connect in PHP7.
 
