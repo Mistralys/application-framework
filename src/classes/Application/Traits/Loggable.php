@@ -146,7 +146,7 @@ trait Application_Traits_Loggable
         AppFactory::createLogger()->logUI($message, ...$args);
     }
 
-    protected function logData(array $data, ?string $label=null, ?string $category=null) : void
+    protected function logData($data, ?string $label=null, ?string $category=null) : void
     {
         AppFactory::createLogger()->logData($data, $category, $label);
     }
@@ -188,5 +188,23 @@ trait Application_Traits_Loggable
     protected function logHeader(string $message, ...$args) : void
     {
         AppFactory::createLogger()->logHeader($message, ...$args);
+    }
+
+    protected function logRequestLog(string $message, ...$args) : void
+    {
+        if($this->isLoggingEnabled() === false) {
+            return;
+        }
+
+        AppFactory::createLogger()->logRequestLog($message, ...$args);
+    }
+
+    protected function logRequestLogData($data, ?string $label=null) : void
+    {
+        if($this->isLoggingEnabled() === false) {
+            return;
+        }
+
+        AppFactory::createLogger()->logRequestLogData($data, $label);
     }
 }
