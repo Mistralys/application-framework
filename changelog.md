@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.10.10 - LDAP DN validation fix
+- LDAP: Tweaked the search DN validation to be more lenient with the LDAP server's setup.
+
 ## v5.10.9 - LDAP Logging
 - LDAP: Added more logging.
 - LDAP: Added `toArray()` in the configuration to dump values.
