@@ -33,6 +33,7 @@ use AppUtils\Microtime;
  */
 class Application_RequestLog extends Application_RequestLog_AbstractFolderContainer
 {
+
     public const SESSION_ID_NONE = 'none';
     public const SESSION_ID_SIMULATED = 'simulated';
 
@@ -194,5 +195,15 @@ class Application_RequestLog extends Application_RequestLog_AbstractFolderContai
         }
 
         return $this->status;
+    }
+
+    public static function setActive(bool $active) : void
+    {
+        AppFactory::createRequestLog()->getStatus()->setEnabled($active);
+    }
+
+    public static function isActive() : bool
+    {
+        return AppFactory::createRequestLog()->isLoggingEnabled();
     }
 }
