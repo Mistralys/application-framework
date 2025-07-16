@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use AppUtils\ConvertHelper\JSONConverter;
 use function AppUtils\parseVariable;
 
 /**
@@ -172,6 +173,8 @@ class Application_LDAP implements Application_Interfaces_Loggable
         }
 
         $this->log('Binding | Connecting to the LDAP server.');
+
+        $this->logRequestLogData($this->config->toArray(), 'LDAP configuration');
 
         $this->isBound = true;
 
@@ -375,6 +378,8 @@ class Application_LDAP implements Application_Interfaces_Loggable
     {
         $this->bind();
 
+        $this->log('Search | Executing search with filter [%s] and attributes [%s].', $filter, JSONConverter::var2json($attributes));
+
         if(empty($baseDn)) {
             $baseDn = $this->config->getDn();
             $this->log('Search | No base DN specified, using the default [%s].', $baseDn);
@@ -397,12 +402,12 @@ class Application_LDAP implements Application_Interfaces_Loggable
             return array();
         }
 
+        $this->logRequestLogData($entries, 'Raw LDAP search results');
+
         if (isset($entries["count"]))
         {
             unset($entries["count"]);
         }
-
-        $this->logRequestLogData($entries, 'Raw LDAP search results');
 
         return $entries;
     }
