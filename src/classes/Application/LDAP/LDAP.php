@@ -264,6 +264,10 @@ class Application_LDAP implements Application_Interfaces_Loggable
         $rightDefs = $this->search("(".self::ATTRIBUTE_RIGHT_TYPE_ID."=*)", array(), $roleDN);
         $rights = array();
 
+        $this->log('FetchRights | Looking for rights in the field [%s].', self::ATTRIBUTE_RIGHT_NAME);
+
+        $this->logRequestLogData($rightDefs, 'Raw role rights data');
+
         foreach ($rightDefs as $rightDef)
         {
             // Fallback check: Verify that the DN in the result set matches
@@ -309,9 +313,8 @@ class Application_LDAP implements Application_Interfaces_Loggable
         $roleDefs = $this->search($rolesFilter, array());
 
         $this->log(sprintf(
-            'User [%s] | Found [%s] roles using member filter [%s].',
+            'User [%s] | Using member filter [%s].',
             $userName,
-            count($roleDefs),
             $rolesFilter
         ));
 
@@ -320,6 +323,13 @@ class Application_LDAP implements Application_Interfaces_Loggable
         {
             $result[] = $roleDef['dn'];
         }
+
+        $this->log(
+            'User [%s] | Detected %s roles: [%s]',
+            $userName,
+            count($result),
+            implode(', ', $result)
+        );
 
         return $result;
     }
@@ -376,12 +386,14 @@ class Application_LDAP implements Application_Interfaces_Loggable
 
         if ($result === false)
         {
+            $this->log('Search | LDAP search failed with error: [%s].', ldap_error($this->connection));
             return array();
         }
 
         $entries = ldap_get_entries($this->connection, $result);
         if ($entries === false)
         {
+            $this->log('Search | LDAP get entries failed with error: [%s].', ldap_error($this->connection));
             return array();
         }
 
@@ -389,6 +401,8 @@ class Application_LDAP implements Application_Interfaces_Loggable
         {
             unset($entries["count"]);
         }
+
+        $this->logRequestLogData($entries, 'Raw LDAP search results');
 
         return $entries;
     }
