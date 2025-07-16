@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.10.9 - LDAP Logging
+- LDAP: Added more logging.
+- LDAP: Added `toArray()` in the configuration to dump values.
+
 ## v5.10.8 - RequestLog logging
 - Logging: Added methods to log messages only when the request log is enabled.
 - Logging: Known types (e.g. `Microtime`) are now converted into useful log messages.
