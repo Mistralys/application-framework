@@ -97,6 +97,39 @@ final class ConfigTests extends LDAPTestCase
         );
     }
 
+    public function test_validHost() : void
+    {
+        new Application_LDAP_Config(
+            'ldap.host.org',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
+
+        $this->addToAssertionCount(1);
+
+        new Application_LDAP_Config(
+            'ldap://ldap.host.org',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
+
+        $this->addToAssertionCount(1);
+
+        new Application_LDAP_Config(
+            'ldaps://ldap.host.org',
+            null,
+            'dc=mokapi,dc=io',
+            'uid=awilliams,dc=mokapi,dc=io',
+            'foo123'
+        );
+
+        $this->addToAssertionCount(1);
+    }
+
     /**
      * The application configuration settings must match
      * the LDAP integration tests configuration, as they
