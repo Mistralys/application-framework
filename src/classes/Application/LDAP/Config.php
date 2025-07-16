@@ -213,4 +213,19 @@ class Application_LDAP_Config
     {
         return $this->memberSuffix;
     }
+
+    public function toArray() : array
+    {
+        return array(
+            'host' => $this->getHost(),
+            'port' => $this->getPort(),
+            'dn' => $this->getDn(),
+            'username' => $this->getUsername(),
+            'password' => str_repeat('*', strlen($this->getPassword())),
+            'memberSuffix' => $this->getMemberSuffix(),
+            'ssl' => $this->isSSLEnabled(),
+            'debug' => $this->isDebug(),
+            'protocolVersion' => $this->getProtocolVersion()
+        );
+    }
 }
