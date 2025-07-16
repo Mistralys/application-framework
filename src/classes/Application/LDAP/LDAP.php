@@ -276,7 +276,7 @@ class Application_LDAP implements Application_Interfaces_Loggable
             // Fallback check: Verify that the DN in the result set matches
             // the role DN.
             $dn = $rightDef['dn'] ?? '';
-            if(!empty($dn) && !str_starts_with($dn, $roleDN))
+            if(!empty($dn) && !str_contains($dn, $roleDN))
             {
                 $this->log(
                     'FetchRights | Skipping role [%s], as it does not match the role DN.',
