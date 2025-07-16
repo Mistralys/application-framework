@@ -1,5 +1,13 @@
 # Application Framework Changelog
 
+## v5.10.8 - RequestLog logging
+- Logging: Added methods to log messages only when the request log is enabled.
+- Logging: Known types (e.g. `Microtime`) are now converted into useful log messages.
+- RequestLog: Added static `setActive()` and `isActive()`.
+- RequestLog: Now caching the enabled status for the duration of the request.
+- LDAP: Added more logging, including debug info in request log mode.
+- Tests: Now also enabling the request logging in `enableLogging()`.
+
 ## v5.10.7 - LDAP PHP7 fix extended
 - LDAP: Added a fallback way to connect to LDAP servers in PHP7.
 - LDAP: Now handling host connections with or without an LDAP scheme.
