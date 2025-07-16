@@ -13,6 +13,7 @@ use Application\Interfaces\ChangelogableInterface;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
+use Application_RequestLog;
 use Application_Session_Base;
 use Application_User;
 use AppLocalize\Localization\Locales\LocaleInterface;
@@ -87,11 +88,15 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     protected function enableLogging(): void
     {
         AppFactory::createLogger()->logModeEcho();
+
+        Application_RequestLog::setActive(true);
     }
 
     protected function disableLogging(): void
     {
         AppFactory::createLogger()->logModeNone();
+
+        Application_RequestLog::setActive(false);
     }
 
     protected function isRunViaApplication(): bool
