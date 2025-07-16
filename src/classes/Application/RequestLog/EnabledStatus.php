@@ -49,13 +49,20 @@ class Application_RequestLog_EnabledStatus
         return (string)sb()->muted(t('Disabled'));
     }
 
+    private ?bool $enabled = null;
+
     public function isEnabled() : bool
     {
-        return file_exists($this->storageFile) && FileHelper::readContents($this->storageFile) === 'yes';
+        if($this->enabled === null) {
+            $this->enabled = file_exists($this->storageFile) && FileHelper::readContents($this->storageFile) === 'yes';
+        }
+
+        return $this->enabled;
     }
 
     public function setEnabled(bool $enabled) : Application_RequestLog_EnabledStatus
     {
+        $this->enabled = $enabled;
         FileHelper::saveFile($this->storageFile, ConvertHelper::boolStrict2string($enabled, true));
         return $this;
     }
