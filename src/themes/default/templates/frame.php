@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
-use AppUtils\ClassHelper;
+use Application\User\LayoutWidths;use AppUtils\ClassHelper;
 use AppUtils\OutputBuffering;
 use UI\Event\PageRendered;
 use UI\Page\Navigation\QuickNavigation;
@@ -203,8 +203,16 @@ SAME SQL STATEMENT: (<?php echo count($duplicates) ?>)
     private function getBodyClasses() : array
     {
         $bodyClasses = array();
-        $bodyClasses[] = 'layout-'.$this->user->getSetting('layout_width', 'standard');
+        $bodyClasses[] = 'layout-'.$this->user->getSetting(Application_Admin_Area_Settings::SETTING_LAYOUT_WIDTH, LayoutWidths::DEFAULT_WIDTH);
         $bodyClasses[] = 'fontsize-'.$this->user->getSetting('layout_fontsize', 'standard');
+
+        if($this->user->isDeveloper()) {
+            $bodyClasses[] = 'dev-user';
+        }
+
+        if(isDevelMode()) {
+            $bodyClasses[] = 'devel-mode';
+        }
 
         if($this->hasQuickNav()) {
             $bodyClasses[] = self::BODY_CLASS_WITH_QUICKNAV;

@@ -450,7 +450,7 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
     /**
      * Sets the percentual width of the label column.
      *
-     * @param int|float $percent
+     * @param int|float|string $percent
      * @throws Application_Exception
      * @return UI_PropertiesGrid
      */
@@ -466,6 +466,8 @@ class UI_PropertiesGrid extends UI_Renderable implements OptionableInterface, UI
                 self::ERROR_ONLY_NUMERIC_VALUES_ALLOWED
             );
         }
+
+        $percent = (float)$percent;
 
         if ($percent < 1) {
             $percent = 1;

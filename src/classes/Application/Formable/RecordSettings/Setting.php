@@ -204,13 +204,16 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
      *
      * The callback method prototype:
      *
-     * <pre>
-     * function(mixed $value, Application_Formable_RecordSettings_ValueSet $values, Application_Formable_RecordSettings_Setting $setting) : mixed
-     * </pre>
+     * ```php
+     * function(
+     *     mixed $value,
+     *     Application_Formable_RecordSettings_ValueSet $values,
+     *     Application_Formable_RecordSettings_Setting $setting
+     * ) : mixed
+     * ```
      *
      * @param callable|NULL $filter
      * @return $this
-     * @throws Application_Exception
      *
      * @see Application_Formable_RecordSettings_ValueSet
      */
@@ -223,8 +226,8 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
    /**
     * Marks this setting as the default form element.
     * 
-    * NOTE: This is done automatically, no need to 
-    * call it manually.
+    * > NOTE: This is done automatically, no need to
+    * > call it manually.
     * 
     * @return Application_Formable_RecordSettings_Setting
     */
@@ -272,10 +275,21 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
     
    /**
     * Sets a custom callback to use to inject the element.
-    * 
+    *
+    * Callable prototype:
+    *
+    * ```php
+    * function(
+    *     Application_Formable_RecordSettings_Setting $setting,
+    *     mixed $arg1,
+    *     mixed $arg2,
+    *     ...
+    * ) : HTML_QuickForm2_Node
+    * ```
+    *
     * @param callable $callback
-    * @param array $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
-    * @return Application_Formable_RecordSettings_Setting
+    * @param array<int,mixed> $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
+    * @return $this
     */
     public function setCallback(callable $callback, array $arguments=array()) : Application_Formable_RecordSettings_Setting
     {

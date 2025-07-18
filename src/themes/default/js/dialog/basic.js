@@ -75,16 +75,21 @@ var Dialog_Basic =
 	Show:function()
 	{
 		if(!this.rendered) {
-			var dialog = this;
+			this.log('Show | Not rendered yet, rendering...');
+
+			var self = this;
 			this.Render();
 			UI.RefreshTimeout(function() {
-				dialog.PostRender();
-				dialog.Show();
+				self.PostRender();
+				self.Show();
 			});
 			return this;
 		}
-		
+
+		this.log('Show | Dialog is ready, showing...');
+
 		this.dialog.modal('show');
+
 		this.HideAlerts();
 		this.Handle_Shown();
 
@@ -121,6 +126,8 @@ var Dialog_Basic =
 		if(this.rendering) {
 			return;
 		}
+
+		this.log('Render | Starting the render...');
 		
 		this.rendering = true;
 		
@@ -151,6 +158,8 @@ var Dialog_Basic =
 		$.each(this.classes, function(idx, className) {
 			dialog.addClass(className);
 		});
+
+		this.log('Render | Complete.');
 	},
 	
    /**
@@ -598,6 +607,8 @@ var Dialog_Basic =
     */
 	PostRender:function()
 	{
+		this.log('Render | Executing post-render tasks...');
+
 		this._PostRender();
 		this.rendered = true;
 		this.rendering = false;
@@ -613,6 +624,8 @@ var Dialog_Basic =
 		});
 		
 		this._Start();
+
+		this.log('Render | All done.');
 	},
 	
    /**
@@ -746,6 +759,8 @@ var Dialog_Basic =
     */
 	Handle_Shown:function()
 	{
+		this.log('Shown | Executing shown tasks...');
+
 		this.isShown = true;
 
 		// fix for clicking an element with a tooltip to open the
@@ -753,12 +768,30 @@ var Dialog_Basic =
 		UI.CloseAllTooltips();
 
 		this._Handle_Shown();
-		
-		if(this.eventHandlers.shown.length > 0) {
-			for(var i=0; i<this.eventHandlers.shown.length; i++) {
-				this.eventHandlers.shown[i].call(undefined, this);
+
+		var self = this;
+
+		if(this.eventHandlers.shown.length > 0)
+		{
+			this.log(sprintf('Shown | Found [%s] event handlers.', this.eventHandlers.shown.length));
+
+			for(var i=0; i<this.eventHandlers.shown.length; i++)
+			{
+				this.log(sprintf('Shown | - Calling handler [#%s]', i));
+
+				try
+				{
+					this.eventHandlers.shown[i].call(undefined, self);
+				}
+				catch (e)
+				{
+					this.log('Shown | - Error calling handler: ' + e.message);
+					console.log(this.eventHandlers.shown[i]);
+				}
 			}
 		}
+
+		this.log('Shown | All done.');
 	},
 	
    /**

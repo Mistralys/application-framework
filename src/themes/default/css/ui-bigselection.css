@@ -1,3 +1,8 @@
+:root {
+    --bigselection-padding-regular: 13px;
+    --bigselection-padding-small: 5px;
+}
+
 .bigselection {
     list-style: none;
     margin-left: 0;
@@ -57,12 +62,12 @@
 
 .bigselection > LI > A {
     display: block;
-    padding: 13px;
+    padding: var(--bigselection-padding-regular);
     font-size: var(--font-size-l);
 }
 
 .bigselection.size-small > LI > A {
-    padding: 5px;
+    padding: var(--bigselection-padding-small);
     font-size: var(--font-size-normal);
     line-height: var(--line-height-normal);
     margin-bottom: 0;
@@ -88,4 +93,24 @@
 
 .bigselection .bigselection-entry.active .bigselection-description {
     color: var(--color-text-inverted-muted);
+}
+
+.bigselection UL.bigselection-meta-controls{
+    float: right;
+    display: flex;
+    padding: 0;
+    margin: 0 var(--bigselection-padding-regular) 0 0;
+    list-style: none;
+}
+
+.bigselection.size-small UL.bigselection-meta-controls{
+    margin-right: var(--bigselection-padding-small);
+    padding: 0;
+}
+
+.bigselection LI.bigselection-meta-control{
+    margin: 0 0 0 5px;
+    padding: 0;
+    font-size: var(--font-size-normal);
+    display:inline-block;
 }

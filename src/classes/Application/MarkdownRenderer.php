@@ -9,6 +9,7 @@ use Application\MarkdownRenderer\CustomTags\MediaTag;
 use AppUtils\AttributeCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\StringBuilder;
 use AppUtils\Traits\OptionableTrait;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment\Environment;
@@ -18,6 +19,7 @@ use League\CommonMark\Extension\HeadingPermalink\HeadingPermalinkExtension;
 use League\CommonMark\Extension\Table\TableExtension;
 use League\CommonMark\Extension\TableOfContents\TableOfContentsExtension;
 use League\CommonMark\MarkdownConverter;
+use UI;
 
 class MarkdownRenderer implements OptionableInterface
 {
@@ -43,6 +45,39 @@ class MarkdownRenderer implements OptionableInterface
         return new self();
     }
 
+    public static function getName() : string
+    {
+        return 'Markdown';
+    }
+
+    public static function injectReference(?StringBuilder $comment=null, bool $quickRef=false) : StringBuilder
+    {
+        if($comment === null) {
+            $comment = sb();
+        }
+
+        $comment->t('It is possible to use %1$s syntax.', self::getName());
+
+        if(!$quickRef) {
+            return $comment;
+        }
+
+        return $comment
+            ->nl()
+            ->t('Quick reference:')
+            ->ul(array(
+                sb()->mono('*'.t('Bold text').'*'),
+                sb()->mono('_'.t('Italic text').'_'),
+                sb()->mono('`'.t('Inline code').'`'),
+                sb()->mono('['.t('Link label').'](https://mistralys.eu)'),
+                sb()->mono('{image:filename.png}')->muted('('.t('Store image in theme image subfolder %1$s', sb()->code('whatsnew')).')'),
+                sb()->mono('{image 20%:filename.png}')->muted('('.t('With percentage width').')'),
+                sb()->mono('{image 120px:filename.png}')->muted('('.t('With pixel width').')'),
+                sb()->mono('### '.t('Heading'))->muted('('.t('Amount of hashes = level').')'),
+                sb()->mono('```')->nl()->mono(t('Code fence'))->nl()->mono('```'),
+            ));
+    }
+
     public function getDefaultOptions(): array
     {
         return array(
@@ -63,7 +98,7 @@ class MarkdownRenderer implements OptionableInterface
 
     public function render(string $markdown) : string
     {
-        \UI::getInstance()->addStylesheet('ui-markdown.css');
+        UI::getInstance()->addStylesheet('ui-markdown.css');
 
         $this->tags = array();
 

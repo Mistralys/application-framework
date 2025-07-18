@@ -1,0 +1,59 @@
+dn: dc=mokapi,dc=io
+
+# ----------------------------------------------
+# Regular user "awilliams"
+# ----------------------------------------------
+dn: uid=awilliams,dc=mokapi,dc=io
+cn: Alice Williams
+uid: awilliams
+userPassword: foo123
+memberOf: cn=Users,ou=groups,dc=mokapi,dc=io
+
+# ----------------------------------------------
+# Regular user "bmiller"
+# ----------------------------------------------
+dn: uid=bmiller,dc=mokapi,dc=io
+cn: Bob Miller
+uid: bmiller
+userPassword: bar123
+memberOf: cn=Users,ou=groups,dc=mokapi,dc=io
+
+# ----------------------------------------------
+# Admin user
+# ----------------------------------------------
+dn: uid=csmith,dc=mokapi,dc=io
+cn: Carol Smith
+uid: csmith
+userPassword: secret123
+memberOf: cn=Admins,ou=groups,dc=mokapi,dc=io
+memberOf: cn=Users,ou=groups,dc=mokapi,dc=io
+
+# ----------------------------------------------
+# Organizational Units
+# ----------------------------------------------
+dn: ou=groups,dc=mokapi,dc=io
+objectClass: organizationalUnit
+ou: groups
+
+# ----------------------------------------------
+# Regular users role
+# ----------------------------------------------
+dn: cn=Users,ou=groups,dc=mokapi,dc=io
+objectClass: groupOfNames
+cn: Users
+member: uid=awilliams,dc=mokapi,dc=io
+member: uid=bmiller,dc=mokapi,dc=io
+member: uid=csmith,dc=mokapi,dc=io
+rightname: ViewProducts
+rightname: EditProducts
+righttypeid: Users
+
+# ----------------------------------------------
+# Admin users role
+# ----------------------------------------------
+dn: cn=Admins,ou=groups,dc=mokapi,dc=io
+objectClass: groupOfNames
+cn: Admins
+member: uid=csmith,dc=mokapi,dc=io
+rightname: DeleteProducts
+righttypeid: Admins

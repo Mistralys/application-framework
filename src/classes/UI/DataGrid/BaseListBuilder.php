@@ -23,6 +23,7 @@ use DateTime;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
+use UI_DataGrid_Entry;
 use UI_DataGrid_Exception;
 use UI_Exception;
 use UI_Page_Sidebar;
@@ -61,9 +62,9 @@ abstract class BaseListBuilder
 
     /**
      * @param object $record
-     * @return array<string,mixed>
+     * @return array<string,mixed>|UI_DataGrid_Entry
      */
-    abstract protected function collectEntry(object $record): array;
+    abstract protected function collectEntry(object $record);
 
     // endregion
 
@@ -256,6 +257,18 @@ abstract class BaseListBuilder
         $this->user = Application_Driver::getInstance()->getUser();
         $this->hasRecords = $this->getFilterCriteria()->countUnfiltered() > 0;
         $this->listID = $listID;
+
+        $this->init();
+    }
+
+    protected function init() : void
+    {
+
+    }
+
+    public function getGridID(): string
+    {
+        return $this->listID;
     }
 
     public function getUI(): UI
@@ -293,6 +306,10 @@ abstract class BaseListBuilder
         $this->configureActions($grid);
     }
 
+    /**
+     * @return array<int,array<string,mixed>|UI_DataGrid_Entry>
+     * @throws Application_Exception
+     */
     protected function collectEntries(): array
     {
         $settings = $this->getFilterSettings();
@@ -314,8 +331,8 @@ abstract class BaseListBuilder
         $grid->addHiddenVars($this->screen->getPageParams());
 
         $items = $filters->getItems();
-        $entries = array();
 
+        $entries = array();
         foreach ($items as $item) {
             $entries[] = $this->collectEntry($this->resolveRecord($item));
         }
@@ -364,9 +381,6 @@ abstract class BaseListBuilder
     /**
      * @param UI_Page_Sidebar $sidebar
      * @return $this
-     * @throws Application_Exception
-     * @throws DriverException
-     * @throws UI_Exception#
      */
     public function addFilterSettings(UI_Page_Sidebar $sidebar): self
     {

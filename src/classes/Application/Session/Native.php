@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Session_Native} class.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_Native
  */
 
 use AppUtils\NamedClosure;
@@ -26,12 +23,23 @@ abstract class Application_Session_Native extends Application_Session_Base
      * @var array<string,string>
      */
     private static array $options = array();
+    private bool $enabled = true;
+
+    protected function init(): void
+    {
+        $this->enabled = !isCLI();
+    }
 
     protected function _start(): void
     {
         $name = $this->getName();
 
-        $this->log('Using session name [%s].', $name);
+        if(!$this->enabled) {
+            $this->log('Start | IGNORE | Session handling is not enabled.');
+            return;
+        }
+
+        $this->log('Start | Using session name [%s].', $name);
 
         // Temporarily set an error handler to catch session
         // initialization errors, so they can be converted
@@ -46,7 +54,7 @@ abstract class Application_Session_Native extends Application_Session_Base
 
         restore_error_handler();
 
-        $this->log('Initial session payload:');
+        $this->log('Start | Initial session payload:');
         $this->logData($_SESSION);
     }
 
@@ -63,22 +71,31 @@ abstract class Application_Session_Native extends Application_Session_Base
         throw $ex;
     }
 
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
+    }
+
     public function getID() : string
     {
+        if(!$this->enabled) {
+            return 'not-started';
+        }
+
         return session_id();
     }
 
     /**
      * Sets a session option.
      *
-     * NOTE: Must be used before the session is started.
-     * Has no effect afterwards.
+     * > NOTE: Must be used before the session is started.
+     * > Has no effect afterward.
      *
-     * Example:
+     * ## Example
      *
-     * <pre>
+     * ```php
      * Application_Session_Native::setOption('cookie_lifetime', '60');
-     * </pre>
+     * ```
      *
      * @param string $name
      * @param string $value
@@ -111,7 +128,10 @@ abstract class Application_Session_Native extends Application_Session_Base
 
     protected function _destroy() : void
     {
-        session_destroy();
+        if($this->enabled) {
+            session_destroy();
+            return;
+        }
 
         $_SESSION = array();
     }

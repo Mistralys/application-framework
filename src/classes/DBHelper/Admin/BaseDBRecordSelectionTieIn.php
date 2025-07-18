@@ -10,6 +10,7 @@ namespace DBHelper\Admin;
 
 use Application\Collection\Admin\BaseRecordSelectionTieIn;
 use Application\Collection\CollectionItemInterface;
+use Application\Interfaces\HiddenVariablesInterface;
 use DBHelper_BaseRecord;
 
 /**

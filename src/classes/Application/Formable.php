@@ -4,8 +4,10 @@
  * @subpackage Forms
  */
 
+use Application\Formable\Event\ClientFormRenderedEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -39,6 +41,10 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     public const ERROR_NO_PAGE_INSTANCE = 38732004;
     public const ERROR_FORM_NOT_VALID = 38732005;
 
+    public const EVENT_CLIENT_FORM_RENDERED = ClientFormRenderedEvent::EVENT_NAME;
+    public const CLIENT_FORM_FLAG = 'is-client-form';
+    public const CLIENT_FORM_UI_PREFIX = 'client-form-';
+
     protected UI_Form $formableForm;
     protected ?HTML_QuickForm2_Container $formableContainer = null;
     protected HTML_QuickForm2_Container $formableMainContainer;
@@ -47,25 +53,29 @@ abstract class Application_Formable implements Application_Interfaces_Formable
 
     /**
      * Creates a form to use specifically for clientside forms.
-     * These require the JSID to be set and ensure that any
+     * These require the `JSID` to be set and ensure that any
      * unnecessary elements are stripped.
      *
-     * Additionally, a stub UI object is used to capture only
-     * the javascript required by the form, so it can be sent
-     * along with the form.
+     * Additionally, a dedicated UI object is used to capture only
+     * the JavaScript required by the form, so it can be sent
+     * along with the form. This gets the name {@see self::CLIENT_FORM_UI_PREFIX}
+     * followed by the form name.
      *
      * @param string $name
      * @param array<string,mixed> $defaultData
      * @return UI_Form
      * @throws Application_Exception
+     * @see self::onClientFormRendered() Use this event in case the rendered HTML must be adjusted.
      */
     protected function createClientForm(string $name, array $defaultData=array()) : UI_Form
     {
-        $ui = UI::selectDummyInstance();
+        // Note: The UI instance is applied to the formable
+        // itself once initFormable() is called.
+        $ui = UI::selectInstance(self::CLIENT_FORM_UI_PREFIX .$name);
 
         $form = $ui->createForm($name, $defaultData);
         $form->getForm()
-        ->setAttribute('is-client-form', 'yes');
+            ->setAttribute(self::CLIENT_FORM_FLAG, 'yes');
 
         return $form;
     }
@@ -687,14 +697,49 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     {
         $this->requireFormableInitialized();
 
-        $html = $this->formableForm->renderHorizontal();
-
-        if($this->formableMainContainer->getAttribute('is-client-form') === 'yes') {
-            $ui = $this->formableForm->getUI();
-            $html = $ui->renderHeadIncludes().$html;
+        if($this->formableMainContainer->getAttribute(self::CLIENT_FORM_FLAG) === 'yes') {
+            return $this->renderClientFormable();
         }
 
-        return $html;
+        return $this->formableForm->renderHorizontal();
+    }
+
+    private function renderClientFormable() : string
+    {
+        // WARNING: The order of these statements is important.
+        // Rendering the form can add additional head includes,
+        // so it must come first.
+        $html = $this->formableForm->renderHorizontal();
+        $html = $this->formableForm->getUI()->renderHeadIncludes().$html;
+
+        $event = ClassHelper::requireObjectInstanceOf(
+            ClientFormRenderedEvent::class,
+            Application_EventHandler::trigger(
+                self::EVENT_CLIENT_FORM_RENDERED,
+                array($this, $html),
+                ClientFormRenderedEvent::class
+            )
+        );
+
+        return $event->getHTML();
+    }
+
+    /**
+     * Adds a listener to the client form rendered event,
+     * which is triggered when a clientside form has finished
+     * rendering. It allows modifying the HTML sent to the client.
+     *
+     * @param callable $listener
+     * @return Application_EventHandler_Listener
+     * @see self::createClientForm()
+     * @see self::renderClientFormable()
+     */
+    public static function onClientFormRendered(callable $listener) : Application_EventHandler_Listener
+    {
+        return Application_EventHandler::addListener(
+            self::EVENT_CLIENT_FORM_RENDERED,
+            $listener
+        );
     }
 
     /**
@@ -702,8 +747,8 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * so the clientside application can access these elements
      * by their ID.
      *
-     * NOTE: This is not necessary for form fields, those are
-     * handled automatically. This is only for custom DOM elements.
+     * > NOTE: This is not necessary for form fields, those are
+     * > handled automatically. This is only for custom DOM elements.
      *
      * @param string $part
      * @return string
@@ -1165,7 +1210,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function setElementUnits(HTML_QuickForm2_Element $element, $units) : self
+    public function setElementUnits(HTML_QuickForm2_Node $element, $units) : self
     {
         $this->getFormInstance()->setElementUnits($element, $units);
         return $this;
@@ -1176,7 +1221,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws ConvertHelper_Exception
      */
-    public function makeStructural(HTML_QuickForm2_Element $element, bool $structural=true) : self
+    public function makeStructural(HTML_QuickForm2_Node $element, bool $structural=true) : self
     {
         $this->getFormInstance()->makeStructural($element, $structural);
         return $this;
@@ -1196,7 +1241,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function makeStandalone(HTML_QuickForm2_Element $element) : self
+    public function makeStandalone(HTML_QuickForm2_Node $element) : self
     {
         $this->getFormInstance()->makeStandalone($element);
         return $this;
@@ -1206,7 +1251,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @inheritDoc
      * @throws Application_Formable_Exception
      */
-    public function makeHiddenWhenReadonly(HTML_QuickForm2_Element $element) : self
+    public function makeHiddenWhenReadonly(HTML_QuickForm2_Node $element) : self
     {
         $this->getFormInstance()->makeHiddenWhenReadonly($element);
         return $this;
@@ -1244,7 +1289,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function setElementPrepend(HTML_QuickForm2_Element $element, $prependString) : self
+    public function setElementPrepend(HTML_QuickForm2_Node $element, $prependString) : self
     {
         $this->getFormInstance()->setElementPrepend($element, $prependString);
         return $this;
@@ -1256,7 +1301,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
      * @throws Application_Formable_Exception
      * @throws UI_Exception
      */
-    public function setElementAppend(HTML_QuickForm2_Element $element, $appendString) : self
+    public function setElementAppend(HTML_QuickForm2_Node $element, $appendString) : self
     {
         $this->getFormInstance()->setElementAppend($element, $appendString);
         return $this;

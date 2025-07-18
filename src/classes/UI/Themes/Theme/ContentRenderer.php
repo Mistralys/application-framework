@@ -12,6 +12,7 @@ declare(strict_types=1);
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\OptionableTrait;
 
 /**
@@ -157,7 +158,7 @@ class UI_Themes_Theme_ContentRenderer implements OptionableInterface, UI_Rendera
     }
     
    /**
-    * @param string|number|UI_Renderable_Interface $content
+    * @param string|number|StringableInterface $content
     * @return $this
     */
     public function appendContent($content) : self

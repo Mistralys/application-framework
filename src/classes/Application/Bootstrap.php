@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory\ClassCacheHandler;
 use Application\Bootstrap\BootException;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\BaseException;
+use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FileInfo\ExtensionClassRegistry;
 use AppUtils\FileHelper\JSONFile;
 use Composer\Autoload\ClassLoader;
@@ -79,6 +81,8 @@ class Application_Bootstrap
         $class = APP_CLASS_NAME.'_Bootstrap_'.$screenID;
         self::bootClass($class, $params, $displayException);
     }
+
+    private static bool $booted = false;
     
    /**
     * Boots an admin screen using its class name.
@@ -121,6 +125,8 @@ class Application_Bootstrap
             
             $screen->boot();
 
+            self::$booted = true;
+
             // Display the page content
             ob_end_flush();
         }
@@ -140,6 +146,15 @@ class Application_Bootstrap
                 throw $e;
             }
         }
+    }
+
+    /**
+     * Whether the bootstrapper has been booted.
+     * @return bool
+     */
+    public static function isBooted() : bool
+    {
+        return self::$booted;
     }
 
     /**
@@ -260,6 +275,7 @@ class Application_Bootstrap
         self::registerConfigSettings();
         self::initConfiguration();
         self::validateConfigSettings();
+        self::initClassLoading();
 
         self::$initializing = false;
         self::$initialized = true;
@@ -280,6 +296,13 @@ class Application_Bootstrap
         Application::log('Bootstrap | Registering shutdown handler.');
 
         register_shutdown_function(array(self::class, 'handleShutDown'));
+    }
+
+    private static function initClassLoading() : void
+    {
+        Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
+
+        ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
     }
 
     public static function convertException(Throwable $e) : Application_Exception

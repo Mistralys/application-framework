@@ -1,9 +1,7 @@
 <?php
 /**
- * File containing the {@link DBHelper} class.
  * @package Helpers
  * @subpackage DBHelper
- * @see DBHelper
  */
 
 use Application\ConfigSettings\AppConfig;
@@ -305,7 +303,7 @@ class DBHelper
     * @param string|DBHelper_StatementBuilder $statementOrBuilder
     * @param array<string,mixed> $variables
     * @return string
-    * @throws DBHelper_Exception|ConvertHelper_Exception|JsonException
+    * @throws DBHelper_Exception
     */
     public static function insert($statementOrBuilder, array $variables = array()) : string
     {
@@ -327,9 +325,7 @@ class DBHelper
      * @param array $variables
      * @return int
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
-     * @throws JsonException
      */
     public static function insertInt($statementOrBuilder, array $variables=array()) : int
     {
@@ -477,7 +473,6 @@ class DBHelper
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return boolean
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function update($statementOrBuilder, array $variables = array()) : bool
@@ -588,7 +583,7 @@ class DBHelper
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
      * @return array<int,array<string,string>>
-     * @throws DBHelper_Exception|ConvertHelper_Exception
+     * @throws DBHelper_Exception
      */
     public static function fetchAll($statementOrBuilder, array $variables = array()) : array
     {
@@ -1599,7 +1594,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return string[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKey(string $key, $statementOrBuilder, array $variables=array()) : array
@@ -1626,7 +1620,6 @@ class DBHelper
      * @param array<string,mixed> $variables
      * @return int[]
      *
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
     public static function fetchAllKeyInt(string $key, $statementOrBuilder, array $variables=array()) : array

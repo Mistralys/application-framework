@@ -41,9 +41,8 @@ trait TagFilterSettingsTrait
         $tags = array();
 
         foreach($ids as $id) {
-            $tag = $collection->getByID($id);
-            if($tag !== null) {
-                $tags[] = $tag;
+            if($collection->idExists($id)) {
+                $tags[] = $collection->getByID($id);
             }
         }
 

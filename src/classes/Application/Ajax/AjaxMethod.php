@@ -320,10 +320,10 @@ abstract class Application_AjaxMethod implements AjaxMethodInterface
     
    /**
     * Sends a generic error response for unknown specified elements,
-    * for example when a specified element ID does not match a valid
+    * for example, when a specified element ID does not match a valid
     * element.
     *  
-    * @param string $elementLabel The label of the element type, for example <code>product type</code>
+    * @param string $elementLabel The label of the element type, for example `product type`.
     * @param array|NULL $data Data to include in the response
     * @param int|NULL $code
     * @return never

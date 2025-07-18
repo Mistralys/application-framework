@@ -1,23 +1,24 @@
 <?php
 /**
- * File containing the {@link UI_DataGrid_Entry} class.
- * 
- * @package Application
- * @subpackage UserInterface
- * @see UI_DataGrid_Entry
+ * @package User Interface
+ * @subpackage Data Grids
  */
 
 use AppUtils\ConvertHelper;
+use AppUtils\HTMLTag;
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\ClassableTrait;
+use UI\DataGrid\EntryClientCommands;
+use UI\DataGrid\GridClientCommands;
 
 /**
  * Container for a single row in a data grid. Offers an API
  * to customize entries, and is used for some advanced features
- * that require setting custom row classes for example.
+ * that require setting custom row CSS classes, for example.
  * 
- * @package Application
- * @subpackage UserInterface
+ * @package User Interface
+ * @subpackage Data Grids
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @implements ArrayAccess<string,mixed>
  */
@@ -27,41 +28,51 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
 
     public const ERROR_MISSING_PRIMARY_VALUE = 536001;
     
-   /**
-    * @var UI_DataGrid
-    */
-    protected $grid;
-    
-   /**
-    * @var array<string,mixed>
-    */
-    protected $data;
-    
-    /**
-     * @var string
-     */
-    protected $id;
+    protected UI_DataGrid $grid;
+    protected string $id;
+    private bool $countable = true;
 
     /**
-     * @var bool
+     * @var array<string, string|int|float|StringableInterface|NULL>
      */
-    private $countable = true;
+    protected array $data;
 
-    public function __construct(UI_DataGrid $grid, $data)
+    /**
+     * @param UI_DataGrid $grid
+     * @param array<string, string|int|float|StringableInterface|NULL> $data
+     */
+    public function __construct(UI_DataGrid $grid, array $data)
     {
         $this->id = nextJSID();
         $this->grid = $grid;
         $this->data = $data;
     }
     
-    public function getID()
+    public function getID() : string
     {
         return $this->id;
     }
     
-    public function getCheckboxID()
+    public function getCheckboxID() : string
     {
         return $this->id.'_check';
+    }
+
+    private ?EntryClientCommands $clientCommands = null;
+
+    /**
+     * Gets the helper class used to access client-side commands
+     * related to this data grid.
+     *
+     * @return EntryClientCommands
+     */
+    public function clientCommands() : EntryClientCommands
+    {
+        if (!isset($this->clientCommands)) {
+            $this->clientCommands = new EntryClientCommands($this);
+        }
+
+        return $this->clientCommands;
     }
 
     public function renderCheckboxLabel(string $label) : string
@@ -75,40 +86,46 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
    /**
     * Retrieves the data record for this entry.
-    * @return array
+    * @return array<int|string,mixed>
     */
-    public function getData()
+    public function getData() : array
     {
         return $this->data;
     }
     
    /**
     * Merges the specified data set with the existing entry data.
-    * @param array<string,mixed> $data
-    * @return UI_DataGrid_Entry
+    * @param array<int|string,mixed> $data
+    * @return $this
     */
-    public function setData(array $data) : UI_DataGrid_Entry
+    public function setData(array $data) : self
     {
         $this->data = array_merge($this->data, $data);
         return $this;
     }
-    
-    public function setColumnValue($name, $value)
+
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return $this
+     */
+    public function setColumnValue(string $name, $value) : self
     {
         $this->data[$name] = $value;
+        return $this;
     }
 
     /**
      * @return $this
      */
-    public function makeNonCountable()
+    public function makeNonCountable() : self
     {
         $this->countable = false;
         return $this;
     }
 
     /**
-     * Whether this entry can be included in the entries total.
+     * Whether this entry can be included in the entries' total.
      *
      * @return bool
      * @see UI_DataGrid::countEntries()
@@ -120,36 +137,40 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
    /**
     * Styles the row as a warning entry.
-    * @return UI_DataGrid_Entry
+    * @return $this
     */
-    public function makeWarning()
+    public function makeWarning() : self
     {
-        return $this->addClass('row-type-warning')->addClass('warning');
+        return $this
+            ->addClass('row-type-warning')
+            ->addClass('warning');
     }
 
    /**
     * Styles the row as a success entry.
-    * @return UI_DataGrid_Entry
+    * @return $this
     */
-    public function makeSuccess()
+    public function makeSuccess() : self
     {
-        return $this->addClass('row-type-success')->addClass('success');
+        return $this
+            ->addClass('row-type-success')
+            ->addClass('success');
     }
     
    /**
     * Avoids this row from being reordered. Note that this is only
     * relevant if the data grid's entries sorting feature has been
-    * enabled. Otherwise it is simply ignored. 
+    * enabled. Otherwise, it is simply ignored.
     * 
     * Additional note: this only disables the dragging of the row.
     * You have to implement any logic beyond this in your clientside
     * handler class, as it does not prevent the user from moving other
-    * rows above or below an unsortable row, effectively moving it 
+    * rows above or below a non-sortable row, effectively moving it
     * anyway even if indirectly.
     * 
     * @return $this
     */
-    public function makeNonSortable()
+    public function makeNonSortable() : self
     {
         if($this->grid->isEntriesSortable()) {
             $this->addClass('row-immovable');
@@ -165,7 +186,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     * @param bool $select
     * @return $this
     */
-    public function select(bool $select=true)
+    public function select(bool $select=true) : self
     {
         $this->selected = $select;
         return $this;
@@ -174,19 +195,26 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     /**
      * @var bool
      */
-    protected $selected = false;
+    protected bool $selected = false;
     
     public function isSelected() : bool
     {
         return $this->selected;
     }
-    
+
+    /**
+     * @return mixed|null
+     */
     public function getPrimaryValue()
     {
         return $this->getValue($this->grid->getPrimaryField());
     }
-    
-    public function getValue($name)
+
+    /**
+     * @param string $name
+     * @return mixed|null
+     */
+    public function getValue(string $name)
     {
         if(isset($this->data[$name])) {
             return $this->data[$name];
@@ -225,34 +253,45 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
     public function render() : string
     {
+        return (string)HTMLTag::create('tr')
+            ->id($this->getID())
+            ->addClasses($this->getClasses())
+            ->attr('data-refid', $this->getReferenceID())
+            ->setContent($this->grid->renderCells($this));
+    }
+
+    /**
+     * If a primary field is present in the grid, adds the
+     * `data-refid` attribute to the row, containing the value
+     * of the primary field for the entry. This is used on the
+     * client side to access the primary value.
+     *
+     * @return string
+     * @throws UI_DataGrid_Exception
+     */
+    public function getReferenceID() : string
+    {
         $primary = $this->grid->getPrimaryField();
 
-        $attribs = array(
-            'class' => $this->classesToString(),
-        );
-        
         // if the primary key name is set, we are in a mode where this
         // is required.
-        if (!empty($primary)) {
-            if(!isset($this->data[$primary])) {
-                throw new Application_Exception(
-                    'Missing primary key value',
-                    sprintf(
-                        'Could not find the primary key [%s] in the data record. Only the keys [%s] were present.',
-                        $primary,
-                        implode(', ', array_keys($this->data))
-                    ),
-                    self::ERROR_MISSING_PRIMARY_VALUE
-                );
-            }
-            
-            $attribs['data-refid'] = $this->data[$primary];
+        if (empty($primary)) {
+            return '';
         }
 
-        return
-            '<tr '.compileAttributes($attribs).'>' .
-                $this->grid->renderCells($this) .
-            '</tr>';
+        if(isset($this->data[$primary])) {
+            return(string)$this->data[$primary];
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Missing primary key value',
+            sprintf(
+                'Could not find the primary key [%s] in the data record. Only the keys [%s] were present.',
+                $primary,
+                implode(', ', array_keys($this->data))
+            ),
+            self::ERROR_MISSING_PRIMARY_VALUE
+        );
     }
 
     // region: Array access interface

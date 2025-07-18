@@ -294,12 +294,43 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
      */
     public const AUTH_SALT = 'APP_AUTH_SALT';
 
+    /**
+     * @see APP_LDAP_HOST
+     */
     public const LDAP_HOST = 'APP_LDAP_HOST';
+
+    /**
+     * Default is 389 for non-SSL and 636 for SSL. Can be `NULL` to use the default port.
+     * @see APP_LDAP_PORT
+     */
     public const LDAP_PORT = 'APP_LDAP_PORT';
+
+    /**
+     * @see APP_LDAP_USERNAME
+     */
     public const LDAP_USERNAME = 'APP_LDAP_USERNAME';
+
+    /**
+     * @see APP_LDAP_DN
+     *
+     * The DN used to bind to the LDAP server.
+     */
     public const LDAP_DN = 'APP_LDAP_DN';
+
+    /**
+     * @see APP_LDAP_PASSWORD
+     */
     public const LDAP_PASSWORD = 'APP_LDAP_PASSWORD';
+
+    /**
+     * @see APP_LDAP_MEMBER_SUFFIX
+     */
     public const LDAP_MEMBER_SUFFIX = 'APP_LDAP_MEMBER_SUFFIX';
+
+    /**
+     * @see APP_LDAP_SSL_ENABLED
+     */
+    public const LDAP_SSL_ENABLED = 'APP_LDAP_SSL_ENABLED';
 
     /**
      * @param string $name

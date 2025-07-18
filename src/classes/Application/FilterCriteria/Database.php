@@ -10,6 +10,7 @@
 use Application\FilterCriteria\FilterCriteriaException;
 use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 
 /**
  * Database-specific filter criteria base class: allows
@@ -453,15 +454,23 @@ EOT;
     }
 
     /**
+     * Gets all queries that have been run so far.
      * @return string[]
      */
     public function getQueries() : array
     {
         $queries = array();
-        foreach ($this->queries as $def) {
+
+        foreach ($this->queries as $def)
+        {
             $sql = $def['sql'];
+
             foreach ($def['vars'] as $name => $value) {
-                $sql = str_replace(':'.$name, json_encode($value), $sql);
+                $sql = str_replace(
+                    ':'.ltrim($name, ':'),
+                    JSONConverter::var2json($value),
+                    $sql
+                );
             }
 
             $queries[] = $sql;
@@ -1481,7 +1490,6 @@ EOT;
      * @param string|DBHelper_StatementBuilder $fieldName
      * @param string $orderDir
      * @return $this
-     * @throws Application_Exception
      */
     public function setOrderBy($fieldName, string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING) : self
     {

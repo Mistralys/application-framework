@@ -11,6 +11,8 @@ namespace Application\Collection\Admin;
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Collection\CollectionItemInterface;
+use Application\Interfaces\HiddenVariablesInterface;
+use AppUtils\Interfaces\StringableInterface;
 use Closure;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -38,6 +40,18 @@ interface RecordSelectionTieInInterface
     public function getRequestPrimaryVarName(): string;
 
     /**
+     * Gets all hidden variables required for the
+     * record selection and the current admin screen.
+     *
+     * > NOTE: Empty values are pruned from the result,
+     * > and the variables are sorted alphabetically by
+     * > key for consistency.
+     *
+     * @return array<string,string|int|StringableInterface|NULL>
+     */
+    public function getHiddenVars() : array;
+
+    /**
      * Whether the record selection can require specific user rights.
      * This is used when displaying the empty selection screen,
      * to hint at the fact that rights may be missing.
@@ -57,7 +71,7 @@ interface RecordSelectionTieInInterface
     /**
      * Gets the currently selected record, if any.
      *
-     * @return \Application\Collection\CollectionItemInterface|null
+     * @return CollectionItemInterface|null
      */
     public function getRecord(): ?CollectionItemInterface;
 
@@ -67,9 +81,17 @@ interface RecordSelectionTieInInterface
     public function getRecordID();
 
     /**
+     * Injects all hidden variables required to select the current record, if any.
+     *
+     * @param HiddenVariablesInterface $subject
+     * @return $this
+     */
+    public function injectHiddenVars(HiddenVariablesInterface $subject) : self;
+
+    /**
      * Gets the currently selected record, or throws an exception if none is selected.
      *
-     * @return \Application\Collection\CollectionItemInterface
+     * @return CollectionItemInterface
      * @throws CollectionException
      */
     public function requireRecord(): CollectionItemInterface;

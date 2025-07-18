@@ -8,6 +8,7 @@
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Interfaces\Admin\CollectionSettingsExtendedInterface;
 
 /**
  * Trait for administration screens that are used to
@@ -322,8 +323,7 @@ trait Application_Traits_Admin_CollectionSettings
             return true;
         }
 
-        if(method_exists($this,'isEditable'))
-        {
+        if($this instanceof CollectionSettingsExtendedInterface) {
             return $this->isEditable() !== true;
         }
 

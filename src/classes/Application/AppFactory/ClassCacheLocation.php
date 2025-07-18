@@ -17,7 +17,7 @@ class ClassCacheLocation extends BaseCacheLocation
 
     public function getByteSize(): int
     {
-        return ClassCacheHandler::getCacheFolder()->getSize();
+        return ClassCacheHandler::getCacheSize();
     }
 
     public function getLabel(): string

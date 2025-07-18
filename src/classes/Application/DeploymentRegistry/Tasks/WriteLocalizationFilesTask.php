@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\DeploymentRegistry\Tasks;
 
 use Application\DeploymentRegistry\BaseDeployTask;
+use Application\DeploymentRegistry\DeploymentTaskInterface;
 use AppLocalize\Localization;
 
 /**
@@ -24,6 +25,11 @@ class WriteLocalizationFilesTask extends BaseDeployTask
     public function getID() : string
     {
         return self::TASK_NAME;
+    }
+
+    public function getPriority(): int
+    {
+        return DeploymentTaskInterface::SYSTEM_BASE_PRIORITY;
     }
 
     public function getDescription() : string

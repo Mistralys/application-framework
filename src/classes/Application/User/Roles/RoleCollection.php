@@ -39,6 +39,8 @@ class RoleCollection extends BaseStringPrimaryCollection
     public function __construct(Application_User_Rights $rightsManager)
     {
         $this->rightsManager = $rightsManager;
+
+        self::$instance = $this;
     }
 
     public static function getInstance(): self

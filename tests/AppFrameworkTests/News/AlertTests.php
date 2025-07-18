@@ -7,7 +7,7 @@ namespace AppFrameworkTests\News;
 use AppFrameworkTestClasses\NewsTestCase;
 use Application\AppFactory;
 use Application\NewsCentral\NewsEntryCriticalities;
-use AppLocalize\Locale\en_UK;
+use AppLocalize\Localization\Locale\en_GB;
 
 final class AlertTests extends NewsTestCase
 {
@@ -27,7 +27,7 @@ final class AlertTests extends NewsTestCase
 
         $this->assertSame('Test alert', $alert->getLabel());
         $this->assertSame('en_UK', $alert->getLocaleID());
-        $this->assertInstanceOf(en_UK::class, $alert->getLocale());
+        $this->assertInstanceOf(en_GB::class, $alert->getLocale());
         $this->assertSame('Message', $alert->getMessage());
         $this->assertDatesHaveBeenSet($alert);
     }

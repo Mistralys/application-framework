@@ -143,4 +143,48 @@ class AppConfig
     {
         return boot_constant(BaseConfigRegistry::THEME);
     }
+
+    // region: LDAP settings
+
+    public static function getLDAPHost() : string
+    {
+        return (string)boot_constant(BaseConfigRegistry::LDAP_HOST);
+    }
+
+    public static function getLDAPPort() : ?int
+    {
+        $value = boot_constant(BaseConfigRegistry::LDAP_PORT);
+        if(is_int($value) || is_string($value)) {
+            return (int)$value;
+        }
+
+        return null;
+    }
+
+    public static function getLDAPDN() : string
+    {
+        return (string)boot_constant(BaseConfigRegistry::LDAP_DN);
+    }
+
+    public static function getLDAPUsername() : string
+    {
+        return (string)boot_constant(BaseConfigRegistry::LDAP_USERNAME);
+    }
+
+    public static function getLDAPPassword() : string
+    {
+        return (string)boot_constant(BaseConfigRegistry::LDAP_PASSWORD);
+    }
+
+    public static function getLDAPMemberSuffix() : string
+    {
+        return (string)boot_constant(BaseConfigRegistry::LDAP_MEMBER_SUFFIX);
+    }
+
+    public static function isLDAPSSLEnabled() : bool
+    {
+        return boot_constant(BaseConfigRegistry::LDAP_SSL_ENABLED) === true;
+    }
+
+    // endregion
 }

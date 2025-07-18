@@ -10,8 +10,11 @@ namespace Application\AppFactory;
 
 use Application;
 use Application\AppFactory;
+use AppLocalize\Localization;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\Repository\ClassRepositoryManager;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\SerializedFile;
 
@@ -31,55 +34,30 @@ use AppUtils\FileHelper\SerializedFile;
 class ClassCacheHandler
 {
     /**
-     * @var array<string,array<int,string>>
-     */
-    private static array $classCache = array();
-
-    /**
      * Uses the class helper to find classes in the target folder.
      * The results are cached to avoid unnecessary file system
      * accesses. The cache uses the application version as a key, so
      * it is automatically invalidated when the application is updated.
      *
-     * NOTE: The cache is automatically disabled in development mode.
+     * > NOTE: The cache is automatically disabled in development mode.
      *
      * @param FolderInfo $folder
      * @param bool $recursive
      * @param string|null $baseClass
      * @return class-string[]
      */
-    public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
     {
-        $cacheKey = sprintf(
-            'classes_v%s_%s',
-            md5($folder->getPath().bool2string($recursive).$baseClass),
-            // Important not to use the Driver instance, as it may not be initialized yet
-            AppFactory::createVersionInfo()->getFullVersion()
-        );
-
-        if(isset(self::$classCache[$cacheKey])) {
-            return self::$classCache[$cacheKey];
+        if(self::isCacheEnabled()) {
+            return ClassHelper::getRepositoryManager()->findClassesInFolder($folder, $recursive, $baseClass)->getClasses();
         }
 
-        $cacheFile = SerializedFile::factory(self::getCacheFolder()->create().'/'.$cacheKey.'.ser');
-
-        if($cacheFile->exists() && self::isCacheEnabled()) {
-            self::$classCache[$cacheKey] = $cacheFile->parse();
-            return self::$classCache[$cacheKey];
-        }
-
-        self::$classCache[$cacheKey] = array();
-
+        $result = array();
         foreach(ClassHelper::findClassesInFolder($folder, $recursive, $baseClass) as $classInfo) {
-            self::$classCache[$cacheKey][] = $classInfo->getNameNS();
+            $result[] = $classInfo->getNameNS();
         }
 
-        // Ensure consistent order
-        sort(self::$classCache[$cacheKey]);
-
-        $cacheFile->putData(self::$classCache[$cacheKey]);
-
-        return self::$classCache[$cacheKey];
+        return $result;
     }
 
     public static function getCacheFolder() : FolderInfo
@@ -89,7 +67,9 @@ class ClassCacheHandler
 
     public static function clearClassCache() : void
     {
-        FileHelper::deleteTree(self::getCacheFolder());
+        foreach(self::getRepositories() as $repository) {
+            $repository->clearCache();
+        }
     }
 
     private static ?bool $enabled = null;
@@ -125,5 +105,41 @@ class ClassCacheHandler
         }
 
         return self::$cacheLocation;
+    }
+
+    public static function getCacheSize() : int
+    {
+        $size = 0;
+        foreach(self::getCacheFiles() as $file) {
+            if($file->exists()) {
+                $size += $file->getSize();
+            }
+        }
+
+        return $size;
+    }
+
+    /**
+     * @return FileInfo[]
+     */
+    public static function getCacheFiles() : array
+    {
+        $result = array();
+        foreach(self::getRepositories() as $repository) {
+            $result[] = $repository->getCacheFile();
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return ClassRepositoryManager[]
+     */
+    public static function getRepositories() : array
+    {
+        return array(
+            ClassHelper::getRepositoryManager(),
+            Localization::getClassRepository()
+        );
     }
 }

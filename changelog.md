@@ -1,7 +1,205 @@
-## v5.7.0 - Tagging fixes and improvements
-- Tagging: Fixed a hardcoded media collection reference in the tag collection trait.
-- Tagging: Added `_handleHiddenFormVars()` in the record's tagging screen trait.
-- Core JS: Added an ES6 version of the basic dialog class.
+# Application Framework Changelog
+
+## v5.10.10 - LDAP DN validation fix
+- LDAP: Tweaked the search DN validation to be more lenient with the LDAP server's setup.
+
+## v5.10.9 - LDAP Logging
+- LDAP: Added more logging.
+- LDAP: Added `toArray()` in the configuration to dump values.
+
+## v5.10.8 - RequestLog logging
+- Logging: Added methods to log messages only when the request log is enabled.
+- Logging: Known types (e.g. `Microtime`) are now converted into useful log messages.
+- RequestLog: Added static `setActive()` and `isActive()`.
+- RequestLog: Now caching the enabled status for the duration of the request.
+- LDAP: Added more logging, including debug info in request log mode.
+- Tests: Now also enabling the request logging in `enableLogging()`.
+
+## v5.10.7 - LDAP PHP7 fix extended
+- LDAP: Added a fallback way to connect to LDAP servers in PHP7.
+- LDAP: Now handling host connections with or without an LDAP scheme.
+- LDAP: The config SSL setting is now inherited from the host if specified with a scheme. 
+
+## v5.10.6 - LDAP PHP7 fix
+- LDAP: Fixed wrong settings used to connect in PHP7.
+
+## v5.10.5 - LDAP fixes and improvements
+- LDAP: Now automatically switching between ldap function resource and class return types.
+- LDAP: Fixed deprecated usage of `ldap_connect` in PHP8.4.
+- LDAP: Allowing port to be set to `null` to use the default port.
+- LDAP: Added integration tests using Mokapi to set up a mock LDAP server.
+- LDAP: Added the debug config setting to debug LDAP connections.
+- LDAP: Added a configuration option to turn off SSL connections.
+- LDAP: The configuration now allows turning on detailed LDAP debugging messages.
+- LDAP: Added a search filter failsafe to return only role-matching rights.
+- Environments: Added `setLDAPSSLEnabled()` to toggle SSL connections.
+
+## v5.10.4 - Country improvements
+- Countries: Added `resolveCountry()` that accepts a range of values.
+- Countries: Added `getByLocalizationCountry()`.
+
+## v5.10.3 - Filter Criteria tweak
+- FilterCriteria: Fixed replacing query placeholders in `getQueries()`.
+
+## v5.10.2 - Request improvements
+- Connectors: Allowing response code `200` for `PUT` requests.
+- Connectors: Added the request methods `useSockets()` and `useCURL()` (default).
+- Connectors: Added the request method `setAuthorization()`.
+- Connectors: Added the request method `setBodyJSON()`.
+
+## v5.10.1 - Language label fix
+- Localization: Fixed getting the language label throwing an exception.
+
+## v5.10.0 - Time Tracker Time Spans (Breaking-S)
+- TimeTracker: Added the time span management.
+- TimeTracker: Added a summary of durations by ticket number.
+- TimeTracker: Added a separate form field for the ticket URL.
+- UI: Fixed a PHPDoc that broke the method chaining in `UI_Bootstrap::setName()`.
+
+### Breaking changes
+
+This change only affects the Time Tracker. If you do not use it, 
+no changes are required. Otherwise, the following SQL update script 
+must be run:
+
+[2025-06-19-time-tracker.sql](/docs/sql/2025-06-19-time-tracker.sql).
+
+## v5.9.0 - Country management (Breaking-M)
+- Wizards: Added the possibility to specify step classes, loosening the class structure.
+- Countries: Added the country management screens.
+- Countries: Added user rights to manage countries.
+- Countries: Improved country ISO code alias handling (`uk` and `gb`).
+- CacheControl: Added the localization cache to the cache control.
+- DBHelper: `statementValues()` now accepts an existing instance.
+- ListBuilder: Added `_renderAboveList()` and `_renderBelowList()` to the list builder screen trait.
+- Dependencies: Updated AppUtils Core to [v2.3.11](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.11).
+- Dependencies: Updated AppUtils Core to [v2.3.12](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.12).
+- Dependencies: Updated AppUtils Core to [v2.3.13](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.13).
+- Dependencies: Updated AppUtils Collections to [v1.1.5](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.5).
+- Dependencies: Updated AppUtils Collections to [v1.1.6](https://github.com/Mistralys/application-utils-collections/releases/tag/1.1.6).
+- Dependencies: Updated AppLocalize to [v2.0.0](https://github.com/Mistralys/application-localization/releases/tag/2.0.0).
+
+### Breaking changes
+
+The feature to ignore countries has been permanently retired.
+If your application uses this feature, you must remove the
+related method calls. We recommend using a static analysis
+tool like PHPStan to find all usages.
+
+I decided to retire it because while it was a quick solution
+for some use cases, it was not stable enough and caused issues
+in other situations. The application must decide for itself
+which countries are relevant depending on the use case.
+
+## v5.8.3 - Fixes and PHP8.4 
+- Session: Fixed the CLI session handling to avoid errors when running in CLI mode.
+- PHP8.4: Fixed deprecation warnings for implicit nullable method arguments.
+- Formable: Added `onClientFormRendered()` to react to the rendered HTML markup.
+- Formable: Fixed JS head statements not being collected due to wrong call order.
+- Sections: Fixed the collapse buttons not appearing in client forms.
+- Events: Added a trait for HTML processing events.
+- UI: Added `onPageRendered()` to add event listeners.
+- UI: Added `selectDefaultInstance()`.
+- UI: `selectInstance()` now accepts freeform instance names.
+- UI: Removed the obsolete `selectDummyInstance()` method.
+- Composer: Set PHP7.4 as the target platform, but allow installing on PHP8.
+- Dependencies: Updated HTML QuickForm to [v2.3.6](https://github.com/Mistralys/HTML_QuickForm2/releases/tag/2.3.6).
+
+### PHP8.4 update progress
+
+Notices have mostly been fixed. One remaining issue is the PhpCAS package,
+which has no PHP8.4 support yet. The session fix in this version makes it
+at least possible to run the tests on PHP8.4.
+
+## v5.8.2 - String builder and CSS classes
+- UI: Added the `CSSClasses` enum class as a reference for available CSS class names.
+- UI: Added the `right-developer` class.
+- StringBuilder: Added `developer()` for dev-only text.
+- StringBuilder: Using class constants where applicable.
+
+## v5.8.1 - Small tweaks
+- TimeTracker: Made times clickable to select the row.
+- ListBuilder: `collectEntry()` can now return an entry instance. 
+
+## v5.8.0 - Time tracker
+- TimeTracker: Added the time tracker management.
+- DBHelper: Added an abstract list builder for DBHelper collections.
+- ListBuilder: Added a trait for list screens via a list builder.
+- StringBuilder: Modified the `reference()` method for a nicer output.
+- StringBuilder: `codeCopy()` now handles empty values better.
+- StringBuilder: Added `hr()`.
+- StringBuilder: Added `heading()` and `h1()` through `h3()`.
+- Interface Refs: Improved the text style references.
+- Tests: Added the test application to the PHPStan analysis to fix unused trait messages and
+- Dependencies: Updated AppUtils Core to [v2.3.8](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.8).
+- Dependencies: Updated AppUtils Core to [v2.3.9](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.9).
+- Dependencies: Updated AppUtils Core to [v2.3.10](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.10).
+  
+## v5.7.9 - News update
+- News: Improved styling of articles somewhat for readability.
+- Markdown: Added the `class` attribute to `{media}` tags.
+- Markdown: Added the boolean `thumbnail` attribute to `{media}` tags to turn off thumbnail generation.
+- Markdown: Updated text styling somewhat for readability.
+
+## v5.7.8 - Connector update
+- Connectors: Added `201` as accepted status code for POST requests ([#76](https://github.com/Mistralys/application-framework/pull/76)) - thanks @danielioinos.
+
+## v5.7.7 - DataGrid form target change
+- DataGrids: Removed setting the form target for the whole grid.
+
+Background for this change: Setting the form target for the whole
+grid caused regular grid functions like sorting to also open in a 
+new tab. This was not the intended behavior and has been removed
+in favor of setting it only for specific list actions.
+
+## v5.7.6 - DataGrid enhancement (Deprecation-XS)
+- DataGrids: Added `enableSubmitInNewTab()` to make the grid's form be submitted in a new tab.
+- DataGrids: Added `setFormTarget()` and `getFormTarget()`.
+- DataGrids: Added the `makeAutoWidth()` method so the grid uses only the width its columns need.
+- DataGrids: Added `clientCommands()` to generate client-side statements.
+- DataGrids: Added `clientCommands()` to grid entries as well.
+- DataGrids: Now marking rows as active when the checkbox is checked.
+- DataGrids: Improved layout of sorted cells with hover and active rows.
+- Tests: Added the utility method `saveTestFile()`.
+- BigSelection: Added the possibility to add meta-controls to items with `addMetaControl()`.
+- Application: Added URL methods for the storage and temp folders, e.g. `getTempFolderURL()`.
+
+### Deprecations
+
+- `DataGrid::getClientSubmitStatement()` => use `clientCommands()` instead.
+- `DataGrid::getClientToggleSelectionStatement()` => use `clientCommands()` instead.
+
+## v5.7.5 - Screen Tie-In improvement
+- Screen Tie-Ins: Added the handling of hidden vars with the optional `_getHiddenVars()` method. 
+- Screen Tie-Ins: Added the `injectHiddenVars()` method.
+- AdminURL: Fixed the return type for `AdminURL::create()` to make PHPStan happy.
+
+## v5.7.4 - Class cache update
+- AppFactory: Now setting the `ClassHelper` cache during bootstrap to enable this for all use-cases.
+- Dependencies: Bumped up AppUtils core to [v2.3.7](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.7).
+
+## v5.7.3 - AdminURL update
+- AdminURL: Fixed the `create()` method not returning the correct instance.
+- Dependencies: Bumped up AppUtils to [v3.1.4](https://github.com/Mistralys/application-utils/releases/tag/3.1.4).
+
+## v5.7.2 - AdminURL update
+- AdminURL: Now extending AppUtil's `URLBuilder` class.
+- Dependencies: Bumped up AppUtils to [v3.1.3](https://github.com/Mistralys/application-utils/releases/tag/3.1.3).
+
+## v5.7.1 - Formable type update
+- Formable: Changed methods requiring element instances to accept nodes instead.
+
+## v5.7.0 - Deployment task prioritization (Breaking-XS)
+- DeploymentRegistry: Added a prioritization system for deployment tasks.
+- DeploymentRegistry: The version update task is now always run first.
+- DeploymentRegistry: Fixed the wrong version being stored in the history.
+- AppFactory: Replaced the class cache with AppUtil's native class caching.
+- Dependencies: Bumped up AppUtils core to [v2.3.6](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.6).
+
+### Breaking changes
+
+- Deployment tasks must now implement the `getPriority()` method. 
+  If you have custom deployment tasks, make sure to add this method.
 
 ## v5.6.2 - Filter settings and changelog improvements
 - FilterSettings: Added constants for the "Apply" and "Request" button request vars.

@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use AppLocalize\Localization\Country\CountryDE;
+use AppLocalize\Localization\Country\CountryGB;
+use AppLocalize\Localization\Country\CountryMX;
 
 class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 {
@@ -30,9 +33,9 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     }
 
     private array $requiredCountries = array(
-        'uk' => 'United Kingdom',
-        'de' => 'Germany',
-        'mx' => 'Mexico'
+        CountryGB::ISO_CODE => 'United Kingdom',
+        CountryDE::ISO_CODE => 'Germany',
+        CountryMX::ISO_CODE => 'Mexico'
     );
 
     private function createCountries() : void
@@ -102,9 +105,22 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     {
     }
 
-    public function getPreselectedCountryID()
+    public function getPreselectedCountryID() : int
     {
-        return $this->getWizardSetting('country_id');
+        return (int)$this->getWizardSetting('country_id');
+    }
+
+    public function getPreselectedCountry() : ?Application_Countries_Country
+    {
+        $collection = AppFactory::createCountries();
+        $id = $this->getPreselectedCountryID();
+
+        if($id > 0 && $collection->idExists($id))
+        {
+            return $collection->getByID($id);
+        }
+
+        return null;
     }
 
     public function initSteps(string $reason) : void

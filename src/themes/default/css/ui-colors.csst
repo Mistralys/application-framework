@@ -163,6 +163,8 @@
     --color-grid-row-bg-hover: #dce2ec;
     --color-grid-border: var(--color-accent-borders);
     --color-grid-bg-sorted: #f7fbff;
+    --color-grid-bg-sorted-hover: #e2ebf4;
+    --color-grid-bg-sorted-active: #e2ebf4;
     --color-grid-icon-sort: #ccc;
     --color-grid-icon-sort-hover: #005580;
     --color-grid-icon-sort-active: #ff3c00;

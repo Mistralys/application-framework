@@ -7,7 +7,9 @@
 declare(strict_types=1);
 
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\FileHelper_Exception;
 use Connectors\Request\RequestSerializer;
@@ -407,12 +409,47 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     }
 
     /**
+     * Sets the body of the request from a JSON string or a data array.
+     * Automatically sets the matching content type.
+     *
+     * @param string|array|ArrayDataCollection $json
+     * @return $this
+     */
+    public function setBodyJSON($json) : self
+    {
+        if($json instanceof ArrayDataCollection) {
+            $json = JSONConverter::var2json($json->getData());
+        } else if(is_array($json)) {
+            $json = JSONConverter::var2json($json);
+        }
+
+        return $this
+            ->setBody($json)
+            ->setContentType('application/json; charset=utf-8');
+    }
+
+    /**
      * @param string $mime
      * @return $this
      */
     public function setContentType(string $mime) : self
     {
         return $this->setHeader('Content-Type', $mime);
+    }
+
+    public const AUTH_SCHEME_BASIC = 'Basic';
+    public const AUTH_SCHEME_DIGEST = 'Digest';
+
+    /**
+     * Sets the `Authorization` request header.
+     *
+     * @param string $scheme The auth scheme to use, e.g. {@see self::AUTH_SCHEME_BASIC} or {@see self::AUTH_SCHEME_DIGEST}.
+     * @param string $value The value matching the selected auth scheme.
+     * @return $this
+     */
+    public function setAuthorization(string $scheme, string $value) : self
+    {
+        return $this->setHeader('Authorization', $scheme.' '.$value);
     }
     
    /**
@@ -632,6 +669,32 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $ex;
     }
 
+    public const ADAPTER_CURL = 'curl';
+    public const ADAPTER_SOCKETS = 'socket';
+
+    public const ADAPTER_CLASSES = array(
+        self::ADAPTER_CURL => HTTP_Request2_Adapter_Curl::class,
+        self::ADAPTER_SOCKETS => HTTP_Request2_Adapter_Socket::class
+    );
+
+    private string $adapter = self::ADAPTER_CURL;
+
+    public function useCURL() : self
+    {
+        return $this->setAdapter(self::ADAPTER_CURL);
+    }
+
+    public function useSockets() : self
+    {
+        return $this->setAdapter(self::ADAPTER_SOCKETS);
+    }
+
+    public function setAdapter(string $adapter) : self
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
     /**
      * Creates and configures the HTTP request instance used
      * to send the request.
@@ -648,11 +711,8 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $this->log(sprintf('Live requests: [%s] (turn on in simulation mode with parameter live-requests=yes)', bool2string($this->connector->isLiveRequestsEnabled())));
         
         $req = new HTTP_Request2($this->buildURL(), $this->HTTPMethod);
-        $req->setAdapter('curl');
-        $req->setConfig('follow_redirects', true);
-        $req->setConfig('ssl_verify_peer', false);
-        $req->setConfig('ssl_verify_host', false);
-        
+        $this->configureAdapter($req);
+
         if(!empty($this->headers))
         {
             foreach($this->headers as $name => $value)
@@ -736,7 +796,18 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         
         return $req;
     }
-    
+
+    private function configureAdapter(HTTP_Request2 $req) : void
+    {
+        $this->log('Using the adapter [%s] for the request.', $this->adapter);
+
+        $req->setAdapter(self::ADAPTER_CLASSES[$this->adapter] ?? self::ADAPTER_CLASSES[self::ADAPTER_CURL]);
+
+        $req->setConfig('follow_redirects', true);
+        $req->setConfig('ssl_verify_peer', false);
+        $req->setConfig('ssl_verify_host', false);
+    }
+
    /**
     * Valid HTTP response codes by request method.
     * @var array<string,array<int,int>>
@@ -744,8 +815,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     protected array $codesByMethod = array(
         HTTP_Request2::METHOD_GET => array(200),
         HTTP_Request2::METHOD_DELETE => array(200, 204),
-        HTTP_Request2::METHOD_PUT => array(201, 202),
-        HTTP_Request2::METHOD_POST => array(200, 202)
+        HTTP_Request2::METHOD_PUT => array(
+            200, // OK (general purpose)
+            201, // Created
+            202, // Accepted
+            204  // OK, Created, Accepted, Empty response content
+        ),
+        HTTP_Request2::METHOD_POST => array(200, 201, 202)
     );
     
    /**

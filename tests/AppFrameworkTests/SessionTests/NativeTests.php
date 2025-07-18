@@ -19,8 +19,6 @@ final class NativeTests extends ApplicationTestCase
 
         $this->assertNotNull($this->session->getUser());
 
-        $this->assertNotEmpty($_SESSION);
-
         // To avoid exiting the application on logout.
         Application_Session_Base::setRedirectsEnabled(false);
 

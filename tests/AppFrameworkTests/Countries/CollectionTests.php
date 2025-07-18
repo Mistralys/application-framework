@@ -9,6 +9,10 @@ declare(strict_types=1);
 namespace testsuites\Countries;
 
 use Application\Countries\CountriesCollection;
+use Application_Countries_Country;
+use AppLocalize\Localization\Countries\CountryCollection;
+use AppLocalize\Localization\Country\CountryFI;
+use AppLocalize\Localization\Country\CountryZZ;
 use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
 /**
@@ -98,5 +102,50 @@ final class CollectionTests extends CountriesTestCase
         $collection->addISO($de->getISO());
 
         $this->assertTrue($collection->hasCountry($de));
+    }
+
+    /**
+     * Test used to verify a bug where the instances were different.
+     * @link https://github.com/Mistralys/application-framework/issues/37
+     */
+    public function test_consistentInstances() : void
+    {
+        $this->createTestCountry('gb');
+
+        $this->countries->resetCollection();
+
+        $countryA = $this->countries->getByISO('gb');
+        $countryB = $this->countries->getByID($countryA->getID());
+
+        $this->assertSame($countryA, $countryB);
+    }
+
+    public function test_getLocale() : void
+    {
+        $at = $this->createTestCountry('at');
+
+        $locale = $at->getLocale();
+
+        $this->assertSame('de_AT', $locale->getCode());
+    }
+
+    public function test_getInvariantCountry() : void
+    {
+        $this->createInvariantCountry();
+
+        $this->assertSame(
+            Application_Countries_Country::COUNTRY_INDEPENDENT_ISO,
+            $this->countries->getInvariantCountry()->getISO()
+        );
+    }
+
+    public function test_resolveCountry() : void
+    {
+        $test = $this->createTestCountry(CountryFI::ISO_CODE);
+
+        $this->assertSame($test, $this->countries->resolveCountry($test->getISO()));
+        $this->assertSame($test, $this->countries->resolveCountry($test->getID()));
+        $this->assertSame($test, $this->countries->resolveCountry($test));
+        $this->assertSame($test, $this->countries->resolveCountry(CountryCollection::getInstance()->choose()->fi()));
     }
 }

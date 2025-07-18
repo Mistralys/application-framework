@@ -29,7 +29,7 @@ abstract class BaseRevisionCopy
     protected DateTime $date;
     protected Application_RevisionStorage $storage;
 
-    public function __construct(Application_RevisionStorage $storage, Application_RevisionableStateless $revisionable, int $sourceRevision, int $targetRevision, int $ownerID, string $ownerName, ?string $comments, DateTime $date = null)
+    public function __construct(Application_RevisionStorage $storage, Application_RevisionableStateless $revisionable, int $sourceRevision, int $targetRevision, int $ownerID, string $ownerName, ?string $comments, ?DateTime $date = null)
     {
         if (!$date) {
             $date = new DateTime();

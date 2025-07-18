@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 14, 2024 at 02:01 PM
--- Server version: 10.5.22-MariaDB
--- PHP Version: 8.3.3
+-- Generation Time: Mar 28, 2025 at 01:11 PM
+-- Server version: 11.6.2-MariaDB
+-- PHP Version: 7.4.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -316,7 +316,7 @@ CREATE TABLE `known_users` (
     `foreign_id` varchar(250) NOT NULL,
     `firstname` varchar(250) NOT NULL,
     `lastname` varchar(250) NOT NULL,
-    `email` varchar(500) NOT NULL
+    `email` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -326,7 +326,7 @@ CREATE TABLE `known_users` (
 --
 
 CREATE TABLE `locales_application` (
-    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
+    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -336,7 +336,7 @@ CREATE TABLE `locales_application` (
 --
 
 CREATE TABLE `locales_content` (
-    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
+    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -484,7 +484,7 @@ CREATE TABLE `tags_registry` (
 
 CREATE TABLE `tags_translations` (
     `tag_id` int(11) UNSIGNED NOT NULL,
-    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL,
     `locale_label` varchar(160) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores tag label translations.';
 
@@ -522,6 +522,48 @@ CREATE TABLE `test_records_tags` (
     `record_id` int(11) UNSIGNED NOT NULL,
     `tag_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_tracker_entries`
+--
+
+CREATE TABLE `time_tracker_entries` (
+    `time_entry_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `date` date NOT NULL,
+    `time_start` time DEFAULT NULL,
+    `time_end` time DEFAULT NULL,
+    `duration` int(11) UNSIGNED NOT NULL,
+    `type` varchar(40) NOT NULL,
+    `ticket` varchar(160) NOT NULL,
+    `comments` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_tracker_entry_data`
+--
+
+CREATE TABLE `time_tracker_entry_data` (
+    `time_entry_id` int(11) UNSIGNED NOT NULL,
+    `name` varchar(180) NOT NULL,
+    `value` mediumtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_tracker_types`
+--
+
+CREATE TABLE `time_tracker_types` (
+    `time_type_id` int(11) UNSIGNED NOT NULL,
+    `label` varchar(160) NOT NULL,
+    `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -873,6 +915,31 @@ ALTER TABLE `test_records_tags`
     ADD KEY `tag_id` (`tag_id`);
 
 --
+-- Indexes for table `time_tracker_entries`
+--
+ALTER TABLE `time_tracker_entries`
+    ADD PRIMARY KEY (`time_entry_id`),
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `date` (`date`),
+    ADD KEY `type` (`type`),
+    ADD KEY `ticket` (`ticket`),
+    ADD KEY `duration` (`duration`);
+
+--
+-- Indexes for table `time_tracker_entry_data`
+--
+ALTER TABLE `time_tracker_entry_data`
+    ADD KEY `time_entry_id` (`time_entry_id`),
+    ADD KEY `name` (`name`);
+
+--
+-- Indexes for table `time_tracker_types`
+--
+ALTER TABLE `time_tracker_types`
+    ADD PRIMARY KEY (`time_type_id`),
+    ADD KEY `label` (`label`);
+
+--
 -- Indexes for table `uploads`
 --
 ALTER TABLE `uploads`
@@ -1009,6 +1076,18 @@ ALTER TABLE `tags`
 --
 ALTER TABLE `test_records`
     MODIFY `record_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `time_tracker_entries`
+--
+ALTER TABLE `time_tracker_entries`
+    MODIFY `time_entry_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `time_tracker_types`
+--
+ALTER TABLE `time_tracker_types`
+    MODIFY `time_type_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `uploads`
@@ -1152,6 +1231,12 @@ ALTER TABLE `test_records_data`
 ALTER TABLE `test_records_tags`
     ADD CONSTRAINT `test_records_tags_ibfk_1` FOREIGN KEY (`record_id`) REFERENCES `test_records` (`record_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `test_records_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tags` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `time_tracker_entry_data`
+--
+ALTER TABLE `time_tracker_entry_data`
+    ADD CONSTRAINT `time_tracker_entry_data_ibfk_1` FOREIGN KEY (`time_entry_id`) REFERENCES `time_tracker_entries` (`time_entry_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `uploads`

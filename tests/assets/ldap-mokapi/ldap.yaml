@@ -1,0 +1,7 @@
+ldap: 3.0.0
+info:
+  title: Mock LDAP Server
+  description: Mock LDAP Server using Mokapi for LDAP tests
+host: 127.0.0.1:9689
+files:
+  - ./users.ldif

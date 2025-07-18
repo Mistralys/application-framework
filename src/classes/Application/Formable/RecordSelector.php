@@ -39,7 +39,10 @@ abstract class Application_Formable_RecordSelector extends Application_Formable_
     {
 
     }
-    
+
+    /**
+     * @return DBHelper_BaseCollection
+     */
     abstract public function createCollection();
     
     abstract protected function configureFilters() : void;

@@ -8,6 +8,7 @@ use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
 use Application\Tags\Taggables\TagConnector;
 use Application\Tags\Taggables\TaggableInterface;
+use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper;
 use DBHelper_BaseCollection;
@@ -41,7 +42,10 @@ class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionI
     public static function getInstance(): self
     {
         if(self::$instance === null) {
-            self::$instance = DBHelper::createCollection(self::class, null, true);
+            self::$instance = ClassHelper::requireObjectInstanceOf(
+                self::class,
+                DBHelper::createCollection(self::class, null, true)
+            );
         }
 
         return self::$instance;

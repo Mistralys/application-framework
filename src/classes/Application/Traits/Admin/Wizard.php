@@ -576,12 +576,13 @@ trait Application_Traits_Admin_Wizard
     /**
      * Adds a mew step to the wizard. Loads the class,
      * instantiates the instance and stores it in the
-     * steps list.
+     * step list.
      *
      * @param string $name
+     * @param class-string<Application_Admin_Wizard_Step>|NULL $className
      * @return Application_Admin_Wizard_Step
      */
-    protected function addStep(string $name) : Application_Admin_Wizard_Step
+    protected function addStep(string $name, ?string $className=null) : Application_Admin_Wizard_Step
     {
         if (isset($this->steps[$name]))
         {
@@ -595,7 +596,9 @@ trait Application_Traits_Admin_Wizard
             );
         }
 
-        $className = $this->classBase . '_Step_' . $name;
+        if(empty($className)) {
+            $className = $this->classBase . '_Step_' . $name;
+        }
 
         $number = count($this->steps) + 1;
 

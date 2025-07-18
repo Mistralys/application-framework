@@ -11,16 +11,15 @@ namespace TestDriver\UI;
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
+use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
 use Application_Admin_Area_Welcome;
 use Application_Admin_TranslationsArea;
-use TestDriver\Area\MediaLibraryScreen;
-use TestDriver\Area\NewsScreen;
+use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
-use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver_Area_WizardTest;
 use UI\Page\Navigation\NavConfigurator;
@@ -45,10 +44,12 @@ class MainNavConfigurator extends NavConfigurator
         $menu
             ->addAreaChained(Application_Admin_Area_Settings::URL_NAME)
             ->addSeparator()
+            ->addAreaChained(CountriesScreen::URL_NAME)
             ->addAreaChained(BaseNewsScreen::URL_NAME)
             ->addAreaChained(BaseMediaLibraryScreen::URL_NAME)
             ->addAreaChained(RevisionableScreen::URL_NAME)
             ->addAreaChained(BaseTagsScreen::URL_NAME)
+            ->addAreaChained(BaseTimeTrackerArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)
             ->addAreaChained(TestingScreen::URL_NAME)

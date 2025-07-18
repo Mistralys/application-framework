@@ -32,7 +32,6 @@ abstract class CountriesTestCase extends ApplicationTestCase
         $this->countries = Application_Countries::getInstance();
 
         $this->countries->resetCollection();
-        $this->countries->clearIgnored();
     }
 
     protected function deleteAllCountries() : void
@@ -51,7 +50,11 @@ abstract class CountriesTestCase extends ApplicationTestCase
 
     public function assertISOExists(string $iso) : void
     {
-        $this->assertTrue($this->countries->isoExists($iso));
+        $this->assertTrue(
+            $this->countries->isoExists($iso),
+            'ISO code "'.$iso.'" does not exist.'.PHP_EOL.
+            'Available codes: '.implode(', ', $this->countries->getSupportedISOs())
+        );
     }
 
     public function assertISONotExists(string $iso) : void

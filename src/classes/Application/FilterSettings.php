@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_FilterSettings} class.
- *
  * @package Application
  * @subpackage Filtering
- * @see Application_FilterSettings
  */
 
 declare(strict_types=1);
@@ -197,7 +194,7 @@ abstract class Application_FilterSettings
      * @param string|null $label Defaults to "Search".
      * @return void
      */
-    protected function registerSearchSetting(?string $setting=null, string $label=null) : void
+    protected function registerSearchSetting(?string $setting=null, ?string $label=null) : void
     {
         if(empty($label)) {
             $label = t('Search');
@@ -275,7 +272,7 @@ abstract class Application_FilterSettings
      * @return SettingDef
      * @throws UI_Exception
      */
-    protected function registerSetting(string $name, $label, $default=null, string $customClass=null) : SettingDef
+    protected function registerSetting(string $name, $label, $default=null, ?string $customClass=null) : SettingDef
     {
         $this->log('RegisterSettings | Registered setting [%s].', $name);
 
@@ -603,7 +600,7 @@ abstract class Application_FilterSettings
 
     // region: Form elements
 
-    public function addMore(HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addMore(?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         if($this->hasMore) {
             throw new Application_Exception(
@@ -724,10 +721,6 @@ abstract class Application_FilterSettings
 
     public function addElementCountry(string $setting, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_Select
     {
-        if(!is_array($options)) {
-            $options = array();
-        }
-
         $options = array_merge(
             array(
                 'with-invariant' => true,
@@ -784,7 +777,7 @@ abstract class Application_FilterSettings
         );
     }
 
-    public function addElementText(string $setting, HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
+    public function addElementText(string $setting, ?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         return ClassHelper::requireObjectInstanceOf(
             HTML_QuickForm2_Element_InputText::class,

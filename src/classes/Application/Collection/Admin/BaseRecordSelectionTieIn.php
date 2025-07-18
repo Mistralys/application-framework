@@ -14,6 +14,8 @@ use Application\AppFactory;
 use Application\Collection\CollectionException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Collection\CollectionItemInterface;
+use Application\Interfaces\HiddenVariablesInterface;
+use AppUtils\Interfaces\StringableInterface;
 use Closure;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
 use DBHelper\Admin\DBHelperAdminException;
@@ -115,6 +117,48 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
      */
     protected function init() : void
     {
+    }
+
+    /**
+     * @param HiddenVariablesInterface $subject
+     * @return $this
+     */
+    public function injectHiddenVars(HiddenVariablesInterface $subject): self
+    {
+        $subject->addHiddenVars($this->getHiddenVars());
+
+        return $this;
+    }
+
+    /**
+     * @return array<string,string>
+     */
+    final public function getHiddenVars() : array
+    {
+        $vars = array_merge(
+            $this->_getHiddenVars(),
+            array(
+                $this->getRequestPrimaryVarName() => $this->getRecordID()
+            )
+        );
+
+        $result = array();
+        foreach($vars as $name => $value) {
+            $value = (string)$value;
+
+            if($value !== '') {
+                $result[$name] = $value;
+            }
+        }
+
+        ksort($result);
+
+        return $result;
+    }
+
+    protected function _getHiddenVars(): array
+    {
+        return array();
     }
 
     public function getParent() : ?RecordSelectionTieInInterface
@@ -253,6 +297,10 @@ abstract class BaseRecordSelectionTieIn implements RecordSelectionTieInInterface
     {
         foreach($this->inheritRequestVars as $var) {
             $url->inheritParam($var);
+        }
+
+        foreach($this->getHiddenVars() as $name => $value) {
+            $url->auto($name, $value);
         }
 
         return $url;

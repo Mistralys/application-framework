@@ -9,13 +9,16 @@ declare(strict_types=1);
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
+use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
+use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
 use TestDriver\Area\QuickNavScreen;
 use TestDriver\Area\RevisionableScreen;
 use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
+use TestDriver\Area\TimeTrackerScreen;
 use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\WelcomeScreen;
 use TestDriver\CustomIcon;
@@ -50,6 +53,8 @@ class TestDriver extends Application_Driver
             BaseMediaLibraryScreen::URL_NAME => MediaLibraryScreen::class,
             TestingScreen::URL_NAME => TestingScreen::class,
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
+            BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
+            CountriesScreen::URL_NAME => CountriesScreen::class,
         );
 
         if(TagCollection::tableExists()) {

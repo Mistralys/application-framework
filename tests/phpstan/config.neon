@@ -6,9 +6,16 @@ parameters:
         - ../../src
         - ../AppFrameworkTestClasses
         - ../AppFrameworkTests
+        - ../application/assets
+        - ../application/ajax
+        - ../application/api
+        - ../application/themes/default/templates
+        - ../application/xml
     dynamicConstantNames:
+        - APP_ROOT
         - APP_TESTS_RUNNING
         - APP_FRAMEWORK_TESTS
+        - TESTSUITE_DB_PORT
     ignoreErrors:
         -
             message: '#this might not be defined.#'

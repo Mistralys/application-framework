@@ -13,6 +13,7 @@ use Application_FilterSettings;
 use DateTime;
 use UI_DataGrid;
 use UI_Page_Sidebar;
+use UI_Renderable_Interface;
 
 /**
  * Interface for classes that build a list of records.
@@ -21,7 +22,7 @@ use UI_Page_Sidebar;
  * @package Data Grids
  * @see BaseListBuilder
  */
-interface ListBuilderInterface
+interface ListBuilderInterface extends UI_Renderable_Interface
 {
     public function getDataGrid(): UI_DataGrid;
     public function isColumnEnabled(string $colName): bool;

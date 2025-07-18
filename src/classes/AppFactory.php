@@ -21,6 +21,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
+use Application\TimeTracker\TimeTrackerCollection;
 use Application_Countries;
 use Application_DBDumps;
 use Application_Driver;
@@ -42,7 +43,6 @@ use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper\FolderInfo;
-use AppUtils\FileHelper\SerializedFile;
 use DBHelper;
 use DeeplHelper;
 use UI;
@@ -262,6 +262,14 @@ class AppFactory
         return CacheManager::getInstance();
     }
 
+    public static function createTimeTracker() : TimeTrackerCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            TimeTrackerCollection::class,
+            DBHelper::createCollection(TimeTrackerCollection::class)
+        );
+    }
+
     // endregion
 
     // region: X - Support methods
@@ -319,7 +327,7 @@ class AppFactory
      * accesses. The cache uses the application version as a key, so
      * it is automatically invalidated when the application is updated.
      *
-     * NOTE: The cache is automatically disabled in development mode.
+     * > NOTE: The cache is automatically disabled in development mode.
      *
      * @param FolderInfo $folder
      * @param bool $recursive
@@ -328,7 +336,7 @@ class AppFactory
      *
      * @see ClassCacheHandler
      */
-    public static function findClassesInFolder(FolderInfo $folder, bool $recursive, ?string $baseClass=null) : array
+    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
     {
         return ClassCacheHandler::findClassesInFolder($folder, $recursive, $baseClass);
     }

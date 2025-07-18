@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link UI_DataGrid} class.
- *
- * @package Application
- * @subpackage UserInterface
- * @see UI_DataGrid
+ * @package User Interface
+ * @subpackage Data Grids
  */
 
 use Application\AppFactory;
@@ -13,7 +10,9 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
 use Application\Traits\HiddenVariablesTrait;
+use AppUtils\HTMLTag;
 use AppUtils\Interfaces\StringableInterface;
+use UI\DataGrid\GridClientCommands;
 use UI\DataGrid\GridConfigurator;
 use function AppLocalize\tex;
 
@@ -22,8 +21,8 @@ use function AppLocalize\tex;
  * like applying custom actions to entries, allowing the user to reorder
  * list items, and more.
  *
- * @package Application
- * @subpackage UserInterface
+ * @package User Interface
+ * @subpackage Data Grids
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class UI_DataGrid implements HiddenVariablesInterface
@@ -34,8 +33,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     public const ERROR_ALLSELECTED_FILTER_CRITERIA_MISSING = 599903;
     public const ERROR_ALLSELECTED_PRIMARY_KEYNAME_MISSING = 599904;
     public const ERROR_DUPLICATE_DATAGRID_ID = 599905;
-    public const ERROR_UNKNOWN_OPTION = 5999007;
+    public const ERROR_UNKNOWN_OPTION = 599907;
     public const ERROR_COLUMN_NAME_DOES_NOT_EXIST = 599908;
+    public const ERROR_ACTION_NOT_FOUND = 599909;
+    public const ERROR_ACTION_ALREADY_ADDED = 599910;
 
     public const REQUEST_PARAM_ORDERBY = 'datagrid_orderby';
     public const REQUEST_PARAM_ORDERDIR = 'datagrid_orderdir';
@@ -731,25 +732,44 @@ class UI_DataGrid implements HiddenVariablesInterface
     	return 'grid'.str_replace('-', '_', $this->id);
     }
 
+    /**
+     * @param string $actionName
+     * @return string
+     * @deprecated Use {@see self::clientCommands()} instead.
+     */
     public function getClientSubmitStatement(string $actionName) : string
     {
-        return sprintf(
-            "%s.Submit('%s')",
-            $this->getClientObjectName(),
-            $actionName
-        );
+        return $this->clientCommands()->submitAction($actionName);
     }
 
+    /**
+     * @return string
+     * @deprecated Use {@see self::clientCommands()} instead.
+     */
     public function getClientToggleSelectionStatement() : string
     {
-        return sprintf(
-            "%s.ToggleSelection()",
-            $this->getClientObjectName()
-        );
+        return $this->clientCommands()->toggleSelection();
+    }
+
+    private ?GridClientCommands $clientCommands = null;
+
+    /**
+     * Gets the helper class used to access client-side commands
+     * related to this data grid.
+     *
+     * @return GridClientCommands
+     */
+    public function clientCommands() : GridClientCommands
+    {
+        if(!isset($this->clientCommands)) {
+            $this->clientCommands = new GridClientCommands($this);
+        }
+
+        return $this->clientCommands;
     }
 
    /**
-    * @var UI_DataGrid_Action[]
+    * @var array<string,UI_DataGrid_Action>
     */
     protected array $actions = array();
 
@@ -763,9 +783,28 @@ class UI_DataGrid implements HiddenVariablesInterface
     public function addAction(string $name, $label) : UI_DataGrid_Action_Default
     {
         $action = new UI_DataGrid_Action_Default($this, $name, $label);
-        $this->actions[] = $action;
+
+        $this->registerAction($action);
 
         return $action;
+    }
+
+    private function registerAction(UI_DataGrid_Action $action) : void
+    {
+        $name = $action->getName();
+        if(!isset($this->actions[$name])) {
+            $this->actions[$name] = $action;
+            return;
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Grid action already exists.',
+            sprintf(
+                'The grid action [%s] has already been added.',
+                $name
+            ),
+            self::ERROR_ACTION_ALREADY_ADDED
+        );
     }
 
     /**
@@ -775,7 +814,7 @@ class UI_DataGrid implements HiddenVariablesInterface
      */
     public function addSeparatorAction() : void
     {
-        $this->actions[] = new UI_DataGrid_Action_Separator($this);
+        $this->registerAction(new UI_DataGrid_Action_Separator($this));
     }
 
     /**
@@ -791,7 +830,8 @@ class UI_DataGrid implements HiddenVariablesInterface
     public function addConfirmAction(string $name, $label, $confirmMessage) : UI_DataGrid_Action_Confirm
     {
         $action = new UI_DataGrid_Action_Confirm($this, $name, $label, $confirmMessage);
-        $this->actions[] = $action;
+
+        $this->registerAction($action);
 
         return $action;
     }
@@ -807,7 +847,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             return false;
         }
 
-        return !empty($this->actions);
+        return !empty($this->getValidActions());
     }
 
    /**
@@ -833,7 +873,8 @@ class UI_DataGrid implements HiddenVariablesInterface
     public function addJSAction(string $name, string $label, string $function) : UI_DataGrid_Action_Javascript
     {
         $action = new UI_DataGrid_Action_Javascript($this, $name, $label, $function);
-        $this->actions[] = $action;
+
+        $this->registerAction($action);
 
         return $action;
     }
@@ -1072,6 +1113,15 @@ class UI_DataGrid implements HiddenVariablesInterface
         return $this;
     }
 
+    private function createFormTag() : HTMLTag
+    {
+        return HTMLTag::create('form')
+            ->id($this->getFormID())
+            ->attr('method', 'post')
+            ->addClass('form-inline')
+            ->attr('action', $this->getFormAction());
+    }
+
     /**
      * Renders the grid with the specified set of data rows.
      *
@@ -1119,13 +1169,12 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $this->executeCallbacks();
 
+        $totalEntries = count($entries);
         $emptyDisplay = 'block';
-        $tableDisplay = 'none';
         $dropperDisplay = 'block';
-        if (!empty($entries)) {
+        if ($totalEntries > 0) {
             $this->entries = $this->filterAndSortEntries($entries);
             $emptyDisplay = 'none';
-            $tableDisplay = 'table';
             $dropperDisplay = 'none';
         }
 
@@ -1187,7 +1236,7 @@ class UI_DataGrid implements HiddenVariablesInterface
                 ));
 
                 $html .=
-                '<form id="' . $this->getFormID() . '" method="post" class="form-inline" action="' . APP_URL.'/'.$this->dispatcher . '">' .
+                    $this->createFormTag()->renderOpen().
                     $this->renderHiddenVars();
             }
 
@@ -1195,7 +1244,7 @@ class UI_DataGrid implements HiddenVariablesInterface
             '<div id="' . $this->getFormID('empty') . '" style="display:' . $emptyDisplay . '">' .
                 $this->renderEmptyMessage().
             '</div>' .
-            '<table class="' . implode(' ', $this->tableClasses) . '" id="' . $this->getFormID('table') . '" style="display:' . $tableDisplay . '">' .
+            $this->createTableTag($totalEntries > 0)->renderOpen().
                 $this->renderHeader() .
                 $this->renderBody() .
                 $this->renderFooter() .
@@ -1215,6 +1264,19 @@ class UI_DataGrid implements HiddenVariablesInterface
         '</div>';
 
         return $html;
+    }
+
+    private function createTableTag(bool $hasEntries) : HTMLTag
+    {
+        $tableDisplay = 'none';
+        if ($hasEntries) {
+            $tableDisplay = 'table';
+        }
+
+        return HTMLTag::create('table')
+            ->id($this->getFormID('table'))
+            ->addClasses($this->tableClasses)
+            ->style('display', $tableDisplay);
     }
 
    /**
@@ -1255,10 +1317,6 @@ class UI_DataGrid implements HiddenVariablesInterface
         // list, so they are passed on.
         foreach($this->actions as $action)
         {
-            if(!$action instanceof UI_DataGrid_Action) {
-                continue;
-            }
-
             $params = $action->getParams();
             $actionName = $action->getName();
             foreach($params as $name => $value) {
@@ -1411,10 +1469,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     * Creates an entry object for the grid: these are used internally
     * to handle individual rows in the table.
     *
-    * @param array $data Associative array with key => value pairs for columns in the row.
+    * @param array<string, string|int|float|StringableInterface|NULL> $data Associative array with key => value pairs for columns in the row.
     * @return UI_DataGrid_Entry
     */
-    public function createEntry(array $data) : UI_DataGrid_Entry
+    public function createEntry(array $data=array()) : UI_DataGrid_Entry
     {
         return new UI_DataGrid_Entry($this, $data);
     }
@@ -1551,7 +1609,7 @@ class UI_DataGrid implements HiddenVariablesInterface
 
             if($this->multiSelect && $this->countPages() > 1)
             {
-                $toggleStatement = $this->getClientObjectName().'.ToggleSelectAll()';
+                $toggleStatement = $this->clientCommands()->toggleSelectAll();
 
                 $html .=
                 '<tr class="actions actions-selectall">' .
@@ -2237,14 +2295,15 @@ class UI_DataGrid implements HiddenVariablesInterface
             return null;
         }
 
-        $total = count($this->actions);
+        $actions = $this->getValidActions();
+        $total = count($actions);
 
         if($total === 0) {
             return null;
         }
 
         $actionName = $this->getAction();
-        foreach ($this->actions as $action) {
+        foreach ($actions as $action) {
             if($action=='__separator') {
                 continue;
             }
@@ -2454,9 +2513,10 @@ class UI_DataGrid implements HiddenVariablesInterface
     * entries.
     *
     * @param string|StringableInterface $clientsideHandler The name of a clientside variable holding the droppable events handler object
+    * @param string|NULL $primaryKeyName The name of the primary key in the records. Optional only if set separately.
     * @return $this
     */
-    public function makeEntriesDroppable($clientsideHandler, $primaryKeyName=null) : self
+    public function makeEntriesDroppable($clientsideHandler, ?string $primaryKeyName=null) : self
     {
         if (!empty($primaryKeyName)) {
             $this->setPrimaryName($primaryKeyName);
@@ -2775,5 +2835,58 @@ class UI_DataGrid implements HiddenVariablesInterface
         $prefix = $this->resolveSettingName('');
 
         Application::getUser()->resetSettings($prefix);
+    }
+
+    protected function getFormAction() : string
+    {
+        return APP_URL.'/'.$this->dispatcher;
+    }
+
+    /**
+     * Turns off the default behavior of tables to fill 100%
+     * of the available space, making the grid use only the
+     * space that its columns require.
+     *
+     * @return $this
+     */
+    public function makeAutoWidth() : self
+    {
+        return $this->addTableClass('auto-width');
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getActionNames() : array
+    {
+        $result = array_keys($this->actions);
+
+        sort($result);
+
+        return $result;
+    }
+
+    public function actionExists(string $name) : bool
+    {
+        return in_array($name, $this->getActionNames());
+    }
+
+    public function getActionByName(string $actionName) : UI_DataGrid_Action
+    {
+        if(isset($this->actions[$actionName])) {
+            return $this->actions[$actionName];
+        }
+
+        throw new UI_DataGrid_Exception(
+            'Data grid action not found',
+            sprintf(
+                'The data grid action with the name [%s] does not exist. '.PHP_EOL.
+                'Available actions are: '.PHP_EOL.
+                '- %s',
+                $actionName,
+                implode(PHP_EOL.'- ', $this->getActionNames())
+            ),
+            self::ERROR_ACTION_NOT_FOUND
+        );
     }
 }

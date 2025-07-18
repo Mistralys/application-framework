@@ -35,28 +35,31 @@ final class OfflineEventTests extends ApplicationTestCase
 {
     public function test_createEventWithoutClassName(): void
     {
-        $this->assertNotNull(AppFactory::createOfflineEvents()
+        AppFactory::createOfflineEvents()
             ->createEvent(
                 TestEvent::EVENT_NAME,
                 array('argument')
-            ));
+            );
+
+        $this->addToAssertionCount(1);
     }
 
     public function test_createEventWithClassName(): void
     {
-        $this->assertNotNull(AppFactory::createOfflineEvents()
+        AppFactory::createOfflineEvents()
             ->createEvent(
                 TestEvent::EVENT_NAME,
                 array('argument'),
                 TestEvent::class
-            ));
+            );
+
+        $this->addToAssertionCount(1);
     }
 
     public function test_eventHasExpectedListeners(): void
     {
         $event = AppFactory::createOfflineEvents()->createEvent(TestEvent::EVENT_NAME, array('argument'));
 
-        $this->assertNotNull($event);
         $this->assertNotNull($event->getEventClass());
         $this->assertNotEmpty($event->getListenerFolders());
         $this->assertNotEmpty($event->getListeners());
@@ -68,7 +71,6 @@ final class OfflineEventTests extends ApplicationTestCase
 
         $event = $offline->triggerEvent(TestEvent::EVENT_NAME, array('argument'));
 
-        $this->assertNotNull($event);
         $this->assertNotNull($event->getTriggeredEvent());
         $this->assertTrue(defined(ListenerA::CONSTANT_NAME));
         $this->assertTrue(defined(ListenerB::CONSTANT_NAME));
@@ -82,7 +84,7 @@ final class OfflineEventTests extends ApplicationTestCase
     public function test_defaultOrderingWithoutPriority() : void
     {
         $listeners = AppFactory::createOfflineEvents()
-            ->triggerEvent(TestEvent::EVENT_NAME, array('priority-argument'))
+            ->createEvent(TestEvent::EVENT_NAME, array('priority-argument'))
             ->getListeners();
 
         $this->assertCount(2, $listeners);
