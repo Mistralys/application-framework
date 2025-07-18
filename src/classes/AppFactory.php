@@ -43,8 +43,10 @@ use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper\FolderInfo;
+use AppUtils\FileHelper\PathInfoInterface;
 use DBHelper;
 use DeeplHelper;
+use SplFileInfo;
 use UI;
 use UI_Themes_Theme;
 use function AppUtils\parseVariable;
@@ -329,16 +331,16 @@ class AppFactory
      *
      * > NOTE: The cache is automatically disabled in development mode.
      *
-     * @param FolderInfo $folder
+     * @param string|PathInfoInterface|SplFileInfo $folder
      * @param bool $recursive
      * @param string|null $baseClass
      * @return class-string[]
      *
      * @see ClassCacheHandler
      */
-    public static function findClassesInFolder(FolderInfo $folder, bool $recursive=false, ?string $baseClass=null) : array
+    public static function findClassesInFolder($folder, bool $recursive=false, ?string $baseClass=null) : array
     {
-        return ClassCacheHandler::findClassesInFolder($folder, $recursive, $baseClass);
+        return ClassCacheHandler::findClassesInFolder(FolderInfo::factory($folder), $recursive, $baseClass);
     }
 
     // endregion
