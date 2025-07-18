@@ -1,5 +1,18 @@
 # Application Framework Changelog
 
+## v6.0.0 - Tagging fixes and improvements (Breaking-S)
+- Tagging: Fixed a hardcoded media collection reference in the tag collection trait.
+- Tagging: Added `_handleHiddenFormVars()` in the record's tagging screen trait.
+- Core JS: Added an ES6 version of the basic dialog class.
+- Forms: Custom form elements are now loaded via the class loader.
+- Forms: Custom form elements now have an interface and trait to implement.
+- Forms: Added the new "Combo" custom form element.
+
+### Breaking changes
+
+- All custom form elements must now implement the interface `CustomElementInterface`.
+  Existing elements will be ignored if they do not implement this interface.
+
 ## v5.10.10 - LDAP DN validation fix
 - LDAP: Tweaked the search DN validation to be more lenient with the LDAP server's setup.
 
