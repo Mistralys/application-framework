@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -18,6 +19,7 @@ use AppUtils\JSHelper;
 use AppUtils\RegexHelper;
 use HTML\QuickForm2\DataSource\ManualSubmitDataSource;
 use UI\AdminURLs\AdminURLInterface;
+use UI\Form\CustomElementInterface;
 use UI\Form\FormException;
 
 /**
@@ -54,6 +56,8 @@ class UI_Form extends UI_Renderable
      * @var string
      */
     public const ID_PREFIX = 'f-';
+
+    public const PROPERTY_DEMO_MODE = 'demo';
 
     public const ATTRIBUTE_LABEL_ID = 'data-label-id';
     public const REL_BUTTON = 'Button';
@@ -175,14 +179,19 @@ class UI_Form extends UI_Renderable
                 continue;
             }
 
-            $names = FileHelper::createFileFinder($folder)
-                ->getPHPClassNames();
+            $classes = AppFactory::findClassesInFolder(
+                $folder,
+                true,
+                CustomElementInterface::class
+            );
 
-            foreach($names as $name)
+            foreach($classes as $class)
             {
-                $id = strtolower($name);
-                $this->log(sprintf('Registering custom form element [%s].', $id));
-                $this->registerCustomElement($id, $name);
+                $elementTypeID = call_user_func($class.'::'.array(CustomElementInterface::class, 'getElementTypeID')[1]);
+                $elementTypeLabel = call_user_func($class.'::'.array(CustomElementInterface::class, 'getElementTypeLabel')[1]);
+
+                $this->log(sprintf('Registering custom form element [%s].', $elementTypeID));
+                $this->registerCustomElement($elementTypeID, $elementTypeLabel, $class);
             }
         }
     }
@@ -256,7 +265,7 @@ class UI_Form extends UI_Renderable
     }
 
     /**
-     * @var array<string,array{alias:string,name:string}>
+     * @var array<string,array{alias:string,name:string,class:class-string<CustomElementInterface>}>
      */
     protected array $customElements = array();
 
@@ -272,25 +281,25 @@ class UI_Form extends UI_Renderable
      * for it has to be called HTML_QuickForm2_Element_ElementName.
      *
      * @param string $alias
-     * @param string $elementName
-     * @throws BaseClassHelperException
+     * @param class-string $elementClass
      */
-    public function registerCustomElement(string $alias, string $elementName) : void
+    public function registerCustomElement(string $alias, string $name, string $elementClass) : void
     {
         $this->customElements[$alias] = array(
             'alias' => $alias,
-            'name' => $elementName
+            'class' => $elementClass,
+            'name' => $name
         );
 
         HTML_QuickForm2_Factory::registerElement(
             $alias,
-            ClassHelper::requireResolvedClass(HTML_QuickForm2_Element::class . '_' . $elementName)
+            $elementClass
         );
     }
 
    /**
     * Retrieves a list of all registered custom elements.
-    * @return array Indexed array with these keys in each entry: "alias", "name" and "file"
+    * @return array{alias:string,name:string,class:class-string<CustomElementInterface>}
     */
     public function getCustomElements() : array
     {
