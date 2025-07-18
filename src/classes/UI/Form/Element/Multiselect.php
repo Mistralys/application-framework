@@ -7,6 +7,10 @@
  * @see HTML_QuickForm2_Element_Multiselect
  */
 
+use Mistralys\Examples\HerbsCollection;
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
+
 /**
  * Bootstrap-based multiple select element that implements the
  * interface of the bootstrap multiselect plugin.
@@ -18,11 +22,29 @@
  * @see https://github.com/davidstutz/bootstrap-multiselect
  * @see http://davidstutz.github.io/bootstrap-multiselect
  */
-class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
+class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select implements CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'multiselect';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Multi-select');
+    }
+
     public function __toString()
     {
         $this->initTemplates();
+
+        if($this->isDemoMode()) {
+            $this->initDemoMode();
+        }
         
         $ui = UI::getInstance();
         $ui->addJavascript('bootstrap-multiselect.js');
@@ -82,8 +104,22 @@ class HTML_QuickForm2_Element_Multiselect extends HTML_QuickForm2_Element_Select
 
         return $html;
     }
+
+    private function initDemoMode() : void
+    {
+        $this->enableSelectAll();
+        $this->makeMultiple();
+        $this->enableFiltering();
+
+        foreach(HerbsCollection::getInstance()->getAll() as $herb) {
+            $this->addOption(
+                $herb->getName(),
+                $herb->getID()
+            );
+        }
+    }
     
-    protected $templates = array(
+    protected array $templates = array(
         'filter' => null,
         'filterClearBtn' => null,
     );

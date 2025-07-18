@@ -2,13 +2,28 @@
 
 declare(strict_types=1);
 
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
+use UI\Tree\TreeNode;
 use UI\Tree\TreeRenderer;
 
-class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element
+class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element implements CustomElementInterface
 {
+    use CustomElementTrait;
+
     public const ERROR_TREE_NOT_SET = 149701;
 
     public const ELEMENT_TYPE = 'treeselect';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Tree select');
+    }
 
     private ?TreeRenderer $treeRenderer = null;
 
@@ -25,6 +40,14 @@ class HTML_QuickForm2_Element_TreeSelect extends HTML_QuickForm2_Element
 
     public function getTree() : ?TreeRenderer
     {
+        if(!isset($this->treeRenderer) && $this->isDemoMode()) {
+            $ui = UI::getInstance();
+            $rootNode = new TreeNode($ui,t('Demo root node'));
+            $rootNode->addChildNode(new TreeNode($ui, t('Child node'). ' 1'));
+            $rootNode->addChildNode(new TreeNode($ui, t('Child node'). ' 2'));
+            $this->treeRenderer = new TreeRenderer($ui, $rootNode);
+        }
+
         return $this->treeRenderer;
     }
 

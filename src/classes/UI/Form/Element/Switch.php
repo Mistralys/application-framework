@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
 use UI\Interfaces\ButtonSizeInterface;
 use UI\Traits\ButtonSizeTrait;
 
@@ -21,11 +23,24 @@ use UI\Traits\ButtonSizeTrait;
  */
 class HTML_QuickForm2_Element_Switch
     extends HTML_QuickForm2_Element_Input
-    implements ButtonSizeInterface
+    implements
+    ButtonSizeInterface,
+    CustomElementInterface
 {
     use ButtonSizeTrait;
+    use CustomElementTrait;
 
     public const ELEMENT_TYPE = 'switch';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Switch');
+    }
 
     /**
      * @var array<string,string>

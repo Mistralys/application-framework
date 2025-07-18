@@ -5,6 +5,8 @@
  */
 
 use AppUtils\ClassHelper;
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
 
 /**
  * EXPERIMENTAL! Element that is used to handle generate HTML input with type date and time together.
@@ -13,11 +15,25 @@ use AppUtils\ClassHelper;
  * @subpackage Form Elements
  * @author Emre Celebi <emre.celebi@ionos.com>
  */
-class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Container_Group
+class HTML_QuickForm2_Element_HTMLDateTimePicker extends HTML_QuickForm2_Container_Group implements CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'htmldatetimepicker';
+
     public const ELEMENT_NAME_DATE = 'date';
     public const ELEMENT_NAME_TIME = 'time';
     public const CSS_FILE_NAME = 'forms/date-picker.css';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Date and time picker');
+    }
 
     private HTML_QuickForm2_Element_HTMLDatePicker $datePicker;
 

@@ -1,25 +1,38 @@
 <?php
 /**
- * File containing the {@see HTML_QuickForm2_Element_HTMLTimePicker} class.
- *
  * @package User Interface
  * @subpackage Form Elements
- * @see HTML_QuickForm2_Element_HTMLTimePicker
  */
 
 use Application\UI\Form\Element\DateTimePicker\BasicTime;
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
 
 /**
  * Element that is used to handle generate HTML input with type time.
- * All browsers(except IE) will open time selection menu as input
+ * All browsers (except IE) will open a time selection menu as input.
  *
  * @package User Interface
  * @subpackage Form Elements
  * @author Emre Celebi <emre.celebi@ionos.com>
  */
-class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input
+class HTML_QuickForm2_Element_HTMLTimePicker extends HTML_QuickForm2_Element_Input implements CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'htmltimepicker';
+
     public const REGEX_GROUP_TIME = '([0-9]{2}):([0-9]{2})';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Time picker');
+    }
 
     protected array $attributes = array(
         'type' => 'time'

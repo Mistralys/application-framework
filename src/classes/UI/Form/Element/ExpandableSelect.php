@@ -1,25 +1,39 @@
 <?php
 /**
- * File containing the class {@see HTML_QuickForm2_Element_ExpandableSelect}.
- *
- * @package Application
- * @subpackage Forms
- * @see HTML_QuickForm2_Element_ExpandableSelect
+ * @package User Interface
+ * @subpackage Form Elements
  */
 
 declare(strict_types=1);
 
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
+
 /**
- * Multiple selection select element with integrated controls
+ * Multiple-selection element with integrated controls
  * to select and deselect elements, as well as to expand or
  * collapse the select to show or hide elements.
  *
- * @package Application
- * @subpackage Forms
+ * @package User Interface
+ * @subpackage Form Elements
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class HTML_QuickForm2_Element_ExpandableSelect extends HTML_QuickForm2_Element_Select
+class HTML_QuickForm2_Element_ExpandableSelect extends HTML_QuickForm2_Element_Select implements CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'expandableselect';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Expandable select');
+    }
+
     private int $maxSize = 20;
 
     protected function initNode() : void

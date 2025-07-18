@@ -11,6 +11,7 @@ use Application\Media\Collection\MediaCollection;
 use AppUtils\ImageHelper_Exception;
 use AppUtils\ImageHelper;
 use AppUtils\OutputBuffering;
+use UI\Form\CustomElementTrait;
 use function AppUtils\parseNumber;
 use AppUtils\ImageHelper_Size;
 use AppUtils\NumberInfo;
@@ -23,10 +24,24 @@ use AppUtils\NumberInfo;
  * @subpackage Form Elements
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input
+class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Input implements \UI\Form\CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'imageuploader';
+
     public const THUMBNAIL_WIDTH = 75;
     public const THUMBNAIL_HEIGHT = 75;
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Image uploader');
+    }
 
     protected bool $persistent = true;
 

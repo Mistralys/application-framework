@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 use HTML\QuickForm2\Element\Select\SelectOption;
 use UI\ClientResourceCollection;
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
 use UI\Form\Element\VisualSelect\ImageSet;
 use UI\Form\Element\VisualSelect\VisualSelectOption;
 use UI\Traits\ScriptInjectableInterface;
@@ -32,15 +34,32 @@ use UI\Traits\ScriptInjectableTrait;
  *
  * @see template_default_ui_forms_elements_visual_select
  */
-class HTML_QuickForm2_Element_VisualSelect extends HTML_QuickForm2_Element_Select implements ScriptInjectableInterface
+class HTML_QuickForm2_Element_VisualSelect
+    extends HTML_QuickForm2_Element_Select
+    implements
+    ScriptInjectableInterface,
+    CustomElementInterface
 {
     use ScriptInjectableTrait;
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'visualselect';
 
     public const ERROR_IMAGE_SET_ALREADY_EXISTS = 130901;
 
     public const PROPERTY_SORTING_ENABLED = 'sorting-enabled';
     public const PROPERTY_PLEASE_SELECT_LABEL = 'please-select-label';
     public const PROPERTY_PLEASE_SELECT_ENABLED = 'please-select';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Visual select');
+    }
 
     protected int $thumbnailSizeL = 80;
     protected int $thumbnailSizeS = 60;

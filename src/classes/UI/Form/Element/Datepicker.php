@@ -9,6 +9,9 @@ declare(strict_types=1);
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper\JSONConverter;
 
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
+
 /**
  * Bootstrap-based datepicker element for selecting dates.
  *
@@ -19,14 +22,28 @@ use AppUtils\ConvertHelper\JSONConverter;
  * @see http://eternicode.github.io/bootstrap-datepicker
  * @see https://github.com/eternicode/bootstrap-datepicker
  */
-class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputText
+class HTML_QuickForm2_Element_Datepicker extends HTML_QuickForm2_Element_InputText implements CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'datepicker';
+
     protected array $clientOptions = array(
         'format' => 'dd/mm/yy',
         'todayBtn' => 'linked',
         'clearBtn' => true,
     );
-    
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Datepicker');
+    }
+
     public function __toString()
     {
         if($this->frozen) {

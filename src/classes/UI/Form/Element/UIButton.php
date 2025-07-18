@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 use UI\AdminURLs\AdminURLInterface;
+use UI\Form\CustomElementTrait;
 
 /**
  * Twitter Bootstrap-based switch element that acts like a checkbox.
@@ -18,8 +19,22 @@ use UI\AdminURLs\AdminURLInterface;
  * @subpackage Form Elements
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-class HTML_QuickForm2_Element_UIButton extends HTML_QuickForm2_Element_Button
+class HTML_QuickForm2_Element_UIButton extends HTML_QuickForm2_Element_Button implements \UI\Form\CustomElementInterface
 {
+    use CustomElementTrait;
+
+    public const ELEMENT_TYPE = 'uibutton';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('UI button');
+    }
+
     /**
      * NOTE: We are not implementing the button interface
      * on purpose. The interface conflicts with methods from

@@ -1,11 +1,11 @@
 <?php
 /**
- * File containing the {@see HTML_QuickForm2_Element_HTMLDatePicker} class.
- *
  * @package User Interface
  * @subpackage Form Elements
- * @see HTML_QuickForm2_Element_HTMLDatePicker
  */
+
+use UI\Form\CustomElementInterface;
+use UI\Form\CustomElementTrait;
 
 /**
  * Element that is used to handle generate HTML input with type date.
@@ -13,12 +13,25 @@
  *
  * @package User Interface
  * @subpackage Form Elements
- * @author Emre Celebi <emre.celebi@ionos.com>
  */
-class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element_Input
+class HTML_QuickForm2_Element_HTMLDatePicker extends HTML_QuickForm2_Element_Input implements CustomElementInterface
 {
+    use CustomElementTrait;
+
     public const REGEX_GROUP_DATE = '([0-9]{4}-[0-9]{2}-[0-9]{2})';
     public const ERROR_INVALID_DATE_VALUE = 145801;
+
+    public const ELEMENT_TYPE = 'htmldatepicker';
+
+    public static function getElementTypeID(): string
+    {
+        return self::ELEMENT_TYPE;
+    }
+
+    public static function getElementTypeLabel(): string
+    {
+        return t('Datepicker');
+    }
 
     protected array $attributes = array(
         'type' => 'date'
