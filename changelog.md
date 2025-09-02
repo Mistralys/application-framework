@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.10.12 - CAS rollback
+- Composer: Rolled `phpCAS` back to the latest public release, as it forces removal of security advisories.
+- Composer: `phpCAS` will be replaced with an alternative in the near future.
+
 ## v5.10.11 - CAS temporary fix
 - Composer: Locked the `phpCAS` package to a specific commit to fix the PHP8 deprecation warnings.
 - Composer: Temporarily removed `roave/security-advisories` to allow the CAS commit to be used. 
