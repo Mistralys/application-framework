@@ -1,8 +1,18 @@
 # Application Framework Changelog
 
+## v5.11.0 - PHP8 and Connector improvements (Breaking-S) 
+- Connectors: Added constructor arguments to `createConnector()`.
+- Connectors: Fixed `createConnector()` creating a new instance with every call.
+- Dependencies: Now requiring PHP8.4.
+
+### Breaking changes (S)
+
+The framework has been officially switched to PHP8.4. It has been updated to run for a while,
+and this change only makes it official. No other breaking changes are included in this version.
+
 ## v5.10.12 - CAS rollback
 - Composer: Rolled `phpCAS` back to the latest public release, as it forces removal of security advisories.
-- Composer: `phpCAS` will be replaced with an alternative in the near future.
+- Composer: `phpCAS` will be replaced with an alternative soon.
 
 ## v5.10.11 - CAS temporary fix
 - Composer: Locked the `phpCAS` package to a specific commit to fix the PHP8 deprecation warnings.
