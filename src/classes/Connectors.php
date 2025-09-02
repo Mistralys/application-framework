@@ -69,7 +69,7 @@ class Connectors
 
         return $instance;
     }
-v
+
     public static function createStubConnector() : StubConnector
     {
         return ClassHelper::requireObjectInstanceOf(
