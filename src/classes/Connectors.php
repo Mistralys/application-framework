@@ -31,13 +31,13 @@ class Connectors
      * the name of the connector file, case-sensitive. Will throw
      * an exception if the type does not exist.
      *
-     * @param string|class-string $typeOrClass Connector type ID or class name.
+     * @param string|class-string<Connectors_Connector> $typeOrClass Connector type ID or class name.
      * @return Connectors_Connector
      *
      * @throws BaseClassHelperException
      * @see Connectors::ERROR_INVALID_CONNECTOR_TYPE
      */
-    public static function createConnector(string $typeOrClass) : Connectors_Connector
+    public static function createConnector(string $typeOrClass, ...$constructorArguments) : Connectors_Connector
     {
         if(isset(self::$connectors[$typeOrClass]))
         {
@@ -52,7 +52,7 @@ class Connectors
 
         return ClassHelper::requireObjectInstanceOf(
             Connectors_Connector::class,
-            new $class(),
+            new $class(...$constructorArguments),
             self::ERROR_INVALID_CONNECTOR_TYPE
         );
     }
