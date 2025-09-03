@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.11.1 - Connector improvements
+- Connectors: Constructor arguments can now be specified for connector methods. 
+
 ## v5.11.0 - PHP8 and Connector improvements (Breaking-S) 
 - Connectors: Added constructor arguments to `createConnector()`.
 - Connectors: Fixed `createConnector()` creating a new instance with every call.
