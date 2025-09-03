@@ -24,24 +24,16 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     use Application_Traits_Simulatable;
     use Application_Traits_Loggable;
 
-    public const ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
+    public const int ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
     
     protected ?string $cachedID = null;
 
     /**
      * @var array<string,string>
      */
-    protected $params = array();
-
-    /**
-     * @var bool
-     */
-    protected $debug = false;
-
-    /**
-     * @var Connectors_Response|null
-     */
-    protected $activeResponse;
+    protected array $params = array();
+    protected bool $debug = false;
+    protected ?Connectors_Response $activeResponse;
 
     public function __construct()
     {
@@ -239,16 +231,24 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     
    /**
     * Creates a new connector method instance, which is
-    * loaded for the current connector type. The class name
-    * follows this scheme:
+    * loaded for the current connector type.
+    *
+    * ## Legacy class names
+    *
+    * For legacy methods, the class name follows this scheme:
     * 
-    * <code>Connectors_Connector_(ConnectorName)_Method_(MethodName)</code>
+    * ```
+    * Connectors_Connector_(ConnectorName)_Method_(MethodName)
+    * ```
     * 
-    * @param string|class-string $nameOrClass
+    * @param string|class-string<BaseConnectorMethod> $nameOrClass
+    * @param mixed ...$constructorArgs Additional arguments to pass to the method constructor.
+    *                                  Note: The connector instance is always passed as the
+    *                                  first argument.
     * @return BaseConnectorMethod
     * @throws BaseClassHelperException
     */
-    public function createMethod(string $nameOrClass) : BaseConnectorMethod
+    public function createMethod(string $nameOrClass, ...$constructorArgs) : BaseConnectorMethod
     {
         if(class_exists($nameOrClass)) {
             $class = $nameOrClass;
@@ -262,7 +262,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
         
         return ClassHelper::requireObjectInstanceOf(
             BaseConnectorMethod::class,
-            new $class($this)
+            new $class($this, ...$constructorArgs)
         );
     }
 }
