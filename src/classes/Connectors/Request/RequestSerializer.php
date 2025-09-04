@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Connectors\Request;
 
+use Application\AppFactory;
 use Application\Exception\UnexpectedInstanceException;
 use Application_Exception;
 use AppUtils\ArrayDataCollection;
@@ -103,7 +104,20 @@ class RequestSerializer
     public static function unserialize(string $json) : ?Connectors_Request
     {
         $data = ArrayDataCollection::create(JSONConverter::json2array($json));
-        $connector = Connectors::createConnector($data->getString(self::KEY_CONNECTOR_ID));
+
+        $connectorID = $data->getString(self::KEY_CONNECTOR_ID);
+
+        if(!Connectors::connectorExists($connectorID))
+        {
+            AppFactory::createLogger()->logError(
+                'Cannot use connector cache, the connector [%s] specified in the cache data does not exist.',
+                $connectorID
+            );
+
+            return null;
+        }
+
+        $connector = Connectors::createConnector($connectorID);
 
         $type = $data->getString(self::KEY_REQUEST_TYPE);
 
