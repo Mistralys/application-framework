@@ -77,4 +77,15 @@ class Connectors
             self::createConnector(StubConnector::class)
         );
     }
+
+    public static function connectorExists(string $connectorID) : bool
+    {
+        if(class_exists($connectorID) && is_a($connectorID, Connectors_Connector::class, true)) {
+            return true;
+        }
+
+        $class = ClassHelper::resolveClassName('Connectors_Connector_' . $connectorID);
+
+        return $class !== null && class_exists($class) && is_a($class, Connectors_Connector::class, true);
+    }
 }
