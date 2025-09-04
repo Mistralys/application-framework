@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.11.2 - Connector fix
+- Connectors: Fixed connector IDs stored in cache causing an exception.
+
 ## v5.11.1 - Connector improvements
 - Connectors: Constructor arguments can now be specified for connector methods. 
 
