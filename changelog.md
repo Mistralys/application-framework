@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.11.3 - Connector cache fix redux
+- Connectors: Fixed unhandled cases of loading broken JSON from the cache.
+- Error handling: Exceptions now also add a message in the application log.
+- Helpers: Added the specialized `JSONUnserializer` class with integrated logging.
+
 ## v5.11.2 - Connector cache fix
 - Connectors: Fixed connector IDs stored in cache causing an exception.
 
