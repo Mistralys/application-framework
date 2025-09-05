@@ -75,6 +75,11 @@ class Application_Exception extends BaseException
                 'Previous exception: [#'.$previous->getCode().'] '.$previous->getMessage();
             }
         }
+        else
+        {
+            Application::logError(sprintf('EXCEPTION #%s: %s', $this->getCode(), $this->getMessage()));
+            Application::logError($developerInfo);
+        }
 
         parent::__construct($message, $developerInfo, $code, $previous);
     }
@@ -129,11 +134,19 @@ class Application_Exception extends BaseException
         return $this->logged;
     }
 
-    public function log() : void
+    /**
+     * Adds a log entry for this exception in the error log.
+     *
+     * > NOTE: This is only done once. Calling it multiple times
+     * > has no effect.
+     *
+     * @return $this
+     */
+    public function log() : self
     {
         if(!$this->logging) 
         {
-            return;
+            return $this;
         }
         
         if(!$this->logged)
@@ -141,6 +154,8 @@ class Application_Exception extends BaseException
             Application_ErrorLog_Log_Entry_Exception::logException($this);
             $this->logged = true;
         }
+
+        return $this;
     }
 
     public static function getDeveloperMessage(Throwable $e) : string
