@@ -22,6 +22,7 @@ use Connectors_Request;
 use Connectors_Request_Method;
 use Connectors_Request_URL;
 use Connectors_Response;
+use Mistralys\AppFramework\Helpers\JSONUnserializer;
 
 /**
  * Utility class that handles serializing and unserializing
@@ -103,7 +104,14 @@ class RequestSerializer
      */
     public static function unserialize(string $json) : ?Connectors_Request
     {
-        $data = ArrayDataCollection::create(JSONConverter::json2array($json));
+        $unserialized = JSONUnserializer::create($json, 'Unserialize cached connector request data.', false)->getData();
+
+        if($unserialized === null)
+        {
+            return null;
+        }
+
+        $data = ArrayDataCollection::create($unserialized);
 
         $connectorID = $data->getString(self::KEY_CONNECTOR_ID);
 
