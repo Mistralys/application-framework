@@ -26,7 +26,7 @@ use AppUtils\FileHelper\FileInfo;
  */
 class ComposerScripts
 {
-    public const ERROR_BOOTSTRAP_NOT_FOUND = 169801;
+    public const int ERROR_BOOTSTRAP_NOT_FOUND = 169801;
 
     /**
      * Clears the PHP class cache that is used by the {@see CacheManager}.
