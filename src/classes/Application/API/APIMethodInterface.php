@@ -20,16 +20,16 @@ use AppUtils\Interfaces\StringPrimaryRecordInterface;
  */
 interface APIMethodInterface extends StringPrimaryRecordInterface
 {
-    public const string PARAM_API_VERSION = 'apiVersion';
-
     public const int ERROR_REQUEST_DATA_EXCEPTION = 183001;
     public const int ERROR_RESPONSE_DATA_EXCEPTION = 183002;
 
+    public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
+    public const string REQUEST_PARAM_METHOD = 'method';
+
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'RequestData';
 
-    public const string API_INFO_KEY_REQUEST_TIME = 'requestTime';
 
-    public function getAPIData() : array;
+    public function getInfo() : APIInfo;
 
     public function getMethodName() : string;
 
