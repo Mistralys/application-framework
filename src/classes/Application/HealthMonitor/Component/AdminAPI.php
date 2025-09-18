@@ -1,15 +1,10 @@
 <?php
 /**
- * File containing the {@link Application_HealthMonitor_Component_Database} class.
  * @package Application
  * @subpackage HealthMonitor
  */
 
-/**
- * The base component class.
- * @see Application_HealthMonitor_Component
- */
-require_once 'Application/HealthMonitor/Component.php';
+declare(strict_types=1);
 
 /**
  * Checks the database connectivity and speed.
@@ -20,34 +15,34 @@ require_once 'Application/HealthMonitor/Component.php';
  */
 class Application_HealthMonitor_Component_AdminAPI extends Application_HealthMonitor_Component
 {
-    public function getName()
+    public function getName() : string
     {
         return 'UI layer';
     }
 
-    public function getDescription()
+    public function getDescription() : string
     {
         return 'Integrity of the UI layer, accessibility of all screens.';
     }
 
-    public function getYellowPagesURL()
+    public function getYellowPagesURL() : string
     {
         return '';
     }
 
-    public function getSeverity()
+    public function getSeverity() : string
     {
         return self::SEVERITY_BLOCKER;
     }
 
-    public function collectData()
+    public function collectData() : void
     {
         $this->durationStart();
-        
-        $api = Application::createAPI();
-        $method = $api->loadMethod('DescribeAdminAreas');
-        $method->setProcessMode(Application_API_Method::PROCESS_MODE_RETURN);
-        $method->process();
+
+        // This only has to work without exceptions.
+        Application::createAPI()
+            ->loadMethod(DescribeAdminAreasAPI::class)
+            ->processReturn();
         
         $this->durationStop();
     }
