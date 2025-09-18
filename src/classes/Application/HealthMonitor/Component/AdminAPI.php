@@ -6,6 +6,8 @@
 
 declare(strict_types=1);
 
+use Application\API\Method\DescribeAdminAreasAPI;
+
 /**
  * Checks the database connectivity and speed.
  *
