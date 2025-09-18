@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Collection;
 
 use Application\API\APIMethodInterface;
-use Application_API;
+use Application\API\APIManager;
 use AppUtils\Collections\BaseClassLoaderCollectionMulti;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
@@ -27,9 +27,9 @@ use AppUtils\Interfaces\StringPrimaryRecordInterface;
  */
 class APIMethodCollection extends BaseClassLoaderCollectionMulti
 {
-    private Application_API $api;
+    private APIManager $api;
 
-    public function __construct(Application_API $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }

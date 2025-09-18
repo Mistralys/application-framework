@@ -10,7 +10,7 @@ use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
 use Application\API\ErrorResponse;
 use Application\API\Traits\JSONRequestInterface;
-use Application_API;
+use Application\API\APIManager;
 use Application_API_Parameter;
 use Application_CORS;
 use Application_Driver;
@@ -29,14 +29,14 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     protected Application_Driver $driver;
     protected Application_Request $request;
-    protected Application_API $api;
+    protected APIManager $api;
     protected string $version;
     protected ?Application_CORS $CORS = null;
     private bool $return = false;
     protected Microtime $time;
     private string $logIdentifier;
 
-    public function __construct(Application_API $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
         $this->driver = Application_Driver::getInstance();

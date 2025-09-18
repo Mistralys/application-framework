@@ -10,7 +10,7 @@ namespace Application\OfflineEvents\RegisterCacheLocationsEvent;
 
 use Application\API\Collection\APIMethodIndex;
 use Application\CacheControl\BaseRegisterCacheLocationsListener;
-use Application_API;
+use Application\API\APIManager;
 
 /**
  * Registers the API method index cache location.
@@ -24,6 +24,6 @@ class RegisterAPIIndexListener extends BaseRegisterCacheLocationsListener
 {
     protected function getCacheLocations(): array
     {
-        return array(Application_API::getInstance()->getMethodIndex()->getCacheLocation());
+        return array(APIManager::getInstance()->getMethodIndex()->getCacheLocation());
     }
 }

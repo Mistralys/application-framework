@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\API\APIManager;
 use Application\AppFactory;
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
@@ -533,11 +534,11 @@ class Application
      * Returns the global instance of the API manager class,
      * creating it as needed.
      *
-     * @return Application_API
+     * @return APIManager
      */
-    public static function createAPI() : Application_API
+    public static function createAPI() : APIManager
     {
-        return Application_API::getInstance();
+        return APIManager::getInstance();
     }
 
     /**

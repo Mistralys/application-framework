@@ -12,7 +12,7 @@ use Application;
 use Application\API\APIException;
 use Application\API\APIMethodInterface;
 use Application\AppFactory\APICacheLocation;
-use Application_API;
+use Application\API\APIManager;
 use AppUtils\FileHelper\JSONFile;
 
 /**
@@ -23,7 +23,7 @@ use AppUtils\FileHelper\JSONFile;
  *
  * ## Usage
  *
- * Use {@see Application_API::getMethodIndex()} to get an instance
+ * Use {@see \Application\API\APIManager::getMethodIndex()} to get an instance
  * of this class, and then call {@see methodExists()} to check
  * if a method exists, or {@see getMethodClass()} to get the
  * class name of a method.
@@ -33,9 +33,9 @@ use AppUtils\FileHelper\JSONFile;
  */
 class APIMethodIndex
 {
-    private Application_API $api;
+    private APIManager $api;
 
-    public function __construct(Application_API $api)
+    public function __construct(APIManager $api)
     {
         $this->api = $api;
     }
