@@ -14,7 +14,7 @@ declare(strict_types=1);
  * mode is enabled.
  *
  * @package UserInterface
- * @subackage Templates
+ * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 class template_default_maintenance extends UI_Page_Template_Custom
