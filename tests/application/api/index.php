@@ -7,7 +7,7 @@
  * @package Application
  * @subpackage TestDriver
  * @see Application_Bootstrap_Screen_API
- * @see Application_API
+ * @see APIManager
  */
 
 declare(strict_types=1);
@@ -16,6 +16,9 @@ declare(strict_types=1);
  * The bootstrapper that starts the target application screen.
  * @see Application_Bootstrap
  */
+
+use Application\API\APIManager;
+
 require_once __DIR__ . '/../bootstrap.php';
 
 Application_Bootstrap::bootClass(Application_Bootstrap_Screen_API::class);
