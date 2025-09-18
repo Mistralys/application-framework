@@ -1,5 +1,15 @@
 # Application Framework Changelog
 
+## v5.12.0 - API Update (Breaking-L)
+- API: Complete overhaul of the API handling.
+- API: Added an API method index to look up method names and classes.
+- API: Registered the method index in the main cache control.
+- API: Added an API method collection to access all methods.
+- API: Added `APIMethodInterface`.
+- API: Overhauled the base API method class, streamlined the request and response processes.
+- API: Added traits for the request and response types, e.g. `JSONResponseTrait`.
+- API: Implemented an exception-based flow break to access response data instead of sending responses.
+
 ## v5.11.3 - Connector cache fix redux
 - Connectors: Fixed unhandled cases of loading broken JSON from the cache.
 - Error handling: Exceptions now also add a message in the application log.
