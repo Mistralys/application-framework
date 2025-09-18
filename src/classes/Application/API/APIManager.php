@@ -1,11 +1,13 @@
 <?php
+/**
+ * @package API
+ * @subpackage Core
+ */
 
 declare(strict_types=1);
 
 namespace Application\API;
 
-use Application\API\APIException;
-use Application\API\APIMethodInterface;
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Collection\APIMethodCollection;
 use Application\API\Collection\APIMethodIndex;
@@ -14,6 +16,19 @@ use Application_Request;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 
+/**
+ * Main API manager class that is used as endpoint to
+ * process API requests.
+ *
+ * ## Usage
+ *
+ * - To process an API request, call the {@see self::process()} method.
+ * - To load a specific API method class, use {@see self::loadMethod()}.
+ * - To access available API methods, use {@see self::getMethodCollection()}.
+ *
+ * @package API
+ * @subpackage Core
+ */
 class APIManager
 {
     public const int ERROR_METHOD_NOT_FOUND = 112547001;
@@ -71,7 +86,7 @@ class APIManager
     public function process(?string $methodName = null): void
     {
         if ($methodName === null) {
-            $methodName = $this->request->registerParam('method')->setAlnum()->getString();
+            $methodName = $this->request->registerParam(APIMethodInterface::REQUEST_PARAM_METHOD)->setAlnum()->getString();
         }
 
         if (empty($methodName)) {
