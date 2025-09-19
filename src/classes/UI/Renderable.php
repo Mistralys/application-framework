@@ -70,7 +70,7 @@ abstract class UI_Renderable implements UI_Renderable_Interface
      * createTemplate('content.my-template');
      * </pre>
      *
-     * @param string|class-string $templateIDOrClass
+     * @param string|class-string<UI_Page_Template> $templateIDOrClass
      * @return UI_Page_Template
      *
      * @throws ClassNotExistsException
