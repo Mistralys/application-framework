@@ -9,6 +9,16 @@
 - API: Overhauled the base API method class, streamlined the request and response processes.
 - API: Added traits for the request and response types, e.g. `JSONResponseTrait`.
 - API: Implemented an exception-based flow break to access response data instead of sending responses.
+- API: Renamed and namespaced the API bootstrapper.
+- API: The method documentation URL is now included in the response API info.
+- API: The request and response mime types are now included in the response API info.
+- Themes: The clean frame template now uses the page title if set.
+- Dependencies: Bumped up AppUtils to [v3.1.10](https://github.com/Mistralys/application-utils/releases/tag/3.1.10) for a bugfix.
+
+### Breaking changes
+
+- Renamed all API-related classes.
+- Renamed and namespaced the API bootstrapper.
 
 ## v5.11.3 - Connector cache fix redux
 - Connectors: Fixed unhandled cases of loading broken JSON from the cache.
