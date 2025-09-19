@@ -11,6 +11,7 @@ namespace Application\API;
 use Application_CORS;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Interface for all API methods.
@@ -28,16 +29,12 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
 
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'RequestData';
 
-
     public function getInfo() : APIInfo;
-
     public function getMethodName() : string;
-
     public function getDescription() : string;
-
     public function getRequestMime() : string;
     public function getResponseMime() : string;
-
+    public function getDocumentationURL() : AdminURLInterface;
     /**
      * Retrieves an indexed array containing available API
      * version numbers that can be specified to work with.
