@@ -118,7 +118,7 @@ class APIMethodIndex
 
     public function getDataFile() : JSONFile
     {
-        return JSONFile::factory(Application::getStorageSubfolderPath('api').'/method-index.ser')
+        return JSONFile::factory(Application::getStorageSubfolderPath('api').'/method-index.json')
             ->setEscapeSlashes(false)
             ->setTrailingNewline(true)
             ->setPrettyPrint(true);
