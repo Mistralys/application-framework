@@ -32,7 +32,7 @@ class APIInfo
             self::KEY_REQUEST_MIME => $this->method->getRequestMime(),
             self::KEY_RESPONSE_MIME => $this->method->getResponseMime(),
             self::KEY_REQUEST_TIME => $this->method->getRequestTime()->getISODate(true),
-            self::KEY_DOCUMENTATION_URL => $this->method->getDocumentationURL()
+            self::KEY_DOCUMENTATION_URL => (string)$this->method->getDocumentationURL()
         );
     }
 }
