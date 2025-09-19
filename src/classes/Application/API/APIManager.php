@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Application\API;
 
-use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Collection\APIMethodCollection;
 use Application\API\Collection\APIMethodIndex;
 use Application_Driver;
@@ -31,7 +30,6 @@ use AppUtils\ClassHelper\BaseClassHelperException;
  */
 class APIManager
 {
-    public const int ERROR_METHOD_NOT_FOUND = 112547001;
     public const int ERROR_NO_METHOD_SPECIFIED = 112547002;
     public const int ERROR_INVALID_METHOD_CLASS = 112547003;
 
@@ -67,6 +65,17 @@ class APIManager
         return self::$instance;
     }
 
+    private ?APIURLs $adminURLs = null;
+
+    public function adminURL() : APIUrls
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new APIUrls();
+        }
+
+        return $this->adminURLs;
+    }
+
     public function getMethodCollection(): APIMethodCollection
     {
         return $this->collection;
@@ -85,9 +94,30 @@ class APIManager
 
     public function process(?string $methodName = null): void
     {
-        if ($methodName === null) {
-            $methodName = $this->request->registerParam(APIMethodInterface::REQUEST_PARAM_METHOD)->setAlnum()->getString();
+        if ($methodName === null)
+        {
+            $method = $this->requireMethodFromRequest();
+        } else {
+            $method = $this->getMethodByName($methodName);
         }
+
+        $method->process();
+    }
+
+    public function getRequestedMethodName() : ?string
+    {
+        $methodName = $this->request->registerParam(APIMethodInterface::REQUEST_PARAM_METHOD)->setAlnum()->getString();
+
+        if($this->getMethodIndex()->methodExists($methodName)) {
+            return $methodName;
+        }
+
+        return null;
+    }
+
+    private function requireMethodFromRequest() : APIMethodInterface
+    {
+        $methodName = $this->getRequestedMethodName();
 
         if (empty($methodName)) {
             throw new APIException(
@@ -97,36 +127,25 @@ class APIManager
             );
         }
 
-        $index = $this->getMethodIndex();
+        return $this->loadMethod($methodName);
+    }
 
-        if (!$index->methodExists($methodName)) {
-            throw new APIException(
-                'Method not found',
-                sprintf(
-                    'The specified method [%s] could not be found in the method index. ' . PHP_EOL .
-                    'These are the known API methods: ' . PHP_EOL .
-                    '- %s',
-                    $methodName,
-                    implode(PHP_EOL . '- ', $index->getMethodNames())
-                ),
-                self::ERROR_METHOD_NOT_FOUND
-            );
-        }
-
-        $this->loadMethod($index->getMethodClass($methodName))->process();
+    public function getMethodByName(string $methodName) : APIMethodInterface
+    {
+        return $this->loadMethod($this->getMethodIndex()->getMethodClass($methodName));
     }
 
     /**
      *
      * @param class-string<APIMethodInterface> $class
-     * @return BaseAPIMethod
+     * @return APIMethodInterface
      * @throws APIException
      */
-    public function loadMethod(string $class): BaseAPIMethod
+    public function loadMethod(string $class): APIMethodInterface
     {
         try {
             return ClassHelper::requireObjectInstanceOf(
-                BaseAPIMethod::class,
+                APIMethodInterface::class,
                 new $class($this)
             );
         } catch (BaseClassHelperException $e) {
