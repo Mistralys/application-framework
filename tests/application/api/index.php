@@ -6,7 +6,7 @@
  *
  * @package Application
  * @subpackage TestDriver
- * @see Application_Bootstrap_Screen_API
+ * @see APIBootstrap
  * @see APIManager
  */
 
@@ -18,7 +18,8 @@ declare(strict_types=1);
  */
 
 use Application\API\APIManager;
+use Application\Bootstrap\Screen\APIBootstrap;
 
 require_once __DIR__ . '/../bootstrap.php';
 
-Application_Bootstrap::bootClass(Application_Bootstrap_Screen_API::class);
+Application_Bootstrap::bootClass(APIBootstrap::class);
