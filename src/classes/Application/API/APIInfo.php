@@ -13,6 +13,7 @@ class APIInfo
     public const string KEY_RESPONSE_MIME = 'responseMime';
     public const string KEY_DESCRIPTION = 'description';
     public const string KEY_AVAILABLE_VERSIONS = 'availableVersions';
+    public const string KEY_DOCUMENTATION_URL = 'documentationURL';
 
     private APIMethodInterface $method;
 
@@ -30,7 +31,8 @@ class APIInfo
             self::KEY_DESCRIPTION => $this->method->getDescription(),
             self::KEY_REQUEST_MIME => $this->method->getRequestMime(),
             self::KEY_RESPONSE_MIME => $this->method->getResponseMime(),
-            self::KEY_REQUEST_TIME => $this->method->getRequestTime()->getISODate(true)
+            self::KEY_REQUEST_TIME => $this->method->getRequestTime()->getISODate(true),
+            self::KEY_DOCUMENTATION_URL => $this->method->getDocumentationURL()
         );
     }
 }
