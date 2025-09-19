@@ -6,6 +6,7 @@ namespace Application\API\BaseMethods;
 
 use Application;
 use Application\API\APIException;
+use Application\API\APIInfo;
 use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
 use Application\API\ErrorResponse;
@@ -22,6 +23,7 @@ use AppUtils\ArrayDataCollection;
 use AppUtils\Microtime;
 use AppUtils\Request\RequestParam;
 use Throwable;
+use UI\AdminURLs\AdminURLInterface;
 
 abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfaces_Loggable
 {
@@ -60,6 +62,11 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     public function getRequestTime() : Microtime
     {
         return $this->time;
+    }
+
+    public function getDocumentationURL(): AdminURLInterface
+    {
+        return $this->api->adminURL()->methodDocumentation($this);
     }
 
     public function process(): never
@@ -137,13 +144,11 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     /**
      * List of reserved API Method request parameters.
-     * @var array
+     * @var string[]
      */
     protected array $reservedParams = array(
-        'method',
-        'input',
-        'output',
-        'api_version'
+        APIMethodInterface::REQUEST_PARAM_METHOD,
+        APIMethodInterface::REQUEST_PARAM_API_VERSION
     );
 
     protected array $params = array();
@@ -271,7 +276,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     public function getActiveVersion() : string
     {
-        $requestedVersion = (string)$this->request->getParam(APIMethodInterface::PARAM_API_VERSION);
+        $requestedVersion = (string)$this->request->getParam(APIMethodInterface::REQUEST_PARAM_API_VERSION);
         if(!empty($requestedVersion) && in_array($requestedVersion, $this->getVersions())) {
             return $requestedVersion;
         }
@@ -387,17 +392,9 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     abstract protected function _sendSuccessResponse(ArrayDataCollection $data) : void;
 
-    public function getAPIData() : array
+    public function getInfo() : APIInfo
     {
-        return array(
-            'methodName' => $this->getMethodName(),
-            'selectedVersion' => $this->getActiveVersion(),
-            'availableVersions' => $this->getVersions(),
-            'description' => $this->getDescription(),
-            'requestMime' => $this->getRequestMime(),
-            'responseMime' => $this->getResponseMime(),
-            APIMethodInterface::API_INFO_KEY_REQUEST_TIME => $this->getRequestTime()->getISODate(true)
-        );
+        return new APIInfo($this);
     }
 
     final protected function processExit() : never
