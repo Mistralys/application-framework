@@ -123,7 +123,13 @@ class QuickNavigation implements Application_Interfaces_Loggable
 
     public function getActiveContainer() : ?ScreenItemsContainer
     {
-        return $this->getContainerByScreen(Application_Driver::getInstance()->getActiveScreen());
+        $screen = Application_Driver::getInstance()->getActiveScreen();
+
+        if($screen !== null) {
+            return $this->getContainerByScreen($screen);
+        }
+
+        return null;
     }
 
     private function requireContainerByScreen(AdminScreenInterface $screen) : ScreenItemsContainer

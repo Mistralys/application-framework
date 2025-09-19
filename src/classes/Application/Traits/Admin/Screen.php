@@ -851,7 +851,7 @@ trait Application_Traits_Admin_Screen
         $this->active = false;
         
         $mine = $this->getURLPath();
-        $current = $this->driver->getActiveScreen()->getURLPath();
+        $current = $this->driver->requireActiveScreen()->getURLPath();
         
         $this->active = substr($current, 0, strlen($mine)) === $mine;
         

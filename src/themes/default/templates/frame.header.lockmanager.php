@@ -5,7 +5,7 @@
     $lockManager = $this->page->getLockManager();
     $screen = $this->page->getActiveScreen();
     
-    if(!$lockManager || !$screen->isLockable())
+    if(!$lockManager || !$screen instanceof Application_Interfaces_Admin_LockableScreen || !$screen->isLockable())
     {
         return;
     }

@@ -33,6 +33,6 @@ trait ScreenAccessTrait
             return $this;
         }
 
-        return Application_Driver::getInstance()->getActiveScreen();
+        return Application_Driver::getInstance()->requireActiveScreen();
     }
 }

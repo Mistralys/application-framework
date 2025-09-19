@@ -105,7 +105,7 @@ trait HiddenVariablesTrait
     public function addHiddenScreenVars() : self
     {
         return $this->addHiddenVars(Application_Driver::getInstance()
-            ->getActiveScreen()
+            ->requireActiveScreen()
             ->getPageParams()
         );
     }

@@ -47,7 +47,21 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getActiveArea() : Application_Admin_Area;
 
-    public function getActiveScreen() : AdminScreenInterface;
+    /**
+     * Gets the active admin screen, if any.
+     *
+     * For example, this may return null when the
+     * application is not running in UI mode.
+     *
+     * @return AdminScreenInterface|null
+     */
+    public function getActiveScreen() : ?AdminScreenInterface;
+
+    /**
+     * Gets the active admin screen, throwing an exception if none is active.
+     * @return AdminScreenInterface
+     */
+    public function requireActiveScreen() : AdminScreenInterface;
 
     public function getPage() : ?UI_Page;
 
