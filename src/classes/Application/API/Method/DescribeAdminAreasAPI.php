@@ -30,8 +30,8 @@ class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterfa
     use RequestRequestTrait;
 
     public const string METHOD_NAME = 'DescribeAdminAreas';
-    public const string VERSION_1_0_0 = '1.0.0';
-    public const string CURRENT_VERSION = self::VERSION_1_0_0;
+    public const string VERSION_1_0 = '1.0';
+    public const string CURRENT_VERSION = self::VERSION_1_0;
 
     public function getMethodName(): string
     {
@@ -41,7 +41,7 @@ class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterfa
     public function getVersions(): array
     {
         return array(
-            self::VERSION_1_0_0
+            self::VERSION_1_0
         );
     }
 
