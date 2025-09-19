@@ -870,14 +870,14 @@ class UI
     }
 
     /**
-     * Creates a new template instance for the specified template ID.
+     * Creates a new template instance for the specified template ID or class name.
      *
-     * @param string $templateID
+     * @param string|class-string<UI_Page_Template> $templateIDOrClass
      * @return UI_Page_Template
      */
-    public function createTemplate(string $templateID) : UI_Page_Template
+    public function createTemplate(string $templateIDOrClass) : UI_Page_Template
     {
-        return $this->getPage()->createTemplate($templateID);
+        return $this->getPage()->createTemplate($templateIDOrClass);
     }
 
     public static function string() : UI_StringBuilder
@@ -1177,15 +1177,16 @@ class UI
         $this->addStylesheet('ui-progressbar.css');
     }
     
-    public function addBootstrap() : void
+    public function addBootstrap() : self
     {
         $this->addStylesheet('bootstrap.min.css', 'all', 8000);
         $this->addJavascript('bootstrap.min.js', 8800);
+        return $this;
     }
     
-    public const FONT_AWESOME_URL = 'https://use.fontawesome.com/releases/v5.15.4/css/all.css';
+    public const string FONT_AWESOME_URL = 'https://use.fontawesome.com/releases/v5.15.4/css/all.css';
     
-    public function addFontAwesome() : void
+    public function addFontAwesome() : self
     {
         $this->addStylesheet(self::FONT_AWESOME_URL);
         
@@ -1193,21 +1194,27 @@ class UI
         // do not work. See here for information and possible fixes:
         // https://fontawesome.com/how-to-use/svg-with-js#with-jquery
         //$this->addJavascript('https://use.fontawesome.com/releases/v5.0.8/js/all.js', null, true);
+
+        return $this;
     }
     
-    public function addJqueryUI() : void
+    public function addJqueryUI() : self
     {
         $this->addStylesheet('jquery-ui.min.css', 'screen', 9000);
         $this->addJavascript('jquery-ui.min.js', 8900);
         $this->addJavascript('jquery-ui-timepicker.js', 8600);
+
+        return $this;
     }
     
-    public function addJquery() : void
+    public function addJquery() : self
     {
         $prio = 9000;
 
         $this->addJavascript('jquery.min.js', $prio);
         $this->addJavascript('jquery-custom-extensions.js', $prio-1);
+
+        return $this;
     }
     
     /**
