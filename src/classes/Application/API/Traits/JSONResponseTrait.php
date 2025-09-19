@@ -48,7 +48,7 @@ trait JSONResponseTrait
 
     private function sendJSONResponse(string $state, array $data) : void
     {
-        $data[JSONResponseInterface::RESPONSE_KEY_API] = $this->getAPIData();
+        $data[JSONResponseInterface::RESPONSE_KEY_API] = $this->getInfo()->toArray();
         $data[JSONResponseInterface::RESPONSE_KEY_STATE] = $state;
 
         ksort($data);
