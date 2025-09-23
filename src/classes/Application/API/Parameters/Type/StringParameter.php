@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Type;
 
+use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 use Application\API\Parameters\Validation\Type\RegexValidation;
 use AppUtils\RegexHelper;
-use AppUtils\Request\RequestParam;
 
 /**
  * @method string getValue()
@@ -25,10 +25,32 @@ class StringParameter extends BaseAPIParameter
      * @param string $default
      * @return $this
      */
-    public function setDefaultValue(string $default) : self
+    public function setDefaultValue(mixed $default) : self
     {
-        $this->defaultValue = $default;
+        $this->defaultValue = $this->requireValidType($default);
+
         return $this;
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     * @throws APIParameterException
+     */
+    private function requireValidType(mixed $value) : string
+    {
+        if(is_string($value)) {
+            return $value;
+        }
+
+        throw new APIParameterException(
+            'Invalid default value.',
+            sprintf(
+                'Expected a string, given: [%s].',
+                gettype($value)
+            ),
+            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+        );
     }
 
     public function addValidationAlnum() : self
@@ -56,10 +78,16 @@ class StringParameter extends BaseAPIParameter
         return $this->addValidation(new RegexValidation($regex));
     }
 
-    protected function resolveValue(): int|float|bool|string|array|null
+    protected function resolveValue(): ?string
     {
-        return $this
+        $value = $this
             ->getRequestParam()
             ->getString();
+
+        if($value !== '') {
+            return $value;
+        }
+
+        return null;
     }
 }

@@ -29,6 +29,13 @@ interface APIParameterInterface
 
     public function getDefaultValue() : int|string|float|bool|array|null;
     public function getValue() : int|float|bool|string|array|null;
+
+    /**
+     * @param mixed $default
+     * @return $this
+     */
+    public function setDefaultValue(mixed $default) : self;
+
     public function getDescription(): string;
     public function hasDescription(): bool;
     public function setDescription(string|StringableInterface $description): self;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Type;
 
+use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 
 /**
@@ -19,13 +20,32 @@ class IntegerParameter extends BaseAPIParameter
     }
 
     /**
-     * @param int $default
+     * @param int|float|string $default
      * @return $this
      */
-    public function setDefaultValue(int $default) : self
+    public function setDefaultValue(mixed $default) : self
     {
-        $this->defaultValue = $default;
+        $this->requireValidType($default);
+
+        $this->defaultValue = (int)$default;
+
         return $this;
+    }
+
+    private function requireValidType(mixed $value) : void
+    {
+        if(is_numeric($value)) {
+            return;
+        }
+
+        throw new APIParameterException(
+            'Invalid default value.',
+            sprintf(
+                'Expected a numeric value, given: [%s].',
+                gettype($value)
+            ),
+            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+        );
     }
 
     protected function resolveValue(): ?int

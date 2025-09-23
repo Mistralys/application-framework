@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Type;
 
+use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 use AppUtils\ConvertHelper;
 
@@ -16,6 +17,8 @@ use AppUtils\ConvertHelper;
  *
  * @package API
  * @subpackage Parameters
+ *
+ * @method int[] getValue()
  */
 class IDListParameter extends BaseAPIParameter
 {
@@ -33,14 +36,14 @@ class IDListParameter extends BaseAPIParameter
     }
 
     /**
-     * @param array<int|string,int|float|string> $default
+     * @param array<int|string,int|float|string>|string $default An array of IDs or a comma-separated string of IDs.
      * @return $this
      */
-    public function setDefaultValue(array $default) : self
+    public function setDefaultValue(mixed $default) : self
     {
         $this->defaultValue = array();
 
-        foreach($default as $id)
+        foreach($this->requireValidType($default) as $id)
         {
             if(!is_numeric($id)) {
                 continue;
@@ -50,6 +53,31 @@ class IDListParameter extends BaseAPIParameter
         }
 
         return $this;
+    }
+
+    /**
+     * @param mixed $value
+     * @return array<int|string,mixed>
+     * @throws APIParameterException
+     */
+    private function requireValidType(mixed $value) : array
+    {
+        if(is_array($value)) {
+            return $value;
+        }
+
+        if(is_string($value)) {
+            return ConvertHelper::explodeTrim(',', $value);
+        }
+
+        throw new APIParameterException(
+            'Invalid default value.',
+            sprintf(
+                'Expected an array, given: [%s].',
+                gettype($value)
+            ),
+            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+        );
     }
 
     /**
