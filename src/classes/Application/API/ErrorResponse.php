@@ -45,7 +45,7 @@ class ErrorResponse
      * @param mixed ...$args
      * @return $this
      */
-    public function setMessage(string $message, ...$args) : self
+    public function setErrorMessage(string $message, ...$args) : self
     {
         $this->message = sprintf($message, ...$args);
         return $this;
@@ -54,6 +54,15 @@ class ErrorResponse
     public function getErrorMessage(): string
     {
         return $this->message;
+    }
+
+    public function appendErrorMessage(string $message, ...$args) : void
+    {
+        if($this->message !== '') {
+            $this->message .= ' ';
+        }
+
+        $this->message .= ltrim(sprintf($message, ...$args));
     }
 
     public function getErrorCode(): int
