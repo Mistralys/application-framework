@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Traits;
 
 use Application\API\ErrorResponse;
+use Application\API\Parameters\Validation\ParamValidationResults;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
 
@@ -55,5 +56,17 @@ trait JSONResponseTrait
 
         header('Content-Type: application/json');
         echo JSONConverter::var2json($data);
+    }
+
+    protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results) : void
+    {
+        $response->appendErrorMessage(sprintf(
+            'Details are available in the response %s key.',
+            JSONResponseInterface::RESPONSE_KEY_DATA
+        ));
+
+        $response->addData(array(
+            JSONResponseInterface::RESPONSE_KEY_DATA => $results->serializeErrors()
+        ));
     }
 }
