@@ -31,10 +31,10 @@ use Throwable;
  */
 class ResponseSerializer
 {
-    public const KEY_STATUS_CODE = 'statusCode';
-    public const KEY_STATUS_MESSAGE = 'statusMessage';
-    public const KEY_BODY = 'body';
-    public const KEY_REQUEST = 'request';
+    public const string KEY_STATUS_CODE = 'statusCode';
+    public const string KEY_STATUS_MESSAGE = 'statusMessage';
+    public const string KEY_BODY = 'body';
+    public const string KEY_REQUEST = 'request';
 
     public static function serialize(Connectors_Response $response) : string
     {
