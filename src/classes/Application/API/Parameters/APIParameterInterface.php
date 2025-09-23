@@ -27,8 +27,8 @@ interface APIParameterInterface
     public function isRequired(): bool;
     public function getLabel(): string;
 
-    public function getDefaultValue() : int|string|float|bool|array;
-    public function getValue() : int|float|bool|string|array;
+    public function getDefaultValue() : int|string|float|bool|array|null;
+    public function getValue() : int|float|bool|string|array|null;
     public function getDescription(): string;
     public function hasDescription(): bool;
     public function setDescription(string|StringableInterface $description): self;

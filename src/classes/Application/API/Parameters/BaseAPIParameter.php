@@ -7,6 +7,7 @@ namespace Application\API\Parameters;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\Validation\Type\CallbackValidation;
 use Application\API\Parameters\Validation\Type\EnumValidation;
+use Application\API\Parameters\Validation\Type\RequiredValidation;
 use Application\AppFactory;
 use Application_Request;
 use AppUtils\Interfaces\StringableInterface;
@@ -56,16 +57,8 @@ abstract class BaseAPIParameter implements APIParameterInterface
             ->getRequest()
             ->registerParam($this->getName());
 
-        $this->configureParam($this->param);
-
-        if(isset($this->validations)) {
-            $this->validations->configureParam($this->param);
-        }
-
         return $this->param;
     }
-
-    abstract protected function configureParam(RequestParam $param) : void;
 
     public function getLabel(): string
     {
@@ -118,31 +111,41 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->addValidation(new EnumValidation(array_values($values)));
     }
 
-    public function getValue() : int|float|bool|string|array
+    public function getValue() : int|float|bool|string|array|null
     {
         if(isset($this->value)) {
             return $this->value;
         }
 
-        $this->value = $this->getDefaultValue();
-
         $value = $this->resolveValue();
 
-        if(!$this->checkIsEmpty($value)) {
-            return $this->value;
+        if($this->validate($value)) {
+            $this->value = $value;
+        } else {
+            $this->value = $this->getDefaultValue();
         }
 
-        foreach($this->validations as $validation) {
-            $result = $validation->validate($value);
-            if(!$result->isValid()) {
-                $this->result = $result;
-                return $this->value;
+        return $this->value;
+    }
+
+    private function validate(int|float|bool|string|array $value) : bool
+    {
+        // If the parameter is required, prepend the required validation.
+        if($this->isRequired()) {
+            array_unshift($this->validations, new RequiredValidation());
+        }
+
+        foreach($this->validations as $validation)
+        {
+            $validation->validate($value, $this->result);
+
+            if(!$this->result->isValid()) {
+                // Stop processing on first error
+                return false;
             }
         }
 
-        $this->value = $value;
-
-        return $this->value;
+        return true;
     }
 
     public function getValidationResult(): OperationResult
@@ -156,22 +159,6 @@ abstract class BaseAPIParameter implements APIParameterInterface
     public function isValid() : bool
     {
         return $this->getValidationResult()->isValid();
-    }
-
-    private function checkIsEmpty(mixed $value) : bool
-    {
-        if(empty($value) && $value !== 0 && $value !== '0' && $value !== false)
-        {
-            $this->value = $this->getDefaultValue();
-
-            if($this->isRequired()) {
-                $this->result->makeError('Parameter is required.');
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     /**
