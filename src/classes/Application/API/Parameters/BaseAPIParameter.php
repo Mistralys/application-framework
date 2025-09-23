@@ -22,7 +22,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
     protected string $description = '';
     private string $name;
     private static ?Application_Request $request = null;
-    private OperationResult $result;
+    protected OperationResult $result;
 
     public function __construct(string $name, string $label)
     {
@@ -130,11 +130,17 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
     private function validate(int|float|bool|string|array $value) : bool
     {
+        // The result may already contain errors from value resolution.
+        if(!$this->result->isValid()) {
+            return false;
+        }
+
         // If the parameter is required, prepend the required validation.
         if($this->isRequired()) {
             array_unshift($this->validations, new RequiredValidation());
         }
 
+        // Run through all validations
         foreach($this->validations as $validation)
         {
             $validation->validate($value, $this->result);
