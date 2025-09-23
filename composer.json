@@ -66,7 +66,7 @@
     "psr/log": ">=1.1.0",
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
-    "mistralys/application-utils": ">=3.1.6",
+    "mistralys/application-utils": ">=3.1.10",
     "mistralys/application-utils-core": ">=2.3.13",
     "mistralys/application-utils-collections": ">=1.1.6",
     "mistralys/application-utils-image": ">=1.2.0",
