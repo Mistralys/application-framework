@@ -10,9 +10,12 @@ use Application\API\APIInfo;
 use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
 use Application\API\ErrorResponse;
+use Application\API\Parameters\APIParamManager;
+use Application\API\Parameters\ParamTypeSelector;
+use Application\API\Parameters\Validation\ParamValidationResults;
 use Application\API\Traits\JSONRequestInterface;
 use Application\API\APIManager;
-use Application_API_Parameter;
+use Application\API\Traits\JSONResponseInterface;
 use Application_CORS;
 use Application_Driver;
 use Application_Exception;
@@ -20,6 +23,7 @@ use Application_Interfaces_Loggable;
 use Application_Request;
 use Application_Traits_Loggable;
 use AppUtils\ArrayDataCollection;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
 use AppUtils\Request\RequestParam;
 use Throwable;
@@ -46,6 +50,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->version = $this->getCurrentVersion();
         $this->logIdentifier = sprintf('APIMethod [%s] | [v%s]', $this->getMethodName(), $this->version);
 
+        $this->initReservedParams();
         $this->init();
     }
 
@@ -115,7 +120,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         } catch (Throwable $e) {
             $this->errorResponse(APIMethodInterface::ERROR_REQUEST_DATA_EXCEPTION)
                 ->makeInternalServerError()
-                ->setMessage('Failed collecting request data: %s', $e->getMessage())
+                ->setErrorMessage('Failed collecting request data: %s', $e->getMessage())
                 ->send();
         }
 
@@ -126,7 +131,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         } catch (Throwable $e) {
             $this->errorResponse(APIMethodInterface::ERROR_RESPONSE_DATA_EXCEPTION)
                 ->makeInternalServerError()
-                ->setMessage('Failed collecting response data: %s', $e->getMessage())
+                ->setErrorMessage('Failed collecting response data: %s', $e->getMessage())
                 ->send();
         }
 
@@ -136,67 +141,44 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     /**
      * Used to give a method the opportunity to configure request
      * parameters before it is processed. Note: use the
-     * {@link registerParam()} method to register parameters.
-     *
-     * @see registerParam()
+     * {@see self::addParam()} method to add parameters.
      */
     abstract protected function init() : void;
 
-    /**
-     * List of reserved API Method request parameters.
-     * @var string[]
-     */
-    protected array $reservedParams = array(
-        APIMethodInterface::REQUEST_PARAM_METHOD,
-        APIMethodInterface::REQUEST_PARAM_API_VERSION
-    );
-
     protected array $params = array();
 
-    /**
-     * Registers an API parameter: this is used to be able to create
-     * the reflection and methods discovery feature. Returns the request
-     * parameter object which can then be used to specify the parameter's
-     * validation method.
-     *
-     * Example:
-     *
-     * registerParam('myparam', 'My Parameter')->setInteger();
-     *
-     * @param string $name
-     * @param string $label
-     * @param string $description
-     * @return RequestParam
-     */
-    protected function registerParam($name, $label, $required = false, $description = null)
+    private ?APIParamManager $paramManager = null;
+
+    public function manageParams() : APIParamManager
     {
-        if (in_array($name, $this->reservedParams)) {
-            throw new Application_Exception(
-                'Tried registering a reserved parameter',
-                sprintf(
-                    'The parameter [%1$s] is a reserved parameter, method [%2$s] may not register it for itself.',
-                    $name,
-                    $this->getID()
-                )
-            );
+        if(!isset($this->paramManager)) {
+            $this->paramManager = new APIParamManager($this);
         }
 
-        if (isset($this->params[$name])) {
-            throw new Application_Exception(
-                'Duplicate parameters',
-                sprintf(
-                    'Cannot register the same parameter [%1$s] again for method [%2$s].',
-                    $name,
-                    $this->getID()
-                )
-            );
-        }
+        return $this->paramManager;
+    }
 
-        $rparam = $this->request->registerParam($name);
-        $param = new Application_API_Parameter($rparam, $label, $required, $description);
-        $this->params[$name] = $param;
+    protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
+    {
+        return $this->manageParams()->add($name, $label);
+    }
 
-        return $rparam;
+    private function initReservedParams() : void
+    {
+        $this->addParam(APIMethodInterface::REQUEST_PARAM_METHOD, 'Method')
+            ->string()
+            ->addValidationCallback(array(APIManager::getInstance()->getMethodIndex(), 'methodExists'))
+            ->setDescription('The name of the API method to call.')
+            ->makeRequired();
+
+        $this->addParam(APIMethodInterface::REQUEST_PARAM_API_VERSION, 'API Version')
+            ->string()
+            ->setDescription(
+                'The version of the API to use for this request. If not provided, the current version (v%1$s) will be used. Supported versions are: %2$s',
+                $this->getCurrentVersion(),
+                implode(', ', $this->getVersions())
+            )
+            ->addValidationEnum($this->getVersions());
     }
 
     /**
@@ -215,26 +197,25 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     /**
      * Validates the parameters of the method to make sure all required
      * request parameters are present and valid.
-     *
-     * @throws Application_Exception
      */
     protected function validate(): void
     {
-        /* @var $param Application_API_Parameter */
+        $results = $this->manageParams()->validateAll();
 
-        foreach ($this->params as $param) {
-            if ($param->isRequired() && !$this->request->hasParam($param->getName())) {
-                throw new Application_Exception(
-                    'Missing parameter',
-                    sprintf(
-                        'The parameter [%1$s] is required for the method [%2$s].',
-                        $param->getName(),
-                        $this->getID()
-                    )
-                );
-            }
+        if($results->isValid()) {
+            return;
         }
+
+        $response = $this->errorResponse(APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS)
+            ->makeBadRequest()
+            ->setErrorMessage('One or more request parameters are invalid.');
+
+        $this->configureValidationErrorResponse($response, $results);
+
+        $response->send();
     }
+
+    abstract protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results) : void;
 
     protected function isSimulation(): bool
     {
@@ -255,7 +236,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         }
 
         $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
-            ->setMessage('Failed to read request input data.')
+            ->setErrorMessage('Failed to read request input data.')
             ->send();
     }
 
