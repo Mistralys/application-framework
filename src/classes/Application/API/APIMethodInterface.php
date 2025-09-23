@@ -23,11 +23,14 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
 {
     public const int ERROR_REQUEST_DATA_EXCEPTION = 183001;
     public const int ERROR_RESPONSE_DATA_EXCEPTION = 183002;
+    public const int ERROR_INVALID_REQUEST_PARAMS = 183003;
 
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 
-    public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'RequestData';
+    public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
+    public const string RESPONSE_KEY_ERROR_PARAM_DETAILS = 'validationErrors';
+
 
     public function getInfo() : APIInfo;
     public function getMethodName() : string;
