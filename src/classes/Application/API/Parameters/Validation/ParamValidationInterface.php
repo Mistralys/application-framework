@@ -8,5 +8,10 @@ use AppUtils\OperationResult;
 
 interface ParamValidationInterface
 {
+    public const int VALIDATION_NON_NUMERIC_ID = 183501;
+    public const int VALIDATION_INVALID_VALUE_TYPE = 183502;
+    public const int VALIDATION_INVALID_JSON_DATA = 183503;
+    public const int VALIDATION_INVALID_FORMAT_BY_REGEX = 183504;
+
     public function validate(int|float|bool|string|array $value, OperationResult $result) : void;
 }
