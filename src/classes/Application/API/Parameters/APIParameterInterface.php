@@ -46,7 +46,7 @@ interface APIParameterInterface
      * @param ParamValidationInterface $validation
      * @return $this
      */
-    public function addValidation(ParamValidationInterface $validation) : self;
+    public function validateBy(ParamValidationInterface $validation) : self;
 
     /**
      * Call a custom callback to validate the parameter value.
@@ -54,15 +54,15 @@ interface APIParameterInterface
      * If the value is invalid, the callback must call {@see OperationResult::makeError()}
      * on the provided result object.
      *
-     * @param callable(int|float|bool|string|array $value, OperationResult $result, ...$args) : void $callback
+     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
      * @param mixed ...$args Additional arguments to pass to the callback after the value and OperationResult.
      * @return self
      */
-    public function addValidationCallback(callable $callback, ...$args) : self;
+    public function validateByCallback(callable $callback, ...$args) : self;
 
     /**
      * @param array<int,int|float|string|bool|array> $values
      * @return $this
      */
-    public function addValidationEnum(array $values) : self;
+    public function validateByEnum(array $values) : self;
 }
