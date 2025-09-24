@@ -13,6 +13,7 @@ use Application\AppFactory;
 use Application_Request;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
+use AppUtils\OperationResult_Collection;
 use AppUtils\Request\RequestParam;
 
 abstract class BaseAPIParameter implements APIParameterInterface
@@ -23,13 +24,13 @@ abstract class BaseAPIParameter implements APIParameterInterface
     protected string $description = '';
     private string $name;
     private static ?Application_Request $request = null;
-    protected OperationResult $result;
+    protected OperationResult_Collection $result;
 
     public function __construct(string $name, string $label)
     {
         $this->name = $name;
         $this->label = $label;
-        $this->result = new OperationResult($this);
+        $this->result = new OperationResult_Collection($this);
     }
 
     public function getName(): string
@@ -169,7 +170,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return true;
     }
 
-    public function getValidationResult(): OperationResult
+    public function getValidationResult(): OperationResult_Collection
     {
         // Ensure value is resolved and validations are run
         $this->getValue();
