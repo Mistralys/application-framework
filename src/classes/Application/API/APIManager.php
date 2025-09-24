@@ -65,7 +65,7 @@ class APIManager
         return self::$instance;
     }
 
-    private ?APIURLs $adminURLs = null;
+    private ?APIUrls $adminURLs = null;
 
     public function adminURL() : APIUrls
     {
