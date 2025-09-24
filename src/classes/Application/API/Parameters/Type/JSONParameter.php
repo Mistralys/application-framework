@@ -11,7 +11,7 @@ use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 
 
 /**
- * @method array getValue()
+ * @method array<int|string,mixed>|string getValue()
  */
 class JSONParameter extends BaseAPIParameter
 {
@@ -43,7 +43,12 @@ class JSONParameter extends BaseAPIParameter
         return null;
     }
 
-    private function convertJSON(string $json) : ?array
+    /**
+     * @param string $json
+     * @return array<int|string,mixed>
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_DEFAULT_VALUE}
+     */
+    private function convertJSON(string $json) : array
     {
         try
         {
@@ -73,6 +78,11 @@ class JSONParameter extends BaseAPIParameter
         return $this;
     }
 
+    /**
+     * @param mixed $value
+     * @return string|array<int|string,mixed>
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_DEFAULT_VALUE}
+     */
     private function requireValidType(mixed $value) : string|array
     {
         if(is_string($value) || is_array($value)) {
