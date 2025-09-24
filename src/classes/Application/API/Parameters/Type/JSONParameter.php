@@ -6,20 +6,20 @@ namespace Application\API\Parameters\Type;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
+use Application\API\Parameters\Validation\ParamValidationInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 
 
 /**
- * @method array<int|string,mixed>|string getValue()
+ * @method array<int|string,mixed>|null getValue()
  */
 class JSONParameter extends BaseAPIParameter
 {
-    public const int VALIDATION_INVALID_JSON_VALUE = 183105;
 
-    private array $defaultValue = array();
+    private ?array $defaultValue = null;
 
-    public function getDefaultValue(): array
+    public function getDefaultValue(): ?array
     {
         return $this->defaultValue;
     }
@@ -28,7 +28,17 @@ class JSONParameter extends BaseAPIParameter
     {
         $value = $this->getRequestParam()->get();
 
-        if(!is_string($value)) {
+        if(empty($value)) {
+            return null;
+        }
+
+        if(!is_string($value))
+        {
+            $this->result->makeWarning(
+                'The JSON value must be a string.',
+                ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
+            );
+
             return null;
         }
 
@@ -36,7 +46,7 @@ class JSONParameter extends BaseAPIParameter
         catch (JSONConverterException) {
             $this->result->makeError(
                 'The given value is not valid JSON.',
-                self::VALIDATION_INVALID_JSON_VALUE
+                ParamValidationInterface::VALIDATION_INVALID_JSON_DATA
             );
         }
 
@@ -80,12 +90,12 @@ class JSONParameter extends BaseAPIParameter
 
     /**
      * @param mixed $value
-     * @return string|array<int|string,mixed>
+     * @return string|array<int|string,mixed>|null
      * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_DEFAULT_VALUE}
      */
-    private function requireValidType(mixed $value) : string|array
+    private function requireValidType(mixed $value) : string|array|null
     {
-        if(is_string($value) || is_array($value)) {
+        if($value === null || is_string($value) || is_array($value)) {
             return $value;
         }
 

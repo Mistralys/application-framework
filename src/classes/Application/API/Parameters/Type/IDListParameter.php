@@ -10,6 +10,7 @@ namespace Application\API\Parameters\Type;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
+use Application\API\Parameters\Validation\ParamValidationInterface;
 use AppUtils\ConvertHelper;
 
 /**
@@ -86,7 +87,20 @@ class IDListParameter extends BaseAPIParameter
     protected function resolveValue(): array|null
     {
         $value = $this->getRequestParam()->get();
+
+        if($value === null) {
+            return null;
+        }
+
+        if(is_numeric($value)) {
+            $value = (string)$value;
+        }
+
         if(!is_array($value) && !is_string($value)) {
+            $this->result->makeWarning(
+                'Ignoring non-array, non-string ID list value.',
+                ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
+            );
             return null;
         }
 
@@ -98,6 +112,10 @@ class IDListParameter extends BaseAPIParameter
         foreach($value as $id)
         {
             if(!is_numeric($id)) {
+                $this->result->makeWarning(
+                    sprintf('Ignoring non-numeric ID value: [%s]', toString($id)),
+                    ParamValidationInterface::VALIDATION_NON_NUMERIC_ID
+                );
                 continue;
             }
 
