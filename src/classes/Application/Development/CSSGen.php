@@ -30,10 +30,10 @@ use UI;
  */
 class CSSGen extends BaseStringPrimaryCollection
 {
-    public const LOCATION_FRAMEWORK = 'default';
-    public const LOCATION_DRIVER = 'driver';
-    public const CSS_TEMPLATE_EXTENSION = 'csst';
-    public const FOLDER_PROPERTY_BASE_FOLDER = 'baseFolder';
+    public const string LOCATION_FRAMEWORK = 'default';
+    public const string LOCATION_DRIVER = 'driver';
+    public const string CSS_TEMPLATE_EXTENSION = 'csst';
+    public const string FOLDER_PROPERTY_BASE_FOLDER = 'baseFolder';
 
     private static ?CSSGen $instance = null;
 
@@ -95,7 +95,7 @@ class CSSGen extends BaseStringPrimaryCollection
             $theme->getDriverStylesheetsPath()
         );
 
-        usort($this->locations, static function(CSSGenLocation $a, CSSGenLocation $b) : int {
+        uasort($this->locations, static function(CSSGenLocation $a, CSSGenLocation $b) : int {
             return strnatcasecmp($a->getLabel(), $b->getLabel());
         });
     }
