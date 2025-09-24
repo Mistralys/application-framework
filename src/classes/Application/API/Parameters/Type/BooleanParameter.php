@@ -9,7 +9,7 @@ use Application\API\Parameters\BaseAPIParameter;
 use AppUtils\ConvertHelper;
 
 /**
- * @method bool getValue()
+ * @method bool|null getValue()
  */
 class BooleanParameter extends BaseAPIParameter
 {

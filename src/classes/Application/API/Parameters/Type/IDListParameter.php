@@ -18,7 +18,7 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @method int[] getValue()
+ * @method int[]|null getValue()
  */
 class IDListParameter extends BaseAPIParameter
 {

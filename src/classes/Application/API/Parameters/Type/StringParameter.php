@@ -10,7 +10,7 @@ use Application\API\Parameters\Validation\Type\RegexValidation;
 use AppUtils\RegexHelper;
 
 /**
- * @method string getValue()
+ * @method string|null getValue()
  */
 class StringParameter extends BaseAPIParameter
 {
@@ -70,21 +70,21 @@ class StringParameter extends BaseAPIParameter
             $regex = RegexHelper::REGEX_ALIAS_CAPITALS;
         }
 
-        return $this->addValidation(new RegexValidation($regex));
+        return $this->validateBy(new RegexValidation($regex));
     }
 
     public function addValidationRegex(string $regex) : self
     {
-        return $this->addValidation(new RegexValidation($regex));
+        return $this->validateBy(new RegexValidation($regex));
     }
 
     protected function resolveValue(): ?string
     {
         $value = $this
             ->getRequestParam()
-            ->getString();
+            ->get();
 
-        if($value !== '') {
+        if(is_string($value) && $value !== '') {
             return $value;
         }
 

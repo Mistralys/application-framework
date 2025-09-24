@@ -8,7 +8,7 @@ use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 
 /**
- * @method int getValue()
+ * @method int|null getValue()
  */
 class IntegerParameter extends BaseAPIParameter
 {
