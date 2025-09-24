@@ -27,7 +27,7 @@ trait JSONResponseTrait
 
     protected function _sendSuccessResponse(ArrayDataCollection $data) : void
     {
-        $this->sendJSONResponse(
+        $this->_sendJSONData(
             JSONResponseInterface::RESPONSE_STATE_SUCCESS,
             array(
                 JSONResponseInterface::RESPONSE_KEY_DATA => $data->getData()
@@ -37,7 +37,7 @@ trait JSONResponseTrait
 
     protected function _sendErrorResponse(ErrorResponse $response) : void
     {
-        $this->sendJSONResponse(
+        $this->_sendJSONData(
             JSONResponseInterface::RESPONSE_STATE_ERROR,
             array(
                 JSONResponseInterface::RESPONSE_KEY_CODE => $response->getErrorCode(),
@@ -47,7 +47,7 @@ trait JSONResponseTrait
         );
     }
 
-    private function sendJSONResponse(string $state, array $data) : void
+    private function _sendJSONData(string $state, array $data) : void
     {
         $data[JSONResponseInterface::RESPONSE_KEY_API] = $this->getInfo()->toArray();
         $data[JSONResponseInterface::RESPONSE_KEY_STATE] = $state;
