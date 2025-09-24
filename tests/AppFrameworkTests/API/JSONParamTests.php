@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTests\Application;
+namespace AppFrameworkTests\API;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\Type\JSONParameter;
