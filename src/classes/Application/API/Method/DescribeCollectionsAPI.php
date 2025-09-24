@@ -32,6 +32,7 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
     public const string METHOD_NAME = 'DescribeCollections';
     public const string VERSION_1_0 = '1.0';
     public const string CURRENT_VERSION = self::VERSION_1_0;
+    public const string RESPONSE_KEY_COLLECTIONS = 'collections';
 
     public function getMethodName(): string
     {
@@ -53,10 +54,8 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
     public function getDescription(): string
     {
         return <<<'MARKDOWN'
-Compiles information about all DBHelper collections that are in use in the application,
-and returns it as a JSON object.
+Compiles information about all DBHelper collections that are in use in the application.
 MARKDOWN;
-
     }
 
     protected function init(): void
@@ -98,7 +97,7 @@ MARKDOWN;
             }
         }
 
-        $this->sendJSONResponse($collections);
+        $response->setKey(self::RESPONSE_KEY_COLLECTIONS, $collections);
     }
 
     protected function resolveCollectionClasses(string $file): array
@@ -114,9 +113,9 @@ MARKDOWN;
 
         $found = array();
 
-        for ($i = 0; $i < count($matches[0]); $i++) {
+        for ($i = 0, $iMax = count($matches[0]); $i < $iMax; $i++) {
             // ignore it if there is an abstract flag, it cannot be instantiated like this 
-            if (stristr($matches[1][$i], 'abstract')) {
+            if (stripos($matches[1][$i], 'abstract') !== false) {
                 continue;
             }
 
