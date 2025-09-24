@@ -35,7 +35,7 @@ class ValueExistsCallbackValidation extends BaseParamValidation
         $this->callback = $callback;
     }
 
-    public function validate(float|int|bool|array|string $value, OperationResult $result): void
+    public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
     {
         $callback = $this->callback;
 

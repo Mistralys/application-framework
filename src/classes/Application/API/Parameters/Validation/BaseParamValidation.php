@@ -8,5 +8,5 @@ use AppUtils\OperationResult;
 
 abstract class BaseParamValidation implements ParamValidationInterface
 {
-    abstract public function validate(int|float|bool|string|array $value, OperationResult $result) : void;
+    abstract public function validate(int|float|bool|string|array|null $value, OperationResult $result) : void;
 }

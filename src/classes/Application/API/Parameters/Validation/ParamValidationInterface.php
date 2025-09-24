@@ -13,6 +13,7 @@ interface ParamValidationInterface
     public const int VALIDATION_INVALID_JSON_DATA = 183503;
     public const int VALIDATION_INVALID_FORMAT_BY_REGEX = 183504;
     public const int VALIDATION_WARNING_FLOAT_TO_INT = 183505;
+    public const int VALIDATION_EMPTY_REQUIRED_PARAM = 183506;
 
-    public function validate(int|float|bool|string|array $value, OperationResult $result) : void;
+    public function validate(int|float|bool|string|array|null $value, OperationResult $result) : void;
 }

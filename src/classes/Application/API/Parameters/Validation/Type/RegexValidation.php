@@ -17,7 +17,7 @@ class RegexValidation extends BaseParamValidation
         $this->regex = $regex;
     }
 
-    public function validate(int|float|bool|string|array $value, OperationResult $result) : void
+    public function validate(int|float|bool|string|array|null $value, OperationResult $result) : void
     {
         if(!is_string($value)) {
             $result->makeError(
