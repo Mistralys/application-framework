@@ -8,6 +8,7 @@ use Application\API\APIMethodInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
+use AppUtils\OperationResult_Collection;
 
 interface APIParameterInterface
 {
@@ -39,7 +40,7 @@ interface APIParameterInterface
     public function getDescription(): string;
     public function hasDescription(): bool;
     public function setDescription(string|StringableInterface $description): self;
-    public function getValidationResult(): OperationResult;
+    public function getValidationResult(): OperationResult_Collection;
     public function isValid() : bool;
 
     /**
