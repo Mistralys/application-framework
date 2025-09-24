@@ -38,7 +38,7 @@ class StringParameter extends BaseAPIParameter
     }
 
     /**
-     * @param string $default
+     * @param string|null $default
      * @return $this
      */
     public function setDefaultValue(mixed $default) : self
@@ -50,12 +50,12 @@ class StringParameter extends BaseAPIParameter
 
     /**
      * @param mixed $value
-     * @return string
+     * @return string|NULL
      * @throws APIParameterException
      */
-    private function requireValidType(mixed $value) : string
+    private function requireValidType(mixed $value) : ?string
     {
-        if(is_string($value)) {
+        if(is_string($value) || $value === null) {
             return $value;
         }
 
@@ -109,7 +109,7 @@ class StringParameter extends BaseAPIParameter
         }
 
         if($value === null || $value === '') {
-            return null;
+            return $this->defaultValue;
         }
 
         $this->result->makeWarning(
