@@ -11,6 +11,7 @@ namespace Application\API;
 use Application_CORS;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
+use AppUtils\Microtime;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -38,6 +39,7 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public function getRequestMime() : string;
     public function getResponseMime() : string;
     public function getDocumentationURL() : AdminURLInterface;
+    public function getRequestTime() : Microtime;
     /**
      * Retrieves an indexed array containing available API
      * version numbers that can be specified to work with.
