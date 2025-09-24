@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Application;
 
-use AppFrameworkTestClasses\ApplicationTestCase;
 use Application\API\Parameters\Type\StringParameter;
+use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 
-final class APITests extends ApplicationTestCase
+final class StringParamTests extends APITestCase
 {
     public function test_paramValidation() : void
     {
@@ -18,12 +18,12 @@ final class APITests extends ApplicationTestCase
         $this->assertSame('bar', $param->getValue());
     }
 
-    protected function setUp(): void
+    public function test_invalidValueInRequest() : void
     {
-        parent::setUp();
+        $_REQUEST['foo'] = 42;
 
-        $_REQUEST = array();
-        $_POST = array();
-        $_GET = array();
+        $param = new StringParameter('foo', 'Foo Label');
+
+        $this->assertNull($param->getValue());
     }
 }
