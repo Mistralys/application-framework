@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package API
+ * @subpackage Parameters
+ */
 
 declare(strict_types=1);
 
@@ -12,6 +16,13 @@ use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 
 
 /**
+ * JSON API Parameter: Accepts a JSON string and converts it to an array.
+ *
+ * > NOTE: If the value is already an array, it will be used as-is.
+ *
+ * @package API
+ * @subpackage Parameters
+ *
  * @method array<int|string,mixed>|null getValue()
  */
 class JSONParameter extends BaseAPIParameter
