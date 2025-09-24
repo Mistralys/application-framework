@@ -18,13 +18,13 @@ class EnumValidation extends BaseParamValidation
     private array $allowedValues = array();
 
     /**
-     * @param array<int,int|float|string|bool> $allowedValues
+     * @param array<int,int|float|string|bool|mixed> $allowedValues
      */
     public function __construct(array $allowedValues)
     {
         foreach($allowedValues as $value)
         {
-            if (is_int($value) || is_float($value) || is_string($value) || is_bool($value)) {
+            if (is_bool($value) || is_int($value) || is_float($value) || is_string($value)) {
                 $this->allowedValues[] = $value;
                 continue;
             }
@@ -51,9 +51,15 @@ class EnumValidation extends BaseParamValidation
                 'Invalid value (using strict typing). '.PHP_EOL.
                 'Allowed values are: '.PHP_EOL.
                 '- %s',
-                implode(PHP_EOL.'- ', array_map(static fn($v) => var_export($v, true), $this->allowedValues)
+                implode(
+                    PHP_EOL.'- ',
+                    array_map(
+                        static fn($v) => var_export($v, true),
+                        $this->allowedValues
+                    )
+                )
             ),
             self::VALIDATION_INVALID_VALUE
-        ));
+        );
     }
 }
