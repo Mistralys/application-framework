@@ -10,7 +10,7 @@ use AppUtils\OperationResult;
 class CallbackValidation extends BaseParamValidation
 {
     /**
-     * @var callable(int|float|bool|string|array $value, OperationResult $result, ...$args) : void
+     * @var (callable(int|float|bool|string|array, OperationResult, mixed...) : void)
      */
     private $callback;
 
@@ -20,7 +20,7 @@ class CallbackValidation extends BaseParamValidation
     private array $args;
 
     /**
-     * @param callable(int|float|bool|string|array $value, OperationResult $result, ...$args) : void $callback
+     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
      * @param mixed ...$args
      */
     public function __construct(callable $callback, ...$args)
