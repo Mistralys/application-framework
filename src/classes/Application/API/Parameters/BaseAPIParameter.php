@@ -8,6 +8,7 @@ use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\Validation\Type\CallbackValidation;
 use Application\API\Parameters\Validation\Type\EnumValidation;
 use Application\API\Parameters\Validation\Type\RequiredValidation;
+use Application\API\Parameters\Validation\Type\ValueExistsCallbackValidation;
 use Application\AppFactory;
 use Application_Request;
 use AppUtils\Interfaces\StringableInterface;
@@ -97,18 +98,32 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
     private int|float|bool|string|array|null $value = null;
 
-    public function addValidationCallback(callable $callback, ...$args) : self
+    /**
+     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
+     * @param mixed ...$args
+     * @return $this
+     */
+    public function validateByCallback(callable $callback, ...$args) : self
     {
-        return $this->addValidation(new CallbackValidation($callback));
+        return $this->validateBy(new CallbackValidation($callback));
+    }
+
+    /**
+     * @param (callable(int|float|bool|string|array|null) : bool) $callback
+     * @return $this
+     */
+    public function validateByValueExistsCallback(callable $callback) : self
+    {
+        return $this->validateBy(new ValueExistsCallbackValidation($callback));
     }
 
     /**
      * @param array<int|string,int|float|string|bool> $values
      * @return $this
      */
-    public function addValidationEnum(array $values) : self
+    public function validateByEnum(array $values) : self
     {
-        return $this->addValidation(new EnumValidation(array_values($values)));
+        return $this->validateBy(new EnumValidation(array_values($values)));
     }
 
     public function getValue() : int|float|bool|string|array|null
@@ -128,7 +143,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->value;
     }
 
-    private function validate(int|float|bool|string|array $value) : bool
+    private function validate(int|float|bool|string|array|null $value) : bool
     {
         // The result may already contain errors from value resolution.
         if(!$this->result->isValid()) {
@@ -172,7 +187,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
      */
     private array $validations = array();
 
-    public function addValidation(ParamValidationInterface $validation) : self
+    public function validateBy(ParamValidationInterface $validation) : self
     {
         $this->validations[] = $validation;
         return $this;

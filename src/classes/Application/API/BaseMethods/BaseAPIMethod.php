@@ -167,7 +167,9 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     {
         $this->addParam(APIMethodInterface::REQUEST_PARAM_METHOD, 'Method')
             ->string()
-            ->addValidationCallback(array(APIManager::getInstance()->getMethodIndex(), 'methodExists'))
+            ->validateByValueExistsCallback(function(mixed $value) : bool{
+                return is_string($value) && APIManager::getInstance()->getMethodIndex()->methodExists($value);
+            })
             ->setDescription('The name of the API method to call.')
             ->makeRequired();
 
@@ -178,7 +180,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
                 $this->getCurrentVersion(),
                 implode(', ', $this->getVersions())
             )
-            ->addValidationEnum($this->getVersions());
+            ->validateByEnum($this->getVersions());
     }
 
     /**
