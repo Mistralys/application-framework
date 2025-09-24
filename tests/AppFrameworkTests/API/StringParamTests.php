@@ -100,4 +100,21 @@ final class StringParamTests extends APITestCase
         $this->assertResultInvalid($param->getValidationResult());
         $this->assertResultHasCode($param->getValidationResult(), ParamValidationInterface::VALIDATION_INVALID_FORMAT_BY_REGEX);
     }
+
+    public function test_defaultWithValidString() : void
+    {
+        $param = new StringParameter('foo', 'Foo Label');
+        $param->setDefaultValue('default string');
+
+        $this->assertSame('default string', $param->getValue());
+    }
+
+    public function test_defaultWithInvalidType() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+
+        $param = new StringParameter('foo', 'Foo Label');
+        $param->setDefaultValue(array());
+    }
 }

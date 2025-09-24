@@ -9,6 +9,7 @@ use Application\API\Parameters\Type\JSONParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
+use stdClass;
 
 final class JSONParamTests extends APITestCase
 {
@@ -69,5 +70,14 @@ final class JSONParamTests extends APITestCase
 
         $param = new JSONParameter('foo', 'Foo Label');
         $param->setDefaultValue('invalid json');
+    }
+
+    public function test_setDefaultWithInvalidType() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+
+        $param = new JSONParameter('foo', 'Foo Label');
+        $param->setDefaultValue(new stdClass());
     }
 }
