@@ -24,14 +24,33 @@ class APIMethodsOverviewTmpl extends UI_Page_Template_Custom
     {
         $this->page->setTitle(t('%1$s API documentation', $this->driver->getAppNameShort()));
 
-        echo $this->renderCleanFrame($this->grid->render($this->compileEntries()));
+        OutputBuffering::start();
+        ?>
+        <h1><?php echo t('%1$s API documentation', $this->driver->getAppNameShort()) ?></h1>
+        <div class="method-abstract">
+            <p>
+            <?php
+                pts('Below is a list of all API methods available in the system.');
+                pts('Click on a method name to view detailed documentation.');
+            ?>
+            </p>
+        </div>
+        <?php
+
+        echo $this->grid->render($this->compileEntries());
+
+        echo $this->renderCleanFrame(OutputBuffering::get());
     }
 
     private function createDataGrid() : void
     {
         $grid = $this->getUI()->createDataGrid('api-methods-list');
 
+        $grid->disableFooter();
+
         $grid->addColumn('name', t('Method name'));
+        $grid->addColumn('accepts', t('Accepts'));
+        $grid->addColumn('returns', t('Returns'));
         $grid->addColumn('version', t('Version'))->alignRight();
 
         $this->grid = $grid;
@@ -50,6 +69,8 @@ class APIMethodsOverviewTmpl extends UI_Page_Template_Custom
             $entries[] = array(
                 'name' => sb()->link($method->getMethodName(), $method->getDocumentationURL()),
                 'version' => $method->getCurrentVersion(),
+                'accepts' => $method->getRequestMime(),
+                'returns' => $method->getResponseMime()
             );
         }
 
