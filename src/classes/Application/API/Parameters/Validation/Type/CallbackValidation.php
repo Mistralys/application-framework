@@ -31,6 +31,11 @@ class CallbackValidation extends BaseParamValidation
 
     public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
     {
+        if($value === null) {
+            // Nothing to validate
+            return;
+        }
+
         $callback = $this->callback;
         $args = array_merge(array($value, $result), $this->args);
         $callback(...$args);
