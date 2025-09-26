@@ -6,11 +6,14 @@ namespace Application\API\Parameters;
 
 use Application\API\APIMethodInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
+use Application\Validation\ValidationLoggableInterface;
+use Application\Validation\ValidationResultInterface;
+use Application\Validation\ValidationResults;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
 use AppUtils\OperationResult_Collection;
 
-interface APIParameterInterface
+interface APIParameterInterface extends ValidationLoggableInterface
 {
     public const array RESERVED_PARAM_NAMES = array(
         APIMethodInterface::REQUEST_PARAM_METHOD,
@@ -30,6 +33,7 @@ interface APIParameterInterface
 
     public function getDefaultValue() : int|string|float|bool|array|null;
     public function getValue() : int|float|bool|string|array|null;
+    public function hasValue() : bool;
 
     /**
      * @param mixed $default
@@ -40,7 +44,7 @@ interface APIParameterInterface
     public function getDescription(): string;
     public function hasDescription(): bool;
     public function setDescription(string|StringableInterface $description): self;
-    public function getValidationResult(): OperationResult_Collection;
+    public function getValidationResults(): ValidationResults;
     public function isValid() : bool;
 
     /**
@@ -66,4 +70,21 @@ interface APIParameterInterface
      * @return $this
      */
     public function validateByEnum(array $values) : self;
+
+    /**
+     * Invalidate this parameter. This causes it to be excluded from the final output
+     * when validating the required parameters for a request using validation rules.
+     *
+     * @return $this
+     */
+    public function invalidate() : self;
+
+    /**
+     * Whether this parameter is enabled. Disabled parameters are ignored for value
+     * resolution (they are disabled automatically when they have been invalidated,
+     * for example).
+     *
+     * @return bool
+     */
+    public function isInvalidated() : bool;
 }
