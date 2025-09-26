@@ -42,6 +42,11 @@ class EnumValidation extends BaseParamValidation
 
     public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
     {
+        if($value === null) {
+            // Nothing to validate
+            return;
+        }
+
         if (in_array($value, $this->allowedValues, true)) {
             return;
         }
