@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses\Traits;
 
+use Application\Validation\ValidationResultInterface;
 use AppUtils\OperationResult;
 use AppUtils\OperationResult_Collection;
 
@@ -26,19 +27,32 @@ use AppUtils\OperationResult_Collection;
  */
 trait OperationResultTestTrait
 {
-    public function assertResultValid(OperationResult $result) : void
+    public function assertResultValid(OperationResult|ValidationResultInterface $result) : void
     {
-        $this->assertTrue($result->isValid());
+        $this->assertTrue($this->resolveResult($result)->isValid());
     }
 
-    public function assertResultValidWithNoMessages(OperationResult $result) : void
+    protected function resolveResult(OperationResult|ValidationResultInterface $result) : OperationResult
     {
+        if($result instanceof ValidationResultInterface) {
+            return $result->getValidationResults();
+        }
+
+        return $result;
+    }
+
+    public function assertResultValidWithNoMessages(OperationResult|ValidationResultInterface $result) : void
+    {
+        $result = $this->resolveResult($result);
+
         $this->assertResultValid($result);
         $this->assertResultHasNoMessages($result);
     }
 
-    public function assertResultHasNoMessages(OperationResult $result) : void
+    public function assertResultHasNoMessages(OperationResult|ValidationResultInterface $result) : void
     {
+        $result = $this->resolveResult($result);
+
         if($result instanceof OperationResult_Collection) {
             $this->assertSame(0, $result->countResults());
         } else {
@@ -47,8 +61,10 @@ trait OperationResultTestTrait
         }
     }
 
-    public function assertResultHasCode(OperationResult $result, int $code) : void
+    public function assertResultHasCode(OperationResult|ValidationResultInterface $result, int $code) : void
     {
+        $result = $this->resolveResult($result);
+
         if($result instanceof OperationResult_Collection) {
             $this->assertTrue($result->containsCode($code));
         } else {
@@ -56,8 +72,8 @@ trait OperationResultTestTrait
         }
     }
 
-    public function assertResultInvalid(OperationResult $result) : void
+    public function assertResultInvalid(OperationResult|ValidationResultInterface $result) : void
     {
-        $this->assertFalse($result->isValid());
+        $this->assertFalse($this->resolveResult($result)->isValid());
     }
 }

@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace AppFrameworkTestClasses\Traits;
 
 use AppFrameworkTestClasses\ApplicationTestCaseInterface;
+use Application\Validation\ValidationResultInterface;
 use AppUtils\OperationResult;
 
 /**
@@ -17,9 +18,9 @@ use AppUtils\OperationResult;
  */
 interface OperationResultTestInterface extends ApplicationTestCaseInterface
 {
-    public function assertResultValidWithNoMessages(OperationResult $result) : void;
-    public function assertResultValid(OperationResult $result) : void;
-    public function assertResultInvalid(OperationResult $result) : void;
-    public function assertResultHasNoMessages(OperationResult $result) : void;
-    public function assertResultHasCode(OperationResult $result, int $code) : void;
+    public function assertResultValidWithNoMessages(OperationResult|ValidationResultInterface $result) : void;
+    public function assertResultValid(OperationResult|ValidationResultInterface $result) : void;
+    public function assertResultInvalid(OperationResult|ValidationResultInterface $result) : void;
+    public function assertResultHasNoMessages(OperationResult|ValidationResultInterface $result) : void;
+    public function assertResultHasCode(OperationResult|ValidationResultInterface $result, int $code) : void;
 }
