@@ -24,6 +24,11 @@ use Application\API\Parameters\Validation\ParamValidationInterface;
  */
 class IntegerParameter extends BaseAPIParameter
 {
+    public function getTypeLabel(): string
+    {
+        return t('Integer');
+    }
+
     private int $defaultValue = 0;
 
     public function getDefaultValue(): int

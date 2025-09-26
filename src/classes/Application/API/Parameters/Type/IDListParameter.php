@@ -23,6 +23,11 @@ use AppUtils\ConvertHelper;
  */
 class IDListParameter extends BaseAPIParameter
 {
+    public function getTypeLabel(): string
+    {
+        return t('ID List');
+    }
+
     /**
      * @var int[]
      */

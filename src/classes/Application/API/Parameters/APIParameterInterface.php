@@ -31,6 +31,7 @@ interface APIParameterInterface extends ValidationLoggableInterface
     );
 
     public function getName(): string;
+    public function getTypeLabel() : string;
 
     /**
      * @param bool $required

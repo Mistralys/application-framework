@@ -28,6 +28,11 @@ use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 class JSONParameter extends BaseAPIParameter
 {
 
+    public function getTypeLabel(): string
+    {
+        return t('JSON');
+    }
+
     private ?array $defaultValue = null;
 
     public function getDefaultValue(): ?array

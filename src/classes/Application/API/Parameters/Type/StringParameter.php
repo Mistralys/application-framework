@@ -30,6 +30,11 @@ use AppUtils\RegexHelper;
  */
 class StringParameter extends BaseAPIParameter
 {
+    public function getTypeLabel(): string
+    {
+        return t('String');
+    }
+
     private ?string $defaultValue = null;
 
     public function getDefaultValue(): ?string

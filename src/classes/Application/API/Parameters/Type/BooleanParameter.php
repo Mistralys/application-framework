@@ -24,6 +24,11 @@ use AppUtils\ConvertHelper;
  */
 class BooleanParameter extends BaseAPIParameter
 {
+    public function getTypeLabel(): string
+    {
+        return t('Boolean');
+    }
+
     private bool $defaultValue = false;
 
     protected function resolveValue(): bool|null
