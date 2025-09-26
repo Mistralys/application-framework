@@ -10,7 +10,10 @@ use Application\API\Parameters\Validation\Type\EnumValidation;
 use Application\API\Parameters\Validation\Type\RequiredValidation;
 use Application\API\Parameters\Validation\Type\ValueExistsCallbackValidation;
 use Application\AppFactory;
+use Application\Validation\ValidationLoggableTrait;
+use Application\Validation\ValidationResults;
 use Application_Request;
+use Application_Traits_Loggable;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
 use AppUtils\OperationResult_Collection;
@@ -18,19 +21,30 @@ use AppUtils\Request\RequestParam;
 
 abstract class BaseAPIParameter implements APIParameterInterface
 {
+    use Application_Traits_Loggable;
+    use ValidationLoggableTrait;
+
     protected ?RequestParam $param = null;
     protected string $label;
     protected bool $required = false;
     protected string $description = '';
     private string $name;
     private static ?Application_Request $request = null;
-    protected OperationResult_Collection $result;
+    protected ValidationResults $result;
+    private bool $invalidated = false;
+    private string $validatorLabel;
 
     public function __construct(string $name, string $label)
     {
         $this->name = $name;
         $this->label = $label;
-        $this->result = new OperationResult_Collection($this);
+        $this->validatorLabel = sprintf('API Parameter [%s]', $this->name);
+        $this->result = new ValidationResults($this);
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->validatorLabel;
     }
 
     public function getName(): string
@@ -127,8 +141,17 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->validateBy(new EnumValidation(array_values($values)));
     }
 
+    public function hasValue() : bool
+    {
+        return $this->value !== null;
+    }
+
     public function getValue() : int|float|bool|string|array|null
     {
+        if($this->isInvalidated()) {
+            return null;
+        }
+
         if(isset($this->value)) {
             return $this->value;
         }
@@ -170,7 +193,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return true;
     }
 
-    public function getValidationResult(): OperationResult_Collection
+    public function getValidationResults(): ValidationResults
     {
         // Ensure value is resolved and validations are run
         $this->getValue();
@@ -180,7 +203,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
     public function isValid() : bool
     {
-        return $this->getValidationResult()->isValid();
+        return $this->getValidationResults()->isValid();
     }
 
     /**
@@ -195,4 +218,15 @@ abstract class BaseAPIParameter implements APIParameterInterface
     }
 
     abstract protected function resolveValue(): int|float|bool|string|array|null;
+
+    public function invalidate() : self
+    {
+        $this->invalidated = true;
+        return $this;
+    }
+
+    public function isInvalidated() : bool
+    {
+        return $this->invalidated;
+    }
 }
