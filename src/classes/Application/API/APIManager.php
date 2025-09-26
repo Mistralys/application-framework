@@ -127,7 +127,7 @@ class APIManager
             );
         }
 
-        return $this->loadMethod($methodName);
+        return $this->getMethodByName($methodName);
     }
 
     public function getMethodByName(string $methodName) : APIMethodInterface
