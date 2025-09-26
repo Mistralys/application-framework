@@ -30,16 +30,16 @@ class RuleTypeSelector
         $this->manager = $manager;
     }
 
-    public function or() : OrRule
+    public function or(string $label) : OrRule
     {
-        $rule = new OrRule();
+        $rule = new OrRule($label);
 
         $this->manager->registerRule($rule);
 
         return $rule;
     }
 
-    public function requiredIfOtherIsSet(APIParameterInterface $target, APIParameterInterface $other) : RequiredIfOtherIsSetRule
+    public function requiredIfOtherIsSet(string $label, APIParameterInterface $target, APIParameterInterface $other) : RequiredIfOtherIsSetRule
     {
         $rule = new RequiredIfOtherIsSetRule($target, $other);
 
@@ -48,7 +48,7 @@ class RuleTypeSelector
         return $rule;
     }
 
-    public function requiredIfOtherValueEquals(APIParameterInterface $target, APIParameterInterface $other, mixed $expectedValue) : RequiredIfOtherValueEquals
+    public function requiredIfOtherValueEquals(string $label, APIParameterInterface $target, APIParameterInterface $other, mixed $expectedValue) : RequiredIfOtherValueEquals
     {
         $rule = new RequiredIfOtherValueEquals($target, $other, $expectedValue);
 
