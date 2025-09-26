@@ -32,7 +32,7 @@ final class RequiredTests extends APITestCase
         $param->makeRequired();
 
         $this->assertNull($param->getValue());
-        $this->assertResultInvalid($param->getValidationResult());
-        $this->assertResultHasCode($param->getValidationResult(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_EMPTY_REQUIRED_PARAM);
     }
 }
