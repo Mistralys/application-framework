@@ -13,6 +13,8 @@ use Application\API\APIException;
 use Application\API\APIMethodInterface;
 use Application\AppFactory\APICacheLocation;
 use Application\API\APIManager;
+use Application_Interfaces_Loggable;
+use Application_Traits_Loggable;
 use AppUtils\FileHelper\JSONFile;
 
 /**
@@ -31,13 +33,22 @@ use AppUtils\FileHelper\JSONFile;
  * @package API
  * @subpackage Method Collection
  */
-class APIMethodIndex
+class APIMethodIndex implements Application_Interfaces_Loggable
 {
+    use Application_Traits_Loggable;
+
     private APIManager $api;
+    private string $logIdentifier;
 
     public function __construct(APIManager $api)
     {
         $this->api = $api;
+        $this->logIdentifier = 'API | MethodIndex';
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->logIdentifier;
     }
 
     public function getMethodNames() : array
@@ -95,6 +106,7 @@ class APIMethodIndex
 
         // Build the index on demand if it doesn't exist yet.
         if(!$file->exists()) {
+            $this->log('API method index not found, building it now...');
             $this->build();
         }
 
@@ -107,11 +119,16 @@ class APIMethodIndex
     {
         $methods = array();
 
+        $this->logHeader('Building API method index...');
+
         foreach($this->api->getMethodCollection()->getAll() as $method) {
+            $this->log('- Method [%s]...', $method->getMethodName());
             $methods[$method->getMethodName()] = get_class($method);
         }
 
         $this->getDataFile()->putData($methods);
+
+        $this->log('Index saved to disk.');
 
         return $this;
     }
