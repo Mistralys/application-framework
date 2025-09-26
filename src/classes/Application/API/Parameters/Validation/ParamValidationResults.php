@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Validation;
 
-use AppUtils\OperationResult_Collection;
+use Application\Validation\ValidationResults;
 
-class ParamValidationResults extends OperationResult_Collection
+class ParamValidationResults extends ValidationResults
 {
     public function serializeErrors() : array
     {
