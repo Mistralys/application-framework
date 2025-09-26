@@ -43,6 +43,11 @@ class APIParamManager implements ValidationResultInterface
         $this->validatorLabel = sprintf('API method [%s] Parameters', $this->method->getMethodName());
     }
 
+    public function getValidatorLabel(): string
+    {
+        return $this->validatorLabel;
+    }
+
     public function addParam(string $name, string $label) : ParamTypeSelector
     {
         return new ParamTypeSelector($this, $name, $label);
@@ -52,7 +57,7 @@ class APIParamManager implements ValidationResultInterface
     {
         $name = $param->getName();
 
-        if (in_array($name, APIParameterInterface::RESERVED_PARAM_NAMES, true)) {
+        if (!$param instanceof ReservedParamInterface && in_array($name, APIParameterInterface::RESERVED_PARAM_NAMES, true)) {
             throw new APIParameterException(
                 'Tried registering a reserved parameter',
                 sprintf(
@@ -122,7 +127,7 @@ class APIParamManager implements ValidationResultInterface
         $results = new ParamValidationResults($this);
 
         foreach($this->rules as $rule) {
-            $results->addResult($rule->getValidationResult());
+            $results->addResult($rule->getValidationResults());
         }
 
         foreach($this->params as $param)
