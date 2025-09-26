@@ -12,6 +12,8 @@ use Application\API\APIResponseDataException;
 use Application\API\ErrorResponse;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\ParamTypeSelector;
+use Application\API\Parameters\Reserved\APIMethodParameter;
+use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
 use Application\API\Traits\JSONRequestInterface;
 use Application\API\APIManager;
@@ -164,22 +166,9 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     private function initReservedParams() : void
     {
-        $this->addParam(APIMethodInterface::REQUEST_PARAM_METHOD, 'Method')
-            ->string()
-            ->validateByValueExistsCallback(function(mixed $value) : bool{
-                return is_string($value) && APIManager::getInstance()->getMethodIndex()->methodExists($value);
-            })
-            ->setDescription('The name of the API method to call.')
-            ->makeRequired();
-
-        $this->addParam(APIMethodInterface::REQUEST_PARAM_API_VERSION, 'API Version')
-            ->string()
-            ->setDescription(
-                'The version of the API to use for this request. If not provided, the current version (v%1$s) will be used. Supported versions are: %2$s',
-                $this->getCurrentVersion(),
-                implode(', ', $this->getVersions())
-            )
-            ->validateByEnum($this->getVersions());
+        $this->manageParams()
+            ->registerParam(new APIMethodParameter())
+            ->registerParam(new APIVersionParameter($this));
     }
 
     /**
