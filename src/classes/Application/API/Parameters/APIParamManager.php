@@ -1,13 +1,33 @@
 <?php
+/**
+ * @package API
+ * @subpackage Parameters
+ */
 
 declare(strict_types=1);
 
 namespace Application\API\Parameters;
 
 use Application\API\APIMethodInterface;
+use Application\API\Parameters\Rules\RuleInterface;
+use Application\API\Parameters\Rules\RuleTypeSelector;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\Validation\ValidationResultInterface;
 
-class APIParamManager
+/**
+ * Main API parameter manager for an API method: Handles registering parameters and rules,
+ * and validating them all.
+ *
+ * ## Using rules
+ *
+ * You may add as many rules as you need with {@see APIParamManager::addRule()}.
+ * The rules are executed in the order they were added. They are able to modify
+ * the parameters by switching their required/optional status, or invalidating them.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
+class APIParamManager implements ValidationResultInterface
 {
     private APIMethodInterface $method;
 
@@ -15,13 +35,15 @@ class APIParamManager
      * @var array<string,APIParameterInterface>
      */
     private array $params = array();
+    private string $validatorLabel;
 
     public function __construct(APIMethodInterface $method)
     {
         $this->method = $method;
+        $this->validatorLabel = sprintf('API method [%s] Parameters', $this->method->getMethodName());
     }
 
-    public function add(string $name, string $label) : ParamTypeSelector
+    public function addParam(string $name, string $label) : ParamTypeSelector
     {
         return new ParamTypeSelector($this, $name, $label);
     }
@@ -65,15 +87,59 @@ class APIParamManager
         return array_values($this->params);
     }
 
-    public function validateAll() : ParamValidationResults
-    {
-        $results = new ParamValidationResults();
+    /**
+     * @var RuleInterface[]
+     */
+    private array $rules = array();
+    private ?RuleTypeSelector $ruleSelector = null;
 
-        foreach($this->params as $param) {
-            $results->addResult($param->getValidationResult());
+    /**
+     * Returns the rule type selector to add a new validation rule.
+     * @return RuleTypeSelector
+     */
+    public function addRule() : RuleTypeSelector
+    {
+        if(!isset($this->ruleSelector)) {
+            $this->ruleSelector = new RuleTypeSelector($this);
+        }
+
+        return $this->ruleSelector;
+    }
+
+    public function registerRule(RuleInterface $rule) : void
+    {
+        $this->rules[] = $rule;
+    }
+
+    public function getValidationResults() : ParamValidationResults
+    {
+        // Let the rules to any pre-validation adjustments, like
+        // invalidating parameters based on other parameter values.
+        foreach($this->rules as $rule) {
+            $rule->preValidate();
+        }
+
+        $results = new ParamValidationResults($this);
+
+        foreach($this->rules as $rule) {
+            $results->addResult($rule->getValidationResult());
+        }
+
+        foreach($this->params as $param)
+        {
+            // Do not collect the validation results of invalidated parameters.
+            if($param->isInvalidated()) {
+                continue;
+            }
+
+            $results->addResult($param->getValidationResults());
         }
 
         return $results;
     }
-}
 
+    public function getLogIdentifier(): string
+    {
+        return $this->validatorLabel;
+    }
+}
