@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package API
+ * @subpackage Parameters
+ */
 
 declare(strict_types=1);
 
@@ -7,12 +11,18 @@ namespace Application\API\Parameters;
 use Application\API\APIMethodInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\Validation\ValidationLoggableInterface;
-use Application\Validation\ValidationResultInterface;
 use Application\Validation\ValidationResults;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
-use AppUtils\OperationResult_Collection;
 
+/**
+ * Interface for API method parameters.
+ *
+ * A base implementation is provided by {@see BaseAPIParameter}.
+ *
+ * @package API
+ * @subpackage Parameters
+ */
 interface APIParameterInterface extends ValidationLoggableInterface
 {
     public const array RESERVED_PARAM_NAMES = array(
