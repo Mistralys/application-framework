@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Composer;
 
 use Application;
+use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
 use Application\Bootstrap\ComposerScriptBootstrap;
 use Application\CacheControl\CacheManager;
@@ -45,7 +46,7 @@ class ComposerScripts
     {
         self::init();
 
-        echo 'Clearing all caches...';
+        echo 'Clearing all caches...'.PHP_EOL;
         CacheManager::getInstance()->clearAll();
         echo 'DONE.'.PHP_EOL;
     }
