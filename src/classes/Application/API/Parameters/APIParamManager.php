@@ -85,6 +85,9 @@ class APIParamManager implements ValidationResultInterface
         );
     }
 
+    /**
+     * @return APIParameterInterface[]
+     */
     public function getParams() : array
     {
         ksort($this->params);
@@ -146,5 +149,13 @@ class APIParamManager implements ValidationResultInterface
     public function getLogIdentifier(): string
     {
         return $this->validatorLabel;
+    }
+
+    /**
+     * @return RuleInterface[]
+     */
+    public function getRules() : array
+    {
+        return $this->rules;
     }
 }
