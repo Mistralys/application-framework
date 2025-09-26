@@ -36,7 +36,11 @@ class APICacheLocation extends BaseCacheLocation
 
     public function getByteSize(): int
     {
-        return $this->file->getSize();
+        if($this->file->exists()) {
+            return $this->file->getSize();
+        }
+
+        return 0;
     }
 
     public function getLabel(): string
