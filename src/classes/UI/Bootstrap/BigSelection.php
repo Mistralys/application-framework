@@ -45,7 +45,7 @@ class UI_Bootstrap_BigSelection extends UI_Bootstrap implements OptionableInterf
                 ->render();
         }
         
-        return $this->ui->createTemplate('ui/bootstrap/big-selection')
+        return $this->ui->createTemplate(template_default_ui_bootstrap_big_selection::class)
             ->setVar('selection', $this)
             ->render();
     }
