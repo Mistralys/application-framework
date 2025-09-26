@@ -13,6 +13,9 @@
 - API: The method documentation URL is now included in the response API info.
 - API: The request and response mime types are now included in the response API info.
 - Themes: The clean frame template now uses the page title if set.
+- Validation: Added the `ValidationResults` utility class.
+- Validation: Added the `ValidationResultInterface` for objects that contain validation results.
+- Validation: Added the `ValidationLoggableTrait` for classes that combine logging and validation.
 - Tests: Added the `OperationResultTestTrait` for useful assertions.
 - Dependencies: Bumped up AppUtils to [v3.1.10](https://github.com/Mistralys/application-utils/releases/tag/3.1.10) for a bugfix.
 
