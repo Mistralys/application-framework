@@ -10,6 +10,8 @@ namespace Application\API\Parameters\Rules;
 
 use Application\Validation\ValidationLoggableInterface;
 use Application\Validation\ValidationResults;
+use AppUtils\Interfaces\StringableInterface;
+use UI;
 
 /**
  * Interface for validation rules.
@@ -24,6 +26,15 @@ interface RuleInterface extends ValidationLoggableInterface
     public const int VALIDATION_NO_PARAM_SET_MATCHED = 183601;
 
     public function getID() : string;
+    public function getLabel() : string;
+    public function getTypeLabel() : string;
+    public function getTypeDescription() : string;
+
+    /**
+     * @param string|StringableInterface $description
+     * @return $this
+     */
+    public function setDescription(string|StringableInterface $description) : self;
 
     /**
      * Applies the rule. This must be called after {@see self::preValidate()}.
@@ -43,4 +54,5 @@ interface RuleInterface extends ValidationLoggableInterface
      * @return void
      */
     public function preValidate() : void;
+    public function renderDocumentation(UI $ui) : string;
 }

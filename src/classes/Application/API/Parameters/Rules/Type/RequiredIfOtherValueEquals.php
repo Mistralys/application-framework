@@ -10,6 +10,8 @@ namespace Application\API\Parameters\Rules\Type;
 
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Rules\BaseRule;
+use UI;
+use function AppUtils\parseVariable;
 
 /**
  * Validation rule: Make a parameter required if another parameter equals a specific value
@@ -57,5 +59,25 @@ class RequiredIfOtherValueEquals extends BaseRule
         // Initial state must be that the required parameter is not required,
         // only if the other parameter is set will it become required.
         $this->target->makeRequired(false);
+    }
+
+    public function getTypeLabel(): string
+    {
+        return t('If other equals');
+    }
+
+    public function getTypeDescription(): string
+    {
+        return t('A parameter will be required if another parameter equals a specific value (strict typed comparison).');
+    }
+
+    public function renderDocumentation(UI $ui): string
+    {
+        return t(
+            'The parameter %1$s will be required if the parameter %2$s is set to "%3$s".',
+            sb()->mono($this->target->getName()),
+            sb()->mono($this->other->getName()),
+            sb()->mono(parseVariable($this->expectedValue)->enableType()->toString())
+        );
     }
 }

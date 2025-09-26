@@ -11,6 +11,7 @@ namespace Application\API\Parameters\Rules;
 use Application\Validation\ValidationLoggableTrait;
 use Application\Validation\ValidationResults;
 use Application_Traits_Loggable;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult_Collection;
 
 /**
@@ -27,11 +28,30 @@ abstract class BaseRule implements RuleInterface
     protected OperationResult_Collection $result;
     private bool $validated = false;
     private string $logIdentifier;
+    private string $label;
+    private string $description = '';
 
-    public function __construct()
+    public function __construct(string $label)
     {
+        $this->label = $label;
         $this->logIdentifier = sprintf('API Parameter Rule [%s]', $this->getID());
         $this->result = new ValidationResults($this);
+    }
+
+    public function getLabel(): string
+    {
+        return $this->label;
+    }
+
+    public function setDescription(string|StringableInterface $description): self
+    {
+        $this->description = (string)$description;
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
     }
 
     public function getLogIdentifier(): string

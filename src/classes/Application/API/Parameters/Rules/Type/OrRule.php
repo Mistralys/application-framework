@@ -11,6 +11,7 @@ namespace Application\API\Parameters\Rules\Type;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Rules\BaseRule;
 use Application\API\Parameters\Rules\RuleInterface;
+use UI;
 
 /**
  * Handles switching between different sets of parameters,
@@ -36,6 +37,18 @@ class OrRule extends BaseRule
     public function getID(): string
     {
         return self::RULE_ID;
+    }
+
+    public function getTypeLabel(): string
+    {
+        return t('OR parameter sets');
+    }
+
+    public function getTypeDescription(): string
+    {
+        return (string)sb()
+            ->t('One of the parameter sets must be provided.')
+            ->t('The sets are evaluated from top to bottom, the first set that is complete and valid is used, all others ignored.');
     }
 
     public function orParam(APIParameterInterface $parameter) : self
@@ -147,5 +160,21 @@ class OrRule extends BaseRule
                 $param->makeRequired(false);
             }
         }
+    }
+
+    public function renderDocumentation(UI $ui) : string
+    {
+        $sel = $ui->createBigSelection();
+        $sel->makeSmall();
+
+        foreach($this->sets as $set) {
+            $list = array();
+            foreach($set as $idx => $param) {
+                $list[] = sb()->mono(($idx+1).'. '.$param->getName());
+            }
+            $sel->addItem(implode('<br>', $list));
+        }
+
+        return $sel->render();
     }
 }
