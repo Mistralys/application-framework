@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTests\API;
+namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\Type\StringParameter;
@@ -18,7 +18,7 @@ final class StringParamTests extends APITestCase
         $param = new StringParameter('foo', 'Foo Label');
 
         $this->assertSame('bar', $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_convertNumericValueInRequest() : void
@@ -28,7 +28,7 @@ final class StringParamTests extends APITestCase
         $param = new StringParameter('foo', 'Foo Label');
 
         $this->assertSame('42', $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_invalidValueInRequest() : void
@@ -38,8 +38,8 @@ final class StringParamTests extends APITestCase
         $param = new StringParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValid($param->getValidationResult());
-        $this->assertResultHasInvalidValueType($param->getValidationResult());
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertResultHasInvalidValueType($param->getValidationResults());
     }
 
     public function test_emptyStringInRequest() : void
@@ -49,7 +49,7 @@ final class StringParamTests extends APITestCase
         $param = new StringParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_nullValueInRequest() : void
@@ -59,7 +59,7 @@ final class StringParamTests extends APITestCase
         $param = new StringParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_setDefaultValueWithValidString() : void
@@ -68,7 +68,7 @@ final class StringParamTests extends APITestCase
         $param->setDefaultValue('default string');
 
         $this->assertSame('default string', $param->getDefaultValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_setDefaultValueWithInvalidType() : void
@@ -97,8 +97,8 @@ final class StringParamTests extends APITestCase
         $param->validateByRegex('/^bar[0-9]+$/');
 
         $this->assertNull($param->getValue());
-        $this->assertResultInvalid($param->getValidationResult());
-        $this->assertResultHasCode($param->getValidationResult(), ParamValidationInterface::VALIDATION_INVALID_FORMAT_BY_REGEX);
+        $this->assertResultInvalid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_INVALID_FORMAT_BY_REGEX);
     }
 
     public function test_defaultWithValidString() : void

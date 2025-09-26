@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTests\API;
+namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\Type\IDListParameter;
@@ -19,7 +19,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_stringValueIsWhitespaceAgnostic(): void
@@ -29,7 +29,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_validArrayValueInRequest() : void
@@ -39,7 +39,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_invalidIDValueInRequest() : void
@@ -49,8 +49,8 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertSame(array(42, 14789), $param->getValue());
-        $this->assertResultValid($param->getValidationResult());
-        $this->assertResultHasCode($param->getValidationResult(), ParamValidationInterface::VALIDATION_NON_NUMERIC_ID);
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_NON_NUMERIC_ID);
     }
 
     public function test_numericValueIsConvertedToString() : void
@@ -60,7 +60,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertSame(array(42), $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_emptyStringInRequest() : void
@@ -70,7 +70,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_nullValueInRequest() : void
@@ -80,7 +80,7 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_invalidValueTypeInRequest() : void
@@ -90,8 +90,8 @@ final class IDListParameterTests extends APITestCase
         $param = new IDListParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertTrue($param->getValidationResult()->isValid());
-        $this->assertTrue($param->getValidationResult()->containsCode(ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE));
+        $this->assertTrue($param->getValidationResults()->isValid());
+        $this->assertTrue($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE));
     }
 
     public function test_setDefaultWithArrayValue() : void

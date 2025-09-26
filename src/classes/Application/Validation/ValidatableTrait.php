@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Application
- * @subpackage Traits
+ * @subpackage Validation
  */
 
 use AppUtils\Interfaces\StringableInterface;
@@ -10,7 +10,7 @@ use AppUtils\Interfaces\StringableInterface;
  * Trait used to implement the interface {@see Application_Interfaces_Validatable}.
  *
  * @package Application
- * @subpackage Traits
+ * @subpackage Validation
  *
  * @see Application_Interfaces_Validatable
  */

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTests\API;
+namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\Type\IntegerParameter;
@@ -18,7 +18,7 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertSame(42, $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_convertNumericValueInRequest() : void
@@ -28,7 +28,7 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertSame(42, $param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_invalidValueInRequest() : void
@@ -38,8 +38,8 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValid($param->getValidationResult());
-        $this->assertResultHasInvalidValueType($param->getValidationResult());
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertResultHasInvalidValueType($param->getValidationResults());
     }
 
     public function test_emptyStringInRequest() : void
@@ -49,7 +49,7 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_nullValueInRequest() : void
@@ -59,7 +59,7 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_floatValueInRequest() : void
@@ -69,8 +69,8 @@ final class IntegerParameterTests extends APITestCase
         $param = new IntegerParameter('foo', 'Foo Label');
 
         $this->assertSame(4, $param->getValue());
-        $this->assertResultValid($param->getValidationResult());
-        $this->assertResultHasCode($param->getValidationResult(), ParamValidationInterface::VALIDATION_WARNING_FLOAT_TO_INT);
+        $this->assertResultValid($param->getValidationResults());
+        $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_WARNING_FLOAT_TO_INT);
     }
 
     public function test_setDefaultValueWithValidInteger() : void
@@ -79,7 +79,7 @@ final class IntegerParameterTests extends APITestCase
         $param->setDefaultValue(42);
 
         $this->assertSame(42, $param->getDefaultValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResult());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
     public function test_setDefaultValueWithInvalidString() : void

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTests\API;
+namespace AppFrameworkTests\API\Parameters;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\Type\JSONParameter;
@@ -20,7 +20,7 @@ final class JSONParamTests extends APITestCase
         $param = new JSONParameter('foo', 'Foo Label');
 
         $this->assertSame(array('foo' => 'bar'), $param->getValue());
-        $this->assertTrue($param->getValidationResult()->isValid());
+        $this->assertTrue($param->getValidationResults()->isValid());
     }
 
     public function test_invalidValueInRequest() : void
@@ -30,8 +30,8 @@ final class JSONParamTests extends APITestCase
         $param = new JSONParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertTrue($param->getValidationResult()->isValid());
-        $this->assertTrue($param->getValidationResult()->containsCode(ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE));
+        $this->assertTrue($param->getValidationResults()->isValid());
+        $this->assertTrue($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE));
     }
 
     public function test_emptyStringValueInRequest() : void
@@ -41,7 +41,7 @@ final class JSONParamTests extends APITestCase
         $param = new JSONParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertTrue($param->getValidationResult()->isValid());
+        $this->assertTrue($param->getValidationResults()->isValid());
 
     }
 
@@ -52,7 +52,7 @@ final class JSONParamTests extends APITestCase
         $param = new JSONParameter('foo', 'Foo Label');
 
         $this->assertNull($param->getValue());
-        $this->assertTrue($param->getValidationResult()->isValid());
+        $this->assertTrue($param->getValidationResults()->isValid());
     }
 
     public function test_setDefaultValueWithValidJSON() : void
