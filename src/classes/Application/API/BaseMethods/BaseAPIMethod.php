@@ -160,7 +160,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
     {
-        return $this->manageParams()->add($name, $label);
+        return $this->manageParams()->addParam($name, $label);
     }
 
     private function initReservedParams() : void
@@ -202,7 +202,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     protected function validate(): void
     {
-        $results = $this->manageParams()->validateAll();
+        $results = $this->manageParams()->getValidationResults();
 
         if($results->isValid()) {
             return;
