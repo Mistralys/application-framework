@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API;
 
+use Application\API\Parameters\APIParamManager;
 use Application_CORS;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
@@ -54,6 +55,8 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return string
      */
     public function getCurrentVersion() : string;
+
+    public function manageParams() : APIParamManager;
 
     /**
      * Gets the version that the method is currently
