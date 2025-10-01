@@ -15,6 +15,7 @@ use Application\AppFactory\APICacheLocation;
 use Application\API\APIManager;
 use Application_Interfaces_Loggable;
 use Application_Traits_Loggable;
+use AppUtils\FileHelper;
 use AppUtils\FileHelper\JSONFile;
 
 /**
@@ -128,7 +129,7 @@ class APIMethodIndex implements Application_Interfaces_Loggable
 
         $this->getDataFile()->putData($methods);
 
-        $this->log('Index saved to disk.');
+        $this->log(sprintf('Index saved to disk at [%s].', FileHelper::relativizePath($this->getDataFile()->getPath(), APP_ROOT)));
 
         return $this;
     }
