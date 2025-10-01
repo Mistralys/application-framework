@@ -24,4 +24,11 @@ interface JSONResponseInterface extends APIMethodInterface
     public const string RESPONSE_KEY_MESSAGE = 'message';
     public const string RESPONSE_STATE_ERROR = 'error';
     public const string RESPONSE_STATE_SUCCESS = 'success';
+
+    public function getExampleJSONResponse() : array;
+
+    /**
+     * @return array<string,string> Key-value pairs of response keys and their descriptions.
+     */
+    public function getReponseKeyDescriptions() : array;
 }

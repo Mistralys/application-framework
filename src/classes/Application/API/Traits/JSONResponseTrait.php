@@ -8,14 +8,19 @@ declare(strict_types=1);
 
 namespace Application\API\Traits;
 
+use Application\API\Documentation\Examples\JSONMethodExample;
 use Application\API\ErrorResponse;
 use Application\API\Parameters\Validation\ParamValidationResults;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
 
 /**
+ * Trait used to implement JSON response handling in API methods,
+ * by implementing the interface {@see JSONResponseInterface}.
+ *
  * @package API
  * @subpackage Traits
+ *
  * @see JSONResponseInterface
  */
 trait JSONResponseTrait
@@ -68,5 +73,15 @@ trait JSONResponseTrait
         $response->addData(array(
             JSONResponseInterface::RESPONSE_KEY_DATA => $results->serializeErrors()
         ));
+    }
+
+    public function renderExample() : string
+    {
+        return new JSONMethodExample($this)->render();
+    }
+
+    public function getReponseKeyDescriptions() : array
+    {
+        return array();
     }
 }
