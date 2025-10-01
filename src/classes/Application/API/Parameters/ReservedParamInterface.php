@@ -16,5 +16,5 @@ namespace Application\API\Parameters;
  */
 interface ReservedParamInterface extends APIParameterInterface
 {
-
+    public function isEditable() : bool;
 }

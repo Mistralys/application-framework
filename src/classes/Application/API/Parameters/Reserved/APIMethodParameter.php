@@ -22,4 +22,9 @@ class APIMethodParameter extends StringParameter implements ReservedParamInterfa
             ->setDescription('The name of the API method to call.')
             ->makeRequired();
     }
+
+    public function isEditable(): bool
+    {
+        return false;
+    }
 }
