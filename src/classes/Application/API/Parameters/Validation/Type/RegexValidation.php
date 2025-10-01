@@ -19,6 +19,11 @@ class RegexValidation extends BaseParamValidation
 
     public function validate(int|float|bool|string|array|null $value, OperationResult $result) : void
     {
+        if($value === null) {
+            // Nothing to validate
+            return;
+        }
+
         if(!is_string($value)) {
             $result->makeError(
                 sprintf('Invalid value type (using strict typing). Expected a string, %1$s given.', gettype($value)),
