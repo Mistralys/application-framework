@@ -25,8 +25,10 @@ use Application_Interfaces_Loggable;
 use Application_Request;
 use Application_Traits_Loggable;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use AppUtils\StringHelper;
 use Throwable;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -296,7 +298,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     private function sendErrorResponse(ErrorResponse $response) : never
     {
-        header('HTTP/1.1 ' . $response->getHttpStatusCode() . ' ' . strip_tags($response->getErrorMessage()));
+        header('HTTP/1.1 ' . $response->getHttpStatusCode() . ' ' . str_replace(array("\n", "\r"), ' ', strip_tags($response->getErrorMessage())));
 
         // initialize cross-domain requests
         $this->getCORS()->init();
