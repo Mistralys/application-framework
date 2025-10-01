@@ -25,6 +25,8 @@ interface AppCountryAPIInterface extends APIMethodInterface
 
     public function getAppCountryIDParam() : ?AppCountryIDParam;
     public function getAppCountryISOParam() : ?AppCountryISOParam;
+    public function registerAppCountryID() : AppCountryIDParam;
+    public function registerAppCountryISO() : AppCountryISOParam;
     public function resolveAppCountry() : ?Application_Countries_Country;
     public function requireAppCountry() : Application_Countries_Country;
 }
