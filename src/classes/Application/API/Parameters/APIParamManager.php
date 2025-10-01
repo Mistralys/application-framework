@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters;
 
+use Application\API\APIException;
 use Application\API\APIMethodInterface;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\RuleTypeSelector;
@@ -55,6 +56,8 @@ class APIParamManager implements ValidationResultInterface
 
     public function registerParam(APIParameterInterface $param) : self
     {
+        $this->requireNotValidated();
+
         $name = $param->getName();
 
         if (!$param instanceof ReservedParamInterface && in_array($name, APIParameterInterface::RESERVED_PARAM_NAMES, true)) {
@@ -82,6 +85,23 @@ class APIParamManager implements ValidationResultInterface
                 $this->method->getMethodName()
             ),
             APIParameterException::ERROR_PARAM_ALREADY_REGISTERED
+        );
+    }
+
+    private function requireNotValidated() : void
+    {
+        if(!isset($this->validationResults)) {
+            return;
+        }
+
+        throw new APIException(
+            'Cannot modify API parameters and rules after validation.',
+            sprintf(
+                'Attempted to modify the API method [%s] after validation has already been performed. '.
+                'All parameters and rules must be added before they are validated.',
+                $this->method->getMethodName()
+            ),
+            APIException::ERROR_CANNOT_MODIFY_AFTER_VALIDATION
         );
     }
 
@@ -116,11 +136,22 @@ class APIParamManager implements ValidationResultInterface
 
     public function registerRule(RuleInterface $rule) : void
     {
-        $this->rules[] = $rule;
+        if(!isset($this->validationResults)) {
+            $this->rules[] = $rule;
+            return;
+        }
+
+        $this->requireNotValidated();
     }
+
+    private ?ParamValidationResults $validationResults = null;
 
     public function getValidationResults() : ParamValidationResults
     {
+        if(isset($this->validationResults)) {
+            return $this->validationResults;
+        }
+
         // Let the rules to any pre-validation adjustments, like
         // invalidating parameters based on other parameter values.
         foreach($this->rules as $rule) {
@@ -142,6 +173,8 @@ class APIParamManager implements ValidationResultInterface
 
             $results->addResult($param->getValidationResults());
         }
+
+        $this->validationResults = $results;
 
         return $results;
     }
