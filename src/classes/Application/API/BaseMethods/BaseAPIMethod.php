@@ -308,8 +308,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     protected function errorResponse(int $errorCode) : ErrorResponse
     {
-        return new ErrorResponse($errorCode, $this->sendErrorResponse(...))
-            ->addData(array(APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA => $_REQUEST))
+        return new ErrorResponse($this, $errorCode, $this->sendErrorResponse(...))
             ->addData($this->collectRequestErrorData());
     }
 

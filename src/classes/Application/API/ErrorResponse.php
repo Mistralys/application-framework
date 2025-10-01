@@ -29,15 +29,22 @@ class ErrorResponse
     private $sendCallback;
     private array $errorData = array();
     private string $message = '';
+    private APIMethodInterface $method;
 
     /**
      * @param int $errorCode
      * @param callable $sendCallback {@see Application\API\BaseMethods\BaseAPIMethod::sendErrorResponse()}
      */
-    public function __construct(int $errorCode, callable $sendCallback)
+    public function __construct(APIMethodInterface $method, int $errorCode, callable $sendCallback)
     {
+        $this->method = $method;
         $this->errorCode = $errorCode;
         $this->sendCallback = $sendCallback;
+    }
+
+    public function getMethod(): APIMethodInterface
+    {
+        return $this->method;
     }
 
     /**
@@ -111,6 +118,10 @@ class ErrorResponse
 
     public function send() : never
     {
+        $this->addData(array(
+            APIMethodInterface::RESPONSE_KEY_ERROR_REQUEST_DATA => $_REQUEST,
+        ));
+
         $send = $this->sendCallback;
         $send($this);
 
