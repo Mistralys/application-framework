@@ -22,7 +22,7 @@ trait AppCountryAPITrait
     private ?AppCountryISOParam $paramCountryISO = null;
     private ?AppCountryIDParam $paramCountryID = null;
 
-    protected function registerAppCountryID() : AppCountryIDParam
+    public function registerAppCountryID() : AppCountryIDParam
     {
         if(isset($this->paramCountryID)) {
             return $this->paramCountryID;
@@ -33,7 +33,7 @@ trait AppCountryAPITrait
         return $this->paramCountryID;
     }
 
-    protected function registerAppCountryISO() : AppCountryISOParam
+    public function registerAppCountryISO() : AppCountryISOParam
     {
         if(isset($this->paramCountryISO)) {
             return $this->paramCountryISO;
