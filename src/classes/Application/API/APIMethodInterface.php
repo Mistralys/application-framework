@@ -40,6 +40,17 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public function getRequestMime() : string;
     public function getResponseMime() : string;
     public function getDocumentationURL() : AdminURLInterface;
+
+    /**
+     * @return string[] An array of method names that are related to this method.
+     */
+    public function getRelatedMethodNames() : array;
+
+    /**
+     * @return APIMethodInterface[] An array of method instances that are related to this method.
+     */
+    public function getRelatedMethods() : array;
+
     public function getRequestTime() : Microtime;
     /**
      * Retrieves an indexed array containing available API
@@ -102,4 +113,14 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @throws APIException
      */
     public function processReturn(): ArrayDataCollection;
+
+    /**
+     * Renders an example response for this API method.
+     *
+     * This is used in the documentation to show an example
+     * response for the method.
+     *
+     * @return string|null The HTML representation of the example response, or null if no example is available.
+     */
+    public function renderExample() : ?string;
 }
