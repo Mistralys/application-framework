@@ -8,9 +8,7 @@ use Application_Exception;
 
 class APIException extends Application_Exception
 {
-    public const int ERROR_INVALID_OUTPUT_FORMAT = 59213003;
-    public const int ERROR_NO_OUTPUT_METHODS = 59213001;
-    public const int ERROR_INVALID_INPUT_FORMAT = 59213002;
-    public const int ERROR_NO_INPUT_METHODS = 59213004;
     public const int ERROR_METHOD_NOT_IN_INDEX = 59213005;
+    public const int ERROR_INTERNAL = 59213006;
+    public const int ERROR_CANNOT_MODIFY_AFTER_VALIDATION = 59213007;
 }
