@@ -8,7 +8,9 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Rules\Type;
 
+use Application\API\APIException;
 use Application\API\Parameters\APIParameterInterface;
+use Application\API\Parameters\ParamSet;
 use Application\API\Parameters\Rules\BaseRule;
 use Application\API\Parameters\Rules\RuleInterface;
 use UI;
@@ -30,9 +32,10 @@ class OrRule extends BaseRule
     public const string RULE_ID = 'OR';
 
     /**
-     * @var array<int,APIParameterInterface[]> $sets
+     * @var array<int,ParamSet> $sets
      */
     private array $sets = array();
+    private ?ParamSet $selectedSet = null;
 
     public function getID(): string
     {
@@ -51,27 +54,15 @@ class OrRule extends BaseRule
             ->t('The sets are evaluated from top to bottom, the first set that is complete and valid is used, all others ignored.');
     }
 
-    public function orParam(APIParameterInterface $parameter) : self
-    {
-        return $this->orParams(array($parameter));
-    }
-
     /**
-     * @param APIParameterInterface[]|APIParameterInterface ...$parameters
+     * Add a set of parameters, where at least one set must be complete and valid.
+     *
+     * @param ParamSet $set
      * @return $this
      */
-    public function orParams(...$parameters) : self
+    public function addSet(ParamSet $set) : self
     {
-        $params = array();
-        foreach($parameters as $param) {
-            if(is_array($param)) {
-                array_push($params, ...$param);
-            } else {
-                $params[] = $param;
-            }
-        }
-
-        $this->sets[] = $params;
+        $this->sets[] = $set;
 
         return $this;
     }
@@ -84,21 +75,12 @@ class OrRule extends BaseRule
 
         foreach($this->sets as $idx => $set)
         {
-            $this->log('Checking set [#%s] | (%s)', $idx + 1, $this->set2string($set));
-
-            $allValid = true;
-            foreach($set as $param) {
-                if (!$param->isValid() || !$param->hasValue()) {
-                    $this->log('- Parameter [%s] is not valid or empty, skipping set.', $param->getName());
-                    $allValid = false;
-                    break;
-                }
-            }
+            $this->log('Checking set [#%s] | (%s)', $idx + 1, $set);
 
             // One set is valid, ignore all others
-            if ($allValid) {
+            if ($set->isValid()) {
                 $this->log('- Set is valid, using it.', $idx + 1);
-                $validSet = $idx;
+                $validSet = $set;
                 break;
             }
         }
@@ -117,26 +99,48 @@ class OrRule extends BaseRule
             return;
         }
 
+        $this->selectedSet = $validSet;
+
         // Invalidate all parameters that are not part of the valid set,
         // and set the parameters of the valid set as required.
-        foreach($this->sets as $idx => $set)
+        foreach($this->sets as $set)
         {
-            foreach ($set as $param)
-            {
-                if ($idx === $validSet) {
-                    $param->makeRequired();
-                } else {
-                    $param->invalidate();
-                }
+            if($set === $validSet) {
+                $validSet->apply();
+                continue;
             }
+
+            $set->invalidate();
         }
     }
 
-    private function set2string(array $set) : string
+    public function getValidSet() : ?ParamSet
     {
-        return implode(
-            ', ',
-            array_map(static fn(APIParameterInterface $p) => $p->getName(), $set)
+        return $this->selectedSet;
+    }
+
+    /**
+     * Get the valid parameter set after validation (non-null-safe).
+     *
+     * > NOTE: This is safe to use after the validation has run.
+     * > If no valid set was found, an error response will have been sent,
+     * > and this exception will not be thrown.
+     *
+     * @return ParamSet
+     * @throws APIException
+     */
+    public function requireValidSet() : ParamSet
+    {
+        $set = $this->getValidSet();
+
+        if($set !== null) {
+            return $set;
+        }
+
+        throw new APIException(
+            'The rule has no valid parameter set selected.',
+            'Requiring a valid set should only be done once validation has occurred, at which point an error response will have been sent, and this exception will not be thrown.',
+            APIException::ERROR_INTERNAL
         );
     }
 
@@ -145,7 +149,7 @@ class OrRule extends BaseRule
         $result = array();
 
         foreach($this->sets as $set) {
-            $result[] = '(' . $this->set2string($set) . ')';
+            $result[] = '(' . $set . ')';
         }
 
         return $result;
@@ -156,9 +160,7 @@ class OrRule extends BaseRule
         // Make all parameters optional, as only one set needs to be valid,
         // to avoid failing required validations on parameters that are not needed.
         foreach($this->sets as $set) {
-            foreach($set as $param) {
-                $param->makeRequired(false);
-            }
+            $set->resetRequiredState();
         }
     }
 
@@ -167,11 +169,15 @@ class OrRule extends BaseRule
         $sel = $ui->createBigSelection();
         $sel->makeSmall();
 
-        foreach($this->sets as $set) {
+        foreach($this->sets as $set)
+        {
+            $sel->addHeader($set->getLabel());
+
             $list = array();
-            foreach($set as $idx => $param) {
-                $list[] = sb()->mono(($idx+1).'. '.$param->getName());
+            foreach($set->getParams() as $param) {
+                $list[] = sb()->mono('- '.$param->getName());
             }
+            
             $sel->addItem(implode('<br>', $list));
         }
 
