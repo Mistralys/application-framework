@@ -8,9 +8,9 @@ use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\ReservedParamInterface;
+use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\MarkdownRenderer;
 use AppUtils\OutputBuffering;
-use Maileditor;
 use UI;
 use UI_Page_Template_Custom;
 
@@ -48,6 +48,19 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         </div>
         <?php
 
+        $this->generateProperties();
+        $this->generateParamList();
+        $this->generateRulesList();
+        $this->generateExample();
+        $this->generateRequestBuilder();
+
+        echo '<br>';
+
+        echo $this->renderCleanFrame(OutputBuffering::get());
+    }
+
+    private function generateProperties() : void
+    {
         $props = $this->ui->createPropertiesGrid();
         $props->add(t('Request mime'), $this->method->getRequestMime());
         $props->add(t('Response mime'), $this->method->getResponseMime());
@@ -65,14 +78,6 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
 
         echo $props;
-
-        $this->generateParamList();
-        $this->generateRulesList();
-        $this->generateExample();
-
-        echo '<br>';
-
-        echo $this->renderCleanFrame(OutputBuffering::get());
     }
 
     private function generateExample() : void
@@ -86,7 +91,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $this->ui->createSection()
             ->setTitle(t('Example response'))
             ->collapse()
-            ->setIcon(Maileditor::icon()->setType('code', 'fas'))
+            ->setIcon(UI::icon()->setType('code', 'fas'))
             ->setContent($example)
             ->display();
     }
@@ -121,7 +126,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $this->ui->createSection()
                 ->setTitle(t('Supported parameters'))
                 ->setIcon(UI::icon()->variables())
-                ->expand()
+                ->collapse()
                 ->setContent($grid->render($entries))
                 ->display();
     }
@@ -151,7 +156,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         {
             $this->ui->createSection()
                 ->setTitle($rule->getLabel())
-                ->setIcon(Maileditor::icon()->setType('clipboard-check', 'fas'))
+                ->setIcon(UI::icon()->setType('clipboard-check', 'fas'))
                 ->collapse()
                 ->setAbstract($rule->getDescription())
                 ->setContent(sb()
@@ -164,5 +169,60 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                 )
                 ->display();
         }
+    }
+
+    private function generateRequestBuilder() : void
+    {
+        $defaults = array();
+        $params = $this->getParamsSorted();
+
+        foreach($params as $param)
+        {
+            if($param instanceof ReservedParamInterface && !$param->isEditable()) {
+                continue;
+            }
+
+            if($param instanceof SelectableValueParamInterface) {
+                $defaults[$param->getName()] = $param->getDefaultSelectableValue()?->getValue() ?? '';
+            }
+        }
+
+        $form = $this->ui->createForm($this->method->getMethodName().'-request-builder-form', $defaults);
+
+        foreach($params as $param)
+        {
+            if($param instanceof ReservedParamInterface && !$param->isEditable()) {
+                continue;
+            }
+
+            if($param instanceof SelectableValueParamInterface)
+            {
+                $field = $form->addSelect($param->getName(), $param->getLabel());
+
+                $field->addOption('Please select...', '');
+
+                foreach($param->getSelectableValues() as $value) {
+                    $field->addOption($value->getLabel(), $value->getValue());
+                }
+            } else {
+                $field = $form->addText($param->getName(), $param->getLabel());
+            }
+
+            $field->setComment($param->getDescription());
+        }
+
+        $this->ui->createSection()
+            ->setTitle(t('Try it out'))
+            ->setIcon(UI::icon()->setType('play', 'fas'))
+            ->setAbstract(sb()
+                ->add('Fill out the parameters you wish to include in the request.')
+                ->add('Note:')
+                ->add('By design, none of the parameters are marked as required.')
+                ->add('This allows you to set it up freely for testing purposes.')
+                ->add('Refer to the parameter documentation to verify their dependencies and requirements.')
+            )
+            ->setContent($form->render())
+            ->collapse()
+            ->display();
     }
 }
