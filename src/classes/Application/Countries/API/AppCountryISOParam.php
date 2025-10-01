@@ -6,11 +6,16 @@ namespace Application\Countries\API;
 
 use Application\API\Parameters\Type\IntegerParameter;
 use Application\API\Parameters\Type\StringParameter;
+use Application\API\Parameters\ValueLookup\SelectableParamValue;
+use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
+use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use Application\AppFactory;
 use Application_Countries_Country;
 
-class AppCountryISOParam extends StringParameter
+class AppCountryISOParam extends StringParameter implements SelectableValueParamInterface
 {
+    use SelectableValueParamTrait;
+
     public function __construct()
     {
         parent::__construct(AppCountryAPIInterface::KEY_COUNTRY_ISO, 'Country ISO code');
@@ -33,5 +38,23 @@ class AppCountryISOParam extends StringParameter
         }
 
         return AppFactory::createCountries()->getByISO($value);
+    }
+
+    protected function _getValues(): array
+    {
+        $result = array();
+        foreach (AppFactory::createCountries()->getAll() as $country) {
+            $result[] = new SelectableParamValue(
+                $country->getISO(),
+                sprintf('%s (%s)', strtoupper($country->getISO()), $country->getLabel())
+            );
+        }
+
+        return $result;
+    }
+
+    public function getDefaultSelectableValue(): ?SelectableParamValue
+    {
+        return null;
     }
 }
