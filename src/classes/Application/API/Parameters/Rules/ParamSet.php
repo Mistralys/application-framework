@@ -59,7 +59,16 @@ class ParamSet implements ParamSetInterface, Application_Interfaces_Loggable
 
     public function getLabel() : string
     {
-        return $this->label ?? sprintf('Parameter set %s', $this->getID());
+        return $this->label ?? $this->generateLabel();
+    }
+
+    protected function generateLabel() : string
+    {
+        $names = array_map(static function(APIParameterInterface $param) {
+            return $param->getLabel();
+        }, $this->getParams());
+
+        return implode(' + ', $names);
     }
 
     public function setLabel(?string $label) : self
