@@ -11,6 +11,7 @@ namespace Application\API\Documentation\Examples;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\Highlighter;
 use UI_Renderable;
 
 /**
@@ -34,7 +35,7 @@ class JSONMethodExample extends UI_Renderable
 
     protected function _render(): string
     {
-        $output = '<pre>'.JSONConverter::var2json($this->method->getExampleJSONResponse(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES).'</pre>';
+        $output = Highlighter::json(JSONConverter::var2json($this->method->getExampleJSONResponse(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
 
         $keys = $this->method->getReponseKeyDescriptions();
 
