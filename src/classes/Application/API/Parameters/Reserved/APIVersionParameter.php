@@ -50,9 +50,6 @@ class APIVersionParameter extends StringParameter implements ReservedParamInterf
 
     public function getDefaultSelectableValue(): ?SelectableParamValue
     {
-        return new SelectableParamValue(
-            $this->method->getCurrentVersion(),
-            'Current version (v'.$this->method->getCurrentVersion().')'
-        );
+        return null;
     }
 }
