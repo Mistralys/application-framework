@@ -68,7 +68,7 @@ class ParamSet implements ParamSetInterface, Application_Interfaces_Loggable
             return $param->getLabel();
         }, $this->getParams());
 
-        return implode(' + ', $names);
+        return t('By %1$s', implode(' + ', $names));
     }
 
     public function setLabel(?string $label) : self
