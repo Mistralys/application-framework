@@ -124,4 +124,14 @@ MARKDOWN;
 
         return $found;
     }
+
+    public function getExampleJSONResponse(): array
+    {
+        return array();
+    }
+
+    public function getRelatedMethodNames(): array
+    {
+        return array();
+    }
 }

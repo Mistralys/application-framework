@@ -77,4 +77,14 @@ MARKDOWN;
 
         $response->setKeys($info->toArray());
     }
+
+    public function getExampleJSONResponse(): array
+    {
+        return array();
+    }
+
+    public function getRelatedMethodNames(): array
+    {
+        return array();
+    }
 }
