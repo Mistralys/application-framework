@@ -65,17 +65,17 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this->logIdentifier;
     }
 
-    public function getRequestTime() : Microtime
+    final public function getRequestTime() : Microtime
     {
         return $this->time;
     }
 
-    public function getDocumentationURL(): AdminURLInterface
+    final public function getDocumentationURL(): AdminURLInterface
     {
         return $this->api->adminURL()->methodDocumentation($this);
     }
 
-    public function process(): never
+    final public function process(): never
     {
         $this->return = false; // In case processReturn() was called before.
 
@@ -84,7 +84,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         Application::exit(sprintf('API Method [%s] has finished.', $this->getID()));
     }
 
-    public function processReturn(): ArrayDataCollection
+    final public function processReturn(): ArrayDataCollection
     {
         $this->return = true;
 
@@ -150,7 +150,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     private ?APIParamManager $paramManager = null;
 
-    public function manageParams() : APIParamManager
+    final public function manageParams() : APIParamManager
     {
         if(!isset($this->paramManager)) {
             $this->paramManager = new APIParamManager($this);
@@ -159,7 +159,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this->paramManager;
     }
 
-    protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
+    final protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
     {
         return $this->manageParams()->addParam($name, $label);
     }
@@ -179,7 +179,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * @param string|array<mixed>|int|float|bool|NULL $default
      * @return mixed|NULL
      */
-    protected function getParam(string $name, $default = null)
+    final protected function getParam(string $name, $default = null)
     {
         return $this->request->getParam($name, $default);
     }
@@ -188,7 +188,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * Validates the parameters of the method to make sure all required
      * request parameters are present and valid.
      */
-    protected function validate(): void
+    final protected function validate(): void
     {
         $results = $this->manageParams()->getValidationResults();
 
@@ -230,13 +230,13 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
             ->send();
     }
 
-    public function allowCORSDomain(string $domain) : self
+    final public function allowCORSDomain(string $domain) : self
     {
         $this->CORS->allowDomain($domain);
         return $this;
     }
 
-    public function getCORS() : Application_CORS
+    final public function getCORS() : Application_CORS
     {
         if(!isset($this->CORS)) {
             $this->CORS = new Application_CORS();
@@ -363,13 +363,35 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     abstract protected function _sendSuccessResponse(ArrayDataCollection $data) : void;
 
-    public function getInfo() : APIInfo
+    private ?APIInfo $info = null;
+
+    final public function getInfo() : APIInfo
     {
-        return new APIInfo($this);
+        if(!isset($this->info)) {
+            $this->info = new APIInfo($this);
+        }
+
+        return $this->info;
     }
 
     final protected function processExit() : never
     {
         Application::exit('API Method [' . $this->getID() . '] has finished.');
+    }
+
+    final public function getRelatedMethods(): array
+    {
+        $result = array();
+        $manager = APIManager::getInstance();
+
+        foreach($this->getRelatedMethodNames() as $methodName) {
+            $result[] = $manager->getMethodByName($methodName);
+        }
+
+        usort($result, static function(APIMethodInterface $a, APIMethodInterface $b) : int {
+            return strnatcasecmp($a->getMethodName(), $b->getMethodName());
+        });
+
+        return $result;
     }
 }
