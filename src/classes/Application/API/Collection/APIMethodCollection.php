@@ -10,6 +10,7 @@ namespace Application\API\Collection;
 
 use Application\API\APIMethodInterface;
 use Application\API\APIManager;
+use Application\AppFactory;
 use AppUtils\Collections\BaseClassLoaderCollectionMulti;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
@@ -52,7 +53,7 @@ class APIMethodCollection extends BaseClassLoaderCollectionMulti
     {
         return array(
             FolderInfo::factory(APP_INSTALL_FOLDER . '/classes/Application/API/Method'),
-            FolderInfo::factory(APP_ROOT . '/assets/classes/' . APP_CLASS_NAME . '/API/')
+            FolderInfo::factory(AppFactory::createDriver()->getClassesFolder() . '/API/')
         );
     }
 
