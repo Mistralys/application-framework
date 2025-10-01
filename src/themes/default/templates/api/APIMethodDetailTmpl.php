@@ -188,6 +188,10 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
 
         $form = $this->ui->createForm($this->method->getMethodName().'-request-builder-form', $defaults);
+        $form->setAttribute('target', '_blank');
+        $form->addHiddenVar('method', $this->method->getMethodName());
+        $form->setAttribute('action', APP_URL.'/api/');
+
 
         foreach($params as $param)
         {
@@ -210,6 +214,8 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
 
             $field->setComment($param->getDescription());
         }
+
+        $form->addPrimarySubmit('Send request');
 
         $this->ui->createSection()
             ->setTitle(t('Try it out'))
