@@ -51,4 +51,14 @@ MARKDOWN;
     {
         $response->setKeys($this->getRequestData()->getData());
     }
+
+    public function getRelatedMethodNames(): array
+    {
+        return array();
+    }
+
+    public function getExampleJSONResponse(): array
+    {
+        return array();
+    }
 }

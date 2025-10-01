@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\API\Rules;
 
+use Application\API\Parameters\ParamSet;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\Type\OrRule;
 use Application\API\Parameters\Type\StringParameter;
@@ -19,7 +20,9 @@ final class OrRuleTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new OrRule()->orParam($paramA)->orParam($paramB);
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA))
+            ->addSet(new ParamSet('b', $paramB));
 
         $rule->preValidate();
         $rule->apply();
@@ -33,6 +36,10 @@ final class OrRuleTests extends APITestCase
         $this->assertTrue($paramB->isInvalidated());
         $this->assertFalse($paramB->isRequired());
         $this->assertNull($paramB->getValue(), 'Param B should not have a value, since it was invalidated.');
+
+        $set = $rule->getValidSet();
+        $this->assertNotNull($set);
+        $this->assertSame('a', $set->getID());
     }
 
     public function test_validSetupWithMultiParamSets() : void
@@ -45,7 +52,9 @@ final class OrRuleTests extends APITestCase
         $paramA2 = new StringParameter('paramA2', 'Param A2');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new OrRule()->orParams($paramA1, $paramA2)->orParam($paramB);
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA1, $paramA2))
+            ->addSet(new ParamSet('b', $paramB));
 
         $rule->preValidate();
         $rule->apply();
@@ -63,7 +72,9 @@ final class OrRuleTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A')->makeRequired();
         $paramB = new StringParameter('paramB', 'Param B')->makeRequired();
 
-        $rule = new OrRule()->orParam($paramA)->orParam($paramB);
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA))
+            ->addSet(new ParamSet('b', $paramB));
 
         $rule->preValidate();
 
@@ -76,7 +87,9 @@ final class OrRuleTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new OrRule()->orParam($paramA)->orParam($paramB);
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA))
+            ->addSet(new ParamSet('b', $paramB));
 
         $rule->preValidate();
         $rule->apply();
