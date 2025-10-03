@@ -879,6 +879,10 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      */
     public function setPOSTData(string $name, $value) : self
     {
+        if(empty($value) && $value !== '0' && $value !== 0 && $value !== false) {
+            return $this;
+        }
+
         if(!is_string($value) && !is_numeric($value)) 
         {
             $ex = new Connectors_Exception(
@@ -898,6 +902,19 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         }
         
         $this->postData[$name] = (string)$value;
+        return $this;
+    }
+
+    public function setPOSTParams(array|ArrayDataCollection $params) : self
+    {
+        if($params instanceof ArrayDataCollection) {
+            $params = $params->getData();
+        }
+
+        foreach($params as $name => $value) {
+            $this->setPOSTData($name, $value);
+        }
+
         return $this;
     }
 
