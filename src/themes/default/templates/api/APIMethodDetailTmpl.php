@@ -6,12 +6,21 @@ namespace Application\Themes\DefaultTemplate\API;
 
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
+use Application\API\Connector\AppAPIConnector;
+use Application\API\Connector\AppAPIMethod;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\MarkdownRenderer;
+use AppUtils\ArrayDataCollection;
+use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\Highlighter;
 use AppUtils\OutputBuffering;
+use Connectors;
 use UI;
+use UI_Form;
 use UI_Page_Template_Custom;
 
 class APIMethodDetailTmpl extends UI_Page_Template_Custom
@@ -19,11 +28,73 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
     public const string PARAM_METHOD = 'method';
 
     private APIMethodInterface $method;
+    private UI_Form $form;
 
 
     protected function preRender(): void
     {
         $this->method = $this->getObjectVar(self::PARAM_METHOD, APIMethodInterface::class);
+
+        $this->createForm();
+    }
+
+    private function generateURL(ArrayDataCollection $values) : string
+    {
+        $params = $this->getParamsSorted();
+
+        $urlParams['method'] = $this->method->getMethodName();
+        foreach($params as $param)
+        {
+            $value = $values->getString($param->getName());
+            if(!empty($value)) {
+                $urlParams[$param->getName()] = $value;
+            }
+        }
+
+        return APP_URL.'/api/?'.http_build_query($urlParams, '', '&', PHP_QUERY_RFC3986);
+    }
+
+    private function handleFormActions(ArrayDataCollection $values) : void
+    {
+        $url = $this->generateURL($values);
+
+        echo '<br>';
+
+        $this->ui->createMessage()
+            ->makeInfo()
+            ->enableIcon()
+            ->makeNotDismissable()
+            ->setContent(sb()
+                ->add('API URL generated for your selected parameters:')
+                ->para(sb()->link($url, $url, true))
+            )
+            ->display();
+
+        if(!$this->request->getBool('generate_url'))
+        {
+            OutputBuffering::start();
+            $connector = AppAPIConnector::create(APP_URL);
+            $result = $connector->fetchMethodData($this->method->getMethodName(), $values->getData());
+
+            $json = JSONConverter::var2json($result->getData(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+            $length = strlen($json);
+            ?>
+            <style>
+                .response > PRE{ max-height: 400px; overflow: auto; }
+            </style>
+            <div class="response">
+                <?php echo Highlighter::json($json) ?>
+            </div>
+            <?php
+
+            $this->ui->createSection()
+                ->setTitle(t('%1$s response', 'JSON'))
+                ->setAbstract(sb()->t('Response size:')->add(ConvertHelper::bytes2readable($length)))
+                ->setIcon(UI::icon()->setType('code', 'fas'))
+                ->setContent(OutputBuffering::get())
+                ->expand()
+                ->display();
+        }
     }
 
     protected function generateOutput(): void
@@ -41,22 +112,34 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             </a>
         </p>
         <h1><?php pt('API'); echo ' - '.$this->method->getMethodName(); ?> </h1>
-        <div class="method-abstract">
-        <?php
-            echo MarkdownRenderer::create()->render($this->method->getDescription());
-        ?>
-        </div>
         <?php
 
-        $this->generateProperties();
-        $this->generateParamList();
-        $this->generateRulesList();
-        $this->generateExample();
+        if($this->form->isSubmitted() && $this->form->isValid()) {
+            $this->handleFormActions(ArrayDataCollection::create($this->form->getValues()));
+        } else {
+            $this->generateDocs();
+        }
+
         $this->generateRequestBuilder();
 
         echo '<br>';
 
         echo $this->renderCleanFrame(OutputBuffering::get());
+    }
+
+    private function generateDocs() : void
+    {
+        ?>
+        <div class="method-abstract">
+            <?php
+            echo MarkdownRenderer::create()->render($this->method->getDescription());
+            ?>
+        </div>
+        <?php
+        $this->generateProperties();
+        $this->generateParamList();
+        $this->generateRulesList();
+        $this->generateExample();
     }
 
     private function generateProperties() : void
@@ -173,6 +256,23 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
 
     private function generateRequestBuilder() : void
     {
+        $this->ui->createSection()
+            ->setTitle(t('Try it out'))
+            ->setCollapsed(!$this->form->isSubmitted())
+            ->setIcon(UI::icon()->setType('play', 'fas'))
+            ->setAbstract(sb()
+                ->add('Fill out the parameters you wish to include in the request.')
+                ->add('Note:')
+                ->add('By design, none of the parameters are marked as required.')
+                ->add('This allows you to set it up freely for testing purposes.')
+                ->add('Refer to the parameter documentation to verify their dependencies and requirements.')
+            )
+            ->setContent($this->form->render())
+            ->display();
+    }
+
+    private function createForm() : void
+    {
         $defaults = array();
         $params = $this->getParamsSorted();
 
@@ -188,10 +288,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
 
         $form = $this->ui->createForm($this->method->getMethodName().'-request-builder-form', $defaults);
-        $form->setAttribute('target', '_blank');
         $form->addHiddenVar('method', $this->method->getMethodName());
-        $form->setAttribute('action', APP_URL.'/api/');
-
 
         foreach($params as $param)
         {
@@ -215,20 +312,15 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             $field->setComment($param->getDescription());
         }
 
-        $form->addPrimarySubmit('Send request');
+        $form->addPrimarySubmit('Send request')
+                ->setIcon(UI::icon()->setType('play', 'fas'));
 
-        $this->ui->createSection()
-            ->setTitle(t('Try it out'))
-            ->setIcon(UI::icon()->setType('play', 'fas'))
-            ->setAbstract(sb()
-                ->add('Fill out the parameters you wish to include in the request.')
-                ->add('Note:')
-                ->add('By design, none of the parameters are marked as required.')
-                ->add('This allows you to set it up freely for testing purposes.')
-                ->add('Refer to the parameter documentation to verify their dependencies and requirements.')
-            )
-            ->setContent($form->render())
-            ->collapse()
-            ->display();
+        $form->addButton('generate_url')
+                ->setValue('yes')
+                ->setLabel(t('Show API request URL'))
+                ->setIcon(UI::icon()->link())
+                ->setAttribute('onclick', 'alert("argh");');
+
+        $this->form = $form;
     }
 }
