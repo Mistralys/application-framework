@@ -25,12 +25,12 @@ use AppUtils\ConvertHelper\JSONConverter;
  */
 trait JSONResponseTrait
 {
-    public function getResponseMime() : string
+    public function getResponseMime(): string
     {
         return 'application/json';
     }
 
-    protected function _sendSuccessResponse(ArrayDataCollection $data) : void
+    protected function _sendSuccessResponse(ArrayDataCollection $data): void
     {
         $this->_sendJSONData(
             JSONResponseInterface::RESPONSE_STATE_SUCCESS,
@@ -40,7 +40,7 @@ trait JSONResponseTrait
         );
     }
 
-    protected function _sendErrorResponse(ErrorResponse $response) : void
+    protected function _sendErrorResponse(ErrorResponse $response): void
     {
         $this->_sendJSONData(
             JSONResponseInterface::RESPONSE_STATE_ERROR,
@@ -52,21 +52,59 @@ trait JSONResponseTrait
         );
     }
 
-    private function _sendJSONData(string $state, array $data) : void
+    /**
+     * Weights for sorting the response keys in the output.
+     * @var array<string,int>
+     */
+    private const array KEY_WEIGHTS = array(
+        JSONResponseInterface::RESPONSE_KEY_STATE => 1,
+        JSONResponseInterface::RESPONSE_KEY_CODE => 2,
+        JSONResponseInterface::RESPONSE_KEY_MESSAGE => 3,
+        JSONResponseInterface::RESPONSE_KEY_DATA => 4,
+        JSONResponseInterface::RESPONSE_KEY_API => 5,
+    );
+
+    private function _sendJSONData(string $state, array $data): void
     {
         $data[JSONResponseInterface::RESPONSE_KEY_API] = $this->getInfo()->toArray();
         $data[JSONResponseInterface::RESPONSE_KEY_STATE] = $state;
 
-        ksort($data);
+        // Custom sort using KEY_WEIGHTS
+        $weights = self::KEY_WEIGHTS;
+        $apiKey = JSONResponseInterface::RESPONSE_KEY_API;
+        $maxWeight = max($weights);
+        $defaultStart = $maxWeight + 1;
+
+        $keys = array_keys($data);
+        $sortMap = [];
+        $alphaKeys = [];
+        foreach ($keys as $key) {
+            if ($key === $apiKey) {
+                $sortMap[$key] = PHP_INT_MAX; // Always last
+            } elseif (isset($weights[$key])) {
+                $sortMap[$key] = $weights[$key];
+            } else {
+                $alphaKeys[] = $key;
+            }
+        }
+        // Sort alphabetically for keys not in weights
+        sort($alphaKeys, SORT_STRING);
+        foreach ($alphaKeys as $i => $key) {
+            $sortMap[$key] = $defaultStart + $i;
+        }
+        // Sort keys by their assigned sort value
+        uksort($data, static function($a, $b) use ($sortMap) {
+            return $sortMap[$a] <=> $sortMap[$b];
+        });
 
         header('Content-Type: application/json');
         echo JSONConverter::var2json($data);
     }
 
-    protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results) : void
+    protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results): void
     {
         $response->appendErrorMessage(sprintf(
-            'Details are available in the response %s key.',
+            'Details are available in the response `%s` key.',
             JSONResponseInterface::RESPONSE_KEY_DATA
         ));
 
@@ -75,12 +113,12 @@ trait JSONResponseTrait
         ));
     }
 
-    public function renderExample() : string
+    public function renderExample(): string
     {
         return new JSONMethodExample($this)->render();
     }
 
-    public function getReponseKeyDescriptions() : array
+    public function getReponseKeyDescriptions(): array
     {
         return array();
     }
