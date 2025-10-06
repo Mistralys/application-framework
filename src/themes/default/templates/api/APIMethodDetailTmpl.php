@@ -11,6 +11,7 @@ use Application\API\Connector\AppAPIMethod;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
+use Application\API\Traits\JSONResponseInterface;
 use Application\MarkdownRenderer;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
@@ -19,6 +20,10 @@ use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Highlighter;
 use AppUtils\OutputBuffering;
 use Connectors;
+use Connectors_Exception;
+use Connectors_Response;
+use Connectors_ResponseCode;
+use Throwable;
 use UI;
 use UI_Form;
 use UI_Page_Template_Custom;
@@ -72,26 +77,52 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
 
         if(!$this->request->getBool('generate_url'))
         {
-            OutputBuffering::start();
-            $connector = AppAPIConnector::create(APP_URL);
-            $result = $connector->fetchMethodData($this->method->getMethodName(), $values->getData());
+            try
+            {
+                $connector = AppAPIConnector::create(APP_URL);
+                $result = $connector->fetchMethodData($this->method->getMethodName(), $values->getData());
+                $data = $result->getData();
+                $json = JSONConverter::var2json($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
-            $json = JSONConverter::var2json($result->getData(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
-            $length = strlen($json);
-            ?>
-            <style>
-                .response > PRE{ max-height: 400px; overflow: auto; }
-            </style>
-            <div class="response">
-                <?php echo Highlighter::json($json) ?>
-            </div>
-            <?php
+                if($data[JSONResponseInterface::RESPONSE_KEY_STATE] === JSONResponseInterface::RESPONSE_STATE_SUCCESS) {
+                    $state = UI::label('OK')->makeSuccess();
+                } else {
+                    $state = UI::label('Error')->makeDangerous();
+                }
+
+                OutputBuffering::start();
+                $length = strlen($json);
+                ?>
+                <style>
+                    .response > PRE{ max-height: 400px; overflow: auto; }
+                </style>
+                <div class="response">
+                    <?php echo Highlighter::json($json) ?>
+                </div>
+                <?php
+                $output = OutputBuffering::get();
+            }
+            catch (Throwable $e)
+            {
+                $state = UI::label('Exception')->makeDangerous();
+
+                $length = 0;
+                $output = $this->ui->createMessage()
+                    ->makeError()
+                    ->enableIcon()
+                    ->makeNotDismissable()
+                    ->setContent(sb()
+                        ->bold('An exception occurred while trying to perform the API request:')
+                        ->sf('#%1$s', $e->getCode())
+                        ->quote($e->getMessage())
+                    );
+            }
 
             $this->ui->createSection()
-                ->setTitle(t('%1$s response', 'JSON'))
+                ->setTitle(sb()->t('%1$s response', 'JSON')->add($state))
                 ->setAbstract(sb()->t('Response size:')->add(ConvertHelper::bytes2readable($length)))
                 ->setIcon(UI::icon()->setType('code', 'fas'))
-                ->setContent(OutputBuffering::get())
+                ->setContent($output)
                 ->expand()
                 ->display();
         }
@@ -149,6 +180,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $props->add(t('Response mime'), $this->method->getResponseMime());
         $props->add(t('Version'), $this->method->getCurrentVersion());
         $props->add(t('Versions'), implode(', ', $this->method->getVersions()));
+        $props->add(t('HTTP status codes'), implode('<br>', $this->resolveHTTPStatusCodes()));
 
         $related = $this->method->getRelatedMethods();
         if(!empty($related)) {
@@ -161,6 +193,22 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
 
         echo $props;
+    }
+
+    private function resolveHTTPStatusCodes() : array
+    {
+        $codes = array(
+            Connectors_ResponseCode::HTTP_OK => 'OK (successful request)',
+            Connectors_ResponseCode::HTTP_BAD_REQUEST => 'Bad request (missing or invalid parameters)',
+            Connectors_ResponseCode::HTTP_INTERNAL_SERVER_ERROR => 'Internal server error',
+        );
+
+        $result = array();
+        foreach($codes as $code => $desc) {
+            $result[] = sb()->code($code)->italic($desc);
+        }
+
+        return $result;
     }
 
     private function generateExample() : void
@@ -320,6 +368,14 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                 ->setLabel(t('Show API request URL'))
                 ->setIcon(UI::icon()->link())
                 ->setAttribute('onclick', 'alert("argh");');
+
+        if($form->isSubmitted()) {
+            $form->addButton('back')
+                ->setLabel('Stop testing')
+                ->setIcon(UI::icon()->back())
+                ->setAttribute('style', 'float:right')
+                ->link($this->method->getDocumentationURL());
+        }
 
         $this->form = $form;
     }
