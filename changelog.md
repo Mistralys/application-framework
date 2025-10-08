@@ -22,6 +22,7 @@
 ### Breaking changes
 
 - Renamed all API-related classes.
+- New API method structure and flow.
 - Renamed and namespaced the API bootstrapper.
 
 ## v5.11.3 - Connector cache fix redux
