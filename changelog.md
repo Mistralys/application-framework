@@ -12,6 +12,7 @@
 - API: Renamed and namespaced the API bootstrapper.
 - API: The method documentation URL is now included in the response API info.
 - API: The request and response mime types are now included in the response API info.
+- Connectors: Added a connector for framework APIs.
 - Themes: The clean frame template now uses the page title if set.
 - Validation: Added the `ValidationResults` utility class.
 - Validation: Added the `ValidationResultInterface` for objects that contain validation results.
