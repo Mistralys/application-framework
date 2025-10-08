@@ -113,16 +113,17 @@ class template_default_frame extends UI_Page_Template_Custom
             '{CONSOLE}' => $this->page->renderConsole(),
             '{CONTENT}' => $contentHTML,
             '{QUERY_SUMMARY}' => $this->renderQuerySummary(),
-            
-            // must always be the last items
-            '{HEADER}' => $this->header->render(),
-            '{MESSAGES}' => $this->page->renderMessages(),
-            '{HEADER_INCLUDES}' => $this->ui->renderHeadIncludes(),
         );
 
         if(isset($this->screen)) {
             $this->variables['{HELP}'] = $this->screen->renderHelp();
         }
+
+        // must always be the last items for all the other elements to
+        // have the possibility to queue scripts, styles and messages.
+        $this->variables['{HEADER}'] = $this->header->render();
+        $this->variables['{MESSAGES}'] = $this->page->renderMessages();
+        $this->variables['{HEADER_INCLUDES}'] = $this->ui->renderHeadIncludes();
     }
 
     private function renderQuerySummary(): string
