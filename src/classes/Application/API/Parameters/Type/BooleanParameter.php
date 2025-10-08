@@ -11,6 +11,9 @@ namespace Application\API\Parameters\Type;
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
+use Application\API\Parameters\ValueLookup\SelectableParamValue;
+use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
+use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use AppUtils\ConvertHelper;
 
 /**
@@ -22,8 +25,10 @@ use AppUtils\ConvertHelper;
  *
  * @method bool|null getValue()
  */
-class BooleanParameter extends BaseAPIParameter
+class BooleanParameter extends BaseAPIParameter implements SelectableValueParamInterface
 {
+    use SelectableValueParamTrait;
+
     public function getTypeLabel(): string
     {
         return t('Boolean');
@@ -83,6 +88,21 @@ class BooleanParameter extends BaseAPIParameter
                 gettype($value)
             ),
             APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+        );
+    }
+
+    public function getDefaultSelectableValue(): ?SelectableParamValue
+    {
+        return null;
+    }
+
+    protected function _getValues(): array
+    {
+        return array(
+            new SelectableParamValue('true', 'True'),
+            new SelectableParamValue('false', 'False'),
+            new SelectableParamValue('yes', 'Yes'),
+            new SelectableParamValue('no', 'No')
         );
     }
 }
