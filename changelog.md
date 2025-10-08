@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.12.1 - Page help fix
+- UI: Fixed the page help being expanded all the time, and buttons not being responsive.
+- API: Can now select boolean values in a select element when trying out an API.
+
 ## v5.12.0 - API Update (Breaking-L)
 - API: Complete overhaul of the API handling.
 - API: Added an API method index to look up method names and classes.
