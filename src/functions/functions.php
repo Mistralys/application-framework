@@ -321,8 +321,8 @@ function displayError(Throwable $e)
         APP_ERROR_PAGE_TITLE, 
         'An unexpected issue came up, and the system decided to stop the current operation to avoid breaking anything. '.
         'While this is certainly inconvenient, we invite you to review the error details below - they may shed some light on possible solutions. ',
-        $themeLocation[1],
-        $themeLocation[0],
+        $themeLocation[1] ?? '(unknown)',
+        $themeLocation[0] ?? '(unknown)',
         $locations,
         $output,
         $contentType,

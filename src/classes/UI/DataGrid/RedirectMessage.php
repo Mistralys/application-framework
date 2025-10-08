@@ -66,7 +66,7 @@ class UI_DataGrid_RedirectMessage
     {
         $this->redirectURL = (string)$redirectURL;
         $this->action = $action;
-        $this->screen = Application_Driver::getInstance()->getActiveScreen();
+        $this->screen = Application_Driver::getInstance()->requireActiveScreen();
         
         $this
         ->none(t('No elements were affected by the operation.'))

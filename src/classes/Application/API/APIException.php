@@ -8,5 +8,7 @@ use Application_Exception;
 
 class APIException extends Application_Exception
 {
-
+    public const int ERROR_METHOD_NOT_IN_INDEX = 59213005;
+    public const int ERROR_INTERNAL = 59213006;
+    public const int ERROR_CANNOT_MODIFY_AFTER_VALIDATION = 59213007;
 }

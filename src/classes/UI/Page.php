@@ -569,10 +569,10 @@ class UI_Page extends UI_Renderable
     /**
      * Retrieves the currently active administration screen.
      *
-     * @return AdminScreenInterface
+     * @return AdminScreenInterface|NULL
      * @throws Application_Exception
      */
-    public function getActiveScreen() : AdminScreenInterface
+    public function getActiveScreen() : ?AdminScreenInterface
     {
         return $this->driver->getActiveScreen();
     }

@@ -80,7 +80,7 @@ class template_default_frame extends UI_Page_Template_Custom
     private array $variables;
     
     private Application_Ratings $ratings;
-    private AdminScreenInterface $screen;
+    private ?AdminScreenInterface $screen = null;
     private ?Application_LockManager $lockManager;
     
     protected function preRender() : void
@@ -100,7 +100,7 @@ class template_default_frame extends UI_Page_Template_Custom
     {
         $contentHTML = $this->getVar('html.content');
         
-        if(strpos($contentHTML, '{SIDEBAR}') !== false)
+        if(str_contains($contentHTML, '{SIDEBAR}'))
         {
             $contentHTML = str_replace('{SIDEBAR}', $this->sidebar->render(), $contentHTML);
         }
@@ -109,7 +109,7 @@ class template_default_frame extends UI_Page_Template_Custom
             '{FOOTER}' => $this->footer->render(),
             '{RATINGS}' => $this->ratings->renderWidget(),
             '{MAINTENANCE}' => $this->page->renderMaintenance(),
-            '{HELP}' => $this->screen->renderHelp(),
+            '{HELP}' => '',
             '{CONSOLE}' => $this->page->renderConsole(),
             '{CONTENT}' => $contentHTML,
             '{QUERY_SUMMARY}' => $this->renderQuerySummary(),
@@ -119,6 +119,10 @@ class template_default_frame extends UI_Page_Template_Custom
             '{MESSAGES}' => $this->page->renderMessages(),
             '{HEADER_INCLUDES}' => $this->ui->renderHeadIncludes(),
         );
+
+        if(isset($this->screen)) {
+            $this->variables['{HELP}'] = $this->screen->renderHelp();
+        }
     }
 
     private function renderQuerySummary(): string

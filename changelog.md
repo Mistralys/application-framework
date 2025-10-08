@@ -1,5 +1,30 @@
 # Application Framework Changelog
 
+## v5.12.0 - API Update (Breaking-L)
+- API: Complete overhaul of the API handling.
+- API: Added an API method index to look up method names and classes.
+- API: Registered the method index in the main cache control.
+- API: Added an API method collection to access all methods.
+- API: Added `APIMethodInterface`.
+- API: Overhauled the base API method class, streamlined the request and response processes.
+- API: Added traits for the request and response types, e.g. `JSONResponseTrait`.
+- API: Implemented an exception-based flow break to access response data instead of sending responses.
+- API: Renamed and namespaced the API bootstrapper.
+- API: The method documentation URL is now included in the response API info.
+- API: The request and response mime types are now included in the response API info.
+- Themes: The clean frame template now uses the page title if set.
+- Validation: Added the `ValidationResults` utility class.
+- Validation: Added the `ValidationResultInterface` for objects that contain validation results.
+- Validation: Added the `ValidationLoggableTrait` for classes that combine logging and validation.
+- Tests: Added the `OperationResultTestTrait` for useful assertions.
+- Dependencies: Bumped up AppUtils to [v3.1.10](https://github.com/Mistralys/application-utils/releases/tag/3.1.10) for a bugfix.
+
+### Breaking changes
+
+- Renamed all API-related classes.
+- New API method structure and flow.
+- Renamed and namespaced the API bootstrapper.
+
 ## v5.11.3 - Connector cache fix redux
 - Connectors: Fixed unhandled cases of loading broken JSON from the cache.
 - Error handling: Exceptions now also add a message in the application log.

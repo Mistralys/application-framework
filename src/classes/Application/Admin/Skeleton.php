@@ -943,6 +943,6 @@ abstract class Application_Admin_Skeleton
     
     public function getActiveScreen() : AdminScreenInterface
     {
-        return $this->driver->getActiveScreen();
+        return $this->driver->requireActiveScreen();
     }
 }

@@ -152,8 +152,8 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
     {
         if(!isset($this->name))
         {
-            $driver = Application_Driver::getInstance();
-            $this->name = str_replace('.', '_', $driver->getActiveScreen()->getURLPath().'_navsearch_'.$this->nav->getID());
+            $urlPath = Application_Driver::getInstance()->getActiveScreen()?->getURLPath() ?? 'global';
+            $this->name = str_replace('.', '_', $urlPath.'_navsearch_'.$this->nav->getID());
         }
         
         return $this->name;
@@ -332,9 +332,12 @@ class UI_Page_Navigation_Item_Search extends UI_Page_Navigation_Item
 
     public function addHiddenPageVars() : self
     {
-        $vars = Application_Driver::getInstance()->getActiveScreen()->getPageParams();
+        $screen = Application_Driver::getInstance()->getActiveScreen();
+        if($screen !== null) {
+            $this->addHiddenVars($screen->getPageParams());
+        }
 
-        return $this->addHiddenVars($vars);
+        return $this;
     }
     
    /**

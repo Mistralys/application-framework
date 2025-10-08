@@ -1006,12 +1006,26 @@ abstract class Application_Driver implements Application_Driver_Interface
     /**
      * Retrieves the currently active administration screen instance.
      *
-     * @return AdminScreenInterface
+     * @return AdminScreenInterface|NULL
      * @throws DriverException
      */
-    public function getActiveScreen() : AdminScreenInterface
+    public function getActiveScreen() : ?AdminScreenInterface
+    {
+        if($this->hasActiveArea()) {
+            return $this->getActiveArea()->getActiveScreen();
+        }
+
+        return null;
+    }
+
+    public function requireActiveScreen() : AdminScreenInterface
     {
         return $this->getActiveArea()->getActiveScreen();
+    }
+
+    public function hasActiveArea() : bool
+    {
+        return isset($this->activeArea);
     }
 
     /**

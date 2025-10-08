@@ -19,13 +19,17 @@ $this->ui->addStylesheet('ui-clean-frame.css');
 
 $framework = AppFramework::getInstance();
 
+$title = $this->page->getTitle();
+if(empty($title)) {
+    $title = $this->driver->getAppName();
+}
+
 ?><!DOCTYPE html>
 <html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title><?php echo $this->driver->getAppName() ?></title>
-        <link rel="shortcut icon" href="favicon.ico"/>
-        <?php echo $this->ui->renderHeadIncludes() ?>    
+        <title><?php echo $title ?></title>
+        <?php echo $this->ui->renderHeadIncludes() ?>
     </head>
     <body class="clean-frame">
 		<div id="content_area">

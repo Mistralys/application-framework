@@ -14,7 +14,7 @@ use function AppUtils\parseVariable;
  * Template for the request log's info dump screen.
  *
  * @package UserInterface
- * @subackage Templates
+ * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Bootstrap_Screen_RequestLog::renderInfoDump()

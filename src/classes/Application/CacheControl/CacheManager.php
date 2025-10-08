@@ -11,6 +11,7 @@ namespace Application\CacheControl;
 use Application\AppFactory;
 use Application\OfflineEvents\RegisterCacheLocationsEvent;
 use Application_EventHandler;
+use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use Mistralys\AppFrameworkDocs\DocumentationPages;
@@ -41,14 +42,23 @@ use Mistralys\AppFrameworkDocs\DocumentationPages;
  *
  * @see self::DOCUMENTATION_URL
  */
-class CacheManager extends BaseStringPrimaryCollection
+class CacheManager extends BaseStringPrimaryCollection implements \Application_Interfaces_Loggable
 {
-    public const DOCUMENTATION_URL = DocumentationPages::MANAGING_CACHE_LOCATIONS;
+    use Application_Traits_Loggable;
+
+    public const string DOCUMENTATION_URL = DocumentationPages::MANAGING_CACHE_LOCATIONS;
 
     private static ?self $instance = null;
+    private string $logIdentifier;
 
     private function __construct()
     {
+        $this->logIdentifier = 'CacheManager';
+    }
+
+    public function getLogIdentifier(): string
+    {
+        return $this->logIdentifier;
     }
 
     public static function getInstance() : self
@@ -77,7 +87,17 @@ class CacheManager extends BaseStringPrimaryCollection
      */
     public function clearAll() : self
     {
-        foreach($this->getAll() as $location) {
+        $this->log('Clearing all caches...');
+
+        foreach($this->getAll() as $location)
+        {
+            $this->log(
+                '[%s] %s (%s bytes)',
+                $location->getID(),
+                $location->getLabel(),
+                $location->getByteSize()
+            );
+
             $location->clear();
         }
 

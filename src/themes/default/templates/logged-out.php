@@ -13,7 +13,7 @@ declare(strict_types=1);
  * Template for the logout screen shown to users when they have logged out.
  *
  * @package UserInterface
- * @subackage Templates
+ * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Bootstrap_Screen_LoggedOut

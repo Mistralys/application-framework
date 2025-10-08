@@ -16,7 +16,7 @@ use AppUtils\OutputBuffering;
  * Template for the request log settings screen.
  *
  * @package UserInterface
- * @subackage Templates
+ * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Bootstrap_Screen_RequestLog::renderSettings()

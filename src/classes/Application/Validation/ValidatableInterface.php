@@ -1,22 +1,22 @@
 <?php
 /**
  * @package Application
- * @subpackage Interfaces
+ * @subpackage Validation
  */
 
 declare(strict_types=1);
 
-use AppUtils\OperationResult_Collection;
+use Application\Validation\ValidationResults;
 
 /**
  * Interface for an element that can be validated.
  *
- * NOTE: Only supports a single validation error
- * message to be generated. As an alternative,
- * consider using {@see OperationResult_Collection}.
+ * > NOTE: Only supports a single validation error
+ * > message to be generated. As an alternative,
+ * > consider using {@see ValidationResults}.
  *
  * @package Application
- * @subpackage Interfaces
+ * @subpackage Validation
  *
  * @see Application_Traits_Validatable
  */
