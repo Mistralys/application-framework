@@ -1,5 +1,14 @@
 # Application Framework Changelog
 
+## v5.12.3 - API fixes and improvements
+- Bootstrap: Added an exception when trying to boot a second time with a different class.
+- API: Fixed the OR rule invalidating parameters prematurely when using multiple OR groups.
+- API: Using `processReturn()` now returns distinct response and error response objects.
+- API: Now passing the parameter instance to validation classes for better error messages.
+- API: Added `getValidationResults()` to get results when processing in return mode.
+- API: Added `setRequestBody()` to simulate the body in test scenarios.
+- Composer: Added the `build` Composer command.
+
 ## v5.12.1 - Page help fix
 - UI: Fixed the page help being expanded all the time, and buttons not being responsive.
 - API: Can now select boolean values in a select element when trying out an API.
