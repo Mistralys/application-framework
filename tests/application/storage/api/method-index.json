@@ -1,0 +1,9 @@
+{
+    "DescribeAdminAreas": "Application\\API\\Method\\DescribeAdminAreasAPI",
+    "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
+    "GetAppCountries": "Application\\API\\Method\\GetAppCountriesAPI",
+    "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
+    "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
+    "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
+    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod"
+}
