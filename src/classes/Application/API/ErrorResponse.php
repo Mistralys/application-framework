@@ -42,6 +42,11 @@ class ErrorResponse
         $this->sendCallback = $sendCallback;
     }
 
+    public function toPayload() : ErrorResponsePayload
+    {
+        return new ErrorResponsePayload($this);
+    }
+
     public function getMethod(): APIMethodInterface
     {
         return $this->method;
