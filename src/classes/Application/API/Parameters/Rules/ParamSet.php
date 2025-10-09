@@ -117,15 +117,6 @@ class ParamSet implements ParamSetInterface, Application_Interfaces_Loggable
         return $this;
     }
 
-    public function invalidate() : self
-    {
-        foreach ($this->params as $param) {
-            $param->invalidate();
-        }
-
-        return $this;
-    }
-
     public function __toString()
     {
         return implode(

@@ -28,5 +28,4 @@ interface ParamSetInterface extends StringableInterface
     public function getParams(): array;
     public function isValid() : bool;
     public function apply() : self;
-    public function invalidate() : self;
 }
