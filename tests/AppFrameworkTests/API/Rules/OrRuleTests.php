@@ -82,6 +82,39 @@ final class OrRuleTests extends APITestCase
         $this->assertFalse($paramB->isRequired());
     }
 
+    /**
+     * When several parameter sets contain the same parameter,
+     * and one of those sets is invalid, the parameter should
+     * not be invalidated if it is part of another valid set.
+     */
+    public function test_duplicateParamsDoNotGetInvalidated() : void
+    {
+        // We only want B to be relevant
+        $_REQUEST['paramB'] = 'valueB';
+
+        $paramA = new StringParameter('paramA', 'Param A');
+        $paramB = new StringParameter('paramB', 'Param B');
+
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA, $paramB))
+            ->addSet(new ParamSet('b', $paramB));
+
+        $rule->preValidate();
+
+        $this->assertResultValidWithNoMessages($rule);
+
+        $this->assertTrue($paramA->isInvalidated());
+        $this->assertNull($paramA->getValue());
+
+        $this->assertFalse($paramB->isInvalidated());
+        $this->assertTrue($paramB->isRequired());
+        $this->assertSame('valueB', $paramB->getValue());
+
+        $set = $rule->getValidSet();
+        $this->assertNotNull($set);
+        $this->assertSame('b', $set->getID());
+    }
+
     public function test_noMatchingParamSets() : void
     {
         $paramA = new StringParameter('paramA', 'Param A');
