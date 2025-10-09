@@ -116,6 +116,10 @@
   },
   "scripts": {
     "post-autoload-dump": "Application\\Composer\\ComposerScripts::clearClassCache",
-    "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches"
+    "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches",
+    "build": [
+      "@composer dumpautoload",
+      "Application\\Composer\\ComposerScripts::build"
+    ]
   }
 }
