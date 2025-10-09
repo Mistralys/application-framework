@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Validation\Type;
 
+use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Validation\BaseParamValidation;
 use AppUtils\OperationResult;
 
@@ -35,14 +36,17 @@ class ValueExistsCallbackValidation extends BaseParamValidation
         $this->callback = $callback;
     }
 
-    public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
+    public function validate(float|int|bool|array|string|null $value, OperationResult $result, APIParameterInterface $param): void
     {
         $callback = $this->callback;
 
         if (!$callback($value))
         {
             $result->makeError(
-                'The specified value does not exist.',
+                sprintf(
+                    'The value specified for API parameter `%s` does not exist.',
+                    $param->getName()
+                ),
                 self::VALIDATION_VALUE_NOT_EXISTS
             );
         }

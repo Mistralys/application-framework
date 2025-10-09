@@ -114,7 +114,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
     private int|float|bool|string|array|null $value = null;
 
     /**
-     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
+     * @param (callable(int|float|bool|string|array, OperationResult, APIParameterInterface, mixed...) : void) $callback
      * @param mixed ...$args
      * @return $this
      */
@@ -182,7 +182,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
         // Run through all validations
         foreach($this->validations as $validation)
         {
-            $validation->validate($value, $this->result);
+            $validation->validate($value, $this->result, $this);
 
             if(!$this->result->isValid()) {
                 // Stop processing on first error

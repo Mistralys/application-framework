@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Validation\Type;
 
+use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Validation\BaseParamValidation;
 use AppUtils\OperationResult;
 
 class CallbackValidation extends BaseParamValidation
 {
     /**
-     * @var (callable(int|float|bool|string|array, OperationResult, mixed...) : void)
+     * @var (callable(int|float|bool|string|array, OperationResult, APIParameterInterface, mixed...) : void)
      */
     private $callback;
 
@@ -20,7 +21,7 @@ class CallbackValidation extends BaseParamValidation
     private array $args;
 
     /**
-     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
+     * @param (callable(int|float|bool|string|array, OperationResult, APIParameterInterface, mixed...) : void) $callback
      * @param mixed ...$args
      */
     public function __construct(callable $callback, ...$args)
@@ -29,7 +30,7 @@ class CallbackValidation extends BaseParamValidation
         $this->args = $args;
     }
 
-    public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
+    public function validate(float|int|bool|array|string|null $value, OperationResult $result, APIParameterInterface $param): void
     {
         if($value === null) {
             // Nothing to validate
@@ -37,7 +38,7 @@ class CallbackValidation extends BaseParamValidation
         }
 
         $callback = $this->callback;
-        $args = array_merge(array($value, $result), $this->args);
+        $args = array_merge(array($value, $result, $param), $this->args);
         $callback(...$args);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\API\Parameters\Validation\Type;
 
 use Application\API\Parameters\APIParameterException;
+use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Validation\BaseParamValidation;
 use AppUtils\OperationResult;
 
@@ -40,7 +41,7 @@ class EnumValidation extends BaseParamValidation
         }
     }
 
-    public function validate(float|int|bool|array|string|null $value, OperationResult $result): void
+    public function validate(float|int|bool|array|string|null $value, OperationResult $result, APIParameterInterface $param): void
     {
         if($value === null) {
             // Nothing to validate
@@ -53,9 +54,10 @@ class EnumValidation extends BaseParamValidation
 
         $result->makeError(
             sprintf(
-                'Invalid value (using strict typing). '.PHP_EOL.
+                'Invalid value for API parameter `%s` (using strict typing). '.PHP_EOL.
                 'Allowed values are: '.PHP_EOL.
                 '- %s',
+                $param->getName(),
                 implode(
                     PHP_EOL.'- ',
                     array_map(

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Validation;
 
+use Application\API\Parameters\APIParameterInterface;
 use AppUtils\OperationResult;
 
 interface ParamValidationInterface
@@ -15,5 +16,5 @@ interface ParamValidationInterface
     public const int VALIDATION_WARNING_FLOAT_TO_INT = 183505;
     public const int VALIDATION_EMPTY_REQUIRED_PARAM = 183506;
 
-    public function validate(int|float|bool|string|array|null $value, OperationResult $result) : void;
+    public function validate(int|float|bool|string|array|null $value, OperationResult $result, APIParameterInterface $param) : void;
 }
