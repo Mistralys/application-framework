@@ -21,11 +21,12 @@ require_once __DIR__ . '/ConfigSettings/BaseConfigRegistry.php';
 
 class Application_Bootstrap
 {
-    public const ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
-    public const ERROR_AUTOLOADER_NOT_STARTED = 28102; 
-    public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
-    public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
-    public const ERROR_MISSING_CONFIG_SETTING = 28105;
+    public const int ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
+    public const int ERROR_AUTOLOADER_NOT_STARTED = 28102;
+    public const int ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103;
+    public const int ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
+    public const int ERROR_MISSING_CONFIG_SETTING = 28105;
+    public const int ERROR_APP_ALREADY_BOOTED = 28106;
 
     private static ClassLoader $autoLoader;
     private static bool $initialized = false;
@@ -87,13 +88,20 @@ class Application_Bootstrap
    /**
     * Boots an admin screen using its class name.
     * 
-    * @param string $class
+    * @param class-string<Application_Bootstrap_Screen> $class
     * @param array $params
     * @param bool $displayException Whether to automatically show the exception screen, or just pass them on.
     * @throws Application_Exception
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        self::requireNotBooted($class);
+
+        // already booted with this class
+        if(self::$bootClass === $class) {
+            return;
+        }
+
         // Allow the request log to make changes to the session
         if($class === Application_Bootstrap_Screen_RequestLog::class) {
             Application_Bootstrap_Screen_RequestLog::init();
@@ -146,6 +154,29 @@ class Application_Bootstrap
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param class-string<Application_Bootstrap_Screen> $class
+     * @return void
+     * @throws BootException
+     */
+    private static function requireNotBooted(string $class) : void
+    {
+        if(!isset(self::$bootClass)) {
+            return;
+        }
+
+        throw new BootException(
+            'Bootstrap already performed',
+            sprintf(
+                'The application has already been booted using the class [%s]. '.PHP_EOL.
+                'Cannot boot again with class [%s].',
+                self::$bootClass,
+                $class
+            ),
+            self::ERROR_APP_ALREADY_BOOTED
+        );
     }
 
     /**
