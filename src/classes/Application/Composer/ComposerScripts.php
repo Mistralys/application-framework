@@ -29,6 +29,14 @@ class ComposerScripts
 {
     public const int ERROR_BOOTSTRAP_NOT_FOUND = 169801;
 
+    public static function build() : void
+    {
+        self::init();
+
+        self::clearCaches();
+        self::apiMethodIndex();
+    }
+
     public static function clearCaches() : void
     {
         self::init();
