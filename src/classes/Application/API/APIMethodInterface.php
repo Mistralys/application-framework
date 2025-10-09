@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API;
 
 use Application\API\Parameters\APIParamManager;
+use Application\API\Parameters\Validation\ParamValidationResults;
 use Application_CORS;
 use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
@@ -123,4 +124,21 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return string|null The HTML representation of the example response, or null if no example is available.
      */
     public function renderExample() : ?string;
+
+    /**
+     * When using {@see self::processReturn()}, this method can be used
+     * to retrieve the validation results of the parameters.
+     *
+     * @return ParamValidationResults
+     */
+    public function getValidationResults() : ParamValidationResults;
+
+    /**
+     * Sets the request body to use instead of reading from `php://input`,
+     * used for testing purposes.
+     *
+     * @param string $body
+     * @return $this
+     */
+    public function setRequestBody(string $body) : self;
 }

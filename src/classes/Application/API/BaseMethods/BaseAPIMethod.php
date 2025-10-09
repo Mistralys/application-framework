@@ -9,12 +9,14 @@ use Application\API\APIException;
 use Application\API\APIInfo;
 use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
+use Application\API\ErrorResponsePayload;
 use Application\API\ErrorResponse;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\ParamTypeSelector;
 use Application\API\Parameters\Reserved\APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
 use Application\API\APIManager;
 use Application\API\Traits\JSONResponseInterface;
@@ -86,7 +88,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         Application::exit(sprintf('API Method [%s] has finished.', $this->getID()));
     }
 
-    final public function processReturn(): ArrayDataCollection
+    final public function processReturn(): ResponsePayload|ErrorResponsePayload
     {
         $this->return = true;
 
@@ -121,6 +123,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         try {
             $this->collectRequestData($version);
         } catch (Throwable $e) {
+            if($e instanceof APIResponseDataException) {
+                throw $e;
+            }
+
             $this->errorResponse(APIMethodInterface::ERROR_REQUEST_DATA_EXCEPTION)
                 ->makeInternalServerError()
                 ->setErrorMessage('Failed collecting request data: %s', $e->getMessage())
@@ -132,6 +138,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         try {
             $this->collectResponseData($response, $version);
         } catch (Throwable $e) {
+            if($e instanceof APIResponseDataException) {
+                throw $e;
+            }
+
             $this->errorResponse(APIMethodInterface::ERROR_RESPONSE_DATA_EXCEPTION)
                 ->makeInternalServerError()
                 ->setErrorMessage('Failed collecting response data: %s', $e->getMessage())
@@ -207,6 +217,11 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $response->send();
     }
 
+    public function getValidationResults() : ParamValidationResults
+    {
+        return $this->manageParams()->getValidationResults();
+    }
+
     abstract protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results) : void;
 
     protected function isSimulation(): bool
@@ -220,7 +235,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     final protected function getRequestBody() : string
     {
-        $raw = file_get_contents('php://input');
+        $raw = $this->requestBody ?? file_get_contents('php://input');
 
         if($raw !== false)
         {
@@ -230,6 +245,14 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->errorResponse(JSONRequestInterface::ERROR_FAILED_TO_READ_INPUT)
             ->setErrorMessage('Failed to read request input data.')
             ->send();
+    }
+
+    private ?string $requestBody = null;
+
+    public function setRequestBody(string $body) : self
+    {
+        $this->requestBody = $body;
+        return $this;
     }
 
     final public function allowCORSDomain(string $domain) : self
@@ -298,6 +321,13 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     private function sendErrorResponse(ErrorResponse $response) : never
     {
+        // In return mode, throw an exception that will be caught
+        // when calling the method's processReturn() method.
+        if($this->return)
+        {
+            throw new APIResponseDataException($this, $response->toPayload());
+        }
+
         header('HTTP/1.1 ' . $response->getHttpStatusCode() . ' ' . str_replace(array("\n", "\r"), ' ', strip_tags($response->getErrorMessage())));
 
         // initialize cross-domain requests
@@ -337,7 +367,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         // when calling the method's processReturn() method.
         if($this->return)
         {
-            throw new APIResponseDataException($this, $data);
+            throw new APIResponseDataException($this, new ResponsePayload($data->getData()));
         }
 
         if ($this->isSimulation())
