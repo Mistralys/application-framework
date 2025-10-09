@@ -107,10 +107,20 @@ class OrRule extends BaseRule
         {
             if($set === $validSet) {
                 $validSet->apply();
-                continue;
+                break;
             }
+        }
 
-            $set->invalidate();
+        $exclude = $validSet->getParams();
+
+        $this->log('Invalidating parameters that are not part of the valid set.');
+        foreach($this->sets as $set) {
+            foreach($set->getParams() as $param) {
+                if(!in_array($param, $exclude, true)) {
+                    $this->log('- Invalidating parameter [%s]', $param->getName());
+                    $param->invalidate();
+                }
+            }
         }
     }
 
