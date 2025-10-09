@@ -95,6 +95,9 @@ class ComposerScripts
 
         require_once (string)$file;
 
-        Application_Bootstrap::bootClass(ComposerScriptBootstrap::class);
+        // Removed this, as the application's composer scripts are
+        // run using the testsuite bootstrap. The bootstrap screen
+        // is still relevant for applications, however.
+        //Application_Bootstrap::bootClass(ComposerScriptBootstrap::class);
     }
 }
