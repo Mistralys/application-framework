@@ -103,16 +103,16 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     /**
      * Processes the method as usual, but instead of sending
      * the response to the client, it returns the response data
-     * as an ArrayDataCollection object.
+     * as an object.
      *
      * > This is mostly used for unit testing API methods, but
      * > can potentially allow re-using API methods outside
      * > the API endpoint context.
      *
-     * @return ArrayDataCollection
+     * @return ResponsePayload|ErrorResponsePayload The data that was fetched, or an error response payload.
      * @throws APIException
      */
-    public function processReturn(): ArrayDataCollection;
+    public function processReturn(): ResponsePayload|ErrorResponsePayload;
 
     /**
      * Renders an example response for this API method.

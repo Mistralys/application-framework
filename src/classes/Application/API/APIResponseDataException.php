@@ -26,9 +26,9 @@ class APIResponseDataException extends Exception
 {
     public const int CODE_API_METHOD_RETURN_EXCEPTION = 182901;
     private APIMethodInterface $method;
-    private ArrayDataCollection $responseData;
+    private ResponsePayload|ErrorResponsePayload $responseData;
 
-    public function __construct(APIMethodInterface $method, ArrayDataCollection $responseData)
+    public function __construct(APIMethodInterface $method, ResponsePayload|ErrorResponsePayload $responseData)
     {
         $this->method = $method;
         $this->responseData = $responseData;
@@ -44,7 +44,7 @@ class APIResponseDataException extends Exception
         return $this->method;
     }
 
-    public function getResponseData(): ArrayDataCollection
+    public function getResponseData(): ResponsePayload|ErrorResponsePayload
     {
         return $this->responseData;
     }
