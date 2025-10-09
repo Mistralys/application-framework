@@ -29,7 +29,7 @@ trait JSONRequestTrait
         catch (JSONConverterException)
         {
             $this->errorResponse(self::ERROR_FAILED_TO_READ_INPUT)
-                ->setErrorMessage('Failed to read input data')
+                ->setErrorMessage('Failed to read JSON input data.')
                 ->send();
         }
     }
