@@ -84,7 +84,7 @@ class StringParameter extends BaseAPIParameter
         return $this->validateByRegex('/^[a-zA-Z]+$/');
     }
 
-    public function validateAsAlias(bool $allowCapitalLetters=false) : self
+    public function validateAsAlias(bool $allowCapitalLetters) : self
     {
         $regex = RegexHelper::REGEX_ALIAS;
         if($allowCapitalLetters) {

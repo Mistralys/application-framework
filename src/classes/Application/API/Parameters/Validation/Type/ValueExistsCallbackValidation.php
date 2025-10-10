@@ -38,6 +38,11 @@ class ValueExistsCallbackValidation extends BaseParamValidation
 
     public function validate(float|int|bool|array|string|null $value, OperationResult $result, APIParameterInterface $param): void
     {
+        if(empty($value) && $value !== 0 && $value !== '0' && $value !== false) {
+            // Nothing to validate
+            return;
+        }
+
         $callback = $this->callback;
 
         if (!$callback($value))

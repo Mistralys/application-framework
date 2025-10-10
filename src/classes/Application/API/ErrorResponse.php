@@ -84,6 +84,12 @@ class ErrorResponse
 
     public function getErrorData(): array
     {
+        $this->errorData['validationMessages'] = array();
+
+        foreach($this->method->getValidationResults()->getResults() as $result) {
+            $this->errorData['validationMessages'][] = (string)$result;
+        }
+
         return $this->errorData;
     }
 
