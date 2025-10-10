@@ -96,6 +96,12 @@ class OrRule extends BaseRule
                 ),
                 RuleInterface::VALIDATION_NO_PARAM_SET_MATCHED
             );
+
+            foreach($this->sets as $set) {
+                foreach($set->getParams() as $param) {
+                    $this->result->addResult($param->getValidationResults());
+                }
+            }
             return;
         }
 
