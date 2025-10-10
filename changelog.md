@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.12.4 - API improvements
+- API: Added a trait and interface for API method tests.
+
 ## v5.12.3 - API fixes and improvements
 - Bootstrap: Added an exception when trying to boot a second time with a different class.
 - API: Fixed the OR rule invalidating parameters prematurely when using multiple OR groups.
