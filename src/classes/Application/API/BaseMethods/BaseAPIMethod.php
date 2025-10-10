@@ -95,7 +95,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         try {
             $this->_process();
         } catch (APIResponseDataException $e) {
-            return $e->getResponseData();
+            return $this->prepareResponse($e->getResponseData());
         }
 
         throw new APIException(
@@ -105,6 +105,33 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
                 $this->getID()
             )
         );
+    }
+
+    private function prepareResponse(ResponsePayload|ErrorResponsePayload|array $response) : ResponsePayload|ErrorResponsePayload
+    {
+        if($response instanceof ErrorResponsePayload) {
+            return $response;
+        }
+
+        $class = $this->getResponseClass();
+
+        if(is_array($response)) {
+            return new ResponsePayload($this, $response);
+        }
+
+        if($class === ResponsePayload::class) {
+            return $response;
+        }
+
+        return new $class($this, $response->getData());
+    }
+
+    /**
+     * @return class-string<ResponsePayload>
+     */
+    protected function getResponseClass() : string
+    {
+        return ResponsePayload::class;
     }
 
     /**
@@ -367,7 +394,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         // when calling the method's processReturn() method.
         if($this->return)
         {
-            throw new APIResponseDataException($this, new ResponsePayload($data->getData()));
+            throw new APIResponseDataException($this, $this->prepareResponse($data->getData()));
         }
 
         if ($this->isSimulation())
