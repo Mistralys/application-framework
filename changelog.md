@@ -3,6 +3,7 @@
 ## v5.12.4 - API improvements
 - API: Added a trait and interface for API method tests.
 - API: Methods can now specify a custom response class to use for success responses.
+- API: Added an application locale selection API trait.
 
 ## v5.12.3 - API fixes and improvements
 - Bootstrap: Added an exception when trying to boot a second time with a different class.
