@@ -6,8 +6,10 @@ namespace Application\API;
 
 use Application\API\Response\ResponseInterface;
 use AppUtils\ArrayDataCollection;
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\Interfaces\StringableInterface;
 
-class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterface
+class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterface, StringableInterface
 {
     public const string KEY_ERROR_CODE = 'errorCode';
     public const string KEY_ERROR_MESSAGE = 'errorMessage';
@@ -44,5 +46,19 @@ class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterf
     public function getErrorData() : array
     {
         return $this->getArray(self::KEY_ERROR_DATA);
+    }
+
+    public function getAsString() : string
+    {
+        return (string)$this;
+    }
+
+    public function __toString() : string
+    {
+        return 'Erroneous API response'.PHP_EOL.
+        'Code: #'.$this->getErrorCode().' '.PHP_EOL.
+        'Message: '.$this->getErrorMessage().PHP_EOL.
+        'Data: '.PHP_EOL.
+        JSONConverter::var2json($this->getErrorData(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
     }
 }
