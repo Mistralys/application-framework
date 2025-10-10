@@ -103,14 +103,6 @@ trait JSONResponseTrait
 
     protected function configureValidationErrorResponse(ErrorResponse $response, ParamValidationResults $results): void
     {
-        $response->appendErrorMessage(sprintf(
-            'Details are available in the response `%s` key.',
-            JSONResponseInterface::RESPONSE_KEY_DATA
-        ));
-
-        $response->addData(array(
-            JSONResponseInterface::RESPONSE_KEY_DATA => $results->serializeErrors()
-        ));
     }
 
     public function renderExample(): string
