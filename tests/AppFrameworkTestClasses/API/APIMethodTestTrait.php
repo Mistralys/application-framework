@@ -30,7 +30,9 @@ trait APIMethodTestTrait
             $response = $response->processReturn();
         }
 
-        $this->assertInstanceOf(ResponsePayload::class, $response, 'The response is not a successful response.');
+        if($response instanceof ErrorResponsePayload) {
+            $this->fail('The response is an error response: '.PHP_EOL.$response->getAsString());
+        }
 
         return $response;
     }
