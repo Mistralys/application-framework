@@ -213,7 +213,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
 
     protected function setUp(): void
     {
-        Localization::selectAppLocale('en_UK');
+        Localization::selectAppLocale(Localization::BUILTIN_LOCALE_NAME);
         AppFactory::createLogger()->reset();
         Application_Session_Base::setRedirectsEnabled(true);
         UI::selectDefaultInstance();
