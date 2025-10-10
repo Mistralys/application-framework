@@ -4,6 +4,9 @@
 - API: Added a trait and interface for API method tests.
 - API: Methods can now specify a custom response class to use for success responses.
 - API: Added an application locale selection API trait.
+- API: Now listing all validation messages in the `validationMessages` response property.
+- API: Fixed enum parameters attempting to validate empty values.
+- API: Made the alias validation argument for capital letters mandatory to make it more visible.
 
 ## v5.12.3 - API fixes and improvements
 - Bootstrap: Added an exception when trying to boot a second time with a different class.
