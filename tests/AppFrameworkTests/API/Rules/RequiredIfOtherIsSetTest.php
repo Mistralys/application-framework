@@ -15,7 +15,7 @@ final class RequiredIfOtherIsSetTest extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A')->makeRequired();
         $paramB = new StringParameter('paramB', 'Param B')->makeRequired();
 
-        $rule = new RequiredIfOtherIsSetRule($paramA, $paramB);
+        $rule = new RequiredIfOtherIsSetRule('Label', $paramA, $paramB);
 
         $rule->preValidate();
 
@@ -31,7 +31,7 @@ final class RequiredIfOtherIsSetTest extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new RequiredIfOtherIsSetRule($paramA, $paramB);
+        $rule = new RequiredIfOtherIsSetRule('Label', $paramA, $paramB);
 
         $rule->preValidate();
         $rule->apply();
@@ -47,7 +47,7 @@ final class RequiredIfOtherIsSetTest extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A')->makeRequired();
         $paramB = new StringParameter('paramB', 'Param B')->makeRequired();
 
-        $rule = new RequiredIfOtherIsSetRule($paramA, $paramB);
+        $rule = new RequiredIfOtherIsSetRule('Label', $paramA, $paramB);
 
         $rule->preValidate();
         $rule->apply();
