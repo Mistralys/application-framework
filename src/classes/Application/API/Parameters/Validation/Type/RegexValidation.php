@@ -28,8 +28,8 @@ class RegexValidation extends BaseParamValidation
         if(!is_string($value)) {
             $result->makeError(
                 sprintf(
-                    'Invalid value type for API parameter `%s` (using strict typing). '.PHP_EOL.
-                    'Expected a string, %1$s given.',
+                    'Invalid value type for API parameter `%1$s` (using strict typing). '.PHP_EOL.
+                    'Expected a string, %2$s given.',
                     $param->getName(),
                     gettype($value)
                 ),
