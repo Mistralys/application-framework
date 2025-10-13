@@ -74,6 +74,8 @@ MARKDOWN,
      */
     private function collectCountries(array $countries) : array
     {
+        $result = array();
+
         foreach($countries as $country)
         {
             $result[$country->getISO()] = $this->collectCountry($country);
