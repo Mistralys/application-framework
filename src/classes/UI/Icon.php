@@ -936,11 +936,21 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     }
 
     /**
+     * Gets the icon's type/name, e.g. `folder-open`.
      * @return string
      */
     public function getType() : string
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the icon's prefix, e.g. `fa` or `fas`.
+     * @return string
+     */
+    public function getPrefix(): string
+    {
+        return $this->prefix;
     }
 
     /**
