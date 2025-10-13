@@ -45,8 +45,8 @@ class Locales extends BaseStringPrimaryCollection
         $countries = AppFactory::createCountries();
 
         // Register events to reset the collection when the countries change
-        $countries->onAfterCreateRecord(array($this, 'reset'));
-        $countries->onAfterDeleteRecord(array($this, 'reset'));
+        $countries->onAfterCreateRecord($this->reset(...));
+        $countries->onAfterDeleteRecord($this->reset(...));
     }
 
     public function getDefaultID(): string
