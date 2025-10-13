@@ -41,7 +41,7 @@ class RuleTypeSelector
 
     public function requiredIfOtherIsSet(string $label, APIParameterInterface $target, APIParameterInterface $other) : RequiredIfOtherIsSetRule
     {
-        $rule = new RequiredIfOtherIsSetRule($target, $other);
+        $rule = new RequiredIfOtherIsSetRule($label, $target, $other);
 
         $this->manager->registerRule($rule);
 
@@ -50,7 +50,7 @@ class RuleTypeSelector
 
     public function requiredIfOtherValueEquals(string $label, APIParameterInterface $target, APIParameterInterface $other, mixed $expectedValue) : RequiredIfOtherValueEquals
     {
-        $rule = new RequiredIfOtherValueEquals($target, $other, $expectedValue);
+        $rule = new RequiredIfOtherValueEquals($label, $target, $other, $expectedValue);
 
         $this->manager->registerRule($rule);
 

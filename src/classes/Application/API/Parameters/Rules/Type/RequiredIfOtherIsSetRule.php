@@ -25,12 +25,12 @@ class RequiredIfOtherIsSetRule extends BaseRule
     private APIParameterInterface $target;
     private APIParameterInterface $other;
 
-    public function __construct(APIParameterInterface $target, APIParameterInterface $other)
+    public function __construct(string $label, APIParameterInterface $target, APIParameterInterface $other)
     {
         $this->target = $target;
         $this->other = $other;
 
-        parent::__construct();
+        parent::__construct($label);
     }
 
     public function getID(): string

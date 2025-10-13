@@ -28,13 +28,13 @@ class RequiredIfOtherValueEquals extends BaseRule
     private APIParameterInterface $other;
     private mixed $expectedValue;
 
-    public function __construct(APIParameterInterface $target, APIParameterInterface $other, mixed $expectedValue)
+    public function __construct(string $label, APIParameterInterface $target, APIParameterInterface $other, mixed $expectedValue)
     {
         $this->target = $target;
         $this->other = $other;
         $this->expectedValue = $expectedValue;
 
-        parent::__construct();
+        parent::__construct($label);
     }
 
     public function getID(): string
