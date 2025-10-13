@@ -25,7 +25,7 @@ abstract class BaseRule implements RuleInterface
     use Application_Traits_Loggable;
     use ValidationLoggableTrait;
 
-    protected OperationResult_Collection $result;
+    protected ValidationResults $result;
     private bool $validated = false;
     private string $logIdentifier;
     private string $label;
