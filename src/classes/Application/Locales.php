@@ -49,11 +49,6 @@ class Locales extends BaseStringPrimaryCollection
         $countries->onAfterDeleteRecord(array($this, 'reset'));
     }
 
-    public function reset() : void
-    {
-        unset($this->items);
-    }
-
     public function getDefaultID(): string
     {
         return en_US::LOCALE_NAME;
