@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.12.6 - Small improvements and fixes
+- API: Fixed missing label argument for some parameter rules.
+- Countries: Updated currency interface return type to make methods visible.
+- Dependencies: Bumped up AppLocalize to [v2.1.2](https://github.com/Mistralys/application-localization/releases/tag/2.1.2). 
+
 ## v5.12.5 - Minor improvements
 - Icons: Added the `getPrefix()` method to the icon class.
 
