@@ -16,6 +16,7 @@ use AppLocalize\Localization;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
 use AppLocalize\Localization\Country\CountryGB;
+use AppLocalize\Localization\Currencies\CountryCurrencyInterface;
 use AppLocalize\Localization\Currencies\CurrencyInterface;
 
 /**
@@ -193,9 +194,9 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     
    /**
     * The currency used in this country.
-    * @return CurrencyInterface
+    * @return CountryCurrencyInterface
     */
-    public function getCurrency() : CurrencyInterface
+    public function getCurrency() : CountryCurrencyInterface
     {
         return $this->country->getCurrency();
     }
