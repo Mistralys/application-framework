@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.12.5 - Minor improvements
+- Icons: Added the `getPrefix()` method to the icon class.
+
 ## v5.12.4 - API improvements
 - API: Added a trait and interface for API method tests.
 - API: Methods can now specify a custom response class to use for success responses.
