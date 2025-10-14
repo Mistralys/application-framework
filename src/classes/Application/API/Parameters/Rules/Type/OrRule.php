@@ -11,6 +11,7 @@ namespace Application\API\Parameters\Rules\Type;
 use Application\API\APIException;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\ParamSet;
+use Application\API\Parameters\ParamSetInterface;
 use Application\API\Parameters\Rules\BaseRule;
 use Application\API\Parameters\Rules\RuleInterface;
 use UI;
@@ -32,10 +33,10 @@ class OrRule extends BaseRule
     public const string RULE_ID = 'OR';
 
     /**
-     * @var array<int,ParamSet> $sets
+     * @var array<int,ParamSetInterface> $sets
      */
     private array $sets = array();
-    private ?ParamSet $selectedSet = null;
+    private ?ParamSetInterface $selectedSet = null;
 
     public function getID(): string
     {
@@ -57,10 +58,10 @@ class OrRule extends BaseRule
     /**
      * Add a set of parameters, where at least one set must be complete and valid.
      *
-     * @param ParamSet $set
+     * @param ParamSetInterface $set
      * @return $this
      */
-    public function addSet(ParamSet $set) : self
+    public function addSet(ParamSetInterface $set) : self
     {
         $this->sets[] = $set;
 
@@ -130,7 +131,7 @@ class OrRule extends BaseRule
         }
     }
 
-    public function getValidSet() : ?ParamSet
+    public function getValidSet() : ?ParamSetInterface
     {
         return $this->selectedSet;
     }
@@ -145,7 +146,7 @@ class OrRule extends BaseRule
      * @return ParamSet
      * @throws APIException
      */
-    public function requireValidSet() : ParamSet
+    public function requireValidSet() : ParamSetInterface
     {
         $set = $this->getValidSet();
 
