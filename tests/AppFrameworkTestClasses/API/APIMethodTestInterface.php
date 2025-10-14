@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Test Classes
+ * @subpackage API
+ */
 
 declare(strict_types=1);
 
@@ -12,6 +16,9 @@ use Application\API\ResponsePayload;
 use AppUtils\OperationResult;
 
 /**
+ * @package Test Classes
+ * @subpackage API
+ *
  * @see APIMethodTestTrait
  */
 interface APIMethodTestInterface extends ApplicationTestCaseInterface, OperationResultTestInterface
@@ -22,5 +29,7 @@ interface APIMethodTestInterface extends ApplicationTestCaseInterface, Operation
      */
     public function assertResultHasInvalidValueType(OperationResult $result) : void;
 
-    public function assertSuccessfulResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response) : ResponsePayload;
+    public function assertSuccessfulResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response, string $message='') : ResponsePayload;
+    public function assertErrorResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response) : ErrorResponsePayload;
+    public function assertErrorResponseCode(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response, int $code) : ErrorResponsePayload;
 }

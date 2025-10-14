@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Test Classes
+ * @subpackage API
+ */
 
 declare(strict_types=1);
 
@@ -11,6 +15,9 @@ use Application\API\ResponsePayload;
 use AppUtils\OperationResult;
 
 /**
+ * @package Test Classes
+ * @subpackage API
+ *
  * @see APIMethodTestInterface
  */
 trait APIMethodTestTrait
@@ -24,15 +31,43 @@ trait APIMethodTestTrait
         $this->assertResultHasCode($result, ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE);
     }
 
-    public function assertSuccessfulResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response) : ResponsePayload
+    public function assertSuccessfulResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response, string $message='') : ResponsePayload
     {
         if($response instanceof APIMethodInterface) {
             $response = $response->processReturn();
         }
 
         if($response instanceof ErrorResponsePayload) {
-            $this->fail('The response is an error response: '.PHP_EOL.$response->getAsString());
+            $this->fail(
+                $message.PHP_EOL.
+                'Expected a successful response, but it\'s an error response: '.PHP_EOL.
+                $response->getAsString()
+            );
         }
+
+        return $response;
+    }
+
+    public function assertErrorResponse(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response) : ErrorResponsePayload
+    {
+        if($response instanceof APIMethodInterface) {
+            $response = $response->processReturn();
+        }
+
+        if(!$response instanceof ErrorResponsePayload) {
+            $this->fail('The response is expected to be an error response, given: '.PHP_EOL.get_class($response));
+        }
+
+        $this->addToAssertionCount(1);
+
+        return $response;
+    }
+
+    public function assertErrorResponseCode(ResponsePayload|ErrorResponsePayload|APIMethodInterface $response, int $code) : ErrorResponsePayload
+    {
+        $response = $this->assertErrorResponse($response);
+
+        $this->assertSame($code, $response->getErrorCode(), 'The response code is not as expected.');
 
         return $response;
     }
