@@ -5,5 +5,6 @@
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
+    "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
     "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod"
 }
