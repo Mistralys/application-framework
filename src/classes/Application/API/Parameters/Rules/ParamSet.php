@@ -97,6 +97,17 @@ class ParamSet implements ParamSetInterface, Application_Interfaces_Loggable
 
     public function isValid() : bool
     {
+        if(empty($this->params)) {
+            throw new APIParameterException(
+                'Parameter set without parameters',
+                sprintf(
+                    'The parameter set [%s] contains no parameters.',
+                    $this->id
+                ),
+                APIParameterException::ERROR_INVALID_PARAM_CONFIG
+            );
+        }
+
         foreach($this->params as $param) {
             if (!$param->isValid() || !$param->hasValue()) {
                 $this->log('- Parameter [%s] is not valid or empty, skipping set.', $param->getName());
