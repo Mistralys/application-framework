@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.12.7 - Country API
+- Countries: Added country ID / country ISO OR rule to the API parameter rules.
+- API: Parameter sets now do a failsafe check if any parameters are defined.
+
 ## v5.12.7 - Fixes
 - Locales: Fixed trait method not being considered callable.
 - Languages: Fixed trait method not being considered callable.
