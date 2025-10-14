@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package TestDriver
+ * @subpackage API
+ */
 
 declare(strict_types=1);
 
@@ -11,8 +15,15 @@ use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application\Countries\API\AppCountryAPITrait;
+use Application_Countries_Country;
 use AppUtils\ArrayDataCollection;
 
+/**
+ * @package TestDriver
+ * @subpackage API
+ *
+ * @see \AppFrameworkTests\Countries\CountryAPITests
+ */
 class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface, JSONResponseInterface, AppCountryAPIInterface
 {
     use RequestRequestTrait;
@@ -27,6 +38,8 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     public const string VERSION_1_0 = '1.0';
     public const string CURRENT_VERSION = self::VERSION_1_0;
+
+    const string KEY_COUNTRY_ID = 'countryID';
 
     public function getMethodName(): string
     {
@@ -65,10 +78,18 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
+        $response->setKey(self::KEY_COUNTRY_ID, $this->getCountry()?->getID());
     }
 
     public function getExampleJSONResponse(): array
     {
-        return array();
+        return array(
+            self::KEY_COUNTRY_ID => 42
+        );
+    }
+
+    public function getCountry() : ?Application_Countries_Country
+    {
+        return $this->getAppCountryIDParam()?->getCountry() ?? $this->getAppCountryISOParam()?->getCountry();
     }
 }
