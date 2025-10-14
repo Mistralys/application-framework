@@ -15,7 +15,7 @@ final class RequiredIfOtherEqualsTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A')->makeRequired();
         $paramB = new StringParameter('paramB', 'Param B')->makeRequired();
 
-        $rule = new RequiredIfOtherValueEquals($paramA, $paramB, 'triggerValue');
+        $rule = new RequiredIfOtherValueEquals('Label', $paramA, $paramB, 'triggerValue');
 
         $rule->preValidate();
 
@@ -31,7 +31,7 @@ final class RequiredIfOtherEqualsTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new RequiredIfOtherValueEquals($paramA, $paramB, 'triggerValue');
+        $rule = new RequiredIfOtherValueEquals('Label', $paramA, $paramB, 'triggerValue');
 
         $rule->preValidate();
         $rule->apply();
@@ -48,7 +48,7 @@ final class RequiredIfOtherEqualsTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A');
         $paramB = new StringParameter('paramB', 'Param B');
 
-        $rule = new RequiredIfOtherValueEquals($paramA, $paramB, 'triggerValue');
+        $rule = new RequiredIfOtherValueEquals('Label', $paramA, $paramB, 'triggerValue');
 
         $rule->preValidate();
         $rule->apply();
@@ -64,7 +64,7 @@ final class RequiredIfOtherEqualsTests extends APITestCase
         $paramA = new StringParameter('paramA', 'Param A')->makeRequired();
         $paramB = new StringParameter('paramB', 'Param B')->makeRequired();
 
-        $rule = new RequiredIfOtherValueEquals($paramA, $paramB, 'triggerValue');
+        $rule = new RequiredIfOtherValueEquals('Label', $paramA, $paramB, 'triggerValue');
 
         $rule->preValidate();
         $rule->apply();

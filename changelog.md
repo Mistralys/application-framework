@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.12.7 - Fixes
+- Locales: Fixed trait method not being considered callable.
+- Languages: Fixed trait method not being considered callable.
+
 ## v5.12.6 - Small improvements and fixes
 - API: Fixed missing label argument for some parameter rules.
 - Countries: Updated currency interface return type to make methods visible.
