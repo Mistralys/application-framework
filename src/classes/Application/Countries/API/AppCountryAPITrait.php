@@ -8,10 +8,19 @@ declare(strict_types=1);
 
 namespace Application\Countries\API;
 
+use Application\API\APIMethodInterface;
+use Application\Countries\API\ParamSets\AppCountryParamRule;
 use Application_Countries_Country;
 
 /**
  * Trait used to implement API methods that work with countries.
+ *
+ * ## Usage
+ *
+ * - Use {@see self::registerAppCountryID()} and/or {@see self::registerAppCountryISO()}
+ * - OR
+ * - Use {@see self::registerAppCountryParams()} to add an OR rule with both parameters
+ * - Use {@see self::resolveAppCountry()} to get the country
  *
  * @package Countries
  * @subpackage API
@@ -21,6 +30,13 @@ trait AppCountryAPITrait
 {
     private ?AppCountryISOParam $paramCountryISO = null;
     private ?AppCountryIDParam $paramCountryID = null;
+    private ?AppCountryParamRule $appCountryParamRule = null;
+
+    protected function registerAppCountryParams() : void
+    {
+        $this->appCountryParamRule = new AppCountryParamRule($this);
+        $this->manageParams()->registerRule($this->appCountryParamRule);
+    }
 
     public function registerAppCountryID() : AppCountryIDParam
     {
@@ -61,7 +77,14 @@ trait AppCountryAPITrait
             ??
             $this->getAppCountryISOParam()?->getCountry()
             ??
+            $this->getAppCountryParamRule()?->getCountry()
+            ??
             null;
+    }
+
+    public function getAppCountryParamRule() : ?AppCountryParamRule
+    {
+        return $this->appCountryParamRule;
     }
 
     public function requireAppCountry() : Application_Countries_Country
@@ -71,8 +94,8 @@ trait AppCountryAPITrait
             return $country;
         }
 
-        $this->errorResponse(AppCountryAPIInterface::ERROR_INVALID_REQUEST_PARAMS)
-            ->makeBadRequest()
+        $this->errorResponseBadRequest()
+            ->setErrorMessage('No valid app country parameter provided.')
             ->send();
     }
 }

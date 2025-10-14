@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Countries\API;
 
 use Application\API\APIMethodInterface;
+use Application\Countries\API\ParamSets\AppCountryParamRule;
 use Application_Countries_Country;
 
 /**
@@ -29,4 +30,5 @@ interface AppCountryAPIInterface extends APIMethodInterface
     public function registerAppCountryISO() : AppCountryISOParam;
     public function resolveAppCountry() : ?Application_Countries_Country;
     public function requireAppCountry() : Application_Countries_Country;
+    public function getAppCountryParamRule() : ?AppCountryParamRule;
 }
