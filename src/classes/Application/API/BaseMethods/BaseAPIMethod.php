@@ -235,9 +235,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
             return;
         }
 
-        $response = $this->errorResponse(APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS)
-            ->makeBadRequest()
-            ->setErrorMessage('One or more request parameters are invalid.');
+        $response = $this->errorResponseBadRequest();
 
         $this->configureValidationErrorResponse($response, $results);
 
@@ -368,6 +366,14 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     protected function errorResponse(int $errorCode) : ErrorResponse
     {
         return new ErrorResponse($this, $errorCode, $this->sendErrorResponse(...))
+            ->addData($this->collectRequestErrorData());
+    }
+
+    protected function errorResponseBadRequest() : ErrorResponse
+    {
+        return new ErrorResponse($this, APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS, $this->sendErrorResponse(...))
+            ->makeBadRequest()
+            ->setErrorMessage('Missing or invalid parameters in request.')
             ->addData($this->collectRequestErrorData());
     }
 
