@@ -13,16 +13,21 @@ use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
+use application\assets\classes\TestDriver\API\TestGetCountryBySetAPI;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application\Countries\API\AppCountryAPITrait;
 use Application_Countries_Country;
 use AppUtils\ArrayDataCollection;
 
 /**
+ * Country API method that allows selecting a country either
+ * by ID or ISO code. Neither parameter is mandatory.
+ *
  * @package TestDriver
  * @subpackage API
  *
- * @see \AppFrameworkTests\Countries\CountryAPITests
+ * @see CountryAPITests
+ * @see TestGetCountryBySetAPI
  */
 class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface, JSONResponseInterface, AppCountryAPIInterface
 {
