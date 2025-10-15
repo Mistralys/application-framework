@@ -171,6 +171,27 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $this->generateParamList();
         $this->generateRulesList();
         $this->generateExample();
+        $this->generateChangelog();
+    }
+
+    private function generateChangelog() : void
+    {
+        $changelog = $this->method->getChangelog();
+        if(empty($changelog)) {
+            return;
+        }
+
+        $output = '';
+        foreach($changelog as $version => $changes) {
+            $output .= sprintf("\n## v%s\n%s", $version, $changes);
+        }
+
+        $this->ui->createSection()
+            ->setTitle(t('Changelog'))
+            ->setIcon(UI::icon()->changelog())
+            ->collapse()
+            ->setContent(MarkdownRenderer::create()->render($output))
+            ->display();
     }
 
     private function generateProperties() : void
@@ -213,7 +234,12 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
 
     private function generateExample() : void
     {
-        $example = $this->method->renderExample();
+        try {
+            $example = $this->method->renderExample();
+        }
+        catch (Throwable $e) {
+            $example = 'ERROR: '.$e->getMessage();
+        }
 
         if(empty($example)) {
             return;
