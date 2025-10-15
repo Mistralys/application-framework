@@ -134,4 +134,9 @@ MARKDOWN;
     {
         return array();
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
 }

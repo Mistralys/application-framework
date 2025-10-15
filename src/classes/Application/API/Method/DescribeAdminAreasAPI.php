@@ -50,14 +50,7 @@ class DescribeAdminAreasAPI extends BaseAPIMethod implements JSONResponseInterfa
         return self::CURRENT_VERSION;
     }
 
-    public function getDescription(): string
-    {
-        return <<<'MARKDOWN'
-Compiles information about all administration areas available in the application,
-and returns it as a JSON object.
-MARKDOWN;
-
-    }
+    // region: B - Setup
 
     protected function init(): void
     {
@@ -66,6 +59,10 @@ MARKDOWN;
     protected function collectRequestData(string $version): void
     {
     }
+
+    // endregion
+
+    // region: A - Payload
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
@@ -78,6 +75,23 @@ MARKDOWN;
         $response->setKeys($info->toArray());
     }
 
+    // endregion
+
+    // region: C - Documentation
+
+    public function getDescription(): string
+    {
+        return <<<'MARKDOWN'
+Compiles information about all administration areas available in the application,
+and returns it as a JSON object.
+MARKDOWN;
+    }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
     public function getExampleJSONResponse(): array
     {
         return array();
@@ -87,4 +101,6 @@ MARKDOWN;
     {
         return array();
     }
+
+    // endregion
 }

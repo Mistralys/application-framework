@@ -39,29 +39,24 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
         self::VERSION_1
     );
 
-    public const string KEY_COUNTRIES = 'countries';
-    private Application_Countries $appCountries;
-
     public function getMethodName(): string
     {
         return self::METHOD_NAME;
     }
 
-    public function getDescription() : string
+    public function getVersions() : array
     {
-        return sprintf(
-            <<<'MARKDOWN'
-Gets information on all known countries available in the 
-%1$s application, including their default locale and currency.
-MARKDOWN,
-            $this->driver->getAppName()
-        );
+        return self::VERSIONS;
     }
 
-    public function getRelatedMethodNames(): array
+    public function getCurrentVersion() : string
     {
-        return array();
+        return self::CURRENT_VERSION;
     }
+
+    // region: A - Payload
+
+    public const string KEY_COUNTRIES = 'countries';
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
@@ -115,23 +110,40 @@ MARKDOWN,
         );
     }
 
-    protected function collectRequestData(string $version): void
-    {
-    }
+    // endregion
 
-    public function getVersions() : array
-    {
-        return self::VERSIONS;
-    }
+    // region: B - Setup
 
-    public function getCurrentVersion() : string
-    {
-        return self::CURRENT_VERSION;
-    }
+    private Application_Countries $appCountries;
 
     protected function init() : void
     {
         $this->appCountries = AppFactory::createCountries();
+    }
+
+    protected function collectRequestData(string $version): void
+    {
+    }
+
+    // endregion
+
+
+    // region: C - Documentation
+
+    public function getDescription() : string
+    {
+        return sprintf(
+            <<<'MARKDOWN'
+Gets information on all known countries available in the 
+%1$s application, including their default locale and currency.
+MARKDOWN,
+            $this->driver->getAppName()
+        );
+    }
+
+    public function getRelatedMethodNames(): array
+    {
+        return array();
     }
 
     public function getExampleJSONResponse(): array
@@ -143,4 +155,11 @@ MARKDOWN,
             ))
         );
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    // endregion
 }
