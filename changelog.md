@@ -6,6 +6,9 @@
 - API: `getRequestTime()` can now return null when an exception occurs and no time is available.
 - API: Added API changelog as a Markdown string with `getChangelog()`.
 - API: Added the Changelog section to the documentation.
+- API: Method indexing now also indexes API version classes in the class cache.
+- API: Parameter sets now auto-register params in the method when not registered yet.
+- Countries: Fixed country API params not having been registered.
 
 ## v5.12.7 - Country API
 - Countries: Added country ID / country ISO OR rule to the API parameter rules.
