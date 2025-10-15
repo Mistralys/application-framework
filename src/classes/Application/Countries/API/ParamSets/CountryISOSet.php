@@ -20,7 +20,7 @@ class CountryISOSet extends BaseAppCountryParamSet
 
     protected function initParams(): void
     {
-        $this->param = new AppCountryISOParam();
+        $this->param = $this->getMethod()->registerAppCountryISO();
         $this->registerParam($this->param);
     }
 
