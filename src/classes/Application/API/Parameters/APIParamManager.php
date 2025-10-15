@@ -54,6 +54,11 @@ class APIParamManager implements ValidationResultInterface
         return new ParamTypeSelector($this, $name, $label);
     }
 
+    public function paramExists(string $name) : bool
+    {
+        return isset($this->params[$name]);
+    }
+
     public function registerParam(APIParameterInterface $param) : self
     {
         $this->requireNotValidated();
