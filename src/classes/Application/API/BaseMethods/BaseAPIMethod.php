@@ -44,7 +44,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     protected string $version;
     protected ?Application_CORS $CORS = null;
     private bool $return = false;
-    protected Microtime $time;
+    protected ?Microtime $time = null;
     private string $logIdentifier;
 
     public function __construct(APIManager $api)
@@ -69,7 +69,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this->logIdentifier;
     }
 
-    final public function getRequestTime() : Microtime
+    final public function getRequestTime() : ?Microtime
     {
         return $this->time;
     }
