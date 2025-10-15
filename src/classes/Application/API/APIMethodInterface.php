@@ -32,7 +32,6 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public const string REQUEST_PARAM_METHOD = 'method';
 
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
-    public const string RESPONSE_KEY_ERROR_PARAM_DETAILS = 'validationErrors';
 
 
     public function getInfo() : APIInfo;
@@ -41,6 +40,11 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public function getRequestMime() : string;
     public function getResponseMime() : string;
     public function getDocumentationURL() : AdminURLInterface;
+
+    /**
+     * @return array<string, string> An associative array containing changelog entries with version numbers as keys and descriptions as values.
+     */
+    public function getChangelog() : array;
 
     /**
      * @return string[] An array of method names that are related to this method.
@@ -52,7 +56,7 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      */
     public function getRelatedMethods() : array;
 
-    public function getRequestTime() : Microtime;
+    public function getRequestTime() : ?Microtime;
     /**
      * Retrieves an indexed array containing available API
      * version numbers that can be specified to work with.
