@@ -122,9 +122,15 @@ class APIMethodIndex implements Application_Interfaces_Loggable
 
         $this->logHeader('Building API method index...');
 
-        foreach($this->api->getMethodCollection()->getAll() as $method) {
+        foreach($this->api->getMethodCollection()->getAll() as $method)
+        {
             $this->log('- Method [%s]...', $method->getMethodName());
             $methods[$method->getMethodName()] = get_class($method);
+
+            // Access versions: This will cause methods that use
+            // class-based versioning to register their versions
+            // in the class loader.
+            $method->getVersions();
         }
 
         $this->getDataFile()->putData($methods);
