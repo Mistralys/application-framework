@@ -57,6 +57,12 @@ abstract class BaseCustomParamSet extends ParamSet
     protected function registerParam(APIParameterInterface $param) : void
     {
         $this->params[] = $param;
+
+        $manager = $this->getMethod()->manageParams();
+
+        if(!$manager->paramExists($param->getName())) {
+            $manager->registerParam($param);
+        }
     }
 
     final public function getMethod() : APIMethodInterface
