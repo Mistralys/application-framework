@@ -18,6 +18,8 @@ use Application\Countries\API\AppCountryAPIInterface;
  *
  * @package Countries
  * @subpackage API
+ *
+ * @method AppCountryAPIInterface getMethod()
  */
 abstract class BaseAppCountryParamSet extends BaseCustomParamSet implements AppCountryParamSetInterface
 {
