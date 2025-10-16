@@ -8,6 +8,12 @@
 - API: Added the Changelog section to the documentation.
 - API: Method indexing now also indexes API version classes in the class cache.
 - API: Parameter sets now auto-register params in the method when not registered yet.
+- API: Added possibility to auto-link API methods in descriptions with the syntax `#MethodName`.
+- API: Moved response key docs to a dedicated section.
+- API: Implementing JSON response key docs is now mandatory.
+- API: Added API utility class `KeyDescription`.
+- API: Tests: Added the assertion method `assertMethodCallIsSuccessful()`.
+- MarkdownRenderer: Added `renderInline()` to render text without a paragraph tag.
 - Countries: Fixed country API params not having been registered.
 
 ## v5.12.7 - Country API
