@@ -115,6 +115,10 @@ class MarkdownRenderer implements OptionableInterface
 
         $markdown = (string)$parser->convert($markdown);
 
+        if(!$this->useWrapper) {
+            return $this->postParse($markdown);
+        }
+
         return self::WRAPPER_TAG_OPEN .$this->postParse($markdown). self::WRAPPER_TAG_CLOSE;
     }
 
@@ -184,5 +188,32 @@ class MarkdownRenderer implements OptionableInterface
     public function setHTMLInput(string $mode) : self
     {
         return $this->setOption(self::OPTION_HTML_INPUT, $mode);
+    }
+
+    private bool $useWrapper = true;
+
+    /**
+     * By default, rendering Markdown will return a paragraph-wrapped HTML string.
+     * This method will render the given markdown string without the paragraph tags.
+     *
+     * @param string $getDescription
+     * @return string
+     */
+    public function renderInline(string $getDescription) : string
+    {
+        $prev = $this->useWrapper;
+        $this->useWrapper = false;
+
+        $html = trim($this->render($getDescription));
+
+        // Use regex to reliably strip a single surrounding <p>...</p> block
+        $pattern = '/^<p(?:\s[^>]*)?>(.*?)<\/p>$/is';
+        if (preg_match($pattern, $html, $matches)) {
+            $html = $matches[1];
+        }
+
+        $this->useWrapper = $prev;
+
+        return trim($html);
     }
 }
