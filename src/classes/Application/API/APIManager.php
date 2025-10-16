@@ -164,4 +164,28 @@ class APIManager
             );
         }
     }
+
+    /**
+     * Replaces all known method names in the given text with Markdown links to their documentation.
+     * @param string $text
+     * @return string
+     */
+    public function markdownifyMethodNames(string $text) : string
+    {
+        foreach ($this->getMethodIndex()->getMethodNames() as $methodName) {
+            if(!str_contains($text, '#'.$methodName)) {
+                continue;
+            }
+
+            $method = $this->getMethodByName($methodName);
+
+            $text = str_replace(
+                '#'.$methodName,
+                '[' . $methodName . '](' . $method->getDocumentationURL() . ')',
+                $text
+            );
+        }
+
+        return $text;
+    }
 }
