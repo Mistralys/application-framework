@@ -97,4 +97,14 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
     {
         return $this->getAppCountryIDParam()?->getCountry() ?? $this->getAppCountryISOParam()?->getCountry();
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
 }

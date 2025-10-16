@@ -59,4 +59,14 @@ class StubAPIMethod extends BaseAPIMethod implements RequestRequestInterface, JS
     {
         return array();
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
 }

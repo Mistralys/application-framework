@@ -101,4 +101,14 @@ class TestAppLocaleMethod
             self::KEY_TEXT => t('Yes')
         );
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
 }

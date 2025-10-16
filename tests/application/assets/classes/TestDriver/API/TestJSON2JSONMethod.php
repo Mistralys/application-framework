@@ -61,4 +61,14 @@ MARKDOWN;
     {
         return array();
     }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
 }
