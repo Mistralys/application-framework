@@ -12,6 +12,7 @@ use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
+use Application\API\Utilities\KeyDescription;
 use Application\MarkdownRenderer;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
@@ -163,7 +164,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         ?>
         <div class="method-abstract">
             <?php
-            echo MarkdownRenderer::create()->render($this->method->getDescription());
+            echo MarkdownRenderer::create()->render(APIManager::getInstance()->markdownifyMethodNames($this->method->getDescription()));
             ?>
         </div>
         <?php
@@ -171,7 +172,42 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $this->generateParamList();
         $this->generateRulesList();
         $this->generateExample();
+        $this->generateKeyDescriptions();
         $this->generateChangelog();
+    }
+
+    private function generateKeyDescriptions() : void
+    {
+        if(!$this->method instanceof JSONResponseInterface) {
+            return;
+        }
+
+        $keys = $this->method->getReponseKeyDescriptions();
+
+        if(empty($keys)) {
+            return;
+        }
+
+        usort($keys, static function(KeyDescription $a, KeyDescription $b) : int {
+            return strnatcasecmp($a->getPath(), $b->getPath());
+        });
+
+        $items = array();
+        foreach($keys as $key) {
+            $items[] = sb()->code($key->getPath()).' - '.$key->renderDescription();
+        }
+
+        $this->ui->createSection()
+            ->setTitle('Response keys')
+            ->setAbstract(sb()
+                ->add('This documents some keys returned in the JSON response whose purpose or meaning may require clarification.')
+                ->note()
+                ->add('They are sorted alphabetically here.')
+            )
+            ->setIcon(UI::icon()->information())
+            ->collapse()
+            ->setContent(sb()->ul($items))
+            ->display();
     }
 
     private function generateChangelog() : void

@@ -10,6 +10,7 @@ namespace Application\API\Documentation\Examples;
 
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
+use Application\API\Utilities\KeyDescription;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Highlighter;
 use UI_Renderable;
@@ -35,21 +36,11 @@ class JSONMethodExample extends UI_Renderable
 
     protected function _render(): string
     {
-        $output = Highlighter::json(JSONConverter::var2json($this->method->getExampleJSONResponse(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
-
-        $keys = $this->method->getReponseKeyDescriptions();
-
-        ksort($keys);
-
-        if(!empty($keys)) {
-            $output .= '<h3>'.t('Response keys explained').'</h3>';
-            $output .= '<ul class="api-response-keys">';
-            foreach($keys as $key => $desc) {
-                $output .= '<li><strong>'.htmlspecialchars($key).'</strong>: '.htmlspecialchars($desc).'</li>';
-            }
-            $output .= '</ul>';
-        }
-
-        return $output;
+        return Highlighter::json(
+            JSONConverter::var2json(
+                $this->method->getExampleJSONResponse(),
+                JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES
+            )
+        );
     }
 }
