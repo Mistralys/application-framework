@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Traits;
 
 use Application\API\APIMethodInterface;
+use Application\API\Utilities\KeyDescription;
 
 /**
  * @package API
@@ -28,7 +29,7 @@ interface JSONResponseInterface extends APIMethodInterface
     public function getExampleJSONResponse() : array;
 
     /**
-     * @return array<string,string> Key-value pairs of response keys and their descriptions.
+     * @return KeyDescription[]
      */
     public function getReponseKeyDescriptions() : array;
 }
