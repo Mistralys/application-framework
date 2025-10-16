@@ -101,6 +101,6 @@ trait APIMethodTestTrait
             $_REQUEST[$key] = $value;
         }
 
-        $this->assertSuccessfulResponse(new GetBusinessAreasAPI(APIManager::getInstance())->processReturn());
+        $this->assertSuccessfulResponse(new $methodClass(APIManager::getInstance())->processReturn());
     }
 }
