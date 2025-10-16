@@ -143,7 +143,7 @@ class OrRule extends BaseRule
      * > If no valid set was found, an error response will have been sent,
      * > and this exception will not be thrown.
      *
-     * @return ParamSet
+     * @return ParamSetInterface
      * @throws APIException
      */
     public function requireValidSet() : ParamSetInterface

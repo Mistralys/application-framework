@@ -37,7 +37,7 @@ class KeyDescription implements KeyPathInterface
      * @param string|KeyPath $path
      * @param string $description Markdown-enabled description of the key.
      * @param mixed ...$args Optional arguments to be used with sprintf to format the description.
-     * @return static
+     * @return self
      */
     public static function create(string|KeyPath $path, string $description, ...$args): self
     {

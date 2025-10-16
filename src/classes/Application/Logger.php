@@ -361,10 +361,10 @@ class Application_Logger
      * @param ArrayDataCollection|array|mixed $data
      * @param string|NULL $category
      * @param string|NULL $label Label to display above the data dump.
-     * @return Application_Logger
+     * @return $this
      * @throws JsonException
      */
-    public function logData($data, ?string $category=null, ?string $label=null) : Application_Logger
+    public function logData($data, ?string $category=null, ?string $label=null) : self
     {
         if(empty($category)) {
             $category = self::CATEGORY_GENERAL;
@@ -406,7 +406,7 @@ class Application_Logger
      * @param mixed ...$args Will be converted to something readable using {@see self::filterArgs()}.
      * @return $this
      */
-    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : Application_Logger
+    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : self
     {
         if (empty($category)) {
             $category = self::CATEGORY_GENERAL;
@@ -429,6 +429,11 @@ class Application_Logger
         return $this->enqueueMessage($category . ' | ' . $message);
     }
 
+    /**
+     * @param string $message
+     * @return $this
+     * @throws FileHelper_Exception
+     */
     private function enqueueMessage(string $message) : self
     {
         if($this->memoryStorageEnabled === true) {

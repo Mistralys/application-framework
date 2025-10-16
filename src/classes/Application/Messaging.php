@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the {@link Application_Messaging} class.
- * 
  * @package Application
  * @subpackage Messaging
- * @see Application_Messaging
  */
+
+use AppUtils\Interfaces\StringableInterface;
 
 /**
  * Helper class for managing messages between application users.
@@ -53,7 +52,7 @@ class Application_Messaging extends DBHelper_BaseCollection
         self::$injected[$uiKey] = true;
     }
     
-    protected $messages = array();
+    protected array $messages = array();
     
    /**
     * Retrieves a message by its ID.
@@ -128,22 +127,22 @@ class Application_Messaging extends DBHelper_BaseCollection
     * to configure it further as needed.
     * 
     * @param Application_User $toUser
-    * @param string $message
+    * @param string|StringableInterface $message
     * @param string $priority
-    * @param Application_User $fromUser
+    * @param Application_User|NULL $fromUser
     * @return Application_Messaging_Message
     */
-    public function addMessage(Application_User $toUser, $message, $priority=self::PRIORITY_NORMAL, Application_User $fromUser = null)
+    public function addMessage(Application_User $toUser, string|StringableInterface $message, string $priority=self::PRIORITY_NORMAL, ?Application_User $fromUser = null) : Application_Messaging_Message
     {
         DBHelper::requireTransaction('Add a message');
         
-        $this->requirePriorityExists($priority);
+        self::requirePriorityExists($priority);
         
-        if($fromUser == null) {
+        if($fromUser === null) {
             $fromUser = Application::getUser();
         }
         
-        if($fromUser->getID() == $toUser->getID()) {
+        if($fromUser->getID() === $toUser->getID()) {
             throw new Application_Exception(
                 'Source and target users cannot be the same',
                 sprintf(
@@ -156,7 +155,7 @@ class Application_Messaging extends DBHelper_BaseCollection
         
         $now = new DateTime();
         
-        $message_id = intval(DBHelper::insert(
+        $message_id = (int)DBHelper::insert(
             "INSERT INTO
                 `app_messaging`
             SET
@@ -168,11 +167,11 @@ class Application_Messaging extends DBHelper_BaseCollection
             array(
                 'from_user' => $fromUser->getID(),
                 'to_user' => $toUser->getID(),
-                'message' => $message,
+                'message' => toString($message),
                 'priority' => $priority,
                 'date_sent' => $now->format('Y-m-d H:i:s')
             )
-        ));
+        );
         
         return $this->getByID($message_id);
     }

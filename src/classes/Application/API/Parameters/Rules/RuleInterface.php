@@ -27,6 +27,7 @@ interface RuleInterface extends ValidationLoggableInterface
 
     public function getID() : string;
     public function getLabel() : string;
+    public function getDescription(): string;
     public function getTypeLabel() : string;
     public function getTypeDescription() : string;
 
