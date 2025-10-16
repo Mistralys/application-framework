@@ -161,5 +161,10 @@ MARKDOWN,
         return array();
     }
 
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
+
     // endregion
 }

@@ -92,6 +92,11 @@ MARKDOWN;
         return array();
     }
 
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
+
     public function getExampleJSONResponse(): array
     {
         return array();

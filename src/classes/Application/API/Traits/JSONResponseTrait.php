@@ -109,9 +109,4 @@ trait JSONResponseTrait
     {
         return new JSONMethodExample($this)->render();
     }
-
-    public function getReponseKeyDescriptions(): array
-    {
-        return array();
-    }
 }

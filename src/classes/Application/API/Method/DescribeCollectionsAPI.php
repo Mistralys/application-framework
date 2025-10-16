@@ -32,7 +32,6 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
     public const string METHOD_NAME = 'DescribeCollections';
     public const string VERSION_1_0 = '1.0';
     public const string CURRENT_VERSION = self::VERSION_1_0;
-    public const string RESPONSE_KEY_COLLECTIONS = 'collections';
 
     public function getMethodName(): string
     {
@@ -51,12 +50,7 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
         return self::CURRENT_VERSION;
     }
 
-    public function getDescription(): string
-    {
-        return <<<'MARKDOWN'
-Compiles information about all DBHelper collections that are in use in the application.
-MARKDOWN;
-    }
+    // region: B - Setup
 
     protected function init(): void
     {
@@ -66,6 +60,12 @@ MARKDOWN;
     {
 
     }
+
+    // endregion
+
+    // region: A - Payload
+
+    public const string RESPONSE_KEY_COLLECTIONS = 'collections';
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
@@ -125,6 +125,17 @@ MARKDOWN;
         return $found;
     }
 
+    // endregion
+
+    // region: C - Documentation
+
+    public function getDescription(): string
+    {
+        return <<<'MARKDOWN'
+Compiles information about all DBHelper collections that are in use in the application.
+MARKDOWN;
+    }
+
     public function getExampleJSONResponse(): array
     {
         return array();
@@ -139,4 +150,11 @@ MARKDOWN;
     {
         return array();
     }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
+
+    // endregion
 }
