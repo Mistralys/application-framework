@@ -113,6 +113,8 @@ var UI_Icon =
     Activate:function() { return this.SetType('sun', 'far'); },
     Activity:function() { return this.SetType('bullhorn'); },
     Add:function() { return this.SetType('plus-circle'); },
+    ApiClients:function() { return this.SetType('project-diagram', 'fas'); },
+    ApiKeys:function() { return this.SetType('key', 'fas'); },
     AttentionRequired:function() { return this.SetType('exclamation-triangle'); },
     Audience:function() { return this.SetType('podcast'); },
     Back:function() { return this.SetType('arrow-circle-left'); },

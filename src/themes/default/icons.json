@@ -15,6 +15,14 @@
     "icon": "plus-circle",
     "type": ""
   },
+  "apiClients": {
+    "icon": "project-diagram",
+    "type": "fas"
+  },
+  "apiKeys": {
+    "icon": "key",
+    "type": "fas"
+  },
   "attention_required": {
     "icon": "exclamation-triangle",
     "type": ""

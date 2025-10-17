@@ -88,6 +88,14 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function apiClients() : self { return $this->setType('project-diagram', 'fas'); }
+    /**
+     * @return $this
+     */
+    public function apiKeys() : self { return $this->setType('key', 'fas'); }
+    /**
+     * @return $this
+     */
     public function attentionRequired() : self { return $this->setType('exclamation-triangle'); }
     /**
      * @return $this
