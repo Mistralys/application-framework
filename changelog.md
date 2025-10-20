@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.13.0 - API Management 
+- DBHelper: Added a base record status screen trait.
+
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
 - API: Added `KeyPath` and `KeyReplacement` classes to reference key paths and replacements.
