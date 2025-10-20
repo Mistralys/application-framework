@@ -15,6 +15,8 @@ use Application\Interfaces\Admin\AdminScreenInterface;
  * Interface for admin screens that display a settings form for
  * a DB item collection record.
  *
+ * Supports both creating new records and editing existing ones.
+ *
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
@@ -23,8 +25,8 @@ use Application\Interfaces\Admin\AdminScreenInterface;
  */
 interface Application_Interfaces_Admin_CollectionSettings extends AdminScreenInterface
 {
-    public const ERROR_UNKNOWN_SETTING_KEY = 17901;
-    public const ERROR_MISSING_REQUIRED_METHOD = 17902;
+    public const int ERROR_UNKNOWN_SETTING_KEY = 17901;
+    public const int ERROR_MISSING_REQUIRED_METHOD = 17902;
 
     /**
      * @return DBHelper_BaseCollection
