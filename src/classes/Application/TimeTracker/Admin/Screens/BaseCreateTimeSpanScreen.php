@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
-use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionCreate;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
-use Application\TimeTracker\TimeSettingsManager;
-use Application\TimeTracker\TimeTrackerCollection;
 
-abstract class BaseCreateTimeSpanScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create-time-span';
+    public const string URL_NAME = 'create-time-span';
 
     public function getURLName(): string
     {

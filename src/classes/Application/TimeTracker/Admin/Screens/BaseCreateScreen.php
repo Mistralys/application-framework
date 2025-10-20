@@ -7,17 +7,17 @@ namespace Application\TimeTracker\Admin\Screens;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionCreate;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
 
-abstract class BaseCreateScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateScreen extends BaseRecordCreateMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create';
+    public const string URL_NAME = 'create';
 
     public function getTitle(): string
     {

@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News;
 
-use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
+use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper_BaseRecord;
 
 /**
  * @property Category|NULL $record
  * @property CategoriesCollection $collection
  */
-abstract class BaseCreateCategoryScreen extends BaseCollectionCreateExtended
+abstract class BaseCreateCategoryScreen extends BaseRecordCreateSubmode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create-category';
+    public const string URL_NAME = 'create-category';
 
     public function getURLName(): string
     {

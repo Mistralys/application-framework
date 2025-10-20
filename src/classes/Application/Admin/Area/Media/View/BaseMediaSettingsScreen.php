@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Media\View;
 
-use Application\Admin\Area\Mode\Submode\BaseCollectionEditExtended;
 use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
  * @property MediaRecord $record
  */
-abstract class BaseMediaSettingsScreen extends BaseCollectionEditExtended
+abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
 {
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName() : string
     {

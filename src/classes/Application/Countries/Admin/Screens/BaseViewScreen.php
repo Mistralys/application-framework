@@ -8,19 +8,19 @@ use Application\AppFactory;
 use Application\Countries\Admin\Screens\View\BaseStatusScreen;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionRecord;
 use Application_Countries;
 use Application_Countries_Country;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
 /**
  * @property Application_Countries_Country $record
  */
-abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewScreen extends BaseRecordMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'view';
+    public const string URL_NAME = 'view';
 
     public function getURLName(): string
     {

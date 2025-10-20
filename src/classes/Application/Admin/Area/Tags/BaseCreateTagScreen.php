@@ -6,17 +6,17 @@ namespace Application\Area\Tags;
 
 use Application\AppFactory;
 use Application\Tags\TagRecord;
-use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings;
 use Application\Tags\TagCollection;
 use AppUtils\ClassHelper;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper_BaseRecord;
 use UI;
 
-abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateTagScreen extends BaseRecordCreateMode
 {
-    public const URL_NAME = 'create';
-    public const REQUEST_PARAM_PARENT_TAG = 'parent-tag';
+    public const string URL_NAME = 'create';
+    public const string REQUEST_PARAM_PARENT_TAG = 'parent-tag';
 
     public function getURLName(): string
     {

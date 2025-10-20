@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace DBHelper\Admin\Screens\Action;
+namespace DBHelper\Admin\Screens\Mode;
 
-use Application_Admin_Area_Mode_Submode_Action;
+use Application_Admin_Area_Mode;
 use DBHelper\Admin\Traits\RecordCreateScreenInterface;
 use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
 
-abstract class BaseRecordCreateAction extends Application_Admin_Area_Mode_Submode_Action implements RecordCreateScreenInterface
+abstract class BaseRecordCreateMode extends Application_Admin_Area_Mode implements RecordCreateScreenInterface
 {
     use RecordSettingsScreenTrait;
 
@@ -20,5 +20,10 @@ abstract class BaseRecordCreateAction extends Application_Admin_Area_Mode_Submod
     final public function isEditMode(): bool
     {
         return false;
+    }
+
+    final public function getDefaultSubmode(): string
+    {
+        return '';
     }
 }

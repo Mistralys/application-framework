@@ -10,17 +10,17 @@ use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
 /**
  * @property Category $record
  */
-abstract class BaseViewCategoryScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewCategoryScreen extends BaseRecordMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'view-category';
+    public const string URL_NAME = 'view-category';
 
     public function getURLName(): string
     {

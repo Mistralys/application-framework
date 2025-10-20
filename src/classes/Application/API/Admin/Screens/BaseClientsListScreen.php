@@ -13,7 +13,7 @@ use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionList;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
 use DBHelper_BaseRecord;
@@ -27,7 +27,7 @@ use UI_DataGrid_Entry;
  * @package API
  * @subpackage Admin
  */
-abstract class BaseClientsListScreen extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseClientsListScreen extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 

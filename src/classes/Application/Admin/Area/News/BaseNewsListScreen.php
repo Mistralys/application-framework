@@ -10,11 +10,11 @@ use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use Closure;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
 use DBHelper_BaseRecord;
@@ -25,18 +25,18 @@ use UI_DataGrid_Action;
  * @property NewsCollection $collection
  * @property NewsFilterCriteria $filters
  */
-abstract class BaseNewsListScreen extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseNewsListScreen extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = self::URL_NAME_DEFAULT;
-    public const COLUMN_ID = 'id';
-    public const COLUMN_LABEL = 'label';
-    public const COLUMN_TYPE = 'type';
-    public const COLUMN_AUTHOR = 'author';
-    public const COLUMN_MODIFIED = 'modified';
-    public const COLUMN_STATUS = 'status';
-    public const COLUMN_CREATED = 'created';
+    public const string URL_NAME = self::URL_NAME_DEFAULT;
+    public const string COLUMN_ID = 'id';
+    public const string COLUMN_LABEL = 'label';
+    public const string COLUMN_TYPE = 'type';
+    public const string COLUMN_AUTHOR = 'author';
+    public const string COLUMN_MODIFIED = 'modified';
+    public const string COLUMN_STATUS = 'status';
+    public const string COLUMN_CREATED = 'created';
 
     public function getURLName(): string
     {

@@ -7,29 +7,29 @@ namespace Application\Admin\Area\Media;
 use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
-use Application_Admin_Area_Mode_CollectionList;
 use Application_User;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use Closure;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
 use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
-abstract class BaseMediaListScreen extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseMediaListScreen extends BaseRecordListMode
 {
-    public const URL_NAME = 'list';
-    public const REQUEST_PARAM_UPDATE_SIZES = 'update-sizes';
+    public const string URL_NAME = 'list';
+    public const string REQUEST_PARAM_UPDATE_SIZES = 'update-sizes';
 
-    public const COL_LABEL = 'label';
-    public const COL_TYPE = 'type';
-    public const COL_SIZE = 'size';
-    public const COL_DATE_ADDED = 'date_added';
-    public const COL_ADDED_BY = 'added_by';
-    public const COL_EXTENSION = 'extension';
-    public const COL_ID = 'id';
+    public const string COL_LABEL = 'label';
+    public const string COL_TYPE = 'type';
+    public const string COL_SIZE = 'size';
+    public const string COL_DATE_ADDED = 'date_added';
+    public const string COL_ADDED_BY = 'added_by';
+    public const string COL_EXTENSION = 'extension';
+    public const string COL_ID = 'id';
 
     public function getURLName(): string
     {

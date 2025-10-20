@@ -7,13 +7,13 @@ namespace Application\API\Admin\Screens;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use DBHelper\Admin\Traits\RecordStatusScreenInterface;
 use UI;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
-class BaseViewAPIClientScreen extends Application_Admin_Area_Mode_CollectionRecord
+class BaseViewAPIClientScreen extends BaseRecordMode
 {
     use AllowableMigrationTrait;
     use APIClientRecordScreenTrait;

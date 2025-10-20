@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\TestingScreen;
 
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
-use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Formable_RecordSettings_ValueSet;
 use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
@@ -17,12 +17,12 @@ use TestDriver\TestDBRecords\TestSettingsManagerLegacy;
  * @see TestSettingsManagerLegacy
  */
 class CollectionCreateManagerLegacyScreen
-    extends Application_Admin_Area_Mode_CollectionCreate
+    extends BaseRecordCreateMode
     implements TestingScreenInterface
 {
     use TestingScreenTrait;
 
-    public const URL_NAME = 'collection-create-legacy';
+    public const string URL_NAME = 'collection-create-legacy';
 
     public function createCollection() : TestDBCollection
     {

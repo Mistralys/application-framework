@@ -13,7 +13,7 @@ use Application\API\Clients\APIClientRecordSettings;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionCreate;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper_BaseRecord;
 
 /**
@@ -22,7 +22,7 @@ use DBHelper_BaseRecord;
  * @package API
  * @subpackage Admin
  */
-abstract class BaseCreateAPIClientScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateAPIClientScreen extends BaseRecordCreateMode
 {
     use AllowableMigrationTrait;
 

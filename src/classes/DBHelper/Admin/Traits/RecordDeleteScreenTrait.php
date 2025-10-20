@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use Application_Driver;
-use Application_Request;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 
 /**
  *
- * @property Application_Driver $driver
- * @property Application_Request $request
+ * @see RecordDeleteScreenInterface
  */
 trait RecordDeleteScreenTrait
 {
@@ -31,11 +28,6 @@ trait RecordDeleteScreenTrait
      */
     abstract protected function createCollection(): DBHelper_BaseCollection;
 
-    /**
-     * @return string
-     */
-    abstract public function getBackOrCancelURL(): string;
-
     public function getNavigationTitle(): string
     {
         return t('Delete');
@@ -48,7 +40,7 @@ trait RecordDeleteScreenTrait
 
     public function getURLName(): string
     {
-        return 'delete';
+        return RecordDeleteScreenInterface::URL_NAME;
     }
 
     protected function _handleActions(): bool
