@@ -11,15 +11,15 @@ use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
+use DBHelper\Admin\Screens\BaseSubmodeRecordSettingsScreen;
 use DBHelper_BaseRecord;
 
 /**
  * @property TimeEntry $record
  */
-class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+class BaseSettingsScreen extends BaseSubmodeRecordSettingsScreen
 {
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName(): string
     {

@@ -9,6 +9,7 @@
 
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\Admin\CollectionSettingsExtendedInterface;
+use DBHelper\Admin\Screens\BaseSubmodeRecordSettingsScreen;
 
 /**
  * Trait for administration screens that are used to
@@ -42,7 +43,7 @@ use Application\Interfaces\Admin\CollectionSettingsExtendedInterface;
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @see Application_Admin_Area_Mode_Submode_CollectionEdit
+ * @see BaseSubmodeRecordSettingsScreen
  * @see Application_Admin_Area_Mode_Submode_Action_CollectionEdit
  * @see Application_Interfaces_Admin_CollectionSettings
  */

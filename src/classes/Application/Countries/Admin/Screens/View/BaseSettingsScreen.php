@@ -7,19 +7,19 @@ namespace Application\Countries\Admin\Screens\View;
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use Application_Countries;
 use Application_Countries_Country;
+use DBHelper\Admin\Screens\BaseSubmodeRecordSettingsScreen;
 use DBHelper_BaseRecord;
 
 /**
  * @property Application_Countries_Country $record
  */
-abstract class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+abstract class BaseSettingsScreen extends BaseSubmodeRecordSettingsScreen
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName(): string
     {
