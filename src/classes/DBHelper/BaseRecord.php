@@ -11,6 +11,8 @@ use Application\Collection\IntegerCollectionItemInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
+use AppUtils\Microtime;
+use DBHelper\BaseRecord\BaseRecordException;
 use DBHelper\BaseRecord\Event\KeyModifiedEvent;
 
 /**
@@ -260,11 +262,7 @@ abstract class DBHelper_BaseRecord
     {
         $this->requireNotDisposed('Get a record data key');
 
-        if(isset($this->recordData[$name])) {
-            return $this->recordData[$name];
-        }
-        
-        return $default;
+        return $this->recordData[$name] ?? $default;
     }
 
     /**
@@ -332,12 +330,40 @@ abstract class DBHelper_BaseRecord
      */
     public function getRecordDateKey(string $name, ?DateTime $default=null) : ?DateTime
     {
-        $value = $this->getRecordKey($name);
-        if($value !== null) {
+        $value = $this->getRecordStringKey($name);
+        if(!empty($value)) {
             return new DateTime($value);
         }
         
         return $default;
+    }
+
+    public function getRecordMicrotimeKey(string $name) : ?Microtime
+    {
+        $value = $this->getRecordStringKey($name);
+        if(!empty($value)) {
+            return Microtime::createFromString($value);
+        }
+
+        return null;
+    }
+
+    public function requireRecordMicrotimeKey(string $name) : Microtime
+    {
+        $value = $this->getRecordMicrotimeKey($name);
+        if($value !== null) {
+            return $value;
+        }
+
+        throw new BaseRecordException(
+            'No microtime date value available.',
+            sprintf(
+                'The record key [%s] does not contain a valid microtime date value in the record [%s].',
+                $name,
+                $this->getIdentification()
+            ),
+            BaseRecordException::ERROR_RECORD_KEY_INVALID_MICROTIME
+        );
     }
 
     /**
