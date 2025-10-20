@@ -118,11 +118,11 @@ abstract class UI_DataGrid_Action
      * - The selected item IDs
      * - [Optional arguments]
      *
-     * @param callable $callback The callback to use.
-     * @param array $arguments Optional list of arguments to include in the callback.
+     * @param callable(UI_DataGrid_Action, array, mixed...): void $callback The callback to use.
+     * @param array<int,mixed> $arguments Optional list of arguments to include in the callback.
      * @return $this
      */
-    public function setCallback(callable $callback, array $arguments=array())
+    public function setCallback(callable $callback, array $arguments=array()) : self
     {
         $this->callback = new CallableContainer($callback, $arguments);
         
