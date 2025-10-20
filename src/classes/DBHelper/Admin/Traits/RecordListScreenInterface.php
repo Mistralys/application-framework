@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Application\Interfaces\Admin;
+namespace DBHelper\Admin\Traits;
 
-use AppUtils\Interfaces\StringableInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;use AppUtils\Interfaces\StringableInterface;
 
-interface CollectionListInterface extends AdminScreenInterface
+interface RecordListScreenInterface extends AdminScreenInterface
 {
-    public const URL_NAME_DEFAULT = 'list';
+    public const string URL_NAME_DEFAULT = 'list';
 
     public function getGridName() : string;
 

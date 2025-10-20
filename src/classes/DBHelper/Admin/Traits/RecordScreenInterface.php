@@ -9,7 +9,7 @@ use Application\Interfaces\Admin\MissingRecordInterface;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 
-interface CollectionRecordScreenInterface extends AdminScreenInterface, MissingRecordInterface
+interface RecordScreenInterface extends AdminScreenInterface, MissingRecordInterface
 {
     /**
      * @return DBHelper_BaseRecord

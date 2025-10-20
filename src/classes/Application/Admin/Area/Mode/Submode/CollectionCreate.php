@@ -1,8 +1,10 @@
 <?php
 
+use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
+
 abstract class Application_Admin_Area_Mode_Submode_CollectionCreate extends Application_Admin_Area_Mode_Submode implements Application_Interfaces_Admin_CollectionCreate
 {
-    use Application_Traits_Admin_CollectionSettings;
+    use RecordSettingsScreenTrait;
 
     public function isUserAllowedEditing() : bool
     {

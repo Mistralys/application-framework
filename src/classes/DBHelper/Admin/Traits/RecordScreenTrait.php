@@ -8,7 +8,7 @@ use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use UI_DataGrid;
 
-trait CollectionRecordScreenTrait
+trait RecordScreenTrait
 {
     /**
      * @var DBHelper_BaseCollection

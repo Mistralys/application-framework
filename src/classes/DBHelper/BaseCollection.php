@@ -13,6 +13,7 @@ use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 use AppUtils\Request_Exception;
+use DBHelper\Admin\Traits\RecordListScreenTrait;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
@@ -458,10 +459,7 @@ abstract class DBHelper_BaseCollection implements IntegerCollectionInterface
      *
      * @return string
      *
-     * @see Application_Traits_Admin_CollectionList
-     * @see Application_Admin_Area_Mode_CollectionList
-     * @see Application_Admin_Area_Mode_Submode_CollectionList
-     * @see Application_Admin_Area_Mode_Submode_Action_CollectionList
+     * @see RecordListScreenTrait
      */
     public function getDataGridName() : string
     {

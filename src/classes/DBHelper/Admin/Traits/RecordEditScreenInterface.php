@@ -1,15 +1,24 @@
 <?php
+/**
+ * @package DBHelper
+ * @subpackage Admin
+ */
 
 declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use Application_Interfaces_Admin_CollectionSettings;
-
 /**
+ * Interface for screens that allow editing of a record.
+ *
+ * This is an extension of the interface {@see RecordSettingsScreenInterface}
+ * with the difference that a record is required for editing.
+ *
+ * @package DBHelper
+ * @subpackage Admin
  * @see RecordEditScreenTrait
  */
-interface RecordEditScreenInterface extends Application_Interfaces_Admin_CollectionSettings, CollectionRecordScreenInterface
+interface RecordEditScreenInterface extends RecordSettingsScreenInterface, RecordScreenInterface
 {
     public function isUserAllowedEditing() : bool;
 

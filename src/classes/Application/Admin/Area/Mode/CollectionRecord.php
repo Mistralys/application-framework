@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-use DBHelper\Admin\Traits\CollectionRecordScreenInterface;
-use DBHelper\Admin\Traits\CollectionRecordScreenTrait;
+use DBHelper\Admin\Traits\RecordScreenInterface;
+use DBHelper\Admin\Traits\RecordScreenTrait;
 
 abstract class Application_Admin_Area_Mode_CollectionRecord
     extends Application_Admin_Area_Mode
-    implements CollectionRecordScreenInterface
+    implements RecordScreenInterface
 {
-    use CollectionRecordScreenTrait;
+    use RecordScreenTrait;
 }

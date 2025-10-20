@@ -6,8 +6,11 @@
 
 declare(strict_types=1);
 
-use DBHelper\Admin\Traits\CollectionRecordScreenInterface;
-use DBHelper\Admin\Traits\CollectionRecordScreenTrait;
+namespace DBHelper\Admin\Screens\Action;
+
+use Application_Admin_Area_Mode_Submode_Action;
+use DBHelper\Admin\Traits\RecordScreenInterface;
+use DBHelper\Admin\Traits\RecordScreenTrait;
 
 /**
  * Abstract base class for an admin "action" screen that works with
@@ -17,9 +20,9 @@ use DBHelper\Admin\Traits\CollectionRecordScreenTrait;
  * @package DBHelper
  * @subpackage Admin
  */
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord
+abstract class BaseRecordScreen
     extends Application_Admin_Area_Mode_Submode_Action
-    implements CollectionRecordScreenInterface
+    implements RecordScreenInterface
 {
-    use CollectionRecordScreenTrait;
+    use RecordScreenTrait;
 }
