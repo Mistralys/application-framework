@@ -2,6 +2,8 @@
 
 ## v5.13.0 - API Management 
 - DBHelper: Added a base record status screen trait.
+- DBHelper: Added `getRecordMicrotimeKey()` to base records.
+- DBHelper: Added validations to registered collection keys like `setRegexValidation()`.
 
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
