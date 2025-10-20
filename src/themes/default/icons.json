@@ -846,5 +846,9 @@
   "time-tracker": {
     "icon": "biohazard",
     "type": "fas"
+  },
+  "wizard": {
+    "icon": "hat-wizard",
+    "type": "fas"
   }
 }

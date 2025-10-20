@@ -316,6 +316,7 @@ var UI_Icon =
     Waiting:function() { return this.SetType('clock', 'far'); },
     Warning:function() { return this.SetType('exclamation-triangle', 'fas'); },
     Whitelist:function() { return this.SetType('star', 'far'); },
+    Wizard:function() { return this.SetType('hat-wizard', 'fas'); },
     Wordwrap:function() { return this.SetType('terminal', 'fas'); },
     Workflow:function() { return this.SetType('sitemap'); },
     Xml:function() { return this.SetType('code'); },

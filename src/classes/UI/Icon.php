@@ -900,6 +900,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function wizard() : self { return $this->setType('hat-wizard', 'fas'); }
+    /**
+     * @return $this
+     */
     public function wordwrap() : self { return $this->setType('terminal', 'fas'); }
     /**
      * @return $this
