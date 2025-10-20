@@ -8,13 +8,13 @@ use Application\AppFactory;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
 use Application_Formable_RecordSettings;
-use DBHelper\Admin\Screens\Submode\BaseRecordSettingsScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
  * @property TagRecord $record
  */
-abstract class BaseTagSettingsScreen extends BaseRecordSettingsScreen
+abstract class BaseTagSettingsScreen extends BaseRecordSettingsSubmode
 {
     public const string URL_NAME = 'tag-settings';
 

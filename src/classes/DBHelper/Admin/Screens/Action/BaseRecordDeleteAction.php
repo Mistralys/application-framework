@@ -6,7 +6,7 @@ namespace DBHelper\Admin\Screens\Action;
 
 use DBHelper\Admin\Traits\RecordDeleteScreenTrait;
 
-abstract class BaseRecordDeleteScreen extends BaseRecordScreen
+abstract class BaseRecordDeleteAction extends BaseRecordAction
 {
     use RecordDeleteScreenTrait;
 }

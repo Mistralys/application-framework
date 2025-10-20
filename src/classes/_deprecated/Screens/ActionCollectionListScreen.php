@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use DBHelper\Admin\Screens\Action\BaseRecordListScreen;
+use DBHelper\Admin\Screens\Action\BaseRecordListAction;
 
 /**
- * @deprecated Use {@see BaseRecordListScreen} instead.
+ * @deprecated Use {@see BaseRecordListAction} instead.
  */
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionList extends BaseRecordListScreen{}
+abstract class Application_Admin_Area_Mode_Submode_Action_CollectionList extends BaseRecordListAction{}

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use DBHelper\Admin\Screens\Submode\BaseRecordScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 
 /**
- * @deprecated Use {@see BaseRecordScreen}
+ * @deprecated Use {@see BaseRecordSubmode}
  */
-abstract class Application_Admin_Area_Mode_Submode_CollectionRecord extends BaseRecordScreen{}
+abstract class Application_Admin_Area_Mode_Submode_CollectionRecord extends BaseRecordSubmode{}

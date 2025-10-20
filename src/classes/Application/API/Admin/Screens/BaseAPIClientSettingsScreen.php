@@ -8,10 +8,10 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\API\Clients\APIClientRecordSettings;
 use Application\Traits\AllowableMigrationTrait;
-use DBHelper\Admin\Screens\Submode\BaseRecordSettingsScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper_BaseRecord;
 
-abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsScreen
+abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsSubmode
 {
     use AllowableMigrationTrait;
     use APIClientRecordScreenTrait;

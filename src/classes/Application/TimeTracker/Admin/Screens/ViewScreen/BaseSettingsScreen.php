@@ -11,13 +11,13 @@ use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
-use DBHelper\Admin\Screens\Submode\BaseRecordSettingsScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
  * @property TimeEntry $record
  */
-class BaseSettingsScreen extends BaseRecordSettingsScreen
+class BaseSettingsScreen extends BaseRecordSettingsSubmode
 {
     public const string URL_NAME = 'settings';
 

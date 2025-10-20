@@ -20,7 +20,7 @@ use DBHelper\Admin\Traits\RecordScreenTrait;
  * @package DBHelper
  * @subpackage Admin
  */
-abstract class BaseRecordScreen
+abstract class BaseRecordAction
     extends Application_Admin_Area_Mode_Submode_Action
     implements RecordScreenInterface
 {

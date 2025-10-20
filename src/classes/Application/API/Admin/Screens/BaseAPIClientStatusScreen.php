@@ -7,12 +7,12 @@ namespace Application\API\Admin\Screens;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\API\Clients\APIClientRecord;
-use DBHelper\Admin\Screens\Submode\BaseRecordStatusScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordStatusSubmode;
 use DBHelper_BaseRecord;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
-class BaseAPIClientStatusScreen extends BaseRecordStatusScreen
+class BaseAPIClientStatusScreen extends BaseRecordStatusSubmode
 {
     use APIClientRecordScreenTrait;
 

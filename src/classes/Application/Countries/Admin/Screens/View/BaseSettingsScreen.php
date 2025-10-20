@@ -9,13 +9,13 @@ use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
-use DBHelper\Admin\Screens\Submode\BaseRecordSettingsScreen;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper_BaseRecord;
 
 /**
  * @property Application_Countries_Country $record
  */
-abstract class BaseSettingsScreen extends BaseRecordSettingsScreen
+abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
 {
     use AllowableMigrationTrait;
 

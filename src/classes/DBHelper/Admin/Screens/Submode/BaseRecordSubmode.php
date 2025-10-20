@@ -16,7 +16,7 @@ use DBHelper\Admin\Traits\RecordScreenTrait;
  * @package DBHelper
  * @subpackage Admin
  */
-abstract class BaseRecordScreen
+abstract class BaseRecordSubmode
     extends Application_Admin_Area_Mode_Submode
     implements RecordScreenInterface
 {

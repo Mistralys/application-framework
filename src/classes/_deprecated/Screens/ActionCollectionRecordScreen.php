@@ -6,9 +6,9 @@
 
 declare(strict_types=1);
 
-use DBHelper\Admin\Screens\Action\BaseRecordScreen;
+use DBHelper\Admin\Screens\Action\BaseRecordAction;
 
 /**
- * @deprecated Use {@see BaseRecordScreen} instead.
+ * @deprecated Use {@see BaseRecordAction} instead.
  */
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord extends BaseRecordScreen{}
+abstract class Application_Admin_Area_Mode_Submode_Action_CollectionRecord extends BaseRecordAction{}

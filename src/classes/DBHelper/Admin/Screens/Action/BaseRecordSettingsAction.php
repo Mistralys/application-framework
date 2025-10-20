@@ -2,23 +2,18 @@
 
 declare(strict_types=1);
 
-namespace DBHelper\Admin\Screens\Submode;
+namespace DBHelper\Admin\Screens\Action;
 
-use Application_Admin_Area_Mode_Submode;
+use Application_Admin_Area_Mode_Submode_Action;
 use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
 use DBHelper\Admin\Traits\RecordEditScreenInterface;
 use DBHelper\Admin\Traits\RecordEditScreenTrait;
 
-abstract class BaseRecordSettingsScreen
-    extends Application_Admin_Area_Mode_Submode
+abstract class BaseRecordSettingsAction
+    extends Application_Admin_Area_Mode_Submode_Action
     implements
     RecordEditScreenInterface
 {
     use RecordSettingsScreenTrait;
     use RecordEditScreenTrait;
-
-    final public function getDefaultAction(): string
-    {
-        return '';
-    }
 }
