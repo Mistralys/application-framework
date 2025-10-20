@@ -9,6 +9,9 @@ use Application\Interfaces\Admin\MissingRecordInterface;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 
+/**
+ * @see RecordCreateScreenTrait
+ */
 interface RecordScreenInterface extends AdminScreenInterface, MissingRecordInterface
 {
     /**

@@ -90,4 +90,6 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
     public function getDefaultFormValues(): array;
 
     public function getDeleteConfirmMessage(): string;
+
+    public function isUserAllowedEditing(): bool;
 }
