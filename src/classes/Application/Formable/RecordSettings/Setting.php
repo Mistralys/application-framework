@@ -287,7 +287,7 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
     * ) : HTML_QuickForm2_Node
     * ```
     *
-    * @param callable $callback
+    * @param callable(Application_Formable_RecordSettings_Setting, mixed...): HTML_QuickForm2_Node $callback
     * @param array<int,mixed> $arguments An array of arguments to pass on to the callback. The first parameter is always the setting instance.
     * @return $this
     */
