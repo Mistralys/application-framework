@@ -1,11 +1,18 @@
 # Application Framework Changelog
 
-## v5.13.0 - API Management 
+## v5.13.0 - API Management (Deprecation)
 - DBHelper: Added a base record status screen trait.
 - DBHelper: Added `getRecordMicrotimeKey()` to base records.
 - DBHelper: Added validations to registered collection keys like `setRegexValidation()`.
+- DBHelper: Deprecated and refactored DBHelper base screens.
+- API: Added the API client collection classes.
 - API: Added the API management screens.
 - API: Added user rights to manage the API.
+
+### Deprecations
+
+All DBHelper base admin screen classes have been deprecated. Replacement classes
+are documented for each to make migration straightforward.
 
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
