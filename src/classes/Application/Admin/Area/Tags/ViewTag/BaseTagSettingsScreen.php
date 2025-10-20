@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace Application\Area\Tags\ViewTag;
 
 use Application\AppFactory;
-use Application_Formable_RecordSettings;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
-use DBHelper\Admin\Screens\BaseSubmodeRecordSettingsScreen;
+use Application_Formable_RecordSettings;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsScreen;
 use DBHelper_BaseRecord;
 
 /**
  * @property TagRecord $record
  */
-abstract class BaseTagSettingsScreen extends BaseSubmodeRecordSettingsScreen
+abstract class BaseTagSettingsScreen extends BaseRecordSettingsScreen
 {
     public const string URL_NAME = 'tag-settings';
 
