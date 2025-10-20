@@ -1,54 +1,13 @@
 <?php
 
-use Application\Interfaces\Admin\MissingRecordInterface;
+declare(strict_types=1);
+
+use DBHelper\Admin\Traits\CollectionRecordScreenInterface;
+use DBHelper\Admin\Traits\CollectionRecordScreenTrait;
 
 abstract class Application_Admin_Area_Mode_Submode_CollectionRecord
     extends Application_Admin_Area_Mode_Submode
-    implements MissingRecordInterface
+    implements CollectionRecordScreenInterface
 {
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
-    
-    /**
-     * @var DBHelper_BaseRecord
-     */
-    protected $record;
-    
-   /**
-    * @return DBHelper_BaseCollection
-    */
-    abstract protected function createCollection();
-
-    protected function init() : void
-    {
-        $this->collection = $this->createCollection();
-        $this->record = $this->collection->getByRequest();
-        
-        if(!$this->record) {
-            $this->redirectWithErrorMessage(
-                t('No such record found.'),
-                $this->getRecordMissingURL()
-            );
-        }
-        
-        parent::init();
-    }
-    
-   /**
-    * @return DBHelper_BaseRecord
-    */
-    public function getRecord()
-    {
-        return $this->record;
-    }
-    
-   /**
-    * @return DBHelper_BaseCollection
-    */
-    public function getCollection()
-    {
-        return $this->collection;
-    }
+    use CollectionRecordScreenTrait;
 }
