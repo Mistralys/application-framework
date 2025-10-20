@@ -237,7 +237,7 @@ class UI_DataGrid_RedirectMessage
         
         foreach($ids as $id)
         {
-            $id = intval($id);
+            $id = (int)$id;
             
             if(!$collection->idExists($id))
             {
