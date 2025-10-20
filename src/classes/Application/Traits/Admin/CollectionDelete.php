@@ -42,11 +42,6 @@ trait Application_Traits_Admin_CollectionDelete
         return 'delete';
     }
     
-    protected function init() : void
-    {
-        $this->collection = $this->createCollection();
-    }
-    
     protected function _handleActions() : bool
     {
         $this->record = $this->collection->getByRequest();
