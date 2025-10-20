@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Application;
 
 use Application;
+use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
@@ -39,6 +40,7 @@ use Application_RequestLog;
 use Application_Session;
 use Application_Sets;
 use Application_Uploads;
+use Application_User;
 use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -181,6 +183,11 @@ class AppFactory
         return VersionInfo::getInstance();
     }
 
+    public static function createUser() : Application_User
+    {
+        return Application::getUser();
+    }
+
     public function createDriverSettings() : DriverSettings
     {
         return Application_Driver::createSettings();
@@ -267,6 +274,14 @@ class AppFactory
         return ClassHelper::requireObjectInstanceOf(
             TimeTrackerCollection::class,
             DBHelper::createCollection(TimeTrackerCollection::class)
+        );
+    }
+
+    public static function createAPIClients() : APIClientsCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            APIClientsCollection::class,
+            DBHelper::createCollection(APIClientsCollection::class)
         );
     }
 
