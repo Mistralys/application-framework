@@ -858,6 +858,19 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->getFormInstance()->addRuleNoHTML($element);
     }
 
+    /**
+     * Marks the element as supporting Markdown syntax.
+     * The comment will be adjusted accordingly.
+     *
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
+     * @throws Application_Formable_Exception
+     */
+    public function addMarkdownSupport(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
+    {
+        return $this->getFormInstance()->addMarkdownSupport($element);
+    }
+
     public function addRuleRegex(HTML_QuickForm2_Element $element, string $regex, string $message) : HTML_QuickForm2_Node
     {
         return $this->getFormInstance()->addRuleRegex($element, $regex, $message);

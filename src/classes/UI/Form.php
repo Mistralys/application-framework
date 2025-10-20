@@ -62,7 +62,6 @@ class UI_Form extends UI_Renderable
     public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
 
 
-
     protected string $id;
     protected HTML_QuickForm2 $form;
     protected HTML_QuickForm2_DataSource_Array $defaultDataSource;
@@ -413,9 +412,20 @@ class UI_Form extends UI_Renderable
         $container = $this->resolveContainer($container);
 
         $group = $container->addGroup($name);
-        $group->setAttribute('rel', UI_Form::REL_LAYOUT_LESS_GROUP);
+        $group->setAttribute('rel', self::REL_LAYOUT_LESS_GROUP);
 
         return $group;
+    }
+
+    /**
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
+     * @see UI_Form_Renderer_CommentGenerator::addMarkdownComment()
+     */
+    public function addMarkdownSupport(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
+    {
+        $element->setRuntimeProperty(UI_Form_Renderer_CommentGenerator::PROPERTY_MARKDOWN_SUPPORT, true);
+        return $element;
     }
 
     /**
