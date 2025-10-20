@@ -1,20 +1,15 @@
 <?php
 
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionEdit extends Application_Admin_Area_Mode_Submode_Action implements Application_Interfaces_Admin_CollectionSettings
+declare(strict_types=1);
+
+use DBHelper\Admin\Traits\RecordEditScreenInterface;
+use DBHelper\Admin\Traits\RecordEditScreenTrait;
+
+abstract class Application_Admin_Area_Mode_Submode_Action_CollectionEdit
+    extends Application_Admin_Area_Mode_Submode_Action
+    implements
+    RecordEditScreenInterface
 {
     use Application_Traits_Admin_CollectionSettings;
-
-    abstract public function isUserAllowedEditing() : bool;
-
-    /**
-     * Whether the record can be edited at all.
-     *
-     * @return bool
-     */
-    abstract public function isEditable() : bool;
-
-    public function isEditMode() : bool
-    {
-        return true;
-    }
+    use RecordEditScreenTrait;
 }
