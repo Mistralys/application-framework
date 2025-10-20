@@ -8,9 +8,11 @@ declare(strict_types=1);
 
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
+use Application\API\Admin\Screens\BaseAPIClientsArea;
 use Application\Area\BaseTagsScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
+use TestDriver\Area\APIClientsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
@@ -55,6 +57,7 @@ class TestDriver extends Application_Driver
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
             CountriesScreen::URL_NAME => CountriesScreen::class,
+            APIClientsArea::URL_NAME => APIClientsArea::class
         );
 
         if(TagCollection::tableExists()) {
