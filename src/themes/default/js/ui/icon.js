@@ -127,6 +127,7 @@ var UI_Icon =
     Business:function() { return this.SetType('university'); },
     Button:function() { return this.SetType('external-link-square-alt'); },
     Cache:function() { return this.SetType('memory', 'fas'); },
+    Calculate:function() { return this.SetType('calculator'); },
     Calendar:function() { return this.SetType('calendar'); },
     Campaigns:function() { return this.SetType('flag'); },
     Cancel:function() { return this.SetType('ban'); },
