@@ -37,22 +37,14 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
     public const string FORM_NAME = 'auto-fill-times';
     public const int VARIATION_PERCENT_MIN = 20;
     public const int VARIATION_PERCENT_MAX = 100;
-    public const string SETTING_START_TIME_MAX = 'start_time_max';
-    public const string SETTING_START_TIME_MIN = 'start_time_min';
-    public const string SETTING_WORK_HOURS = 'work_hours_per_day';
-    public const string SETTING_OVERTIME_BIAS = 'overtime_bias';
-    public const string SETTING_MAX_OVERTIME = 'max_overtime';
-    public const string SETTING_MAX_UNDERTIME = 'max_undertime';
-    public const string SETTING_DATE = 'date';
-    public const string SETTING_LUNCH_MIN_START_TIME = 'lunch_start_min';
-    public const string SETTING_LUNCH_MAX_START_TIME = 'lunch_start_max';
-    public const string SETTING_LUNCH_MAX_DURATION = 'lunch_duration_max';
-    public const string SETTING_LUNCH_MIN_DURATION = 'lunch_duration_min';
+
     public const string REQUEST_PARAM_CREATE_ENTRIES = 'create_entries';
-    public const string SETTING_GENERATION_SETTINGS = 'generation_settings';
     public const string KEY_TIME_START = 'time_start';
     public const string KEY_WORK_DURATION_SECONDS = 'work_duration_seconds';
     public const string KEY_WORK_BLOCKS = 'work_blocks';
+    public const string SETTING_ENTRY_TYPE = 'entry_type';
+    public const string SETTING_TICKET_NUMBER = 'ticket_number';
+    public const string SETTING_TICKET_URL = 'ticket_url';
     private string $createID;
 
     public function getURLName(): string
@@ -428,13 +420,6 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
             );
     }
 
-    private function getDefaultFormValues() : array
-    {
-        $data = TimeUIManager::getAutoFillPreferences()->getData();
-        $data[self::SETTING_DATE] = TimeUIManager::getLastUsedDate()->format('Y-m-d');
-        return $data;
-    }
-
     public static function getDefaultPreferences() : array
     {
         return array(
@@ -469,6 +454,31 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         TimeUIManager::setAutoFillPreferences($prefs);
     }
 
+    // region: Form creation
+
+    public const string SETTING_START_TIME_MAX = 'start_time_max';
+    public const string SETTING_START_TIME_MIN = 'start_time_min';
+    public const string SETTING_WORK_HOURS = 'work_hours_per_day';
+    public const string SETTING_OVERTIME_BIAS = 'overtime_bias';
+    public const string SETTING_MAX_OVERTIME = 'max_overtime';
+    public const string SETTING_MAX_UNDERTIME = 'max_undertime';
+    public const string SETTING_DATE = 'date';
+    public const string SETTING_LUNCH_MIN_START_TIME = 'lunch_start_min';
+    public const string SETTING_LUNCH_MAX_START_TIME = 'lunch_start_max';
+    public const string SETTING_LUNCH_MAX_DURATION = 'lunch_duration_max';
+    public const string SETTING_LUNCH_MIN_DURATION = 'lunch_duration_min';
+    public const string SETTING_GENERATION_SETTINGS = 'generation_settings';
+
+    private function getDefaultFormValues() : array
+    {
+        $data = TimeUIManager::getAutoFillPreferences()->getData();
+
+        $data[self::SETTING_DATE] = TimeUIManager::getLastUsedDate()->format('Y-m-d');
+        $data[self::SETTING_ENTRY_TYPE] = TimeEntryTypes::getInstance()->getDefault()->getID();
+
+        return $data;
+    }
+
     private function createSettingsForm() : void
     {
         $this->createFormableForm(self::FORM_NAME, $this->getDefaultFormValues());
@@ -478,6 +488,9 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
             ->setIcon(UI::icon()->information());
 
         $this->injectDate();
+        $this->injectEntryType();
+        $this->injectTicketNumber();
+        $this->injectTicketURL();
 
         $this->addSection(t('General Settings'))
             ->setIcon(UI::icon()->settings())
@@ -509,6 +522,29 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         $this->injectLunchEnd();
         $this->injectLunchMinDuration();
         $this->injectLunchMaxDuration();
+
+        $this->setDefaultElement(self::SETTING_DATE);
+    }
+
+    private function injectEntryType() : void
+    {
+        $el = $this->addElementSelect(self::SETTING_ENTRY_TYPE, t('Entry type'));
+
+        foreach(TimeEntryTypes::getInstance()->getAll() as $type) {
+            $el->addOption($type->getLabel(), $type->getID());
+        }
+    }
+
+    private function injectTicketNumber() : void
+    {
+        $el = $this->addElementText(self::SETTING_TICKET_NUMBER, t('Ticket number'))
+            ->setComment(t('Optional ticket number to associate with the generated entries.'));
+    }
+
+    private function injectTicketURL() : void
+    {
+        $el = $this->addElementText(self::SETTING_TICKET_URL, t('Ticket URL'))
+            ->setComment(t('Optional ticket URL to associate with the generated entries.'));
     }
 
     private function injectLunchStart() : void
@@ -602,6 +638,8 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         );
     }
 
+    // endregion
+
     private function handleCreateEntries(ArrayDataCollection $values) : never
     {
         $data = JSONConverter::json2array($this->request->registerParam(self::SETTING_GENERATION_SETTINGS)->setJSON()->getString());
@@ -614,6 +652,9 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         }
 
         $tracker = AppFactory::createTimeTracker();
+        $type = TimeEntryTypes::getInstance()->getByID($values->getString(self::SETTING_ENTRY_TYPE));
+        $ticketNumber = $values->getString(self::SETTING_TICKET_NUMBER);
+        $ticketURL = $values->getString(self::SETTING_TICKET_URL);
         $count = 0;
 
         $this->startTransaction();
@@ -626,12 +667,17 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
             $count++;
 
-            $tracker->createNewEntryByTime(
+            $entry = $tracker->createNewEntryByTime(
                 $date,
                 $block->getStartTime(),
                 $block->getEndTime(),
-                TimeEntryTypes::getInstance()->getDefault()
+                $type
             );
+
+            if(!empty($ticketNumber)) {
+                $entry->setTicket($ticketNumber, $ticketURL);
+                $entry->save();
+            }
         }
 
         $this->endTransaction();
