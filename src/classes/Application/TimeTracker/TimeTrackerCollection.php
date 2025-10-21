@@ -11,8 +11,6 @@ namespace Application\TimeTracker;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use DBHelper_BaseCollection;
 use Application\TimeTracker\Admin\TrackerAdminURLs;
-use DBHelper_BaseRecord;
-use TestDriver\TestDBRecords\TestDBCollection;
 
 /**
  * @package Time Tracker
@@ -20,6 +18,8 @@ use TestDriver\TestDBRecords\TestDBCollection;
  *
  * @method TimeEntry[] getAll()
  * @method TimeEntry getByID($record_id)
+ * @method TimeFilterCriteria getFilterCriteria()
+ * @method TimeFilterSettings getFilterSettings()
  */
 class TimeTrackerCollection extends DBHelper_BaseCollection
 {
