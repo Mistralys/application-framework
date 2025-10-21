@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\Screens\AutoFillScreen\WorkBlock;
 use Application\TimeTracker\Admin\TimeUIManager;
+use Application\TimeTracker\Types\TimeEntryTypes;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area_Mode;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\Microtime;
@@ -45,6 +48,12 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
     public const string SETTING_LUNCH_MAX_START_TIME = 'lunch_start_max';
     public const string SETTING_LUNCH_MAX_DURATION = 'lunch_duration_max';
     public const string SETTING_LUNCH_MIN_DURATION = 'lunch_duration_min';
+    public const string REQUEST_PARAM_CREATE_ENTRIES = 'create_entries';
+    public const string SETTING_GENERATION_SETTINGS = 'generation_settings';
+    public const string KEY_TIME_START = 'time_start';
+    public const string KEY_WORK_DURATION_SECONDS = 'work_duration_seconds';
+    public const string KEY_WORK_BLOCKS = 'work_blocks';
+    private string $createID;
 
     public function getURLName(): string
     {
@@ -81,19 +90,28 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
     protected function _handleActions(): bool
     {
+        $this->createID = nextJSID();
+
         $this->createSettingsForm();
 
-        if($this->isFormValid()) {
-            $this->handleCalculate();
+        if($this->isFormValid())
+        {
+            $values = ArrayDataCollection::create($this->getFormValues());
+
+            $this->savePreferences($values);
+
+            if($this->request->getBool(self::REQUEST_PARAM_CREATE_ENTRIES)) {
+                $this->handleCreateEntries($values);
+            }
+
+            $this->handleCalculate($values);
         }
 
         return true;
     }
 
-    private function handleCalculate() : void
+    private function handleCalculate(ArrayDataCollection $values) : void
     {
-        $values = ArrayDataCollection::create($this->getFormValues());
-
         $date = $values->requireMicrotime(self::SETTING_DATE);
 
         $dayStartTime = $this->calculateStartTime($values);
@@ -164,6 +182,9 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         $occupied = $merged;
 
         $desiredSeconds = (int)round($dayWorkHours * 3600.0);
+        // round to nearest 5 minutes
+        $desiredSeconds = (int)(round($desiredSeconds / 300) * 300);
+
         $remainingSeconds = $desiredSeconds - $existingWorkedSeconds;
 
         if($remainingSeconds <= 0) {
@@ -176,7 +197,6 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
         $pointer = $dayStartSeconds;
 
-        $stack = array();
         foreach($occupied as $interval)
         {
             [$startSec, $endSec] = $interval;
@@ -241,29 +261,45 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
         $this->workBlocks = $workBlocks;
         $this->startTime = $dayStartTime;
-        $this->workHours = $dayWorkHours;
+        $this->workDuration = $desiredSeconds;
 
-        usort($this->stack, static function($a, $b) : int {
-            return strcmp($a['start'], $b['start']);
+        usort($this->stack, static function(WorkBlock $a, WorkBlock $b) : int {
+            return $a->getStartTime()->getTotalSeconds() <=> $b->getStartTime()->getTotalSeconds();
         });
 
         $this->renderer->appendContent($this->renderCalculation());
+
+        $this->addHiddenVar(self::REQUEST_PARAM_CREATE_ENTRIES, 'no', $this->createID);
+
+        $this->addHiddenVar(
+            self::SETTING_GENERATION_SETTINGS,
+            JSONConverter::var2json($this->serializeWorkBlocks())
+        );
+    }
+
+    private function serializeWorkBlocks() : array
+    {
+        $result = array();
+
+        foreach($this->stack as $block) {
+            $result[] = $block->serialize();
+        }
+
+        return $result;
     }
 
     private function addToStack(string $type, DaytimeStringInfo $startTime, int $duration) : void
     {
-        $this->stack[] = array(
-            'type' => $type,
-            'start' => $startTime->getNormalized(),
-            'end' => DaytimeStringInfo::fromSeconds($startTime->getTotalSeconds() + $duration)->getNormalized(),
-            'duration_seconds' => $duration,
-            'duration' => ConvertHelper::interval2string(ConvertHelper::seconds2interval($duration))
-        );
+        $this->stack[] = new WorkBlock($type, $startTime, $duration);
     }
 
     private array $workBlocks = array();
     private Microtime $startTime;
-    private float $workHours;
+    private float $workDuration;
+
+    /**
+     * @var WorkBlock[]
+     */
     private array $stack = array();
 
     private function calculateLunch(ArrayDataCollection $values) : array
@@ -308,11 +344,13 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         // round the offset to the nearest 5 minutes
         $randOffset = (int)(round($randOffset / 300) * 300);
 
-        return Microtime::createFromString(sprintf(
-            '%s %s',
+        $start = sprintf(
+            '%s %s:00',
             $values->requireMicrotime(self::SETTING_DATE)->format('Y-m-d'),
             DaytimeStringInfo::fromSeconds($earliestTime->getTotalSeconds() + $randOffset)->getNormalized()
-        ));
+        );
+
+        return Microtime::createFromString($start);
     }
 
     protected function _handleHelp(): void
@@ -333,14 +371,19 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
             return;
         }
 
-
         $this->sidebar->addButton('create_entries', t('Create entries'))
             ->makePrimary()
             ->setIcon(UI::icon()->add())
-            ->makeClickableSubmit($this);
+            ->setTooltip(t('Creates the time entries as shown in the calculation.'))
+            ->click(sprintf(
+                "document.getElementById('%s').value='yes'; %s",
+                $this->createID,
+                $this->formableForm->getJSSubmitHandler()
+            ));
 
         $this->sidebar->addButton('re_roll', t('Re-roll calculations'))
             ->setIcon(UI::icon()->calculate())
+            ->setTooltip(t('Generate a new set of time entries.'))
             ->makeClickableSubmit($this);
     }
 
@@ -355,51 +398,75 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
     {
         $sel = $this->ui->createBigSelection();
 
-        foreach($this->stack as $item) {
-            if($item['type'] === 'occupied') {
-                $badge = UI::label('Existing')->makeInactive();
-            } else {
-                $badge = UI::label('Generated')->makeSuccess();
-            }
+        foreach($this->stack as $item)
+        {
+            $entry = $sel->addItem(sb()
+                ->add($item->getStartTime()->getNormalized())
+                ->add('-')
+                ->add($item->getEndTime()->getNormalized())
+                ->add($item->getBadge())
+            );
 
-            $entry = $sel->addItem(sb()->add($item['start'])->add('-')->add($item['end'])->add($badge));
             $entry->setDescription(sb()
                 ->t('Duration:')
-                ->add($item['duration'])
+                ->add($item->getDurationPretty())
             );
         }
+
+        $props = $this->ui->createPropertiesGrid();
+        $props->setLabelWidth(15);
+        $props->add(t('Date'), sb()->link($this->startTime->format('Y-m-d'), AppFactory::createTimeTracker()->adminURL()->dayList($this->startTime), true));
+        $props->add(t('Start time'), $this->startTime->format('H:i:s'));
+        $props->add(t('Total hours'), ConvertHelper::interval2string(DateInterval::createFromDateString($this->workDuration.' seconds')));
 
         return $this->ui->createSection()
             ->setTitle(t('Calculated time entries'))
             ->setIcon(UI::icon()->wizard())
             ->setContent(sb()
-                ->para(sb()
-                    ->t('Start time:')
-                    ->add($this->startTime->format('H:i:s'))
-                )
-                ->para(sb()
-                    ->t('Total hours:')
-                    ->add(ConvertHelper::interval2string(DateInterval::createFromDateString((int)($this->workHours * 3600).' seconds')))
-                )
+                ->add($props)
                 ->add($sel)
             );
     }
 
     private function getDefaultFormValues() : array
     {
+        $data = TimeUIManager::getAutoFillPreferences()->getData();
+        $data[self::SETTING_DATE] = TimeUIManager::getLastUsedDate()->format('Y-m-d');
+        return $data;
+    }
+
+    public static function getDefaultPreferences() : array
+    {
         return array(
             self::SETTING_START_TIME_MIN => '07:00',
             self::SETTING_START_TIME_MAX => '08:00',
             self::SETTING_WORK_HOURS => '8.0',
-            self::SETTING_MAX_OVERTIME => '4.0',
+            self::SETTING_MAX_OVERTIME => '3.0',
             self::SETTING_MAX_UNDERTIME => '2.0',
-            self::SETTING_OVERTIME_BIAS => '1.0',
-            self::SETTING_DATE => TimeUIManager::getLastUsedDate()->format('Y-m-d'),
-            self::SETTING_LUNCH_MIN_START_TIME => '11:30',
-            self::SETTING_LUNCH_MAX_START_TIME => '12:30',
-            self::SETTING_LUNCH_MIN_DURATION => '15',
-            self::SETTING_LUNCH_MAX_DURATION => '30',
+            self::SETTING_OVERTIME_BIAS => '1.2',
+            self::SETTING_LUNCH_MIN_START_TIME => '12:00',
+            self::SETTING_LUNCH_MAX_START_TIME => '12:45',
+            self::SETTING_LUNCH_MIN_DURATION => 15,
+            self::SETTING_LUNCH_MAX_DURATION => 40,
         );
+    }
+
+    private function savePreferences(ArrayDataCollection $values) : void
+    {
+        $prefs = ArrayDataCollection::create(array(
+            self::SETTING_START_TIME_MIN => $values->getString(self::SETTING_START_TIME_MIN),
+            self::SETTING_START_TIME_MAX => $values->getString(self::SETTING_START_TIME_MAX),
+            self::SETTING_WORK_HOURS => $values->getFloat(self::SETTING_WORK_HOURS),
+            self::SETTING_MAX_OVERTIME => $values->getFloat(self::SETTING_MAX_OVERTIME),
+            self::SETTING_MAX_UNDERTIME => $values->getFloat(self::SETTING_MAX_UNDERTIME),
+            self::SETTING_OVERTIME_BIAS => $values->getFloat(self::SETTING_OVERTIME_BIAS),
+            self::SETTING_LUNCH_MIN_START_TIME => $values->getString(self::SETTING_LUNCH_MIN_START_TIME),
+            self::SETTING_LUNCH_MAX_START_TIME => $values->getString(self::SETTING_LUNCH_MAX_START_TIME),
+            self::SETTING_LUNCH_MIN_DURATION => $values->getInt(self::SETTING_LUNCH_MIN_DURATION),
+            self::SETTING_LUNCH_MAX_DURATION => $values->getInt(self::SETTING_LUNCH_MAX_DURATION)
+        ));
+
+        TimeUIManager::setAutoFillPreferences($prefs);
     }
 
     private function createSettingsForm() : void
@@ -464,7 +531,7 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
     private function injectLunchMinDuration() : void
     {
-        $el = $this->addElementText(self::SETTING_LUNCH_MIN_DURATION, t('Min duration'))
+        $el = $this->addElementInteger(self::SETTING_LUNCH_MIN_DURATION, t('Min duration'))
             ->addClass(CSSClasses::INPUT_XSMALL);
 
         $this->setElementAppend($el, t('Minutes'));
@@ -472,7 +539,7 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
     private function injectLunchMaxDuration() : void
     {
-        $el = $this->addElementText(self::SETTING_LUNCH_MAX_DURATION, t('Max duration'))
+        $el = $this->addElementInteger(self::SETTING_LUNCH_MAX_DURATION, t('Max duration'))
             ->addClass(CSSClasses::INPUT_XSMALL);
 
         $this->setElementAppend($el, t('Minutes'));
@@ -532,6 +599,50 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         $el->setComment(sb()
             ->t('How biased the calculation is towards generating overtime.')
             ->t('Higher than 1: More likely to get higher hours; Lesser than 1: More likely to get lower hours.')
+        );
+    }
+
+    private function handleCreateEntries(ArrayDataCollection $values) : never
+    {
+        $data = JSONConverter::json2array($this->request->registerParam(self::SETTING_GENERATION_SETTINGS)->setJSON()->getString());
+
+        $date = $values->requireMicrotime(self::SETTING_DATE);
+        $workBlocks = array();
+
+        foreach($data as $def) {
+            $workBlocks[] = WorkBlock::fromSerialized($def);
+        }
+
+        $tracker = AppFactory::createTimeTracker();
+        $count = 0;
+
+        $this->startTransaction();
+
+        foreach($workBlocks as $block)
+        {
+            if($block->isOccupied()) {
+                continue;
+            }
+
+            $count++;
+
+            $tracker->createNewEntryByTime(
+                $date,
+                $block->getStartTime(),
+                $block->getEndTime(),
+                TimeEntryTypes::getInstance()->getDefault()
+            );
+        }
+
+        $this->endTransaction();
+
+        $this->redirectWithSuccessMessage(
+            t(
+                '%1$s time entries have been created successfully at %1$s.',
+                $count,
+                sb()->time()
+            ),
+            AppFactory::createTimeTracker()->adminURL()->dayList()
         );
     }
 
