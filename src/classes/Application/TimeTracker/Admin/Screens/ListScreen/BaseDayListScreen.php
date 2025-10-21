@@ -8,7 +8,6 @@ use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
-use Application\TimeTracker\TimeSpans\TimeSpanRecord;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application_Admin_Area_Mode_Submode;
 use AppUtils\ConvertHelper;
@@ -27,9 +26,9 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
 {
     use ListBuilderScreenTrait;
 
-    public const URL_NAME = 'day';
-    public const LIST_ID = 'time-entries-day';
-    public const REQUEST_VAR_DATE = 'date';
+    public const string URL_NAME = 'day';
+    public const string LIST_ID = 'time-entries-day';
+    public const string REQUEST_VAR_DATE = 'date';
 
     private Microtime $date;
     private TimeTrackerCollection $timeTracker;
@@ -58,7 +57,7 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
 
     public function createListBuilder(): ListBuilderInterface
     {
-        return (new TimeListBuilder($this))
+        return new TimeListBuilder($this)
             ->enableDayMode($this->date)
             ->enableSummary();
     }
@@ -153,6 +152,10 @@ class BaseDayListScreen extends Application_Admin_Area_Mode_Submode implements L
         $this->sidebar->addButton('create', t('Create new entry').'...')
             ->setIcon(UI::icon()->add())
             ->link(AppFactory::createTimeTracker()->adminURL()->create());
+
+        $this->sidebar->addButton('auto_fill', t('Auto-fill').'...')
+            ->setIcon(UI::icon()->wizard())
+            ->link($this->timeTracker->adminURL()->autoFill());
 
         $this->sidebar->addSeparator();
 
