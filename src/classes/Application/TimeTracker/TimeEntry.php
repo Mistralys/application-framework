@@ -97,6 +97,13 @@ class TimeEntry extends DBHelper_BaseRecord
         return $this;
     }
 
+    public function setTicket(string $ticketID, string $ticketURL='') : self
+    {
+        $this->setRecordKey(TimeTrackerCollection::COL_TICKET, $ticketID);
+        $this->setRecordKey(TimeTrackerCollection::COL_TICKET_URL, $ticketURL);
+        return $this;
+    }
+
     public function getTypeID() : string
     {
         return $this->getRecordStringKey(TimeTrackerCollection::COL_TYPE);
