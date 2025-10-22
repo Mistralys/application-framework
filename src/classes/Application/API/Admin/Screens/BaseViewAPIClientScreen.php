@@ -55,6 +55,9 @@ class BaseViewAPIClientScreen extends BaseRecordMode
         $this->subnav->addURL(t('Status'), $this->getRecord()->adminURL()->status())
             ->setIcon(UI::icon()->status());
 
+        $this->subnav->addURL(t('API Keys'), $this->getRecord()->adminURL()->apiKeys())
+            ->setIcon(UI::icon()->apiKeys());
+
         $this->subnav->addURL(t('Settings'), $this->getRecord()->adminURL()->settings())
             ->setIcon(UI::icon()->settings());
     }
