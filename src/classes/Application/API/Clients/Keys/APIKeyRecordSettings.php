@@ -91,6 +91,7 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
     private function injectGrantAllMethod(Application_Formable_RecordSettings_Setting $key) : HTML_QuickForm2_Node
     {
         $el = $this->addElementSwitch($key->getName(), t('Grant all?'));
+        $el->makeYesNo(true);
         $el->setComment(sb()
             ->t('If enabled, this API key will always have access to all available API methods.')
             ->nl()
