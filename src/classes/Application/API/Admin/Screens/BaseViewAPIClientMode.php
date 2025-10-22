@@ -13,7 +13,7 @@ use UI;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
-class BaseViewAPIClientScreen extends BaseRecordMode
+class BaseViewAPIClientMode extends BaseRecordMode
 {
     use AllowableMigrationTrait;
     use APIClientRecordScreenTrait;

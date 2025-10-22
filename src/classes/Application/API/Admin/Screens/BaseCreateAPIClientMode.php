@@ -22,7 +22,7 @@ use DBHelper_BaseRecord;
  * @package API
  * @subpackage Admin
  */
-abstract class BaseCreateAPIClientScreen extends BaseRecordCreateMode
+abstract class BaseCreateAPIClientMode extends BaseRecordCreateMode
 {
     use AllowableMigrationTrait;
 

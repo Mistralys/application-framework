@@ -27,7 +27,7 @@ use UI_DataGrid_Entry;
  * @package API
  * @subpackage Admin
  */
-abstract class BaseClientsListScreen extends BaseRecordListMode
+abstract class BaseClientsListMode extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 

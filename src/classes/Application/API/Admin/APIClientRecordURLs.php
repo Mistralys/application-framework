@@ -8,7 +8,7 @@ use Application\API\Admin\Screens\APIKeys\BaseAPIKeysSubmode;
 use Application\API\Admin\Screens\BaseAPIClientsArea;
 use Application\API\Admin\Screens\BaseAPIClientSettingsScreen;
 use Application\API\Admin\Screens\BaseAPIClientStatusScreen;
-use Application\API\Admin\Screens\BaseViewAPIClientScreen;
+use Application\API\Admin\Screens\BaseViewAPIClientMode;
 use Application\API\Clients\APIClientRecord;
 use DBHelper\Admin\Traits\RecordStatusScreenInterface;
 use TestDriver\ClassFactory;
@@ -35,7 +35,7 @@ class APIClientRecordURLs
     {
         return AdminURL::create()
             ->area(BaseAPIClientsArea::URL_NAME)
-            ->mode(BaseViewAPIClientScreen::URL_NAME)
+            ->mode(BaseViewAPIClientMode::URL_NAME)
             ->int(ClassFactory::createAPIClients()->getRecordRequestPrimaryName(), $this->record->getID());
     }
 
