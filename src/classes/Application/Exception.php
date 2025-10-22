@@ -1,14 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Exception} class.
- * 
  * @package Application
  * @subpackage Core
- * @see Application_Exception
  */
 
 declare(strict_types=1);
 
+use Application\ApplicationException;
 use AppUtils\BaseException;
 
 /**
@@ -20,6 +18,7 @@ use AppUtils\BaseException;
  * @package Application
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @deprecated Use {@see ApplicationException} instead.
  */
 class Application_Exception extends BaseException
 {
