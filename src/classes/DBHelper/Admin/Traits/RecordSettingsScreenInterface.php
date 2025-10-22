@@ -50,9 +50,9 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
      * The URL to redirect to once the record has been created.
      *
      * @param DBHelper_BaseRecord $record
-     * @return string
+     * @return string|AdminURLInterface
      */
-    public function getSuccessURL(DBHelper_BaseRecord $record): string;
+    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface;
 
     /**
      * @param DBHelper_BaseRecord $record

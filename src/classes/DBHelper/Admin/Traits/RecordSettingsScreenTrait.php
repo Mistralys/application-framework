@@ -19,6 +19,7 @@ use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use Throwable;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 use UI_Themes_Theme_ContentRenderer;
 
 /**
@@ -319,7 +320,7 @@ trait RecordSettingsScreenTrait
         return false;
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface
     {
         if ($this->isEditMode()) {
             return $this->request->buildRefreshURL();

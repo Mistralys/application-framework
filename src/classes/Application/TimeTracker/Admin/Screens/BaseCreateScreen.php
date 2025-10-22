@@ -12,6 +12,7 @@ use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
+use UI\AdminURLs\AdminURLInterface;
 
 abstract class BaseCreateScreen extends BaseRecordCreateMode
 {
@@ -50,7 +51,7 @@ abstract class BaseCreateScreen extends BaseRecordCreateMode
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface
     {
         return $this->getBackOrCancelURL();
     }
