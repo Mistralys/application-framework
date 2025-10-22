@@ -24,6 +24,11 @@ class BaseCreateAPIKeyAction extends BaseRecordCreateAction implements APIClient
         return self::URL_NAME;
     }
 
+    public function getNavigationTitle(): string
+    {
+        return t('Create new key');
+    }
+
     public function getTitle(): string
     {
         return t('Create an API Key');
