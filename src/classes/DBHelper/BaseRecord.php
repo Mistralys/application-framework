@@ -65,7 +65,6 @@ abstract class DBHelper_BaseRecord
     protected int $recordID;
     protected string $instanceID;
     protected static int $instanceCounter = 0;
-    protected string $parentPrimaryName;
 
     /**
      * @param int|string $primary_id
@@ -79,7 +78,6 @@ abstract class DBHelper_BaseRecord
         $this->collection = $collection;
         $this->recordTable = $collection->getRecordTableName();
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
-        $this->parentPrimaryName = $collection->getParentPrimaryName();
         $this->recordTypeName = $collection->getRecordTypeName();
         $this->recordID = (int)$primary_id;
         $this->instanceID = (string)self::$instanceCounter;
@@ -207,11 +205,6 @@ abstract class DBHelper_BaseRecord
     public function getRecordPrimaryName() : string
     {
         return $this->recordPrimaryName;
-    }
-
-    public function getParentPrimaryName() : string
-    {
-        return $this->parentPrimaryName;
     }
 
     /**
@@ -763,12 +756,12 @@ abstract class DBHelper_BaseRecord
 
     /**
      * Retrieves the record's parent record: this is only
-     * available if the record's collection has a parent
+     * relevant if the record's collection has a parent
      * collection.
      *
      * @return DBHelper_BaseRecord|NULL
      */
-    public function getParentRecord()
+    public function getParentRecord() : ?DBHelper_BaseRecord
     {
         return $this->collection->getParentRecord();
     }

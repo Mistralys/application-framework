@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
+use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use UI_DataGrid;
@@ -81,11 +82,12 @@ trait RecordScreenTrait
 
         $collection = $record->getCollection();
 
-        $parent = $collection->getParentRecord();
-
-        if($parent !== null && $collection->hasParentCollection())
+        if($collection instanceof BaseChildCollection)
         {
-            $grid->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
+            $grid->addHiddenVar(
+                $collection->getParentCollection()->getRecordPrimaryName(),
+                (string)$collection->getParentRecord()->getID()
+            );
         }
 
         return $grid;
@@ -110,9 +112,9 @@ trait RecordScreenTrait
 
         $collection = $record->getCollection();
 
-        if($collection->hasParentCollection())
+        if($collection instanceof BaseChildCollection)
         {
-            $parent = $collection->requireParentRecord();
+            $parent = $collection->getParentRecord();
 
             $this->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
         }
