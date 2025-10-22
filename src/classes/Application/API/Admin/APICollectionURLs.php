@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Application\API\Admin;
 
 use Application\API\Admin\Screens\BaseAPIClientsArea;
-use Application\API\Admin\Screens\BaseClientsListScreen;
-use Application\API\Admin\Screens\BaseCreateAPIClientScreen;
+use Application\API\Admin\Screens\BaseClientsListMode;
+use Application\API\Admin\Screens\BaseCreateAPIClientMode;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -16,7 +16,7 @@ class APICollectionURLs
     {
         return $this
             ->base()
-            ->mode(BaseClientsListScreen::URL_NAME);
+            ->mode(BaseClientsListMode::URL_NAME);
     }
 
     public function base() : AdminURLInterface
@@ -29,6 +29,6 @@ class APICollectionURLs
     {
         return $this
             ->base()
-            ->mode(BaseCreateAPIClientScreen::URL_NAME);
+            ->mode(BaseCreateAPIClientMode::URL_NAME);
     }
 }

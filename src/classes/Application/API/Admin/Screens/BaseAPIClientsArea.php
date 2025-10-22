@@ -48,7 +48,7 @@ abstract class BaseAPIClientsArea extends Application_Admin_Area
 
     public function getDefaultMode(): string
     {
-        return BaseClientsListScreen::URL_NAME;
+        return BaseClientsListMode::URL_NAME;
     }
 
     public function getNavigationGroup(): string
