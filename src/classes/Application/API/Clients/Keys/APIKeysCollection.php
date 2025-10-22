@@ -139,11 +139,18 @@ class APIKeysCollection extends BaseChildCollection
             ->makeRequired();
 
         $this->keys->register(self::COL_API_KEY)
+            ->setGenerator(function () : string {
+                return $this->generateKey();
+            })
             ->makeRequired();
 
+        $this->keys->register(self::COL_DATE_CREATED)
+            ->makeRequired()
+            ->setMicrotimeGenerator();
+
         $this->keys->register(self::COL_CREATED_BY)
-            ->setUserValidation()
-            ->makeRequired();
+            ->makeRequired()
+            ->setCurrentUserGenerator();
     }
 
     private ?APIKeyCollectionURLs $adminURLs = null;
