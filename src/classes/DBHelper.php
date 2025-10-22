@@ -7,11 +7,14 @@
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper\Exception\CLIErrorRenderer;
 use DBHelper\Exception\HTMLErrorRenderer;
 use DBHelper\TrackedQuery;
@@ -1983,7 +1986,7 @@ class DBHelper
      * @return DBHelper_BaseCollection
      * @throws DBHelper_Exception
      */
-    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : ?DBHelper_BaseCollection
+    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : DBHelper_BaseCollection
     {
         $key = $class;
         if($parentRecord) {
@@ -2000,40 +2003,13 @@ class DBHelper
             self::ERROR_NOT_A_DBHELPER_COLLECTION
         );
 
-        if($instance->hasParentCollection())
-        {
-            if(!$parentRecord) {
-                throw new DBHelper_Exception(
-                    'No parent record specified',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record to be specified when calling createCollection.',
-                        $class
-                    ),
-                    self::ERROR_NO_PARENT_RECORD_SPECIFIED
-                );
-            }
-    
-            $parentClass = get_class($parentRecord->getCollection());
-            if($parentClass !== $instance->getParentCollectionClass()) {
-                throw new DBHelper_Exception(
-                    'Invalid parent record',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record of the collection [%s], provided was a record of type [%s].',
-                        $class,
-                        $instance->getParentCollectionClass(),
-                        get_class($parentRecord->getCollection())
-                    ),
-                    self::ERROR_INVALID_PARENT_RECORD
-                );
-            }
-    
+        if($instance instanceof BaseChildCollection) {
             $instance->bindParentRecord($parentRecord);
         }
         
         $instance->setupComplete();
 
-        if(!$newInstance)
-        {
+        if(!$newInstance) {
             self::$collections[$key] = $instance;
         }
 
