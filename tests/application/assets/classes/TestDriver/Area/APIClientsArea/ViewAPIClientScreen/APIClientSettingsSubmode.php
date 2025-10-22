@@ -6,4 +6,4 @@ namespace TestDriver\Area\APIClientsArea\ViewAPIClientScreen;
 
 use Application\API\Admin\Screens\BaseAPIClientSettingsScreen;
 
-class APIClientSettingsScreen extends BaseAPIClientSettingsScreen{}
+class APIClientSettingsSubmode extends BaseAPIClientSettingsScreen{}

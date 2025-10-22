@@ -6,4 +6,4 @@ namespace TestDriver\Area\APIClientsArea\ViewAPIClientScreen;
 
 use Application\API\Admin\Screens\BaseAPIClientStatusScreen;
 
-class APIClientStatusScreen extends BaseAPIClientStatusScreen{}
+class APIClientStatusSubmode extends BaseAPIClientStatusScreen{}

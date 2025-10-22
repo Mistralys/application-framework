@@ -14,4 +14,4 @@ use Application\API\Admin\Screens\BaseClientsListScreen;
  * @package API
  * @subpackage Test Driver Admin
  */
-class ClientsListScreen extends BaseClientsListScreen{}
+class ClientsListMode extends BaseClientsListScreen{}
