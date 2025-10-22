@@ -35,9 +35,15 @@ class BaseAPIKeysSubmode extends BaseRecordSubmode
     {
         return APIScreenRights::SCREEN_API_KEYS;
     }
-
+    
     public function getDefaultAction(): string
     {
         return BaseAPIKeysListAction::URL_NAME;
+    }
+
+    protected function _handleBreadcrumb(): void
+    {
+        $this->breadcrumb->appendItem($this->getNavigationTitle())
+            ->makeLinked($this->getRecord()->adminURL()->apiKeys());
     }
 }
