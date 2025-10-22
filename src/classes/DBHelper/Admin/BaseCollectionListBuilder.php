@@ -7,6 +7,7 @@ namespace DBHelper\Admin;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterSettings;
 use AppUtils\ConvertHelper\JSONConverter;
+use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use DBHelper_Exception;
@@ -44,7 +45,7 @@ abstract class BaseCollectionListBuilder extends BaseListBuilder
     protected function resolveRecord(array $itemData): object
     {
         $collection = $this->getCollection();
-        $primaryName = $collection->getParentPrimaryName();
+        $primaryName = $collection->getRecordPrimaryName();
 
         if(isset($itemData[$primaryName])) {
             return $collection->getByID((int)$itemData[$primaryName]);
