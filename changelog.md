@@ -5,14 +5,27 @@
 - DBHelper: Added `getRecordMicrotimeKey()` to base records.
 - DBHelper: Added validations to registered collection keys like `setRegexValidation()`.
 - DBHelper: Deprecated and refactored DBHelper base screens.
+- DBHelper: Added a dedicated `BaseChildCollection` class to handle parent relations.
+- DBHelper: Added an interface for the DBHelper collection.
+- DBHelper: Moved parent record handling to a separate child collection class.
+- DBHelper: Added the request type base class `BaseDBRecordRequestType`.
 - API: Added the API client collection classes.
 - API: Added the API management screens.
 - API: Added user rights to manage the API.
+- API: Added API client test support classes.
+- TimeTracker: Added autofill feature.
+- TimeTracker: Added flavored entry creation methods.
+- Admin: Added a base class and interface for request types.
+- Admin: Allowing AdminURLInterface as return type in some URL methods.
+- Core: Deprecated `Application_Exception` in favor of `ApplicationException`.
+- Dependencies: Bumped up AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
 
 ### Deprecations
 
-All DBHelper base admin screen classes have been deprecated. Replacement classes
+- All DBHelper base admin screen classes have been deprecated. Replacement classes
 are documented for each to make migration straightforward.
+- DBHelper collections with a parent collection must now extend `BaseChildCollection`.
+- `Application_Exception` => use `ApplicationException` instead.
 
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
