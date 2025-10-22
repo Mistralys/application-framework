@@ -6,13 +6,31 @@ namespace Application\API\Clients;
 
 use Application\API\Admin\APIClientRecordURLs;
 use Application\API\Admin\APIScreenRights;
+use Application\API\Clients\Keys\APIKeyRecord;
+use Application\API\Clients\Keys\APIKeysCollection;
 use Application\AppFactory;
 use Application_Users_User;
+use AppUtils\ClassHelper;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper;
 use DBHelper_BaseRecord;
 
 class APIClientRecord extends DBHelper_BaseRecord
 {
+    public function createAPIKeys() : APIKeysCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            APIKeysCollection::class,
+            DBHelper::createCollection(APIKeysCollection::class, $this)
+        );
+    }
+
+    public function createNewAPIKey(string $label) : APIKeyRecord
+    {
+        return $this->createAPIKeys()->createNewAPIKey($label);
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
@@ -20,6 +38,12 @@ class APIClientRecord extends DBHelper_BaseRecord
     public function getLabel(): string
     {
         return $this->getRecordStringKey(APIClientsCollection::COL_LABEL);
+    }
+
+    public function setLabel(string|StringableInterface $label) : self
+    {
+        $this->setRecordKey(APIClientsCollection::COL_LABEL, (string)$label);
+        return $this;
     }
 
     public function getLabelLinked() : string
