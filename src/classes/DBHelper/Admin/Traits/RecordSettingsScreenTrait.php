@@ -14,6 +14,7 @@ use Application_Formable_RecordSettings;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Media;
+use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use Throwable;
@@ -83,11 +84,6 @@ trait RecordSettingsScreenTrait
      * @return string
      */
     abstract public function getSuccessMessage(DBHelper_BaseRecord $record): string;
-
-    /**
-     * @return string
-     */
-    abstract public function getBackOrCancelURL(): string;
 
     /**
      * @return bool
@@ -241,8 +237,10 @@ trait RecordSettingsScreenTrait
             );
         }
 
-        $parent = $this->collection->getParentRecord();
-        if ($parent !== null) {
+        if ($this->collection instanceof BaseChildCollection)
+        {
+            $parent = $this->collection->getParentRecord();
+
             $this->addHiddenVar(
                 $parent->getRecordPrimaryName(),
                 (string)$parent->getID()

@@ -13,6 +13,7 @@ namespace DBHelper\Admin\Traits;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application_Formable_RecordSettings;use DBHelper\Admin\Traits\RecordSettingsScreenTrait;use DBHelper_BaseCollection;use DBHelper_BaseRecord;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Interface for admin screens that display a settings form for
@@ -36,10 +37,7 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
      */
     public function createCollection();
 
-    /**
-     * @return string
-     */
-    public function getBackOrCancelURL(): string;
+    public function getBackOrCancelURL(): string|AdminURLInterface;
 
     /**
      * Retrieves the name of the HTML form tag.

@@ -117,8 +117,6 @@ trait RecordListScreenTrait
 
     abstract protected function configureActions(): void;
 
-    abstract public function getBackOrCancelURL(): string;
-
     protected function _handleBreadcrumb(): void
     {
         $this->breadcrumb->appendItem($this->getNavigationTitle());
