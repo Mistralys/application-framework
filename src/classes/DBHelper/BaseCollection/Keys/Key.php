@@ -260,6 +260,8 @@ class DBHelper_BaseCollection_Keys_Key
 
     public function setCurrentUserGenerator() : self
     {
+        $this->setUserValidation();
+
         return $this->setGenerator(function() : int {
             return AppFactory::createUser()->getID();
         });
