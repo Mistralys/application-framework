@@ -24,6 +24,8 @@ use Throwable;
  */
 class ScreenException extends Application_Admin_Exception
 {
+    public const int NO_RECORD_SPECIFIED_IN_REQUEST = 185101;
+
     private AdminScreenInterface $screen;
 
     public function __construct(AdminScreenInterface $screen, string $message, string $developerInfo = '', int $code = 0, ?Throwable $previous = null)
