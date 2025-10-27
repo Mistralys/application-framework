@@ -78,7 +78,7 @@ abstract class NavigationTemplate extends UI_Page_Template_Custom
     protected function generateSeasonal() : void
     {
         $date = new DateTime();
-        $year = date('Y');
+        $year = (int)date('Y');
         $start = new DateTime($year.'-12-15');
         $end = new DateTime(($year+1).'-01-15');
 
