@@ -9,6 +9,9 @@ use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
+/**
+ * @see RecordStatusScreenInterface
+ */
 trait RecordStatusScreenTrait
 {
     public function getURLName() : string
@@ -27,7 +30,7 @@ trait RecordStatusScreenTrait
             ->makeLinked($this->getRecordStatusURL());
     }
 
-    abstract protected function getRecordStatusURL() : string|AdminURLInterface;
+    abstract public function getRecordStatusURL() : string|AdminURLInterface;
 
     protected function _renderContent(): UI_Themes_Theme_ContentRenderer
     {
