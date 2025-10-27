@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Admin\Screens;
 
 use Application\API\Admin\APIScreenRights;
+use Application\API\APIManager;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Area;
 use UI;
@@ -79,9 +80,13 @@ abstract class BaseAPIClientsArea extends Application_Admin_Area
     protected function _handleHelp(): void
     {
         $this->renderer->getTitle()->setIcon($this->getNavigationIcon());
-        $this->renderer->setAbstract(sb()
-            ->t('This is an overview of all API Clients that have been registered in the system.')
-            ->t('It enables access to the APIs provided by the application through API keys specific to each client.')
+    }
+
+    protected function _handleQuickNavigation(): void
+    {
+        $this->quickNav->addURL(
+            t('API Documentation Overview'),
+            APIManager::getInstance()->adminURL()->documentationOverview()
         );
     }
 }
