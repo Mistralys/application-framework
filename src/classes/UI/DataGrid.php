@@ -1480,10 +1480,10 @@ class UI_DataGrid implements HiddenVariablesInterface
    /**
     * Creates a heading entry that can be used to create subtitles in a grid.
     *
-    * @param string $title
+    * @param string|StringableInterface $title
     * @return UI_DataGrid_Entry_Heading
     */
-    public function createHeadingEntry(string $title) : UI_DataGrid_Entry_Heading
+    public function createHeadingEntry(string|StringableInterface $title) : UI_DataGrid_Entry_Heading
     {
         return new UI_DataGrid_Entry_Heading($this, $title);
     }
