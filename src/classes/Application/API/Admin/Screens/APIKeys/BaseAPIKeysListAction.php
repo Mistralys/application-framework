@@ -10,6 +10,8 @@ use Application\API\Admin\RequestTypes\APIClientRequestTrait;
 use Application\API\Clients\Keys\APIKeyRecord;
 use Application\API\Clients\Keys\APIKeysCollection;
 use AppUtils\ClassHelper;
+use AppUtils\ConvertHelper;
+use AppUtils\Microtime;
 use DBHelper\Admin\Screens\Action\BaseRecordListAction;
 use DBHelper_BaseCollection;
 use DBHelper_BaseFilterCriteria_Record;
@@ -24,6 +26,8 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
     public const string URL_NAME = 'list';
 
     public const string COL_LABEL = 'label';
+    const string COL_METHOD_COUNT = 'method_count';
+    const string COL_LAST_ACCESSED = 'last_accessed';
 
     public function getURLName(): string
     {
@@ -56,13 +60,26 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
         );
 
         return array(
-            self::COL_LABEL => $key->getLabel()
+            self::COL_LABEL => $key->getLabelLinked(),
+            self::COL_METHOD_COUNT => $key->getMethods()->countMethods(),
+            self::COL_LAST_ACCESSED => $this->renderDate($key->getLastUsedDate())
         );
+    }
+
+    private function renderDate(?Microtime $date) : string
+    {
+        if($date === null) {
+            return (string)sb()->muted(t('Never accessed'));
+        }
+
+        return ConvertHelper::date2listLabel($date, true, true);
     }
 
     protected function configureColumns(): void
     {
         $this->grid->addColumn(self::COL_LABEL, t('Label'));
+        $this->grid->addColumn(self::COL_METHOD_COUNT, t('Granted methods'));
+        $this->grid->addColumn(self::COL_LAST_ACCESSED, t('Last accessed'));
     }
 
     protected function configureActions(): void
