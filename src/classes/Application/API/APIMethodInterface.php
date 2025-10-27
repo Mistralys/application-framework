@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Application\API;
 
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\Validation\ParamValidationResults;
 use Application_CORS;
-use AppUtils\ArrayDataCollection;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 use AppUtils\Microtime;
 use UI\AdminURLs\AdminURLInterface;
@@ -37,6 +37,16 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public function getInfo() : APIInfo;
     public function getMethodName() : string;
     public function getDescription() : string;
+
+    /**
+     * The group that this method belongs to. This is used for
+     * documentation purposes, but also for organizing methods
+     * and selecting them in the API key administration.
+     *
+     * @return APIGroupInterface
+     */
+    public function getGroup() : APIGroupInterface;
+
     public function getRequestMime() : string;
     public function getResponseMime() : string;
     public function getDocumentationURL() : AdminURLInterface;
@@ -145,4 +155,6 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return $this
      */
     public function setRequestBody(string $body) : self;
+
+    public function getFilterText() : string;
 }
