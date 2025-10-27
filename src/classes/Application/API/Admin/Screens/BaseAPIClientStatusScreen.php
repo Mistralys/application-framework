@@ -31,7 +31,7 @@ class BaseAPIClientStatusScreen extends BaseRecordStatusSubmode
         return '';
     }
 
-    protected function getRecordStatusURL(): AdminURLInterface
+    public function getRecordStatusURL(): AdminURLInterface
     {
         return $this->getRecord()->adminURL()->status();
     }
