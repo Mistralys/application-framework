@@ -156,5 +156,11 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      */
     public function setRequestBody(string $body) : self;
 
+    /**
+     * Gets a single-line text representation of the method to use in the
+     * UI when filtering the method list by keywords.
+     *
+     * @return string
+     */
     public function getFilterText() : string;
 }
