@@ -6,7 +6,6 @@
  * @see DBHelper_BaseRecord
  */
 
-use Application\Collection\CollectionItemInterface;
 use Application\Collection\IntegerCollectionItemInterface;
 use Application\Exception\DisposableDisposedException;
 use AppUtils\ConvertHelper;
