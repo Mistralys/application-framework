@@ -150,4 +150,12 @@ abstract class BaseClientsListMode extends BaseRecordListMode
     {
         return APP_URL;
     }
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer->setAbstract(sb()
+            ->t('This is an overview of all API Clients that have been registered in the system.')
+            ->t('It enables access to the APIs provided by the application through API keys specific to each client.')
+        );
+    }
 }
