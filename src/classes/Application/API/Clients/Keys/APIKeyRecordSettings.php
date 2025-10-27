@@ -14,8 +14,10 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
+use AppUtils\DateTimeHelper\DurationStringInfo;
 use DBHelper_BaseRecord;
 use HTML_QuickForm2_Node;
+use HTML_QuickForm2_Rule_Callback;
 use UI;
 use UI\CSSClasses;
 
@@ -142,8 +144,27 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
             ->ul(array(
                 '2 days',
                 '3 weeks',
-                '1 year and 6 months',
+                '1 year 6 months',
+                '1m 5d'
             ))
+        );
+
+        $this->addRuleCallback(
+            $el,
+            static function (mixed $value, HTML_QuickForm2_Rule_Callback $rule) : bool {
+                if(empty($value) || !is_string($value)) {
+                    return true;
+                }
+                $duration = DurationStringInfo::fromString($value);
+
+                if($duration->isValid()) {
+                    return true;
+                }
+
+                $rule->setMessage(t('Please enter a valid duration.'));
+                return false;
+            },
+            ''
         );
 
         return $el;
