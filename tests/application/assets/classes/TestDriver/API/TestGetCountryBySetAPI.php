@@ -10,6 +10,7 @@ namespace application\assets\classes\TestDriver\API;
 
 use AppFrameworkTests\Countries\CountryAPITests;
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
@@ -19,6 +20,7 @@ use Application\Countries\API\AppCountryAPITrait;
 use Application\Countries\API\ParamSets\AppCountryParamRule;
 use Application_Countries_Country;
 use AppUtils\ArrayDataCollection;
+use TestDriver\TestDriverAPIGroup;
 
 /**
  * Test API method that identifies a country by a set of
@@ -62,6 +64,11 @@ class TestGetCountryBySetAPI
     public function getCurrentVersion(): string
     {
         return self::CURRENT_VERSION;
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return TestDriverAPIGroup::create();
     }
 
     public function getDescription(): string

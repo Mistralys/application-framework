@@ -11,6 +11,7 @@ namespace TestDriver\API;
 use AppFrameworkTests\Locales\AppLocaleAPITests;
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\ErrorResponsePayload;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
@@ -19,6 +20,7 @@ use Application\Locales\API\AppLocaleAPIInterface;
 use Application\Locales\API\AppLocaleAPITrait;
 use AppUtils\ArrayDataCollection;
 use TestDriver\API\TestAppLocale\AppLocaleResponse;
+use TestDriver\TestDriverAPIGroup;
 
 /**
  * Test method for selecting an application locale when calling an API method.
@@ -72,6 +74,11 @@ class TestAppLocaleMethod
     public function getCurrentVersion(): string
     {
         return '1.0';
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return TestDriverAPIGroup::create();
     }
 
     protected function init(): void

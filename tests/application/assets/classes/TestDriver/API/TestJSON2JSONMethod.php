@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace TestDriver\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONRequestInterface;
 use Application\API\Traits\JSONRequestTrait;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use AppUtils\ArrayDataCollection;
+use TestDriver\TestDriverAPIGroup;
 
 class TestJSON2JSONMethod extends BaseAPIMethod implements JSONRequestInterface, JSONResponseInterface
 {
@@ -28,7 +30,6 @@ class TestJSON2JSONMethod extends BaseAPIMethod implements JSONRequestInterface,
         return <<<'MARKDOWN'
 A test method that accepts a JSON object and returns it as a JSON response.
 MARKDOWN;
-
     }
 
     public function getVersions(): array
@@ -41,6 +42,11 @@ MARKDOWN;
     public function getCurrentVersion(): string
     {
         return '1.0';
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return TestDriverAPIGroup::create();
     }
 
     protected function init(): void

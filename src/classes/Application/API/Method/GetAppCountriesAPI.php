@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace Application\API\Method;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use Application\AppFactory;
 use Application\Countries\API\AppCountryAPIInterface;
+use Application\Countries\API\CountriesAPIGroup;
 use Application_Countries;
 use Application_Countries_Country;
 use AppLocalize\Localization\Country\CountryDE;
@@ -52,6 +54,11 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
     public function getCurrentVersion() : string
     {
         return self::CURRENT_VERSION;
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return CountriesAPIGroup::create();
     }
 
     // region: A - Payload
