@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package API
+ * @subpackage UI
+ */
 
 declare(strict_types=1);
 
@@ -29,6 +33,12 @@ use UI;
 use UI_Form;
 use UI_Page_Template_Custom;
 
+/**
+ * Renders the API method detail documentation page.
+ *
+ * @package API
+ * @subpackage UI
+ */
 class APIMethodDetailTmpl extends UI_Page_Template_Custom
 {
     public const string PARAM_METHOD = 'method';
@@ -138,11 +148,16 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         OutputBuffering::start();
 
         ?>
-        <p>
+        <p class="pull-left">
             <a href="<?php echo APIManager::getInstance()->adminURL()->documentationOverview(); ?>">
                 &laquo; <?php pt('Back to overview'); ?>
             </a>
         </p>
+        <?php
+
+        $this->getPage()->createTemplate(APIMethodsMetaNav::class)->display();
+
+        ?>
         <h1><?php pt('API'); echo ' - '.$this->method->getMethodName(); ?> </h1>
         <?php
 
@@ -233,6 +248,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
     private function generateProperties() : void
     {
         $props = $this->ui->createPropertiesGrid();
+        $props->add(t('API group'), $this->method->getGroup()->getLabel());
         $props->add(t('Request mime'), $this->method->getRequestMime());
         $props->add(t('Response mime'), $this->method->getResponseMime());
         $props->add(t('Version'), $this->method->getCurrentVersion());
