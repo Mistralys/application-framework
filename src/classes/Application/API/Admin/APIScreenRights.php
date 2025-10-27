@@ -18,4 +18,5 @@ class APIScreenRights
     public const string SCREEN_CLIENTS_SETTINGS_EDIT = APIRightsInterface::RIGHT_EDIT_API_CLIENTS;
     public const string SCREEN_API_KEYS = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
     public const string SCREEN_API_KEYS_CREATE = APIRightsInterface::RIGHT_CREATE_API_CLIENTS;
+    public const string SCREEN_API_KEYS_STATUS = APIRightsInterface::RIGHT_VIEW_API_CLIENTS;
 }
