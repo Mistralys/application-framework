@@ -799,7 +799,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * rule object instance, even if custom arguments are specified.
     *
     * @param HTML_QuickForm2_Node $element
-    * @param callable $callback
+    * @param callable(mixed, mixed..., HTML_QuickForm2_Rule_Callback) : bool $callback
     * @param string $errorMessage
     * @param array<int,mixed> $arguments Indexed list of arguments for the callback
     * @return HTML_QuickForm2_Rule_Callback
