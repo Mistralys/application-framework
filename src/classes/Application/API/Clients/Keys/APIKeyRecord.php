@@ -8,10 +8,13 @@ declare(strict_types=1);
 
 namespace Application\API\Clients\Keys;
 
+use Application\API\Admin\APIKeyURLs;
+use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\AppFactory;
 use Application_Users_User;
 use AppUtils\ClassHelper;
+use AppUtils\DateTimeHelper\DateIntervalExtended;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
 use DBHelper_BaseRecord;
@@ -36,6 +39,15 @@ class APIKeyRecord extends DBHelper_BaseRecord
     public function getLabel(): string
     {
         return $this->getRecordStringKey(APIKeysCollection::COL_LABEL);
+    }
+
+    public function getLabelLinked() : string
+    {
+        return (string)sb()->linkRight(
+            $this->getLabel(),
+            $this->adminURL()->status(),
+            APIScreenRights::SCREEN_API_KEYS_STATUS
+        );
     }
 
     public function setLabel(string|StringableInterface $label) : self
@@ -115,6 +127,46 @@ class APIKeyRecord extends DBHelper_BaseRecord
         return $this->getRecordIntKey(APIKeysCollection::COL_USAGE_COUNT);
     }
 
+    public function getLastUsedDate() : ?Microtime
+    {
+        return $this->getRecordMicrotimeKey(APIKeysCollection::COL_LAST_USED);
+    }
+
+    public function getExpiryDate() : ?Microtime
+    {
+        return $this->getRecordMicrotimeKey(APIKeysCollection::COL_EXPIRY_DATE);
+    }
+
+    public function resolveExpiryDate() : ?Microtime
+    {
+        $date = $this->getExpiryDate();
+        if($date !== null) {
+            return $date;
+        }
+
+        $delay = $this->getExpiryDelay();
+        if($delay === null) {
+            return null;
+        }
+
+        return $this->getDateCreated()->add($delay->getInterval());
+    }
+
+    public function getExpiryDelay() : ?DateIntervalExtended
+    {
+        $delayText = $this->getRecordStringKey(APIKeysCollection::COL_EXPIRY_DELAY);
+        if(empty($delayText)) {
+            return null;
+        }
+
+        return DateIntervalExtended::fromDurationString($delayText);
+    }
+
+    public function getAPIKey() : string
+    {
+        return $this->getRecordStringKey(APIKeysCollection::COL_API_KEY);
+    }
+
     public function getClient() : APIClientRecord
     {
         return $this->getParentRecord();
@@ -129,5 +181,16 @@ class APIKeyRecord extends DBHelper_BaseRecord
             APIClientRecord::class,
             parent::getParentRecord()
         );
+    }
+
+    private ?APIKeyURLs $adminURLs = null;
+
+    public function adminURL() : APIKeyURLs
+    {
+        if(!isset($this->adminURLs)) {
+            $this->adminURLs = new APIKeyURLs($this);
+        }
+
+        return $this->adminURLs;
     }
 }
