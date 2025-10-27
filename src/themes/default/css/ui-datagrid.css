@@ -90,6 +90,18 @@
 
 .row-heading TD {
     font-weight: var(--font-weight-bold);
+    padding: 0;
+}
+
+.row-heading TD .heading{
+    padding: 1rem;
+    border-left: solid 5px var(--color-grid-border);
+}
+
+.row-heading TD .subline{
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-s);
+    color: var(--color-text-muted);
 }
 
 
