@@ -13,10 +13,17 @@
 - API: Added the API management screens.
 - API: Added user rights to manage the API.
 - API: Added API client test support classes.
+- API: Added API grouping support, organized all APIs into groups.
+- API: Added flat and grouped overviews with filtering in the documentation.
+- API: Added links back to the application from the documentation.
 - TimeTracker: Added autofill feature.
 - TimeTracker: Added flavored entry creation methods.
 - Admin: Added a base class and interface for request types.
 - Admin: Allowing AdminURLInterface as return type in some URL methods.
+- DataGrid: Heading rows now support an optional subline text.
+- DataGrid: Better heading row styling.
+- DataGrid: Added the method `attr()` to grid entries to set row attributes.
+- UI: Added a text link style for navigations with `TextLinkNavigation`.
 - Core: Deprecated `Application_Exception` in favor of `ApplicationException`.
 - Dependencies: Bumped up AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
 
