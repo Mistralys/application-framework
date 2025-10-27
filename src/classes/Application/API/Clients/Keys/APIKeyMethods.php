@@ -247,4 +247,9 @@ class APIKeyMethods
     {
         return in_array($methodName, $this->getMethodNames(), true);
     }
+
+    public function countMethods() : int
+    {
+        return count($this->getMethodNames());
+    }
 }
