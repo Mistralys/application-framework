@@ -280,6 +280,11 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this;
     }
 
+    public function getFilterText(): string
+    {
+        return strtolower($this->getMethodName()).' '.mb_strtolower($this->getGroup()->getLabel());
+    }
+
     final public function allowCORSDomain(string $domain) : self
     {
         $this->CORS->allowDomain($domain);
