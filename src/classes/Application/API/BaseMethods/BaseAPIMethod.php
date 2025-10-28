@@ -92,6 +92,8 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     {
         $this->return = true;
 
+        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = $this->getMethodName();
+
         try {
             $this->_process();
         } catch (APIResponseDataException $e) {
