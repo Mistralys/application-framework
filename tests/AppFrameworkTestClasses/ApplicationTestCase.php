@@ -256,6 +256,22 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     // region Custom assertions
 
     /**
+     * Asserts that the default locale is currently selected ({@see Localization::BUILTIN_LOCALE_NAME}).
+     * @return void
+     */
+    public function assertDefaultLocaleSelected() : void
+    {
+        $this->assertSame(
+            Localization::BUILTIN_LOCALE_NAME,
+            Localization::getAppLocaleName(),
+            sprintf(
+                'The default locale must be selected, currently %s is selected.',
+                Localization::getAppLocaleName()
+            )
+        );
+    }
+
+    /**
      * Checks if the changelogable has the specified changelog entry type in its queue.
      *
      * @param ChangelogableInterface $changelogable
