@@ -23,6 +23,15 @@ interface AppLocaleAPIInterface extends APIMethodInterface
 {
     public const string PARAM_LOCALE = 'appLocale';
 
+    /**
+     * Selects a locale manually to be used when working outside a request context.
+     * The methods {@see self::getAppLocale()} and {@see self::applyLocale()} will
+     * use the selected locale instead of trying to resolve it from the request.
+     *
+     * @param LocaleInterface $locale
+     * @return self
+     */
+    public function selectLocale(LocaleInterface $locale) : self;
     public function registerAppLocaleParameter() : AppLocaleParam;
     public function getAppLocaleParam() : ?AppLocaleParam;
     public function resolveAppLocaleID() : ?string;
