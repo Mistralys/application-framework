@@ -1,10 +1,25 @@
 <?php
+/**
+ * @package API
+ * @subpackage Response
+ */
 
 declare(strict_types=1);
 
-namespace Application\API;
+namespace Application\API\Response;
 
-class APIInfo
+use Application\API\APIMethodInterface;
+use Application\API\Traits\JSONResponseTrait;
+
+/**
+ * Helper class that serializes the information on an API method
+ * to an array that is included in JSON responses.
+ *
+ * @package API
+ * @subpackage Response
+ * @see JSONResponseTrait::_sendJSONData()
+ */
+class JSONInfoSerializer
 {
     public const string KEY_REQUEST_MIME = 'requestMime';
     public const string KEY_SELECTED_VERSION = 'selectedVersion';
