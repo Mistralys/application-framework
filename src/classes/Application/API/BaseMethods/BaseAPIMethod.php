@@ -6,20 +6,19 @@ namespace Application\API\BaseMethods;
 
 use Application;
 use Application\API\APIException;
-use Application\API\APIInfo;
+use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
-use Application\API\ErrorResponsePayload;
 use Application\API\ErrorResponse;
+use Application\API\ErrorResponsePayload;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\ParamTypeSelector;
 use Application\API\Parameters\Reserved\APIMethodParameter;
 use Application\API\Parameters\Reserved\APIVersionParameter;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\Response\JSONInfoSerializer;
 use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
-use Application\API\APIManager;
-use Application\API\Traits\JSONResponseInterface;
 use Application_CORS;
 use Application_Driver;
 use Application_Exception;
@@ -27,10 +26,8 @@ use Application_Interfaces_Loggable;
 use Application_Request;
 use Application_Traits_Loggable;
 use AppUtils\ArrayDataCollection;
-use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
-use AppUtils\StringHelper;
 use Throwable;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -41,7 +38,6 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     protected Application_Driver $driver;
     protected Application_Request $request;
     protected APIManager $api;
-    protected string $version;
     protected ?Application_CORS $CORS = null;
     private bool $return = false;
     protected ?Microtime $time = null;
@@ -52,8 +48,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->api = $api;
         $this->driver = Application_Driver::getInstance();
         $this->request = $this->driver->getRequest();
-        $this->version = $this->getCurrentVersion();
-        $this->logIdentifier = sprintf('APIMethod [%s] | [v%s]', $this->getMethodName(), $this->version);
+        $this->logIdentifier = sprintf('APIMethod [%s]', $this->getMethodName());
 
         $this->initReservedParams();
         $this->init();
@@ -200,6 +195,31 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         return $this->paramManager;
     }
 
+    private ?string $selectedVersion = null;
+
+    public function selectVersion(string $version) : self
+    {
+        if(!in_array($version, $this->getVersions())) {
+            throw new APIException(
+                'Invalid API version selected',
+                sprintf(
+                    'The API version [%1$s] is not valid for method [%2$s]. '.PHP_EOL.
+                    'Available versions are: [%3$s].',
+                    $version,
+                    $this->getID(),
+                    implode(', ', $this->getVersions())
+                ),
+                APIException::ERROR_INVALID_API_VERSION
+            );
+        }
+
+        $this->selectedVersion = $version;
+
+        $this->logIdentifier = sprintf('APIMethod [%s v%s]', $this->getMethodName(), $version);
+
+        return $this;
+    }
+
     final protected function addParam(string $name, string|StringableInterface $label) : ParamTypeSelector
     {
         return $this->manageParams()->addParam($name, $label);
@@ -299,12 +319,22 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     public function getActiveVersion() : string
     {
+        if(isset($this->selectedVersion)) {
+            return $this->selectedVersion;
+        }
+
         $requestedVersion = (string)$this->request->getParam(APIMethodInterface::REQUEST_PARAM_API_VERSION);
+
         if(!empty($requestedVersion) && in_array($requestedVersion, $this->getVersions())) {
+            $this->selectVersion($requestedVersion);
             return $requestedVersion;
         }
 
-        return $this->getCurrentVersion();
+        $version =$this->getCurrentVersion();
+
+        $this->selectVersion($version);
+
+        return $version;
     }
 
     /**
@@ -429,12 +459,12 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      */
     abstract protected function _sendSuccessResponse(ArrayDataCollection $data) : void;
 
-    private ?APIInfo $info = null;
+    private ?JSONInfoSerializer $info = null;
 
-    final public function getInfo() : APIInfo
+    final public function getInfo() : JSONInfoSerializer
     {
         if(!isset($this->info)) {
-            $this->info = new APIInfo($this);
+            $this->info = new JSONInfoSerializer($this);
         }
 
         return $this->info;
