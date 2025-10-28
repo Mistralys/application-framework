@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.12.9 - Locale API improvements
+- API: Added  `selectLocale()` to the locale API trait to select a locale manually.
+- API: When running a method, it automatically sets `$_REQUEST['method']` to its own name.
+
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
 - API: Added `KeyPath` and `KeyReplacement` classes to reference key paths and replacements.
