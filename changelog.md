@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.12.10 - API version selection
+- API: Added `selectVersion()` to manually select the version to work with.
+
 ## v5.12.9 - Locale API improvements
 - API: Added  `selectLocale()` to the locale API trait to select a locale manually.
 - API: When running a method, it automatically sets `$_REQUEST['method']` to its own name.
