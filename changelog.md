@@ -1,5 +1,9 @@
 # Application Framework Changelog
 
+## v5.12.11 - UI Stringable fix
+- UI: Fixed `toString()` recognizing `UI_Renderable_Interface` instances as not stringable. 
+- UI: `toString()` now returns `true` and `false` as strings for boolean values.
+
 ## v5.12.10 - API version selection
 - API: Added `selectVersion()` to manually select the version to work with.
 
