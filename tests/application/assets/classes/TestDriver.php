@@ -20,6 +20,7 @@ use TestDriver\Area\TagsScreen;
 use TestDriver\Area\TestingScreen;
 use TestDriver\Area\TimeTrackerScreen;
 use TestDriver\Area\TranslationsScreen;
+use TestDriver\Area\UsersArea;
 use TestDriver\Area\WelcomeScreen;
 use TestDriver\CustomIcon;
 
@@ -55,6 +56,7 @@ class TestDriver extends Application_Driver
             RevisionableScreen::URL_NAME => RevisionableScreen::class,
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
             CountriesScreen::URL_NAME => CountriesScreen::class,
+            UsersArea::URL_NAME => UsersArea::class,
         );
 
         if(TagCollection::tableExists()) {
