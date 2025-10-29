@@ -1390,15 +1390,15 @@ class UI
    /**
     * Requires the subject to be a scalar value, or an object instance of the renderable interface.
     * 
-    * @param mixed|UI_Renderable_Interface $subject
+    * @param mixed|StringableInterface $subject
     * @throws UI_Exception
-    * @return string|number|UI_Renderable_Interface
+    * @return string|int|float|bool|StringableInterface
     * 
     * @see UI::ERROR_NOT_A_RENDERABLE
     */
-    public static function requireRenderable($subject)
+    public static function requireRenderable(mixed $subject) : string|int|float|bool|StringableInterface
     {
-        if(is_scalar($subject) || $subject instanceof UI_Renderable_Interface) {
+        if(is_scalar($subject) || $subject instanceof StringableInterface) {
             return $subject;
         }
         
