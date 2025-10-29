@@ -81,4 +81,17 @@ class StringableTests extends ApplicationTestCase
     {
         $this->assertSame(StringableStub::RETURN_VALUE, toString(new StringableStub()));
     }
+
+    public function test_arrayIsNotARenderable() : void
+    {
+        $this->expectException(UI_Exception::class);
+        $this->expectExceptionCode(UI::ERROR_NOT_A_RENDERABLE);
+
+        toString(['not', 'a', 'renderable']);
+    }
+
+    public function test_buttonIsRenderable() : void
+    {
+        $this->assertNotEmpty(toString(UI::button('Click Me')));
+    }
 }
