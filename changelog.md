@@ -1,12 +1,5 @@
 # Application Framework Changelog
 
-## v5.12.10 - API version selection
-- API: Added `selectVersion()` to manually select the version to work with.
-
-## v5.12.9 - Locale API improvements
-- API: Added  `selectLocale()` to the locale API trait to select a locale manually.
-- API: When running a method, it automatically sets `$_REQUEST['method']` to its own name.
-
 ## v5.13.0 - API Management (Deprecation)
 - DBHelper: Added a base record status screen trait.
 - DBHelper: Added `getRecordMicrotimeKey()` to base records.
@@ -37,9 +30,16 @@
 ### Deprecations
 
 - All DBHelper base admin screen classes have been deprecated. Replacement classes
-are documented for each to make migration straightforward.
+  are documented for each to make migration straightforward.
 - DBHelper collections with a parent collection must now extend `BaseChildCollection`.
 - `Application_Exception` => use `ApplicationException` instead.
+
+## v5.12.10 - API version selection
+- API: Added `selectVersion()` to manually select the version to work with.
+
+## v5.12.9 - Locale API improvements
+- API: Added  `selectLocale()` to the locale API trait to select a locale manually.
+- API: When running a method, it automatically sets `$_REQUEST['method']` to its own name.
 
 ## v5.12.8 - API Versioning
 - API: Added trait and classes to handle API versioning with transformer classes.
