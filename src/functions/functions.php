@@ -1025,12 +1025,22 @@ function sb() : UI_StringBuilder
  *
  * @see UI::ERROR_NOT_A_RENDERABLE
  */
-function toString($subject) : string
+function toString(mixed $subject) : string
 {
     // avoid the additional function call
     if(is_string($subject))
     {
         return $subject;
+    }
+
+    if($subject === false)
+    {
+        return 'false';
+    }
+
+    if($subject === true)
+    {
+        return 'true';
     }
 
     if($subject === null)
