@@ -11,6 +11,7 @@ namespace Application\API;
 use Application\API\Groups\APIGroupInterface;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\Validation\ParamValidationResults;
+use Application\API\Response\JSONInfoSerializer;
 use Application_CORS;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 use AppUtils\Microtime;
@@ -34,7 +35,7 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
 
 
-    public function getInfo() : APIInfo;
+    public function getInfo() : JSONInfoSerializer;
     public function getMethodName() : string;
     public function getDescription() : string;
 
@@ -81,6 +82,15 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return string
      */
     public function getCurrentVersion() : string;
+
+    /**
+     * Manually selects the version to work with, when working
+     * outside a request context.
+     *
+     * @param string $version
+     * @return $this
+     */
+    public function selectVersion(string $version) : self;
 
     public function manageParams() : APIParamManager;
 

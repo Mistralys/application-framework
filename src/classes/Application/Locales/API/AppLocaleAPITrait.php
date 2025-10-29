@@ -21,6 +21,13 @@ use AppLocalize\Localization\Locales\LocaleInterface;
 trait AppLocaleAPITrait
 {
     private ?AppLocaleParam $appLocaleParam = null;
+    private ?LocaleInterface $selectedLocale = null;
+
+    public function selectLocale(LocaleInterface $locale) : self
+    {
+        $this->selectedLocale = $locale;
+        return $this;
+    }
 
     public function registerAppLocaleParameter() : AppLocaleParam
     {
@@ -41,18 +48,26 @@ trait AppLocaleAPITrait
 
     public function resolveAppLocaleID() : ?string
     {
-        return $this->getAppLocaleParam()?->getValue();
+        return $this->selectedLocale?->getID() ?? $this->getAppLocaleParam()?->getValue();
     }
 
     public function getAppLocale() : LocaleInterface
     {
+        if(isset($this->selectedLocale)) {
+            return $this->selectedLocale;
+        }
+
         $localeID = $this->resolveAppLocaleID();
 
         if($localeID !== null) {
-            return Localization::getAppLocaleByName($localeID);
+            $locale = Localization::getAppLocaleByName($localeID);
+        } else {
+            $locale = Localization::getAppLocaleByName(Localization::BUILTIN_LOCALE_NAME);
         }
 
-        return Localization::getAppLocaleByName(Localization::BUILTIN_LOCALE_NAME);
+        $this->selectedLocale = $locale;
+
+        return $locale;
     }
 
     public function requireAppLocaleID() : string

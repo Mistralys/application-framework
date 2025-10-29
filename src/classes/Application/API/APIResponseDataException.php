@@ -1,7 +1,7 @@
 <?php
 /**
  * @package API
- * @subpackage Exceptions
+ * @subpackage Core
  */
 
 declare(strict_types=1);
@@ -20,7 +20,7 @@ use Exception;
  * **WARNING**: This exception should not be used for any other purpose.
  *
  * @package API
- * @subpackage Exceptions
+ * @subpackage Core
  */
 class APIResponseDataException extends Exception
 {
