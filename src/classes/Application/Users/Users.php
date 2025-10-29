@@ -6,6 +6,7 @@
 
 use Application\Exception\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Users\Admin\UsersAdminURLs;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
 use AppUtils\ClassHelper;
@@ -259,5 +260,28 @@ class Application_Users extends DBHelper_BaseCollection
         return Application_Driver::getInstance()
             ->getRequest()
             ->buildURL($params);
+    }
+
+    private ?UsersAdminURLs $usersAdminURLs = null;
+
+    public function adminURL() : UsersAdminURLs
+    {
+        if(!isset($this->usersAdminURLs)) {
+            $this->usersAdminURLs = new UsersAdminURLs();
+        }
+
+        return $this->usersAdminURLs;
+    }
+
+    protected function _registerKeys(): void
+    {
+        $this->keys->register(self::COL_FIRSTNAME)
+            ->makeRequired();
+
+        $this->keys->register(self::COL_LASTNAME)
+            ->makeRequired();
+
+        $this->keys->register(self::COL_EMAIL)
+            ->makeRequired();
     }
 }
