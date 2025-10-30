@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Themes\Default\Templates\Updaters;
 
-use Application\Updaters\UpdaterInterface;use UI_Page_Template_Custom;
+use Application\Updaters\UpdaterInterface;
+use UI_Page_Template_Custom;
 
 class UpdatersScaffoldTmpl extends UI_Page_Template_Custom
 {
