@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Updaters\UpdatersCollection;
+
 class Application_Bootstrap_Screen_Updaters extends Application_Bootstrap_Screen
 {
     public const DISPATCHER_NAME = 'upgrade.php';
@@ -15,7 +17,7 @@ class Application_Bootstrap_Screen_Updaters extends Application_Bootstrap_Screen
     {
         $this->createEnvironment();
         
-        $updaters = new Application_Updaters();
+        $updaters = new UpdatersCollection();
         $updaters->start();
     }
 }
