@@ -9,6 +9,7 @@ declare(strict_types=1);
 use Application\Admin\Area\BaseMediaLibraryScreen;
 use Application\Admin\Area\BaseNewsScreen;
 use Application\Area\BaseTagsScreen;
+use Application\ConfigSettings\BaseConfigRegistry;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
 use TestDriver\Area\CountriesScreen;
@@ -23,6 +24,8 @@ use TestDriver\Area\TranslationsScreen;
 use TestDriver\Area\UsersArea;
 use TestDriver\Area\WelcomeScreen;
 use TestDriver\CustomIcon;
+use TestDriver\UnitTestRedirectException;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @package TestDriver
@@ -71,15 +74,15 @@ class TestDriver extends Application_Driver
      * in unit test mode: In this case, the redirect is
      * ignored to support testing admin screen classes.
      *
-     * @param $paramsOrURL
-     * @return void
+     * @param string|array|AdminURLInterface|NULL $paramsOrURL
+     * @return never
      * @throws Application_Exception
      */
-    public function redirectTo($paramsOrURL = null) : void
+    public function redirectTo(string|array|AdminURLInterface|NULL $paramsOrURL = null) : never
     {
-        if(defined('APP_FRAMEWORK_TESTS'))
+        if(BaseConfigRegistry::areUnitTestsRunning())
         {
-            return;
+            throw new UnitTestRedirectException();
         }
 
         parent::redirectTo($paramsOrURL);
