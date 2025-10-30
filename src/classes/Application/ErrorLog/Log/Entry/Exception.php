@@ -135,7 +135,7 @@ class Application_ErrorLog_Log_Entry_Exception extends Application_ErrorLog_Log_
         }
     }
     
-    public static function logException(Application_Exception $exception)
+    public static function logException(Application_Exception $exception) : string
     {
         // INDEX MAPPING
         
@@ -172,6 +172,8 @@ class Application_ErrorLog_Log_Entry_Exception extends Application_ErrorLog_Log_
             $logID,
             parseThrowable($exception)
         );
+
+        return $logID;
     }
     
     protected static function addTokens(&$tokens, Throwable $exception)
