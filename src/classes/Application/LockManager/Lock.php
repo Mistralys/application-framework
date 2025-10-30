@@ -174,6 +174,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         }
 
         if($this->getLastActivity()->getTimestamp() > $lastActivity->getTimestamp() ) {
+            $this->setTimeActive($lastActivity);
             return $this;
         }
 
