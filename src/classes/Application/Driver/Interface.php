@@ -8,6 +8,7 @@
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Interface for driver classes.
@@ -135,10 +136,10 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
     public function getAdminURLChangelog(array $params=array()) : string;
 
     /**
-     * @param string|array<string,string|number>|NULL $paramsOrURL
+     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL
      * @return never
      */
-    public function redirectTo($paramsOrURL = null);
+    public function redirectTo(string|array|AdminURLInterface|NULL $paramsOrURL = null) : never;
 
     /**
      * Adds an informational message and redirects to the target URL.
