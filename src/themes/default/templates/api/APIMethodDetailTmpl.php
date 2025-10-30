@@ -14,6 +14,7 @@ use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Utilities\KeyDescription;
 use Application\MarkdownRenderer;
+use Application_Bootstrap;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -105,6 +106,9 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             }
             catch (Throwable $e)
             {
+                $exception = Application_Bootstrap::convertException($e);
+                $exception->log();
+
                 $state = UI::label('Exception')->makeDangerous();
 
                 $length = 0;
@@ -114,8 +118,8 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                     ->makeNotDismissable()
                     ->setContent(sb()
                         ->bold('An exception occurred while trying to perform the API request:')
-                        ->sf('#%1$s', $e->getCode())
-                        ->quote($e->getMessage())
+                        ->sf('#%1$s', $exception->getCode())
+                        ->quote($exception->getMessage())
                     );
             }
 
