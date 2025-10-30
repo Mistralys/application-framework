@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.13.1 - Small improvements
+- API: Added the `dryRun` API parameter trait to handle triggering dry-run operations.
+- API: Exceptions are now logged to the error log even if they are non-framework exceptions.
+- Exceptions: Exceptions now return their log ID with `getLogID()`.
+
 ## v5.13.0 - User management (Breaking-L)
 - Users: Added a user interface to manage known users.
 - Users: Upgraded the user table for additional information, like the foreign nickname.
