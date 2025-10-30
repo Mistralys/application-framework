@@ -7,5 +7,6 @@
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
     "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
-    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod"
+    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
+    "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
 }
