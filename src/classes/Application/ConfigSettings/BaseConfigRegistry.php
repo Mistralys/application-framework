@@ -353,4 +353,9 @@ abstract class BaseConfigRegistry implements SetConfigSettingInterface
         define($name, $value);
         return $this;
     }
+
+    public static function areUnitTestsRunning() : bool
+    {
+        return defined(self::FRAMEWORK_TESTS) && boot_constant(self::FRAMEWORK_TESTS) === true;
+    }
 }
