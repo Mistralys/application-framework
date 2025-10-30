@@ -38,6 +38,25 @@ class Application_Users_User extends DBHelper_BaseRecord
         return $this->getRecordStringKey(Application_Users::COL_FOREIGN_ID);
     }
 
+    public function updateEmailAddressHash() : bool
+    {
+        $current = $this->getEmailMD5();
+        $expected = Application_Users::email2hash($this->getEmail());
+
+        if($current === $expected) {
+            return false;
+        }
+
+        $this->setRecordKey(
+            Application_Users::COL_EMAIL_MD5,
+            Application_Users::email2hash($this->getEmail())
+        );
+
+        $this->save();
+
+        return true;
+    }
+
     protected function init() : void
     {
         $this->registerRecordKey(Application_Users::COL_EMAIL, t('Email Address'), true);
