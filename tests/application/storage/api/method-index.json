@@ -3,6 +3,7 @@
     "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
     "GetAppCountries": "Application\\API\\Method\\GetAppCountriesAPI",
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
+    "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
     "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
