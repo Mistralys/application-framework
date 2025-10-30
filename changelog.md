@@ -6,6 +6,7 @@
 - Users: Added user rights to manage known users.
 - Users: Added hashing of email addresses for faster database queries (partially implemented).
 - Changelog: Moved v5 entries into multiple files to avoid overly cluttering this file.
+- API: Added `selectAppCountry()` to the app country API trait for manual selection.
 
 ### Breaking changes (DB-L)
 
