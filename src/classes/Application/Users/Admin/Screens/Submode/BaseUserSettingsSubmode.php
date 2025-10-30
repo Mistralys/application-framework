@@ -15,6 +15,7 @@ use AppUtils\ClassHelper;
 use DBHelper_BaseRecord;
 
 /**
+ * @property Application_Users_User $record
  */
 abstract class BaseUserSettingsSubmode extends Application_Admin_Area_Mode_Submode_CollectionEdit
 {
