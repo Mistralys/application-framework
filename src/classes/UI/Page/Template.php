@@ -241,7 +241,7 @@ class UI_Page_Template extends UI_Renderable implements PageTemplateInterface
      * @param array<string,string> $params
      * @return string
      */
-    public function buildURL(array $params) : string
+    public function buildURL(array $params=array()) : string
     {
         return $this->request->buildURL($params);
     }
