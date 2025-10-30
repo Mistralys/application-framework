@@ -42,7 +42,7 @@ class IDListParameter extends BaseAPIParameter
     }
 
     /**
-     * @param array<int|string,int|float|string>|string $default An array of IDs or a comma-separated string of IDs.
+     * @param array<int|string,int|float|string>|string|mixed $default An array of IDs or a comma-separated string of IDs. Other value types are ignored.
      * @return $this
      */
     public function setDefaultValue(mixed $default) : self

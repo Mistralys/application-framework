@@ -65,7 +65,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
     }
 
     /**
-     * @param bool|string $default A boolean value, or a string that can be converted to boolean by {@see ConvertHelper::string2bool()}.
+     * @param bool|string|mixed $default A boolean value, or a string that can be converted to boolean by {@see ConvertHelper::string2bool()}. Other value types are rejected.
      * @return $this
      */
     public function setDefaultValue(mixed $default) : self

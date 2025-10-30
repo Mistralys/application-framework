@@ -37,7 +37,7 @@ class IntegerParameter extends BaseAPIParameter
     }
 
     /**
-     * @param int|float|string $default
+     * @param int|float|string|mixed $default The default value. Must be numeric, all other types are rejected.
      * @return $this
      */
     public function setDefaultValue(mixed $default) : self

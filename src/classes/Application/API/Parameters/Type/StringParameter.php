@@ -43,7 +43,7 @@ class StringParameter extends BaseAPIParameter
     }
 
     /**
-     * @param string|null $default
+     * @param string|null|mixed $default The default value. Must be a string or null, all other types are rejected.
      * @return $this
      */
     public function setDefaultValue(mixed $default) : self
