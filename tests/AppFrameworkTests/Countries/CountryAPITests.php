@@ -93,4 +93,11 @@ final class CountryAPITests extends APITestCase
 
         $this->assertSame($country, $method->resolveAppCountry());
     }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->startTransaction();
+    }
 }
