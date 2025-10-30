@@ -1,11 +1,14 @@
 <?php
 /**
- * File containing the {@link Application_LockManager_Lock} class.
- * 
  * @package Application
  * @subpackage LockManager
- * @see Application_LockManager_Lock
  */
+
+declare(strict_types=1);
+
+use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
+use AppUtils\DateTimeHelper\DateIntervalExtended;
 
 /**
  * Container class for a single locked administration screen.
@@ -17,13 +20,17 @@
  */
 class Application_LockManager_Lock extends DBHelper_BaseRecord
 {
-   /**
+    public const string TABLE_NAME = 'app_locking';
+    public const string PRIMARY_NAME = 'lock_id';
+    public const string RECORD_TYPE_NAME = 'lock';
+
+    /**
     * Retrieves the primary value used, if any.
     * @return string
     */
-    public function getPrimary()
+    public function getPrimary() : string
     {
-        return $this->getRecordKey('item_primary');
+        return $this->getRecordStringKey('item_primary');
     }
     
    /**
@@ -44,9 +51,9 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * 
     * @return string
     */
-    public function getURLPath()
+    public function getURLPath() : string
     {
-        return $this->getRecordKey('screen_url_path');
+        return $this->getRecordStringKey('screen_url_path');
     }
     
    /**
@@ -56,29 +63,30 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     */
     public function getLockedByID() : int
     {
-        return intval($this->getRecordKey('locked_by'));
+        return $this->getRecordIntKey('locked_by');
     }
     
    /**
     * Retrieves the owner of the lock.
     * @return Application_User
     */
-    public function getLockedBy()
+    public function getLockedBy() : Application_User
     {
-        $user = Application::getUser();
-        return $user->createByID($this->getLockedByID());
+        return Application::createUser($this->getLockedByID());
     }
     
    /**
     * Retrieves the date and time this lock was created.
+    *
+    * @param boolean $utc If true, the date is returned in UTC timezone.
     * @return DateTime
     */
-    public function getLockedTime($utc=false)
+    public function getLockedTime(bool $utc=false) : DateTime
     {
-        return $this->getDate(new DateTime($this->getRecordKey('locked_time')));
+        return $this->getDate(new DateTime($this->getRecordKey('locked_time')), $utc);
     }
     
-    protected function getDate(DateTime $date, $utc=false)
+    protected function getDate(DateTime $date, bool $utc=false) : DateTime
     {
         if($utc) {
             $date->setTimezone(new DateTimeZone('UTC'));
@@ -90,35 +98,37 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
    /**
     * Retrieves the date and time at which the lock expires.
     * This gets updated each time the user is detected as being active.
-    *  
+    *
+    * @param boolean $utc If true, the date is returned in UTC timezone.
     * @return DateTime
     */
-    public function getLockedUntil($utc=false)
+    public function getLockedUntil(bool $utc=false) : DateTime
     {
-        return $this->getDate(new DateTime($this->getRecordKey('locked_until')));
+        return $this->getDate(new DateTime($this->getRecordKey('locked_until')), $utc);
     }
     
    /**
     * Retrieves the date and time the user was last seen active 
     * in the administration screen.
-    * 
+    *
+    * @param boolean $utc If true, the date is returned in UTC timezone.
     * @return DateTime
     */
-    public function getLastActivity($utc=false)
+    public function getLastActivity(bool $utc=false) : DateTime
     {
-        return $this->getDate(new DateTime($this->getRecordKey('last_activity')));
+        return $this->getDate(new DateTime($this->getRecordKey('last_activity')), $utc);
     }
 
    /**
     * Retrieves the amount of time the owner of the lock has been active in the page.
     * @return DateInterval
     */
-    public function getTimeActive()
+    public function getTimeActive() : DateInterval
     {
         return $this->getLockedTime()->diff(new DateTime());
     }
     
-    public function getTimeInactive()
+    public function getTimeInactive() : DateInterval
     {
         return $this->getLastActivity()->diff(new DateTime());
     }
@@ -127,7 +137,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * Retrieves the amount of time until the lock expires automatically.
     * @return DateInterval
     */
-    public function getTimeToUnlock()
+    public function getTimeToUnlock() : DateInterval
     {
         $expiry = $this->getLockedUntil();
         
@@ -139,60 +149,64 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         }
         
         $now = new DateTime();
-        
-        $diff = date_diff($now, $lockedUntil);
-        return $diff;
+
+        return date_diff($now, $lockedUntil);
     }
     
    /**
-    * Retrieves the amount of time the owner was active in the page in a human readable version.
+    * Retrieves the amount of time the owner was active in the page in a human-readable version.
     * @return string
     */
-    public function getTimeActivePretty()
+    public function getTimeActivePretty() : string
     {
-        return AppUtils\ConvertHelper::interval2string($this->getTimeActive());
+        return ConvertHelper::interval2string($this->getTimeActive());
     }
     
-    public function getTimeToUnlockPretty()
+    public function getTimeToUnlockPretty() : string
     {
-        return AppUtils\ConvertHelper::interval2string($this->getTimeToUnlock());
+        return ConvertHelper::interval2string($this->getTimeToUnlock());
     }
     
-    public function updateActive(?DateTime $lastActivity=null)
+    public function updateActive(?DateTime $lastActivity=null) : self
     {
         if(!$lastActivity) {
             $lastActivity = new DateTime();
         }
-        
+
         if($this->getLastActivity()->getTimestamp() > $lastActivity->getTimestamp() ) {
+            $this->setTimeActive($lastActivity);
             return $this;
         }
-        
-        return $this->setTimeActive($lastActivity);
+
+        return $this;
     }
     
-    public function setTimeActive(DateTime $time)
+    public function setTimeActive(DateTime $time) : self
     {
-        return $this->setRecordKey('last_activity', $time->format('Y-m-d H:i:s'));
+        $this->setRecordKey('last_activity', $time->format('Y-m-d H:i:s'));
+        return $this;
     }
     
-    public function setLockedUntil(DateTime $time)
+    public function setLockedUntil(DateTime $time) : self
     {
-        return $this->setRecordKey('locked_until', $time->format('Y-m-d H:i:s'));
+        $this->setRecordKey('locked_until', $time->format('Y-m-d H:i:s'));
+        return $this;
     }
     
-    public function setLockedTime(DateTime $time)
+    public function setLockedTime(DateTime $time) : self
     {
-        return $this->setRecordKey('locked_time', $time->format('Y-m-d H:i:s'));
+        $this->setRecordKey('locked_time', $time->format('Y-m-d H:i:s'));
+        return $this;
     }
     
    /**
     * Extends the lock for another duration. This is used to prolong the
     * lock when the user is detected as being active in the locked page.
-    * 
-    * @return Application_LockManager_Lock
+    *
+    * @param DateTime|NULL $lastActivity The last activity time to set. If NULL, the current time is used.
+    * @return $this
     */
-    public function extend(?DateTime $lastActivity=null)
+    public function extend(?DateTime $lastActivity=null) : self
     {
         $extended = new DateTime();
         $extended->add(Application_LockManager::getExpiryDelay());
@@ -210,15 +224,15 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * information on any unlock request the user may have sent
     * is included as well.
     * 
-    * NOTE: All dates are UTC to be compatible with the client.
+    * > NOTE: All dates are UTC to be compatible with the client.
     * 
     * @param Application_User|NULL $visitor
     * @return array<string,mixed>
     */
-    public function toArray(Application_User $visitor = null) : array
+    public function toArray(?Application_User $visitor = null) : array
     {
         $info = array(
-            'lock_id' => $this->getID(),
+            self::PRIMARY_NAME => $this->getID(),
             'lock_label' => $this->getLabel(),
             'locked_until' => $this->getLockedUntil(true)->format('Y-m-d H:i:s'),
             'last_activity' => $this->getLastActivity(true)->format('Y-m-d H:i:s'),
@@ -247,7 +261,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
             WHERE
                 `lock_id`=:lock_id",
             array(
-                'lock_id' => $this->getID()
+                self::PRIMARY_NAME => $this->getID()
             )
         );
         
@@ -271,9 +285,9 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * the lock info to the client to allow layout adjustments
     * based on how much time is left before it expires.
     * 
-    * @var array Percent time => label pairs
+    * @var array<int,string> Percent time => label pairs
     */
-    protected static $unlockCritLevels = array(
+    protected static array $unlockCritLevels = array(
         10 => 'critical',
         30 => 'warning',
         50 => 'attention',
@@ -282,9 +296,9 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     
    /**
     * Retrieves all expiry critical levels, as percent => label pairs.
-    * @return array
+    * @return array<int,string>
     */
-    public static function getCritLevels()
+    public static function getCritLevels() : array
     {
         return self::$unlockCritLevels;
     }
@@ -295,10 +309,10 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * 
     * @return string
     */
-    public function getTimeToUnlockCritLevel()
+    public function getTimeToUnlockCritLevel() : string
     {
         $time = $this->getTimeToUnlock();
-        $lockMinutes = AppUtils\ConvertHelper::interval2total($time, AppUtils\ConvertHelper::INTERVAL_MINUTES);
+        $lockMinutes = ConvertHelper::interval2total($time, DateIntervalExtended::INTERVAL_MINUTES);
         $maxMinutes = Application_LockManager::EXPIRY_DELAY;
         
         foreach(self::$unlockCritLevels as $percent => $level) {
@@ -316,10 +330,10 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
      * user using the lock ID.
      *
      * @param Application_User $visitor
-     * @param string $text An optional, custom message to send. 
+     * @param string|NULL $text An optional, custom message to send.
      * @return Application_Messaging_Message
      */
-    public function sendUnlockRequest(Application_User $visitor, $text=null)    
+    public function sendUnlockRequest(Application_User $visitor, ?string $text=null) : Application_Messaging_Message
     {
         DBHelper::requireTransaction('Send a locking unlock request');
         
@@ -349,7 +363,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         DBHelper::insertDynamic(
             'app_locking_messages', 
             array(
-                'lock_id' => $this->getID(), 
+                self::PRIMARY_NAME => $this->getID(),
                 'message_id' => $message->getID(),
                 'requested_by' => $visitor->getID()
             )
@@ -363,7 +377,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * @param Application_User $visitor
     * @return Application_Messaging_Message|NULL
     */
-    public function getRequestUnlockMessage(Application_User $visitor)
+    public function getRequestUnlockMessage(Application_User $visitor) : ?Application_Messaging_Message
     {
         $entry = DBHelper::fetch(
             "SELECT
@@ -375,20 +389,23 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
             AND 
                 `requested_by`=:requested_by",
             array(
-                'lock_id' => $this->getID(),
+                self::PRIMARY_NAME => $this->getID(),
                 'requested_by' => $visitor->getID()
             )
         );
         
         if(is_array($entry) && isset($entry['message_id'])) {
-            $messaging = Application::createMessaging();
-            return $messaging->getByID($entry['message_id']);
+            return Application::createMessaging()->getByID($entry['message_id']);
         }
         
         return null;
     }
-    
-    public function getRequestUnlockMessages()
+
+    /**
+     * @return Application_Messaging_Message[]
+     * @throws DBHelper_Exception
+     */
+    public function getRequestUnlockMessages() : array
     {
         $entries = DBHelper::fetchAllKey(
             'message_id',
@@ -399,7 +416,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
             WHERE
                 `lock_id`=:lock_id",
             array(
-                'lock_id' => $this->getID()
+                self::PRIMARY_NAME => $this->getID()
             )
         );
         
@@ -419,12 +436,12 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     * @param Application_User $visitor
     * @return boolean
     */
-    public function isUnlockRequestSent(Application_User $visitor)
+    public function isUnlockRequestSent(Application_User $visitor) : bool
     {
         return DBHelper::recordExists(
             'app_locking_messages', 
             array(
-                'lock_id' => $this->getID(), 
+                self::PRIMARY_NAME => $this->getID(),
                 'requested_by' => $visitor->getID()            
             )
         );
@@ -470,21 +487,30 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         $this->save();
     }
     
-    public function forcedRelease()
+    public function forcedRelease() : self
     {
         $this->setProperty('forced_release', 'yes');
         $this->release();
+        return $this;
     }
-    
-    protected $properties = array();
-    
-    protected function setProperty($name, $value)
+
+    /**
+     * @var array<string,string|int|float|bool|array<int|string,mixed>> Custom properties stored with the lock.
+     */
+    protected array $properties = array();
+
+    /**
+     * @param string $name
+     * @param string|int|float|bool|array<int|string,mixed> $value
+     * @return $this
+     */
+    protected function setProperty(string $name, string|int|float|bool|array $value) : self
     {
         $this->properties[$name] = $value;
         return $this;
     }
     
-    protected function getProperty($name, $default=null)
+    protected function getProperty(string $name, string|int|float|bool|array|null $default=null) : string|int|float|bool|array|null
     {
         if(isset($this->properties[$name])) {
             return $this->properties[$name];
@@ -495,44 +521,40 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
     
     public function getRecordPrimaryName() : string
     {
-        return 'lock_id';
+        return self::PRIMARY_NAME;
     }
     
-    public function getRecordTable()
+    public function getRecordTable() : string
     {
-        return 'app_locking';
+        return self::TABLE_NAME;
     }
     
     public function getRecordTypeName() : string
     {
-        return 'lock';
+        return self::RECORD_TYPE_NAME;
     }
  
     public function save(bool $silent=false) : bool
     {
-        $this->setRecordKey('properties', json_encode($this->properties));
+        $this->setRecordKey('properties', JSONConverter::var2json($this->properties));
         
         return parent::save();
     }
     
-    public function isReleased()
+    public function isReleased() : bool
     {
-        if($this->getProperty('released', 'no') === 'yes') {
-            return true;
-        }
-        
-        return false;
+        return $this->getProperty('released', 'no') === 'yes';
     }
     
-    protected function init()
+    protected function init() : void
     {
         $props = $this->getRecordKey('properties');
         if(!empty($props)) {
-            $this->properties = json_decode($props, true);
+            $this->properties = JSONConverter::json2array($props);
         }
     }
 
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
 }

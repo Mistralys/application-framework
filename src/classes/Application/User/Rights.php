@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class Application_User_Rights
 {
-    public const ERROR_UNKNOWN_RIGHT = 70701;
-    public const ERROR_UNKNOWN_GROUP = 70702;
-    public const ERROR_UNKNOWN_ROLE = 70703;
+    public const int ERROR_UNKNOWN_RIGHT = 70701;
+    public const int ERROR_UNKNOWN_GROUP = 70702;
+    public const int ERROR_UNKNOWN_ROLE = 70703;
 
     /**
      * @var Application_User_Rights_Group[]
@@ -123,7 +123,7 @@ class Application_User_Rights
     {
         if($this->rolesSorted === false) {
             $this->rolesSorted = true;
-            usort($this->roles, static function (Application_User_Rights_Role $a, Application_User_Rights_Role $b): int {
+            uasort($this->roles, static function (Application_User_Rights_Role $a, Application_User_Rights_Role $b): int {
                 return strnatcasecmp($a->getLabel(), $b->getLabel());
             });
         }

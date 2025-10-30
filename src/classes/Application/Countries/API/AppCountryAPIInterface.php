@@ -24,6 +24,7 @@ interface AppCountryAPIInterface extends APIMethodInterface
     public const string KEY_COUNTRY_ID = 'countryID';
     public const string KEY_COUNTRY_ISO = 'countryISO';
 
+    public function selectAppCountry(Application_Countries_Country $country) : self;
     public function getAppCountryIDParam() : ?AppCountryIDParam;
     public function getAppCountryISOParam() : ?AppCountryISOParam;
     public function registerAppCountryID() : AppCountryIDParam;

@@ -99,20 +99,6 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
         Application_RequestLog::setActive(false);
     }
 
-    protected function isRunViaApplication(): bool
-    {
-        return boot_defined(BaseConfigRegistry::FRAMEWORK_TESTS) !== true;
-    }
-
-    protected function skipIfRunViaApplication(): bool
-    {
-        if ($this->isRunViaApplication()) {
-            $this->markTestSkipped();
-        }
-
-        return false;
-    }
-
     protected function createTestFormable(array $defaultValues = array()): Application_Formable_Generic
     {
         $formable = new Application_Formable_Generic();

@@ -16,8 +16,6 @@ final class CountryAPITests extends APITestCase
 {
     public function test_setIsInvalidIfNoCountryParams() : void
     {
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryBySetAPI::METHOD_NAME;
-
         $method = new TestGetCountryBySetAPI(APIManager::getInstance());
 
         $this->assertErrorResponseCode($method, APIMethodInterface::ERROR_INVALID_REQUEST_PARAMS);
@@ -27,7 +25,6 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryBySetAPI::METHOD_NAME;
         $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ID] = $country->getID();
 
         $method = new TestGetCountryBySetAPI(APIManager::getInstance());
@@ -41,7 +38,6 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryBySetAPI::METHOD_NAME;
         $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ISO] = $country->getISO();
 
         $method = new TestGetCountryBySetAPI(APIManager::getInstance());
@@ -53,40 +49,55 @@ final class CountryAPITests extends APITestCase
 
     public function test_methodIsValidIfNoCountryParams() : void
     {
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryAPI::METHOD_NAME;
-
         $method = new TestGetCountryAPI(APIManager::getInstance());
 
         $this->assertSuccessfulResponse($method, 'Must be a valid response because none of the parameters are mandatory.');
 
-        $this->assertNull($method->getCountry());
+        $this->assertNull($method->resolveAppCountry());
     }
 
     public function test_methodIsValidWithCountryID() : void
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryAPI::METHOD_NAME;
         $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ID] = $country->getID();
 
         $method = new TestGetCountryAPI(APIManager::getInstance());
 
         $this->assertSuccessfulResponse($method);
 
-        $this->assertSame($country, $method->getCountry());
+        $this->assertSame($country, $method->resolveAppCountry());
     }
 
     public function test_methodIsValidWithCountryISO() : void
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = TestGetCountryAPI::METHOD_NAME;
         $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ISO] = $country->getISO();
 
         $method = new TestGetCountryAPI(APIManager::getInstance());
 
         $this->assertSuccessfulResponse($method);
 
-        $this->assertSame($country, $method->getCountry());
+        $this->assertSame($country, $method->resolveAppCountry());
+    }
+
+    public function test_countryCanBeSelectedManually() : void
+    {
+        $country = $this->createTestCountry(CountryDE::ISO_CODE);
+
+        $method = new TestGetCountryAPI(APIManager::getInstance());
+        $method->selectAppCountry($country);
+
+        $this->assertSuccessfulResponse($method);
+
+        $this->assertSame($country, $method->resolveAppCountry());
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->startTransaction();
     }
 }

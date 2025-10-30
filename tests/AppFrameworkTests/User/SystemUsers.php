@@ -15,10 +15,6 @@ final class User_SystemUsersTest extends UserTestCase
 {
     public function test_createSystemUser(): void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Creating a system user instance');
 
         $user = Application::createSystemUser();
@@ -30,10 +26,6 @@ final class User_SystemUsersTest extends UserTestCase
 
     public function test_createDummyUser(): void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $user = Application::createDummyUser();
 
         $this->assertInstanceOf(TestDriver_User::class, $user);

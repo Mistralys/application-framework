@@ -83,7 +83,7 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $response->setKey(self::KEY_COUNTRY_ID, $this->getCountry()?->getID());
+        $response->setKey(self::KEY_COUNTRY_ID, $this->resolveAppCountry()?->getID());
     }
 
     public function getExampleJSONResponse(): array
@@ -91,11 +91,6 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
         return array(
             self::KEY_COUNTRY_ID => 42
         );
-    }
-
-    public function getCountry() : ?Application_Countries_Country
-    {
-        return $this->getAppCountryIDParam()?->getCountry() ?? $this->getAppCountryISOParam()?->getCountry();
     }
 
     public function getChangelog(): array

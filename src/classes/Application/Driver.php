@@ -333,7 +333,7 @@ abstract class Application_Driver implements Application_Driver_Interface
      * @return never
      * @throws DriverException
      */
-    public function redirectTo($paramsOrURL = null)
+    public function redirectTo(string|array|AdminURLInterface|NULL $paramsOrURL = null) : never
     {
         if (is_array($paramsOrURL))
         {

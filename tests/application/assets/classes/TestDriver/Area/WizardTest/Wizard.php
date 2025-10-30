@@ -9,7 +9,7 @@ use AppLocalize\Localization\Country\CountryMX;
 
 class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 {
-    public const URL_NAME = 'wizard';
+    public const string URL_NAME = 'wizard';
 
     protected function init() : void
     {

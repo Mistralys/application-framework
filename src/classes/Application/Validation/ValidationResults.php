@@ -25,6 +25,6 @@ class ValidationResults extends OperationResult_Collection
 {
     public function __construct(ValidationResultInterface $subject)
     {
-        parent::__construct($subject, $subject->getLogIdentifier());
+        parent::__construct($subject, $subject->getValidatorLabel());
     }
 }

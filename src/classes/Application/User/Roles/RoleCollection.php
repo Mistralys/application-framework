@@ -76,7 +76,7 @@ class RoleCollection extends BaseStringPrimaryCollection
         $this->registerFolderItems($this->getFrameworkRoleFolder(), 'Application_User_Role_');
         $this->registerFolderItems($this->getAppRoleFolder(), APP_CLASS_NAME.'_User_Role_');
 
-        usort($this->items, static function(BaseRole $a, BaseRole $b) : int {
+        uasort($this->items, static function(BaseRole $a, BaseRole $b) : int {
             return strnatcasecmp($a->getLabel(), $b->getLabel());
         });
     }
