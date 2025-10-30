@@ -36,10 +36,10 @@ class AppCountryParamRule extends OrRule
     }
 
     /**
-     * @param AppCountryParamSetInterface $set
+     * @param AppCountryParamSetInterface|ParamSetInterface $set Only {@see AppCountryParamSetInterface} instances are allowed.
      * @return $this
      */
-    public function addSet(ParamSetInterface $set): self
+    public function addSet(AppCountryParamSetInterface|ParamSetInterface $set): self
     {
         if($set instanceof AppCountryParamSetInterface) {
             return parent::addSet($set);
