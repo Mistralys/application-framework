@@ -1057,7 +1057,7 @@ class Application
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect($url)
+    public static function redirect(string|AdminURLInterface $url) : never
     {
         $url = (string)$url;
 
