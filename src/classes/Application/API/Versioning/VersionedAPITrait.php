@@ -14,7 +14,9 @@ use AppUtils\ArrayDataCollection;
  * Trait used to implement {@see VersionedAPIInterface} in an API method,
  * and add version handling using separate version classes.
  *
+ * ----------------------------------------------------------------
  * For more documentation, see {@see VersionedAPIInterface}.
+ * ----------------------------------------------------------------
  *
  * @package API
  * @subpackage Versioning
