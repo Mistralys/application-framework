@@ -54,11 +54,18 @@ trait OperationResultTestTrait
         $result = $this->resolveResult($result);
 
         if($result instanceof OperationResult_Collection) {
-            $this->assertSame(0, $result->countResults());
-        } else {
-            $this->assertSame('', $result->getMessage());
-            $this->assertSame(0, $result->getCode());
+            $this->assertSame(
+                0,
+                $result->countResults(),
+                'Expected result collection to contain no messages. '.PHP_EOL.
+                'Found messages: '.PHP_EOL.
+                $result->getSummary()
+            );
+            return;
         }
+
+        $this->assertSame('', $result->getMessage());
+        $this->assertSame(0, $result->getCode());
     }
 
     public function assertResultHasCode(OperationResult|ValidationResultInterface $result, int $code) : void
