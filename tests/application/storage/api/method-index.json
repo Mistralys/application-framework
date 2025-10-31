@@ -8,5 +8,6 @@
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
     "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
     "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
+    "TestStringValidations": "TestDriver\\API\\TestStringValidationsMethod",
     "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
 }
