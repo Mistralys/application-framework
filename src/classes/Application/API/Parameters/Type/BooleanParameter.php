@@ -32,7 +32,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
         return t('Boolean');
     }
 
-    private bool $defaultValue = false;
+    private ?bool $defaultValue = null;
 
     protected function resolveValue(): bool|null
     {
@@ -48,7 +48,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
 
         $this->result->makeWarning(
             sprintf(
-                'Expected a boolean value, given: [%s].',
+                'Expected a boolean value or compatible string, given: [%s].',
                 gettype($value)
             ),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
