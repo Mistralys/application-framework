@@ -4,6 +4,7 @@
 - API: Added `validateAs()` to the string parameter class to choose common validations.
 - API: Added a series of common validation types for API parameters, like email, URL, date, etc.
 - API: Added parameter classes for common types, like email, URL, date, etc.
+- API: Added / renamed constants to distinguish between request params (`PARAM_`) and payload keys (`KEY_`).
 - Users: Fixed the missing MD5 email column when setting up system user entries.
 - UI: Fixed the generic button trait missing some button interface methods.
 - Sessions: Fixed some errors in the OAuth session handling trait.
