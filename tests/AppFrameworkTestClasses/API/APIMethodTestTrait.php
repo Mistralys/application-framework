@@ -11,6 +11,7 @@ namespace AppFrameworkTestClasses\API;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\ErrorResponsePayload;
+use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\ResponsePayload;
 use AppUtils\ArrayDataCollection;
@@ -102,5 +103,26 @@ trait APIMethodTestTrait
         }
 
         $this->assertSuccessfulResponse(new $methodClass(APIManager::getInstance())->processReturn());
+    }
+
+    public function assertParamInvalidWithValue(APIParameterInterface $param, mixed $value) : void
+    {
+        $_REQUEST[$param->getName()] = $value;
+
+        $this->assertNull($param->getValue());
+        $this->assertResultInvalid($param->getValidationResults());
+    }
+
+    public function assertParamValueIsSame(APIParameterInterface $param, mixed $value, int|float|string|array|bool|NULL $expected) : void
+    {
+        $_REQUEST[$param->getName()] = $value;
+
+        $this->assertSame($expected, $param->getValue());
+    }
+
+    public function assertParamValidWithValue(APIParameterInterface $param, mixed $value, int|float|string|array|bool|NULL $expected) : void
+    {
+        $this->assertParamValueIsSame($param, $value, $expected);
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 }
