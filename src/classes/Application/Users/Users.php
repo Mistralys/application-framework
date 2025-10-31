@@ -159,14 +159,25 @@ class Application_Users extends DBHelper_BaseCollection
         return null;
     }
 
-    public function createNewUser(string $email, string $firstname, string $lastname, string $foreignID='') : Application_Users_User
+    public function createNewUser(string $email, string $firstname, string $lastname, string $foreignID='', ?int $userID=null) : Application_Users_User
     {
-        return $this->createNewRecord(array(
-            self::COL_EMAIL => $email,
-            self::COL_FIRSTNAME => $firstname,
-            self::COL_LASTNAME => $lastname,
-            self::COL_FOREIGN_ID => $foreignID
-        ));
+        $options = array();
+
+        if($userID !== null)
+        {
+            $options[DBHelper_BaseCollection::OPTION_CUSTOM_RECORD_ID] = $userID;
+        }
+
+        return $this->createNewRecord(
+            array(
+                self::COL_EMAIL => $email,
+                self::COL_FIRSTNAME => $firstname,
+                self::COL_LASTNAME => $lastname,
+                self::COL_FOREIGN_ID => $foreignID
+            ),
+            false,
+            $options
+        );
     }
 
     /**
@@ -227,18 +238,12 @@ class Application_Users extends DBHelper_BaseCollection
         {
             $this->log(sprintf('User [%s] | Does not exist, inserting into the database.', $userID));
 
-            // Inserting it manually, since the createNewUser method
-            // does not allow specifying an ID.
-            DBHelper::insertDynamic(
-                $this->getRecordTableName(),
-                array(
-                    $this->getRecordPrimaryName() => $userID,
-                    self::COL_EMAIL => $user->getEmail(),
-                    self::COL_EMAIL_MD5 => self::email2hash($user->getEmail()),
-                    self::COL_FIRSTNAME => $user->getFirstname(),
-                    self::COL_LASTNAME => $user->getLastname(),
-                    self::COL_FOREIGN_ID => $user->getForeignID()
-                )
+            $this->createNewUser(
+                $user->getEmail(),
+                $user->getFirstname(),
+                $user->getLastname(),
+                $user->getForeignID(),
+                $userID
             );
 
             return;
