@@ -13,6 +13,9 @@ use Throwable;
 
 class StringValidations
 {
+    public const string REGEX_ALPHA = '/^[a-zA-Z]+$/';
+    public const string REGEX_ALNUM = '/^[a-zA-Z0-9]+$/';
+
     private StringParameter $parameter;
 
     public function __construct(StringParameter $parameter)
@@ -20,16 +23,30 @@ class StringValidations
         $this->parameter = $parameter;
     }
 
+    /**
+     * @return StringParameter
+     * @see self::REGEX_ALNUM
+     */
     public function alphanumeric() : StringParameter
     {
-        return $this->parameter->validateByRegex('/^[a-zA-Z0-9]+$/');
+        return $this->parameter->validateByRegex(self::REGEX_ALNUM);
     }
 
+    /**
+     * @return StringParameter
+     * @see self::REGEX_ALPHA
+     */
     public function alphabetical() : StringParameter
     {
-        return $this->parameter->validateByRegex('/^[a-zA-Z]+$/');
+        return $this->parameter->validateByRegex(self::REGEX_ALPHA);
     }
 
+    /**
+     * @param bool $allowCapitalLetters Whether to allow capital letters in the alias.
+     * @return StringParameter
+     * @see RegexHelper::REGEX_ALIAS
+     * @see RegexHelper::REGEX_ALIAS_CAPITALS
+     */
     public function alias(bool $allowCapitalLetters) : StringParameter
     {
         $regex = RegexHelper::REGEX_ALIAS;
@@ -40,11 +57,19 @@ class StringValidations
         return $this->parameter->validateBy(new RegexValidation($regex));
     }
 
+    /**
+     * @return StringParameter
+     * @see RegexHelper::REGEX_LABEL
+     */
     public function label() : StringParameter
     {
         return $this->parameter->validateByRegex(RegexHelper::REGEX_LABEL);
     }
 
+    /**
+     * @return StringParameter
+     * @see RegexHelper::REGEX_NAME_OR_TITLE
+     */
     public function nameOrTitle() : StringParameter
     {
         return $this->parameter->validateByRegex(RegexHelper::REGEX_NAME_OR_TITLE);
@@ -55,21 +80,37 @@ class StringValidations
         return $this->parameter->validateByRegex(RegexHelper::REGEX_MD5);
     }
 
+    /**
+     * @return StringParameter
+     * @see RegexHelper::REGEX_EMAIL
+     */
     public function email() : StringParameter
     {
         return $this->parameter->validateByRegex(RegexHelper::REGEX_EMAIL);
     }
 
+    /**
+     * @return StringParameter
+     * @see RegexHelper::REGEX_URL
+     */
     public function url() : StringParameter
     {
         return $this->parameter->validateByRegex(RegexHelper::REGEX_URL);
     }
 
+    /**
+     * @return StringParameter
+     * @see RegexHelper::REGEX_FILENAME
+     */
     public function filename() : StringParameter
     {
         return $this->parameter->validateByRegex(RegexHelper::REGEX_FILENAME);
     }
 
+    /**
+     * @return StringParameter
+     * @see Microtime::createFromString()
+     */
     public function date() : StringParameter
     {
         return $this->parameter->validateByCallback(function (mixed $value, OperationResult $result) : void
