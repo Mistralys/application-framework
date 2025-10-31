@@ -5,6 +5,9 @@
 - API: Added a series of common validation types for API parameters, like email, URL, date, etc.
 - API: Added parameter classes for common types, like email, URL, date, etc.
 - Users: Fixed the missing MD5 email column when setting up system user entries.
+- UI: Fixed the generic button trait missing some button interface methods.
+- Sessions: Fixed some errors in the OAuth session handling trait.
+- Tests: Added several stubs to enable static analysis of traits that were not analyzed before.
 
 ## v5.13.1 - Small improvements
 - API: Added the `dryRun` API parameter trait to handle triggering dry-run operations.
