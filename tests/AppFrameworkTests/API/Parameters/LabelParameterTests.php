@@ -24,7 +24,7 @@ final class LabelParameterTests extends APITestCase
     {
         $this->assertParamInvalidWithValue(
             new LabelParameter('foo', 'Param Label'),
-            ''
+            '>Invalid Label<',
         );
     }
 }
