@@ -18,5 +18,5 @@ declare(strict_types=1);
  */
 interface Application_Session_AuthTypes_NoneInterface
 {
-    public const TYPE_ID = 'NoAuth';
+    public const string TYPE_ID = 'NoAuth';
 }
