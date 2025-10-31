@@ -16,7 +16,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = '42,55,14789';
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -26,7 +26,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = '  42 ,  55,   14789   ';
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -36,7 +36,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = array(42, 55, 14789);
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertSame(array(42, 55, 14789), $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -46,7 +46,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = '42,invalid,14789';
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertSame(array(42, 14789), $param->getValue());
         $this->assertResultValid($param->getValidationResults());
@@ -57,7 +57,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = 42;
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertSame(array(42), $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -67,7 +67,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = '';
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -77,7 +77,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = null;
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -87,7 +87,7 @@ final class IDListParameterTests extends APITestCase
     {
         $_REQUEST['foo'] = new stdClass();
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertTrue($param->getValidationResults()->isValid());
@@ -96,7 +96,7 @@ final class IDListParameterTests extends APITestCase
 
     public function test_setDefaultWithArrayValue() : void
     {
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
         $param->setDefaultValue(array(42, 55, 14789));
 
         $this->assertSame(array(42, 55, 14789), $param->getDefaultValue());
@@ -104,7 +104,7 @@ final class IDListParameterTests extends APITestCase
 
     public function test_setDefaultWithStringValue() : void
     {
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
         $param->setDefaultValue('42,55,14789');
 
         $this->assertSame(array(42, 55, 14789), $param->getDefaultValue());
@@ -115,7 +115,7 @@ final class IDListParameterTests extends APITestCase
         $this->expectException(APIParameterException::class);
         $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
 
-        $param = new IDListParameter('foo', 'Foo Label');
+        $param = new IDListParameter('foo', 'Param Label');
         $param->setDefaultValue(new stdClass());
     }
 }

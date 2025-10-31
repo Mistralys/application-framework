@@ -17,7 +17,7 @@ final class JSONParamTests extends APITestCase
     {
         $_REQUEST['foo'] = JSONConverter::var2json(array('foo' => 'bar'));
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
 
         $this->assertSame(array('foo' => 'bar'), $param->getValue());
         $this->assertTrue($param->getValidationResults()->isValid());
@@ -27,7 +27,7 @@ final class JSONParamTests extends APITestCase
     {
         $_REQUEST['foo'] = 42;
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertTrue($param->getValidationResults()->isValid());
@@ -38,7 +38,7 @@ final class JSONParamTests extends APITestCase
     {
         $_REQUEST['foo'] = '';
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertTrue($param->getValidationResults()->isValid());
@@ -49,7 +49,7 @@ final class JSONParamTests extends APITestCase
     {
         $_REQUEST['foo'] = null;
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertTrue($param->getValidationResults()->isValid());
@@ -57,7 +57,7 @@ final class JSONParamTests extends APITestCase
 
     public function test_setDefaultValueWithValidJSON() : void
     {
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
         $param->setDefaultValue('{"foo":"bar"}');
 
         $this->assertSame(array('foo' => 'bar'), $param->getDefaultValue());
@@ -68,7 +68,7 @@ final class JSONParamTests extends APITestCase
         $this->expectException(APIParameterException::class);
         $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
         $param->setDefaultValue('invalid json');
     }
 
@@ -77,7 +77,7 @@ final class JSONParamTests extends APITestCase
         $this->expectException(APIParameterException::class);
         $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
 
-        $param = new JSONParameter('foo', 'Foo Label');
+        $param = new JSONParameter('foo', 'Param Label');
         $param->setDefaultValue(new stdClass());
     }
 }

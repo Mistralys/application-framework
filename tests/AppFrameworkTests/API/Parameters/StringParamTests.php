@@ -15,7 +15,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = 'bar';
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
 
         $this->assertSame('bar', $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -25,7 +25,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = 42;
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
 
         $this->assertSame('42', $param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -35,7 +35,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = array();
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertResultValid($param->getValidationResults());
@@ -46,7 +46,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = '';
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -56,7 +56,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = null;
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
 
         $this->assertNull($param->getValue());
         $this->assertResultValidWithNoMessages($param->getValidationResults());
@@ -64,7 +64,7 @@ final class StringParamTests extends APITestCase
 
     public function test_setDefaultValueWithValidString() : void
     {
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->setDefaultValue('default string');
 
         $this->assertSame('default string', $param->getDefaultValue());
@@ -76,7 +76,7 @@ final class StringParamTests extends APITestCase
         $this->expectException(APIParameterException::class);
         $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->setDefaultValue(123);
     }
 
@@ -84,7 +84,7 @@ final class StringParamTests extends APITestCase
     {
         $_REQUEST['foo'] = 'bar123';
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->validateByRegex('/^bar[0-9]+$/');
 
         $this->assertSame('bar123', $param->getValue());
@@ -93,7 +93,7 @@ final class StringParamTests extends APITestCase
     public function test_regexValidationInvalid() : void
     {
         $_REQUEST['foo'] = 'baz123';
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->validateByRegex('/^bar[0-9]+$/');
 
         $this->assertNull($param->getValue());
@@ -103,7 +103,7 @@ final class StringParamTests extends APITestCase
 
     public function test_defaultWithValidString() : void
     {
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->setDefaultValue('default string');
 
         $this->assertSame('default string', $param->getValue());
@@ -114,7 +114,7 @@ final class StringParamTests extends APITestCase
         $this->expectException(APIParameterException::class);
         $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
 
-        $param = new StringParameter('foo', 'Foo Label');
+        $param = new StringParameter('foo', 'Param Label');
         $param->setDefaultValue(array());
     }
 }
