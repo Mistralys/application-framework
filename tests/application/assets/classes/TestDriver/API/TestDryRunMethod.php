@@ -13,6 +13,10 @@ use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use AppUtils\ArrayDataCollection;
 
+/**
+ * @see DryRunAPIInterface
+ * @see DryRunAPITrait
+ */
 class TestDryRunMethod
     extends BaseAPIMethod
     implements
@@ -25,7 +29,6 @@ class TestDryRunMethod
     use DryRunAPITrait;
 
     public const string METHOD_NAME= 'TestDryRun';
-    public const string KEY_DRY_RUN = 'dryRun';
 
     public function getMethodName(): string
     {
@@ -68,7 +71,7 @@ class TestDryRunMethod
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $response->setKey(self::KEY_DRY_RUN, $this->isDryRun());
+        $response->setKey(DryRunAPIInterface::PARAM_DRY_RUN, $this->isDryRun());
     }
 
     public function getExampleJSONResponse(): array

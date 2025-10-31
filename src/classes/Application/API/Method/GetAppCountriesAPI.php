@@ -89,7 +89,7 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 
         return array(
             AppCountryAPIInterface::KEY_COUNTRY_ID => $country->getID(),
-            'isoCode' => $country->getISO(),
+            AppCountryAPIInterface::KEY_COUNTRY_ISO => $country->getISO(),
             'labelInvariant' => $country->getLabel(),
             'codeAliases' => $countryDef->getAliases(),
             'defaultLocale' => array(

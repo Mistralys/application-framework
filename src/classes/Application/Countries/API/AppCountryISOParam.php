@@ -18,7 +18,7 @@ class AppCountryISOParam extends StringParameter implements SelectableValueParam
 
     public function __construct()
     {
-        parent::__construct(AppCountryAPIInterface::KEY_COUNTRY_ISO, 'Country ISO code');
+        parent::__construct(AppCountryAPIInterface::PARAM_COUNTRY_ISO, 'Country ISO code');
 
         $this
             ->setDescription('Two-letter country ISO code, e.g. `de` for Germany. Case insensitive.')

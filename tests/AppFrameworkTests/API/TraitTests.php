@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\API;
 
 use Application\API\APIManager;
+use Application\API\Traits\DryRunAPIInterface;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 use TestDriver\API\TestDryRunMethod;
 
@@ -33,7 +34,7 @@ final class TraitTests extends APITestCase
 
     public function test_dryRunCanBeEnabledViaRequest() : void
     {
-        $_REQUEST[TestDryRunMethod::KEY_DRY_RUN] = 'true';
+        $_REQUEST[DryRunAPIInterface::PARAM_DRY_RUN] = 'true';
 
         $method = new TestDryRunMethod(APIManager::getInstance());
 
@@ -42,7 +43,7 @@ final class TraitTests extends APITestCase
         $this->assertTrue($method->isDryRun());
 
         $this->assertTrue(
-            $response->getBool(TestDryRunMethod::KEY_DRY_RUN),
+            $response->getBool(DryRunAPIInterface::PARAM_DRY_RUN),
             'Dry run should be enabled when the request parameter is set to true.'
         );
 

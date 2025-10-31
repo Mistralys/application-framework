@@ -24,6 +24,9 @@ use Application\API\Traits\DryRun\DryRunAPIParam;
  */
 interface DryRunAPIInterface extends APIMethodInterface
 {
+    public const string PARAM_DRY_RUN = 'dryRun';
+    public const string KEY_DRY_RUN = 'dryRun';
+
     public function selectDryRun(bool $dryRun) : self;
     public function getDryRunParam() : ?DryRunAPIParam;
     public function registerDryRunParam() : DryRunAPIParam;

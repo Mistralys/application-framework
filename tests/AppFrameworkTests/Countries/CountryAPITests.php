@@ -25,7 +25,7 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ID] = $country->getID();
+        $_REQUEST[AppCountryAPIInterface::PARAM_COUNTRY_ID] = $country->getID();
 
         $method = new TestGetCountryBySetAPI(APIManager::getInstance());
 
@@ -38,7 +38,7 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ISO] = $country->getISO();
+        $_REQUEST[AppCountryAPIInterface::PARAM_COUNTRY_ISO] = $country->getISO();
 
         $method = new TestGetCountryBySetAPI(APIManager::getInstance());
 
@@ -60,7 +60,7 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ID] = $country->getID();
+        $_REQUEST[AppCountryAPIInterface::PARAM_COUNTRY_ID] = $country->getID();
 
         $method = new TestGetCountryAPI(APIManager::getInstance());
 
@@ -73,7 +73,7 @@ final class CountryAPITests extends APITestCase
     {
         $country = $this->createTestCountry(CountryDE::ISO_CODE);
 
-        $_REQUEST[AppCountryAPIInterface::KEY_COUNTRY_ISO] = $country->getISO();
+        $_REQUEST[AppCountryAPIInterface::PARAM_COUNTRY_ISO] = $country->getISO();
 
         $method = new TestGetCountryAPI(APIManager::getInstance());
 

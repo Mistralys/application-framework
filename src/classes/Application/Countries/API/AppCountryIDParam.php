@@ -17,7 +17,7 @@ class AppCountryIDParam extends IntegerParameter implements SelectableValueParam
 
     public function __construct()
     {
-        parent::__construct(AppCountryAPIInterface::KEY_COUNTRY_ID, 'App Country ID');
+        parent::__construct(AppCountryAPIInterface::PARAM_COUNTRY_ID, 'App Country ID');
 
         $this
             ->setDescription('Application country ID.')
