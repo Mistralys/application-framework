@@ -19,8 +19,6 @@ use Application\API\Parameters\Validation\ParamValidationInterface;
  *
  * @package API
  * @subpackage Parameters
- *
- * @method int|null getValue()
  */
 class IntegerParameter extends BaseAPIParameter
 {
@@ -98,6 +96,17 @@ class IntegerParameter extends BaseAPIParameter
             ),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
         );
+
+        return null;
+    }
+
+    public function getValue(): ?int
+    {
+        $value = parent::getValue();
+
+        if(is_int($value)) {
+            return $value;
+        }
 
         return null;
     }

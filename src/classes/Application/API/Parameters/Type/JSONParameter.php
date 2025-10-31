@@ -22,8 +22,6 @@ use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
  *
  * @package API
  * @subpackage Parameters
- *
- * @method array<int|string,mixed>|null getValue()
  */
 class JSONParameter extends BaseAPIParameter
 {
@@ -123,5 +121,19 @@ class JSONParameter extends BaseAPIParameter
             ),
             APIParameterException::ERROR_INVALID_DEFAULT_VALUE
         );
+    }
+
+    /**
+     * @return array<int|string,mixed>|null
+     */
+    public function getValue(): ?array
+    {
+        $value = parent::getValue();
+
+        if(is_array($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

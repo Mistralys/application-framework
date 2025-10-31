@@ -18,8 +18,6 @@ use AppUtils\ConvertHelper;
  *
  * @package API
  * @subpackage Parameters
- *
- * @method int[]|null getValue()
  */
 class IDListParameter extends BaseAPIParameter
 {
@@ -128,5 +126,18 @@ class IDListParameter extends BaseAPIParameter
         }
 
         return $result;
+    }
+
+    /**
+     * @return int[]|null
+     */
+    public function getValue(): ?array
+    {
+        $value = parent::getValue();
+        if(is_array($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

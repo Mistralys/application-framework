@@ -22,8 +22,6 @@ use AppUtils\ConvertHelper;
  *
  * @package API
  * @subpackage Parameters
- *
- * @method bool|null getValue()
  */
 class BooleanParameter extends BaseAPIParameter implements SelectableValueParamInterface
 {
@@ -104,5 +102,16 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
             new SelectableParamValue('yes', 'Yes'),
             new SelectableParamValue('no', 'No')
         );
+    }
+
+    public function getValue(): ?bool
+    {
+        $value = parent::getValue();
+
+        if(is_bool($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

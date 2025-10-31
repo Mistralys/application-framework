@@ -10,6 +10,7 @@ namespace Application\API\Parameters\Type;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
+use Application\API\Parameters\Type\StringParam\StringValidations;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\Validation\Type\RegexValidation;
 use AppUtils\RegexHelper;
@@ -25,8 +26,6 @@ use AppUtils\RegexHelper;
  *
  * @package API
  * @subpackage Parameters
- *
- * @method string|null getValue()
  */
 class StringParameter extends BaseAPIParameter
 {
@@ -74,24 +73,13 @@ class StringParameter extends BaseAPIParameter
         );
     }
 
-    public function validateAsAlphanumeric() : self
+    /**
+     * Returns a helper to choose among predefined string validations.
+     * @return StringValidations
+     */
+    public function validateAs() : StringValidations
     {
-        return $this->validateByRegex('/^[a-zA-Z0-9]+$/');
-    }
-
-    public function validateAsAlphabetical() : self
-    {
-        return $this->validateByRegex('/^[a-zA-Z]+$/');
-    }
-
-    public function validateAsAlias(bool $allowCapitalLetters) : self
-    {
-        $regex = RegexHelper::REGEX_ALIAS;
-        if($allowCapitalLetters) {
-            $regex = RegexHelper::REGEX_ALIAS_CAPITALS;
-        }
-
-        return $this->validateBy(new RegexValidation($regex));
+        return new StringValidations($this);
     }
 
     public function validateByRegex(string $regex) : self
@@ -121,6 +109,16 @@ class StringParameter extends BaseAPIParameter
             sprintf('The value must be a string, [%s] given.', gettype($value)),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
         );
+
+        return null;
+    }
+
+    public function getValue() : ?string
+    {
+        $value = parent::getValue();
+        if(is_string($value)) {
+            return parent::getValue();
+        }
 
         return null;
     }
