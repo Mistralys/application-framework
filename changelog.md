@@ -4,6 +4,7 @@
 - API: Added `validateAs()` to the string parameter class to choose common validations.
 - API: Added a series of common validation types for API parameters, like email, URL, date, etc.
 - API: Added parameter classes for common types, like email, URL, date, etc.
+- Users: Fixed the missing MD5 email column when setting up system user entries.
 
 ## v5.13.1 - Small improvements
 - API: Added the `dryRun` API parameter trait to handle triggering dry-run operations.
