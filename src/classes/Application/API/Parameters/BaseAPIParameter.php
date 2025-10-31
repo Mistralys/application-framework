@@ -40,6 +40,13 @@ abstract class BaseAPIParameter implements APIParameterInterface
         $this->label = $label;
         $this->validatorLabel = sprintf('API Parameter [%s]', $this->name);
         $this->result = new ValidationResults($this);
+
+        $this->_init();
+    }
+
+    protected function _init() : void
+    {
+
     }
 
     public function getLogIdentifier(): string
