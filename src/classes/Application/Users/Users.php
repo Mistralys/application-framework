@@ -234,6 +234,7 @@ class Application_Users extends DBHelper_BaseCollection
                 array(
                     $this->getRecordPrimaryName() => $userID,
                     self::COL_EMAIL => $user->getEmail(),
+                    self::COL_EMAIL_MD5 => self::email2hash($user->getEmail()),
                     self::COL_FIRSTNAME => $user->getFirstname(),
                     self::COL_LASTNAME => $user->getLastname(),
                     self::COL_FOREIGN_ID => $user->getForeignID()
