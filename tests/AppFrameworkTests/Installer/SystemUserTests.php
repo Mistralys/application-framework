@@ -41,16 +41,19 @@ final class SystemUserTests extends ApplicationTestCase
     {
         $this->startTest('Update users with internal data');
 
+        $email = 'test' . $this->getTestCounter() . '@testsuite.system';
+
         // Insert the system user entry with completely different
         // data than the one it should have.
         DBHelper::insertDynamic(
-            'known_users',
+            Application_Users::TABLE_NAME,
             array(
-                'user_id' => Application::USER_ID_SYSTEM,
-                'email' => 'test' . $this->getTestCounter() . '@testsuite.system',
-                'firstname' => 'test' . $this->getTestCounter(),
-                'lastname' => 'test' . $this->getTestCounter(),
-                'foreign_id' => 'test' . $this->getTestCounter()
+                Application_Users::PRIMARY_NAME => Application::USER_ID_SYSTEM,
+                Application_Users::COL_EMAIL => $email,
+                Application_Users::COL_EMAIL_MD5 => Application_Users::email2hash($email),
+                Application_Users::COL_FIRSTNAME => 'test' . $this->getTestCounter(),
+                Application_Users::COL_LASTNAME => 'test' . $this->getTestCounter(),
+                Application_Users::COL_FOREIGN_ID => 'test' . $this->getTestCounter()
             )
         );
 
