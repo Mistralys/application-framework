@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v5.13.2 - API validation helpers
+- API: Added `validateAs()` to the string parameter class to choose common validations.
+- API: Added a series of common validation types for API parameters, like email, URL, date, etc.
+- API: Added parameter classes for common types, like email, URL, date, etc.
+
 ## v5.13.1 - Small improvements
 - API: Added the `dryRun` API parameter trait to handle triggering dry-run operations.
 - API: Exceptions are now logged to the error log even if they are non-framework exceptions.
