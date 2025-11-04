@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package Countries
+ * @subpackage API
+ */
 
 declare(strict_types=1);
 
@@ -11,7 +15,16 @@ use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use Application\AppFactory;
 use Application_Countries_Country;
 
-class AppCountryIDParam extends IntegerParameter implements SelectableValueParamInterface
+/**
+ * Country ID parameter for the Countries API.
+ *
+ * > NOTE: This implements {@see AppCountryParamInterface}
+ * > to provide access to the resolved country object.
+ *
+ * @package Countries
+ * @subpackage API
+ */
+class AppCountryIDParam extends IntegerParameter implements SelectableValueParamInterface, AppCountryParamInterface
 {
     use SelectableValueParamTrait;
 

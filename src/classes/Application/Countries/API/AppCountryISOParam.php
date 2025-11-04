@@ -1,10 +1,13 @@
 <?php
+/**
+ * @package Countries
+ * @subpackage API
+ */
 
 declare(strict_types=1);
 
 namespace Application\Countries\API;
 
-use Application\API\Parameters\Type\IntegerParameter;
 use Application\API\Parameters\Type\StringParameter;
 use Application\API\Parameters\ValueLookup\SelectableParamValue;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
@@ -12,7 +15,16 @@ use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use Application\AppFactory;
 use Application_Countries_Country;
 
-class AppCountryISOParam extends StringParameter implements SelectableValueParamInterface
+/**
+ * Country ISO code parameter for the Countries API.
+ *
+ * > NOTE: This implements {@see AppCountryParamInterface}
+ * > to provide access to the resolved country object.
+ *
+ * @package Countries
+ * @subpackage API
+ */
+class AppCountryISOParam extends StringParameter implements SelectableValueParamInterface, AppCountryParamInterface
 {
     use SelectableValueParamTrait;
 
