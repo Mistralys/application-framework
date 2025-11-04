@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v5.13.3 - API improvements
+- Countries: Added an interface for country API parameters to declare the `getCountry()` method.
+
 ## v5.13.2 - API validation helpers
 - API: Added `validateAs()` to the string parameter class to choose common validations.
 - API: Added a series of common validation types for API parameters, like email, URL, date, etc.
