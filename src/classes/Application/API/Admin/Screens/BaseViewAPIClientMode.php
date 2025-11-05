@@ -58,7 +58,7 @@ class BaseViewAPIClientMode extends BaseRecordMode
         $this->subnav->addURL(t('API Keys'), $this->getRecord()->adminURL()->apiKeys())
             ->setIcon(UI::icon()->apiKeys());
 
-        $this->subnav->addURL(t('Settings'), $this->getRecord()->adminURL()->settings())
+        $this->subnav->addURL(t('Client Settings'), $this->getRecord()->adminURL()->settings())
             ->setIcon(UI::icon()->settings());
     }
 
