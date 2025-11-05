@@ -8,10 +8,12 @@ declare(strict_types=1);
 
 namespace Application\API\Clients\Keys;
 
+use Application;
 use Application\API\Admin\APIKeyURLs;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\AppFactory;
+use Application_User;
 use Application_Users_User;
 use AppUtils\ClassHelper;
 use AppUtils\DateTimeHelper\DateIntervalExtended;
@@ -30,6 +32,16 @@ class APIKeyRecord extends DBHelper_BaseRecord
     public function getClientID() : int
     {
         return $this->getRecordIntKey(APIKeysCollection::COL_API_CLIENT_ID);
+    }
+
+    public function getPseudoUserID() : int
+    {
+        return $this->getRecordIntKey(APIKeysCollection::COL_PSEUDO_USER_ID);
+    }
+
+    public function getPseudoUser() : Application_User
+    {
+        return Application::createUser($this->getPseudoUserID());
     }
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
