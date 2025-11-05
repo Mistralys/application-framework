@@ -10,6 +10,14 @@ use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 
 final class BooleanParameterTests extends APITestCase
 {
+    public function test_defaultIsNull() : void
+    {
+        $param = new BooleanParameter('foo', 'Param Label');
+
+        $this->assertNull($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
     public function test_validStringTrueValueInRequest() : void
     {
         $this->assertParamValueIsSame(
@@ -72,6 +80,8 @@ final class BooleanParameterTests extends APITestCase
         $this->assertResultHasInvalidValueType($param->getValidationResults());
     }
 
+    // region: Default values
+
     public function test_setDefaultValidValue() : void
     {
         $param = new BooleanParameter('foo', 'Param Label');
@@ -84,9 +94,56 @@ final class BooleanParameterTests extends APITestCase
     public function test_setDefaultInvalidValue() : void
     {
         $this->expectException(APIParameterException::class);
-        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
 
         $param = new BooleanParameter('foo', 'Param Label');
         $param->setDefaultValue('invalid');
     }
+
+    public function test_requestValueOverridesDefaultValue() : void
+    {
+        $_REQUEST['foo'] = 'false';
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->setDefaultValue(true);
+
+        $this->assertFalse($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    // endregion
+
+    // region: Selecting values
+
+    public function test_selectValidValue() : void
+    {
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->selectValue(true);
+
+        $this->assertTrue($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_selectInvalidValue() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->selectValue('invalid');
+    }
+
+    public function test_selectValueOverridesRequestAndDefaultValues() : void
+    {
+        $_REQUEST['foo'] = 'false';
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->setDefaultValue(false);
+        $param->selectValue(true);
+
+        $this->assertTrue($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    // endregion
 }

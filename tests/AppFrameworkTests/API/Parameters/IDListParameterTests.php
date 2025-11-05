@@ -94,6 +94,8 @@ final class IDListParameterTests extends APITestCase
         $this->assertTrue($param->getValidationResults()->containsCode(ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE));
     }
 
+    // region: Default values
+
     public function test_setDefaultWithArrayValue() : void
     {
         $param = new IDListParameter('foo', 'Param Label');
@@ -113,9 +115,51 @@ final class IDListParameterTests extends APITestCase
     public function test_setDefaultWithInvalidValue() : void
     {
         $this->expectException(APIParameterException::class);
-        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
 
         $param = new IDListParameter('foo', 'Param Label');
-        $param->setDefaultValue(new stdClass());
+        $param->setDefaultValue(false);
     }
+
+    // endregion
+
+    // region: Selecting values
+
+    public function test_selectWithArrayValue() : void
+    {
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->selectValue(array(42, 55, 14789));
+
+        $this->assertSame(array(42, 55, 14789), $param->getValue());
+    }
+
+    public function test_selectWithStringValue() : void
+    {
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->selectValue('42,55,14789');
+
+        $this->assertSame(array(42, 55, 14789), $param->getValue());
+    }
+
+    public function test_selectWithInvalidValue() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
+
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->selectValue(true);
+    }
+
+    public function test_selectOverridesRequestAndDefaultValue() : void
+    {
+        $_REQUEST['foo'] = '20,30';
+
+        $param = new IDListParameter('foo', 'Param Label');
+        $param->setDefaultValue('10,15');
+        $param->selectValue('42,55,14789');
+
+        $this->assertSame(array(42, 55, 14789), $param->getValue());
+    }
+
+    // endregion
 }

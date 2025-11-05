@@ -73,6 +73,8 @@ final class IntegerParameterTests extends APITestCase
         $this->assertResultHasCode($param->getValidationResults(), ParamValidationInterface::VALIDATION_WARNING_FLOAT_TO_INT);
     }
 
+    // region: Default values
+
     public function test_setDefaultValueWithValidInteger() : void
     {
         $param = new IntegerParameter('foo', 'Param Label');
@@ -82,12 +84,60 @@ final class IntegerParameterTests extends APITestCase
         $this->assertResultValidWithNoMessages($param->getValidationResults());
     }
 
+    public function test_requestValueOverridesDefault() : void
+    {
+        $_REQUEST['foo'] = '100';
+
+        $param = new IntegerParameter('foo', 'Param Label');
+        $param->setDefaultValue(42);
+
+        $this->assertSame(100, $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
     public function test_setDefaultValueWithInvalidString() : void
     {
         $this->expectException(APIParameterException::class);
-        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
 
         $param = new IntegerParameter('foo', 'Param Label');
         $param->setDefaultValue('invalid string');
     }
+
+    // endregion
+
+    // region: Selecting values
+
+    public function test_selectValueOverridesDefault() : void
+    {
+        $param = new IntegerParameter('foo', 'Param Label');
+        $param->setDefaultValue(10);
+        $param->selectValue(55);
+
+        $this->assertSame(55, $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_selectValueOverridesRequestAndDefaultValue() : void
+    {
+        $_REQUEST['foo'] = '20';
+
+        $param = new IntegerParameter('foo', 'Param Label');
+        $param->setDefaultValue(10);
+        $param->selectValue(55);
+
+        $this->assertSame(55, $param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_selectingInvalidValueCausesException() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
+
+        $param = new IntegerParameter('foo', 'Param Label');
+        $param->selectValue('invalid string');
+    }
+
+    // endregion
 }
