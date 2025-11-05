@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace Application\API\Admin\Screens;
 
 use Application\API\Admin\APIScreenRights;
+use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientRecordSettings;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper_BaseRecord;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Abstract base class for the API Client creation screen.
@@ -65,6 +67,15 @@ abstract class BaseCreateAPIClientMode extends BaseRecordCreateMode
             sb()->reference($record->getLabel()),
             sb()->time()
         );
+    }
+
+    public function getSuccessURL(DBHelper_BaseRecord $record): AdminURLInterface
+    {
+        if($record instanceof APIClientRecord) {
+            return $record->adminURL()->settings();
+        }
+
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getBackOrCancelURL(): string
