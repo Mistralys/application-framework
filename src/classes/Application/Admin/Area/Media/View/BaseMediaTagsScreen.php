@@ -15,6 +15,7 @@ use Application\Tags\AdminScreens\RecordTaggingScreenInterface;
 use Application\Tags\AdminScreens\RecordTaggingScreenTrait;
 use Application\Tags\Taggables\TaggableInterface;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @package Media
@@ -40,9 +41,9 @@ class BaseMediaTagsScreen
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string

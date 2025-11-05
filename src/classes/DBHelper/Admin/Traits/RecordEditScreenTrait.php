@@ -6,6 +6,7 @@ namespace DBHelper\Admin\Traits;
 
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @see RecordEditScreenInterface
@@ -27,7 +28,7 @@ trait RecordEditScreenTrait
         return $this->collection;
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): string|AdminURLInterface
     {
         return $this->getArea()->getURL();
     }

@@ -12,6 +12,7 @@ use Application_Countries;
 use Application_Countries_Country;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property Application_Countries_Country $record
@@ -47,9 +48,9 @@ abstract class BaseViewScreen extends BaseRecordMode
         return AppFactory::createCountries();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string

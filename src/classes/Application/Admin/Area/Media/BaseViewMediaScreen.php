@@ -10,6 +10,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property MediaRecord $record
@@ -28,9 +29,9 @@ abstract class BaseViewMediaScreen extends BaseRecordMode
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string

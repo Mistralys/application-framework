@@ -12,6 +12,7 @@ use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Media_Document;
 use AppUtils\FileHelper;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
@@ -35,9 +36,9 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string

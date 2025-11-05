@@ -11,6 +11,7 @@ use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ConvertHelper;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
@@ -48,9 +49,9 @@ abstract class BaseUserStatusSubmode extends Application_Admin_Area_Mode_Submode
         return AppFactory::createUsers();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultAction(): string

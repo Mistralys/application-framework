@@ -13,6 +13,7 @@ use Application\TimeTracker\TimeTrackerCollection;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property TimeEntry $record
@@ -43,9 +44,9 @@ abstract class BaseViewScreen extends BaseRecordMode
         return AppFactory::createTimeTracker();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)AppFactory::createTimeTracker()->adminURL()->list();
+        return AppFactory::createTimeTracker()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string

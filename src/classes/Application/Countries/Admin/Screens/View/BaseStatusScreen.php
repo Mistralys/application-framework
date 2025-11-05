@@ -11,6 +11,7 @@ use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper_BaseCollection;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
 /**
@@ -55,9 +56,9 @@ class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRec
         return AppFactory::createCountries();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     protected function _handleHelp(): void
