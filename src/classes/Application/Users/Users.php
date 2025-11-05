@@ -7,6 +7,7 @@
 use Application\Exception\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\Admin\UsersAdminURLs;
+use Application\Users\UserSelector;
 use Application\Users\UsersException;
 use Application\Users\UsersFilterCriteria;
 use Application\Users\UsersFilterSettings;
@@ -287,6 +288,11 @@ class Application_Users extends DBHelper_BaseCollection
         }
 
         return $this->usersAdminURLs;
+    }
+
+    public function createUserSelector(Application_Interfaces_Formable $formable) : UserSelector
+    {
+        return new UserSelector($formable);
     }
 
     protected function _registerKeys(): void
