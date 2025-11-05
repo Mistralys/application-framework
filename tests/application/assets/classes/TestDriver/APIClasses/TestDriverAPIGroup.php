@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TestDriver;
+namespace application\assets\classes\TestDriver\APIClasses;
 
 use Application\API\Groups\GenericAPIGroup;
 
@@ -10,7 +10,7 @@ class TestDriverAPIGroup extends GenericAPIGroup
 {
     public const string GROUP_ID = 'testDriver';
 
-    public function __construct()
+    protected function __construct()
     {
         parent::__construct(
             self::GROUP_ID,
