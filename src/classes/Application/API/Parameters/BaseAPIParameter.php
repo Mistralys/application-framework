@@ -120,10 +120,13 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return self::$request;
     }
 
+    /**
+     * @var int|float|bool|string|array<int|string,mixed>|null
+     */
     private int|float|bool|string|array|null $value = null;
 
     /**
-     * @param (callable(int|float|bool|string|array, OperationResult, APIParameterInterface, mixed...) : void) $callback
+     * @param (callable(int|float|bool|string|array<int|string,mixed>, OperationResult, APIParameterInterface, mixed...) : void) $callback
      * @param mixed ...$args
      * @return $this
      */
@@ -133,7 +136,7 @@ abstract class BaseAPIParameter implements APIParameterInterface
     }
 
     /**
-     * @param (callable(int|float|bool|string|array|null) : bool) $callback
+     * @param (callable(int|float|bool|string|array<int|string,mixed>|null) : bool) $callback
      * @return $this
      */
     public function validateByValueExistsCallback(callable $callback) : self
@@ -150,6 +153,9 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->validateBy(new EnumValidation(array_values($values)));
     }
 
+    /**
+     * @var int|float|bool|string|array<int|string,mixed>|null
+     */
     private int|float|bool|string|array|null $selectedValue = null;
 
     public function selectValue(int|float|bool|string|array|null $value) : self
@@ -160,10 +166,13 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this;
     }
 
+    /**
+     * @var int|float|bool|string|array<int|string,mixed>|null
+     */
     protected int|float|bool|string|array|null $defaultValue = null;
 
     /**
-     * @param int|float|bool|string|array|null $default
+     * @param int|float|bool|string|array<int|string,mixed>|null $default
      * @return $this
      */
     public function setDefaultValue(int|float|bool|string|array|null $default) : self
@@ -174,6 +183,11 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this;
     }
 
+    /**
+     * @param int|float|bool|string|array<int|string,mixed>|null $value
+     * @return void
+     * @throws APIParameterException
+     */
     private function requireValidSelectableValue(int|float|bool|string|array|null $value) : void
     {
         if($value === null) {
@@ -226,6 +240,10 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->value;
     }
 
+    /**
+     * @param int|float|bool|string|array<int|string,mixed>|null $value
+     * @return bool
+     */
     private function validate(int|float|bool|string|array|null $value) : bool
     {
         // The result may already contain errors from value resolution.
@@ -276,6 +294,9 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this;
     }
 
+    /**
+     * @return int|float|bool|string|array<int|string,mixed>|null
+     */
     abstract protected function resolveValue(): int|float|bool|string|array|null;
 
     public function invalidate() : self

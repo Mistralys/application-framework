@@ -104,6 +104,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         );
     }
 
+    /**
+     * @param ResponsePayload|ErrorResponsePayload|array<int|string,mixed> $response
+     * @return ResponsePayload|ErrorResponsePayload
+     */
     private function prepareResponse(ResponsePayload|ErrorResponsePayload|array $response) : ResponsePayload|ErrorResponsePayload
     {
         if($response instanceof ErrorResponsePayload) {
@@ -181,8 +185,6 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * {@see self::addParam()} method to add parameters.
      */
     abstract protected function init() : void;
-
-    protected array $params = array();
 
     private ?APIParamManager $paramManager = null;
 

@@ -27,6 +27,10 @@ class ErrorResponse
      * @var callable
      */
     private $sendCallback;
+
+    /**
+     * @var array<string, mixed> $errorData Additional data to include in the error response
+     */
     private array $errorData = array();
     private string $message = '';
     private APIMethodInterface $method;
@@ -68,6 +72,11 @@ class ErrorResponse
         return $this->message;
     }
 
+    /**
+     * @param string $message
+     * @param mixed ...$args Arguments for `sprintf`.
+     * @return void
+     */
     public function appendErrorMessage(string $message, ...$args) : void
     {
         if($this->message !== '') {
@@ -82,6 +91,9 @@ class ErrorResponse
         return $this->errorCode;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getErrorData(): array
     {
         $this->errorData['validationMessages'] = array();
@@ -98,6 +110,10 @@ class ErrorResponse
         return $this->httpStatusCode;
     }
 
+    /**
+     * @param array<string, mixed>|ArrayDataCollection|null $data
+     * @return $this
+     */
     public function addData(array|ArrayDataCollection|null $data) : self
     {
         if($data instanceof ArrayDataCollection) {

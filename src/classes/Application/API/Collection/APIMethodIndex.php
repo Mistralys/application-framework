@@ -52,6 +52,9 @@ class APIMethodIndex implements Application_Interfaces_Loggable
         return $this->logIdentifier;
     }
 
+    /**
+     * @return string[]
+     */
     public function getMethodNames() : array
     {
         return array_keys($this->getIndex());
@@ -97,6 +100,9 @@ class APIMethodIndex implements Application_Interfaces_Loggable
      */
     private ?array $index = null;
 
+    /**
+     * @return array<string,class-string<APIMethodInterface>>
+     */
     private function getIndex() : array
     {
         if(isset($this->index)) {
