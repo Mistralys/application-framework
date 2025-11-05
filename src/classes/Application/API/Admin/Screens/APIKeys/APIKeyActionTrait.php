@@ -12,7 +12,7 @@ use UI\AdminURLs\AdminURLInterface;
 
 trait APIKeyActionTrait
 {
-    protected function createCollection(): APIKeysCollection
+    public function createCollection(): APIKeysCollection
     {
         return $this->getAPIClientRequest()->getRecordOrRedirect()->createAPIKeys();
     }
@@ -69,6 +69,10 @@ trait APIKeyActionTrait
         $this->tabs->appendTab(t('Status'), BaseAPIKeyStatusAction::URL_NAME)
             ->setIcon(UI::icon()->status())
             ->makeLinked($apiKey->adminURL()->status());
+
+        $this->tabs->appendTab(t('Key Settings'), BaseAPIKeySettingsAction::URL_NAME)
+            ->setIcon(UI::icon()->settings())
+            ->makeLinked($apiKey->adminURL()->settings());
 
         $this->tabs->selectByAction();
     }
