@@ -2,6 +2,7 @@
 
 ## v5.13.3 - API improvements
 - Countries: Added an interface for country API parameters to declare the `getCountry()` method.
+- API: Parameters now support manually selecting a value via `selectValue()`.
 
 ## v5.13.2 - API validation helpers
 - API: Added `validateAs()` to the string parameter class to choose common validations.
