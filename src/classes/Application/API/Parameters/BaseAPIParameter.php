@@ -9,6 +9,8 @@ use Application\API\Parameters\Validation\Type\CallbackValidation;
 use Application\API\Parameters\Validation\Type\EnumValidation;
 use Application\API\Parameters\Validation\Type\RequiredValidation;
 use Application\API\Parameters\Validation\Type\ValueExistsCallbackValidation;
+use Application\API\Parameters\ValueLookup\SelectableParamValue;
+use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\AppFactory;
 use Application\Validation\ValidationLoggableTrait;
 use Application\Validation\ValidationResults;
@@ -148,10 +150,54 @@ abstract class BaseAPIParameter implements APIParameterInterface
         return $this->validateBy(new EnumValidation(array_values($values)));
     }
 
+    private int|float|bool|string|array|null $selectedValue = null;
+
+    public function selectValue(int|float|bool|string|array|null $value) : self
+    {
+        $this->requireValidSelectableValue($value);
+
+        $this->selectedValue = $value;
+        return $this;
+    }
+
+    protected int|float|bool|string|array|null $defaultValue = null;
+
+    /**
+     * @param int|float|bool|string|array|null $default
+     * @return $this
+     */
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
+    {
+        $this->requireValidSelectableValue($default);
+
+        $this->defaultValue = $default;
+        return $this;
+    }
+
+    private function requireValidSelectableValue(int|float|bool|string|array|null $value) : void
+    {
+        if($value === null) {
+            return;
+        }
+
+        if($this instanceof SelectableValueParamInterface && !$this->selectableValueExists($value)) {
+            throw new APIParameterException(
+                'Invalid selected value.',
+                sprintf(
+                    'The given value is not among the selectable options for parameter [%s].',
+                    $this->getName()
+                ),
+                APIParameterException::ERROR_INVALID_PARAM_VALUE
+            );
+        }
+    }
+
     public function hasValue() : bool
     {
-        return $this->value !== null;
+        return $this->getValue() !== null;
     }
+
+    private bool $valueResolved = false;
 
     public function getValue() : int|float|bool|string|array|null
     {
@@ -159,9 +205,15 @@ abstract class BaseAPIParameter implements APIParameterInterface
             return null;
         }
 
-        if(isset($this->value)) {
+        if($this->selectedValue !== null) {
+            return $this->selectedValue;
+        }
+
+        if($this->valueResolved) {
             return $this->value;
         }
+
+        $this->valueResolved = true;
 
         $value = $this->resolveValue();
 

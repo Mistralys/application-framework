@@ -47,10 +47,23 @@ interface APIParameterInterface extends ValidationLoggableInterface
     public function hasValue() : bool;
 
     /**
-     * @param mixed $default
+     * Manually selects the value to use for the parameter.
+     * The value will be used instead of any value provided
+     * in the request.
+     *
+     * If the parameter implements {@see SelectableValueParamInterface},
+     * this will also check that the value exists in the selectable values.
+     *
+     * @param int|float|bool|string|array|null $value Note: Set to `NULL` to clear any selected value.
      * @return $this
      */
-    public function setDefaultValue(mixed $default) : self;
+    public function selectValue(int|float|bool|string|array|null $value) : self;
+
+    /**
+     * @param int|float|bool|string|array|null $default
+     * @return $this
+     */
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self;
 
     public function getDescription(): string;
     public function hasDescription(): bool;

@@ -26,6 +26,8 @@ use AppUtils\RegexHelper;
  *
  * @package API
  * @subpackage Parameters
+ *
+ * @property string|null $defaultValue
  */
 class StringParameter extends BaseAPIParameter
 {
@@ -34,42 +36,54 @@ class StringParameter extends BaseAPIParameter
         return t('String');
     }
 
-    private ?string $defaultValue = null;
-
     public function getDefaultValue(): ?string
     {
         return $this->defaultValue;
     }
 
     /**
-     * @param string|null|mixed $default The default value. Must be a string or null, all other types are rejected.
+     * @param string|int|float|null $default Numeric values will be converted to strings. All other types are rejected.
      * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
-    public function setDefaultValue(mixed $default) : self
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
-        $this->defaultValue = $this->requireValidType($default);
-
-        return $this;
+        return parent::setDefaultValue($this->requireValidType($default));
     }
+
+    /**
+     * @param string|int|float|null $value Numeric values will be converted to strings. All other types are rejected.
+     * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+     */
+    public function selectValue(float|int|bool|array|string|null $value): self
+    {
+        return parent::selectValue($this->requireValidType($value));
+    }
+
 
     /**
      * @param mixed $value
      * @return string|NULL
-     * @throws APIParameterException
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
     private function requireValidType(mixed $value) : ?string
     {
+        if(is_numeric($value)) {
+            return (string)$value;
+        }
+
         if(is_string($value) || $value === null) {
             return $value;
         }
 
         throw new APIParameterException(
-            'Invalid default value.',
+            'Invalid parameter value.',
             sprintf(
                 'Expected a string, given: [%s].',
                 gettype($value)
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
     }
 
