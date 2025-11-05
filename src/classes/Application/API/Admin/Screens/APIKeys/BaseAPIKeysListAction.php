@@ -26,8 +26,11 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
     public const string URL_NAME = 'list';
 
     public const string COL_LABEL = 'label';
-    const string COL_METHOD_COUNT = 'method_count';
-    const string COL_LAST_ACCESSED = 'last_accessed';
+    public const string COL_METHOD_COUNT = 'method_count';
+    public const string COL_LAST_ACCESSED = 'last_accessed';
+    public const string COL_USER = 'user';
+    public const string COL_CREATED = 'created';
+    public const string COL_EXPIRES = 'expires';
 
     public function getURLName(): string
     {
@@ -54,22 +57,34 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
 
     protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
-        $key = ClassHelper::requireObjectInstanceOf(
-            APIKeyRecord::class,
-            $record
-        );
+        $key = $this->resolveRecord($record);
 
         return array(
             self::COL_LABEL => $key->getLabelLinked(),
+            self::COL_USER => $key->getPseudoUser()->getName(),
             self::COL_METHOD_COUNT => $key->getMethods()->countMethods(),
-            self::COL_LAST_ACCESSED => $this->renderDate($key->getLastUsedDate())
+            self::COL_LAST_ACCESSED => $this->renderDate($key->getLastUsedDate()),
+            self::COL_CREATED => $this->renderDate($key->getDateCreated()),
+            self::COL_EXPIRES => $this->renderDate($key->getExpiryDate(), t('Never'))
         );
     }
 
-    private function renderDate(?Microtime $date) : string
+    private function resolveRecord(DBHelper_BaseRecord $record) : APIKeyRecord
     {
+        return ClassHelper::requireObjectInstanceOf(
+            APIKeyRecord::class,
+            $record
+        );
+    }
+
+    private function renderDate(?Microtime $date, ?string $emptyMessage=null) : string
+    {
+        if(empty($emptyMessage)) {
+            $emptyMessage = t('Never accessed');
+        }
+
         if($date === null) {
-            return (string)sb()->muted(t('Never accessed'));
+            return (string)sb()->muted($emptyMessage);
         }
 
         return ConvertHelper::date2listLabel($date, true, true);
@@ -78,8 +93,11 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
     protected function configureColumns(): void
     {
         $this->grid->addColumn(self::COL_LABEL, t('Label'));
+        $this->grid->addColumn(self::COL_USER, t('User'));
         $this->grid->addColumn(self::COL_METHOD_COUNT, t('Granted methods'));
         $this->grid->addColumn(self::COL_LAST_ACCESSED, t('Last accessed'));
+        $this->grid->addColumn(self::COL_CREATED, t('Created on'));
+        $this->grid->addColumn(self::COL_EXPIRES, t('Expires on'));
     }
 
     protected function configureActions(): void
