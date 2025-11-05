@@ -10,6 +10,7 @@ namespace Application\API\Clients\Keys;
 
 use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
+use Application\AppFactory;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
@@ -30,6 +31,9 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
     public const string SETTING_LABEL = 'label';
     public const string SETTING_EXPIRY_DELAY = 'expiry_delay';
     public const string SETTING_EXPIRY_DATE = 'expiry_date';
+    public const string SETTING_PSEUDO_USER = 'pseudo_user';
+    public const string SETTING_COMMENTS = 'comments';
+    public const string SETTING_GRANT_ALL = 'grant_all';
 
     public function __construct(Application_Formable $formable, APIClientRecord $client, ?APIKeyRecord $record = null)
     {
@@ -61,14 +65,19 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
             ->makeRequired()
             ->setCallback($this->injectLabel(...));
 
-        $group->registerSetting('comments')
+        $group->registerSetting(self::SETTING_PSEUDO_USER)
+            ->setStorageName(APIKeysCollection::COL_PSEUDO_USER_ID)
+            ->makeRequired()
+            ->setCallback($this->injectPseudoUser(...));
+
+        $group->registerSetting(self::SETTING_COMMENTS)
             ->setStorageName(APIKeysCollection::COL_COMMENTS)
             ->setCallback($this->injectComments(...));
 
         $group = $this->addGroup(t('Options'))
             ->setIcon(UI::icon()->options());
 
-        $group->registerSetting('grant_all')
+        $group->registerSetting(self::SETTING_GRANT_ALL)
             ->setDefaultValue('no')
             ->setStorageName(APIKeysCollection::COL_GRANT_ALL_METHODS)
             ->setCallback($this->injectGrantAllMethod(...));
@@ -179,6 +188,23 @@ class APIKeyRecordSettings extends Application_Formable_RecordSettings_Extended
         $this->addRuleNameOrTitle($el);
 
         return $el;
+    }
+
+    private function injectPseudoUser(Application_Formable_RecordSettings_Setting $key) : HTML_QuickForm2_Node
+    {
+        return AppFactory::createUsers()->createUserSelector($this)
+            ->setLabel(t('Pseudo user'))
+            ->setMaxSize(10)
+            ->makeMultiselect()
+            ->enablePleaseSelect()
+            ->enableSorting()
+            ->setName($key->getName())
+            ->setComment(sb()
+                ->t('The user under which API tasks are processed when the API key is used.')
+                ->t('This is used for logging, changelogs and permission purposes.')
+                ->note()
+                ->t('API methods that support specifying a user can potentially override this setting, or use both.'))
+            ->inject();
     }
 
     public function getDefaultSettingName(): string
