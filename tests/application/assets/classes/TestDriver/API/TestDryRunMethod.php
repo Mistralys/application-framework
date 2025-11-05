@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace TestDriver\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\DryRunAPIInterface;
 use Application\API\Traits\DryRunAPITrait;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
+use application\assets\classes\TestDriver\APIClasses\TestDriverAPIGroup;
 use AppUtils\ArrayDataCollection;
 
 /**
@@ -86,5 +88,10 @@ class TestDryRunMethod
     public function getReponseKeyDescriptions(): array
     {
         return array();
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return TestDriverAPIGroup::create();
     }
 }

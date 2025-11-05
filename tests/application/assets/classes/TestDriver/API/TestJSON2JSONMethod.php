@@ -10,8 +10,8 @@ use Application\API\Traits\JSONRequestInterface;
 use Application\API\Traits\JSONRequestTrait;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
+use application\assets\classes\TestDriver\APIClasses\TestDriverAPIGroup;
 use AppUtils\ArrayDataCollection;
-use TestDriver\TestDriverAPIGroup;
 
 class TestJSON2JSONMethod extends BaseAPIMethod implements JSONRequestInterface, JSONResponseInterface
 {

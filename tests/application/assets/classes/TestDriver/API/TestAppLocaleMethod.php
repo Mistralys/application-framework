@@ -16,11 +16,11 @@ use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
+use application\assets\classes\TestDriver\APIClasses\TestDriverAPIGroup;
 use Application\Locales\API\AppLocaleAPIInterface;
 use Application\Locales\API\AppLocaleAPITrait;
 use AppUtils\ArrayDataCollection;
 use TestDriver\API\TestAppLocale\AppLocaleResponse;
-use TestDriver\TestDriverAPIGroup;
 
 /**
  * Test method for selecting an application locale when calling an API method.
