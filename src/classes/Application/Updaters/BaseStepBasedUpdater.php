@@ -11,6 +11,7 @@ namespace Application\Updaters;
 use Application_Exception;
 use DBHelper;
 use DBHelper_OperationTypes;
+use Throwable;
 use UI;
 
 /**
@@ -35,9 +36,9 @@ abstract class BaseStepBasedUpdater extends BaseUpdater
     /**
      * @var array<string,array<string,mixed>>
      */
-    protected $steps;
+    protected array $steps;
 
-    protected $stepsIndex = array();
+    protected array $stepsIndex = array();
 
     /**
      * @var string
@@ -112,7 +113,7 @@ abstract class BaseStepBasedUpdater extends BaseUpdater
         return $this->$method();
     }
 
-    protected $hasAlterTablePrivileges;
+    protected ?bool $hasAlterTablePrivileges = null;
 
     /**
      * Checks whether the user of the current database connection
@@ -120,7 +121,7 @@ abstract class BaseStepBasedUpdater extends BaseUpdater
      *
      * @return boolean
      */
-    protected function hasAlterTablePrivileges()
+    protected function hasAlterTablePrivileges() : bool
     {
         if (isset($this->hasAlterTablePrivileges)) {
             return $this->hasAlterTablePrivileges;
@@ -131,7 +132,7 @@ abstract class BaseStepBasedUpdater extends BaseUpdater
         try {
             DBHelper::execute(DBHelper_OperationTypes::TYPE_ALTER, "ALTER TABLE `app_settings` ADD `testfield` INT(11) UNSIGNED NOT NULL");
             DBHelper::execute(DBHelper_OperationTypes::TYPE_ALTER, "ALTER TABLE `app_settings` DROP `testfield`;");
-        } catch (Exception $e) {
+        } catch (Throwable) {
             $this->hasAlterTablePrivileges = false;
         }
 
@@ -160,9 +161,10 @@ abstract class BaseStepBasedUpdater extends BaseUpdater
      * again anytime.
      *
      * @param mixed $data
-     * @param string $step
+     * @param string|NULL $step Will use the current step if NULL.
+     * @return $this
      */
-    protected function setStepData($data, $step = null)
+    protected function setStepData($data, ?string $step = null) : self
     {
         if (empty($step)) {
             $step = $this->currentStep;
