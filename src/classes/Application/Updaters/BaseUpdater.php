@@ -285,8 +285,9 @@ abstract class BaseUpdater implements UpdaterInterface, Application_Interfaces_L
      *
      * @param string $name
      * @param mixed $value
+     * @return $this
      */
-    protected function setSessionValue($name, $value)
+    protected function setSessionValue(string $name, mixed $value) : self
     {
         $data = $this->session->getValue($this->sessionVar, array());
         if (!isset($data['values'])) {
@@ -295,6 +296,8 @@ abstract class BaseUpdater implements UpdaterInterface, Application_Interfaces_L
 
         $data['values'][$name] = $value;
         $this->session->setValue($this->sessionVar, $data);
+
+        return $this;
     }
 
     /**
