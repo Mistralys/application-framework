@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\API\Admin;
 
+use Application\API\Admin\Screens\APIKeys\BaseAPIKeySettingsAction;
 use Application\API\Admin\Screens\APIKeys\BaseAPIKeyStatusAction;
 use Application\API\Clients\Keys\APIKeyRecord;
 use UI\AdminURLs\AdminURLInterface;
@@ -30,5 +31,11 @@ class APIKeyURLs
             ->adminURL()
             ->apiKeys()
             ->int($this->record->getCollection()->getRecordRequestPrimaryName(), $this->record->getID());
+    }
+
+    public function settings() : AdminURLInterface
+    {
+        return $this->base()
+            ->action(BaseAPIKeySettingsAction::URL_NAME);
     }
 }
