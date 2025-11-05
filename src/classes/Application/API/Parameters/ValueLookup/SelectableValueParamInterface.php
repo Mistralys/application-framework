@@ -14,4 +14,17 @@ interface SelectableValueParamInterface extends APIParameterInterface
     public function getSelectableValues() : array;
 
     public function getDefaultSelectableValue() : ?SelectableParamValue;
+
+    /**
+     * @return string[]
+     */
+    public function getSelectableValueOptions() : array;
+
+    /**
+     * Checks whether the given value exists in the selectable values.
+     *
+     * @param mixed $value Numeric and boolean values will be converted to string for comparison.
+     * @return bool
+     */
+    public function selectableValueExists(mixed $value) : bool;
 }
