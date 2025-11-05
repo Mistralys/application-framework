@@ -19,7 +19,7 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @method int[]|null getValue()
+ * @property int[] $defaultValue
  */
 class IDListParameter extends BaseAPIParameter
 {
@@ -27,11 +27,6 @@ class IDListParameter extends BaseAPIParameter
     {
         return t('ID List');
     }
-
-    /**
-     * @var int[]
-     */
-    private array $defaultValue = array();
 
     /**
      * @return int[]
@@ -42,32 +37,55 @@ class IDListParameter extends BaseAPIParameter
     }
 
     /**
-     * @param array<int|string,int|float|string>|string $default An array of IDs or a comma-separated string of IDs.
+     * @param array<int|string,int|float|string>|string|NULL $default An array of IDs or a comma-separated string of IDs. Set to `NULL` to reset to an empty array. Other value types are ignored.
      * @return $this
      */
-    public function setDefaultValue(mixed $default) : self
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
-        $this->defaultValue = array();
+        return parent::setDefaultValue($this->filterValues($this->requireValidType($default)));
+    }
 
-        foreach($this->requireValidType($default) as $id)
+    /**
+     * @param array<int|string,int|float|string>|string|null $value
+     * @return BaseAPIParameter
+     * @throws APIParameterException
+     */
+    public function selectValue(float|int|bool|array|string|null $value): BaseAPIParameter
+    {
+        return parent::selectValue($this->filterValues($this->requireValidType($value)));
+    }
+
+    /**
+     * @param array<int|string,mixed> $values
+     * @return int[]
+     */
+    private function filterValues(array $values) : array
+    {
+        $result = array();
+
+        foreach($values as $id)
         {
             if(!is_numeric($id)) {
                 continue;
             }
 
-            $this->defaultValue[] = (int)$id;
+            $result[] = (int)$id;
         }
 
-        return $this;
+        return $result;
     }
 
     /**
      * @param mixed $value
      * @return array<int|string,mixed>
-     * @throws APIParameterException
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
     private function requireValidType(mixed $value) : array
     {
+        if($value === null) {
+            return array();
+        }
+
         if(is_array($value)) {
             return $value;
         }
@@ -77,12 +95,12 @@ class IDListParameter extends BaseAPIParameter
         }
 
         throw new APIParameterException(
-            'Invalid default value.',
+            'Invalid parameter value.',
             sprintf(
-                'Expected an array, given: [%s].',
+                'Expected an array or comma-separated string, given: [%s].',
                 gettype($value)
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
     }
 
@@ -128,5 +146,18 @@ class IDListParameter extends BaseAPIParameter
         }
 
         return $result;
+    }
+
+    /**
+     * @return int[]|null
+     */
+    public function getValue(): ?array
+    {
+        $value = parent::getValue();
+        if(is_array($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

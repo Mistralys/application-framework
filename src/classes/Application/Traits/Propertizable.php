@@ -32,24 +32,4 @@ trait Application_Traits_Propertizable
     {
         return $this->getProperties()->getByID($property_id);
     }
-    
-    abstract public function getPropertiesOwnerType();
-
-    abstract public function getPropertiesOwnerKey();
-    
-    abstract public function getPropertiesTypeNameSingular();
-    
-    abstract public function getPropertiesTypeNamePlural();
-    
-    abstract public function isPropertiesOwnerPublishable();
-    
-    abstract public function startPropertiesTransaction();
-    
-    abstract public function endPropertiesTransaction();
-    
-    abstract public function handle_propertyModified(Application_CustomProperties_Property $property, $partLabel, $oldValue=null, $newValue=null, $isStructural=false);
-    
-    abstract public function handle_propertyCreated(Application_CustomProperties_Property $property);
-    
-    abstract public function handle_propertyDeleted(Application_CustomProperties_Property $property);
 }

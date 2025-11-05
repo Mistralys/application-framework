@@ -42,15 +42,35 @@ interface APIParameterInterface extends ValidationLoggableInterface
     public function isRequired(): bool;
     public function getLabel(): string;
 
+    /**
+     * @return int|string|float|bool|array<int|string,mixed>|null
+     */
     public function getDefaultValue() : int|string|float|bool|array|null;
+
+    /**
+     * @return int|float|bool|string|array<int|string,mixed>|null
+     */
     public function getValue() : int|float|bool|string|array|null;
     public function hasValue() : bool;
 
     /**
-     * @param mixed $default
+     * Manually selects the value to use for the parameter.
+     * The value will be used instead of any value provided
+     * in the request.
+     *
+     * If the parameter implements {@see SelectableValueParamInterface},
+     * this will also check that the value exists in the selectable values.
+     *
+     * @param int|float|bool|string|array<int|string,mixed>|null $value Note: Set to `NULL` to clear any selected value.
      * @return $this
      */
-    public function setDefaultValue(mixed $default) : self;
+    public function selectValue(int|float|bool|string|array|null $value) : self;
+
+    /**
+     * @param int|float|bool|string|array<int|string,mixed>|null $default
+     * @return $this
+     */
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self;
 
     public function getDescription(): string;
     public function hasDescription(): bool;
@@ -70,14 +90,14 @@ interface APIParameterInterface extends ValidationLoggableInterface
      * If the value is invalid, the callback must call {@see OperationResult::makeError()}
      * on the provided result object.
      *
-     * @param (callable(int|float|bool|string|array, OperationResult, mixed...) : void) $callback
+     * @param (callable(int|float|bool|string|array<int|string,mixed>, OperationResult, mixed...) : void) $callback
      * @param mixed ...$args Additional arguments to pass to the callback after the value and OperationResult.
      * @return self
      */
     public function validateByCallback(callable $callback, ...$args) : self;
 
     /**
-     * @param array<int,int|float|string|bool|array> $values
+     * @param array<int,int|float|string|bool|array<int|string,mixed>> $values
      * @return $this
      */
     public function validateByEnum(array $values) : self;

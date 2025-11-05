@@ -88,6 +88,10 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
         return $result;
     }
 
+    /**
+     * @param Application_Countries_Country $country
+     * @return array<string,mixed>
+     */
     private function collectCountry(Application_Countries_Country $country) : array
     {
         $currency = $country->getCurrency();
@@ -96,7 +100,7 @@ class GetAppCountriesAPI extends BaseAPIMethod implements RequestRequestInterfac
 
         return array(
             AppCountryAPIInterface::KEY_COUNTRY_ID => $country->getID(),
-            'isoCode' => $country->getISO(),
+            AppCountryAPIInterface::KEY_COUNTRY_ISO => $country->getISO(),
             'labelInvariant' => $country->getLabel(),
             'codeAliases' => $countryDef->getAliases(),
             'defaultLocale' => array(

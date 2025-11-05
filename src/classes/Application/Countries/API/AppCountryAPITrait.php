@@ -31,6 +31,14 @@ trait AppCountryAPITrait
     private ?AppCountryISOParam $paramCountryISO = null;
     private ?AppCountryIDParam $paramCountryID = null;
     private ?AppCountryParamRule $appCountryParamRule = null;
+    private ?Application_Countries_Country $selectedAppCountry = null;
+    private bool $appCountrySelected = false;
+
+    public function selectAppCountry(Application_Countries_Country $country) : self
+    {
+        $this->selectedAppCountry = $country;
+        return $this;
+    }
 
     protected function registerAppCountryParams() : void
     {
@@ -72,14 +80,20 @@ trait AppCountryAPITrait
 
     public function resolveAppCountry() : ?Application_Countries_Country
     {
-        return
+        if($this->appCountrySelected || isset($this->selectedAppCountry)) {
+            return $this->selectedAppCountry;
+        }
+
+        $this->appCountrySelected = true;
+
+        $this->selectedAppCountry =
             $this->getAppCountryIDParam()?->getCountry()
             ??
             $this->getAppCountryISOParam()?->getCountry()
             ??
-            $this->getAppCountryParamRule()?->getCountry()
-            ??
-            null;
+            $this->getAppCountryParamRule()?->getCountry();
+
+        return $this->selectedAppCountry;
     }
 
     public function getAppCountryParamRule() : ?AppCountryParamRule

@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace Application\API\Parameters\Type;
 
 use Application\API\Parameters\APIParameterException;
+use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\BaseAPIParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\ValueLookup\SelectableParamValue;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use AppUtils\ConvertHelper;
+use function AppUtils\parseVariable;
 
 /**
  * Boolean parameter type. Also accepts string values that can be converted to boolean,
@@ -23,7 +25,7 @@ use AppUtils\ConvertHelper;
  * @package API
  * @subpackage Parameters
  *
- * @method bool|null getValue()
+ * @property bool|NULL $defaultValue
  */
 class BooleanParameter extends BaseAPIParameter implements SelectableValueParamInterface
 {
@@ -34,9 +36,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
         return t('Boolean');
     }
 
-    private bool $defaultValue = false;
-
-    protected function resolveValue(): bool|null
+    protected function resolveValue(): ?bool
     {
         $value = $this->getRequestParam()->get();
 
@@ -50,7 +50,7 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
 
         $this->result->makeWarning(
             sprintf(
-                'Expected a boolean value, given: [%s].',
+                'Expected a boolean value or compatible string, given: [%s].',
                 gettype($value)
             ),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
@@ -59,24 +59,37 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
         return null;
     }
 
-    public function getDefaultValue(): bool
+    public function getDefaultValue(): ?bool
     {
         return $this->defaultValue;
     }
 
     /**
-     * @param bool|string $default A boolean value, or a string that can be converted to boolean by {@see ConvertHelper::string2bool()}.
+     * @param bool|string|int|null $default A boolean value, or a string that can be converted to boolean by {@see ConvertHelper::string2bool()}. Other value types are rejected.
      * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
-    public function setDefaultValue(mixed $default) : self
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
-        $this->defaultValue = $this->requireValidType($default);
-
-        return $this;
+        return parent::setDefaultValue($this->requireValidType($default));
     }
 
-    private function requireValidType(mixed $value) : bool
+    /**
+     * @param bool|string|int|null $value A boolean value, or a string that can be converted to boolean by {@see ConvertHelper::string2bool()}. Other value types are rejected.
+     * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+     */
+    public function selectValue(float|int|bool|array|string|null $value): self
     {
+        return parent::selectValue($this->requireValidType($value));
+    }
+
+    private function requireValidType(mixed $value) : ?bool
+    {
+        if(empty($value)) {
+            return null;
+        }
+
         if(ConvertHelper::isBoolean($value)) {
             return ConvertHelper::string2bool($value);
         }
@@ -85,9 +98,9 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
             'Invalid default value.',
             sprintf(
                 'Expected a boolean value, given: [%s].',
-                gettype($value)
+                parseVariable($value)->enableType()->toString()
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
     }
 
@@ -104,5 +117,16 @@ class BooleanParameter extends BaseAPIParameter implements SelectableValueParamI
             new SelectableParamValue('yes', 'Yes'),
             new SelectableParamValue('no', 'No')
         );
+    }
+
+    public function getValue(): ?bool
+    {
+        $value = parent::getValue();
+
+        if(is_bool($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

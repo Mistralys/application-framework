@@ -9,8 +9,6 @@ declare(strict_types=1);
 namespace Application\API\Parameters\Rules\Type;
 
 use Application\API\APIException;
-use Application\API\Parameters\APIParameterInterface;
-use Application\API\Parameters\ParamSet;
 use Application\API\Parameters\ParamSetInterface;
 use Application\API\Parameters\Rules\BaseRule;
 use Application\API\Parameters\Rules\RuleInterface;
@@ -161,6 +159,10 @@ class OrRule extends BaseRule
         );
     }
 
+    /**
+     * List the sets for error messages.
+     * @return array<int,string>
+     */
     private function listSets() : array
     {
         $result = array();

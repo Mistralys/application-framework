@@ -3,8 +3,11 @@
     "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
     "GetAppCountries": "Application\\API\\Method\\GetAppCountriesAPI",
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
+    "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
     "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
     "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
-    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod"
+    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
+    "TestStringValidations": "TestDriver\\API\\TestStringValidationsMethod",
+    "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
 }

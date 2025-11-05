@@ -21,9 +21,12 @@ use Application_Countries_Country;
  */
 interface AppCountryAPIInterface extends APIMethodInterface
 {
+    public const string PARAM_COUNTRY_ID = 'countryID';
+    public const string PARAM_COUNTRY_ISO = 'countryISO';
     public const string KEY_COUNTRY_ID = 'countryID';
-    public const string KEY_COUNTRY_ISO = 'countryISO';
+    public const string KEY_COUNTRY_ISO = 'isoCode';
 
+    public function selectAppCountry(Application_Countries_Country $country) : self;
     public function getAppCountryIDParam() : ?AppCountryIDParam;
     public function getAppCountryISOParam() : ?AppCountryISOParam;
     public function registerAppCountryID() : AppCountryIDParam;

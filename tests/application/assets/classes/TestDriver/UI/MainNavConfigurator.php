@@ -13,6 +13,7 @@ use Application\Admin\Area\BaseNewsScreen;
 use Application\API\Admin\Screens\BaseAPIClientsArea;
 use Application\Area\BaseTagsScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
+use Application\Users\Admin\Screens\BaseUsersArea;
 use Application_Admin_Area_Devel;
 use Application_Admin_Area_Devel_Appinterface;
 use Application_Admin_Area_Settings;
@@ -52,6 +53,7 @@ class MainNavConfigurator extends NavConfigurator
             ->addAreaChained(BaseTagsScreen::URL_NAME)
             ->addAreaChained(BaseTimeTrackerArea::URL_NAME)
             ->addAreaChained(BaseAPIClientsArea::URL_NAME)
+            ->addAreaChained(BaseUsersArea::URL_NAME)
             ->addSeparator()
             ->addAreaChained(Application_Admin_Area_Devel::URL_NAME)
             ->addAreaChained(TestingScreen::URL_NAME)

@@ -235,13 +235,7 @@ class Application_Countries extends DBHelper_BaseCollection
         $countries = parent::getAll();
             
         // sort by the localized label, which is not in the database.
-        usort(
-            $countries,
-            NamedClosure::fromClosure(
-                Closure::fromCallable(array($this, 'handle_sortCountries')),
-                array($this, 'handle_sortCountries')
-            )
-        );
+        usort($countries, $this->handle_sortCountries(...));
 
         $result = array();
 
@@ -292,7 +286,7 @@ class Application_Countries extends DBHelper_BaseCollection
             }
         }
 
-        usort($result, Closure::fromCallable(array($this, 'handle_sortCountries')));
+        usort($result, $this->handle_sortCountries(...));
 
         return $result;
     }
@@ -334,15 +328,10 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         $iso = CountryCollection::getInstance()->filterCode($iso);
 
-        foreach($this->getAll() as $country)
-        {
-            if($country->getISO() === $iso || $country->getAlpha2() === $iso)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $this->getAll(),
+            static fn($country) => $country->getISO() === $iso || $country->getAlpha2() === $iso
+        );
     }
 
    /**

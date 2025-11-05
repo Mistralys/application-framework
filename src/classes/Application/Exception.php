@@ -22,9 +22,6 @@ use AppUtils\BaseException;
  */
 class Application_Exception extends BaseException
 {
-   /**
-    * @var string
-    */
     protected string $id;
     
     /**
@@ -32,17 +29,10 @@ class Application_Exception extends BaseException
      * @var boolean
      */
     private bool $logging = true;
-    
-   /**
-    * @var boolean
-    */
-    private bool $logged = false;
-
     private static ?string $requestID = null;
-
     private static int $exceptionCounter = 0;
-
     private ?string $pageOutput = null;
+    private ?string $logID = null;
 
     /**
      * The additional developer information is only included in
@@ -130,7 +120,7 @@ class Application_Exception extends BaseException
      */
     public function isLogged(): bool
     {
-        return $this->logged;
+        return isset($this->logID);
     }
 
     /**
@@ -148,13 +138,23 @@ class Application_Exception extends BaseException
             return $this;
         }
         
-        if(!$this->logged)
-        {
-            Application_ErrorLog_Log_Entry_Exception::logException($this);
-            $this->logged = true;
-        }
+        $this->generateLogID();
 
         return $this;
+    }
+
+    private function generateLogID() : string
+    {
+        if(!isset($this->logID)) {
+            $this->logID = Application_ErrorLog_Log_Entry_Exception::logException($this);
+        }
+
+        return $this->logID;
+    }
+
+    public function getLogID() : string
+    {
+        return $this->generateLogID();
     }
 
     public static function getDeveloperMessage(Throwable $e) : string

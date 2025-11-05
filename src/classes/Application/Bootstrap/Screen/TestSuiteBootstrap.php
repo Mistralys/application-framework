@@ -59,7 +59,7 @@ class TestSuiteBootstrap extends Application_Bootstrap_Screen
     {
         $testsRoot = APP_ROOT . '/tests';
 
-        if (boot_constant(BaseConfigRegistry::FRAMEWORK_TESTS) === true) {
+        if (BaseConfigRegistry::areUnitTestsRunning()) {
             $testsRoot = APP_ROOT;
         }
 

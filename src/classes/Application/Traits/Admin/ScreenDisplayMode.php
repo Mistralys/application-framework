@@ -1,17 +1,14 @@
 <?php
 /**
- * File containing the {@see Application_Traits_Admin_ScreenDisplayMode} trait.
- * 
  * @package Application
  * @subpackage Admin
- * @see Application_Traits_Admin_ScreenDisplayMode
  */
 
 declare(strict_types=1);
 
 /**
  * This trait is used to namespace the _handle methods of the 
- * screen to a display mode. Typically this is practical when
+ * screen to a display mode. Typically, this is practical when
  * working in an Action screen, and subscreens need to be added
  * nevertheless.
  * 
@@ -19,23 +16,25 @@ declare(strict_types=1);
  * of the `resolveDisplayMode()` method, matching handling
  * methods can be added.
  * 
- * Example: Assuming display mode is `list`, the following
+ * ## Example
+ *
+ * Assuming display mode is `list`, the following
  * can be added in the screen:
  * 
- * _handleActions_list()
- * _handleBreadcrumb_list()
- * _handleSidebar_list()
- * _handleSubnavigation_list()
- * _handleTabs_list()
- * _handleHelp_list()
- * _renderContent_list()
+ * - `_handleActions_list()`
+ * - `_handleBreadcrumb_list()`
+ * - `_handleSidebar_list()`
+ * - `_handleSubnavigation_list()`
+ * - `_handleTabs_list()`
+ * - `_handleHelp_list()`
+ * - `_renderContent_list()`
  * 
- * Usage:
+ * ## Usage
  * 
- * - Add the trait: `use Application_Traits_Admin_ScreenDisplayMode`
- * - Implement the interface: `implements Application_Interfaces_Admin_ScreenDisplayMode`
+ * - Add the trait {@see Application_Traits_Admin_ScreenDisplayMode}
+ * - Implement the interface {@see Application_Interfaces_Admin_ScreenDisplayMode}
  * - Implement the abstract methods
- * - Implement the according handling methods
+ * - Implement the relevant handling methods
  * 
  * @package Application
  * @subpackage Admin

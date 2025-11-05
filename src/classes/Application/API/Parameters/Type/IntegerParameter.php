@@ -20,7 +20,7 @@ use Application\API\Parameters\Validation\ParamValidationInterface;
  * @package API
  * @subpackage Parameters
  *
- * @method int|null getValue()
+ * @property int|NULL $defaultValue
  */
 class IntegerParameter extends BaseAPIParameter
 {
@@ -29,30 +29,38 @@ class IntegerParameter extends BaseAPIParameter
         return t('Integer');
     }
 
-    private int $defaultValue = 0;
-
-    public function getDefaultValue(): int
+    public function getDefaultValue(): ?int
     {
         return $this->defaultValue;
     }
 
     /**
-     * @param int|float|string $default
+     * @param int|float|string|null $default The default value. Must be numeric or `NULL`, all other types are rejected.
      * @return $this
      */
-    public function setDefaultValue(mixed $default) : self
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
-        $this->requireValidType($default);
-
-        $this->defaultValue = (int)$default;
-
-        return $this;
+        return parent::setDefaultValue($this->requireValidType($default));
     }
 
-    private function requireValidType(mixed $value) : void
+    /**
+     * @param int|float|string|null $value String and float values will be converted to integer.
+     * @return $this
+     * @throws APIParameterException
+     */
+    public function selectValue(float|int|bool|array|string|null $value): self
     {
+        return parent::selectValue($this->requireValidType($value));
+    }
+
+    private function requireValidType(mixed $value) : ?int
+    {
+        if($value !== 0 && empty($value)) {
+            return null;
+        }
+
         if(is_numeric($value)) {
-            return;
+            return (int)$value;
         }
 
         throw new APIParameterException(
@@ -61,7 +69,7 @@ class IntegerParameter extends BaseAPIParameter
                 'Expected a numeric value, given: [%s].',
                 gettype($value)
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
     }
 
@@ -98,6 +106,17 @@ class IntegerParameter extends BaseAPIParameter
             ),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
         );
+
+        return null;
+    }
+
+    public function getValue(): ?int
+    {
+        $value = parent::getValue();
+
+        if(is_int($value)) {
+            return $value;
+        }
 
         return null;
     }

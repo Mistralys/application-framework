@@ -28,23 +28,23 @@ use AppUtils\OperationResult;
  */
 class Application_Logger
 {
-    public const LOG_MODE_FILE = 1;
-    public const LOG_MODE_ECHO = 2;
-    public const LOG_MODE_NONE = 3;
+    public const int LOG_MODE_FILE = 1;
+    public const int LOG_MODE_ECHO = 2;
+    public const int LOG_MODE_NONE = 3;
 
-    public const LOG_MODE_DEFAULT = self::LOG_MODE_NONE;
+    public const int LOG_MODE_DEFAULT = self::LOG_MODE_NONE;
 
-    public const LINE_LENGTH = 65;
+    public const int LINE_LENGTH = 65;
 
-    public const CATEGORY_GENERAL = 'GEN';
-    public const CATEGORY_UI = 'UI';
-    public const CATEGORY_ERROR = 'ERR';
-    public const CATEGORY_EVENT = 'EVENT';
-    public const CATEGORY_REQUEST = 'REQ';
+    public const string CATEGORY_GENERAL = 'GEN';
+    public const string CATEGORY_UI = 'UI';
+    public const string CATEGORY_ERROR = 'ERR';
+    public const string CATEGORY_EVENT = 'EVENT';
+    public const string CATEGORY_REQUEST = 'REQ';
 
-    public const HTML_MODE_DEFAULT = false;
-    public const LOGGING_ENABLED_DEFAULT = true;
-    public const MEMORY_STORAGE_ENABLED_DEFAULT = true;
+    public const bool HTML_MODE_DEFAULT = false;
+    public const bool LOGGING_ENABLED_DEFAULT = true;
+    public const bool MEMORY_STORAGE_ENABLED_DEFAULT = true;
 
     private int $logMode = self::LOG_MODE_DEFAULT;
     private bool $html = self::HTML_MODE_DEFAULT;
@@ -199,11 +199,13 @@ class Application_Logger
      * Logs a message, but only if the application
      * is in developer mode.
      *
-     * @param string|number|array|null $message Arrays are automatically dumped.
+     * @param mixed|null $message Arrays are automatically dumped.
      * @param bool $header
+     * @param string $category
      * @return Application_Logger
+     * @throws JsonException
      */
-    public function log($message = null, bool $header=false, string $category=self::CATEGORY_GENERAL) : Application_Logger
+    public function log(mixed $message = null, bool $header=false, string $category=self::CATEGORY_GENERAL) : Application_Logger
     {
         if($header === true)
         {
@@ -219,8 +221,8 @@ class Application_Logger
         {
             return $this->logData($message);
         }
-        
-        return $this->addLogMessage((string)$message, $category, true);
+
+        return $this->addLogMessage(self::filterArg($message), $category, true);
     }
 
     /**
@@ -313,7 +315,7 @@ class Application_Logger
      * @return $this
      * @throws JsonException
      */
-    public function logRequestLogData($data, ?string $label) : self
+    public function logRequestLogData(mixed $data, ?string $label) : self
     {
         if(!$this->isLoggingEnabled() || !Application_RequestLog::isActive()) {
             return $this;
@@ -364,7 +366,7 @@ class Application_Logger
      * @return $this
      * @throws JsonException
      */
-    public function logData($data, ?string $category=null, ?string $label=null) : self
+    public function logData(mixed $data, ?string $category=null, ?string $label=null) : self
     {
         if(empty($category)) {
             $category = self::CATEGORY_GENERAL;
@@ -487,7 +489,7 @@ class Application_Logger
      * @return string
      * @throws JsonException
      */
-    public static function filterArg($arg) : string
+    public static function filterArg(mixed $arg) : string
     {
         if($arg instanceof OperationResult) {
             return '[operationResult]'.PHP_EOL.$arg.PHP_EOL.'[/operationResult]';
@@ -548,7 +550,7 @@ class Application_Logger
             return $message.PHP_EOL;
         }
         
-        if(strpos($message, "\n") !== false)
+        if(str_contains($message, "\n"))
         {
             $message = '<pre>'.$message.'</pre>';
         }

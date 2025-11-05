@@ -41,17 +41,12 @@ final class SystemUserTests extends ApplicationTestCase
     {
         $this->startTest('Update users with internal data');
 
-        // Insert the system user entry with completely different
-        // data than the one it should have.
-        DBHelper::insertDynamic(
-            'known_users',
-            array(
-                'user_id' => Application::USER_ID_SYSTEM,
-                'email' => 'test' . $this->getTestCounter() . '@testsuite.system',
-                'firstname' => 'test' . $this->getTestCounter(),
-                'lastname' => 'test' . $this->getTestCounter(),
-                'foreign_id' => 'test' . $this->getTestCounter()
-            )
+        AppFactory::createUsers()->createNewUser(
+            'test' . $this->getTestCounter() . '@testsuite.system',
+            'test' . $this->getTestCounter(),
+            'test' . $this->getTestCounter(),
+            'test' . $this->getTestCounter(),
+            Application::USER_ID_SYSTEM
         );
 
         $this->assertTrue(AppFactory::createUsers()->idExists(Application::USER_ID_SYSTEM));
@@ -63,9 +58,9 @@ final class SystemUserTests extends ApplicationTestCase
 
         $systemUser = Application::createSystemUser();
         $updatedData = DBHelper::fetchData(
-            'known_users',
+            Application_Users::TABLE_NAME,
             array(
-                'user_id' => Application::USER_ID_SYSTEM
+                Application_Users::PRIMARY_NAME => Application::USER_ID_SYSTEM
             )
         );
 

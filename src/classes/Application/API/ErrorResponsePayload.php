@@ -43,6 +43,9 @@ class ErrorResponsePayload extends ArrayDataCollection implements ResponseInterf
         return $this->getString(self::KEY_ERROR_MESSAGE);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getErrorData() : array
     {
         return $this->getArray(self::KEY_ERROR_DATA);

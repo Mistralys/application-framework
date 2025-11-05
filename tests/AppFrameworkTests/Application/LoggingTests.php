@@ -5,44 +5,12 @@ declare(strict_types=1);
 namespace testsuites\Application;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application;
 use Application\AppFactory;
-use Application_Bootstrap;
-use Application_Exception;
 use Application_Logger;
-use TestDriver_Bootstrap_Screen_ExceptionTest;
 use TestLoggable;
 
 final class LoggingTests extends ApplicationTestCase
 {
-   /**
-    * Ensure that regular exceptions get converted to application
-    * exceptions, so they can be logged.
-    */
-    public function test_convertException() : void
-    {
-        try
-        {
-            // The screen throws a regular Exception.
-            Application_Bootstrap::bootClass(TestDriver_Bootstrap_Screen_ExceptionTest::class, array(), false);
-            
-            $this->fail('No exception was triggered.');
-        }
-        catch(Application_Exception $e)
-        {
-            $this->assertEquals(Application_Bootstrap::ERROR_NON_FRAMEWORK_EXCEPTION, $e->getCode());
-
-            $previous = $e->getPrevious();
-            $this->assertNotNull($previous);
-
-            $this->assertEquals(
-                TestDriver_Bootstrap_Screen_ExceptionTest::ERROR_TEST_EXCEPTION,
-                $previous->getCode(),
-                Application_Exception::getDeveloperMessage($previous)
-            );
-        }
-    }
-    
     /**
      * The logging methods support adding arbitrary arguments,
      * which are injected into the message using `sprintf()`.

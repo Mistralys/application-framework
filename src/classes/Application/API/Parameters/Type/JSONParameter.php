@@ -13,6 +13,7 @@ use Application\API\Parameters\BaseAPIParameter;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
+use function AppUtils\parseVariable;
 
 
 /**
@@ -23,7 +24,7 @@ use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
  * @package API
  * @subpackage Parameters
  *
- * @method array<int|string,mixed>|null getValue()
+ * @property array<int|string,mixed>|null $defaultValue
  */
 class JSONParameter extends BaseAPIParameter
 {
@@ -32,8 +33,6 @@ class JSONParameter extends BaseAPIParameter
     {
         return t('JSON');
     }
-
-    private ?array $defaultValue = null;
 
     public function getDefaultValue(): ?array
     {
@@ -72,7 +71,7 @@ class JSONParameter extends BaseAPIParameter
     /**
      * @param string $json
      * @return array<int|string,mixed>
-     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_DEFAULT_VALUE}
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
     private function convertJSON(string $json) : array
     {
@@ -85,13 +84,34 @@ class JSONParameter extends BaseAPIParameter
             throw new APIParameterException(
                 'Invalid default value.',
                 'Given string could not be parsed as JSON: ' . $e->getMessage(),
-                APIParameterException::ERROR_INVALID_DEFAULT_VALUE,
+                APIParameterException::ERROR_INVALID_PARAM_VALUE,
                 $e
             );
         }
     }
 
-    public function setDefaultValue(mixed $default) : self
+    /**
+     * @param array<int|string,mixed>|string|null $value String values will be parsed as JSON.
+     * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+     */
+    public function selectValue(float|int|bool|array|string|null $value): self
+    {
+        $value = $this->requireValidType($value);
+
+        if(is_string($value)) {
+            $value = $this->convertJSON($value);
+        }
+
+        return parent::selectValue($value);
+    }
+
+    /**
+     * @param string|array<int|string,mixed>|null $default String values will be parsed as JSON.
+     * @return $this
+     * @throws APIParameterException
+     */
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
         $default = $this->requireValidType($default);
 
@@ -99,15 +119,13 @@ class JSONParameter extends BaseAPIParameter
             $default = $this->convertJSON($default);
         }
 
-        $this->defaultValue = $default;
-
-        return $this;
+        return parent::setDefaultValue($default);
     }
 
     /**
      * @param mixed $value
      * @return string|array<int|string,mixed>|null
-     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_DEFAULT_VALUE}
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
     private function requireValidType(mixed $value) : string|array|null
     {
@@ -116,12 +134,26 @@ class JSONParameter extends BaseAPIParameter
         }
 
         throw new APIParameterException(
-            'Invalid default value.',
+            'Invalid parameter value.',
             sprintf(
-                'Expected an array, given: [%s].',
-                gettype($value)
+                'Expected an array or JSON string, given: [%s].',
+                parseVariable($value)->enableType()->toString()
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
+    }
+
+    /**
+     * @return array<int|string,mixed>|null
+     */
+    public function getValue(): ?array
+    {
+        $value = parent::getValue();
+
+        if(is_array($value)) {
+            return $value;
+        }
+
+        return null;
     }
 }

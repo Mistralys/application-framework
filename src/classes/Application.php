@@ -14,11 +14,13 @@ use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\BaseException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
 use function AppUtils\parseVariable;
 
@@ -34,50 +36,47 @@ use function AppUtils\parseVariable;
  */
 class Application
 {
-    public const ERROR_CANNOT_CREATE_TEMP_FOLDER = 1199543001;
-    public const ERROR_CLASS_FILE_NOT_FOUND = 1199543002;
-    public const ERROR_NO_USER_PRIOR_TO_SESSION = 1199543003;
-    public const ERROR_CLASS_NOT_FOUND = 1199543004;
-    public const ERROR_EMPTY_PAGE_ID = 1199543005;
-    public const ERROR_APPLICATION_NOT_STARTED = 1199543006;
-    public const ERROR_DRIVER_DID_NOT_GENERATE_CONTENT = 1199543007;
-    public const ERROR_CANNOT_CREATE_STORAGE_FOLDER = 1199543008;
-    public const ERROR_TRAIT_FILE_NOT_FOUND = 1199543009;
-    public const ERROR_TRAIT_CLASS_NOT_FOUND = 1199543010;
-    public const ERROR_CANNOT_SET_EXECUTION_TIME = 1199543011;
-    public const ERROR_CANNOT_SET_MEMORY_LIMIT = 1199543012;
-    public const ERROR_INVALID_RUN_MODE = 1199543013;
-    public const ERROR_SCRIPT_RUN_MODE_NO_TYPE_SET = 1199543014;
-    public const ERROR_NO_RUN_MODE_SET = 1199543015;
-    public const ERROR_PHP_FILE_SYNTAX_ERRORS = 1199543016;
-    public const ERROR_CALLBACK_NOT_CALLABLE = 1199543017;
-    public const ERROR_SESSION_NOT_AVAILABLE_YET = 1199543018;
-    public const ERROR_USER_CLASS_DOES_NOT_EXIST = 1199543019;
-    public const ERROR_USER_DATA_NOT_FOUND = 1199543020;
-    public const ERROR_INVALID_USER_CLASS = 1199543021;
-    public const ERROR_REDIRECT_EVENTS_FAILED = 1199543022;
+    public const int ERROR_CANNOT_CREATE_TEMP_FOLDER = 1199543001;
+    public const int ERROR_CLASS_FILE_NOT_FOUND = 1199543002;
+    public const int ERROR_NO_USER_PRIOR_TO_SESSION = 1199543003;
+    public const int ERROR_CLASS_NOT_FOUND = 1199543004;
+    public const int ERROR_EMPTY_PAGE_ID = 1199543005;
+    public const int ERROR_APPLICATION_NOT_STARTED = 1199543006;
+    public const int ERROR_DRIVER_DID_NOT_GENERATE_CONTENT = 1199543007;
+    public const int ERROR_CANNOT_CREATE_STORAGE_FOLDER = 1199543008;
+    public const int ERROR_TRAIT_FILE_NOT_FOUND = 1199543009;
+    public const int ERROR_TRAIT_CLASS_NOT_FOUND = 1199543010;
+    public const int ERROR_CANNOT_SET_EXECUTION_TIME = 1199543011;
+    public const int ERROR_CANNOT_SET_MEMORY_LIMIT = 1199543012;
+    public const int ERROR_INVALID_RUN_MODE = 1199543013;
+    public const int ERROR_SCRIPT_RUN_MODE_NO_TYPE_SET = 1199543014;
+    public const int ERROR_NO_RUN_MODE_SET = 1199543015;
+    public const int ERROR_PHP_FILE_SYNTAX_ERRORS = 1199543016;
+    public const int ERROR_CALLBACK_NOT_CALLABLE = 1199543017;
+    public const int ERROR_SESSION_NOT_AVAILABLE_YET = 1199543018;
+    public const int ERROR_USER_CLASS_DOES_NOT_EXIST = 1199543019;
+    public const int ERROR_USER_DATA_NOT_FOUND = 1199543020;
+    public const int ERROR_INVALID_USER_CLASS = 1199543021;
+    public const int ERROR_REDIRECT_EVENTS_FAILED = 1199543022;
 
-    public const RUN_MODE_UI = 'ui';
-    public const RUN_MODE_SCRIPT = 'script';
+    public const string RUN_MODE_UI = 'ui';
+    public const string RUN_MODE_SCRIPT = 'script';
 
-    public const SCRIPT_TYPE_AJAX = 'ajax';
-    public const SCRIPT_TYPE_EXPORT_AUTHENTICATED = 'export_authenticated';
-    public const SCRIPT_TYPE_EXPORT_PUBLIC = 'export_public';
-    public const SCRIPT_TYPE_MONITOR = 'monitor';
+    public const int USER_ID_SYSTEM = 1;
+    public const int USER_ID_DUMMY = 2;
 
-    public const USER_ID_SYSTEM = 1;
-    public const USER_ID_DUMMY = 2;
+    public const string EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
+    public const string EVENT_REDIRECT = 'Redirect';
+    public const string EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
 
-    public const EVENT_DRIVER_INSTANTIATED = 'DriverInstantiated';
-    public const EVENT_REDIRECT = 'Redirect';
-    public const EVENT_SYSTEM_SHUTDOWN = 'SystemShutdown';
-
-    public const REQUEST_VAR_SIMULATION = 'simulate_only';
-    public const REQUEST_VAR_QUERY_SUMMARY = 'query_summary';
-    public const STORAGE_FOLDER_NAME = 'storage';
-    public const TEMP_FOLDER_NAME = 'temp';
-    public const CACHE_FOLDER_NAME = 'cache';
-    public const DEFAULT_TEST_FILE_EXTENSION = 'tmp';
+    public const string REQUEST_VAR_SIMULATION = 'simulate_only';
+    public const string REQUEST_VAR_QUERY_SUMMARY = 'query_summary';
+    public const string STORAGE_FOLDER_NAME = 'storage';
+    public const string TEMP_FOLDER_NAME = 'temp';
+    public const string CACHE_FOLDER_NAME = 'cache';
+    public const string DEFAULT_TEST_FILE_EXTENSION = 'tmp';
+    public const string STUB_USER_FOREIGN_ID = '__dummy';
+    public const string SYSTEM_USER_FOREIGN_ID = '__system';
 
     private UI $ui;
     private ?Application_Driver $driver = null;
@@ -90,10 +89,13 @@ class Application
     private static bool $simulation = false;
     private static ?bool $develEnvironment = null;
     private static string $storageFolder = '';
+
+    /**
+     * @var string[]
+     */
     private static array $knownStorageFolders = array();
     private static ?Application_Messaging $messaging = null;
     private int $id;
-    private static bool $exitEnabled = true;
 
     public function __construct(Application_Bootstrap_Screen $bootScreen)
     {
@@ -261,19 +263,38 @@ class Application
      * Logs a message, but only if the application is
      * in developer mode.
      *
-     * @param string|NULL|array $message Arrays are automatically dumped.
+     * @param mixed $message Arrays are automatically dumped.
      * @param bool $header Whether to display it styled as a header.
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
-    public static function log($message = null, bool $header = false) : Application_Logger
+    public static function log(mixed $message = null, bool $header = false) : Application_Logger
     {
         return AppFactory::createLogger()->log($message, $header);
     }
 
+    /**
+     * Logs a formatted message.
+     *
+     * @param string $message
+     * @param string|null $category
+     * @param mixed ...$args
+     * @return Application_Logger
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
+     */
     public static function logSF(string $message, ?string $category=Application_Logger::CATEGORY_GENERAL, ...$args) : Application_Logger
     {
         return AppFactory::createLogger()->logSF($message, $category, ...$args);
     }
 
+    /**
+     * Logs an event with an optional message.
+     *
+     * @param string $eventName
+     * @param string $message
+     * @param mixed ...$args
+     * @return Application_Logger
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
+     */
     public static function logEvent(string $eventName, string $message = '', ...$args) : Application_Logger
     {
         return AppFactory::createLogger()->logEvent($eventName, $message, ...$args);
@@ -284,6 +305,7 @@ class Application
      *
      * @param string $message
      * @return Application_Logger
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
     public static function logHeader(string $message) : Application_Logger
     {
@@ -293,14 +315,20 @@ class Application
     /**
      * Logs a data array.
      *
-     * @param array $data
+     * @param array<int|string,mixed> $data
      * @return Application_Logger
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
      */
     public static function logData(array $data) : Application_Logger
     {
         return AppFactory::createLogger()->logData($data);
     }
 
+    /**
+     * @param string $message
+     * @return Application_Logger
+     * @deprecated Use the Logger instance directly via {@see AppFactory::createLogger()}.
+     */
     public static function logError(string $message) : Application_Logger
     {
         return AppFactory::createLogger()->logError($message);
@@ -477,12 +505,12 @@ class Application
     // 4: vendor
     // 5: root
     //                                             1  2  3  4  5
-    private const ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../../';
+    private const string ROOT_PATH_DEPENDENCY = __DIR__.'/../../../../../';
 
     // 1: src/
     // 2: root
     //                                          1  2
-    private const ROOT_PATH_PACKAGE = __DIR__.'/../../';
+    private const string ROOT_PATH_PACKAGE = __DIR__.'/../../';
 
     private static ?bool $isInstalledAsDependency = null;
 
@@ -948,9 +976,10 @@ class Application
 
     /**
      * Exit the application and handle shutdown tasks.
+     * @param string $reason
      * @return never
      */
-    public static function exit(string $reason = '')
+    public static function exit(string $reason = '') : never
     {
         self::log(sprintf('Exiting application. Reason given: [%s].', $reason));
 
@@ -963,9 +992,11 @@ class Application
      * and throws an exception otherwise.
      *
      * @param mixed $callable
+     * @param int $errorCode
      * @throws Application_Exception
+     * @throws BaseException
      */
-    public static function requireCallableValid($callable, int $errorCode = 0) : void
+    public static function requireCallableValid(mixed $callable, int $errorCode = 0) : void
     {
         if (is_callable($callable))
         {
@@ -1025,13 +1056,13 @@ class Application
 
     public static function createLDAP() : Application_LDAP
     {
-        $conf = (new Application_LDAP_Config(
+        $conf = new Application_LDAP_Config(
             AppConfig::getLDAPHost(),
             AppConfig::getLDAPPort(),
             AppConfig::getLDAPDN(),
             AppConfig::getLDAPUsername(),
             AppConfig::getLDAPPassword()
-        ))
+        )
             ->setMemberSuffix(AppConfig::getLDAPMemberSuffix())
             ->setSSLEnabled(AppConfig::isLDAPSSLEnabled());
 
@@ -1057,7 +1088,7 @@ class Application
      * @throws Application_Exception
      * @see Application::ERROR_REDIRECT_EVENTS_FAILED
      */
-    public static function redirect($url)
+    public static function redirect(string|AdminURLInterface $url) : never
     {
         $url = (string)$url;
 
@@ -1306,6 +1337,8 @@ class Application
             return self::getDummyUserData();
         }
 
+        $exception = null;
+
         try
         {
             $data = DBHelper::fetch(
@@ -1326,8 +1359,9 @@ class Application
                 return $data;
             }
         }
-        catch (DBHelper_Exception $e)
+        catch (Throwable $e)
         {
+            $exception = $e;
         }
 
         throw new Application_Exception(
@@ -1336,27 +1370,40 @@ class Application
                 'Tried loading data for user [%s], but it does not exist in the database.',
                 $userID
             ),
-            self::ERROR_USER_DATA_NOT_FOUND
+            self::ERROR_USER_DATA_NOT_FOUND,
+            $exception
         );
     }
 
+    /**
+     * Returns the data set for the dummy user.
+     *
+     * @return array<string,string>
+     */
     public static function getDummyUserData() : array
     {
         return array(
-            'email' => APP_DUMMY_EMAIL,
-            'firstname' => 'Dummy',
-            'lastname' => 'User',
-            'foreign_id' => '__dummy'
+            Application_Users::COL_EMAIL => APP_DUMMY_EMAIL,
+            Application_Users::COL_FIRSTNAME => 'Stub',
+            Application_Users::COL_LASTNAME => 'User',
+            Application_Users::COL_NICKNAME => 'stubuser',
+            Application_Users::COL_FOREIGN_ID => self::STUB_USER_FOREIGN_ID
         );
     }
 
+    /**
+     * Returns the data set for the system user.
+     *
+     * @return array<string,string>
+     */
     public static function getSystemUserData() : array
     {
         return array(
-            'email' => APP_SYSTEM_EMAIL,
-            'firstname' => APP_SYSTEM_NAME,
-            'lastname' => 'Application',
-            'foreign_id' => '__system'
+            Application_Users::COL_EMAIL => APP_SYSTEM_EMAIL,
+            Application_Users::COL_FIRSTNAME => APP_SYSTEM_NAME,
+            Application_Users::COL_LASTNAME => 'Application',
+            Application_Users::COL_NICKNAME => 'systemuser',
+            Application_Users::COL_FOREIGN_ID => self::SYSTEM_USER_FOREIGN_ID
         );
     }
 
@@ -1380,6 +1427,9 @@ class Application
         return in_array($userID, self::getSystemUserIDs());
     }
 
+    /**
+     * @return int[]
+     */
     public static function getSystemUserIDs() : array
     {
         return array(

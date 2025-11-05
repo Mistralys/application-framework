@@ -10,80 +10,81 @@ use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 
 final class BooleanParameterTests extends APITestCase
 {
+    public function test_defaultIsNull() : void
+    {
+        $param = new BooleanParameter('foo', 'Param Label');
+
+        $this->assertNull($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
     public function test_validStringTrueValueInRequest() : void
     {
-        $_REQUEST['foo'] = 'true';
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertTrue($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            'true',
+            true
+        );
     }
 
     public function test_validStringFalseValueInRequest() : void
     {
-        $_REQUEST['foo'] = 'false';
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertFalse($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            'false',
+            false
+        );
     }
 
     public function test_validStringYesValueInRequest() : void
     {
-        $_REQUEST['foo'] = 'yes';
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertTrue($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            'yes',
+            true
+        );
     }
 
     public function test_validStringNoValueInRequest() : void
     {
-        $_REQUEST['foo'] = 'no';
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertFalse($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            'no',
+            false
+        );
     }
 
     public function test_validIntegerTrueValueInRequest() : void
     {
-        $_REQUEST['foo'] = 1;
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertTrue($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            1,
+            true
+        );
     }
 
     public function test_validIntegerFalseValueInRequest() : void
     {
-        $_REQUEST['foo'] = 0;
-
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertFalse($param->getValue());
-        $this->assertResultValidWithNoMessages($param->getValidationResults());
+        $this->assertParamValueIsSame(
+            new BooleanParameter('foo', 'Param Label'),
+            0,
+            false
+        );
     }
 
     public function test_invalidValueInRequest() : void
     {
-        $_REQUEST['foo'] = 'invalid';
+        $param = new BooleanParameter('foo', 'Param Label');
 
-        $param = new BooleanParameter('foo', 'Foo Label');
-
-        $this->assertNull($param->getValue());
-        $this->assertResultValid($param->getValidationResults());
+        $this->assertParamValueIsSame($param, 'invalid', null);
         $this->assertResultHasInvalidValueType($param->getValidationResults());
     }
 
+    // region: Default values
+
     public function test_setDefaultValidValue() : void
     {
-        $param = new BooleanParameter('foo', 'Foo Label');
+        $param = new BooleanParameter('foo', 'Param Label');
         $param->setDefaultValue(true);
 
         $this->assertTrue($param->getDefaultValue());
@@ -93,9 +94,56 @@ final class BooleanParameterTests extends APITestCase
     public function test_setDefaultInvalidValue() : void
     {
         $this->expectException(APIParameterException::class);
-        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_DEFAULT_VALUE);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
 
-        $param = new BooleanParameter('foo', 'Foo Label');
+        $param = new BooleanParameter('foo', 'Param Label');
         $param->setDefaultValue('invalid');
     }
+
+    public function test_requestValueOverridesDefaultValue() : void
+    {
+        $_REQUEST['foo'] = 'false';
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->setDefaultValue(true);
+
+        $this->assertFalse($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    // endregion
+
+    // region: Selecting values
+
+    public function test_selectValidValue() : void
+    {
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->selectValue(true);
+
+        $this->assertTrue($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    public function test_selectInvalidValue() : void
+    {
+        $this->expectException(APIParameterException::class);
+        $this->expectExceptionCode(APIParameterException::ERROR_INVALID_PARAM_VALUE);
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->selectValue('invalid');
+    }
+
+    public function test_selectValueOverridesRequestAndDefaultValues() : void
+    {
+        $_REQUEST['foo'] = 'false';
+
+        $param = new BooleanParameter('foo', 'Param Label');
+        $param->setDefaultValue(false);
+        $param->selectValue(true);
+
+        $this->assertTrue($param->getValue());
+        $this->assertResultValidWithNoMessages($param->getValidationResults());
+    }
+
+    // endregion
 }

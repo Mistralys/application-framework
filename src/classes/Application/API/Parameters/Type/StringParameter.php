@@ -10,6 +10,7 @@ namespace Application\API\Parameters\Type;
 
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\BaseAPIParameter;
+use Application\API\Parameters\Type\StringParam\StringValidations;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\Validation\Type\RegexValidation;
 use AppUtils\RegexHelper;
@@ -26,7 +27,7 @@ use AppUtils\RegexHelper;
  * @package API
  * @subpackage Parameters
  *
- * @method string|null getValue()
+ * @property string|null $defaultValue
  */
 class StringParameter extends BaseAPIParameter
 {
@@ -35,63 +36,64 @@ class StringParameter extends BaseAPIParameter
         return t('String');
     }
 
-    private ?string $defaultValue = null;
-
     public function getDefaultValue(): ?string
     {
         return $this->defaultValue;
     }
 
     /**
-     * @param string|null $default
+     * @param string|int|float|null $default Numeric values will be converted to strings. All other types are rejected.
      * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
-    public function setDefaultValue(mixed $default) : self
+    public function setDefaultValue(int|float|bool|string|array|null $default) : self
     {
-        $this->defaultValue = $this->requireValidType($default);
-
-        return $this;
+        return parent::setDefaultValue($this->requireValidType($default));
     }
+
+    /**
+     * @param string|int|float|null $value Numeric values will be converted to strings. All other types are rejected.
+     * @return $this
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
+     */
+    public function selectValue(float|int|bool|array|string|null $value): self
+    {
+        return parent::selectValue($this->requireValidType($value));
+    }
+
 
     /**
      * @param mixed $value
      * @return string|NULL
-     * @throws APIParameterException
+     * @throws APIParameterException {@see APIParameterException::ERROR_INVALID_PARAM_VALUE}
      */
     private function requireValidType(mixed $value) : ?string
     {
+        if(is_numeric($value)) {
+            return (string)$value;
+        }
+
         if(is_string($value) || $value === null) {
             return $value;
         }
 
         throw new APIParameterException(
-            'Invalid default value.',
+            'Invalid parameter value.',
             sprintf(
                 'Expected a string, given: [%s].',
                 gettype($value)
             ),
-            APIParameterException::ERROR_INVALID_DEFAULT_VALUE
+            APIParameterException::ERROR_INVALID_PARAM_VALUE
         );
     }
 
-    public function validateAsAlphanumeric() : self
+    /**
+     * Returns a helper to choose among predefined string validations.
+     * @return StringValidations
+     */
+    public function validateAs() : StringValidations
     {
-        return $this->validateByRegex('/^[a-zA-Z0-9]+$/');
-    }
-
-    public function validateAsAlphabetical() : self
-    {
-        return $this->validateByRegex('/^[a-zA-Z]+$/');
-    }
-
-    public function validateAsAlias(bool $allowCapitalLetters) : self
-    {
-        $regex = RegexHelper::REGEX_ALIAS;
-        if($allowCapitalLetters) {
-            $regex = RegexHelper::REGEX_ALIAS_CAPITALS;
-        }
-
-        return $this->validateBy(new RegexValidation($regex));
+        return new StringValidations($this);
     }
 
     public function validateByRegex(string $regex) : self
@@ -121,6 +123,16 @@ class StringParameter extends BaseAPIParameter
             sprintf('The value must be a string, [%s] given.', gettype($value)),
             ParamValidationInterface::VALIDATION_INVALID_VALUE_TYPE
         );
+
+        return null;
+    }
+
+    public function getValue() : ?string
+    {
+        $value = parent::getValue();
+        if(is_string($value)) {
+            return parent::getValue();
+        }
 
         return null;
     }

@@ -26,6 +26,9 @@ interface JSONResponseInterface extends APIMethodInterface
     public const string RESPONSE_STATE_ERROR = 'error';
     public const string RESPONSE_STATE_SUCCESS = 'success';
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getExampleJSONResponse() : array;
 
     /**

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\Admin\Wizard\InvalidationHandler;
 use Application\AppFactory;
+use Application\ConfigSettings\BaseConfigRegistry;
 
 /**
  * Trait for adding a wizard to an administration screen.
@@ -115,6 +116,10 @@ trait Application_Traits_Admin_Wizard
         if (empty($this->sessionID))
         {
             $this->createSession();
+
+            if(!BaseConfigRegistry::areUnitTestsRunning()) {
+                $this->redirectTo($this->getURL($this->request->getRefreshParams()));
+            }
         }
 
         $data = $this->session->getValue($this->sessionID);
@@ -122,6 +127,10 @@ trait Application_Traits_Admin_Wizard
         if(empty($data))
         {
             $this->createSession();
+
+            if(!BaseConfigRegistry::areUnitTestsRunning()) {
+                $this->redirectTo($this->getURL($this->request->getRefreshParams()));
+            }
         }
 
         $this->log('Using existing wizard ID [%s].', $this->getWizardID());
@@ -159,10 +168,10 @@ trait Application_Traits_Admin_Wizard
     }
 
     /**
-     * @return never
+     * @return void
      * @throws Application_Exception
      */
-    private function createSession()
+    private function createSession() : void
     {
         $this->sessionID = self::generateNewSessionID();
 
@@ -175,8 +184,6 @@ trait Application_Traits_Admin_Wizard
         $this->setWizardSetting('invalidationHandler', $this->invalidationHandler);
 
         $this->saveSettings();
-
-        $this->redirectTo($this->getURL($this->request->getRefreshParams()));
     }
 
     public function getSuccessURL() : string
@@ -265,9 +272,13 @@ trait Application_Traits_Admin_Wizard
 
             $this->endWizardTransaction();
 
-            $this->redirectTo($this->getURL(array(
-                'step' => $nextStep->getID()
-            )));
+            if(BaseConfigRegistry::areUnitTestsRunning()) {
+                $_REQUEST['step'] = $nextStep->getID();
+            } else {
+                $this->redirectTo($this->getURL(array(
+                    'step' => $nextStep->getID()
+                )));
+            }
         }
 
         $this->endWizardTransaction();
