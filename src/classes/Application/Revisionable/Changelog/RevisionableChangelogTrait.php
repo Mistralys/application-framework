@@ -11,7 +11,7 @@ use Application_User;
 
 /**
  * @see ChangelogableInterface
- * @see \Application_RevisionableStateless
+ * @see Application\Revisionable\RevisionableInterface
  */
 trait RevisionableChangelogTrait
 {

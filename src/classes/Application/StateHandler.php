@@ -135,11 +135,11 @@ class Application_StateHandler
     }
 
     /**
-     * @param BaseRevisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @return void
      * @throws StateHandlerException
      */
-    public function setRevisionable(BaseRevisionable $revisionable) : void
+    public function setRevisionable(RevisionableInterface $revisionable) : void
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;

@@ -6,39 +6,22 @@ namespace Application\Revisionable\Storage;
 
 use Application;
 use Application\Revisionable\Collection\BaseRevisionableCollection;
-use Application\Revisionable\RevisionableException;
-use Application_RevisionableStateless;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application_StateHandler_State;
 use Application_User;
-use BaseRevisionable;
+use DateTime;
 use DBHelper;
 
 /**
- * @property BaseRevisionable $revisionable
+ * @property RevisionableInterface $revisionable
  */
 abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
 {
-    public const ERROR_INVALID_REVISIONABLE_TYPE = 14601;
+    protected RevisionableCollectionInterface $collection;
 
-    /**
-     * @var BaseRevisionableCollection
-     */
-    protected $collection;
-
-    public function __construct(Application_RevisionableStateless $revisionable)
+    public function __construct(RevisionableInterface $revisionable)
     {
-        if (!$revisionable instanceof BaseRevisionable) {
-            throw new RevisionableException(
-                'Invalid revisionable type',
-                sprintf(
-                    'The [%s] revision storage requires the revisionable to be of the [%s] type.',
-                    'Application\Revisionable\Storage\BaseDBCollectionStorage',
-                    'Application\Revisionable\RevisionableCollection\BaseDBRevisionable'
-                ),
-                self::ERROR_INVALID_REVISIONABLE_TYPE
-            );
-        }
-
         $this->collection = $revisionable->getCollection();
 
         parent::__construct($revisionable);
@@ -92,12 +75,12 @@ abstract class BaseDBCollectionStorage extends BaseDBStandardizedStorage
 
         $data = $customColumns;
         $data[$this->idColumn] = $revisionable_id;
-        $data[BaseRevisionableCollection::COL_REV_LABEL] = $label;
-        $data[BaseRevisionableCollection::COL_REV_STATE] = $state->getName();
-        $data[BaseRevisionableCollection::COL_REV_DATE] = $date->format('Y-m-d H:i:s');
-        $data[BaseRevisionableCollection::COL_REV_AUTHOR] = $author->getID();
-        $data[BaseRevisionableCollection::COL_REV_COMMENTS] = $comments;
-        $data[BaseRevisionableCollection::COL_REV_PRETTY_REVISION] = $prettyRevision;
+        $data[RevisionableCollectionInterface::COL_REV_LABEL] = $label;
+        $data[RevisionableCollectionInterface::COL_REV_STATE] = $state->getName();
+        $data[RevisionableCollectionInterface::COL_REV_DATE] = $date->format('Y-m-d H:i:s');
+        $data[RevisionableCollectionInterface::COL_REV_AUTHOR] = $author->getID();
+        $data[RevisionableCollectionInterface::COL_REV_COMMENTS] = $comments;
+        $data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION] = $prettyRevision;
 
         $campaignKeys = $this->getStaticColumns();
         foreach ($campaignKeys as $keyName => $keyValue) {

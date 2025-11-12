@@ -41,15 +41,6 @@ abstract class BaseRevisionableCollection
     use DBHelper\Traits\BeforeCreateEventTrait;
     use DBHelper\Traits\AfterRecordCreatedEventTrait;
 
-    public const string COL_REV_DATE = 'date';
-    public const string COL_REV_LABEL = 'label';
-    public const string COL_REV_STATE = 'state';
-    public const string COL_REV_COMMENTS = 'comments';
-    public const string COL_REV_AUTHOR = 'author';
-    public const string COL_REV_PRETTY_REVISION = 'pretty_revision';
-    public const string COL_CURRENT_REVISION = 'current_revision';
-    public const int STUB_OBJECT_ID = -9999;
-
     /**
      * This is called right after the collection's constructor:
      * it is used to process any custom arguments that may have
@@ -151,7 +142,7 @@ abstract class BaseRevisionableCollection
 
     public function createStubRecord(): RevisionableInterface
     {
-        return $this->getByID(self::STUB_OBJECT_ID);
+        return $this->getByID(RevisionableCollectionInterface::STUB_OBJECT_ID);
     }
 
     /**
@@ -425,15 +416,15 @@ abstract class BaseRevisionableCollection
                 `%s`
             WHERE
                 %s",
-            self::COL_CURRENT_REVISION,
+            RevisionableCollectionInterface::COL_CURRENT_REVISION,
             $this->getCurrentRevisionsTableName(),
             DBHelper::buildWhereFieldsStatement($params)
         );
 
         $entry = DBHelper::fetch($query, $params);
 
-        if (isset($entry[self::COL_CURRENT_REVISION])) {
-            return (int)$entry[self::COL_CURRENT_REVISION];
+        if (isset($entry[RevisionableCollectionInterface::COL_CURRENT_REVISION])) {
+            return (int)$entry[RevisionableCollectionInterface::COL_CURRENT_REVISION];
         }
 
         return null;
@@ -452,7 +443,7 @@ abstract class BaseRevisionableCollection
         $revision = DBHelper::createFetchOne($this->getRevisionsTableName())
             ->selectColumn('MAX(`' . $this->getRevisionKeyName() . '`) as `rev`')
             ->whereValue($this->getRecordPrimaryName(), $revisionableID)
-            ->whereValue(self::COL_REV_STATE, $state->getName())
+            ->whereValue(RevisionableCollectionInterface::COL_REV_STATE, $state->getName())
             ->whereValues($this->getCampaignKeys())
             ->fetch();
 
@@ -489,7 +480,7 @@ abstract class BaseRevisionableCollection
         ON
         revs.`$primaryKey` = current.`$primaryKey`
         WHERE
-        revs.`$revisionKey` = current." . self::COL_CURRENT_REVISION;
+        revs.`$revisionKey` = current." . RevisionableCollectionInterface::COL_CURRENT_REVISION;
 
         $where = $this->getCampaignKeys();
         $where[$key] = $value;
@@ -557,7 +548,7 @@ abstract class BaseRevisionableCollection
 
         $data = $foreignKeys;
         $data[$this->primaryKeyName] = $revisionableID;
-        $data[self::COL_CURRENT_REVISION] = $revision;
+        $data[RevisionableCollectionInterface::COL_CURRENT_REVISION] = $revision;
 
         // Primary keys are the campaign keys + the revisionable ID.
         // Without campaign keys, it's just the revisionable ID.
@@ -675,7 +666,7 @@ abstract class BaseRevisionableCollection
 
     public function getRecordDefaultSortKey(): string
     {
-        return self::COL_REV_LABEL;
+        return RevisionableCollectionInterface::COL_REV_LABEL;
     }
 
     public function registerRequestParams(): void
@@ -722,28 +713,28 @@ abstract class BaseRevisionableCollection
 
     public function createNewRecord(array $data = array(), bool $silent = false, array $options = array()): RevisionableInterface
     {
-        if(!isset($data[self::COL_REV_LABEL])) {
+        if(!isset($data[RevisionableCollectionInterface::COL_REV_LABEL])) {
             throw new RevisionableException(
                 'Revision label is required to create a new revisionable record.',
                 sprintf(
                     'When creating a new revisionable record using [%s()], the label must be specified in the data array using the key [%s].',
                     __METHOD__,
-                    self::COL_REV_LABEL
+                    RevisionableCollectionInterface::COL_REV_LABEL
                 ),
                 RevisionableException::ERROR_INVALID_CREATE_ARGUMENTS
             );
         }
 
-        unset($data[self::COL_REV_LABEL]);
+        unset($data[RevisionableCollectionInterface::COL_REV_LABEL]);
 
         $author = null;
-        if(isset($data[self::COL_REV_AUTHOR])) {
-            $author = Application::createUser((int)$data[self::COL_REV_AUTHOR]);
-            unset($data[self::COL_REV_AUTHOR]);
+        if(isset($data[RevisionableCollectionInterface::COL_REV_AUTHOR])) {
+            $author = Application::createUser((int)$data[RevisionableCollectionInterface::COL_REV_AUTHOR]);
+            unset($data[RevisionableCollectionInterface::COL_REV_AUTHOR]);
         }
 
         return $this->createNewRevisionable(
-            $data[self::COL_REV_LABEL],
+            $data[RevisionableCollectionInterface::COL_REV_LABEL],
             $author,
             $data
         );

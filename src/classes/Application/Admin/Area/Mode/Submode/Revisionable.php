@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 
 abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Application_Admin_Area_Mode_Submode
 {
-    protected Application_RevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected string $recordTypeName;
     protected int $revisionableID;
     protected RevisionableInterface $revisionable;
@@ -17,10 +19,7 @@ abstract class Application_Admin_Area_Mode_Submode_Revisionable extends Applicat
         $this->recordTypeName = $this->collection->getRecordTypeName();
     }
 
-    /**
-     * @return Application_RevisionableCollection
-     */
-    abstract protected function createCollection();
+    abstract protected function createCollection() : RevisionableCollectionInterface;
 
     /**
      * Retrieves the revisionable ID from the request, and attempts to retrieve

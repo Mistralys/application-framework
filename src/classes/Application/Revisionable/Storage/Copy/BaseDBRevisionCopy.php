@@ -7,9 +7,9 @@
 
 namespace Application\Revisionable\Storage\Copy;
 
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseDBStandardizedStorage;
 use Application\Revisionable\Storage\RevisionStorageException;
-use Application_RevisionableStateless;
 use AppUtils\ConvertHelper_Exception;
 use DBHelper;
 use DBHelper_Exception;
@@ -369,7 +369,7 @@ abstract class BaseDBRevisionCopy extends BaseRevisionCopy
         $this->log(sprintf('Copied [%s] records.', count($data)));
     }
 
-    protected function _processDataKeys(Application_RevisionableStateless $targetRevisionable): void
+    protected function _processDataKeys(RevisionableInterface $targetRevisionable): void
     {
         $revCol = $this->storage->getRevisionColumn();
 

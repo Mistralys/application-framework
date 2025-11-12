@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
 
 /**
@@ -12,11 +13,11 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
     public const ERROR_INVALID_REVISIONABLE_ID = 15301;
     
     /**
-    * @return Application_RevisionableCollection
+    * @return BaseRevisionableCollection
     */
     abstract protected function createCollection();
     
-    protected Application_RevisionableCollection $collection;
+    protected BaseRevisionableCollection $collection;
     protected string $recordTypeName;
     protected int $revisionableID;
     
@@ -38,13 +39,13 @@ abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends A
         $this->collection = $this->createCollection();
         $this->recordTypeName = $this->collection->getRecordTypeName();
         
-        $this->revisionableID = (int)Application_Driver::getInstance()->getRequest()->registerParam($this->collection->getPrimaryKeyName())->setInteger()->get();
+        $this->revisionableID = (int)Application_Driver::getInstance()->getRequest()->registerParam($this->collection->getRecordPrimaryName())->setInteger()->get();
         if(empty($this->revisionableID) || !$this->collection->idExists($this->revisionableID)) {
             throw new Application_Exception(
                 'Invalid or missing record ID',
                 sprintf(
                     'The ID specified via [%s] to edit the settings of the revisionable [%s] was not valid or empty.',
-                    $this->collection->getPrimaryKeyName(),
+                    $this->collection->getRecordPrimaryName(),
                     $this->collection->getRecordTypeName()
                 ),
                 self::ERROR_INVALID_REVISIONABLE_ID

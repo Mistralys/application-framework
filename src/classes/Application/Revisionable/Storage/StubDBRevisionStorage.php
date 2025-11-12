@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage;
 
 use Application;
-use Application_RevisionableStateless;
+use Application\Revisionable\RevisionableInterface;
 use Application_StateHandler_State;
 use Application_User;
 use DateTime;
@@ -27,7 +27,7 @@ class StubDBRevisionStorage extends BaseDBCollectionStorage
     public const ERROR_CANNOT_CREATE_STUB_REVISION = 153501;
     public const STUB_REVISION_NUMBER = 1;
 
-    public function __construct(Application_RevisionableStateless $revisionable)
+    public function __construct(RevisionableInterface $revisionable)
     {
         parent::__construct($revisionable);
 

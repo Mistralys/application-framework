@@ -1,6 +1,8 @@
 <?php
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Revisionable\Collection\BaseRevisionableDataGridMultiAction;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 
 /**
  * 
@@ -18,9 +20,9 @@ interface Application_Interfaces_Admin_RevisionableList extends AdminScreenInter
      * @param string $label
      * @param string $redirectURL
      * @param boolean $confirm
-     * @return Application_RevisionableCollection_DataGridMultiAction
+     * @return BaseRevisionableDataGridMultiAction
      */
-    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : Application_RevisionableCollection_DataGridMultiAction;
+    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : BaseRevisionableDataGridMultiAction;
 
-    public function getCollection() : Application_RevisionableCollection;
+    public function getCollection() : BaseRevisionableCollection;
 }

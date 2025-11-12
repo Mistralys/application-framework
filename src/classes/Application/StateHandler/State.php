@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\Interfaces\StringableInterface;
 
@@ -234,7 +233,7 @@ class Application_StateHandler_State implements StringableInterface
      *
      * @param Application_StateHandler_State $state
      * @return $this
-     * @see BaseRevisionable::save()
+     * @see RevisionableInterface::save()
      */
     public function setOnStructuralChange(Application_StateHandler_State $state) : self
     {
@@ -269,11 +268,11 @@ class Application_StateHandler_State implements StringableInterface
     }
 
     /**
-     * @param BaseRevisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @return $this
      * @throws StateHandlerException {@see self::ERROR_CANNOT_REPLACE_REVISIONABLE}
      */
-    public function setRevisionable(BaseRevisionable $revisionable) : self
+    public function setRevisionable(RevisionableInterface $revisionable) : self
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;

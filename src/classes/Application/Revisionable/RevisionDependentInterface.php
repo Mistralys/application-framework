@@ -25,7 +25,7 @@ interface RevisionDependentInterface
 {
     public function getIdentification() : string;
     public function getRevision() : ?int;
-    public function getRevisionable() : RevisionableStatelessInterface;
+    public function getRevisionable() : RevisionableInterface;
 
     /**
      * Verifies that the revision-dependent object is of the same class

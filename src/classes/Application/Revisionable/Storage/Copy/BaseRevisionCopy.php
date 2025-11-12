@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Storage\Copy;
 
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseRevisionStorage;
 use Application\Revisionable\Storage\RevisionStorageException;
 use Application_Interfaces_Loggable;
-use Application_RevisionableStateless;
 use Application_Traits_Loggable;
 use DateTime;
 
@@ -16,20 +16,20 @@ abstract class BaseRevisionCopy
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_CLASS_MISMATCH_FOR_TARGET_REVISIONABLE = 720001;
+    public const int ERROR_CLASS_MISMATCH_FOR_TARGET_REVISIONABLE = 720001;
 
     protected int $sourceRevision;
     protected int $targetRevision;
     protected int $ownerID;
     protected string $ownerName;
     protected string $comments;
-    protected Application_RevisionableStateless $revisionable;
-    protected ?Application_RevisionableStateless $targetRevisionable = null;
+    protected RevisionableInterface $revisionable;
+    protected ?RevisionableInterface $targetRevisionable = null;
 
     protected DateTime $date;
     protected BaseRevisionStorage $storage;
 
-    public function __construct(BaseRevisionStorage $storage, Application_RevisionableStateless $revisionable, int $sourceRevision, int $targetRevision, int $ownerID, string $ownerName, ?string $comments, ?DateTime $date = null)
+    public function __construct(BaseRevisionStorage $storage, RevisionableInterface $revisionable, int $sourceRevision, int $targetRevision, int $ownerID, string $ownerName, ?string $comments, ?DateTime $date = null)
     {
         if (!$date) {
             $date = new DateTime();
@@ -54,10 +54,10 @@ abstract class BaseRevisionCopy
 
     /**
      * Sets a target revisionable to copy the revision to.
-     * @param Application_RevisionableStateless $revisionable
+     * @param RevisionableInterface $revisionable
      * @throws RevisionStorageException
      */
-    public function setTarget(Application_RevisionableStateless $revisionable): void
+    public function setTarget(RevisionableInterface $revisionable): void
     {
         $sourceType = $this->revisionable->getRecordTypeName();
         $targetType = $revisionable->getRecordTypeName();
@@ -110,7 +110,7 @@ abstract class BaseRevisionCopy
         $this->log('Copy complete.');
     }
 
-    protected function processParts(Application_RevisionableStateless $targetRevisionable): void
+    protected function processParts(RevisionableInterface $targetRevisionable): void
     {
         $parts = $this->getParts();
 
@@ -125,7 +125,7 @@ abstract class BaseRevisionCopy
         }
     }
 
-    protected function processDataKeys(Application_RevisionableStateless $targetRevisionable): void
+    protected function processDataKeys(RevisionableInterface $targetRevisionable): void
     {
         if (!$this->storage->hasDataKeys()) {
             $this->log('The revisionable has no data keys, skipping.');
@@ -137,7 +137,7 @@ abstract class BaseRevisionCopy
         $this->_processDataKeys($targetRevisionable);
     }
 
-    abstract protected function _processDataKeys(Application_RevisionableStateless $targetRevisionable): void;
+    abstract protected function _processDataKeys(RevisionableInterface $targetRevisionable): void;
 
     public function getLogIdentifier(): string
     {

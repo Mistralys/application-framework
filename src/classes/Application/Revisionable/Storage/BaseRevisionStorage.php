@@ -9,9 +9,11 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage;
 
 use Application;
+use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableException;
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Revisionable\Storage\Copy\BaseRevisionCopy;
 use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
@@ -21,7 +23,6 @@ use Application_Exception;
 use Application_FilterCriteria_RevisionableRevisions;
 use Application\Disposables\DisposableInterface;
 use Application_Interfaces_Eventable;
-use Application_RevisionableStateless;
 use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
@@ -91,7 +92,7 @@ abstract class BaseRevisionStorage
      */
     protected array $revisionsToRemember = array();
 
-    protected Application_RevisionableStateless $revisionable;
+    protected RevisionableInterface $revisionable;
     protected int $revisionable_id;
 
     /**
@@ -114,7 +115,7 @@ abstract class BaseRevisionStorage
      */
     protected array $dataKeys = array();
 
-    public function __construct(Application_RevisionableStateless $revisionable)
+    public function __construct(RevisionableInterface $revisionable)
     {
         $this->revisionable = $revisionable;
         $this->revisionable_id = $revisionable->getID();
@@ -122,7 +123,7 @@ abstract class BaseRevisionStorage
         $this->configure();
     }
 
-    public function getRevisionable(): Application_RevisionableStateless
+    public function getRevisionable(): RevisionableInterface
     {
         return $this->revisionable;
     }
@@ -681,6 +682,7 @@ abstract class BaseRevisionStorage
     /**
      * Reloads the currently selected revision's data.
      */
+    #[DisposedAware]
     public function reload(): self
     {
         $this->requireNotDisposed();
@@ -1021,13 +1023,13 @@ abstract class BaseRevisionStorage
      * to the currently selected revision of the target revisionable
      * instance.
      *
-     * NOTE: Only revisionables of the same class may be copied.
+     * > NOTE: Only revisionables of the same class may be copied.
      *
-     * @param BaseRevisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @return $this
      * @throws Application_Exception
      */
-    public function copyTo(BaseRevisionable $revisionable): self
+    public function copyTo(RevisionableInterface $revisionable): self
     {
         $this->requireNotDisposed();
 
@@ -1356,7 +1358,7 @@ abstract class BaseRevisionStorage
 
         // We have to add the label here, because it is not part
         // of the essential revision keys handled by the storage.
-        $data[BaseRevisionableCollection::COL_REV_LABEL] = $this->revisionable->getLabel();
+        $data[Application\Revisionable\Collection\RevisionableCollectionInterface::COL_REV_LABEL] = $this->revisionable->getLabel();
 
         $this->_writeRevisionKeys($data);
 

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\Collection\BaseRevisionableDataGridMultiAction;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\Collection\RevisionableFilterSettingsInterface;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\ConvertHelper;
 
@@ -9,13 +12,13 @@ use AppUtils\ConvertHelper;
  * @see Application_Interfaces_Admin_RevisionableList
  * 
  * @property string $recordTypeName
- * @property Application_RevisionableCollection $collection
+ * @property RevisionableCollectionInterface $collection
  */
 trait Application_Traits_Admin_RevisionableList
 {
     protected string $gridName = '';
     protected UI_DataGrid $grid;
-    protected Application_RevisionableCollection_FilterSettings $filterSettings;
+    protected RevisionableFilterSettingsInterface $filterSettings;
     protected bool $filtersAdded = false;
 
     public function getURLName() : string
@@ -45,7 +48,7 @@ trait Application_Traits_Admin_RevisionableList
         $items = $filters->getItemsObjects();
         
         $total = count($items);
-        $primaryKey = $this->collection->getPrimaryKeyName();
+        $primaryKey = $this->collection->getRecordPrimaryName();
         $entries = array();
         $hasState = $this->grid->hasColumn('state');
         $hasLastModified = $this->grid->hasColumn('last_modified');
@@ -75,7 +78,7 @@ trait Application_Traits_Admin_RevisionableList
         $this->grid = $grid;
         
         $grid->setFullViewTitle($this->getTitle());
-        $grid->enableMultiSelect($this->collection->getPrimaryKeyName());
+        $grid->enableMultiSelect($this->collection->getRecordPrimaryName());
         $grid->enableLimitOptionsDefault();
         
         $this->configureGrid();
@@ -132,9 +135,9 @@ trait Application_Traits_Admin_RevisionableList
      * @param string $label
      * @param string $redirectURL
      * @param boolean $confirm
-     * @return Application_RevisionableCollection_DataGridMultiAction
+     * @return BaseRevisionableDataGridMultiAction
      */
-    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : Application_RevisionableCollection_DataGridMultiAction
+    public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : BaseRevisionableDataGridMultiAction
     {
         return $this->collection->createListMultiAction(
             $className,

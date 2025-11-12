@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\LookupItems;
 
-use Application\Revisionable\RevisionableCollectionInterface;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 
 /**
  * Specialized item lookup class for use with revisionable collections.
@@ -40,7 +40,7 @@ abstract class BaseRevisionableLookupItem extends BaseLookupItem
 
     protected function getPrimaryName(): string
     {
-        return $this->getCollection()->getPrimaryKeyName();
+        return $this->getCollection()->getRecordPrimaryName();
     }
 
     protected function getSearchColumns(): array
@@ -66,18 +66,18 @@ abstract class BaseRevisionableLookupItem extends BaseLookupItem
         $collection = $this->getCollection();
 
         return "SELECT
-    ".self::REVS_ALIAS.".`".$collection->getPrimaryKeyName()."`
+    ".self::REVS_ALIAS.".`".$collection->getRecordPrimaryName()."`
 FROM
     `".$collection->getRevisionsTableName()."` AS ".self::REVS_ALIAS."
 LEFT JOIN
     `".$collection->getCurrentRevisionsTableName()."` AS currev
 ON
-    ".self::REVS_ALIAS.".".$collection->getPrimaryKeyName()." = currev.".$collection->getPrimaryKeyName()."
+    ".self::REVS_ALIAS.".".$collection->getRecordPrimaryName()." = currev.".$collection->getRecordPrimaryName()."
 WHERE
     ".self::REVS_ALIAS.".".$collection->getRevisionKeyName()." = currev.current_revision
 AND
     {WHERE}
 GROUP BY
-    ".self::REVS_ALIAS.".`".$collection->getPrimaryKeyName()."`";
+    ".self::REVS_ALIAS.".`".$collection->getRecordPrimaryName()."`";
     }
 }

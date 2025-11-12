@@ -17,6 +17,15 @@ interface RevisionableCollectionInterface extends IntegerCollectionInterface, DB
 {
     // region: DBHelper collection overloads
 
+    public const int STUB_OBJECT_ID = -9999;
+    public const string COL_REV_DATE = 'date';
+    public const string COL_REV_AUTHOR = 'author';
+    public const string COL_REV_LABEL = 'label';
+    public const string COL_REV_STATE = 'state';
+    public const string COL_CURRENT_REVISION = 'current_revision';
+    public const string COL_REV_COMMENTS = 'comments';
+    public const string COL_REV_PRETTY_REVISION = 'pretty_revision';
+
     public function createStubRecord() : RevisionableInterface;
     public function getFilterCriteria() : RevisionableFilterCriteriaInterface;
     public function getFilterSettings() : RevisionableFilterSettingsInterface;

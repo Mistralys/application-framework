@@ -2,18 +2,15 @@
 
 namespace Application\Revisionable\Collection;
 
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\Copy\BaseDBRevisionCopy;
-use Application_RevisionableStateless;
-use BaseRevisionable;
 use DBHelper;
 
 /**
- * @property BaseRevisionable $revisionable
+ * @property RevisionableInterface $revisionable
  */
 abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRevisionCopy
 {
-    public const ERROR_REVISION_DOES_NOT_EXIST = 15401;
-
     protected BaseRevisionableCollection $collection;
     protected string $primaryKey;
     protected string $revisionKey;
@@ -32,7 +29,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
         return $this->collection->getRecordCopyRevisionClass();
     }
 
-    protected function processParts(Application_RevisionableStateless $targetRevisionable): void
+    protected function processParts(RevisionableInterface $targetRevisionable): void
     {
         // ensure this is always done first, as it is 
         // the basis for the rest.
@@ -41,7 +38,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
         parent::processParts($targetRevisionable);
     }
 
-    protected function processSettings(Application_RevisionableStateless $targetRevisionable): void
+    protected function processSettings(RevisionableInterface $targetRevisionable): void
     {
         $this->log(sprintf('Copying revision data from table [%s].', $this->revisionTable));
 
@@ -63,7 +60,7 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
             )
         );
 
-        unset($data[BaseRevisionableCollection::COL_REV_PRETTY_REVISION]);
+        unset($data[RevisionableCollectionInterface::COL_REV_PRETTY_REVISION]);
 
         $keys = $this->storage->getStaticColumns();
         foreach ($keys as $key => $value) {
@@ -71,9 +68,9 @@ abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRev
         }
 
         // overwrite the required keys with the target information
-        $data[BaseRevisionableCollection::COL_REV_COMMENTS] = $this->comments;
-        $data[BaseRevisionableCollection::COL_REV_DATE] = $this->date->format('Y-m-d H:i:s');
-        $data[BaseRevisionableCollection::COL_REV_AUTHOR] = $this->ownerID;
+        $data[RevisionableCollectionInterface::COL_REV_COMMENTS] = $this->comments;
+        $data[RevisionableCollectionInterface::COL_REV_DATE] = $this->date->format('Y-m-d H:i:s');
+        $data[RevisionableCollectionInterface::COL_REV_AUTHOR] = $this->ownerID;
         $data[$this->revisionKey] = $this->targetRevision;
         $data[$this->primaryKey] = $targetRevisionable->getID();
 

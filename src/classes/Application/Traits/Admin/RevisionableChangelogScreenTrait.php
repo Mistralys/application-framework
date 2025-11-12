@@ -9,12 +9,9 @@ declare(strict_types=1);
 namespace Application\Traits\Admin;
 
 use Application\Interfaces\Admin\RevisionableChangelogScreenInterface;
-use Application\Revisionable\RevisionableException;
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application_Changelog_Entry;
 use Application_Changelog_FilterCriteria;
-use Application_RevisionableCollection;
-use Application_RevisionableStateless;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -22,7 +19,6 @@ use AppUtils\Microtime;
 use Closure;
 use UI;
 use UI_DataGrid;
-use UI_Form;
 
 /**
  * @package Application
@@ -32,9 +28,9 @@ use UI_Form;
  */
 trait RevisionableChangelogScreenTrait
 {
-    protected RevisionableStatelessInterface $revisionable;
+    protected RevisionableInterface $revisionable;
 
-    abstract protected function getRevisionable(): RevisionableStatelessInterface;
+    abstract protected function getRevisionable(): RevisionableInterface;
 
     abstract protected function isUserAuthorized(): bool;
 
@@ -57,17 +53,6 @@ trait RevisionableChangelogScreenTrait
         }
 
         $this->revisionable = $this->getRevisionable();
-
-        if (!$this->revisionable instanceof Application_RevisionableStateless) {
-            throw new RevisionableException(
-                'Not a valid revisionable',
-                sprintf(
-                    'The specified variable is not a class extending the [%s] class, and cannot be used to access a changelog.',
-                    'Application_RevisionableStateless'
-                ),
-                RevisionableChangelogScreenInterface::REVISIONABLE_CHANGELOG_ERROR_NOT_A_VALID_REVISIONABLE
-            );
-        }
     }
 
     protected function _handleActions(): bool
@@ -233,7 +218,7 @@ trait RevisionableChangelogScreenTrait
             'Changelog.Revisionable',
             array(
                 'Label' => $this->revisionable->getLabel(),
-                'TypeName' => $this->revisionable->getRevisionableTypeName(),
+                'TypeName' => $this->revisionable->getRecordTypeName(),
                 'PrettyRevision' => $this->revisionable->getPrettyRevision(),
                 'CurrentRevision' => $this->revisionable->getRevision(),
                 'LatestRevision' => $this->revisionable->getLatestRevision(),
@@ -400,7 +385,7 @@ trait RevisionableChangelogScreenTrait
 
     protected function getListID(): string
     {
-        return 'changelog-'.$this->revisionable->getRevisionableTypeName();
+        return 'changelog-'.$this->revisionable->getRecordTypeName();
     }
 
     protected function getDefaultFilters() : array

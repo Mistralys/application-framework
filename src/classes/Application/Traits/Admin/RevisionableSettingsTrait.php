@@ -16,7 +16,7 @@ trait RevisionableSettingsTrait
         'structural' => false,
     );
     
-    public function callback_beforeSave(Application_RevisionableCollection_DBRevisionable $revisionable) : void
+    public function callback_beforeSave(RevisionableInterface $revisionable) : void
     {
         $this->changed['changes'] = $revisionable->hasChanges();
         $this->changed['structural'] = $revisionable->hasStructuralChanges();
@@ -104,7 +104,7 @@ trait RevisionableSettingsTrait
      * Uses the submitted form values to create/update the
      * revisionable. Returns the revisionable instance.
      *
-     * @param array $formValues
+     * @param array<string,mixed> $formValues
      * @return RevisionableInterface
      */
     abstract protected function processSettings(array $formValues) : RevisionableInterface;
@@ -124,7 +124,7 @@ trait RevisionableSettingsTrait
         if($this->isEditMode()) 
         {
             $this->addHiddenVar(
-                $this->collection->getPrimaryKeyName(), 
+                $this->collection->getRecordPrimaryName(),
                 (string)$this->revisionable->getID()
             );
             

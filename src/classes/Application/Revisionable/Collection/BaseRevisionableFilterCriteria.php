@@ -85,7 +85,7 @@ abstract class BaseRevisionableFilterCriteria
         return sprintf(
             '`%s`.`%s`',
             self::ALIAS_REVISION_TABLE,
-            BaseRevisionableCollection::COL_REV_STATE
+            RevisionableCollectionInterface::COL_REV_STATE
         );
     }
 
@@ -211,7 +211,7 @@ EOT;
             self::ALIAS_REVISION_TABLE,
             $this->revisionKeyName,
             self::ALIAS_CURRENT_REVISION_TABLE,
-            BaseRevisionableCollection::COL_CURRENT_REVISION
+            RevisionableCollectionInterface::COL_CURRENT_REVISION
         ));
     }
 

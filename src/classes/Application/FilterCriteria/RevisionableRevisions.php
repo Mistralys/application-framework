@@ -7,6 +7,8 @@
  * @see Application_FilterCriteria_RevisionableRevisions
  */
 
+use Application\Revisionable\Storage\BaseDBStandardizedStorage;
+
 /**
  * Generic filter criteria implementation for revisionable
  * revisions. Allows selecting and fetching revision data
@@ -25,7 +27,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
     */
     protected $storage;
     
-    protected $stateless = true;
+    protected bool $stateless = false;
     
     public function __construct(BaseDBStandardizedStorage $storage)
     {
@@ -34,11 +36,6 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         $this->setOrderBy('`date`', 'ASC');
 
         $this->storage = $storage;
-        
-        $revisionable = $this->storage->getRevisionable();
-        if($revisionable instanceof Application_Revisionable) {
-            $this->stateless = false;
-        }
     }
     
     protected function getSearchFields()
@@ -49,7 +46,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         );
     }
     
-    protected function getQuery()
+    protected function getQuery() : string
     {
         $query =
         "SELECT

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Interfaces;
 
-use Application\Revisionable\RevisionableChangelogTrait;
+use Application\Revisionable\Changelog\RevisionableChangelogTrait;
 use Application_Changelog_FilterCriteria;
 use Application_User;
 use TestDriver\TestDBRecords\TestDBCollection;
