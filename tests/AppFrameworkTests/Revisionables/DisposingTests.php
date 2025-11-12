@@ -16,7 +16,7 @@ final class DisposingTests extends RevisionableTestCase
      * the storage's disposable keys, as long as they are dependent
      * on the revisionable and that specific revision.
      *
-     * @see \Application_RevisionableStateless::_dispose()
+     * @see \BaseRevisionable::_dispose()
      * @see \Application\Revisionable\Storage\BaseRevisionStorage::_dispose()
      */
     public function test_disposeRevisionStorageAndDisposableKeys() : void

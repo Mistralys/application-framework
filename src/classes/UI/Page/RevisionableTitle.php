@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use AppUtils\Interfaces\StringableInterface;
 
 /**
@@ -23,10 +23,10 @@ use AppUtils\Interfaces\StringableInterface;
  */
 class UI_Page_RevisionableTitle extends UI_Renderable
 {
-    protected RevisionableStatelessInterface $revisionable;
+    protected RevisionableInterface $revisionable;
     protected bool $configured = false;
     
-    public function __construct(UI_Page $page, RevisionableStatelessInterface $revisionable)
+    public function __construct(UI_Page $page, RevisionableInterface $revisionable)
     {
         parent::__construct($page);
 
@@ -100,7 +100,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         return $this;
     }
     
-    protected function configureBadges(UI_Page_Title $title, BaseRevisionable $revisionable) : void
+    protected function configureBadges(UI_Page_Title $title, RevisionableInterface $revisionable) : void
     {
         $state = $revisionable->getState();
 
@@ -123,11 +123,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         
         $title = $this->renderer->getTitle();
         
-        // revisionable that supports states: configure specific badges
-        if($this->revisionable instanceof BaseRevisionable)
-        {
-            $this->configureBadges($title, $this->revisionable);
-        }
+        $this->configureBadges($title, $this->revisionable);
 
         if(Application::getUser()->isDeveloper()) 
         {

@@ -6,6 +6,8 @@ namespace TestDriver\Revisionables;
 
 use Application\Interfaces\ChangelogViaHandlerInterface;
 use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
@@ -21,8 +23,8 @@ class RevisionableRecord
     use StandardStateSetupTrait;
     use ChangelogViaHandlerTrait;
 
-    public const DATA_KEY_NON_STRUCTURAL = 'non_structural_data_key';
-    public const DATA_KEY_STRUCTURAL = 'structural_data_key';
+    public const string DATA_KEY_NON_STRUCTURAL = 'non_structural_data_key';
+    public const string DATA_KEY_STRUCTURAL = 'structural_data_key';
 
 
     public function setAlias(string $alias) : self
@@ -166,8 +168,8 @@ class RevisionableRecord
         return ChangelogHandler::class;
     }
 
-    public static function createStubObject(): BaseRevisionable
+    public static function createStubObject(): RevisionableInterface
     {
-        return new self(RevisionableCollection::getInstance(), BaseRevisionableCollection::STUB_OBJECT_ID);
+        return new self(RevisionableCollection::getInstance(), RevisionableCollectionInterface::STUB_OBJECT_ID);
     }
 }

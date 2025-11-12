@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace AppFrameworkTestClasses\Stubs;
 
-use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
 use Application\Disposables\DisposableInterface;

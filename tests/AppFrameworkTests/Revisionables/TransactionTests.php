@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDriver\Revisionables\RevisionableRecord;
 
@@ -91,7 +91,7 @@ final class TransactionTests extends RevisionableTestCase
 
         $revisionable->startCurrentUserTransaction();
 
-        $this->expectExceptionCode(RevisionableStatelessInterface::ERROR_CANNOT_GET_ADDED_REVISION_DURING_TRANSACTION);
+        $this->expectExceptionCode(RevisionableInterface::ERROR_CANNOT_GET_ADDED_REVISION_DURING_TRANSACTION);
 
         $revisionable->hasLastTransactionAddedARevision();
     }

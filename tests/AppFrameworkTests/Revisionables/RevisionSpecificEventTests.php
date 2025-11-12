@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use TestApplication\TestDriver\Revisionables\RevisionableMemory;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\Event\RevisionAddedEvent;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 

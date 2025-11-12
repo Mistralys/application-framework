@@ -9,12 +9,8 @@ declare(strict_types=1);
 namespace AppFrameworkTestClasses\Stubs;
 
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
-use Application\Disposables\DisposableTrait;
-use Application_Traits_Eventable;
-use Application_Traits_Loggable;
 
 /**
  * Implementation of a revision-dependent object.
@@ -43,7 +39,7 @@ class RevisionDependentStub implements RevisionDependentInterface
         return $this->revision;
     }
 
-    public function getRevisionable(): RevisionableStatelessInterface
+    public function getRevisionable(): RevisionableInterface
     {
         return $this->revisionable;
     }

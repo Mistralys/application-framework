@@ -36,7 +36,7 @@ final class StubTests extends RevisionableTestCase
         // the stub revision constant.
         $this->assertSame(StubDBRevisionStorage::STUB_REVISION_NUMBER, $stub->getCurrentRevision());
 
-        // The revision is selected correctly, because DB revisionables
+        // The revision is selected correctly, because revisionables
         // select the current revision on instantiation.
         /* @see BaseRevisionable::__construct() */
 
