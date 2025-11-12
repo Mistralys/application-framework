@@ -67,7 +67,7 @@ class RecordTests extends DBHelperTestCase
         $record->setCustomField('dummy', 'dummy');
 
         $this->assertTrue($record->isModified());
-        $this->assertFalse($record->isStructureModified(), 'The custom field is not structural.');
+        $this->assertFalse($record->hasStructuralChanges(), 'The custom field is not structural.');
 
         $record->save();
 
@@ -82,10 +82,10 @@ class RecordTests extends DBHelperTestCase
         $record->setAlias('new-alias');
 
         $this->assertTrue($record->isModified());
-        $this->assertTrue($record->isStructureModified(), 'The alias is a structural key.');
+        $this->assertTrue($record->hasStructuralChanges(), 'The alias is a structural key.');
 
         $record->save();
 
-        $this->assertFalse($record->isStructureModified());
+        $this->assertFalse($record->hasStructuralChanges());
     }
 }

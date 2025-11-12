@@ -12,8 +12,8 @@ use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
-use Application_Interfaces_Disposable;
-use Application_Traits_Disposable;
+use Application\Disposables\DisposableInterface;
+use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 
@@ -26,14 +26,14 @@ use Application_Traits_Loggable;
  *
  * @see RevisionDependentInterface
  * @see RevisionDependentTrait
- * @see Application_Interfaces_Disposable
- * @see Application_Traits_Disposable
+ * @see \Application\Disposables\DisposableInterface
+ * @see DisposableTrait
  */
 class RevisionDependentDisposableStub
     extends RevisionDependentStub
-    implements Application_Interfaces_Disposable
+    implements DisposableInterface
 {
-    use Application_Traits_Disposable;
+    use DisposableTrait;
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 

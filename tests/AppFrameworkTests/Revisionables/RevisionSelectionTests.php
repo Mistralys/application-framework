@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use Application\Revisionable\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
-use Application_Revisionable;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDriver\Revisionables\RevisionableCollection;
 use TestDriver\Revisionables\RevisionableRecord;

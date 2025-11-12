@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace TestApplication\TestDriver\Revisionables;
 
 use Application;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableException;
 use Application_Changelog_FilterCriteria;
 use Application_EventHandler_EventableListener;
-use Application_RevisionableCollection;
 use Application_RevisionableStateless;
 use Application_Traits_Loggable;
 use TestDriver\Revisionables\RevisionableMemoryCollection;
@@ -171,7 +171,7 @@ class RevisionableMemory extends Application_RevisionableStateless
         return $type;
     }
 
-    public function getCollection(): Application_RevisionableCollection
+    public function getCollection(): BaseRevisionableCollection
     {
         return RevisionableMemoryCollection::create();
     }

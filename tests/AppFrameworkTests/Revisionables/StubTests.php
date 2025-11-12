@@ -5,28 +5,28 @@ declare(strict_types=1);
 namespace AppFrameworkTests\Revisionables;
 
 use Application\Revisionable\RevisionableInterface;
-use Application\RevisionStorage\StubDBRevisionStorage;
+use Application\Revisionable\Storage\StubDBRevisionStorage;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 
 final class StubTests extends RevisionableTestCase
 {
     public function test_createStubIsStub() : void
     {
-        $stub = $this->revCollection->createDummyRecord();
+        $stub = $this->revCollection->createStubRecord();
 
         $this->assertTrue($stub->isStub());
     }
 
     public function test_stubUsesStubRevisionStorage() : void
     {
-        $stub = $this->revCollection->createDummyRecord();
+        $stub = $this->revCollection->createStubRecord();
 
         $this->assertInstanceOf(StubDBRevisionStorage::class, $stub->getRevisionStorage());
     }
 
     public function test_getRevisionIsDefaultStubRevision() : void
     {
-        $stub = $this->revCollection->createDummyRecord();
+        $stub = $this->revCollection->createStubRecord();
 
         // Stub records have no current revision on the collection level,
         // as they do not exist in the database.
@@ -38,21 +38,21 @@ final class StubTests extends RevisionableTestCase
 
         // The revision is selected correctly, because DB revisionables
         // select the current revision on instantiation.
-        /* @see Application_RevisionableCollection_DBRevisionable::__construct() */
+        /* @see BaseRevisionable::__construct() */
 
         $this->assertSame($stub->getRevision(), StubDBRevisionStorage::STUB_REVISION_NUMBER);
     }
 
     public function test_revisionExists() : void
     {
-        $stub = $this->revCollection->createDummyRecord();
+        $stub = $this->revCollection->createStubRecord();
 
         $this->assertTrue($stub->revisionExists(StubDBRevisionStorage::STUB_REVISION_NUMBER));
     }
 
     public function test_transactionNotAllowedOnStubs() : void
     {
-        $stub = $this->revCollection->createDummyRecord();
+        $stub = $this->revCollection->createStubRecord();
 
         $this->expectExceptionCode(RevisionableInterface::ERROR_OPERATION_NOT_ALLOWED_ON_STUB);
 

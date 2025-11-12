@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
-use TestApplication\TestDriver\Revisionables\RevisionableMemory;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
-use Application_RevisionableCollection;
-use Application_Traits_Disposable;
+use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
+use TestApplication\TestDriver\Revisionables\RevisionableMemory;
 use TestDriver\Revisionables\Storage\RevisionableStorage;
 use TestDriver\Revisionables\Storage\RevisionCopy;
 
-class RevisionableMemoryCollection extends Application_RevisionableCollection
+class RevisionableMemoryCollection extends BaseRevisionableCollection
 {
     use Application_Traits_Eventable;
-    use Application_Traits_Disposable;
+    use DisposableTrait;
 
     protected function _getIdentification(): string
     {
@@ -100,12 +100,12 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
         return '';
     }
 
-    public function getPrimaryKeyName(): string
+    public function getRecordPrimaryName(): string
     {
         return '';
     }
 
-    public function getTableName(): string
+    public function getRecordTableName(): string
     {
         return '';
     }
@@ -130,7 +130,7 @@ class RevisionableMemoryCollection extends Application_RevisionableCollection
         return true;
     }
 
-    public function getPrimaryRequestName(): string
+    public function getRecordRequestPrimaryName(): string
     {
         return '';
     }

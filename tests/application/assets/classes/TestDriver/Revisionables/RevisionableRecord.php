@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
-use BaseDBCollectionStorage;
 use Application\Interfaces\ChangelogViaHandlerInterface;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
+use Application\Revisionable\Storage\BaseDBCollectionStorage;
 use Application\Traits\ChangelogViaHandlerTrait;
-use Application_Revisionable;
-use Application_RevisionableCollection;
-use Application_RevisionableCollection_DBRevisionable;
+use BaseRevisionable;
 
 class RevisionableRecord
-    extends Application_RevisionableCollection_DBRevisionable
+    extends BaseRevisionable
     implements
     StandardStateSetupInterface,
     ChangeLogViaHandlerInterface
@@ -167,8 +166,8 @@ class RevisionableRecord
         return ChangelogHandler::class;
     }
 
-    public static function createStubObject(): Application_Revisionable
+    public static function createStubObject(): BaseRevisionable
     {
-        return new self(RevisionableCollection::getInstance(), Application_RevisionableCollection::STUB_OBJECT_ID);
+        return new self(RevisionableCollection::getInstance(), BaseRevisionableCollection::STUB_OBJECT_ID);
     }
 }

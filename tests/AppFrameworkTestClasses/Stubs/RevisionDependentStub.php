@@ -12,7 +12,7 @@ use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionableStatelessInterface;
 use Application\Revisionable\RevisionDependentInterface;
 use Application\Traits\RevisionDependentTrait;
-use Application_Traits_Disposable;
+use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 

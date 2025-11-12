@@ -10,7 +10,7 @@ namespace TestDriver\Collection;
 
 use Application\Collection\StringCollectionInterface;
 use Application\Collection\StringCollectionItemInterface;
-use Application_Traits_Disposable;
+use Application\Disposables\DisposableTrait;
 use Application_Traits_Eventable;
 use Application_Traits_Loggable;
 
@@ -23,7 +23,7 @@ use Application_Traits_Loggable;
  */
 class MythologyRecordCollection implements StringCollectionInterface
 {
-    use Application_Traits_Disposable;
+    use DisposableTrait;
     use Application_Traits_Loggable;
     use Application_Traits_Eventable;
 
@@ -87,20 +87,14 @@ class MythologyRecordCollection implements StringCollectionInterface
         return 'Custom Record Collection';
     }
 
-    public function idExists($record_id): bool
+    public function idExists(string $record_id): bool
     {
-        $record_id = (string)$record_id;
-
         return isset($this->items[$record_id]);
     }
 
-    /**
-     * @param string|int $record_id
-     * @return MythologicalRecord
-     */
-    public function getByID($record_id): StringCollectionItemInterface
+    public function getByID(string $record_id): MythologicalRecord
     {
-        return $this->items[(string)$record_id];
+        return $this->items[$record_id];
     }
 
     /**
@@ -111,7 +105,7 @@ class MythologyRecordCollection implements StringCollectionInterface
         return array_values($this->items);
     }
 
-    public function createDummyRecord() : MythologicalRecord
+    public function createStubRecord() : MythologicalRecord
     {
         return new MythologicalRecord(self::RECORD_STUB, 'Stub');
     }

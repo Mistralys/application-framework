@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace TestDriver\Area\RevisionableScreen;
 
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
 use Application_Admin_Area_Mode_RevisionableList;
-use Application_RevisionableCollection;
 use TestDriver\Revisionables\RevisionableCollection;
 
 class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableList
 {
     public const URL_NAME = 'list';
 
-    public function getCollection(): Application_RevisionableCollection
+    public function getCollection(): BaseRevisionableCollection
     {
         return RevisionableCollection::getInstance();
     }

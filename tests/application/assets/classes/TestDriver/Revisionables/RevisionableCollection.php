@@ -4,20 +4,21 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
-use Application_RevisionableCollection;
-use Application_Traits_Disposable;
-use Application_Traits_Eventable;
+use Application_EventHandler_EventableListener;
 use Application_User;
 use AppUtils\ClassHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+use DBHelper_BaseRecord;
 use TestDriver\Revisionables\Storage\RevisionableStorage;
 use TestDriver\Revisionables\Storage\RevisionCopy;
 
 /**
- * @method RevisionableRecord createNewRecord(string $label, ?Application_User $author = null, array $data = array())
- * @method RevisionableRecord createDummyRecord()
+ * @method RevisionableRecord createNewRevisionable(string $label, ?Application_User $author = null, array $data = array())
+ * @method RevisionableRecord createStubRecord()
  */
-class RevisionableCollection extends Application_RevisionableCollection
+class RevisionableCollection extends BaseRevisionableCollection
 {
     public const TABLE_NAME = 'revisionables';
     public const TABLE_REVISIONS = 'revisionables_revisions';
@@ -40,9 +41,9 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::$instance;
     }
 
-    public function createNewRevisionable(string $label, string $alias) : RevisionableRecord
+    public function createNew(string $label, string $alias) : RevisionableRecord
     {
-        return $this->createNewRecord(
+        return $this->createNewRevisionable(
             $label,
             null,
             array(
@@ -53,7 +54,7 @@ class RevisionableCollection extends Application_RevisionableCollection
 
     // region: X - Interface methods
 
-    public function getPrimaryRequestName(): string
+    public function getRecordRequestPrimaryName(): string
     {
         return self::PRIMARY_NAME;
     }
@@ -139,12 +140,12 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::TABLE_CURRENT_REVISIONS;
     }
 
-    public function getPrimaryKeyName(): string
+    public function getRecordPrimaryName(): string
     {
         return self::PRIMARY_NAME;
     }
 
-    public function getTableName(): string
+    public function getRecordTableName(): string
     {
         return self::TABLE_NAME;
     }
@@ -178,5 +179,4 @@ class RevisionableCollection extends Application_RevisionableCollection
     {
         return '';
     }
-
 }

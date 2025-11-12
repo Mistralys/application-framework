@@ -17,7 +17,7 @@ final class DisposingTests extends RevisionableTestCase
      * on the revisionable and that specific revision.
      *
      * @see \Application_RevisionableStateless::_dispose()
-     * @see \Application_RevisionStorage::_dispose()
+     * @see \Application\Revisionable\Storage\BaseRevisionStorage::_dispose()
      */
     public function test_disposeRevisionStorageAndDisposableKeys() : void
     {

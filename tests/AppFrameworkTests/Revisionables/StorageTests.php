@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use Application_RevisionStorage;
+use Application\Revisionable\Storage\BaseRevisionStorage;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDriver\Revisionables\RevisionableCollection;
 use TestDriver\Revisionables\RevisionableRecord;
@@ -111,7 +111,7 @@ final class StorageTests extends RevisionableTestCase
     public function test_noPrivateKeyPrefixDuplicates() : void
     {
         $this->storage->setPrivateKey('foo', 'initial');
-        $this->storage->setPrivateKey(Application_RevisionStorage::PRIVATE_KEY_PREFIX.'foo', 'overwritten');
+        $this->storage->setPrivateKey(BaseRevisionStorage::PRIVATE_KEY_PREFIX.'foo', 'overwritten');
 
         $this->assertSame('overwritten', $this->storage->getPrivateKey('foo'));
     }
