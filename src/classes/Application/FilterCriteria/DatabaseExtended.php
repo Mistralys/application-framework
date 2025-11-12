@@ -1,14 +1,13 @@
 <?php
 /**
- * File containing the class {@see Application_FilterCriteria_DatabaseExtended}.
- *
  * @package Application
  * @subpackage FilterCriteria
- * @see Application_FilterCriteria_DatabaseExtended
  */
 
 declare(strict_types=1);
 
+use Application\FilterCriteria\FilterCriteriaDBExtendedInterface;
+use Application\FilterCriteria\FilterCriteriaException;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
 
@@ -48,39 +47,25 @@ use AppUtils\NamedClosure;
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_FilterCriteria_DatabaseExtended extends Application_FilterCriteria_Database
+abstract class Application_FilterCriteria_DatabaseExtended extends Application_FilterCriteria_Database implements FilterCriteriaDBExtendedInterface
 {
-    public const ERROR_CANNOT_REGISTER_COLUMN_AGAIN = 90501;
-    public const ERROR_MAX_BUILD_ITERATIONS_REACHED = 90502;
-    public const ERROR_MAX_REPLACE_ITERATIONS_REACHED = 90503;
+    public const int MAX_BUILD_ITERATIONS = 20;
+    public const int MAX_REPLACE_ITERATIONS = 4;
 
-    const MAX_BUILD_ITERATIONS = 20;
-    const MAX_REPLACE_ITERATIONS = 4;
-
-    /**
-     * @var bool
-     */
-    private $customColumnsInitialized = false;
+    private bool $customColumnsInitialized = false;
 
     /**
      * @var array<string,Application_FilterCriteria_Database_CustomColumn>
      */
-    protected $customColumns = array();
+    protected array $customColumns = array();
 
-    /**
-     * @var int
-     */
-    private $buildIteration = 0;
-
-    /**
-     * @var string
-     */
-    private $buildInitialQuery = '';
+    private int $buildIteration = 0;
+    private string $buildInitialQuery = '';
 
     /**
      * @var array<string,Application_FilterCriteria_Database_ColumnUsage>
      */
-    private $columnUsage = array();
+    private array $columnUsage = array();
 
     /**
      * Actually boolean keys in the array, but since
@@ -89,7 +74,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      *
      * @var array<int,string>
      */
-    private $buildCache;
+    private array $buildCache;
 
     abstract protected function _initCustomColumns() : void;
 
@@ -105,10 +90,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         $this->_initCustomColumns();
     }
 
-    /**
-     * @return string[]
-     * @throws Application_Exception
-     */
     public function getSelects() : array
     {
         $selects = array_merge(parent::getSelects(), $this->getCustomSelects());
@@ -116,11 +97,6 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         return array_map('strval', $selects);
     }
 
-    /**
-     * Fetches all select statements for custom columns.
-     *
-     * @return string[]
-     */
     public function getCustomSelects() : array
     {
         $this->initCustomColumns();
@@ -147,7 +123,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @return string
      *
      * @throws Application_Exception
-     * @see Application_FilterCriteria_Database::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
+     * @see FilterCriteriaException::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
      */
     protected function getCustomSelect(string $columnID) : string
     {
@@ -175,10 +151,10 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @param bool $enable Whether to enable this column. Allows turning it on and off at will.
      * @return $this
      *
+     * @throws Application_Exception
      * @see Application_FilterCriteria_Database::registerCustomColumn()
      *
-     * @throws Application_Exception
-     * @see Application_FilterCriteria_Database::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
+     * @see FilterCriteriaException::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
      */
     protected function withCustomColumn(string $columnID, bool $enable=true)
     {
@@ -193,9 +169,9 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         throw $this->createMissingColumnException($columnID);
     }
 
-    protected function createMissingColumnException(string $columnID) : Application_Exception
+    protected function createMissingColumnException(string $columnID) : FilterCriteriaException
     {
-        return new Application_Exception(
+        return new FilterCriteriaException(
             'Custom column not registered',
             sprintf(
                 'The custom column [%s] is not available, it has not been registered in the filters class [%s]. Registered columns are: [%s].',
@@ -203,7 +179,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                 get_class($this),
                 implode(', ', array_keys($this->customColumns))
             ),
-            self::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
+            FilterCriteriaException::ERROR_CUSTOM_COLUMN_NOT_REGISTERED
         );
     }
 
@@ -312,7 +288,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @return Application_FilterCriteria_Database_CustomColumn
      *
      * @throws Application_Exception
-     * @see Application_FilterCriteria_DatabaseExtended::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
+     * @see FilterCriteriaException::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
      */
     protected function registerCustomColumn(string $columnID, $source) : Application_FilterCriteria_Database_CustomColumn
     {
@@ -323,22 +299,19 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
             return $column;
         }
 
-        throw new Application_Exception(
+        throw new FilterCriteriaException(
             'Can register custom columns only once',
             sprintf(
                 'The column [%s] has already been registered.',
                 $columnID
             ),
-            self::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
+            FilterCriteriaException::ERROR_CANNOT_REGISTER_COLUMN_AGAIN
         );
     }
 
     /**
-     * Fetches a custom column instance.
-     *
-     * @param string $columnID
-     * @return Application_FilterCriteria_Database_CustomColumn
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
     public function getCustomColumn(string $columnID) : Application_FilterCriteria_Database_CustomColumn
     {
@@ -356,13 +329,13 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
      * @param bool $debug
      * @return $this
      */
-    public function debugBuild(bool $debug=true)
+    public function debugBuild(bool $debug=true) : self
     {
         $this->debugBuild = $debug;
         return $this;
     }
 
-    private $debugBuild = false;
+    private bool $debugBuild = false;
 
     private function logBuild(string $message) : void
     {
@@ -436,7 +409,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                         $adjusted,
                         self::MAX_BUILD_ITERATIONS
                     ),
-                    self::ERROR_MAX_BUILD_ITERATIONS_REACHED
+                    FilterCriteriaException::ERROR_MAX_BUILD_ITERATIONS_REACHED
                 );
             }
 
@@ -487,7 +460,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
         // The query is complete when there are no further
         // column markers left to replace.
-        if(strstr($query, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === false)
+        if(!str_contains($query, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX))
         {
             $this->logBuild('OK: No placeholders left in the query.');
 
@@ -541,7 +514,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
                     $this->replaceIteration,
                     $query
                 ),
-                self::ERROR_MAX_REPLACE_ITERATIONS_REACHED
+                FilterCriteriaException::ERROR_MAX_REPLACE_ITERATIONS_REACHED
             );
         }
 
@@ -553,7 +526,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
         return $this->buildQuery($isCount);
     }
 
-    private $replaceIteration = 0;
+    private int $replaceIteration = 0;
 
     protected function replaceMarkers(string $query) : string
     {
@@ -645,7 +618,7 @@ abstract class Application_FilterCriteria_DatabaseExtended extends Application_F
 
             $statement = $column->getGroupByValue();
 
-            if(!in_array($statement, $groupBys))
+            if(!in_array($statement, $groupBys, true))
             {
                 $groupBys[] = $statement;
             }

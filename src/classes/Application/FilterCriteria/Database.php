@@ -7,6 +7,7 @@
  * @see Application_FilterCriteria_Database
  */
 
+use Application\FilterCriteria\FilterCriteriaDBInterface;
 use Application\FilterCriteria\FilterCriteriaException;
 use Application\Interfaces\FilterCriteriaInterface;
 use AppUtils\ConvertHelper;
@@ -18,29 +19,16 @@ use AppUtils\ConvertHelper\JSONConverter;
  * database-specific methods for handling JOIN statements
  * and the like.
  *
- * NOTE: For new projects, it is recommended to use the
- * {@see Application_FilterCriteria_DatabaseExtended} class,
- * which automates more tasks.
+ * > NOTE: For new projects, it is recommended to use the
+ * > {@see Application_FilterCriteria_DatabaseExtended} class,
+ * > which automates more tasks.
  *
  * @package Application
  * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class Application_FilterCriteria_Database extends Application_FilterCriteria
+abstract class Application_FilterCriteria_Database extends Application_FilterCriteria implements FilterCriteriaDBInterface
 {
-    public const ERROR_INVALID_WHERE_STATEMENT = 710001;
-    public const ERROR_EMPTY_SELECT_FIELDS_LIST = 710002;
-    public const ERROR_MISSING_SELECT_KEYWORD = 710004;
-    public const ERROR_CUSTOM_COLUMN_NOT_REGISTERED = 710005;
-    public const ERROR_JOIN_ID_NOT_FOUND = 710006;
-    public const ERROR_JOIN_ALREADY_REGISTERED = 710007;
-    public const ERROR_JOIN_ALREADY_ADDED = 710008;
-    public const ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT = 710009;
-
-    public const DEFAULT_SELECT = <<<'EOT'
-SELECT {WHAT} FROM tablename {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}
-EOT;
-
     protected string $placeholderPrefix = 'PH';
 
     /**
@@ -150,7 +138,7 @@ EOT;
                 throw new FilterCriteriaException(
                     'Cannot use DISTINCT with wildcard column',
                     'When using a distinct query, the count column name must be more specific than a wildcard.',
-                    self::ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT
+                    FilterCriteriaException::ERROR_CANNOT_USE_WILDCARD_AND_DISTINCT
                 );
             }
 
@@ -212,7 +200,7 @@ EOT;
      * @return string
      *
      * @throws Application_Exception
-     * @see Application_FilterCriteria_Database::ERROR_MISSING_SELECT_KEYWORD
+     * @see FilterCriteriaException::ERROR_MISSING_SELECT_KEYWORD
      */
     protected function addDistinctKeyword($query) : string
     {
@@ -233,7 +221,7 @@ EOT;
             throw new Application_Exception(
                 'SELECT keyword missing in the query.',
                 'The query does not seem to have any SELECT keyword: '.$query,
-                self::ERROR_MISSING_SELECT_KEYWORD
+                FilterCriteriaException::ERROR_MISSING_SELECT_KEYWORD
             );
         }
 
@@ -312,21 +300,14 @@ EOT;
      *
      * @return string|DBHelper_StatementBuilder
      */
-    abstract protected function getQuery();
+    abstract protected function getQuery() : string|DBHelper_StatementBuilder;
 
     /**
      * @var array<string,string>
      */
     protected array $placeholders = array();
 
-    /**
-     * Stores placeholders to replace it with variables in the query.
-     *
-     * @param string|int|float $value
-     * @param string $name
-     * @return $this
-     */
-    public function addPlaceholder(string $name, $value) : self
+    public function addPlaceholder(string $name, string|int|float $value) : self
     {
         $name = ':' . ltrim($name, ':');
 
@@ -335,12 +316,6 @@ EOT;
         return $this;
     }
 
-    /**
-     * Retrieves an associative array with placeholder => value pairs of
-     * variables to use in the query.
-     *
-     * @return array<string,string>
-     */
     public function getQueryVariables() : array
     {
         return $this->placeholders;
@@ -362,7 +337,7 @@ EOT;
      * @param string|DBHelper_StatementBuilder $columnSelect
      * @return $this
      */
-    public function addSelectColumn($columnSelect)
+    public function addSelectColumn(string|DBHelper_StatementBuilder $columnSelect) : self
     {
         $key = self::getUniqueKey($columnSelect);
 
@@ -376,8 +351,8 @@ EOT;
     }
 
     /**
-     * @return string[]
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
     public function getSelects() : array
     {
@@ -385,10 +360,10 @@ EOT;
 
         if(empty($selects))
         {
-            throw new Application_Exception(
+            throw new FilterCriteriaException(
                 'Select fields list cannot be empty',
                 'The method call [getSelect] returned an empty value.',
-                self::ERROR_EMPTY_SELECT_FIELDS_LIST
+                FilterCriteriaException::ERROR_EMPTY_SELECT_FIELDS_LIST
             );
         }
 
@@ -426,15 +401,7 @@ EOT;
         return $statement;
     }
 
-    /**
-     * Sets this query as distinct: the SELECT statement will
-     * automatically be changed, and other details also be
-     * adjusted, like adding the order column to the selected
-     * fields for compatibility reasons for example.
-     *
-     * @return $this
-     */
-    public function makeDistinct()
+    public function makeDistinct() : self
     {
         $this->distinct = true;
         return $this;
@@ -453,10 +420,6 @@ EOT;
         return $this->fetchResults(false);
     }
 
-    /**
-     * Gets all queries that have been run so far.
-     * @return string[]
-     */
     public function getQueries() : array
     {
         $queries = array();
@@ -480,29 +443,25 @@ EOT;
     }
 
     /**
-     * Adds a where statement (without the `WHERE`).
-     *
-     * @param string|DBHelper_StatementBuilder $statement
-     * @return $this
-     *
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhere($statement) : self
+    public function addWhere(string|DBHelper_StatementBuilder $statement) : self
     {
         $statement = (string)$statement;
 
         if(empty($statement) || $statement === '()') {
-            throw new Application_Exception(
+            throw new FilterCriteriaException(
                 'Invalid where statement',
                 sprintf(
                     'Where statements may not be empty, and must be valid SQL conditions in statement: %s',
                     $statement
                 ),
-                self::ERROR_INVALID_WHERE_STATEMENT
+                FilterCriteriaException::ERROR_INVALID_WHERE_STATEMENT
             );
         }
 
-        if(!in_array($statement, $this->where))
+        if(!in_array($statement, $this->where, true))
         {
             $this->where[] = $statement;
             $this->handleCriteriaChanged();
@@ -512,22 +471,19 @@ EOT;
     }
 
     /**
-     * @param string $template
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereStatement(string $template)
+    public function addWhereStatement(string $template) : self
     {
         return $this->addWhere($this->statement($template));
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param bool $null
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnISNULL($column, bool $null=true)
+    public function addWhereColumnISNULL(string|DBHelper_StatementBuilder $column, bool $null=true) : self
     {
         $token = '';
         if($null===false) {
@@ -536,31 +492,27 @@ EOT;
 
         return $this->addWhere(sprintf(
             "%s IS %sNULL",
-            (string)$column,
+            $column,
             $token
         ));
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnNOT_NULL($column)
+    public function addWhereColumnNOT_NULL(string|DBHelper_StatementBuilder $column) : self
     {
         return $this->addWhereColumnISNULL($column, false);
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param string[] $values
-     * @param bool $exclude
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnIN($column, array $values, bool $exclude=false)
+    public function addWhereColumnIN(string|DBHelper_StatementBuilder $column, array $values, bool $exclude=false) : self
     {
-        $column = strval($column);
+        $column = (string)$column;
 
         if(empty($values)) {
             return $this;
@@ -585,12 +537,10 @@ EOT;
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param string|string[] $value
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnLIKE($column, $value)
+    public function addWhereColumnLIKE(string|DBHelper_StatementBuilder $column, string|array $value) : self
     {
         $column = $this->quoteColumnName($column);
 
@@ -608,46 +558,40 @@ EOT;
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param string[] $values
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnNOT_IN($column, array $values)
+    public function addWhereColumnNOT_IN(string|DBHelper_StatementBuilder $column, array $values) : self
     {
         return $this->addWhereColumnIN($column, $values, true);
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param string $value
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnEquals($column, string $value)
+    public function addWhereColumnEquals(string|DBHelper_StatementBuilder $column, string $value) : self
     {
         $placeholder = $this->generatePlaceholder($value);
 
         return $this->addWhere(sprintf(
             "%s = %s",
-            (string)$column,
+            $column,
             $placeholder
         ));
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder $column
-     * @param string $value
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnNOT_Equals($column, string $value)
+    public function addWhereColumnNOT_Equals(string|DBHelper_StatementBuilder $column, string $value) : self
     {
         $placeholder = $this->generatePlaceholder($value);
 
         return $this->addWhere(sprintf(
             "%s != %s",
-            (string)$column,
+            $column,
             $placeholder
         ));
     }
@@ -655,13 +599,13 @@ EOT;
     /**
      * @param string|DBHelper_StatementBuilder $column
      * @return $this
-     * @throws Application_Exception
+     * @throws FilterCriteriaException
      */
-    public function addWhereColumnNOT_Empty($column)
+    public function addWhereColumnNOT_Empty(string|DBHelper_StatementBuilder $column) : self
     {
         return $this->addWhere(sprintf(
             "%s != ''",
-            (string)$column
+            $column
         ));
     }
 
@@ -698,15 +642,6 @@ EOT;
         $this->_registerJoins();
     }
 
-    /**
-     * Retrieves all join statements that are currently
-     * in use in the criteria. Includes all dependencies
-     * if a join requires another one, even if that has
-     * only been registered so far.
-     *
-     * @return Application_FilterCriteria_Database_Join[]
-     * @throws DBHelper_Exception
-     */
     public function getJoins(bool $includeRegistered=false) : array
     {
         $this->registerJoins();
@@ -739,15 +674,6 @@ EOT;
         return array_values($result);
     }
 
-    /**
-     * Retrieves all join statements currently used in
-     * the criteria, ordered to ensure that joins that
-     * depend on each other are added in the correct
-     * sequence.
-     *
-     * @return Application_FilterCriteria_Database_Join[]
-     * @throws DBHelper_Exception
-     */
     public function getJoinsOrdered(bool $includeRegistered=false) : array
     {
         $joins = $this->getJoins($includeRegistered);
@@ -792,7 +718,7 @@ EOT;
      * @param string $joinID
      * @return Application_FilterCriteria_Database_Join
      */
-    public function addJoin($statement, string $joinID='') : Application_FilterCriteria_Database_Join
+    public function addJoin(string|DBHelper_StatementBuilder $statement, string $joinID='') : Application_FilterCriteria_Database_Join
     {
         $join = new Application_FilterCriteria_Database_Join($this, $statement, $joinID);
         $id = $join->getID();
@@ -816,11 +742,6 @@ EOT;
         return $join;
     }
 
-    /**
-     * @param string $template
-     * @param string $joinID
-     * @return DBHelper_StatementBuilder
-     */
     public function addJoinStatement(string $template, string $joinID='') : DBHelper_StatementBuilder
     {
         $statement = $this->statement($template);
@@ -830,22 +751,7 @@ EOT;
         return $statement;
     }
 
-    /**
-     * Adds a `JOIN` statement that was previously registered
-     * with {@see Application_FilterCriteria_Database::registerJoin()}.
-     *
-     * Use this to add joins to a query only when they are needed,
-     * as alternative to {@see Application_FilterCriteria_Database::addJoin()},
-     * which adds it regardless of whether it is actually used.
-     *
-     * NOTE: If the join has already been added, this will be ignored.
-     *
-     * @param string $joinID
-     * @return $this
-     * @throws DBHelper_Exception
-     * @see Application_FilterCriteria_Database::ERROR_JOIN_ID_NOT_FOUND
-     */
-    public function requireJoin(string $joinID)
+    public function requireJoin(string $joinID) : self
     {
         if($this->hasJoin($joinID))
         {
@@ -872,14 +778,9 @@ EOT;
     }
 
     /**
-     * Gets a join statement, either from those that have
-     * been added, or who have been registered but not added
-     * yet.
-     *
-     * @param string $joinID
-     * @return Application_FilterCriteria_Database_Join
-     * @throws DBHelper_Exception
-     * @see Application_FilterCriteria_Database::ERROR_JOIN_ID_NOT_FOUND
+     * @inheritDoc
+     * @throws FilterCriteriaException
+     * @see FilterCriteriaException::ERROR_JOIN_ID_NOT_FOUND
      */
     public function getJoinByID(string $joinID) : Application_FilterCriteria_Database_Join
     {
@@ -895,43 +796,36 @@ EOT;
             return $this->registeredJoins[$joinID];
         }
 
-        throw new DBHelper_Exception(
+        throw new FilterCriteriaException(
             'Missing JOIN statement.',
             sprintf(
                 'JOIN not found by ID [%s].',
                 $joinID
             ),
-            self::ERROR_JOIN_ID_NOT_FOUND
+            FilterCriteriaException::ERROR_JOIN_ID_NOT_FOUND
         );
     }
 
     /**
-     * Registers a `JOIN` statement that can be referenced
-     * by its ID, to allow columns to require joins only
-     * when they are actually needed.
-     *
-     * @param string $joinID
-     * @param string|DBHelper_StatementBuilder $statement
-     * @return Application_FilterCriteria_Database_Join
-     *
-     * @throws DBHelper_Exception
-     * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_ADDED
-     * @see Application_FilterCriteria_Database::ERROR_JOIN_ALREADY_REGISTERED
+     * @inheritDoc
+     * @throws FilterCriteriaException
+     * @see FilterCriteriaException::ERROR_JOIN_ALREADY_ADDED
+     * @see FilterCriteriaException::ERROR_JOIN_ALREADY_REGISTERED
      */
-    public function registerJoin(string $joinID, $statement) : Application_FilterCriteria_Database_Join
+    public function registerJoin(string $joinID, string|DBHelper_StatementBuilder $statement) : Application_FilterCriteria_Database_Join
     {
         $join = new Application_FilterCriteria_Database_Join($this, $statement, $joinID);
         $id = $join->getID();
 
         if(isset($this->joins[$id]))
         {
-            throw new DBHelper_Exception(
+            throw new FilterCriteriaException(
                 'JOIN statement already added.',
                 sprintf(
                     'Cannot register JOIN statement [%s], it has already been added.',
                     $joinID
                 ),
-                self::ERROR_JOIN_ALREADY_ADDED
+                FilterCriteriaException::ERROR_JOIN_ALREADY_ADDED
             );
         }
 
@@ -943,27 +837,20 @@ EOT;
             return $join;
         }
 
-        throw new DBHelper_Exception(
+        throw new FilterCriteriaException(
             'JOIN statement already registered.',
             sprintf(
                 'The statement has already been registered: 
                 %s',
                 $statement
             ),
-            self::ERROR_JOIN_ALREADY_REGISTERED
+            FilterCriteriaException::ERROR_JOIN_ALREADY_REGISTERED
         );
     }
 
     /**
-     * Registers a `JOIN` statement using a statement builder
-     * template. The join will not be used unless it is specifically
-     * added using {@see Application_FilterCriteria_Database::requireJoin()},
-     * or a custom column requires it.
-     *
-     * @param string $joinID
-     * @param string $statementTemplate Statement template
-     * @return Application_FilterCriteria_Database_Join
-     * @throws DBHelper_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
     public function registerJoinStatement(string $joinID, string $statementTemplate) : Application_FilterCriteria_Database_Join
     {
@@ -976,11 +863,13 @@ EOT;
      * @param string|DBHelper_StatementBuilder $statement
      * @return $this
      */
-    public function addHaving($statement)
+    public function addHaving(string|DBHelper_StatementBuilder $statement) : self
     {
-        if(!in_array($statement, $this->havings))
+        $statement = (string)$statement;
+
+        if(!in_array($statement, $this->havings, true))
         {
-            $this->havings[] = (string)$statement;
+            $this->havings[] = $statement;
             $this->handleCriteriaChanged();
         }
 
@@ -1039,9 +928,9 @@ EOT;
      * @param string|int|float|null $value Placeholder name with prepended `:`.
      * @return string
      */
-    public function generatePlaceholder($value) : string
+    public function generatePlaceholder(string|int|float|null $value) : string
     {
-        $value = strval($value);
+        $value = (string)$value;
         $hash = md5($value);
 
         if(isset($this->placeholderHashes[$hash]))
@@ -1072,10 +961,7 @@ EOT;
     // endregion
 
 
-    /**
-     * @return $this
-     */
-    public function debug()
+    public function debug() : self
     {
         $queries = $this->getQueries();
         foreach($queries as $query) {
@@ -1092,7 +978,7 @@ EOT;
      * @param string|DBHelper_StatementBuilder $groupBy
      * @return $this
      */
-    public function addGroupBy($groupBy)
+    public function addGroupBy(string|DBHelper_StatementBuilder $groupBy) : self
     {
         if($groupBy instanceof DBHelper_StatementBuilder)
         {
@@ -1122,22 +1008,12 @@ EOT;
     }
 
     /**
-     * @param string|DBHelper_StatementBuilder ...$args
-     */
-    public function addGroupBys(...$args)
-    {
-        foreach($args as $groupBy) {
-            $this->addGroupBy($groupBy);
-        }
-    }
-
-    /**
      * Converts all entries to statements before adding them.
      *
      * @param string ...$args
      * @return $this
      */
-    public function addGroupByStatements(...$args)
+    public function addGroupByStatements(...$args) : self
     {
         foreach($args as $groupBy)
         {
@@ -1172,7 +1048,7 @@ EOT;
         $query = $this->addDistinctKeyword($query);
 
         $replaces = array(
-            '{WHAT}' => null,
+            '{WHAT}' => null, // So it is at the beginning of the array.
             '{WHERE}' => $this->buildWhere(),
             '{GROUPBY}' => $this->buildGroupBy(),
             '{ORDERBY}' => $this->buildOrderby(),
@@ -1411,7 +1287,7 @@ EOT;
      * @param string $alias
      * @return $this
      */
-    protected function setSelectAlias(string $alias)
+    protected function setSelectAlias(string $alias) : self
     {
         if($this->selectAlias !== $alias)
         {
@@ -1423,16 +1299,10 @@ EOT;
     }
 
     /**
-     * Selects the date ranges specified by the date string, and
-     * stores the corresponding SQL statements under the given type
-     * (works like the {@link selectCriteriaValue() method).
-     *
-     * @param string $type
-     * @param string $dateSearchString
-     * @return $this
-     * @throws Application_Exception
+     * @inheritDoc
+     * @throws FilterCriteriaException
      */
-    public function selectCriteriaDate(string $type, string $dateSearchString)
+    public function selectCriteriaDate(string $type, string $dateSearchString) : self
     {
         if(empty($dateSearchString)) {
             return $this;
@@ -1461,7 +1331,7 @@ EOT;
      * @return $this
      * @throws Application_Exception
      */
-    public function addDateSearch(string $type, string $column)
+    public function addDateSearch(string $type, string $column) : self
     {
         $values = $this->getCriteriaValues($type);
         if(!empty($values)) {
