@@ -6,21 +6,14 @@ namespace DBHelper\Admin\Traits;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\Admin\MissingRecordInterface;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @see RecordCreateScreenTrait
  */
 interface RecordScreenInterface extends AdminScreenInterface, MissingRecordInterface
 {
-    /**
-     * @return DBHelper_BaseRecord
-     */
-    public function getRecord() : DBHelper_BaseRecord;
-
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    public function getCollection() : DBHelper_BaseCollection;
+    public function getRecord() : DBHelperRecordInterface;
+    public function getCollection() : DBHelperCollectionInterface;
 }

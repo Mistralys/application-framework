@@ -1,10 +1,13 @@
 <?php
 /**
- * File containing the {@link DBHelper_BaseCollection} class.
  * @package Application
  * @subpackage Core
- * @see DBHelper_BaseCollection
  */
+
+declare(strict_types=1);
+
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\DBHelperFilterCriteriaInterface;
 
 /**
  * Base class for filter criteria to be used in conjunction
@@ -37,24 +40,13 @@
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_DatabaseExtended
+abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_DatabaseExtended implements DBHelperFilterCriteriaInterface
 {
-   /**
-    * @var DBHelper_BaseCollection
-    */
-    protected $collection;
-
-    /**
-     * @var string
-     */
-    protected $recordTableName;
-
-    /**
-     * @var string
-     */
-    protected $recordPrimaryName;
+    protected DBHelperCollectionInterface $collection;
+    protected string $recordTableName;
+    protected string $recordPrimaryName;
     
-    public function __construct(DBHelper_BaseCollection $collection)
+    public function __construct(DBHelperCollectionInterface $collection)
     {
         $this->collection = $collection;
         $this->recordTableName = $collection->getRecordTableName();
@@ -63,6 +55,11 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         parent::__construct($collection);
 
         $this->setOrderBy($collection->getRecordDefaultSortKey(), $collection->getRecordDefaultSortDir());
+    }
+
+    public function getCollection() : DBHelperCollectionInterface
+    {
+        return $this->collection;
     }
 
     protected function init() : void
@@ -104,7 +101,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         
     }
     
-    public function getQuery()
+    public function getQuery() : string
     {
         $this->prepareQuery();
         
@@ -139,7 +136,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         );
     }
     
-    protected function resolveTableFrom()
+    protected function resolveTableFrom() : string
     {
         $from = '`'.$this->recordTableName.'`';
         
@@ -150,13 +147,9 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         return $from;
     }
     
-    protected function resolveTableSelector()
+    protected function resolveTableSelector() : string
     {
-        if(isset($this->selectAlias)) {
-            return $this->selectAlias;
-        }
-        
-        return '`'.$this->recordTableName.'`';
+        return $this->selectAlias ?? ('`' . $this->recordTableName . '`');
     }
     
    /**

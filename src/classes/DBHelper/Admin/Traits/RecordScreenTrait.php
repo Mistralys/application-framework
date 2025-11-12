@@ -5,35 +5,33 @@ declare(strict_types=1);
 namespace DBHelper\Admin\Traits;
 
 use DBHelper\BaseCollection\BaseChildCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use UI_DataGrid;
 
 trait RecordScreenTrait
 {
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
+    protected DBHelperCollectionInterface $collection;
+    protected DBHelperRecordInterface $record;
 
-    /**
-     * @var DBHelper_BaseRecord
-     */
-    protected $record;
-
-    abstract protected function createCollection() : DBHelper_BaseCollection;
+    abstract protected function createCollection() : DBHelperCollectionInterface;
 
     protected function init() : void
     {
         $this->collection = $this->createCollection();
-        $this->record = $this->collection->getByRequest();
 
-        if(!$this->record) {
+        $record = $this->collection->getByRequest();
+
+        if($record === null) {
             $this->redirectWithErrorMessage(
                 t('No such record found.'),
                 $this->getRecordMissingURL()
             );
         }
+
+        $this->record = $record;
 
         parent::init();
 
@@ -49,18 +47,12 @@ trait RecordScreenTrait
 
     }
 
-    /**
-     * @return DBHelper_BaseRecord
-     */
-    public function getRecord() : DBHelper_BaseRecord
+    public function getRecord() : DBHelperRecordInterface
     {
         return $this->record;
     }
 
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    public function getCollection() : DBHelper_BaseCollection
+    public function getCollection() : DBHelperCollectionInterface
     {
         return $this->collection;
     }
@@ -82,11 +74,12 @@ trait RecordScreenTrait
 
         $collection = $record->getCollection();
 
-        if($collection instanceof BaseChildCollection)
+        $parent = $collection->getParentRecord();
+        if($parent !== null)
         {
             $grid->addHiddenVar(
-                $collection->getParentCollection()->getRecordPrimaryName(),
-                (string)$collection->getParentRecord()->getID()
+                $parent->getRecordPrimaryName(),
+                (string)$parent->getID()
             );
         }
 
@@ -112,11 +105,14 @@ trait RecordScreenTrait
 
         $collection = $record->getCollection();
 
-        if($collection instanceof BaseChildCollection)
-        {
-            $parent = $collection->getParentRecord();
+        $parent = $collection->getParentRecord();
 
-            $this->addHiddenVar($parent->getRecordPrimaryName(), (string)$parent->getID());
+        if($parent !== null)
+        {
+            $this->addHiddenVar(
+                $parent->getRecordPrimaryName(),
+                (string)$parent->getID()
+            );
         }
 
         return $this;

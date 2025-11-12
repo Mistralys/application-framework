@@ -7,18 +7,17 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableTrait;
+use Application\Disposables\DisposableDisposedException;
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
-use DBHelper\Admin\Traits\RecordListScreenTrait;
-use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper\BaseCollection\DBHelperCollectionException;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
-use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
-use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
+use DBHelper\DBHelperFilterCriteriaInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+use DBHelper\Traits\AfterRecordCreatedEventTrait;
+use DBHelper\Traits\BeforeCreateEventTrait;
 
 /**
  * Base management class for a collection of database records
@@ -39,9 +38,11 @@ use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
  */
 abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 {
-    use Application_Traits_Disposable;
+    use DisposableTrait;
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
+    use BeforeCreateEventTrait;
+    use AfterRecordCreatedEventTrait;
 
     public const string SORT_DIR_ASC = 'ASC';
     public const string SORT_DIR_DESC = 'DESC';
@@ -58,7 +59,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     protected string $recordSortDir;
     protected string $recordPrimaryName;
     protected string $recordTable;
-    protected ?DBHelper_BaseRecord $dummyRecord = null;
+    protected ?DBHelperRecordInterface $dummyRecord = null;
 
     /**
      * @var class-string<DBHelper_BaseFilterCriteria>
@@ -246,7 +247,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return $this->getRecordTypeName().'-datagrid';
     }
 
-    public function getByID($record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : DBHelperRecordInterface
     {
         $record_id = (int)$record_id;
 
@@ -301,7 +302,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->idLookup = array();
     }
 
-    public function getByRequest() : ?DBHelper_BaseRecord
+    public function getByRequest() : ?DBHelperRecordInterface
     {
         $request = AppFactory::createRequest();
 
@@ -338,7 +339,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             ->setCallback(array($this, 'idExists'));
     }
 
-    public function getByKey(string $key, string $value) : ?DBHelper_BaseRecord
+    public function getByKey(string $key, string $value) : ?DBHelperRecordInterface
     {
         if($key === $this->recordPrimaryName)
         {
@@ -385,11 +386,9 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
      */
     private array $idLookup = array();
 
-    final public function idExists($record_id) : bool
+    final public function idExists(int $record_id) : bool
     {
         $this->requireNotDisposed('Check if record ID exists.');
-
-        $record_id = (int)$record_id;
 
         if(isset($this->idLookup[$record_id])) {
             return $this->idLookup[$record_id];
@@ -425,7 +424,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return $this->idLookup[$record_id];
     }
 
-    public function createDummyRecord() : DBHelper_BaseRecord
+    public function createStubRecord() : DBHelperRecordInterface
     {
         if(isset($this->dummyRecord)) {
             return $this->dummyRecord;
@@ -449,14 +448,14 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     }
 
     /**
-     * @var DBHelper_BaseRecord[]|null
+     * @var DBHelperRecordInterface[]|null
      */
     private ?array $allRecords = null;
 
     /**
      * Retrieves all records from the database, ordered by the default sorting key.
      *
-     * @return DBHelper_BaseRecord[]
+     * @return DBHelperRecordInterface[]
      * @cached
      */
     public function getAll() : array
@@ -477,7 +476,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return $this->getFilterCriteria()->countItems();
     }
 
-    public function getFilterCriteria() : DBHelper_BaseFilterCriteria
+    public function getFilterCriteria() : DBHelperFilterCriteriaInterface
     {
         $this->requireNotDisposed('Get filter criteria');
 
@@ -527,7 +526,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     public const string OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
 
-    public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelper_BaseRecord
+    public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelperRecordInterface
     {
         $this->requireNotDisposed('Create a new record');
 
@@ -540,19 +539,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
         $this->log('Creating a new record.');
 
-        $event = $this->triggerBeforeCreateRecord($data);
-        
-        if($event !== null && $event->isCancelled())
-        {
-            throw new DBHelperCollectionException(
-                'Creating new record has been cancelled.',
-                sprintf(
-                    'The event has been cancelled. Reason given: %s',
-                    $event->getCancelReason()
-                ),
-                DBHelperCollectionException::ERROR_CREATE_RECORD_CANCELLED
-            );
-        }
+        $this->handleOnBeforeCreateRecord($data);
 
         $customID = null;
         if(isset($options[self::OPTION_CUSTOM_RECORD_ID])) {
@@ -601,19 +588,9 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->allRecords = null;
 
         $record = $this->getByID($record_id);
-        
-        $context = new DBHelper_BaseCollection_OperationContext_Create($record);
-        $context->setOptions($options);
 
-        if($silent)
-        {
-            $context->makeSilent();
-        }
+        $this->handleAfterRecordCreated($record, $silent, $options);
 
-        $record->onCreated($context);
-
-        $this->triggerAfterCreateRecord($record, $context);
-        
         return $record;
     }
 
@@ -741,108 +718,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         );
     }
 
-    /**
-     * Triggers the BeforeCreatedRecord event.
-     *
-     * @param array<string,mixed> $data
-     *
-     * @return BeforeCreateRecordEvent|NULL
-     * @throws Application_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     */
-    final protected function triggerBeforeCreateRecord(array $data) : ?BeforeCreateRecordEvent
-    {
-        $event = $this->triggerEvent(
-            self::EVENT_BEFORE_CREATE_RECORD,
-            array(
-                $this,
-                $data
-            )
-        );
-
-        if($event !== null)
-        {
-            return ClassHelper::requireObjectInstanceOf(
-                BeforeCreateRecordEvent::class,
-                $event
-            );
-        }
-
-        return null;
-    }
-
-    /**
-     * Triggered after a new record has been created, and after the record's
-     * {@see DBHelper_BaseRecord::onCreated()} method has been called.
-     *
-     * @param DBHelper_BaseRecord $record
-     * @param DBHelper_BaseCollection_OperationContext_Create $context
-     * @return AfterCreateRecordEvent|NULL
-     *
-     * @throws Application_Exception
-     * @throws ClassNotExistsException
-     * @throws ClassNotImplementsException
-     */
-    final protected function triggerAfterCreateRecord(DBHelper_BaseRecord $record, DBHelper_BaseCollection_OperationContext_Create $context) : ?AfterCreateRecordEvent
-    {
-        $event = $this->triggerEvent(
-            self::EVENT_AFTER_CREATE_RECORD,
-            array(
-                $this,
-                $record,
-                $context
-            ),
-            AfterCreateRecordEvent::class
-        );
-
-        if($event !== null)
-        {
-            return ClassHelper::requireObjectInstanceOf(
-                AfterCreateRecordEvent::class,
-                $event
-            );
-        }
-
-        return null;
-    }
-
     // endregion
-
-    final public function recordKeyValueExists(string $keyName, string $value) : int|bool
-    {
-        $this->requireNotDisposed('Check if a record key value exists.');
-
-        $primary = $this->getRecordPrimaryName();
-    
-        $where = $this->foreignKeys;
-        $where[$keyName] = $value;
-        
-        $query = sprintf(
-            "SELECT
-                `%s`
-            FROM
-                `%s`
-            WHERE
-                %s",
-            $primary,
-            $this->getRecordTableName(),
-            DBHelper::buildWhereFieldsStatement($where)
-        );
-    
-        $id = DBHelper::fetchKeyInt(
-            $primary,
-            $query,
-            $where
-        );
-    
-        if($id > 0) 
-        {
-            return $id;
-        }
-    
-        return false;
-    }
 
     /**
      * Sets the table that should be used to generate new record
@@ -862,7 +738,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->recordIDTablePrimaryName = $primaryName ?? $this->recordPrimaryName;
     }
 
-    public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void
+    public function deleteRecord(DBHelperRecordInterface $record, bool $silent=false) : void
     {
         $this->requireNotDisposed('Delete a record.');
 
@@ -921,7 +797,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     /**
      * @return array<string,string|null|number|array>
-     * @throws DisposableDisposedException
+     * @throws \Application\Disposables\DisposableDisposedException
      */
     final public function describe() : array
     {
@@ -939,7 +815,6 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             'searchableKeys' => $this->getRecordSearchableKeys(),
             'collectionLabel' => $this->getCollectionLabel(),
             'recordLabel' => $this->getRecordLabel(),
-            'recordProperties' => $this->getRecordProperties(),
             'tableName' => $this->getRecordTableName(),
             'typeName' => $this->getRecordTypeName()
         );

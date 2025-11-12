@@ -5,30 +5,30 @@ declare(strict_types=1);
 namespace DBHelper\BaseCollection;
 
 use Application\Collection\IntegerCollectionInterface;
-use Application\Exception\DisposableDisposedException;
 use Application_EventHandler_EventableListener;
 use AppUtils\Request;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
-use DBHelper_BaseFilterCriteria;
-use DBHelper_BaseFilterSettings;
+use DBHelper\DBHelperFilterCriteriaInterface;
+use DBHelper\DBHelperFilterSettingsInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 interface DBHelperCollectionInterface extends IntegerCollectionInterface
 {
     /**
-     * @return class-string<DBHelper_BaseRecord>
+     * @return class-string<DBHelperRecordInterface>
      */
     public function getRecordClassName() : string;
 
     /**
-     * @return class-string<DBHelper_BaseFilterCriteria>
+     * @return class-string<DBHelperFilterCriteriaInterface>
      */
     public function getRecordFiltersClassName() : string;
 
     /**
-     * @return class-string<DBHelper_BaseFilterSettings>
+     * @return class-string<DBHelperFilterSettingsInterface>
      */
     public function getRecordFilterSettingsClassName() : string;
 
@@ -79,43 +79,14 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
     public function getRecordLabel() : string;
 
     /**
-     * Retrieves a list of properties available in the
-     * collection's records, in the following format:
-     *
-     * <pre>
-     * array(
-     *    array(
-     *        'key' => 'alias',
-     *        'name' => 'Alias',
-     *        'type' => 'string'
-     *    )
-     * )
-     * </pre>
-     *
-     * @return array<int,array<string,string>>
-     * @deprecated Not used anymore.
-     */
-    public function getRecordProperties() : array;
-
-    /**
-     * Checks whether a specific column value exists
-     * in any of the collection's records.
-     *
-     * @param string $keyName
-     * @param string $value
-     * @return integer|boolean The record's ID, or false if not found.
-     */
-    public function recordKeyValueExists(string $keyName, string $value) : int|bool;
-
-    /**
      * Attempts to retrieve a record by its ID as specified in the request.
      *
      * Uses the request parameter name as returned by {@see self::getRecordRequestPrimaryName()},
      * with {@see self::getRecordPrimaryName()} as fallback.
      *
-     * @return DBHelper_BaseRecord|NULL
+     * @return DBHelperRecordInterface|NULL
      */
-    public function getByRequest() : ?DBHelper_BaseRecord;
+    public function getByRequest() : ?DBHelperRecordInterface;
 
     /**
      * Registers parameter names in the {@see Request} class to
@@ -134,31 +105,31 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      *
      * @param string $key
      * @param string $value
-     * @return DBHelper_BaseRecord|NULL
+     * @return DBHelperRecordInterface|NULL
      */
-    public function getByKey(string $key, string $value) : ?DBHelper_BaseRecord;
+    public function getByKey(string $key, string $value) : ?DBHelperRecordInterface;
 
     /**
      * Checks whether a record with the specified ID exists in the database.
      *
-     * @param integer|string|NULL $record_id
+     * @param integer $record_id
      * @return boolean
      */
-    public function idExists($record_id) : bool;
+    public function idExists(int $record_id) : bool;
 
     /**
      * Creates a stub record of this collection, which can
      * be used to access the API that may not be available
      * statically.
      *
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      */
-    public function createDummyRecord() : DBHelper_BaseRecord;
+    public function createStubRecord() : DBHelperRecordInterface;
 
     /**
      * Retrieves all records from the database, ordered by the default sorting key.
      *
-     * @return DBHelper_BaseRecord[]
+     * @return DBHelperRecordInterface[]
      */
     public function getAll() : array;
 
@@ -172,17 +143,17 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      * Creates the filter criteria for this collection of records,
      * which is used to query the records.
      *
-     * @return DBHelper_BaseFilterCriteria
+     * @return DBHelperFilterCriteriaInterface
      */
-    public function getFilterCriteria() : DBHelper_BaseFilterCriteria;
+    public function getFilterCriteria() : DBHelperFilterCriteriaInterface;
 
     /**
      * Creates the filter settings for this collection of records,
      * which is used to configure the filtering options used in lists.
      *
-     * @return DBHelper_BaseFilterSettings
+     * @return DBHelperFilterSettingsInterface
      */
-    public function getFilterSettings() : DBHelper_BaseFilterSettings;
+    public function getFilterSettings() : DBHelperFilterSettingsInterface;
 
     /**
      * Creates a new record with the specified data.
@@ -207,9 +178,9 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      *                       Official options are:
      *                       - {@see self::OPTION_CUSTOM_RECORD_ID}: Specify a custom
      *                         ID to use for the record. Can fail if this is not available.
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      */
-    public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelper_BaseRecord;
+    public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelperRecordInterface;
 
     /**
      * Whether the collection has a separate database table dedicated
@@ -263,12 +234,12 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
     /**
      * Deletes a record from the collection.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param bool $silent Whether to delete the record silently, without processing events afterwards.
      *                      The _onDeleted method will still be called for cleanup tasks, but the context
      *                      will reflect the silent state. The method implementation must check this manually.
      */
-    public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void;
+    public function deleteRecord(DBHelperRecordInterface $record, bool $silent=false) : void;
 
     /**
      * Checks whether a record with the specified ID is loaded in memory.
@@ -301,10 +272,10 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      * > with instanceof {@see BaseChildCollection}, then this method
      * > will no longer return `null`.
      *
-     * @return DBHelper_BaseRecord|NULL
+     * @return DBHelperRecordInterface|NULL
      * @see BaseChildCollection::getParentRecord()
      */
-    public function getParentRecord() : ?DBHelper_BaseRecord;
+    public function getParentRecord() : ?DBHelperRecordInterface;
 
     public function getInstanceID() : string;
 
@@ -352,10 +323,10 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
     /**
      * Retrieves a record by its ID.
      *
-     * @param int|string $record_id
-     * @return DBHelper_BaseRecord
+     * @param int $record_id
+     * @return DBHelperRecordInterface
      */
-    public function getByID($record_id) : DBHelper_BaseRecord;
+    public function getByID(int $record_id) : DBHelperRecordInterface;
 
     /**
      * Refreshes all data currently loaded in memory with

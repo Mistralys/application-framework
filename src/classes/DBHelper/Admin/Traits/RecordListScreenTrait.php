@@ -6,8 +6,11 @@
 
 namespace DBHelper\Admin\Traits;
 
+use DateTime;
 use DBHelper\Admin\Traits\RecordListScreenInterface;
-use AppUtils\Interfaces\StringableInterface;use DBHelper_BaseCollection;use DBHelper_BaseFilterCriteria;use DBHelper_BaseFilterCriteria_Record;use DBHelper_BaseFilterSettings;use DBHelper_BaseRecord;use UI_DataGrid;use UI_DataGrid_Entry;use UI_Themes_Theme_ContentRenderer;
+use AppUtils\Interfaces\StringableInterface;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper_BaseCollection;use DBHelper_BaseFilterCriteria;use DBHelper_BaseFilterCriteria_Record;use DBHelper_BaseFilterSettings;use DBHelper_BaseRecord;use UI_DataGrid;use UI_DataGrid_Entry;use UI_Themes_Theme_ContentRenderer;
 
 /**
  * Trait used for simplify displaying lists of DBHelper records:
@@ -101,10 +104,7 @@ trait RecordListScreenTrait
 
     }
 
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    abstract protected function createCollection(): DBHelper_BaseCollection;
+    abstract protected function createCollection(): DBHelperCollectionInterface;
 
     /**
      * @param DBHelper_BaseRecord $record

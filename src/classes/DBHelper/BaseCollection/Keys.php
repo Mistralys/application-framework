@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
-class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
+use Application\Disposables\DisposableInterface;
+use Application\Disposables\DisposableTrait;
+
+class DBHelper_BaseCollection_Keys implements DisposableInterface
 {
     use Application_Traits_Loggable;
     use Application_Traits_Eventable;
-    use Application_Traits_Disposable;
+    use DisposableTrait;
 
     public const ERROR_KEY_ALREADY_REGISTERED = 71401;
 
