@@ -234,7 +234,7 @@ class Application_StateHandler_State implements StringableInterface
      *
      * @param Application_StateHandler_State $state
      * @return $this
-     * @see Application_Revisionable::save()
+     * @see BaseRevisionable::save()
      */
     public function setOnStructuralChange(Application_StateHandler_State $state) : self
     {
@@ -269,11 +269,11 @@ class Application_StateHandler_State implements StringableInterface
     }
 
     /**
-     * @param Application_Revisionable $revisionable
+     * @param BaseRevisionable $revisionable
      * @return $this
      * @throws StateHandlerException {@see self::ERROR_CANNOT_REPLACE_REVISIONABLE}
      */
-    public function setRevisionable(Application_Revisionable $revisionable) : self
+    public function setRevisionable(BaseRevisionable $revisionable) : self
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;

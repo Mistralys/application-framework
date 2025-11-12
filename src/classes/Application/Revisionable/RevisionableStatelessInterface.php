@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Collection\IntegerCollectionItemInterface;
+use Application\Revisionable\Changelog\RevisionableChangelogInterface;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application_EventHandler_EventableListener;
-use Application_Interfaces_Disposable;
+use Application\Disposables\DisposableInterface;
 use Application_Interfaces_Simulatable;
 use Application_LockableRecord_Interface;
-use Application_RevisionableCollection;
 use Application_User;
 use DateTime;
 use TestDriver\Revisionables\RevisionableCollection;
@@ -19,7 +20,7 @@ interface RevisionableStatelessInterface
     IntegerCollectionItemInterface,
     RevisionDependentInterface,
     Application_LockableRecord_Interface,
-    Application_Interfaces_Disposable,
+    DisposableInterface,
     Application_Interfaces_Simulatable,
     RevisionableChangelogInterface
 {
@@ -107,6 +108,8 @@ interface RevisionableStatelessInterface
      * @return DateTime
      */
     public function getLastModifiedDate() : DateTime;
+
+    public function getInstanceID() : string;
 
     /**
      * Like {@see self::getRevision()}, but never returns null.
@@ -234,7 +237,7 @@ interface RevisionableStatelessInterface
     /**
      * Saves the item using whatever storage the item uses.
      */
-    public function save(): bool;
+    public function save(bool $silent=false): bool;
 
     public function hasChanges() : bool;
 
@@ -257,7 +260,7 @@ interface RevisionableStatelessInterface
      *
      * @return string
      */
-    public function getRevisionableTypeName(): string;
+    public function getRecordTypeName(): string;
 
     /**
      * Reloads the revisionable if it has been disposed,
@@ -284,9 +287,9 @@ interface RevisionableStatelessInterface
 
     /**
      * Gets an instance of the revisionable's collection instance.
-     * @return Application_RevisionableCollection
+     * @return \Application\Revisionable\Collection\BaseRevisionableCollection
      */
-    public function getCollection() : Application_RevisionableCollection;
+    public function getCollection() : BaseRevisionableCollection;
 
 
     /**

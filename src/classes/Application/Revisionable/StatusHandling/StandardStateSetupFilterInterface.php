@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\StatusHandling;
 
-use Application\RevisionableCollection\RevisionableFilterCriteriaInterface;
+use Application\Revisionable\Collection\RevisionableFilterCriteriaInterface;
 
 /**
  * See the trait: {@see StandardStateSetupFilterTrait}

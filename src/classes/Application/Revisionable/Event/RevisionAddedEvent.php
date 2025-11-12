@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Application\Revisionable\Event;
 
 use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
 use Application_EventHandler_EventableEvent;
-use Application_RevisionStorage_Event_RevisionAdded;
 
 class RevisionAddedEvent extends Application_EventHandler_EventableEvent
 {

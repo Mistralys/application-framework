@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\StatusHandling;
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use Application\Revisionable\RevisionableException;
 use Application\StateHandler\StateHandlerException;
 use Application_StateHandler_State;
@@ -276,7 +276,7 @@ trait StandardStateSetupTrait
      * @return $this
      * @throws RevisionableException
      * @throws StateHandlerException
-     * @throws DisposableDisposedException
+     * @throws \Application\Disposables\DisposableDisposedException
      */
     public function setStateFinalized() : self
     {

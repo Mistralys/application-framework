@@ -100,7 +100,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         return $this;
     }
     
-    protected function configureBadges(UI_Page_Title $title, Application_Revisionable $revisionable) : void
+    protected function configureBadges(UI_Page_Title $title, BaseRevisionable $revisionable) : void
     {
         $state = $revisionable->getState();
 
@@ -124,7 +124,7 @@ class UI_Page_RevisionableTitle extends UI_Renderable
         $title = $this->renderer->getTitle();
         
         // revisionable that supports states: configure specific badges
-        if($this->revisionable instanceof Application_Revisionable)
+        if($this->revisionable instanceof BaseRevisionable)
         {
             $this->configureBadges($title, $this->revisionable);
         }

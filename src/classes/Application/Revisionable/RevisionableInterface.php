@@ -8,13 +8,14 @@ declare(strict_types=1);
 
 namespace Application\Revisionable;
 
+use Application\Disposables\DisposableDisposedException;
+use Application\Revisionable\Storage\RevisionStorageException;
 use Application\StateHandler\StateHandlerException;
-use Application\Interfaces\ChangelogableInterface;
 use Application_FilterCriteria_RevisionableRevisions;
-use Application_Revisionable;
 use Application_StateHandler;
 use Application_StateHandler_State;
-use DateTime;
+use BaseRevisionable;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Interface for revisionable objects that can be in different states.
@@ -22,11 +23,12 @@ use DateTime;
  * @package Application
  * @subpackage Revisionables
  *
- * @see Application_Revisionable
+ * @see BaseRevisionable
  */
 interface RevisionableInterface
     extends
-    RevisionableStatelessInterface
+    RevisionableStatelessInterface,
+    DBHelperRecordInterface
 {
     public const ERROR_INVALID_STATE_CHANGE = 149303;
     public const ERROR_NO_STATE_AVAILABLE = 149304;
@@ -51,6 +53,12 @@ interface RevisionableInterface
     public function getState() : ?Application_StateHandler_State;
 
     public function getStateName() : string;
+
+    /**
+     * Revisionables do not have parent records.
+     * @return null
+     */
+    public function getParentRecord(): null;
 
     /**
      * Like {@see self::getState()}, but the method does not
@@ -147,12 +155,54 @@ interface RevisionableInterface
      * which is used to access all the object's static
      * functions, for example, for the state information.
      *
-     * @throws RevisionableException
-     * @return Application_Revisionable
+     * @return BaseRevisionable
+     *@throws RevisionableException
      */
-    public static function createStubObject() : Application_Revisionable;
+    public static function createStubObject() : BaseRevisionable;
 
     public function getAdminChangelogURL(array $params = array()): string;
 
     public function getAdminStatusURL(array $params = array()): string;
+
+    /**
+     * Selects the revisionable's current revision.
+     * @return $this
+     *
+     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws RevisionableException
+     * @throws RevisionStorageException
+     */
+    public function selectCurrentRevision(): self;
+
+    /**
+     * Selects the last revision of the record by a specific state.
+     *
+     * @param Application_StateHandler_State $state
+     * @return integer|false The revision number, or false if no revision matches.
+     */
+    public function selectLastRevisionByState(Application_StateHandler_State $state) : int|false;
+
+    /**
+     * Retrieves the last revision of the record by a specific state.
+     *
+     * @param Application_StateHandler_State $state
+     * @return integer|false The revision number, or false if no revision matches.
+     */
+    public function getLastRevisionByState(Application_StateHandler_State $state) : int|false;
+
+    /**
+     * Retrieves the revision currently in use. This is tracked in
+     * a dedicated table, and namespaced to any campaign keys that
+     * may have been defined.
+     *
+     * @return integer|NULL
+     */
+    public function getCurrentRevision(): ?int;
+
+    /**
+     * Sets the label for the current revision.
+     * @param string $label
+     * @return $this
+     */
+    public function setLabel(string $label): self;
 }

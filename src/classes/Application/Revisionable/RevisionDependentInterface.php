@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Traits\RevisionDependentTrait;
-use Application_Interfaces_Disposable;
+use Application\Disposables\DisposableInterface;
 
 /**
  * Interface for objects that are dependent on a revisionable's revision.
