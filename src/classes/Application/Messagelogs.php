@@ -168,15 +168,6 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         return t('Message log entry');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordProperties()
-     */
-    public function getRecordProperties() : array
-    {
-        return array();
-    }
-    
     public function addInfo(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
     {
         return $this->logMessage(self::MESSAGELOG_INFORMATION, $message, $category, $user);

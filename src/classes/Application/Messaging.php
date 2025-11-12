@@ -273,13 +273,4 @@ class Application_Messaging extends DBHelper_BaseCollection
     {
         return t('Application message');
     }
-
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordProperties()
-     */
-    public function getRecordProperties() : array
-    {
-        return array();
-    }
 }
