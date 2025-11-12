@@ -9,19 +9,19 @@ namespace Application\Collection;
  * @subpackage Collection
  *
  * @method StringCollectionItemInterface[] getAll()
- * @method StringCollectionItemInterface createDummyRecord()
+ * @method StringCollectionItemInterface createStubRecord()
  */
 interface StringCollectionInterface extends BaseCollectionInterface
 {
     /**
-     * @param int|string $record_id
+     * @param string $record_id
      * @return bool
      */
-    public function idExists($record_id): bool;
+    public function idExists(string $record_id): bool;
 
     /**
-     * @param int|string $record_id
+     * @param string $record_id
      * @return StringCollectionItemInterface
      */
-    public function getByID($record_id): StringCollectionItemInterface;
+    public function getByID(string $record_id): StringCollectionItemInterface;
 }
