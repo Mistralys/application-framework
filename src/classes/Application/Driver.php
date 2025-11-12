@@ -7,17 +7,18 @@
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Driver\DriverException;
+use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\RevisionableInterface;
 use Application\WhatsNew;
-use Application\Driver\DriverSettings;
 use AppLocalize\Localization;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
-use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
-use Mistralys\VersionParser\VersionParser;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\NavConfigurator;
 
@@ -1408,14 +1409,14 @@ abstract class Application_Driver implements Application_Driver_Interface
      * </pre>
      *
      * @param string $type
-     * @param array $primary
-     * @return Application_RevisionableStateless
+     * @param array<string,int|string> $primary
+     * @return RevisionableInterface
      * @throws DriverException
      */
-    public function getRevisionable($type, $primary)
+    public function getRevisionable(string $type, array $primary) : RevisionableInterface
     {
         $types = $this->getRevisionableTypes();
-        if (!in_array($type, $types))
+        if (!in_array($type, $types, true))
         {
             throw new DriverException(
                 'Unknown revisionable type',
@@ -1442,7 +1443,7 @@ abstract class Application_Driver implements Application_Driver_Interface
         }
 
         $revisionable = $this->$method($primary);
-        if (!$revisionable instanceof Application_RevisionableStateless)
+        if (!$revisionable instanceof RevisionableInterface)
         {
             throw new DriverException(
                 'Not a revisionable',
@@ -1623,7 +1624,7 @@ abstract class Application_Driver implements Application_Driver_Interface
     }
 
     /**
-     * @var array<string,DBHelper_BaseCollection|Application_RevisionableCollection>
+     * @var array<string,DBHelperCollectionInterface>
      */
     protected static array $collections = array();
 
@@ -1633,10 +1634,10 @@ abstract class Application_Driver implements Application_Driver_Interface
      * only a singleton is returned every time.
      *
      * @param string $className
-     * @param array<mixed> $parameters Any parameters the collection may need to be instantiated
-     * @return DBHelper_BaseCollection|Application_RevisionableCollection
+     * @param array<int,mixed> $parameters Any parameters the collection may need to be instantiated
+     * @return DBHelperCollectionInterface
      */
-    protected static function createCollection(string $className, array $parameters = array())
+    protected static function createCollection(string $className, array $parameters = array()) : DBHelperCollectionInterface
     {
         if (!isset(self::$collections[$className]))
         {
