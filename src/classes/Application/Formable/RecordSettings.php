@@ -1,15 +1,13 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSettings_Setting} class.
- *
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSettings_Setting
  */
 
 declare(strict_types=1);
 
 use AppUtils\BaseException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
  * Used to make handling record setting forms easier:
@@ -41,8 +39,8 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_NOTHING_TO_INJECT = 44801;
-    public const ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
+    public const int ERROR_NOTHING_TO_INJECT = 44801;
+    public const int ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
     
    /**
     * @var DBHelper_BaseRecord|NULL
@@ -50,24 +48,17 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     protected $record;
     
    /**
-    * @var DBHelper_BaseCollection
+    * @var DBHelperCollectionInterface
     */
     protected $collection;
     
    /**
     * @var Application_Formable_RecordSettings_Group[]
     */
-    protected $groups = array();
+    protected array $groups = array();
     
-   /**
-    * @var bool
-    */
-    protected $settingsInitialized = false;
-    
-   /**
-    * @var boolean
-    */
-    protected $settingsFormInitialized = false;
+    protected bool $settingsInitialized = false;
+    protected bool $settingsFormInitialized = false;
 
     /**
      * Whether using {@see Application_Formable_RecordSettings::getDefaultValues()}
@@ -78,7 +69,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      */
     private bool $defaultsUseStorage = false;
 
-    public function __construct(Application_Formable $formable, DBHelper_BaseCollection $collection, ?DBHelper_BaseRecord $record=null)
+    public function __construct(Application_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelper_BaseRecord $record=null)
     {
         parent::__construct($formable);
         
@@ -210,7 +201,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
 
         if(!$injected)
         {
-            throw new Application_Exception(
+            throw new Application_Formable_Exception(
                 'No settings to inject',
                 sprintf(
                     'No groups had any settings to inject in the class [%s].',
@@ -397,7 +388,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
             }
         }
 
-        throw new Application_Exception(
+        throw new Application_Formable_Exception(
             'Unknown form setting',
             sprintf(
                 'Tried to fetch the setting [%s]. Available settings are [%s].',
