@@ -66,7 +66,7 @@ class TagConnector
      * @param DBHelper_BaseCollection $collection
      * @return DBHelper_BaseRecord[]
      *
-     * @throws \Application\Exception\DisposableDisposedException
+     * @throws \Application\Disposables\DisposableDisposedException
      * @throws DBHelper_Exception
      */
     protected function getDBRecordsByTag(TagRecord $tag, DBHelper_BaseCollection $collection) : array

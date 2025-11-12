@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\OptionableInterface;
@@ -58,7 +58,7 @@ class Application_Countries_ButtonBar extends UI_Renderable implements Classable
      * @param string $baseURL
      * @param int[] $limitToCountries List of country IDs to limit the selection to.
      *
-     * @throws DisposableDisposedException
+     * @throws \Application\Disposables\DisposableDisposedException
      * @throws DBHelper_Exception
      * @throws BaseClassHelperException
      */

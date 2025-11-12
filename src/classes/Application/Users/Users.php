@@ -4,7 +4,7 @@
  * @subpackage Users
  */
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Users\Admin\UsersAdminURLs;
 use Application\Users\UserSelector;
@@ -27,7 +27,6 @@ use AppUtils\ConvertHelper\JSONConverter;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * @see Application_Users_User
  * 
- * @method Application_Users_User|NULL getByKey(string $key, string $value)
  * @method Application_Users_User createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  * @method Application_Users_User[] getAll()
  */
@@ -137,15 +136,6 @@ class Application_Users extends DBHelper_BaseCollection
     public function getRecordLabel() : string
     {
         return t('User');
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordProperties()
-     */
-    public function getRecordProperties() : array
-    {
-        return array();
     }
 
     public function getByEmail(string $email) : ?Application_Users_User

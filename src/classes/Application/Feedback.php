@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use Application\Exception\UnexpectedInstanceException;
-use AppUtils\Microtime;
 
 class Application_Feedback extends DBHelper_BaseCollection
 {
@@ -148,7 +147,7 @@ class Application_Feedback extends DBHelper_BaseCollection
      * @param Application_User|null $user If other user than the logged-in user.
      * @return Application_Feedback_Report
      * @throws Application_Exception
-     * @throws DisposableDisposedException
+     * @throws \Application\Disposables\DisposableDisposedException
      * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
