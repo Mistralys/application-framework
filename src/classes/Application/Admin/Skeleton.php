@@ -9,10 +9,12 @@
 
 use Application\AppFactory;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application\Traits\Admin\ScreenAccessTrait;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Interfaces\StringableInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -568,10 +570,10 @@ abstract class Application_Admin_Skeleton
     * Renders the title for a revisionable item, which includes
     * a badge for the item's current state.
     * 
-    * @param Application_Revisionable $revisionable
-    * @param string $subline
+    * @param RevisionableInterface $revisionable
+    * @param string|StringableInterface $subline
     */
-    protected function renderRevisionableTitle(Application_Revisionable $revisionable, $subline='')
+    protected function renderRevisionableTitle(RevisionableInterface $revisionable, string|StringableInterface $subline='')
     {
         $title = $this->createRevisionableTitle($revisionable);
         $title->setSubline($subline);
@@ -584,10 +586,10 @@ abstract class Application_Admin_Skeleton
     * This allows for more customization than the {@link renderRevisionableTitle}
     * method, using the helper's API.
     * 
-    * @param Application_RevisionableStateless $revisionable
+    * @param RevisionableInterface $revisionable
     * @return UI_Page_RevisionableTitle
     */
-    protected function createRevisionableTitle(Application_RevisionableStateless $revisionable)
+    protected function createRevisionableTitle(RevisionableInterface $revisionable) : UI_Page_RevisionableTitle
     {
         return $this->requirePage()->createRevisionableTitle($revisionable);
     }
@@ -777,7 +779,7 @@ abstract class Application_Admin_Skeleton
         
         $primary = $this->getLockManagerPrimary();
         
-        if($primary instanceof Application_RevisionableStateless && !$primary->isEditable()) {
+        if($primary instanceof RevisionableInterface && !$primary->isEditable()) {
             $this->formableForm->makeReadonly();
         }
         
