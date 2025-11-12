@@ -1,6 +1,6 @@
 # Application Framework Changelog
 
-## v5.14.0 - API Management (Deprecation)
+## v6.0.0 - DBHelper, Revisionables and APIs (Breaking-XL)
 - DBHelper: Added a base record status screen trait.
 - DBHelper: Added `getRecordMicrotimeKey()` to base records.
 - DBHelper: Added validations to registered collection keys like `setRegexValidation()`.
@@ -9,6 +9,13 @@
 - DBHelper: Added an interface for the DBHelper collection.
 - DBHelper: Moved parent record handling to a separate child collection class.
 - DBHelper: Added the request type base class `BaseDBRecordRequestType`.
+- DBHelper: Added more interfaces for DBHelper collections and records.
+- Revisionables: Now fully interchangeable with DBHelper collections.
+- Revisionables: Added more interfaces for revisionable collections and records.
+- Revisionables: Retired the old plain revisionable class. Now all revisionables use the DB system.
+- Disposables: Added the attribute `DisposedAware` to mark methods that check disposed state.
+- Revisionables: Retired the stateless revisionables, which were never used in practice.
+- Revisionables: Removed the memory revisionables, which were also never used in practice.
 - API: Added the API client collection classes.
 - API: Added the API management screens.
 - API: Added user rights to manage the API.
@@ -28,6 +35,10 @@
 - Core: Deprecated `Application_Exception` in favor of `ApplicationException`.
 - Countries: Added an interface for country API parameters to declare the `getCountry()` method.
 - Dependencies: Bumped up AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
+
+### Breaking Changes
+- Revisionables: Completely revamped, modernized and namespaced the
+  revisionables system. Migration is required.
 
 ### Deprecations
 
