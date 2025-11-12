@@ -27,7 +27,7 @@ class Application_FilterCriteria_AppSettings extends Application_FilterCriteria_
         return array('data_key', 'data_value');
     }
 
-    protected function getQuery()
+    protected function getQuery() : string
     {
         return 'SELECT {WHAT} FROM `app_settings` {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}';
     }
