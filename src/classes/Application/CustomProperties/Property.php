@@ -25,7 +25,7 @@ class Application_CustomProperties_Property extends DBHelper_BaseRecord
     */
     protected $owner;
     
-    protected function init()
+    protected function init() : void
     {
         $this->presets = $this->collection->getPresets();
         
