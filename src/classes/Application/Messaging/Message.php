@@ -11,7 +11,7 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
     
     protected $data;
     
-    protected function init()
+    protected function init() : void
     {
         $this->messaging = Application::createMessaging();
     }
@@ -198,7 +198,7 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
         return 'message_id';
     }
     
-    public function getRecordTable()
+    public function getRecordTable() : string
     {
         return 'app_messaging';
     }
