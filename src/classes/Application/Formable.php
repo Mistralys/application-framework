@@ -796,10 +796,14 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Adds a callback rule. Helper method for easier access to
     * the QuickForm API for this. The first argument of the callback
     * is always the value to validate, and the last is the
-    * rule object instance, even if custom arguments are specified.
+    * rule object instance, even if custom arguments are specified:
+    *
+    * 1. mixed $value - The value to validate
+    * 2. mixed ...$arguments - Custom arguments specified when adding the rule
+    * 3. HTML_QuickForm2_Rule $rule - The rule object instance
     *
     * @param HTML_QuickForm2_Node $element
-    * @param callable(mixed, mixed..., HTML_QuickForm2_Rule_Callback) : bool $callback
+    * @param callable $callback
     * @param string $errorMessage
     * @param array<int,mixed> $arguments Indexed list of arguments for the callback
     * @return HTML_QuickForm2_Rule_Callback
