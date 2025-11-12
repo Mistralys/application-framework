@@ -16,10 +16,7 @@ use UI\AdminURLs\AdminURLInterface;
  */
 trait APIClientRecordScreenTrait
 {
-    /**
-     * @return APIClientsCollection
-     */
-    public function createCollection(): DBHelper_BaseCollection
+    public function createCollection(): APIClientsCollection
     {
         return AppFactory::createAPIClients();
     }
