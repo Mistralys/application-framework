@@ -514,7 +514,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
      * @param mixed $newValue
      * @return bool True to allow the change, false to abort it.
      */
-    protected function recordRegisteredKeyBeforeModified(string $name, string $label, bool $isStructural, $oldValue, $newValue) : bool
+    protected function recordRegisteredKeyBeforeModified(string $name, string $label, bool $isStructural, mixed $oldValue, mixed $newValue) : bool
     {
         return true;
     }
@@ -525,17 +525,19 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     * these changes automatically as needed, for example to add changelog
     * entries.
     *
-    * NOTE: This is not related to the collection's registered keys.
+    * > NOTE: This is not related to the collection's registered keys,
+    * > but the record's own registered keys, as is typically done in
+    * > the {@see self::init()} method, using the method {@see self::registerRecordKey()}.
     *  
     * @param string $name Name of the data key
     * @param string $label Human-readable label of the key
     * @param boolean $isStructural Whether changing this key means it's a structural (critical) change
-    * @param string $oldValue The previous value
-    * @param string $newValue The new value
+    * @param mixed $oldValue The previous value
+    * @param mixed $newValue The new value
     */
     abstract protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue);
     
-    private function triggerKeyModified(string $name, $oldValue, $newValue, bool $structural=false, bool $isCustom=false) : void
+    private function triggerKeyModified(string $name, mixed $oldValue, mixed $newValue, bool $structural=false, bool $isCustom=false) : void
     {
         $label = null;
         $isStructural = $structural;
