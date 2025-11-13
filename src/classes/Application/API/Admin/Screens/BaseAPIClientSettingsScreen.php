@@ -9,6 +9,7 @@ use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\API\Clients\APIClientRecordSettings;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsSubmode
@@ -48,7 +49,7 @@ abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsSubmode
         return true;
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The %1$s API Client settings have been updated successfully at %2$s.',

@@ -12,6 +12,7 @@ use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -58,7 +59,7 @@ abstract class BaseUserSettingsSubmode extends Application_Admin_Area_Mode_Submo
         return AppFactory::createUsers();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The settings for user %1$s have been saved successfully at %2$s.',
@@ -67,7 +68,7 @@ abstract class BaseUserSettingsSubmode extends Application_Admin_Area_Mode_Submo
         );
     }
 
-    private function resolveUser(DBHelper_BaseRecord $record) : Application_Users_User
+    private function resolveUser(DBHelperRecordInterface $record) : Application_Users_User
     {
         return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,

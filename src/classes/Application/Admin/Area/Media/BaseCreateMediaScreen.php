@@ -9,6 +9,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -34,7 +35,7 @@ abstract class BaseCreateMediaScreen extends BaseRecordCreateSubmode
         return AppFactory::createMediaCollection();
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         if($record instanceof MediaRecord) {
             if($record->isTaggingEnabled()) {
@@ -47,7 +48,7 @@ abstract class BaseCreateMediaScreen extends BaseRecordCreateSubmode
         return parent::getSuccessURL($record);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The media file %1$s has been added successfully at %2$s.',

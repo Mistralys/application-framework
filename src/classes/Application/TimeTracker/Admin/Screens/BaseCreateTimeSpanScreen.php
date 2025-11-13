@@ -9,6 +9,7 @@ use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 
@@ -38,7 +39,7 @@ abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode
         return new TimeSpanSettingsManager($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The time span has been added successfully at %1$s.',
@@ -54,7 +55,7 @@ abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         return $this->getBackOrCancelURL();
     }

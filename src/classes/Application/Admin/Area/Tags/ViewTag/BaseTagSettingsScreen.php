@@ -7,8 +7,10 @@ namespace Application\Area\Tags\ViewTag;
 use Application\AppFactory;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
+use Application\Tags\TagSettingsManager;
 use Application_Formable_RecordSettings;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -38,7 +40,7 @@ abstract class BaseTagSettingsScreen extends BaseRecordSettingsSubmode
         return AppFactory::createTags();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The tag settings have been saved successfully at %1$s.',
@@ -46,7 +48,7 @@ abstract class BaseTagSettingsScreen extends BaseRecordSettingsSubmode
         );
     }
 
-    public function getSettingsManager(): ?Application_Formable_RecordSettings
+    public function getSettingsManager(): ?TagSettingsManager
     {
         return $this->createCollection()->createSettingsManager($this, $this->record);
     }

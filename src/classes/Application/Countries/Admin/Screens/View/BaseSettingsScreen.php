@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Application\Countries\Admin\Screens\View;
 
 use Application\AppFactory;
+use Application\Countries\CountrySettingsManager;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -36,7 +38,7 @@ abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
         return CountryScreenRights::SCREEN_SETTINGS;
     }
 
-    public function getSettingsManager()
+    public function getSettingsManager() : CountrySettingsManager
     {
         return AppFactory::createCountries()->createSettingsManager($this, $this->record);
     }
@@ -56,7 +58,7 @@ abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
         return AppFactory::createCountries();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The country settings have been saved sucessfully at %1$s.',

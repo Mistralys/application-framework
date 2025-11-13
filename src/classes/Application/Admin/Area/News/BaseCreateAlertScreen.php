@@ -10,6 +10,7 @@ use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
@@ -41,7 +42,7 @@ abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
         return AppFactory::createNews();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The news alert has been created successfully at %1$s.',

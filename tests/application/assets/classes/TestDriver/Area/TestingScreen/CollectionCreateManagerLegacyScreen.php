@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TestDriver\Area\TestingScreen;
 
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
@@ -34,7 +35,7 @@ class CollectionCreateManagerLegacyScreen
         return new TestSettingsManagerLegacy($this, $this->createCollection(), $this->record);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return 'Success';
     }

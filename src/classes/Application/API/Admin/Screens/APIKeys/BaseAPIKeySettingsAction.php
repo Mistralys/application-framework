@@ -12,6 +12,7 @@ use Application\Traits\AllowableMigrationTrait;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Action\BaseRecordSettingsAction;
 use DBHelper\Admin\Screens\Action\BaseRecordStatusAction;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
@@ -76,7 +77,7 @@ class BaseAPIKeySettingsAction extends BaseRecordSettingsAction implements APIKe
         return $this->getRecord()->getClient()->adminURL()->apiKeys();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The settings for API key %1$s have been saved successfully at %2$s.',

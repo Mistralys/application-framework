@@ -12,6 +12,7 @@ use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 abstract class BaseCreateUserMode extends Application_Admin_Area_Mode_CollectionCreate
@@ -45,7 +46,7 @@ abstract class BaseCreateUserMode extends Application_Admin_Area_Mode_Collection
         return new UsersSettingsManager($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         $user = ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,

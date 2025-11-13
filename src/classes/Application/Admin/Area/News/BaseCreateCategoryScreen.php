@@ -11,6 +11,7 @@ use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -46,7 +47,7 @@ abstract class BaseCreateCategoryScreen extends BaseRecordCreateSubmode
         return AppFactory::createNews()->createCategories();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The news category %1$s has been created successfully at %2$s.',

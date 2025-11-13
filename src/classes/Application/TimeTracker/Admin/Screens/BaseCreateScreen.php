@@ -8,6 +8,7 @@ use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSettingsManager;
@@ -35,7 +36,7 @@ abstract class BaseCreateScreen extends BaseRecordCreateMode
         return new TimeSettingsManager($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The time entry has been added successfully at %1$s.',
@@ -51,7 +52,7 @@ abstract class BaseCreateScreen extends BaseRecordCreateMode
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface
+    public function getSuccessURL(DBHelperRecordInterface $record): string|AdminURLInterface
     {
         return $this->getBackOrCancelURL();
     }

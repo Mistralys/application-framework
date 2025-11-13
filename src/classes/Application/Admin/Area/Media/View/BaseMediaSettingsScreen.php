@@ -9,6 +9,7 @@ use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -33,7 +34,7 @@ abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
         return AppFactory::createMediaCollection();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The media file %1$s has been updated successfully at %2$s.',

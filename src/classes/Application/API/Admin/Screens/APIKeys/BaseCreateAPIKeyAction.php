@@ -9,6 +9,7 @@ use Application\API\Admin\RequestTypes\APIClientRequestTrait;
 use Application\API\Clients\Keys\APIKeyRecordSettings;
 use Application\API\Clients\Keys\APIKeysCollection;
 use DBHelper\Admin\Screens\Action\BaseRecordCreateAction;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
@@ -44,7 +45,7 @@ class BaseCreateAPIKeyAction extends BaseRecordCreateAction implements APIClient
         return new APIKeyRecordSettings($this, $this->getAPIClientRequest()->getRecordOrRedirect());
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The API Key %1$s has been created successfully at %2$s.',

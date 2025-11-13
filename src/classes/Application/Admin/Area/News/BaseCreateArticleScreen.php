@@ -11,6 +11,7 @@ use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -46,7 +47,7 @@ abstract class BaseCreateArticleScreen extends BaseRecordCreateSubmode
         return AppFactory::createNews();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The news article has been created successfully at %1$s.',

@@ -12,7 +12,10 @@ declare(strict_types=1);
 namespace DBHelper\Admin\Traits;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_Formable_RecordSettings;use DBHelper\Admin\Traits\RecordSettingsScreenTrait;use DBHelper_BaseCollection;use DBHelper_BaseRecord;
+use Application_Formable_RecordSettings;use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+use DBHelper_BaseCollection;use DBHelper_BaseRecord;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -32,10 +35,7 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
     public const int ERROR_UNKNOWN_SETTING_KEY = 17901;
     public const int ERROR_MISSING_REQUIRED_METHOD = 17902;
 
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    public function createCollection();
+    public function createCollection() : DBHelperCollectionInterface;
 
     public function getBackOrCancelURL(): string|AdminURLInterface;
 
@@ -49,16 +49,16 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
     /**
      * The URL to redirect to once the record has been created.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @return string|AdminURLInterface
      */
-    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface;
+    public function getSuccessURL(DBHelperRecordInterface $record): string|AdminURLInterface;
 
     /**
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @return string
      */
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string;
+    public function getSuccessMessage(DBHelperRecordInterface $record): string;
 
     /**
      * Retrieves the form values to use once the form has been
@@ -66,7 +66,7 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
      *
      * @return array<string,mixed>
      */
-    public function getSettingsFormValues();
+    public function getSettingsFormValues() : array;
 
     /**
      * @return string[]
@@ -76,7 +76,7 @@ interface RecordSettingsScreenInterface extends AdminScreenInterface
     /**
      * @return Application_Formable_RecordSettings|NULL
      */
-    public function getSettingsManager();
+    public function getSettingsManager() : ?Application_Formable_RecordSettings;
 
     public function isEditMode(): bool;
 

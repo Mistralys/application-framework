@@ -15,6 +15,7 @@ use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -60,7 +61,7 @@ abstract class BaseCreateAPIClientMode extends BaseRecordCreateMode
         return new APIClientRecordSettings($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The API Client %1$s has been created successfully at %2$s.',
@@ -69,7 +70,7 @@ abstract class BaseCreateAPIClientMode extends BaseRecordCreateMode
         );
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): AdminURLInterface
+    public function getSuccessURL(DBHelperRecordInterface $record): AdminURLInterface
     {
         if($record instanceof APIClientRecord) {
             return $record->adminURL()->settings();

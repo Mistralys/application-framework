@@ -15,6 +15,8 @@ use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Media;
 use DBHelper\BaseCollection\BaseChildCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use Throwable;
@@ -58,48 +60,9 @@ use UI_Themes_Theme_ContentRenderer;
  */
 trait RecordSettingsScreenTrait
 {
-    /**
-     * @var Application_Formable_RecordSettings|NULL
-     */
-    protected $settingsManager;
-
-    /**
-     * @var DBHelper_BaseRecord|NULL
-     */
-    protected $record;
-
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
-
-    // region: Abstract methods
-
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    abstract public function createCollection();
-
-    /**
-     * @param DBHelper_BaseRecord $record
-     * @return string
-     */
-    abstract public function getSuccessMessage(DBHelper_BaseRecord $record): string;
-
-    /**
-     * @return bool
-     */
-    abstract public function isEditMode(): bool;
-
-    /**
-     * Whether the user is allowed to edit the settings.
-     * If not, the form is made readonly automatically.
-     *
-     * @return bool
-     */
-    abstract public function isUserAllowedEditing(): bool;
-
-    // endregion
+    protected ?Application_Formable_RecordSettings $settingsManager = null;
+    protected ?DBHelperRecordInterface $record = null;
+    protected DBHelperCollectionInterface$collection;
 
     /**
      * Retrieves the path to the administration screen that can be used to delete this item, if any.
@@ -320,7 +283,7 @@ trait RecordSettingsScreenTrait
         return false;
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string|AdminURLInterface
+    public function getSuccessURL(DBHelperRecordInterface $record): string|AdminURLInterface
     {
         if ($this->isEditMode()) {
             return $this->request->buildRefreshURL();
@@ -616,15 +579,12 @@ trait RecordSettingsScreenTrait
         return $values;
     }
 
-    /**
-     * @return Application_Formable_RecordSettings|NULL
-     */
-    public function getSettingsManager()
+    public function getSettingsManager() : ?Application_Formable_RecordSettings
     {
         return null;
     }
 
-    protected function _handleBeforeSidebar()
+    protected function _handleBeforeSidebar() : void
     {
 
     }

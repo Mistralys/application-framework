@@ -12,6 +12,7 @@ use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -72,7 +73,7 @@ abstract class BaseCategorySettingsScreen extends BaseRecordSettingsSubmode
         return AppFactory::createNews()->createCategories();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t('The settings have been saved successfully at %1$s.', sb()->time());
     }

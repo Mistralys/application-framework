@@ -6,10 +6,12 @@ namespace Application\Area\Tags;
 
 use Application\AppFactory;
 use Application\Tags\TagRecord;
+use Application\Tags\TagSettingsManager;
 use Application_Formable_RecordSettings;
 use Application\Tags\TagCollection;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 use UI;
 
@@ -28,7 +30,7 @@ abstract class BaseCreateTagScreen extends BaseRecordCreateMode
         return AppFactory::createTags();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The tag %1$s has been created successfully at %2$s.',
@@ -37,10 +39,7 @@ abstract class BaseCreateTagScreen extends BaseRecordCreateMode
         );
     }
 
-    /**
-     * @return Application_Formable_RecordSettings|NULL
-     */
-    public function getSettingsManager(): ?Application_Formable_RecordSettings
+    public function getSettingsManager(): ?TagSettingsManager
     {
         return $this->createCollection()
             ->createSettingsManager($this, null)
@@ -55,7 +54,7 @@ abstract class BaseCreateTagScreen extends BaseRecordCreateMode
         }
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         $parent = $this->resolveParentTag();
         if($parent !== null) {
