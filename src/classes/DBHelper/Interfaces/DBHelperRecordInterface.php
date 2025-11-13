@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DBHelper\Interfaces;
 
 use Application\Collection\IntegerCollectionItemInterface;
-use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application_EventHandler_EventableListener;
 use Application\Disposables\DisposableInterface;
@@ -38,7 +37,6 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param string $name
      * @param mixed $default
      * @return mixed
-     * @throws \Application\Disposables\DisposableDisposedException
      */
     public function getRecordKey(string $name, mixed $default=null) : mixed;
 
@@ -49,7 +47,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param string $name
      * @param int $default
      * @return int
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      */
     public function getRecordIntKey(string $name, int $default=0) : int;
 
@@ -84,7 +82,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
 
     /**
      * Reloads the record's data from the database.
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws BaseRecordException
      */
     public function refreshData() : void;
@@ -102,7 +100,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param string $name
      * @param float $default
      * @return float
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      */
     public function getRecordFloatKey(string $name, float $default=0.0) : float;
 
@@ -144,7 +142,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param boolean $boolean
      * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise, "true/false" is used.
      * @return boolean Whether the value has changed.
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno=true) : bool;
@@ -153,7 +151,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param string $name
      * @param DateTime $date
      * @return bool
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordDateKey(string $name, DateTime $date) : bool;
@@ -167,7 +165,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @param string $name
      * @param mixed $value
      * @return boolean
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws ConvertHelper_Exception
      */
     public function setRecordKey(string $name, mixed $value) : bool;
@@ -176,7 +174,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * Throws an exception if the record does not have the specified key.
      * @param string $name
      * @return bool
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      * @throws BaseRecordException
      */
     public function requireRecordKeyExists(string $name) : bool;
@@ -243,7 +241,7 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
 
     /**
      * @return array<string,mixed>
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      */
     public function getFormValues() : array;
 
