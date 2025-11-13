@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCriteria_DatabaseExtended
 {
-    public const JOIN_FEEDBACK = 'feedback';
-    public const JOIN_OPTIONAL_TABLE = 'table_optional_join';
-    public const JOIN_LAST_USED_VERSION = 'join_last_used_version';
+    public const string JOIN_FEEDBACK = 'feedback';
+    public const string JOIN_OPTIONAL_TABLE = 'table_optional_join';
+    public const string JOIN_LAST_USED_VERSION = 'join_last_used_version';
 
-    public const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
-    public const CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
-    public const CUSTOM_COL_TEXT = 'text';
-    public const CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
+    public const string CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
+    public const string CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
+    public const string CUSTOM_COL_TEXT = 'text';
+    public const string CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
 
     /**
      * Enables the custom column, which automatically
