@@ -6,9 +6,9 @@ namespace Application\Revisionable\Collection\FilterSettings;
 
 use Application\FilterSettings\SettingDef;
 use Application\Interfaces\FilterCriteriaInterface;
-use Application\Revisionable\Collection\BaseRevisionableFilterCriteria;
 use Application\Revisionable\Collection\BaseRevisionableFilterSettings;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\Collection\RevisionableFilterCriteriaInterface;
 use Application\Revisionable\RevisionableException;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -20,9 +20,9 @@ use HTML_QuickForm2_Exception;
  */
 class Application_RevisionableCollection_FilterSettings_StateFilter extends SettingDef
 {
-    public const ERROR_INVALID_STATE_IN_PRESET = 16001;
+    public const int ERROR_INVALID_STATE_IN_PRESET = 16001;
 
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
 
     protected array $states = array();
 
@@ -33,8 +33,8 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
         parent::__construct($settings, BaseRevisionableFilterSettings::FILTER_STATE, t('State'), 'any');
 
         $this
-            ->setInjectCallback(Closure::fromCallable(array($this, 'injectElement')))
-            ->setConfigureCallback(Closure::fromCallable(array($this, 'configure')));
+            ->setInjectCallback($this->injectElement(...))
+            ->setConfigureCallback($this->configure(...));
 
         $this->collection = $settings->getCollection();
 
@@ -101,8 +101,8 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
 
     public function configure(FilterCriteriaInterface $filterCriteria): self
     {
-        $filterCriteria = ClassHelper::requireObjectInstanceOf(
-            BaseRevisionableFilterCriteria::class,
+        $filters = ClassHelper::requireObjectInstanceOf(
+            RevisionableFilterCriteriaInterface::class,
             $filterCriteria
         );
 
@@ -113,14 +113,14 @@ class Application_RevisionableCollection_FilterSettings_StateFilter extends Sett
             $preset = $this->presets[$value];
 
             foreach ($preset['include'] as $stateName) {
-                $filterCriteria->selectState($stateName);
+                $filters->selectState($stateName);
             }
 
             foreach ($preset['exclude'] as $stateName) {
-                $filterCriteria->selectState($stateName, true);
+                $filters->selectState($stateName, true);
             }
         } else if (isset($this->states[$value])) {
-            $filterCriteria->selectState($value);
+            $filters->selectState($value);
         }
 
         return $this;

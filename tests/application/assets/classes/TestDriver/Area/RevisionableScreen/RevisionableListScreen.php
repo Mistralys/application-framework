@@ -11,9 +11,9 @@ use TestDriver\Revisionables\RevisionableCollection;
 
 class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableList
 {
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
-    public function getCollection(): BaseRevisionableCollection
+    public function getCollection(): RevisionableCollection
     {
         return RevisionableCollection::getInstance();
     }

@@ -69,11 +69,11 @@ abstract class BaseRevisionable implements RevisionableInterface
     private ?int $selectedRevision = null;
     protected Application_StateHandler $stateHandler;
 
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected int $id;
     private ?string $revisionableTypeName = null;
 
-    public function __construct(BaseRevisionableCollection $collection, int $id)
+    public function __construct(RevisionableCollectionInterface $collection, int $id)
     {
         $this->collection = $collection;
         $this->id = $id;

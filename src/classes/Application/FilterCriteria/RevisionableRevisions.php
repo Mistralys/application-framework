@@ -38,7 +38,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         $this->storage = $storage;
     }
     
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
         return array(
             "`label`",
@@ -78,7 +78,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         return $query;
     }
 
-    protected function getSelect()
+    protected function getSelect() : array
     {
         $fields = array(
             '`'.$this->storage->getIDColumn().'` AS `revisionable_id`',

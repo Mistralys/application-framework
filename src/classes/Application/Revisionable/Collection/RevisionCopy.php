@@ -11,7 +11,7 @@ use DBHelper;
  */
 abstract class Application_RevisionableCollection_RevisionCopy extends BaseDBRevisionCopy
 {
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected string $primaryKey;
     protected string $revisionKey;
     protected string $revisionTable;

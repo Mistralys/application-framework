@@ -3,6 +3,7 @@
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\Collection\BaseRevisionableDataGridMultiAction;
 use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 
 /**
  * 
@@ -24,5 +25,5 @@ interface Application_Interfaces_Admin_RevisionableList extends AdminScreenInter
      */
     public function addMultiAction(string $className, string $label, string $redirectURL, bool $confirm=false) : BaseRevisionableDataGridMultiAction;
 
-    public function getCollection() : BaseRevisionableCollection;
+    public function getCollection() : RevisionableCollectionInterface;
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Collection;
 
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
-use Application_Admin_Skeleton;
 use Application_Interfaces_Iconizable;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Interfaces\StringableInterface;
@@ -20,23 +20,23 @@ abstract class BaseRevisionableDataGridMultiAction implements OptionableInterfac
 {
     use OptionableTrait;
 
-    protected Application_Admin_Skeleton $adminScreen;
+    protected AdminScreenInterface $adminScreen;
     protected UI_DataGrid $grid;
     protected bool $initDone = false;
     protected string $redirectURL;
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected UI_DataGrid_Action $action;
     protected string $id;
 
     /**
-     * @param BaseRevisionableCollection $collection
-     * @param Application_Admin_Skeleton $adminScreen
+     * @param RevisionableCollectionInterface $collection
+     * @param AdminScreenInterface $adminScreen
      * @param UI_DataGrid $grid
      * @param string|int|float|StringableInterface|null $label
      * @param string|AdminURLInterface $redirectURL
      * @throws UI_Exception
      */
-    public function __construct(BaseRevisionableCollection $collection, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, string|int|float|StringableInterface|null $label, string|AdminURLInterface $redirectURL)
+    public function __construct(RevisionableCollectionInterface $collection, AdminScreenInterface $adminScreen, UI_DataGrid $grid, string|int|float|StringableInterface|null $label, string|AdminURLInterface $redirectURL)
     {
         $this->collection = $collection;
         $this->adminScreen = $adminScreen;

@@ -9,12 +9,9 @@ use Application_AjaxMethod;
 
 abstract class Application_RevisionableCollection_AjaxMethod extends Application_AjaxMethod
 {
-    /**
-     * @return BaseRevisionableCollection
-     */
-    abstract protected function getCollection();
+    abstract protected function getCollection() : RevisionableCollectionInterface;
 
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected ?RevisionableInterface $revisionable = null;
     protected int $revisionableID;
 

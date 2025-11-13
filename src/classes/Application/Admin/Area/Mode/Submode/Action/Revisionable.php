@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 
 /**
@@ -10,14 +11,11 @@ use Application\Revisionable\RevisionableInterface;
  */
 abstract class Application_Admin_Area_Mode_Submode_Action_Revisionable extends Application_Admin_Area_Mode_Submode_Action
 {
-    public const ERROR_INVALID_REVISIONABLE_ID = 15301;
+    public const int ERROR_INVALID_REVISIONABLE_ID = 15301;
     
-    /**
-    * @return BaseRevisionableCollection
-    */
-    abstract protected function createCollection();
+    abstract protected function createCollection() : RevisionableCollectionInterface;
     
-    protected BaseRevisionableCollection $collection;
+    protected RevisionableCollectionInterface $collection;
     protected string $recordTypeName;
     protected int $revisionableID;
     
