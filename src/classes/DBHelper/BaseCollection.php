@@ -7,8 +7,9 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
-use Application\Disposables\DisposableTrait;
+use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
+use Application\Disposables\DisposableTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\BaseCollection\DBHelperCollectionException;
@@ -198,7 +199,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->init();
     }
     
-    public function getParentRecord() : ?DBHelper_BaseRecord
+    public function getParentRecord() : ?DBHelperRecordInterface
     {
         return null;
     }
@@ -433,7 +434,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::STUB_ID);
         
         if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
-            throw new Application_Exception(
+            throw new DBHelperCollectionException(
                 'Duplicate DB collection tables',
                 sprintf(
                     'The DBHelper collection [%s] has the same table [%s] defined as record table and ID table.',
@@ -705,7 +706,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return $this->addEventListener(self::EVENT_AFTER_DELETE_RECORD, $callback);
     }
 
-    final protected function triggerAfterDeleteRecord(DBHelper_BaseRecord $record, DBHelper_BaseCollection_OperationContext_Delete $context) : void
+    final protected function triggerAfterDeleteRecord(DBHelperRecordInterface $record, DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->triggerEvent(
             self::EVENT_AFTER_DELETE_RECORD,
@@ -797,8 +798,9 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     /**
      * @return array<string,string|null|number|array>
-     * @throws \Application\Disposables\DisposableDisposedException
+     * @throws DisposableDisposedException
      */
+    #[DisposedAware]
     final public function describe() : array
     {
         $this->requireNotDisposed('Describe the collection.');

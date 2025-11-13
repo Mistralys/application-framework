@@ -2,21 +2,23 @@
 
 declare(strict_types=1);
 
+use DBHelper\Interfaces\DBHelperRecordInterface;
+
 class DBHelper_BaseFilterCriteria_Record
 {
     /**
      * @var array<string,string>
      */
     private array $data;
-    private DBHelper_BaseRecord $record;
+    private DBHelperRecordInterface $record;
 
-    public function __construct(array $data, DBHelper_BaseRecord $record)
+    public function __construct(array $data, DBHelperRecordInterface $record)
     {
         $this->data = $data;
         $this->record = $record;
     }
 
-    public function getRecord() : DBHelper_BaseRecord
+    public function getRecord() : DBHelperRecordInterface
     {
         return $this->record;
     }

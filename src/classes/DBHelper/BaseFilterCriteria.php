@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\DBHelperFilterCriteriaInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Base class for filter criteria to be used in conjunction
@@ -72,12 +73,12 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
     }
     
-    protected function getSearchFields()
+    protected function getSearchFields() : array
     {
         $fields = $this->collection->getRecordSearchableKeys();
         $result = array();
         foreach($fields as $field) {
-            if(!strstr($field, '.')) {
+            if(!str_contains($field, '.')) {
                 $field = sprintf(
                     "%s.`%s`",
                     $this->resolveTableSelector(),
@@ -101,7 +102,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         
     }
     
-    public function getQuery() : string
+    public function getQuery() : string|DBHelper_StatementBuilder
     {
         $this->prepareQuery();
         
@@ -125,7 +126,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         );
     }
     
-    protected function getSelect()
+    protected function getSelect() : array
     {
         return array(
             sprintf(
@@ -154,9 +155,9 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     
    /**
     * Retrieves all matching record instances.
-    * @return DBHelper_BaseRecord[]
+    * @return DBHelperRecordInterface[]
     */
-    public function getItemsObjects()
+    public function getItemsObjects() : array
     {
         $items = $this->getItemsDetailed();
         $result = array();
@@ -195,7 +196,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     * Retrieves the primary keys for all items in the current selection.
     * @return integer[]
     */
-    public function getIDs()
+    public function getIDs() : array
     {
         $items = $this->getItems();
         $ids = array();
