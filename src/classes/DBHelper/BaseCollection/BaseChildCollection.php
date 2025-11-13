@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace DBHelper\BaseCollection;
 
 use DBHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
 use DBHelper_Exception;
 
 /**
@@ -28,26 +28,21 @@ use DBHelper_Exception;
  * @package DBHelper
  * @subpackage Base Collection
  */
-abstract class BaseChildCollection extends DBHelper_BaseCollection
+abstract class BaseChildCollection extends DBHelper_BaseCollection implements ChildCollectionInterface
 {
-    /**
-     * @return class-string<DBHelper_BaseCollection>
-     */
-    abstract public function getParentCollectionClass(): string;
-
-    protected ?DBHelper_BaseRecord $parentRecord = null;
+    protected ?DBHelperRecordInterface $parentRecord = null;
 
     /**
      * This is only available if the collection has a parent collection.
      *
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      */
-    public function getParentRecord() : DBHelper_BaseRecord
+    public function getParentRecord() : DBHelperRecordInterface
     {
         return $this->parentRecord;
     }
 
-    public function bindParentRecord(?DBHelper_BaseRecord $record) : void
+    final public function bindParentRecord(?DBHelperRecordInterface $record) : void
     {
         if($record === null) {
             throw new DBHelper_Exception(
@@ -118,7 +113,7 @@ abstract class BaseChildCollection extends DBHelper_BaseCollection
         $this->dispose();
     }
 
-    public function getParentCollection() : DBHelper_BaseCollection
+    public function getParentCollection() : DBHelperCollectionInterface
     {
         return $this->getParentRecord()->getCollection();
     }
