@@ -1,11 +1,10 @@
 <?php
 /**
- * File containing the class {@see Application_FilterCriteria_Database}.
- *
  * @package Application
  * @subpackage FilterCriteria
- * @see Application_FilterCriteria_Database
  */
+
+declare(strict_types=1);
 
 use Application\FilterCriteria\FilterCriteriaDBInterface;
 use Application\FilterCriteria\FilterCriteriaException;
@@ -45,7 +44,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected int $placeholderCounter = 0;
 
     /**
-     * @var array<string,array<mixed>>
+     * @var array<string,array<int|string,mixed>>
      */
     protected array $placeholderHashes = array();
 
@@ -202,7 +201,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @throws Application_Exception
      * @see FilterCriteriaException::ERROR_MISSING_SELECT_KEYWORD
      */
-    protected function addDistinctKeyword($query) : string
+    protected function addDistinctKeyword(string|DBHelper_StatementBuilder $query) : string
     {
         $query = (string)$query;
 
@@ -215,10 +214,10 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         // keyword. We assume that the first one we find is the
         // one we want to modify.
         $result = array();
-        preg_match_all('/SELECT[ ]*DISTINCT|SELECT/sU', $query, $result, PREG_PATTERN_ORDER);
+        preg_match_all('/SELECT[ ]*DISTINCT|SELECT/U', $query, $result, PREG_PATTERN_ORDER);
 
         if(empty($result[0][0])) {
-            throw new Application_Exception(
+            throw new FilterCriteriaException(
                 'SELECT keyword missing in the query.',
                 'The query does not seem to have any SELECT keyword: '.$query,
                 FilterCriteriaException::ERROR_MISSING_SELECT_KEYWORD
@@ -268,7 +267,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @return string|array<int,string|DBHelper_StatementBuilder>
      */
-    abstract protected function getSelect();
+    abstract protected function getSelect() : string|array;
 
     /**
      * Retrieves a list of fields in the query that gets
@@ -284,7 +283,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      *
      * @return array<int,string|DBHelper_StatementBuilder>
      */
-    abstract protected function getSearchFields();
+    abstract protected function getSearchFields() : array;
 
     /**
      * Retrieves the query to run, which is very simple
@@ -356,9 +355,9 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      */
     public function getSelects() : array
     {
-        $selects = $this->getSelect();
+        $select = $this->getSelect();
 
-        if(empty($selects))
+        if(empty($select))
         {
             throw new FilterCriteriaException(
                 'Select fields list cannot be empty',
@@ -367,9 +366,13 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             );
         }
 
-        if(!is_array($selects))
+        if(is_array($select))
         {
-            $selects = ConvertHelper::explodeTrim(',', $selects);
+           $selects = $select;
+        }
+        else
+        {
+            $selects = ConvertHelper::explodeTrim(',', $select);
         }
 
         if(!empty($this->columnSelects))
@@ -391,7 +394,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|DBHelper_StatementBuilder $statement
      * @return string
      */
-    public static function getUniqueKey($statement) : string
+    public static function getUniqueKey(string|DBHelper_StatementBuilder $statement) : string
     {
         if($statement instanceof DBHelper_StatementBuilder)
         {
@@ -614,19 +617,14 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     /**
      * @var array<string,Application_FilterCriteria_Database_Join>
      */
-    protected $joins = array();
-
-    /**
-     * @var DBHelper_StatementBuilder[]
-     */
-    protected $joinStatements = array();
+    protected array $joins = array();
 
     /**
      * @var array<string,Application_FilterCriteria_Database_Join>
      */
-    private $registeredJoins = array();
+    private array $registeredJoins = array();
 
-    private $joinsRegistered = false;
+    private bool $joinsRegistered = false;
 
     abstract protected function _registerJoins() : void;
 
@@ -902,7 +900,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @param string|DBHelper_StatementBuilder $name
      * @return string
      */
-    protected function quoteColumnName($name) : string
+    protected function quoteColumnName(string|DBHelper_StatementBuilder $name) : string
     {
         if($name instanceof DBHelper_StatementBuilder)
         {
@@ -913,7 +911,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
             return '';
         }
 
-        if($name[0] === '`' || strpos($name, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === 0) {
+        if($name[0] === '`' || str_starts_with($name, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX)) {
             return $name;
         }
 
@@ -1117,7 +1115,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
         $parts = array();
         $connectorAdded = false;
         $like = true;
-        $cnt = 0;
 
         for($i=0; $i<$totalTerms; $i++)
         {
@@ -1140,7 +1137,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
                     continue;
                 }
 
-                if($i==($totalTerms-1)) {
+                if($i===($totalTerms-1)) {
                     $this->addWarning('The search terms may not end with a logical operator.');
                     continue;
                 }
@@ -1166,7 +1163,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
                 $like = true;
             }
 
-            $cnt++;
             $fieldTokens = array();
             for($j=0; $j<$totalFields; $j++) {
                 $fieldName = (string)$searchFields[$j];
@@ -1199,11 +1195,11 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     protected function canAddTableAlias(string $field) : bool
     {
         return
-            strpos($field, '.') === false
+            !str_contains($field, '.')
                 &&
-            strpos($field, '\\') === false
+            !str_contains($field, '\\')
                 &&
-            strpos($field, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX) === false;
+            !str_contains($field, Application_FilterCriteria_Database_CustomColumn::MARKER_SUFFIX);
     }
 
     protected function buildOrderby() : string
