@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
@@ -48,5 +48,5 @@ trait RecordStatusScreenTrait
         return $grid;
     }
 
-    abstract protected function _populateGrid(UI_PropertiesGrid $grid, DBHelper_BaseRecord $record): void;
+    abstract protected function _populateGrid(UI_PropertiesGrid $grid, DBHelperRecordInterface $record): void;
 }

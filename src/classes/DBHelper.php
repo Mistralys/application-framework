@@ -15,8 +15,10 @@ use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
 use DBHelper\BaseCollection\BaseChildCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Exception\CLIErrorRenderer;
 use DBHelper\Exception\HTMLErrorRenderer;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper\TrackedQuery;
 use function AppUtils\parseVariable;
 
@@ -1964,7 +1966,7 @@ class DBHelper
     }
 
     /**
-     * @var array<string,DBHelper_BaseCollection>
+     * @var array<string,DBHelperCollectionInterface>
      */
     protected static array $collections = array();
 
@@ -1981,12 +1983,12 @@ class DBHelper
 
     /**
      * @param string $class
-     * @param DBHelper_BaseRecord|NULL $parentRecord
+     * @param DBHelperRecordInterface|NULL $parentRecord
      * @param bool $newInstance
-     * @return DBHelper_BaseCollection
+     * @return DBHelperCollectionInterface
      * @throws DBHelper_Exception
      */
-    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : DBHelper_BaseCollection
+    public static function createCollection(string $class, ?DBHelperRecordInterface $parentRecord=null, bool $newInstance=false) : DBHelperCollectionInterface
     {
         $key = $class;
         if($parentRecord) {
@@ -1998,7 +2000,7 @@ class DBHelper
         }
     
         $instance = ClassHelper::requireObjectInstanceOf(
-            DBHelper_BaseCollection::class,
+            DBHelperCollectionInterface::class,
             new $class(),
             self::ERROR_NOT_A_DBHELPER_COLLECTION
         );

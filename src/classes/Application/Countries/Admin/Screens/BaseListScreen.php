@@ -7,13 +7,13 @@ namespace Application\Countries\Admin\Screens;
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
+use Application_Countries;
 use Application_Countries_Country;
 use Application_Countries_FilterCriteria;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
-use DBHelper_BaseCollection;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Entry;
 
@@ -51,12 +51,12 @@ class BaseListScreen extends BaseRecordListMode
         return t('Available countries');
     }
 
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): Application_Countries
     {
         return AppFactory::createCountries();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
     {
         $country = ClassHelper::requireObjectInstanceOf(
             Application_Countries_Country::class,

@@ -9,7 +9,7 @@ use Application\API\Admin\RequestTypes\APIClientRequestTrait;
 use Application\API\Clients\Keys\APIKeyRecord;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Action\BaseRecordStatusAction;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
@@ -35,7 +35,7 @@ class BaseAPIKeyStatusAction extends BaseRecordStatusAction implements APIKeyAct
         return APIScreenRights::SCREEN_API_KEYS_STATUS;
     }
 
-    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelper_BaseRecord $record): void
+    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelperRecordInterface $record): void
     {
         $apiKey = ClassHelper::requireObjectInstanceOf(
             APIKeyRecord::class,

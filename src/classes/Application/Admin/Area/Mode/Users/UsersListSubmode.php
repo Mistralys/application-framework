@@ -14,14 +14,10 @@ use Application\AppFactory\AppFactoryException;
 use Application\Exception\UnexpectedInstanceException;
 use Application_Admin_Area_Mode_Submode_CollectionList;
 use Application_Admin_Area_Mode_Users;
-use Application_Driver;
 use Application_Users;
 use Application_Users_User;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
-use DBHelper_BaseCollection;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 
 /**
  * Abstract submode for the users list screen in the
@@ -61,12 +57,12 @@ abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_Coll
      * @return Application_Users
      * @throws AppFactoryException
      */
-    protected function createCollection() : DBHelper_BaseCollection
+    protected function createCollection() : Application_Users
     {
         return AppFactory::createUsers();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         if ($record instanceof Application_Users_User)
         {

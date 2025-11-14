@@ -35,8 +35,6 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
     public const int ERROR_RECORD_DOES_NOT_EXIST = 13301;
     public const int ERROR_RECORD_KEY_UNKNOWN = 13302;
 
-    public const int STUB_ID = -1;
-
     /**
      * @var array<string,mixed>|NULL
      */
@@ -73,7 +71,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         $this->recordID = (int)$primary_id;
         $this->instanceID = 'DBR'.self::$instanceCounter;
 
-        if($this->recordID === self::STUB_ID)
+        if($this->recordID === DBHelperRecordInterface::STUB_ID)
         {
             $this->constructStub();
             return;
@@ -96,7 +94,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         $this->isStub = true;
 
         $this->recordData = array(
-            $this->recordPrimaryName => self::STUB_ID
+            $this->recordPrimaryName => DBHelperRecordInterface::STUB_ID
         );
 
         $this->recordKeys = array_keys($this->recordData);

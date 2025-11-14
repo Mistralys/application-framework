@@ -1,5 +1,7 @@
 <?php
 
+use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
+
 /**
  * @deprecated Use {@see BaseRecordListSubmode} instead.
  */

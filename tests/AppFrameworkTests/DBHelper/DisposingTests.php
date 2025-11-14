@@ -2,12 +2,15 @@
 
 declare(strict_types=1);
 
+namespace AppFrameworkTests\DBHelper;
+
 use Application\AppFactory;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
+use TestDriver\TestDBRecords\TestDBCollection;
 
-final class DBHelper_DisposingTests extends DBHelperTestCase
+final class DisposingTests extends DBHelperTestCase
 {
-    public function test_resetCollection() : void
+    public function test_resetCollection(): void
     {
         $collection = AppFactory::createCountries();
 
@@ -18,8 +21,7 @@ final class DBHelper_DisposingTests extends DBHelperTestCase
 
         $collection->resetCollection();
 
-        foreach($records as $record)
-        {
+        foreach ($records as $record) {
             $this->assertTrue($record->isDisposed());
             $this->assertFalse($collection->isRecordLoaded($record->getID()));
         }
@@ -32,11 +34,11 @@ final class DBHelper_DisposingTests extends DBHelperTestCase
      *
      * @see DBHelper_BaseCollection::callback_parentRecordDisposed()
      */
-    public function test_parentRecordDisposed() : void
+    public function test_parentRecordDisposed(): void
     {
         $this->markTestIncomplete();
 
-        $parentCollection = new TestDriver_DBHelperCollection();
+        $parentCollection = new TestDBCollection();
         $parentRecord = $parentCollection->addTestRecord();
 
         $collection = new TestDriver_DBHelperCollectionWithParent();
@@ -52,7 +54,7 @@ final class DBHelper_DisposingTests extends DBHelperTestCase
      * not fetch a fresh instance, and throw an exception if the
      * collection is
      */
-    public function test_parentRecordDeleted() : void
+    public function test_parentRecordDeleted(): void
     {
         $this->markTestIncomplete();
     }

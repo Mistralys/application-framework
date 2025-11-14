@@ -19,6 +19,8 @@ use DBHelper_Exception;
 
 interface DBHelperRecordInterface extends IntegerCollectionItemInterface, DisposableInterface
 {
+    public const int STUB_ID = -1;
+
     /**
      * Whether this is a stub record that is used only to
      * access information on this record type.

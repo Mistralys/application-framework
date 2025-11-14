@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\TimeTracker;
 
 use Application\AppFactory;
-use Application\MarkdownRenderer;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
@@ -14,24 +13,23 @@ use Application_Formable_RecordSettings_ValueSet;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\DateTimeHelper\TimeDurationCalculator;
-use AppUtils\Microtime;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use Application\TimeTracker\Types\TimeEntryTypes;
 use HTML_QuickForm2_Rule_Callback;
 
 class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_DATE = 'date';
-    public const SETTING_START_TIME = 'start';
-    public const SETTING_END_TIME = 'end';
-    public const SETTING_TYPE = 'type';
-    public const SETTING_DURATION = 'duration';
-    public const SETTING_TICKET = 'ticket';
-    public const SETTING_COMMENTS = 'comments';
-    public const FORMAT_PLACEHOLDER = '$format';
-    public const SETTING_TICKET_URL = 'ticketURL';
+    public const string SETTING_DATE = 'date';
+    public const string SETTING_START_TIME = 'start';
+    public const string SETTING_END_TIME = 'end';
+    public const string SETTING_TYPE = 'type';
+    public const string SETTING_DURATION = 'duration';
+    public const string SETTING_TICKET = 'ticket';
+    public const string SETTING_COMMENTS = 'comments';
+    public const string FORMAT_PLACEHOLDER = '$format';
+    public const string SETTING_TICKET_URL = 'ticketURL';
 
     public function __construct(Application_Formable $formable, ?TimeEntry $record = null)
     {
@@ -40,7 +38,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $this->setDefaultsUseStorageNames(true);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

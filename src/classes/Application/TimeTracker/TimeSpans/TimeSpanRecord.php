@@ -15,13 +15,13 @@ use DBHelper_BaseRecord;
 
 class TimeSpanRecord extends DBHelper_BaseRecord
 {
-    public const COL_USER_ID = 'user_id';
-    public const COL_DATE_START = 'date_start';
-    public const COL_DATE_END = 'date_end';
-    public const COL_COMMENTS = 'comments';
-    public const COL_TYPE = 'type';
-    public const COL_PROCESSED = 'processed';
-    public const COL_DAYS = 'days';
+    public const string COL_USER_ID = 'user_id';
+    public const string COL_DATE_START = 'date_start';
+    public const string COL_DATE_END = 'date_end';
+    public const string COL_COMMENTS = 'comments';
+    public const string COL_TYPE = 'type';
+    public const string COL_PROCESSED = 'processed';
+    public const string COL_DAYS = 'days';
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {

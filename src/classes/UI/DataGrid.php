@@ -6,6 +6,7 @@
 
 use Application\AppFactory;
 use Application\Driver\DriverException;
+use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
@@ -1418,16 +1419,16 @@ class UI_DataGrid implements HiddenVariablesInterface
     }
 
     protected ?FilterCriteriaInterface $filterCriteria = null;
-    protected ?Application_FilterSettings $filterSettings = null;
+    protected ?FilterSettingsInterface $filterSettings = null;
 
     /**
      * Configures the data grid using the specified filter settings and filter criteria.
      *
-     * @param Application_FilterSettings $settings
+     * @param FilterSettingsInterface $settings
      * @param FilterCriteriaInterface $criteria
      * @return UI_DataGrid
      */
-    public function configure(Application_FilterSettings $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
+    public function configure(FilterSettingsInterface $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
     {
         $this->start();
 
@@ -2304,7 +2305,7 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $actionName = $this->getAction();
         foreach ($actions as $action) {
-            if($action=='__separator') {
+            if($action === '__separator') {
                 continue;
             }
             if ($action->getName() === $actionName) {

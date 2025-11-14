@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace DBHelper\Admin;
 
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_FilterSettings;
 use AppUtils\ConvertHelper\JSONConverter;
-use DBHelper\BaseCollection\BaseChildCollection;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\DBHelperFilterSettingsInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_Exception;
 use UI\DataGrid\BaseListBuilder;
 
@@ -20,14 +19,14 @@ abstract class BaseCollectionListBuilder extends BaseListBuilder
         $this->setListID($this->getCollection()->getRecordTypeName().'-list');
     }
 
-    abstract public function getCollection() : DBHelper_BaseCollection;
+    abstract public function getCollection() : DBHelperCollectionInterface;
 
     protected function createFilterCriteria(): FilterCriteriaInterface
     {
         return $this->getCollection()->getFilterCriteria();
     }
 
-    protected function createFilterSettings(): Application_FilterSettings
+    protected function createFilterSettings(): DBHelperFilterSettingsInterface
     {
         return $this->getCollection()->getFilterSettings();
     }
@@ -39,10 +38,10 @@ abstract class BaseCollectionListBuilder extends BaseListBuilder
 
     /**
      * @param array<string,string> $itemData
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      * @throws DBHelper_Exception
      */
-    protected function resolveRecord(array $itemData): object
+    protected function resolveRecord(array $itemData): DBHelperRecordInterface
     {
         $collection = $this->getCollection();
         $primaryName = $collection->getRecordPrimaryName();

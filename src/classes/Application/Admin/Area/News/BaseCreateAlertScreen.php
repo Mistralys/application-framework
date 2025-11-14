@@ -6,18 +6,16 @@ namespace Application\Admin\Area\News;
 
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
-use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create-alert';
+    public const string URL_NAME = 'create-alert';
 
     public function getURLName(): string
     {

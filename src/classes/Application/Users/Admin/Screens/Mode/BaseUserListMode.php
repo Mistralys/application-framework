@@ -7,17 +7,16 @@ namespace Application\Users\Admin\Screens\Mode;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\UserAdminScreenRights;
-use Application_Admin_Area_Mode_CollectionList;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Entry;
 
-abstract class BaseUserListMode extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseUserListMode extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 
@@ -50,15 +49,12 @@ abstract class BaseUserListMode extends Application_Admin_Area_Mode_CollectionLi
         return UserAdminScreenRights::SCREEN_LIST;
     }
 
-    /**
-     * @return Application_Users
-     */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): Application_Users
     {
         return AppFactory::createUsers();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
     {
         return $this->getUserData(ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,

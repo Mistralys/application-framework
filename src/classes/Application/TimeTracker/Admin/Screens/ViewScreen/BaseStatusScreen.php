@@ -8,7 +8,6 @@ use Application\AppFactory;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
-use DBHelper_BaseCollection;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
@@ -18,7 +17,7 @@ use UI_Themes_Theme_ContentRenderer;
  */
 abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
 {
-    public const URL_NAME = 'status';
+    public const string URL_NAME = 'status';
 
     public function getURLName(): string
     {
@@ -43,7 +42,7 @@ abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_Coll
     /**
      * @return TimeTrackerCollection
      */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): TimeTrackerCollection
     {
         return AppFactory::createTimeTracker();
     }

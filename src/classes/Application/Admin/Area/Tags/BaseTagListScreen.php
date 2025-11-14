@@ -12,8 +12,8 @@ use Application\Tags\TagRecord;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use Closure;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
@@ -37,12 +37,12 @@ abstract class BaseTagListScreen extends BaseRecordListMode
     }
 
     /**
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
      * @return array<string,mixed>
      * @throws BaseClassHelperException
      */
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $tag = ClassHelper::requireObjectInstanceOf(
             TagRecord::class,

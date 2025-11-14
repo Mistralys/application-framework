@@ -15,6 +15,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper\JSONConverter;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * User management class: allows retrieving and modifying the
@@ -49,19 +51,11 @@ class Application_Users extends DBHelper_BaseCollection
     public const int COL_FOREIGN_NICKNAME_MAX_LENGTH = 180;
     public const int COL_NICKNAME_MAX_LENGTH = 180;
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordClassName()
-     */
     public function getRecordClassName() : string
     {
         return Application_Users_User::class;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordFiltersClassName()
-     */
     public function getRecordFiltersClassName() : string
     {
         return UsersFilterCriteria::class;
@@ -72,19 +66,11 @@ class Application_Users extends DBHelper_BaseCollection
         return UsersFilterSettings::class;
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
-     */
     public function getRecordDefaultSortKey() : string
     {
         return self::COL_EMAIL;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordSearchableColumns()
-     */
     public function getRecordSearchableColumns() : array
     {
         return array(
@@ -94,45 +80,26 @@ class Application_Users extends DBHelper_BaseCollection
         );
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTableName()
-     */
     public function getRecordTableName() : string
     {
         return self::TABLE_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordPrimaryName()
-     */
     public function getRecordPrimaryName() : string
     {
         return self::PRIMARY_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTypeName()
-     */
     public function getRecordTypeName() : string
     {
         return 'user';        
     }
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getCollectionLabel()
-     */
+
     public function getCollectionLabel() : string
     {
         return t('Users');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordLabel()
-     */
     public function getRecordLabel() : string
     {
         return t('User');
@@ -142,8 +109,7 @@ class Application_Users extends DBHelper_BaseCollection
     {
         $user = $this->getByKey(self::COL_EMAIL, $email);
 
-        if($user !== null)
-        {
+        if($user instanceof Application_Users_User) {
             return $user;
         }
 
@@ -156,7 +122,7 @@ class Application_Users extends DBHelper_BaseCollection
 
         if($userID !== null)
         {
-            $options[DBHelper_BaseCollection::OPTION_CUSTOM_RECORD_ID] = $userID;
+            $options[DBHelperCollectionInterface::OPTION_CUSTOM_RECORD_ID] = $userID;
         }
 
         return $this->createNewRecord(
@@ -175,13 +141,13 @@ class Application_Users extends DBHelper_BaseCollection
      * @param int|string $record_id
      * @return Application_Users_User
      *
-     * @throws DisposableDisposedException
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
-     * @throws DBHelper_Exception
      */
-    public function getByID($record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : Application_Users_User
     {
+        $record_id = (int)$record_id;
+
         return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,
             parent::getByID($record_id)

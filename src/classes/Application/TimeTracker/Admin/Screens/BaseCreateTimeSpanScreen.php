@@ -10,7 +10,6 @@ use Application\TimeTracker\TimeSpans\TimeSpanSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 
 abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode

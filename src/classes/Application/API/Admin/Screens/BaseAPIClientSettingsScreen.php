@@ -10,7 +10,6 @@ use Application\API\Clients\APIClientRecordSettings;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsSubmode
 {

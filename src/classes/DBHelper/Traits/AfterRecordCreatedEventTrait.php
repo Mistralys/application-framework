@@ -6,6 +6,7 @@ namespace DBHelper\Traits;
 
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection_OperationContext_Create;
@@ -29,7 +30,7 @@ trait AfterRecordCreatedEventTrait
 
     /**
      * Triggered after a new record has been created, and after the record's
-     * {@see DBHelper_BaseRecord::onCreated()} method has been called.
+     * {@see DBHelperRecordInterface::onCreated()} method has been called.
      *
      * @param DBHelperRecordInterface $record
      * @param DBHelper_BaseCollection_OperationContext_Create $context
@@ -40,7 +41,7 @@ trait AfterRecordCreatedEventTrait
     final protected function triggerAfterCreateRecord(DBHelperRecordInterface $record, DBHelper_BaseCollection_OperationContext_Create $context) : ?AfterCreateRecordEvent
     {
         $event = $this->triggerEvent(
-            self::EVENT_AFTER_CREATE_RECORD,
+            DBHelperCollectionInterface::EVENT_AFTER_CREATE_RECORD,
             array(
                 $this,
                 $record,

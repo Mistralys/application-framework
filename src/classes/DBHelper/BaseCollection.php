@@ -45,15 +45,10 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     use BeforeCreateEventTrait;
     use AfterRecordCreatedEventTrait;
 
-    public const string SORT_DIR_ASC = 'ASC';
-    public const string SORT_DIR_DESC = 'DESC';
-
-    public const string VALUE_UNDEFINED = '__undefined';
-
     protected ?string $recordIDTable;
 
     /**
-     * @var class-string<DBHelper_BaseRecord>
+     * @var class-string<DBHelperRecordInterface>
      */
     protected string $recordClassName;
     protected string $recordSortKey;
@@ -81,7 +76,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     protected array $foreignKeys = array();
 
     /**
-     * @var DBHelper_BaseRecord[]
+     * @var DBHelperRecordInterface[]
      */
     protected array $records = array();
     private ?string $recordIDTablePrimaryName = null;
@@ -92,9 +87,9 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     * stay parameter-less to stay compatible with the
     * <code>DBHelper::createCollection()</code> method.
     * 
-    * NOTE: Extend the <code>init()</code> method to 
-    * handle any required initialization once the 
-    * collection has been fully set up.
+    * > NOTE: Extend the {@see DBHelper_BaseCollection::init()} method to
+    * > handle any required initialization once the
+    * > collection has been fully set up.
     * 
     * @see DBHelper::createCollection()
     * @see DBHelper_BaseCollection::init()
@@ -122,7 +117,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     /**
      * @param int $record_id
-     * @return class-string<DBHelper_BaseRecord>
+     * @return class-string<DBHelperRecordInterface>
      */
     protected function resolveRecordClass(int $record_id) : string
     {
@@ -177,7 +172,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     public function getRecordDefaultSortDir() : string
     {
-        return self::SORT_DIR_ASC;
+        return DBHelperCollectionInterface::SORT_DIR_ASC;
     }
 
     final public function setupComplete() : void
@@ -431,7 +426,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             return $this->dummyRecord;
         }
         
-        $this->dummyRecord = $this->getByID(DBHelper_BaseRecord::STUB_ID);
+        $this->dummyRecord = $this->getByID(DBHelperRecordInterface::STUB_ID);
         
         if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
             throw new DBHelperCollectionException(
@@ -525,8 +520,6 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         );
     }
 
-    public const string OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
-
     public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelperRecordInterface
     {
         $this->requireNotDisposed('Create a new record');
@@ -543,8 +536,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $this->handleOnBeforeCreateRecord($data);
 
         $customID = null;
-        if(isset($options[self::OPTION_CUSTOM_RECORD_ID])) {
-            $customID = (int)$options[self::OPTION_CUSTOM_RECORD_ID];
+        if(isset($options[DBHelperCollectionInterface::OPTION_CUSTOM_RECORD_ID])) {
+            $customID = (int)$options[DBHelperCollectionInterface::OPTION_CUSTOM_RECORD_ID];
         }
 
         // use a special table for generating the record id?
@@ -663,7 +656,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
             $value = $this->resolveDefaultValue($key, $data);
 
-            if($value !== self::VALUE_UNDEFINED)
+            if($value !== DBHelperCollectionInterface::VALUE_UNDEFINED)
             {
                 $data[$name] = $value;
             }
@@ -682,34 +675,30 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             return $key->getDefault();
         }
 
-        return self::VALUE_UNDEFINED;
+        return DBHelperCollectionInterface::VALUE_UNDEFINED;
     }
 
     // region: Event handling
 
-    public const string EVENT_BEFORE_CREATE_RECORD = 'BeforeCreateRecord';
-    public const string EVENT_AFTER_CREATE_RECORD = 'AfterCreateRecord';
-    public const string EVENT_AFTER_DELETE_RECORD = 'AfterDeleteRecord';
-
     final public function onBeforeCreateRecord(callable $callback) : Application_EventHandler_EventableListener
     {
-        return $this->addEventListener(self::EVENT_BEFORE_CREATE_RECORD, $callback);
+        return $this->addEventListener(DBHelperCollectionInterface::EVENT_BEFORE_CREATE_RECORD, $callback);
     }
 
     final public function onAfterCreateRecord(callable $callback) : Application_EventHandler_EventableListener
     {
-        return $this->addEventListener(self::EVENT_AFTER_CREATE_RECORD, $callback);
+        return $this->addEventListener(DBHelperCollectionInterface::EVENT_AFTER_CREATE_RECORD, $callback);
     }
 
     final public function onAfterDeleteRecord(callable $callback) : Application_EventHandler_EventableListener
     {
-        return $this->addEventListener(self::EVENT_AFTER_DELETE_RECORD, $callback);
+        return $this->addEventListener(DBHelperCollectionInterface::EVENT_AFTER_DELETE_RECORD, $callback);
     }
 
     final protected function triggerAfterDeleteRecord(DBHelperRecordInterface $record, DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->triggerEvent(
-            self::EVENT_AFTER_DELETE_RECORD,
+            DBHelperCollectionInterface::EVENT_AFTER_DELETE_RECORD,
             array(
                 $this,
                 $record,

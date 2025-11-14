@@ -13,9 +13,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
 use DBHelper\Admin\Screens\Action\BaseRecordListAction;
-use DBHelper_BaseCollection;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -50,12 +49,12 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
     /**
      * @return APIKeysCollection
      */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): APIKeysCollection
     {
         return $this->getAPIClientRequest()->getRecordOrRedirect()->createAPIKeys();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $key = $this->resolveRecord($record);
 
@@ -69,7 +68,7 @@ class BaseAPIKeysListAction extends BaseRecordListAction implements APIClientReq
         );
     }
 
-    private function resolveRecord(DBHelper_BaseRecord $record) : APIKeyRecord
+    private function resolveRecord(DBHelperRecordInterface $record) : APIKeyRecord
     {
         return ClassHelper::requireObjectInstanceOf(
             APIKeyRecord::class,

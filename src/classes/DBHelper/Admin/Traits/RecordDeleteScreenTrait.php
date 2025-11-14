@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  *
@@ -13,20 +13,10 @@ use DBHelper_BaseRecord;
  */
 trait RecordDeleteScreenTrait
 {
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
+    protected DBHelperCollectionInterface $collection;
+    protected ?DBHelperRecordInterface $record = null;
 
-    /**
-     * @var DBHelper_BaseRecord
-     */
-    protected $record;
-
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    abstract protected function createCollection(): DBHelper_BaseCollection;
+    abstract protected function createCollection(): DBHelperCollectionInterface;
 
     public function getNavigationTitle(): string
     {

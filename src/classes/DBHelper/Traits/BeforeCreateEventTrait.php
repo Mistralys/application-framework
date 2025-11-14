@@ -7,6 +7,7 @@ namespace DBHelper\Traits;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use DBHelper\BaseCollection\DBHelperCollectionException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
 
 trait BeforeCreateEventTrait
@@ -40,7 +41,7 @@ trait BeforeCreateEventTrait
     final protected function triggerBeforeCreateRecord(array $data) : ?BeforeCreateRecordEvent
     {
         $event = $this->triggerEvent(
-            self::EVENT_BEFORE_CREATE_RECORD,
+            DBHelperCollectionInterface::EVENT_BEFORE_CREATE_RECORD,
             array(
                 $this,
                 $data

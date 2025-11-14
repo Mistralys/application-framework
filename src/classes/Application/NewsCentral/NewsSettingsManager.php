@@ -13,7 +13,7 @@ use AppUtils\Microtime;
 use AppUtils\Microtime_Exception;
 use AppUtils\NamedClosure;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Element;
 use HTML_QuickForm2_Element_HTMLDateTimePicker;
 use HTML_QuickForm2_Element_InputText;
@@ -55,7 +55,7 @@ class NewsSettingsManager extends Application_Formable_RecordSettings_Extended
 
     // region: Data handling
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
 
     }

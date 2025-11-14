@@ -7,36 +7,33 @@ namespace DBHelper\Admin\Requests;
 use Application\Admin\RequestTypes\BaseRequestType;
 use Application\Admin\RequestTypes\RequestTypeInterface;
 use AppUtils\ClassHelper;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
- * @implements RequestTypeInterface<DBHelper_BaseRecord>
+ * @implements RequestTypeInterface<DBHelperRecordInterface>
  */
 abstract class BaseDBRecordRequestType extends BaseRequestType
 {
-    /**
-     * @return DBHelper_BaseCollection
-     */
-    abstract public function getCollection();
+    abstract public function getCollection() : DBHelperCollectionInterface;
 
-    public function getRecord()
+    public function getRecord() : DBHelperRecordInterface
     {
         return $this->getCollection()->getByRequest();
     }
 
-    public function getRecordOrRedirect()
+    public function getRecordOrRedirect() : DBHelperRecordInterface
     {
         return ClassHelper::requireObjectInstanceOf(
-            DBHelper_BaseRecord::class,
+            DBHelperRecordInterface::class,
             parent::getRecordOrRedirect()
         );
     }
 
-    public function requireRecord()
+    public function requireRecord() : DBHelperRecordInterface
     {
         return ClassHelper::requireObjectInstanceOf(
-            DBHelper_BaseRecord::class,
+            DBHelperRecordInterface::class,
             parent::requireRecord()
         );
     }

@@ -10,7 +10,6 @@ use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 /**
  * @property MediaRecord|NULL $record

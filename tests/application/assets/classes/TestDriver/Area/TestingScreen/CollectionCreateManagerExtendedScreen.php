@@ -10,7 +10,6 @@ use TestDriver\Admin\TestingScreenInterface;
 use TestDriver\Admin\TestingScreenTrait;
 use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Formable_RecordSettings_ValueSet;
-use DBHelper_BaseRecord;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestDBRecord;
 use TestDriver\TestDBRecords\TestSettingsManagerExtended;
@@ -61,7 +60,7 @@ class CollectionCreateManagerExtendedScreen
             ->add('Otherwise, and exception is thrown.');
     }
 
-    protected function _handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    protected function _handleAfterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
         TestSettingsManagerExtended::verifyValueSet($data);
 

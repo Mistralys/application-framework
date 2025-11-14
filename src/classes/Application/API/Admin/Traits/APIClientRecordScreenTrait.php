@@ -7,7 +7,6 @@ namespace Application\API\Admin\Traits;
 use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
-use DBHelper_BaseCollection;
 use UI\AdminURLs\AdminURLInterface;
 
 /**

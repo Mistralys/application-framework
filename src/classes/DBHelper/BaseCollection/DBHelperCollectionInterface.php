@@ -13,10 +13,17 @@ use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
 use DBHelper\DBHelperFilterCriteriaInterface;
 use DBHelper\DBHelperFilterSettingsInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 interface DBHelperCollectionInterface extends IntegerCollectionInterface
 {
+    public const string SORT_DIR_ASC = 'ASC';
+    public const string VALUE_UNDEFINED = '__undefined';
+    public const string EVENT_BEFORE_CREATE_RECORD = 'BeforeCreateRecord';
+    public const string EVENT_AFTER_DELETE_RECORD = 'AfterDeleteRecord';
+    public const string SORT_DIR_DESC = 'DESC';
+    public const string EVENT_AFTER_CREATE_RECORD = 'AfterCreateRecord';
+    public const string OPTION_CUSTOM_RECORD_ID = '__custom_record_id';
+
     /**
      * @return class-string<DBHelperRecordInterface>
      */
@@ -162,7 +169,7 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      * > you have to ensure that the required keys are
      * > all present in the data set.
      *
-     * > NOTE: It is possible to use the {@see \DBHelper_BaseCollection::onBeforeCreateRecord()}
+     * > NOTE: It is possible to use the {@see DBHelperCollectionInterface::onBeforeCreateRecord()}
      * > method to verify the data, and cancel the event
      * > as needed.
      *
@@ -211,7 +218,7 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
      * Listens to any new records created in the collection.
      * This allows tasks to execute on the collection level
      * when records are created, as compared to the record's
-     * own created event handled via {@see DBHelper_BaseRecord::onCreated()}.
+     * own created event handled via {@see DBHelperRecordInterface::onCreated()}.
      *
      * @param callable(AfterCreateRecordEvent) : void $callback
      * @return Application_EventHandler_EventableListener
@@ -250,7 +257,7 @@ interface DBHelperCollectionInterface extends IntegerCollectionInterface
 
     /**
      * Gets the name of the request parameter used to fetch
-     * a collection record when using {@see DBHelper_BaseCollection::getByRequest()}.
+     * a collection record when using {@see DBHelperCollectionInterface::getByRequest()}.
      * Defaults to the same name as the primary key.
      *
      * @return string

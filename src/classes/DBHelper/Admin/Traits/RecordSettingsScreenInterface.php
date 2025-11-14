@@ -12,10 +12,9 @@ declare(strict_types=1);
 namespace DBHelper\Admin\Traits;
 
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application_Formable_RecordSettings;use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
+use Application_Formable_RecordSettings;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseCollection;use DBHelper_BaseRecord;
 use UI\AdminURLs\AdminURLInterface;
 
 /**

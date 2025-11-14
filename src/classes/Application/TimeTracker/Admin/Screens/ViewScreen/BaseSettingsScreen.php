@@ -13,7 +13,6 @@ use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 /**
  * @property TimeEntry $record

@@ -14,7 +14,6 @@ use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use AppUtils\Microtime;
 use DBHelper\BaseCollection\BaseChildCollection;
-use DBHelper_BaseRecord;
 
 /**
  * API Keys Collection that handles the available keys for an API client.

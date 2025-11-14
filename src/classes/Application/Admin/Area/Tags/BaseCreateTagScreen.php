@@ -7,12 +7,10 @@ namespace Application\Area\Tags;
 use Application\AppFactory;
 use Application\Tags\TagRecord;
 use Application\Tags\TagSettingsManager;
-use Application_Formable_RecordSettings;
 use Application\Tags\TagCollection;
 use AppUtils\ClassHelper;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 use UI;
 
 abstract class BaseCreateTagScreen extends BaseRecordCreateMode

@@ -8,7 +8,7 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\API\Clients\APIClientRecord;
 use DBHelper\Admin\Screens\Submode\BaseRecordStatusSubmode;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
@@ -41,7 +41,7 @@ class BaseAPIClientStatusScreen extends BaseRecordStatusSubmode
      * @param APIClientRecord $record
      * @return void
      */
-    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelper_BaseRecord $record): void
+    protected function _populateGrid(UI_PropertiesGrid $grid, DBHelperRecordInterface $record): void
     {
         $grid->add(t('Foreign ID'), $record->getForeignID());
     }

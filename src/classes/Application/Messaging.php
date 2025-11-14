@@ -5,6 +5,7 @@
  */
 
 use AppUtils\Interfaces\StringableInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Helper class for managing messages between application users.
@@ -60,7 +61,7 @@ class Application_Messaging extends DBHelper_BaseCollection
     * @param int|string $record_id
     * @return Application_Messaging_Message
     */
-    public function getByID($record_id) : DBHelper_BaseRecord
+    public function getByID($record_id) : Application_Messaging_Message
     {
         $record_id = (int)$record_id;
 
@@ -182,46 +183,27 @@ class Application_Messaging extends DBHelper_BaseCollection
         $priorities = self::getPriorities();
         return $priorities[$priority];
     }
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordClassName()
-     */
+
     public function getRecordClassName() : string
     {
-        return 'Application_Messaging_Message';
+        return Application_Messaging_Message::class;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordFiltersClassName()
-     */
     public function getRecordFiltersClassName() : string
     {
         return 'Application_Messaging_FilterCriteria';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordFilterSettingsClassName()
-     */
     public function getRecordFilterSettingsClassName() : string
     {
         return 'Application_Messaging_FilterSettings';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
-     */
     public function getRecordDefaultSortKey() : string
     {
         return 'date_sent';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordSearchableColumns()
-     */
     public function getRecordSearchableColumns() : array
     {
         return array(
@@ -229,46 +211,26 @@ class Application_Messaging extends DBHelper_BaseCollection
         );
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTableName()
-     */
     public function getRecordTableName() : string
     {
         return 'app_messaging';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordPrimaryName()
-     */
     public function getRecordPrimaryName() : string
     {
         return 'message_id';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTypeName()
-     */
     public function getRecordTypeName() : string
     {
         return 'message';
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getCollectionLabel()
-     */
     public function getCollectionLabel() : string
     {
         return t('Application messages');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordLabel()
-     */
     public function getRecordLabel() : string
     {
         return t('Application message');

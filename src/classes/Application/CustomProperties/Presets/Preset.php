@@ -44,11 +44,8 @@ class Application_CustomProperties_Presets_Preset extends DBHelper_BaseRecord
             'default_value' => $this->getDefaultValue()
         );
     }
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseRecord::recordRegisteredKeyModified()
-     */
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }
 }

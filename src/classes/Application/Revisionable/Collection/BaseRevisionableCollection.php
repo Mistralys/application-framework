@@ -24,6 +24,7 @@ use AppUtils\ConvertHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
 use DateTime;
 use DBHelper;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseCollection;
 use DBHelper_Exception;
@@ -748,7 +749,7 @@ abstract class BaseRevisionableCollection
     final public function onBeforeCreateRecord(callable $callback): Application_EventHandler_EventableListener
     {
         return $this->addEventListener(
-            DBHelper_BaseCollection::EVENT_BEFORE_CREATE_RECORD,
+            DBHelperCollectionInterface::EVENT_BEFORE_CREATE_RECORD,
             $callback
         );
     }
@@ -756,7 +757,7 @@ abstract class BaseRevisionableCollection
     final public function onAfterCreateRecord(callable $callback): Application_EventHandler_EventableListener
     {
         return $this->addEventListener(
-            DBHelper_BaseCollection::EVENT_AFTER_CREATE_RECORD,
+            DBHelperCollectionInterface::EVENT_AFTER_CREATE_RECORD,
             $callback
         );
     }
@@ -795,7 +796,7 @@ abstract class BaseRevisionableCollection
 
     public function getRecordDefaultSortDir(): string
     {
-        return DBHelper_BaseCollection::SORT_DIR_ASC;
+        return DBHelperCollectionInterface::SORT_DIR_ASC;
     }
 
     final public function setupComplete(): void

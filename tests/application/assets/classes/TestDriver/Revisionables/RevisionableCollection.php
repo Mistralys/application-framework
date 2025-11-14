@@ -7,11 +7,8 @@ namespace TestDriver\Revisionables;
 use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
-use Application_EventHandler_EventableListener;
 use Application_User;
 use AppUtils\ClassHelper;
-use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 use TestDriver\Revisionables\Storage\RevisionableStorage;
 use TestDriver\Revisionables\Storage\RevisionCopy;
 
@@ -21,15 +18,15 @@ use TestDriver\Revisionables\Storage\RevisionCopy;
  */
 class RevisionableCollection extends BaseRevisionableCollection
 {
-    public const TABLE_NAME = 'revisionables';
-    public const TABLE_REVISIONS = 'revisionables_revisions';
-    public const TABLE_CURRENT_REVISIONS = 'revisionables_current_revisions';
-    public const TABLE_CHANGELOG = 'revisionables_changelog';
+    public const string TABLE_NAME = 'revisionables';
+    public const string TABLE_REVISIONS = 'revisionables_revisions';
+    public const string TABLE_CURRENT_REVISIONS = 'revisionables_current_revisions';
+    public const string TABLE_CHANGELOG = 'revisionables_changelog';
 
-    public const PRIMARY_NAME = 'revisionable_id';
-    public const COL_REV_ID = 'revisionable_revision';
-    public const COL_REV_STRUCTURAL = 'structural';
-    public const COL_REV_ALIAS = 'alias';
+    public const string PRIMARY_NAME = 'revisionable_id';
+    public const string COL_REV_ID = 'revisionable_revision';
+    public const string COL_REV_STRUCTURAL = 'structural';
+    public const string COL_REV_ALIAS = 'alias';
 
     private static ?RevisionableCollection $instance = null;
 

@@ -9,6 +9,7 @@
 
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Manages the collection of custom properties for the specified
@@ -364,16 +365,16 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         );
     }
     
-    public function deleteRecord(DBHelper_BaseRecord $record, bool $silent=false) : void
+    public function deleteRecord(DBHelperRecordInterface $record, bool $silent=false) : void
     {
-        $record = ClassHelper::requireObjectInstanceOf(
+        $property = ClassHelper::requireObjectInstanceOf(
             Application_CustomProperties_Property::class,
             $record
         );
         
-        parent::deleteRecord($record);
+        parent::deleteRecord($property);
         
-        $this->record->handle_propertyDeleted($record);
+        $this->record->handle_propertyDeleted($property);
     }
     
     public function getCollectionLabel() : string

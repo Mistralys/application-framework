@@ -17,7 +17,6 @@ use Application_Media;
 use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseCollection;
 use DBHelper_BaseRecord;
 use Throwable;
 use UI;
@@ -309,10 +308,10 @@ trait RecordSettingsScreenTrait
      * that are not included in the data set given to the
      * record.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param Application_Formable_RecordSettings_ValueSet $data
      */
-    final protected function handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    final protected function handleAfterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
         $this->logEvent('AfterSave', 'The record has been created/updated.');
 
@@ -418,7 +417,7 @@ trait RecordSettingsScreenTrait
         $this->record->save();
     }
 
-    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data): DBHelper_BaseRecord
+    final protected function createRecord(Application_Formable_RecordSettings_ValueSet $data): DBHelperRecordInterface
     {
         $this->log('Creating a new record.');
 
@@ -603,12 +602,12 @@ trait RecordSettingsScreenTrait
      * Called once the record has been created or saved,
      * and before the transaction is committed.
      *
-     * NOTE: Only used if not using a settings manager.
+     * > NOTE: Only used if not using a settings manager.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param Application_Formable_RecordSettings_ValueSet $data The form values that were submitted, including form-internal values.
      */
-    protected function _handleAfterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    protected function _handleAfterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
 
     }

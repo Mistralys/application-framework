@@ -7,10 +7,15 @@
 namespace DBHelper\Admin\Traits;
 
 use DateTime;
-use DBHelper\Admin\Traits\RecordListScreenInterface;
 use AppUtils\Interfaces\StringableInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
-use DBHelper_BaseCollection;use DBHelper_BaseFilterCriteria;use DBHelper_BaseFilterCriteria_Record;use DBHelper_BaseFilterSettings;use DBHelper_BaseRecord;use UI_DataGrid;use UI_DataGrid_Entry;use UI_Themes_Theme_ContentRenderer;
+use DBHelper\DBHelperFilterCriteriaInterface;
+use DBHelper\DBHelperFilterSettingsInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+use DBHelper_BaseFilterCriteria_Record;
+use UI_DataGrid;
+use UI_DataGrid_Entry;
+use UI_Themes_Theme_ContentRenderer;
 
 /**
  * Trait used for simplify displaying lists of DBHelper records:
@@ -33,34 +38,11 @@ use DBHelper_BaseCollection;use DBHelper_BaseFilterCriteria;use DBHelper_BaseFil
  */
 trait RecordListScreenTrait
 {
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    protected $collection;
-
-    /**
-     * @var string
-     */
+    protected DBHelperCollectionInterface $collection;
     protected string $gridName;
-
-    /**
-     * @var UI_DataGrid
-     */
     protected UI_DataGrid $grid;
-
-    /**
-     * @var DBHelper_BaseFilterSettings
-     */
-    protected $filterSettings;
-
-    /**
-     * @var DBHelper_BaseFilterCriteria
-     */
-    protected $filters;
-
-    /**
-     * @var bool
-     */
+    protected DBHelperFilterSettingsInterface $filterSettings;
+    protected DBHelperFilterCriteriaInterface $filters;
     protected bool $filtersAdded = false;
 
     public function getURLName(): string
@@ -107,11 +89,11 @@ trait RecordListScreenTrait
     abstract protected function createCollection(): DBHelperCollectionInterface;
 
     /**
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
      * @return array<string,string|number|bool|DateTime|StringableInterface>|UI_DataGrid_Entry
      */
-    abstract protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry);
+    abstract protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array|UI_DataGrid_Entry;
 
     abstract protected function configureColumns(): void;
 

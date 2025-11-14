@@ -19,6 +19,7 @@ use AppUtils\ClassHelper;
 use AppUtils\DateTimeHelper\DateIntervalExtended;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseRecord;
 
 /**
@@ -187,7 +188,7 @@ class APIKeyRecord extends DBHelper_BaseRecord
     /**
      * @return APIClientRecord
      */
-    public function getParentRecord(): DBHelper_BaseRecord
+    public function getParentRecord(): DBHelperRecordInterface
     {
         return ClassHelper::requireObjectInstanceOf(
             APIClientRecord::class,

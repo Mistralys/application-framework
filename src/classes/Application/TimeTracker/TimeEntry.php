@@ -28,7 +28,7 @@ use function AppUtils\parseDurationString;
  */
 class TimeEntry extends DBHelper_BaseRecord
 {
-    public const PLACEHOLDER_TICKET_ID = '$ticketID';
+    public const string PLACEHOLDER_TICKET_ID = '$ticketID';
 
     public static function duration2hoursDec(DurationStringInfo $duration) : string
     {

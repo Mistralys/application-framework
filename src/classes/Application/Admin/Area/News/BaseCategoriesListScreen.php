@@ -12,8 +12,8 @@ use Application\Traits\AllowableMigrationTrait;
 use AppUtils\ClassHelper;
 use Closure;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
@@ -38,7 +38,7 @@ abstract class BaseCategoriesListScreen extends BaseRecordListMode
         return AppFactory::createNews()->createCategories();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry)
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $category = ClassHelper::requireObjectInstanceOf(Category::class, $record);
 

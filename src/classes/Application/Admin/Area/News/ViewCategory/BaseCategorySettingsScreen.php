@@ -13,7 +13,6 @@ use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 /**
  * @property BaseViewCategoryScreen $mode

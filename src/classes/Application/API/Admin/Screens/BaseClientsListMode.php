@@ -14,9 +14,8 @@ use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
-use DBHelper_BaseCollection;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 use UI_DataGrid_Entry;
@@ -65,10 +64,7 @@ abstract class BaseClientsListMode extends BaseRecordListMode
         );
     }
 
-    /**
-     * @return APIClientsCollection
-     */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): APIClientsCollection
     {
         return AppFactory::createAPIClients();
     }
@@ -78,7 +74,7 @@ abstract class BaseClientsListMode extends BaseRecordListMode
      * @param DBHelper_BaseFilterCriteria_Record $entry
      * @return UI_DataGrid_Entry
      */
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
     {
         return $this->grid->createEntry(array(
             self::COL_ID => $record->getID(),

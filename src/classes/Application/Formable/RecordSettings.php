@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use AppUtils\BaseException;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Used to make handling record setting forms easier:
@@ -42,15 +43,8 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
     public const int ERROR_NOTHING_TO_INJECT = 44801;
     public const int ERROR_SETTING_NAME_DOES_NOT_EXIST = 44802;
     
-   /**
-    * @var DBHelper_BaseRecord|NULL
-    */
-    protected $record;
-    
-   /**
-    * @var DBHelperCollectionInterface
-    */
-    protected $collection;
+    protected ?DBHelperRecordInterface $record = null;
+    protected DBHelperCollectionInterface $collection;
     
    /**
     * @var Application_Formable_RecordSettings_Group[]
@@ -69,7 +63,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      */
     private bool $defaultsUseStorage = false;
 
-    public function __construct(Application_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelper_BaseRecord $record=null)
+    public function __construct(Application_Formable $formable, DBHelperCollectionInterface $collection, ?DBHelperRecordInterface $record=null)
     {
         parent::__construct($formable);
         
@@ -119,10 +113,10 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
      * Called when a record has been newly created or an existing one updated
      * using the settings form.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param Application_Formable_RecordSettings_ValueSet $data
      */
-    protected function _afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
+    protected function _afterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data) : void
     {
 
     }
@@ -432,7 +426,7 @@ abstract class Application_Formable_RecordSettings extends Application_Formable_
         return $result;
     }
 
-    final public function afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data) : void
+    final public function afterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data) : void
     {
         $this->logEvent('AfterSave', sprintf('The record [%s] has been saved.', $record->getID()));
 

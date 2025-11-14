@@ -6,7 +6,7 @@ namespace AppFrameworkTests\DBHelper;
 
 use AppFrameworkTestClasses\Stubs\IDTableCollectionStub;
 use DBHelper;
-use DBHelper_BaseCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 use TestDriver\TestDBRecords\TestDBCollection;
 
@@ -87,7 +87,7 @@ final class CollectionTests extends DBHelperTestCase
             ),
             false,
             array(
-                DBHelper_BaseCollection::OPTION_CUSTOM_RECORD_ID => 999942
+                DBHelperCollectionInterface::OPTION_CUSTOM_RECORD_ID => 999942
             )
         );
 

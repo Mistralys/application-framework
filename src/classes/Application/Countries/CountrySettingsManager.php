@@ -11,13 +11,13 @@ use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use UI\CSSClasses;
 
 class CountrySettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LABEL = 'label';
+    public const string SETTING_LABEL = 'label';
 
     public function __construct(Application_Formable $formable, ?Application_Countries_Country $record = null)
     {
@@ -36,7 +36,7 @@ class CountrySettingsManager extends Application_Formable_RecordSettings_Extende
         return $this->getUser()->canEditCountries();
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

@@ -125,7 +125,7 @@ trait Application_Traits_Eventable
      * @template ClassInstanceType
      * @param string $eventName
      * @param class-string<ClassInstanceType> $eventClass
-     * @param array<mixed> $args
+     * @param array<int|string,mixed> $args
      * @return ClassInstanceType|NULL Returns `null` if no listeners have been added, or if events have been disabled.
      *
      * @throws Application_Exception

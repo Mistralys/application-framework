@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -18,12 +18,12 @@ trait RecordEditScreenTrait
         return true;
     }
 
-    public function getRecord(): DBHelper_BaseRecord
+    public function getRecord(): DBHelperRecordInterface
     {
         return $this->record;
     }
 
-    public function getCollection(): DBHelper_BaseCollection
+    public function getCollection(): DBHelperCollectionInterface
     {
         return $this->collection;
     }

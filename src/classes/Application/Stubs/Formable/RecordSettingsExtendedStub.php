@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use DBHelper\Interfaces\DBHelperRecordInterface;
+
 /**
  * Usage:
  *
@@ -40,7 +42,7 @@ class Application_Stubs_Formable_RecordSettingsExtendedStub extends Application_
         return Application::getUser()->isDeveloper();
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void
     {
     }
 

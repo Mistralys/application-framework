@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Traits;
 
-use DBHelper\BaseCollection\BaseChildCollection;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
 use UI_DataGrid;
 
 trait RecordScreenTrait
 {
     protected DBHelperCollectionInterface $collection;
-    protected DBHelperRecordInterface $record;
+    protected ?DBHelperRecordInterface $record = null;
 
     abstract protected function createCollection() : DBHelperCollectionInterface;
 

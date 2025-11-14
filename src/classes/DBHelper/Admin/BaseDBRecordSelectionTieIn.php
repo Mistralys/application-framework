@@ -9,9 +9,7 @@ declare(strict_types=1);
 namespace DBHelper\Admin;
 
 use Application\Collection\Admin\BaseRecordSelectionTieIn;
-use Application\Collection\CollectionItemInterface;
-use Application\Interfaces\HiddenVariablesInterface;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Tie-in class for selecting a DB record from a short list
@@ -42,11 +40,7 @@ abstract class BaseDBRecordSelectionTieIn
         return $this->getCollection()->idExists((int)$id);
     }
 
-    /**
-     * @inheritDoc
-     * @return DBHelper_BaseRecord
-     */
-    protected function getRecordByID($id): CollectionItemInterface
+    protected function getRecordByID($id): DBHelperRecordInterface
     {
         return $this->getCollection()->getByID((int)$id);
     }

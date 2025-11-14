@@ -12,7 +12,6 @@ use Application\NewsCentral\NewsSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 
 /**
  * @property NewsEntry|NULL $record

@@ -15,9 +15,8 @@ use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use Closure;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
-use DBHelper_BaseCollection;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
@@ -48,15 +47,12 @@ abstract class BaseNewsListScreen extends BaseRecordListMode
         return NewsScreenRights::SCREEN_NEWS_LIST;
     }
 
-    /**
-     * @return NewsCollection
-     */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): NewsCollection
     {
         return AppFactory::createNews();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $newsEntry = ClassHelper::requireObjectInstanceOf(NewsEntry::class, $record);
 

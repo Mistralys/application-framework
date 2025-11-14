@@ -9,7 +9,6 @@ use Application\TimeTracker\Admin\TimeUIManager;
 use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseRecord;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
