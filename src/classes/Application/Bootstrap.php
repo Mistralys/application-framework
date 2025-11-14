@@ -567,9 +567,9 @@ function boot_define(string $name, $value)
  * from a registered setting or an actual constant.
  * 
  * @param string $name
- * @return string|number|bool|NULL The value, or NULL if it does not exist.
+ * @return string|int|float|bool|array<int|string,mixed>|NULL The value, or NULL if it does not exist.
  */
-function boot_constant(string $name)
+function boot_constant(string $name) : string|int|float|bool|array|NULL
 {
     return Application_Bootstrap::getSetting($name);
 }

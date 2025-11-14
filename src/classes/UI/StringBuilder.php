@@ -31,7 +31,7 @@ class UI_StringBuilder extends StringBuilder implements UI_Renderable_Interface,
     use UI_Traits_RenderableGeneric;
     use UI_Traits_Conditional;
 
-    public const CLASS_BTN_CLIPBOARD_COPY = 'btn-clipboard-copy';
+    public const string CLASS_BTN_CLIPBOARD_COPY = 'btn-clipboard-copy';
 
     /**
      * Delay, in seconds, after which to hide the status
