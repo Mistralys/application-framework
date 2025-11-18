@@ -1,5 +1,6 @@
 <?php
 
+use Application\Ratings\Screens\RatingScreensCollection;
 use AppUtils\ClassHelper;
 
 /**
@@ -9,7 +10,7 @@ use AppUtils\ClassHelper;
  */
 class Application_Ratings extends DBHelper_BaseCollection
 {
-    public const MAX_RATING = 5;
+    public const int MAX_RATING = 5;
     
     public function getRecordClassName() : string
     {
@@ -127,13 +128,13 @@ class Application_Ratings extends DBHelper_BaseCollection
     * which is used to handle the application screens that
     * have been accessed by the rating system.
     * 
-    * @return Application_Ratings_Screens
+    * @return RatingScreensCollection
     */
-    public function createScreens() : Application_Ratings_Screens
+    public function createScreens() : RatingScreensCollection
     {
         return ClassHelper::requireObjectInstanceOf(
-            Application_Ratings_Screens::class,
-            DBHelper::createCollection(Application_Ratings_Screens::class)
+            RatingScreensCollection::class,
+            DBHelper::createCollection(RatingScreensCollection::class)
         );
     }
     
