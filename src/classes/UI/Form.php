@@ -1603,12 +1603,12 @@ class UI_Form extends UI_Renderable
      * Adds a hidden variable to the form that will get submitted along with visible fields.
      *
      * @param string $name
-     * @param string|null $value
+     * @param string|int|float|null $value
      * @param string|null $id
      * @return HTML_QuickForm2_Element_InputHidden
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
-    public function addHiddenVar(string $name, ?string $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
+    public function addHiddenVar(string $name, string|int|float|null $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
     {
         if (!isset($this->hiddens[$name]))
         {
@@ -1617,6 +1617,8 @@ class UI_Form extends UI_Renderable
 
         if($value === null) {
             $value = (string)$this->hiddens[$name]->getValue();
+        } else {
+            $value = (string)$value;
         }
 
         if(!empty($value)) {

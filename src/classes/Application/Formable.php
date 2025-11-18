@@ -634,7 +634,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->formableContainer;
     }
 
-    public function addHiddenVar(string $name, string $value='', ?string $id=null) : self
+    public function addHiddenVar(string $name, string|int|float|NULL $value=null, ?string $id=null) : self
     {
         $this->requireFormableInitialized();
 
