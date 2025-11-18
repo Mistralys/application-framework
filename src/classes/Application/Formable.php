@@ -787,6 +787,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->getFormInstance()->addRuleEmail($element);
     }
 
+    public function addRuleURL(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node
+    {
+        return $this->getFormInstance()->addRuleURL($element);
+    }
+
     public function addRuleAlias(HTML_QuickForm2_Element $element, bool $allowCapitalLetters=false) : HTML_QuickForm2_Node
     {
         return $this->getFormInstance()->addRuleAlias($element, $allowCapitalLetters);

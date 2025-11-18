@@ -287,6 +287,7 @@ interface Application_Interfaces_Formable extends UI_Renderable_Interface
     public function addRulePhone(HTML_QuickForm2_Element $element) : HTML_QuickForm2_Node;
 
     public function addRuleEmail(HTML_QuickForm2_Element $element) : HTML_QuickForm2_Node;
+    public function addRuleURL(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node;
 
     public function addRuleAlias(HTML_QuickForm2_Element $element, bool $allowCapitalLetters = false) : HTML_QuickForm2_Node;
 
