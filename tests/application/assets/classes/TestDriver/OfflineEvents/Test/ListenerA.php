@@ -10,7 +10,7 @@ use TestDriver\OfflineEvents\TestEvent;
 
 class ListenerA extends Application_EventHandler_OfflineEvents_OfflineListener
 {
-    public const CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_A_TRIGGERED';
+    public const string CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_A_TRIGGERED';
 
     /**
      * @param TestEvent $event
@@ -19,6 +19,6 @@ class ListenerA extends Application_EventHandler_OfflineEvents_OfflineListener
      */
     protected function handleEvent(Application_EventHandler_Event $event, ...$args): void
     {
-        define(self::CONSTANT_NAME, true);
+        boot_define(self::CONSTANT_NAME, true);
     }
 }

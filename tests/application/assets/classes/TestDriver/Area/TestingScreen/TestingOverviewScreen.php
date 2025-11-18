@@ -15,7 +15,7 @@ use TestDriver\ClassFactory;
 
 class TestingOverviewScreen extends Application_Admin_Area_Mode
 {
-    public const URL_NAME = 'overview';
+    public const string URL_NAME = 'overview';
 
     public function getURLName() : string
     {
@@ -82,6 +82,10 @@ class TestingOverviewScreen extends Application_Admin_Area_Mode
                 'urlName' => $className::URL_NAME
             );
         }
+
+        /**
+         * @var array<int,array{label:string,urlName:string}> $result
+         */
 
         usort(
             $result,

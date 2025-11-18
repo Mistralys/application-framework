@@ -9,7 +9,7 @@ use TestDriver\OfflineEvents\TestEvent;
 
 class ListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
 {
-    public const CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_B_ARGUMENT';
+    public const string CONSTANT_NAME = 'OFFLINE_EVENTS_LISTENER_B_ARGUMENT';
 
     /**
      * @param TestEvent $event
@@ -20,6 +20,6 @@ class ListenerB extends Application_EventHandler_OfflineEvents_OfflineListener
     {
         $value = $args[0] ?? 'unknown';
 
-        define(self::CONSTANT_NAME, $value);
+        boot_define(self::CONSTANT_NAME, $value);
     }
 }

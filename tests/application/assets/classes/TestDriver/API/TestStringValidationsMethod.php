@@ -19,7 +19,6 @@ use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use AppUtils\ArrayDataCollection;
-use TestDriver\APIClasses\TestDriverAPIGroup;
 
 class TestStringValidationsMethod extends BaseAPIMethod
     implements
@@ -123,6 +122,6 @@ class TestStringValidationsMethod extends BaseAPIMethod
 
     public function getGroup(): APIGroupInterface
     {
-        return new TestDriverAPIGroup();
+        return new TestAPIGroup();
     }
 }
