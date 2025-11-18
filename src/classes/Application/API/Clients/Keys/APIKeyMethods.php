@@ -48,6 +48,9 @@ class APIKeyMethods
         return $this->clearMethods();
     }
 
+    /**
+     * @return $this
+     */
     private function clearMethods() : self
     {
         DBHelper::deleteRecords(
