@@ -28,13 +28,8 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
     public const string URL_NAME = 'auto-fill';
     public const string FORM_NAME = 'auto-fill-times';
-    public const int VARIATION_PERCENT_MIN = 20;
-    public const int VARIATION_PERCENT_MAX = 100;
 
     public const string REQUEST_PARAM_CREATE_ENTRIES = 'create_entries';
-    public const string KEY_TIME_START = 'time_start';
-    public const string KEY_WORK_DURATION_SECONDS = 'work_duration_seconds';
-    public const string KEY_WORK_BLOCKS = 'work_blocks';
     public const string SETTING_ENTRY_TYPE = 'entry_type';
     public const string SETTING_TICKET_NUMBER = 'ticket_number';
     public const string SETTING_TICKET_URL = 'ticket_url';
@@ -112,8 +107,6 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
             ->getFilterCriteria()
             ->setFixedDate($date)
             ->getItemsObjects();
-
-        $workBlocks = array();
 
         // Build a list of occupied intervals (seconds from midnight) and compute already worked seconds
         $occupied = array();
@@ -244,7 +237,6 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
             $remainingSeconds = 0;
         }
 
-        $this->workBlocks = $workBlocks;
         $this->startTime = $dayStartTime;
         $this->workDuration = $desiredSeconds;
 
@@ -278,7 +270,6 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
         $this->stack[] = new WorkBlock($type, $startTime, $duration);
     }
 
-    private array $workBlocks = array();
     private Microtime $startTime;
     private float $workDuration;
 
@@ -530,14 +521,20 @@ abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
 
     private function injectTicketNumber() : void
     {
-        $el = $this->addElementText(self::SETTING_TICKET_NUMBER, t('Ticket number'))
+        $this->addElementText(self::SETTING_TICKET_NUMBER, t('Ticket number'))
+            ->addFilterTrim()
+            ->addClass(CSSClasses::INPUT_MEDIUM)
             ->setComment(t('Optional ticket number to associate with the generated entries.'));
     }
 
     private function injectTicketURL() : void
     {
         $el = $this->addElementText(self::SETTING_TICKET_URL, t('Ticket URL'))
+            ->addFilterTrim()
+            ->addClass(CSSClasses::INPUT_XXLARGE)
             ->setComment(t('Optional ticket URL to associate with the generated entries.'));
+
+        $this->addRuleURL($el);
     }
 
     private function injectLunchStart() : void
