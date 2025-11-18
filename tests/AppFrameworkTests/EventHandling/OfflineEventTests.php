@@ -72,9 +72,9 @@ final class OfflineEventTests extends ApplicationTestCase
         $event = $offline->triggerEvent(TestEvent::EVENT_NAME, array('argument'));
 
         $this->assertNotNull($event->getTriggeredEvent());
-        $this->assertTrue(defined(ListenerA::CONSTANT_NAME));
-        $this->assertTrue(defined(ListenerB::CONSTANT_NAME));
-        $this->assertEquals('argument', constant(ListenerB::CONSTANT_NAME));
+        $this->assertTrue(boot_defined(ListenerA::CONSTANT_NAME));
+        $this->assertTrue(boot_defined(ListenerB::CONSTANT_NAME));
+        $this->assertEquals('argument', boot_constant(ListenerB::CONSTANT_NAME));
     }
 
     /**

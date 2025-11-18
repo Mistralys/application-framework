@@ -24,16 +24,16 @@ final class EventTests extends ApplicationTestCase
 {
     public function test_frameworkSessionInstantiatedEventCalled() : void
     {
-        $this->assertTrue(defined(TestSessionInstantiatedListener::CONSTANT_INSTANTIATED));
+        $this->assertTrue(boot_defined(TestSessionInstantiatedListener::CONSTANT_INSTANTIATED));
     }
 
     public function test_frameworkSessionStartedEventCalled() : void
     {
-        $this->assertTrue(defined(TestSessionInstantiatedListener::CONSTANT_STARTED));
+        $this->assertTrue(boot_defined(TestSessionInstantiatedListener::CONSTANT_STARTED));
     }
 
     public function test_frameworkUserAuthenticatedEventCalled() : void
     {
-        $this->assertTrue(defined(TestSessionInstantiatedListener::CONSTANT_AUTHENTICATED));
+        $this->assertTrue(boot_defined(TestSessionInstantiatedListener::CONSTANT_AUTHENTICATED));
     }
 }
