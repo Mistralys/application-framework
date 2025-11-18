@@ -8,21 +8,31 @@ declare(strict_types=1);
 
 use Application\FilterCriteria\FilterCriteriaDBExtendedInterface;
 use Application\FilterCriteria\FilterCriteriaException;
+use Application\FilterCriteria\Items\GenericIntegerItem;
 use AppUtils\ConvertHelper;
 use AppUtils\NamedClosure;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
+ * ## Manually handling items
+ *
+ * The method {@see self::getItemsObjects()} expects objects to be returned.
+ * When not using a {@see DBHelperRecordInterface}, the best alternative is
+ * to use or extend {@see GenericIntegerItem} or {@see GenericStringItem}.
+ *
+ * ## Custom Columns
+ *
  * Formalizes the use of custom columns in the filter criteria,
  * by defining abstract methods to set up the custom columns to
  * use.
  *
- * **What are custom columns?**
+ * ### What are custom columns?
  *
  * Any columns not directly present in the target tables, or
  * columns that are the result of more complex selections like
  * sub-queries or CASE statements.
  *
- * **Custom column features**
+ * ### Custom column features
  *
  * - Specify JOIN statements that the column needs
  * - Add custom placeholder values only used when enabled
@@ -31,7 +41,7 @@ use AppUtils\NamedClosure;
  * - Object-Oriented interface to handle the columns
  * - Automatic support for sub-queries in `GROUP BY` and `ORDER BY`
  *
- * **How the technical side works**
+ * ### How the technical side works
  *
  * In a first step, custom columns only add a placeholder string
  * to the query, called "markers". When the final query is built,
