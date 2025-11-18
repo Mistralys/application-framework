@@ -847,7 +847,7 @@ function isDevelMode() : bool
 
 /**
  * 
- * @param object|class-string $subject
+ * @param object|class-string|string $subject
  * @return string
  */
 function getClassTypeName(object|string $subject) : string
