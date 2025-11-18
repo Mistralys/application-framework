@@ -9,14 +9,6 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
     use Application_Traits_Loggable;
     
     private static ?Application_Media_Delivery $instance = null;
-
-   /**
-    * The full path to the storage folder.
-    * @see getStorageFolder()
-    * @var string
-    */
-    private string $storageFolder;
-
     private Application_Request $request;
     
     /**
@@ -36,7 +28,6 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
 
     protected function __construct()
     {
-        $this->storageFolder = Application::getStorageSubfolderPath('cache');
         $this->request = Application_Driver::getInstance()->getRequest();
     }
 
@@ -45,7 +36,7 @@ class Application_Media_Delivery implements Application_Interfaces_Loggable
      * the request variables for the required parameters and
      * retrieves the matching media file, then serves it.
      */
-    public function serveFromRequest()
+    public function serveFromRequest() : void
     {
         $esales = Application_Driver::getInstance();
         $request = $esales->getRequest();
