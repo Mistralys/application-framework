@@ -14,6 +14,8 @@ use Application\Environments;
 use Application\DeploymentRegistry;
 use Application\Driver\DriverException;
 use Application\Exception\UnexpectedInstanceException;
+use Application\Feedback\FeedbackCollection;
+use Application\Messaging\MessagingCollection;
 use AppUtils\BaseException;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
@@ -94,7 +96,7 @@ class Application
      * @var string[]
      */
     private static array $knownStorageFolders = array();
-    private static ?Application_Messaging $messaging = null;
+    private static ?MessagingCollection $messaging = null;
     private int $id;
 
     public function __construct(Application_Bootstrap_Screen $bootScreen)
@@ -120,20 +122,20 @@ class Application
     }
 
     /**
-     * @return Application_Feedback
+     * @return FeedbackCollection
      * @throws UnexpectedInstanceException
      * @throws DBHelper_Exception
      */
-    public static function createFeedback() : Application_Feedback
+    public static function createFeedback() : FeedbackCollection
     {
-        $collection = DBHelper::createCollection(Application_Feedback::class);
+        $collection = DBHelper::createCollection(FeedbackCollection::class);
 
-        if($collection instanceof Application_Feedback)
+        if($collection instanceof FeedbackCollection)
         {
             return $collection;
         }
 
-        throw new UnexpectedInstanceException(Application_Feedback::class, $collection);
+        throw new UnexpectedInstanceException(FeedbackCollection::class, $collection);
     }
 
     /**
@@ -854,13 +856,13 @@ class Application
      * Retrieves the global messaging management instance, which is
      * used to handle sending messages between users.
      *
-     * @return Application_Messaging
+     * @return MessagingCollection
      */
-    public static function createMessaging() : Application_Messaging
+    public static function createMessaging() : MessagingCollection
     {
         if (!isset(self::$messaging))
         {
-            self::$messaging = new Application_Messaging();
+            self::$messaging = new MessagingCollection();
         }
 
         return self::$messaging;
