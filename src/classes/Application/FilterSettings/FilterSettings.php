@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 use Application\AppFactory;
 use Application\Driver\DriverException;
+use Application\FilterSettings\FilterSettingsException;
 use Application\FilterSettings\SettingDef;
 use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
@@ -17,7 +18,6 @@ use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
-use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\StringableInterface;
 
 abstract class Application_FilterSettings
@@ -27,15 +27,15 @@ abstract class Application_FilterSettings
     use UI_Traits_RenderableGeneric;
     use HiddenVariablesTrait;
 
-    public const ERROR_UNKNOWN_SETTING = 450001;
-    public const ERROR_NO_SETTINGS_REGISTERED = 450002;
-    public const ERROR_ONLY_ONE_MORE_ALLOWED = 450004;
-    public const ERROR_MISSING_ID = 450005;
-    public const ERROR_SETTING_ALREADY_REGISTERED = 450006;
+    public const int ERROR_UNKNOWN_SETTING = 450001;
+    public const int ERROR_NO_SETTINGS_REGISTERED = 450002;
+    public const int ERROR_ONLY_ONE_MORE_ALLOWED = 450004;
+    public const int ERROR_MISSING_ID = 450005;
+    public const int ERROR_SETTING_ALREADY_REGISTERED = 450006;
 
-    public const SETTING_PREFIX = 'filter_settings_';
-    public const REQUEST_VAR_RESET = 'reset';
-    public const REQUEST_VAR_APPLY = 'apply';
+    public const string SETTING_PREFIX = 'filter_settings_';
+    public const string REQUEST_VAR_RESET = 'reset';
+    public const string REQUEST_VAR_APPLY = 'apply';
 
     protected string $id;
     protected string $jsID;
@@ -43,7 +43,7 @@ abstract class Application_FilterSettings
     protected Application_User $user;
 
     /**
-     * @var array<string,string|number|array<mixed>|bool|NULL>
+     * @var array<string,string|number|array<int|string,mixed>|bool|NULL>
      */
     private array $settings = array();
 
@@ -66,7 +66,7 @@ abstract class Application_FilterSettings
     /**
      * @param string $id The ID is used to persist the settings.
      *
-     * @throws Application_Exception
+     * @throws FilterSettingsException
      * @throws UI_Exception
      * @throws DriverException
      */
@@ -84,7 +84,7 @@ abstract class Application_FilterSettings
         $this->registerSettings();
         
         if(empty($this->definitions)) {
-            throw new Application_Exception(
+            throw new FilterSettingsException(
                 'No settings registered',
                 'The [registerSettings] method has been implemented, but it does not register any settings.',
                 self::ERROR_NO_SETTINGS_REGISTERED
@@ -98,16 +98,17 @@ abstract class Application_FilterSettings
     {
         if(empty($id))
         {
-            throw new Application_Exception(
+            throw new FilterSettingsException(
                 'An empty ID for filter settings is not allowed.',
                 '',
                 self::ERROR_MISSING_ID
             );
         }
 
-        if(isset($this->id))
-        {
-            $this->log('Changing ID to [%s].', $id);
+        if(empty($this->id)) {
+            $this->log('Setting ID to [%s].', $id);
+        } else {
+            $this->log('Changing ID to [%s] (was [%s]).', $id, $this->id);
         }
 
         $this->id = $id;
@@ -118,7 +119,7 @@ abstract class Application_FilterSettings
         return $this;
     }
     
-    protected function init()
+    protected function init() : void
     {
         
     }
@@ -154,7 +155,7 @@ abstract class Application_FilterSettings
      */
     abstract protected function _configureFilters() : void;
 
-    public const SETTING_DEFAULT_SEARCH = 'search';
+    public const string SETTING_DEFAULT_SEARCH = 'search';
 
     private bool $searchConfigured = false;
 
@@ -165,7 +166,7 @@ abstract class Application_FilterSettings
      *
      * @param string|SettingDef|NULL $setting Defaults to {@see self::SETTING_DEFAULT_SEARCH}.
      */
-    protected function configureSearch($setting=null) : void
+    protected function configureSearch(string|SettingDef|NULL $setting=null) : void
     {
         if($this->searchConfigured) {
             return;
@@ -205,8 +206,8 @@ abstract class Application_FilterSettings
         }
 
         $this->registerSetting($setting, $label)
-            ->setInjectCallback(Closure::fromCallable(array($this, 'inject_search')))
-            ->setConfigureCallback(Closure::fromCallable(array($this, 'configureSearch')));
+            ->setInjectCallback($this->inject_search(...))
+            ->setConfigureCallback($this->configureSearch(...));
     }
 
     protected function inject_search() : HTML_QuickForm2_Element_InputText
@@ -272,7 +273,7 @@ abstract class Application_FilterSettings
      * @return SettingDef
      * @throws UI_Exception
      */
-    protected function registerSetting(string $name, $label, mixed $default=null, ?string $customClass=null) : SettingDef
+    protected function registerSetting(string $name, string|int|float|StringableInterface|NULL $label, mixed $default=null, ?string $customClass=null) : SettingDef
     {
         $this->log('RegisterSettings | Registered setting [%s].', $name);
 
@@ -387,14 +388,12 @@ abstract class Application_FilterSettings
 
     protected function getDefaultSettings() : array
     {
-        $result = array();
-
-        foreach($this->definitions as $name => $def)
-        {
-            $result[$name] = $def->getDefault();
-        }
-
-        return $result;
+        return array_map(
+            static function ($def) {
+                return $def->getDefault();
+            },
+            $this->definitions
+        );
     }
 
     // region: Access setting values
@@ -417,12 +416,8 @@ abstract class Application_FilterSettings
         $setting = $this->requireSetting($name);
 
         $this->loadSettings();
-        
-        if(isset($this->settings[$name])) {
-            return $this->settings[$name];
-        }
-        
-        return $setting->getDefault();
+
+        return $this->settings[$name] ?? $setting->getDefault();
     }
 
     public function getArraySetting(string $name) : array
@@ -603,7 +598,7 @@ abstract class Application_FilterSettings
     public function addMore(?HTML_QuickForm2_Container $container=null) : HTML_QuickForm2_Element_InputText
     {
         if($this->hasMore) {
-            throw new Application_Exception(
+            throw new FilterSettingsException(
                 'Only one more element may be added.',
                 sprintf(
                     'The filter settings [%s] can only accept one mor^e element.',
@@ -645,9 +640,12 @@ abstract class Application_FilterSettings
      *
      * @param string[] $searchFields Human-readable field labels.
      * @param HTML_QuickForm2_Container|NULL $container
+     * @param array<string,mixed> $options
      * @return HTML_QuickForm2_Element_InputText
+     * @throws Application_Exception
+     * @throws BaseClassHelperException
      */
-    protected function addElementSearch(array $searchFields, ?HTML_QuickForm2_Container $container=null, $options=array()) : HTML_QuickForm2_Element_InputText
+    protected function addElementSearch(array $searchFields, ?HTML_QuickForm2_Container $container=null, array $options=array()) : HTML_QuickForm2_Element_InputText
     {
         $options = array_merge(
             array(
@@ -811,7 +809,7 @@ abstract class Application_FilterSettings
             return $this->definitions[$name];
         }
         
-        throw new Application_Exception(
+        throw new FilterSettingsException(
             'Unknown filtering setting',
             sprintf(
                 'Unknown setting [%s]. Available settings are: [%s].',
@@ -911,7 +909,7 @@ abstract class Application_FilterSettings
      * @param mixed|NULL $value
      * @return mixed|null
      */
-    private function nullify($value)
+    private function nullify(mixed $value) : mixed
     {
         if($value === '' || $value === null) {
             return null;
@@ -933,7 +931,7 @@ abstract class Application_FilterSettings
 
     public function getSettingCountry(string $name) : ?Application_Countries_Country
     {
-        $countries = Application_Driver::createCountries();
+        $countries = AppFactory::createCountries();
         
         $value = (int)$this->getSetting($name);
         
@@ -954,7 +952,6 @@ abstract class Application_FilterSettings
     /**
      * @return $this
      * @throws BaseClassHelperException
-     * @throws FileHelper_Exception
      * @throws UI_Themes_Exception
      */
     protected function addMoreEnd() : self

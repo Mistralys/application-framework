@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 class Application_FilterSettings_DateParser
 {
-    protected $string;
+    protected string $string;
     
-    protected $errorMessage;
-    
-    protected $commands;
+    protected ?string $errorMessage = null;
+
+    /**
+     * @var array<int,array{token:string,date:DateTime,dateString:string,sql:string}>
+     */
+    protected array $commands = array();
     
     public function __construct($dateString)
     {
@@ -17,12 +22,12 @@ class Application_FilterSettings_DateParser
         }
     }
 
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         return empty($this->string);
     }
     
-    protected function parse()
+    protected function parse() : void
     {
         $string = mb_strtoupper($this->string);
     
@@ -36,7 +41,7 @@ class Application_FilterSettings_DateParser
         {
             $string = str_replace($translated, $special, $string);
             
-            if(strstr($string, $special)) 
+            if(str_contains($string, $special))
             {
                 $replace = '';
                 
@@ -58,7 +63,7 @@ class Application_FilterSettings_DateParser
         
         $matches = array();
         preg_match_all('/([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})[ ]+([0-9]{1,2}):([0-9]{1,2})|([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})/', $string, $matches, PREG_PATTERN_ORDER);
-        if(!isset($matches[0]) || empty($matches[0])) {
+        if(empty($matches[0])) {
             $this->setError(t('No valid date recognized.'));
             return;
         }
@@ -69,7 +74,7 @@ class Application_FilterSettings_DateParser
         foreach($matches[0] as $dateString) {
             try{
                 $date = new DateTime($dateString);
-            } catch(Exception $e) {
+            } catch(Throwable) {
                 $this->setError(t('The date %1$s does not exist.', $dateString));
                 return;
             }
@@ -78,7 +83,7 @@ class Application_FilterSettings_DateParser
             $string = str_replace($dateString, ' '.$placeholder.' ', $string);
             $validSymbols[] = $placeholder;
             
-            if(strstr($dateString, ':')) {
+            if(str_contains($dateString, ':')) {
                 $hasTime = true;
                 $dateString = $date->format('Y-m-d H:i');
             } else {
@@ -112,7 +117,7 @@ class Application_FilterSettings_DateParser
             $part = trim($part);
             
             // keep only known symbols and throw away everything else
-            if(empty($part) || !in_array($part, $validSymbols)) {
+            if(empty($part) || !in_array($part, $validSymbols, true)) {
                 continue;
             }
             
@@ -175,38 +180,27 @@ class Application_FilterSettings_DateParser
         }
         
         $this->commands = $commands;
-        
-        /*
-        echo '<pre style="background:#fff;color:#666;padding:6px;border:solid 1 px #ccc;">';
-        print_r(array(
-            'string' => $this->string,
-            'datified' => $datified,
-            'matches' => $matches,
-            'parsable' => $string,
-            'validSymbols' => $validSymbols,
-            'parts' => $parts,
-            'commands' => $commands
-        ));
-        echo '</pre>';
-        */
     }
     
-    protected function setError($message)
+    protected function setError(string $message) : void
     {
         $this->errorMessage = $message;
     }
     
-    public function isValid()
+    public function isValid() : bool
     {
         return !isset($this->errorMessage);
     }
     
-    public function getErrorMessage()
+    public function getErrorMessage() : ?string
     {
         return $this->errorMessage;
     }
-    
-    public function getDates()
+
+    /**
+     * @return array<int,array{token:string,date:DateTime,dateString:string,sql:string}>
+     */
+    public function getDates() : array
     {
         return $this->commands;
     }
