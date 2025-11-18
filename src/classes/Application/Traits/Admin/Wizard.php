@@ -12,6 +12,7 @@ declare(strict_types=1);
 use Application\Admin\Wizard\InvalidationHandler;
 use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Trait for adding a wizard to an administration screen.
@@ -186,7 +187,7 @@ trait Application_Traits_Admin_Wizard
         $this->saveSettings();
     }
 
-    public function getSuccessURL() : string
+    public function getSuccessURL() : string|AdminURLInterface
     {
         return APP_URL;
     }
@@ -312,7 +313,7 @@ trait Application_Traits_Admin_Wizard
      */
     abstract protected function processCancelCleanup() : void;
 
-    public function getCanceledURL() : string
+    public function getCanceledURL() : string|AdminURLInterface
     {
         return $this->getSuccessURL();
     }
