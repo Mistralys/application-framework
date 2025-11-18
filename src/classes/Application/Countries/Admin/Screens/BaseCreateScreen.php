@@ -18,8 +18,8 @@ abstract class BaseCreateScreen extends Application_Admin_Wizard
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create';
-    public const WIZARD_ID = 'CreateAppCountry';
+    public const string URL_NAME = 'create';
+    public const string WIZARD_ID = 'CreateAppCountry';
 
     public function getURLName(): string
     {
