@@ -5,10 +5,15 @@ declare(strict_types=1);
 namespace Application\Revisionable\Collection;
 
 use Application\Collection\IntegerCollectionInterface;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableInterface;
+use Application_Admin_Skeleton;
 use Application_StateHandler_State;
 use Application_User;
+use AppUtils\Interfaces\StringableInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use UI\AdminURLs\AdminURLInterface;
+use UI_DataGrid;
 
 /**
  * @method RevisionableInterface[] getAll()
@@ -140,4 +145,20 @@ interface RevisionableCollectionInterface extends IntegerCollectionInterface, DB
      * @return bool
      */
     public function canRecordBeDestroyed(RevisionableInterface $revisionable) : bool;
+
+    /**
+     * Creates a datagrid multi action handler: these are used to handle common
+     * revisionable tasks like publishing, deleting etc. via the multi-action
+     * datagrid feature.
+     *
+     * @param class-string<BaseRevisionableDataGridMultiAction> $className The name of the multi action class to use. Must extend the base class.
+     * @param AdminScreenInterface $adminScreen The administration screen in which the grid is used.
+     * @param UI_DataGrid $grid The grid to apply the action to.
+     * @param string|int|float|StringableInterface|null $label The label of the item.
+     * @param string|AdminURLInterface $redirectURL The URL to redirect to when this action completes.
+     * @param boolean $confirm Whether this is an action that displays a confirmation message.
+     * @return BaseRevisionableDataGridMultiAction
+     */
+    public function createListMultiAction(string $className, AdminScreenInterface $adminScreen, UI_DataGrid $grid, string|int|float|StringableInterface|null $label, string|AdminURLInterface $redirectURL, bool $confirm = false): BaseRevisionableDataGridMultiAction;
+
 }

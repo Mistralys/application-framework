@@ -6,14 +6,12 @@ namespace TestDriver\Area\RevisionableScreen;
 
 use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
-use Application_Admin_Area_Mode_RevisionableList;
+use Application\Revisionable\Admin\Screens\Mode\BaseRevisionableListMode;
 use TestDriver\Revisionables\RevisionableCollection;
 
-class RevisionableListScreen extends Application_Admin_Area_Mode_RevisionableList
+class RevisionableListScreen extends BaseRevisionableListMode
 {
-    public const string URL_NAME = 'list';
-
-    public function getCollection(): RevisionableCollection
+    public function createCollection(): RevisionableCollection
     {
         return RevisionableCollection::getInstance();
     }

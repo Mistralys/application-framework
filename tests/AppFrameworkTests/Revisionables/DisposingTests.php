@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AppFrameworkTests\Revisionables;
 
-use AppFrameworkTestClasses\Stubs\RevisionDependentDisposableStub;
+use AppFrameworkTestClasses\Stubs\Revisionables\RevisionDependentDisposableStub;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
 use TestDisposable;
 

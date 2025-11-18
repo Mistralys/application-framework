@@ -6,6 +6,8 @@ namespace AppFrameworkTests\Revisionables;
 
 use Application\Revisionable\Event\RevisionAddedEvent;
 use Mistralys\AppFrameworkTests\TestClasses\RevisionableTestCase;
+use TestDriver\Revisionables\RevisionableCollection;
+use TestDriver\Revisionables\RevisionableRecord;
 
 final class RevisionSpecificEventTests extends RevisionableTestCase
 {
@@ -21,17 +23,17 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
         $this->createRevisionable();
 
         $this->revisionable->selectRevision($this->rev1ID);
-        $this->revisionable->triggerTheEvent();
+        $this->revisionable->triggerTestEvent();
 
         $this->assertTrue($this->revision1Event);
-        $this->assertFalse($this->revision2Event);
+        $this->assertFalse($this->revision2Event, 'Because we are on revision 1, revision 2 event must not have been triggered.');
 
         $this->resetEvents();
 
         $this->revisionable->selectRevision($this->rev2ID);
-        $this->revisionable->triggerTheEvent();
+        $this->revisionable->triggerTestEvent();
 
-        $this->assertFalse($this->revision1Event);
+        $this->assertFalse($this->revision1Event, 'Because we are on revision 2, revision 1 event must not have been triggered.');
         $this->assertTrue($this->revision2Event);
     }
 
@@ -45,11 +47,11 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
         // Ignore the event in revision 1
         $this->revisionable->selectRevision($this->rev1ID);
         $this->revisionable->ignoreTestEvent();
-        $this->revisionable->triggerTheEvent();
+        $this->revisionable->triggerTestEvent();
 
         // Trigger it for revision 2
         $this->revisionable->selectRevision($this->rev2ID);
-        $this->revisionable->triggerTheEvent();
+        $this->revisionable->triggerTestEvent();
 
         $this->assertFalse($this->revision1Event);
         $this->assertTrue($this->revision2Event);
@@ -67,7 +69,7 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
 
         $this->revisionable->onRevisionAdded(array($this, 'callback_revisionAdded'));
         $this->revisionable->ignoreRevisionAddedEvent();
-        $this->revisionable->createRevision();
+        $this->revisionable->createTestRevision();
 
         $this->assertNull($this->revisionAdded);
     }
@@ -81,12 +83,12 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
         $this->createRevisionable();
 
         $this->revisionable->selectRevision($this->rev1ID);
-        $this->revisionable->onRevisionAdded(array($this, 'callback_revisionAdded'));
+        $this->revisionable->onRevisionAdded($this->callback_revisionAdded(...));
         $this->revisionable->selectRevision($this->rev2ID);
 
         $this->assertNull($this->revisionAdded);
 
-        $this->revisionable->createRevision();
+        $this->revisionable->createTestRevision();
 
         $this->assertInstanceOf(RevisionAddedEvent::class, $this->revisionAdded);
     }
@@ -97,7 +99,7 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
 
     private bool $revision1Event = false;
     private bool $revision2Event = false;
-    private RevisionableMemory $revisionable;
+    private RevisionableRecord $revisionable;
     private int $rev1ID;
     private int $rev2ID;
     private ?RevisionAddedEvent $revisionAdded;
@@ -114,18 +116,24 @@ final class RevisionSpecificEventTests extends RevisionableTestCase
      */
     private function createRevisionable(): void
     {
-        $this->revisionable = new RevisionableMemory();
+        $this->revisionable = RevisionableCollection::getInstance()->createNew('label', 'alias');
 
-        $this->assertSame(0, $this->revisionable->countRevisions());
-        $this->assertFalse($this->revisionable->isEventRevisionAgnostic(RevisionableMemory::EVENT_TEST_EVENT));
+        $this->assertFalse(
+            $this->revisionable->isEventRevisionAgnostic(RevisionableRecord::EVENT_TEST_EVENT),
+            'The test event must be revision-specific.'
+        );
 
-        $this->rev1ID = $this->revisionable->createRevision();
+        // Create two revisions, each with their own event handlers
+        // that work so that the correct one is triggered based on
+        // the selected revision.
+
+        $this->rev1ID = $this->revisionable->createTestRevision();
         $this->revisionable->selectRevision($this->rev1ID);
-        $this->revisionable->onTriggerEvent(array($this, 'callback_revision1'));
+        $this->revisionable->onTestEvent($this->callback_revision1(...));
 
-        $this->rev2ID = $this->revisionable->createRevision();
+        $this->rev2ID = $this->revisionable->createTestRevision();
         $this->revisionable->selectRevision($this->rev2ID);
-        $this->revisionable->onTriggerEvent(array($this, 'callback_revision2'));
+        $this->revisionable->onTestEvent($this->callback_revision2(...));
 
         $this->assertSame(2, $this->revisionable->countRevisions());
     }

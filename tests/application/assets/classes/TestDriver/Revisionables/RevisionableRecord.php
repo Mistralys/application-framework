@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace TestDriver\Revisionables;
 
 use Application\Interfaces\ChangelogViaHandlerInterface;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupInterface;
 use Application\Revisionable\StatusHandling\StandardStateSetupTrait;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
 use Application\Traits\ChangelogViaHandlerTrait;
+use Application_EventHandler_EventableListener;
 use BaseRevisionable;
 
 class RevisionableRecord
@@ -25,7 +25,7 @@ class RevisionableRecord
 
     public const string DATA_KEY_NON_STRUCTURAL = 'non_structural_data_key';
     public const string DATA_KEY_STRUCTURAL = 'structural_data_key';
-
+    public const string EVENT_TEST_EVENT = 'TestEvent';
 
     public function setAlias(string $alias) : self
     {
@@ -100,6 +100,16 @@ class RevisionableRecord
     }
 
     // region: C - Saving data
+    public function createTestRevision() : int
+    {
+        $this->startCurrentUserTransaction();
+
+        $this->setStructuralDataKey('some_structural_key');
+
+        $this->endTransaction();
+
+        return $this->getRevision();
+    }
 
     protected function initStorageParts(): void
     {
@@ -145,6 +155,26 @@ class RevisionableRecord
 
     protected function _registerEvents(): void
     {
+    }
+
+    public function onTestEvent(callable $callback): Application_EventHandler_EventableListener
+    {
+        return $this->addEventListener(self::EVENT_TEST_EVENT, $callback);
+    }
+
+    public function triggerTestEvent() : void
+    {
+        $this->triggerEvent(self::EVENT_TEST_EVENT);
+    }
+
+    public function ignoreTestEvent() : void
+    {
+        $this->ignoreEvent(self::EVENT_TEST_EVENT);
+    }
+
+    public function ignoreRevisionAddedEvent() : void
+    {
+        $this->ignoreEvent(self::EVENT_REVISION_ADDED);
     }
 
     // endregion

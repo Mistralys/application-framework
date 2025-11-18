@@ -143,11 +143,6 @@ class RevisionableCollection extends BaseRevisionableCollection
         return self::PRIMARY_NAME;
     }
 
-    public function getRecordTableName(): string
-    {
-        return self::TABLE_NAME;
-    }
-
     public function getRevisionsTableName(): string
     {
         return self::TABLE_REVISIONS;

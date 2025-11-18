@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace AppFrameworkTestClasses\Stubs;
+namespace AppFrameworkTestClasses\Stubs\Revisionables;
 
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;

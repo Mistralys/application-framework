@@ -6,19 +6,17 @@
 
 declare(strict_types=1);
 
-namespace Application\Traits\Admin;
+namespace Application\Revisionable\Admin\Traits;
 
-use Application\Interfaces\Admin\RevisionableChangelogScreenInterface;
-use Application\Revisionable\RevisionableInterface;
 use Application_Changelog_Entry;
 use Application_Changelog_FilterCriteria;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Microtime;
-use Closure;
 use UI;
 use UI_DataGrid;
+use UI_Themes_Theme_ContentRenderer;
 
 /**
  * @package Application
@@ -28,12 +26,6 @@ use UI_DataGrid;
  */
 trait RevisionableChangelogScreenTrait
 {
-    protected RevisionableInterface $revisionable;
-
-    abstract protected function getRevisionable(): RevisionableInterface;
-
-    abstract protected function isUserAuthorized(): bool;
-
     public function getTitle(): string
     {
         return t('Changelog');
@@ -44,19 +36,10 @@ trait RevisionableChangelogScreenTrait
         return t('Changelog');
     }
 
-    protected function init(): void
-    {
-        parent::init();
-
-        if (!$this->isAdminMode()) {
-            return;
-        }
-
-        $this->revisionable = $this->getRevisionable();
-    }
-
     protected function _handleActions(): bool
     {
+        $this->getRevisionableOrRedirect();
+
         if($this->request->getBool(RevisionableChangelogScreenInterface::REQUEST_PARAM_RESET)) {
             $this->handle_resetFilters();
             return true;
@@ -94,7 +77,7 @@ trait RevisionableChangelogScreenTrait
 
     protected function createFilterForm(): void
     {
-        $changelog = $this->revisionable->getChangelog();
+        $changelog = $this->requireRevisionable()->getChangelog();
 
         $this->createFormableForm('changelog-filters', $this->getFiltersConfig());
 
@@ -109,6 +92,7 @@ trait RevisionableChangelogScreenTrait
         $this->getFormInstance()->makeCondensed();
         $this->addHiddenVars($this->getPageParams());
         $this->addHiddenVars($changelog->getPrimary());
+        $this->addHiddenVars($this->getPersistVars());
     }
 
     private function injectFromDate() : void
@@ -129,7 +113,7 @@ trait RevisionableChangelogScreenTrait
 
         $this->addRuleCallback(
             $el,
-            Closure::fromCallable(array($this, 'validateScheduleDates')),
+            $this->validateScheduleDates(...),
             t('The "To date" must be after the "From date".')
         );
     }
@@ -149,7 +133,6 @@ trait RevisionableChangelogScreenTrait
     private function injectRevision() : void
     {
         $el = $this->addElementText(RevisionableChangelogScreenInterface::FILTER_REVISION, t('Revision'))
-            ->addFilter('strip_tags')
             ->addFilterTrim();
 
         $this->addRuleInteger($el);
@@ -174,7 +157,7 @@ trait RevisionableChangelogScreenTrait
 
         $el->addOption(t('All'), 'all');
 
-        foreach ($this->revisionable->getChangelog()->getAuthors() as $user) {
+        foreach ($this->requireRevisionable()->getChangelog()->getAuthors() as $user) {
             $el->addOption(
                 $user->getName(),
                 (string)$user->getID()
@@ -188,7 +171,7 @@ trait RevisionableChangelogScreenTrait
 
         $el->addOption(t('All'), 'all');
 
-        foreach ($this->revisionable->getChangelog()->getTypes() as $type => $label) {
+        foreach ($this->requireRevisionable()->getChangelog()->getTypes() as $type => $label) {
             $el->addOption($label, $type);
         }
     }
@@ -202,13 +185,9 @@ trait RevisionableChangelogScreenTrait
 
     // endregion
 
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
-        /* @var $entry Application_Changelog_Entry */
-
-        if (!$this->isUserAuthorized()) {
-            return $this->renderUnauthorized();
-        }
+        $revisionable = $this->requireRevisionable();
 
         $this->ui->addJavascript('changelog.js');
         $this->ui->addJavascript('changelog/dialog/entry.js');
@@ -217,13 +196,13 @@ trait RevisionableChangelogScreenTrait
         $this->ui->addJavascriptHeadVariable(
             'Changelog.Revisionable',
             array(
-                'Label' => $this->revisionable->getLabel(),
-                'TypeName' => $this->revisionable->getRecordTypeName(),
-                'PrettyRevision' => $this->revisionable->getPrettyRevision(),
-                'CurrentRevision' => $this->revisionable->getRevision(),
-                'LatestRevision' => $this->revisionable->getLatestRevision(),
-                'Table' => $this->revisionable->getChangelogTable(),
-                'OwnerPrimary' => $this->revisionable->getChangelogItemPrimary()
+                'Label' => $revisionable->getLabel(),
+                'TypeName' => $revisionable->getRecordTypeName(),
+                'PrettyRevision' => $revisionable->getPrettyRevision(),
+                'CurrentRevision' => $revisionable->getRevision(),
+                'LatestRevision' => $revisionable->getLatestRevision(),
+                'Table' => $revisionable->getChangelogTable(),
+                'OwnerPrimary' => $revisionable->getChangelogItemPrimary()
             )
         );
 
@@ -255,7 +234,7 @@ trait RevisionableChangelogScreenTrait
         $grid->enableColumnControls(4);
         $grid->setEmptyMessage(t('No changes found.'));
         $grid->addHiddenScreenVars();
-        $grid->addHiddenVars($this->revisionable->getChangelogItemPrimary());
+        $grid->addHiddenVars(array_merge($this->requireRevisionable()->getChangelogItemPrimary(), $this->getPersistVars()));
 
         $this->registerColumns($grid);
 
@@ -292,7 +271,7 @@ trait RevisionableChangelogScreenTrait
 
         return array(
             RevisionableChangelogScreenInterface::COL_CHANGELOG_ID => $entry->getID(),
-            RevisionableChangelogScreenInterface::COL_REVISION => '<span class="monospace">'.$dbEntry->getInt($this->revisionable->getCollection()->getRevisionKeyName()).'</span>',
+            RevisionableChangelogScreenInterface::COL_REVISION => '<span class="monospace">'.$dbEntry->getInt($this->requireRevisionable()->getCollection()->getRevisionKeyName()).'</span>',
             RevisionableChangelogScreenInterface::COL_AUTHOR => $entry->getAuthorName(),
             RevisionableChangelogScreenInterface::COL_DATE => $entry->getDatePretty(true),
             RevisionableChangelogScreenInterface::COL_DETAILS => $entry->getText(),
@@ -335,7 +314,7 @@ trait RevisionableChangelogScreenTrait
      */
     protected function createFilters(): Application_Changelog_FilterCriteria
     {
-        $changelog = $this->revisionable->getChangelog();
+        $changelog = $this->requireRevisionable()->getChangelog();
         $filters = $changelog->getFilters();
         $config = $this->getFiltersConfig();
 
@@ -359,7 +338,7 @@ trait RevisionableChangelogScreenTrait
 
         $revision = $values->getInt(RevisionableChangelogScreenInterface::FILTER_REVISION);
         if($revision > 0) {
-            $filters->limitByCustomField($this->revisionable->getCollection()->getRevisionKeyName(), $revision);
+            $filters->limitByCustomField($this->requireRevisionable()->getCollection()->getRevisionKeyName(), $revision);
         }
 
         $search = $values->getString(RevisionableChangelogScreenInterface::FILTER_SEARCH);
@@ -385,7 +364,7 @@ trait RevisionableChangelogScreenTrait
 
     protected function getListID(): string
     {
-        return 'changelog-'.$this->revisionable->getRecordTypeName();
+        return 'changelog-'.$this->requireRevisionable()->getRecordTypeName();
     }
 
     protected function getDefaultFilters() : array
@@ -424,7 +403,7 @@ trait RevisionableChangelogScreenTrait
         $this->user->setSetting($this->getListID(), JSONConverter::var2json($filters));
         $this->user->saveSettings();
 
-        $redirectParams = $this->revisionable->getChangelogItemPrimary();
+        $redirectParams = $this->requireRevisionable()->getChangelogItemPrimary();
         $redirectParams = array_merge($redirectParams, $this->getPageParams());
 
         $this->redirectWithSuccessMessage(
@@ -435,11 +414,17 @@ trait RevisionableChangelogScreenTrait
 
     // endregion
 
+    /**
+     * @return array<string, string|int>
+     */
+    abstract protected function getPersistVars() : array;
+
     public function getURL(array $params = array()) : string
     {
         return parent::getURL(array_merge(
             $params,
-            $this->revisionable->getChangelogItemPrimary()
+            $this->requireRevisionable()->getChangelogItemPrimary(),
+            $this->getPersistVars()
         ));
     }
 

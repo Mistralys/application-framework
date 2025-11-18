@@ -98,7 +98,7 @@ abstract class BaseRevisionableFilterCriteria
         );
     }
 
-    protected function getSearchFields(): array
+    public function getSearchFields(): array
     {
         $keys = $this->collection->getRecordSearchableKeys();
         $result = array();

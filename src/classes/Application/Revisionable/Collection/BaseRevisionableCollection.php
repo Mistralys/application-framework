@@ -6,6 +6,7 @@ namespace Application\Revisionable\Collection;
 
 use Application;
 use Application\AppFactory;
+use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Revisionable\RevisionableException;
 use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\Storage\BaseDBCollectionStorage;
@@ -26,7 +27,6 @@ use DateTime;
 use DBHelper;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
-use DBHelper_BaseCollection;
 use DBHelper_Exception;
 use JsonException;
 use UI\AdminURLs\AdminURLInterface;
@@ -626,36 +626,13 @@ abstract class BaseRevisionableCollection
         $this->unloadRecord($revisionable);
     }
 
-    /**
-     * Creates a datagrid multi action handler: these are used to handle common
-     * revisionable tasks like publishing, deleting etc. via the multi-action
-     * datagrid feature.
-     *
-     * @param class-string<BaseRevisionableDataGridMultiAction> $className The name of the multi action class to use. Must extend the base class.
-     * @param Application_Admin_Skeleton $adminScreen The administration screen in which the grid is used.
-     * @param UI_DataGrid $grid The grid to apply the action to.
-     * @param string|int|float|StringableInterface|null $label The label of the item.
-     * @param string|AdminURLInterface $redirectURL The URL to redirect to when this action completes.
-     * @param boolean $confirm Whether this is an action that displays a confirmation message.
-     * @return BaseRevisionableDataGridMultiAction
-     */
-    public function createListMultiAction(string $className, Application_Admin_Skeleton $adminScreen, UI_DataGrid $grid, string|int|float|StringableInterface|null $label, string|AdminURLInterface $redirectURL, bool $confirm = false): BaseRevisionableDataGridMultiAction
+    public function createListMultiAction(string $className, AdminScreenInterface $adminScreen, UI_DataGrid $grid, string|int|float|StringableInterface|null $label, string|AdminURLInterface $redirectURL, bool $confirm = false): BaseRevisionableDataGridMultiAction
     {
-        $obj = new $className($this, $adminScreen, $grid, $label, $redirectURL, $confirm);
-
-        if (!$obj instanceof BaseRevisionableDataGridMultiAction) {
-            throw new RevisionableException(
-                'Invalid multi action class',
-                sprintf(
-                    'The object [%s] does not extend the [%s] class.',
-                    get_class($obj),
-                    BaseRevisionableDataGridMultiAction::class
-                ),
-                RevisionableException::ERROR_INVALID_MULTI_ACTION_CLASS
-            );
-        }
-
-        return $obj;
+        return ClassHelper::requireObjectInstanceOf(
+            BaseRevisionableDataGridMultiAction::class,
+            new $className($this, $adminScreen, $grid, $label, $redirectURL, $confirm),
+            RevisionableException::ERROR_INVALID_MULTI_ACTION_CLASS
+        );
     }
 
     // region: DBHelper methods

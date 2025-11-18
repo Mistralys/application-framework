@@ -12,10 +12,9 @@ declare(strict_types=1);
 namespace Application\Revisionable\Storage;
 
 use Application;
-use Application\Revisionable\Collection\BaseRevisionableCollection;
 use Application\Revisionable\RevisionableInterface;
 use Application_FilterCriteria_RevisionableRevisions;
-use BaseRevisionable;
+use DateTime;
 use DBHelper;
 use DBHelper_Exception;
 
@@ -47,12 +46,12 @@ use DBHelper_Exception;
  */
 abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
 {
-    public const ERROR_LOADING_REVISION = 534001;
-    public const ERROR_LOADING_REVISION_USER = 534002;
+    public const int ERROR_LOADING_REVISION = 534001;
+    public const int ERROR_LOADING_REVISION_USER = 534002;
 
-    public const FREEFORM_KEY_PREFIX = 'freeform_';
-    public const COL_DATA_KEY = 'data_key';
-    public const COL_DATA_VALUE = 'data_value';
+    public const string FREEFORM_KEY_PREFIX = 'freeform_';
+    public const string COL_DATA_KEY = 'data_key';
+    public const string COL_DATA_VALUE = 'data_value';
 
     protected int $revisionableID;
     protected string $revisionTable;
@@ -240,6 +239,7 @@ abstract class BaseDBStandardizedStorage extends BaseDBRevisionStorage
      * revisions that came after it.
      *
      * @param int $number
+     * @return $this
      */
     protected function _removeRevision(int $number): self
     {

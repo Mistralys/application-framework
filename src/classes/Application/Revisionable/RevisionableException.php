@@ -14,4 +14,5 @@ class RevisionableException extends ApplicationException
     public const int ERROR_REVISION_DOES_NOT_EXIST = 16102;
     public const int ERROR_INVALID_CREATE_ARGUMENTS = 16105;
     public const int ERROR_CANNOT_USE_SET_RECORD_KEY = 16106;
+    public const int ERROR_REVISIONABLE_NOT_AVAILABLE = 16107;
 }

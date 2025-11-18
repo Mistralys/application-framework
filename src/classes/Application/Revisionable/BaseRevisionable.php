@@ -59,7 +59,7 @@ abstract class BaseRevisionable implements RevisionableInterface
     public const int ERROR_NO_CURRENT_REVISION_FOUND = 14701;
     public const int ERROR_LAST_TRANSACTION_NOT_AVAILABLE = 14702;
 
-    protected BaseRevisionStorage $revisions;
+    protected BaseDBCollectionStorage $revisions;
     protected bool $requiresNewRevision = false;
     protected ?int $transactionSourceRevision = null;
     protected ?int $transactionTargetRevision = null;
@@ -71,7 +71,6 @@ abstract class BaseRevisionable implements RevisionableInterface
 
     protected RevisionableCollectionInterface $collection;
     protected int $id;
-    private ?string $revisionableTypeName = null;
 
     public function __construct(RevisionableCollectionInterface $collection, int $id)
     {
@@ -1297,24 +1296,29 @@ abstract class BaseRevisionable implements RevisionableInterface
         return $this->revisions->getDataKeys();
     }
 
+    /**
+     * **NOTE**: This is not supported by revisionables. It will always
+     * be ignored.
+     *
+     * @param callable $callback
+     * @return Application_EventHandler_EventableListener
+     */
     public function onKeyModified(callable $callback): Application_EventHandler_EventableListener
     {
-
+        return $this->addEventListener('void', $callback);
     }
 
     public function onCreated(DBHelper_BaseCollection_OperationContext_Create $context): void
     {
-        // TODO: Implement onCreated() method.
+
     }
 
     public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context): void
     {
-        // TODO: Implement onDeleted() method.
     }
 
     public function onBeforeDelete(DBHelper_BaseCollection_OperationContext_Delete $context): void
     {
-        // TODO: Implement onBeforeDelete() method.
     }
 
     // endregion
@@ -2084,10 +2088,9 @@ abstract class BaseRevisionable implements RevisionableInterface
     // endregion
 
     /**
-     * @inheritDoc
-     * @return $this
+     * @return RevisionableInterface
      */
-    public function reload() : self
+    public function reload() : RevisionableInterface
     {
         if($this->isDisposed()) {
             return $this->getCollection()->getByID($this->getID());
@@ -2121,13 +2124,8 @@ abstract class BaseRevisionable implements RevisionableInterface
         $this->storageParts = array();
         $this->lastTransaction = null;
         $this->lastTransactionAddedRevision = null;
-        $this->revisionableTypeName = null;
         $this->transactionSourceRevision = null;
         $this->transactionTargetRevision = null;
-
-        unset(
-            $this->revisions
-        );
 
         $this->_disposeRevisionable();
     }

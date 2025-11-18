@@ -1481,10 +1481,6 @@ abstract class BaseRevisionStorage
         $this->defaults = array();
         $this->revisionsToRemember = array();
         $this->staticColumns = array();
-
-        unset(
-            $this->revisionable
-        );
     }
 
     public function onRevisionSelected(callable $callback): Application_EventHandler_EventableListener
