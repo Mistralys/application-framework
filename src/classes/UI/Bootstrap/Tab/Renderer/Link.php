@@ -8,7 +8,7 @@ class UI_Bootstrap_Tab_Renderer_Link extends UI_Bootstrap_Tab_Renderer
     {
         $attributes = array(
             'href' => $this->tab->getURL(),
-            'id', $this->tab->getLinkID()
+            'id' => $this->tab->getLinkID()
         );
 
         $target = $this->tab->getURLTarget();
