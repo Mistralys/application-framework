@@ -196,7 +196,7 @@ class APIMethodsOverviewTmpl extends UI_Page_Template_Custom
     }
 
     /**
-     * @return array<string, array{group: APIGroupInterface, grid: UI_DataGrid, entries: array<int, array<string, mixed>>}>
+     * @return array<string, array{group: APIGroupInterface, grid: UI_DataGrid, entries: array<int, UI_DataGrid_Entry>}>
      */
     private function compileGroupedEntries() : array
     {
