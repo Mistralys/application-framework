@@ -1925,6 +1925,14 @@ class UI_Form extends UI_Renderable
         return $element;
     }
 
+    public function addRuleURL(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node
+    {
+        $element->addRule('regex', t('Must be a valid URL.'), RegexHelper::REGEX_URL);
+        $element->setAttribute('data-type', 'url');
+
+        return $element;
+    }
+
     /**
      * Adds a phone number validation rule to the element.
      *
