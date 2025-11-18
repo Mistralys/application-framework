@@ -1,18 +1,17 @@
 <?php
 /**
- * File containing the {@link Application_Formable_Container} class.
- * 
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_Container
  */
+
+declare(strict_types=1);
 
 /**
  * Abstract class that can be extended to use an existing
  * formable instance natively in the extended class.
  * 
- * NOTE: This formable will only be useable once the parent
- * formable has been initialized.
+ * > NOTE: This formable will only be usable once the parent
+ * > formable has been initialized.
  *
  * @package Application
  * @subpackage Formable
@@ -20,16 +19,24 @@
  */
 abstract class Application_Formable_Container extends Application_Formable
 {
-    public const ERROR_INITIALIZATION_ERROR = 36901;
+    public const int ERROR_INITIALIZATION_ERROR = 36901;
     
-   /**
-    * @var Application_Interfaces_Formable
-    */
-    protected $originFormable;
+    protected ?Application_Interfaces_Formable $originFormable = null;
 
     public function __construct(Application_Interfaces_Formable $formable)
     {
         $this->switchFormable($formable);
+
+        if($this->originFormable === null) {
+            throw new Application_Formable_Exception(
+                'Initialization error.',
+                sprintf(
+                    'The origin formable is not set after calling [%s()].',
+                    array($this, 'switchFormable')[1]
+                ),
+                self::ERROR_INITIALIZATION_ERROR
+            );
+        }
         
         $this->initContainer();
     }
@@ -44,7 +51,7 @@ abstract class Application_Formable_Container extends Application_Formable
     * cascades the initialization to this container and all
     * child containers, if any.
     */
-    public function handleFormableInitialized()
+    public function handleFormableInitialized() : void
     {
         $this->initFormable(
             $this->originFormable->getFormInstance(),
@@ -52,7 +59,7 @@ abstract class Application_Formable_Container extends Application_Formable
         );
     }
     
-    public function switchFormable(Application_Interfaces_Formable $formable)
+    public function switchFormable(Application_Interfaces_Formable $formable) : self
     {
         $this->logFormable('Switching to: '.$formable->getFormableIdentification());
         
@@ -65,12 +72,14 @@ abstract class Application_Formable_Container extends Application_Formable
         $formable->registerContainer($this);
         
         if($formable->isInitialized() && !$this->isInitialized()) {
-            throw new Application_Exception(
+            throw new Application_Formable_Exception(
                 'Initialization error.',
                 '',
                 self::ERROR_INITIALIZATION_ERROR
             );
         }
+
+        return $this;
     }
 
     public function render() : string
