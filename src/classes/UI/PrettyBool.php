@@ -11,89 +11,37 @@ class UI_PrettyBool implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const TYPE_TRUE_FALSE = 'true_false';
-    public const TYPE_YES_NO = 'yes_no';
-    public const TYPE_ENABLED_DISABLED = 'enabled_disabled';
-    public const TYPE_ACTIVE_INACTIVE = 'active_inactive';
+    public const string COLORS_DEFAULT = 'default';
+    public const string COLORS_NEUTRAL = 'neutral';
+    public const string COLORS_INVERTED = 'inverted';
 
-    public const COLORS_DEFAULT = 'default';
-    public const COLORS_NEUTRAL = 'neutral';
-    public const COLORS_INVERTED = 'inverted';
+    public const string LAYOUT_BADGE = 'badge';
+    public const string LAYOUT_ICON = 'icon';
 
-    public const LAYOUT_BADGE = 'badge';
-    public const LAYOUT_ICON = 'icon';
+    public const string CRITICALITY_SUCCESS = 'success';
+    public const string CRITICALITY_WARNING = 'warning';
+    public const string CRITICALITY_DANGEROUS = 'dangerous';
 
-    public const CRITICALITY_SUCCESS = 'success';
-    public const CRITICALITY_WARNING = 'warning';
-    public const CRITICALITY_DANGEROUS = 'dangerous';
+    private string $criticality = self::CRITICALITY_SUCCESS;
+    private bool $bool;
+    private string $labelTrue;
+    private string $labelFalse;
+    private string $colors = self::COLORS_DEFAULT;
+    private string $layout = self::LAYOUT_BADGE;
+    private bool $falseHasColor = false;
+    private bool $iconWithLabel = false;
+    private bool $useIcon = true;
 
-    /**
-     * @var string
-     */
-    private $criticality = self::CRITICALITY_SUCCESS;
-
-    /**
-     * @var bool
-     */
-    private $bool;
-
-    /**
-     * @var string
-     */
-    private $labelTrue;
-
-    /**
-     * @var string
-     */
-    private $labelFalse;
-
-    /**
-     * @var string
-     */
-    private $type = self::TYPE_TRUE_FALSE;
-
-    /**
-     * @var string
-     */
-    private $colors = self::COLORS_DEFAULT;
-
-    /**
-     * @var string
-     */
-    private $layout = self::LAYOUT_BADGE;
-
-    /**
-     * @var bool
-     */
-    private $falseHasColor = false;
-
-    /**
-     * @var bool
-     */
-    private $iconWithLabel = false;
-
-    /**
-     * @var bool
-     */
-    private $useIcon = true;
-
-    /**
-     * @var string
-     */
-    private $iconTrue;
-
-    /**
-     * @var string
-     */
-    private $iconFalse;
+    private ?UI_Icon $iconTrue = null;
+    private ?UI_Icon $iconFalse = null;
     private ?TooltipInfo $tooltipTrue = null;
     private ?TooltipInfo $tooltipFalse = null;
 
     /**
-     * @param string|bool $boolean
+     * @param mixed $boolean
      * @throws ConvertHelper_Exception
      */
-    public function __construct($boolean)
+    public function __construct(mixed $boolean)
     {
         $this->bool = ConvertHelper::string2bool($boolean);
 
@@ -113,63 +61,77 @@ class UI_PrettyBool implements UI_Renderable_Interface
         return $this->renderBadge();
     }
 
+    public function getIconTrue() : UI_Icon
+    {
+        return $this->iconTrue ?? UI::icon()->enabled();
+    }
+
+    public function getIconFalse() : UI_Icon
+    {
+        return $this->iconFalse ?? UI::icon()->disabled();
+    }
+
+    public function getIcon() : UI_Icon
+    {
+        if($this->bool) {
+            return $this->getIconTrue();
+        }
+
+        return $this->getIconFalse();
+    }
+
+    public function getLabel() : string
+    {
+        if($this->bool) {
+            return $this->labelTrue;
+        }
+
+        return $this->labelFalse;
+    }
+
+    public function getTooltip() : string
+    {
+        if($this->bool && $this->tooltipTrue !== null) {
+            return (string)$this->tooltipTrue;
+        }
+
+        if(!$this->bool && $this->tooltipFalse !== null) {
+            return (string)$this->tooltipFalse;
+        }
+
+        return '';
+    }
+
     private function renderIcon() : string
     {
-        if($this->bool)
-        {
-            $label = $this->labelTrue;
-
-            $icon = UI::icon()->enabled()
-                ->setTooltip($this->labelTrue)
-                ->makeSuccess();
-        }
-        else
-        {
-            $label = $this->labelFalse;
-
-            $icon = UI::icon()->disabled()
-                ->setTooltip($this->labelFalse)
-                ->makeMuted();
-        }
+        $icon = $this->getIcon();
 
         $this->checkColors($icon);
 
         return (string)sb()
-            ->icon($icon)
-            ->ifTrue($this->iconWithLabel, $label);
+            ->icon($icon->setTooltip($this->getTooltip()))
+            ->ifTrue($this->iconWithLabel, $this->getLabel());
     }
 
     private function renderBadge() : string
     {
         $label = UI::label('');
 
-        if($this->bool)
-        {
-            $label->setLabel($this->labelTrue);
-            $label->setTooltip($this->tooltipTrue);
-            $icon = UI::icon()->ok();
-        }
-        else
-        {
-            $label->setLabel($this->labelFalse);
-            $label->setTooltip($this->tooltipFalse);
-            $icon = UI::icon()->disabled();
-        }
-
-        if($this->useIcon)
-        {
-            $label->setIcon($icon);
+        if($this->useIcon) {
+            $label->setIcon($this->getIcon());
         }
 
         $this->checkColors($label);
 
-        return (string)$label;
+        return (string)$label
+            ->setLabel($this->getLabel())
+            ->setTooltip($this->getTooltip());
     }
 
     /**
      * @param UI_Icon|UI_Badge $subject
      */
-    private function checkColors($subject) : void
+    private function checkColors(UI_Icon|UI_Badge $subject) : void
     {
         // Default is to render both as muted/inactive,
         // which catches the "inverted" color mode - and
@@ -341,7 +303,6 @@ class UI_PrettyBool implements UI_Renderable_Interface
      */
     public function makeYesNo() : UI_PrettyBool
     {
-        $this->type = self::TYPE_YES_NO;
         return $this->setLabels(t('Yes'), t('No'));
     }
 
@@ -351,7 +312,6 @@ class UI_PrettyBool implements UI_Renderable_Interface
      */
     public function makeEnabledDisabled() : UI_PrettyBool
     {
-        $this->type = self::TYPE_ENABLED_DISABLED;
         return $this->setLabels(t('Enabled'), t('Disabled'));
     }
 
@@ -361,7 +321,6 @@ class UI_PrettyBool implements UI_Renderable_Interface
      */
     public function makeActiveInactive() : UI_PrettyBool
     {
-        $this->type = self::TYPE_ACTIVE_INACTIVE;
         return $this->setLabels(t('Active'), t('Inactive'));
     }
 
@@ -381,18 +340,18 @@ class UI_PrettyBool implements UI_Renderable_Interface
 
     public function setIcons(UI_Icon $iconTrue, UI_Icon $iconFalse) : UI_PrettyBool
     {
-        $this->iconTrue = $iconTrue->getType();
-        $this->iconFalse = $iconFalse->getType();
+        $this->iconTrue = $iconTrue;
+        $this->iconFalse = $iconFalse;
         return $this;
     }
 
     /**
-     * @param string|number|StringableInterface|TooltipInfo|NULL $tooltipTrue
-     * @param string|number|StringableInterface|TooltipInfo|NULL $tooltipFalse
+     * @param string|int|float|StringableInterface|TooltipInfo|NULL $tooltipTrue
+     * @param string|int|float|StringableInterface|TooltipInfo|NULL $tooltipFalse
      * @return self
      * @throws UI_Exception
      */
-    public function setTooltip($tooltipTrue, $tooltipFalse) : self
+    public function setTooltip(string|int|float|StringableInterface|TooltipInfo|NULL $tooltipTrue, string|int|float|StringableInterface|TooltipInfo|NULL $tooltipFalse) : self
     {
         $this->tooltipTrue = UI::tooltip($tooltipTrue);
         $this->tooltipFalse = UI::tooltip($tooltipFalse);
