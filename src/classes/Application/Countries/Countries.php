@@ -124,11 +124,11 @@ class Application_Countries extends DBHelper_BaseCollection
      * Resolves the country from the specified subject, which can be
      * a country ID, ISO code, or a country instance.
      *
-     * @param Application_Countries_Country|CountryInterface|int|string $subject
+     * @param Application_Countries_Country|CountryInterface|int|string|mixed $subject
      * @return Application_Countries_Country
      * @throws CountryException
      */
-    public function resolveCountry($subject) : Application_Countries_Country
+    public function resolveCountry(mixed $subject) : Application_Countries_Country
     {
         if($subject instanceof Application_Countries_Country) {
             return $subject;
@@ -538,14 +538,22 @@ class Application_Countries extends DBHelper_BaseCollection
     {
         $this->keys->register(Application_Countries_Country::COL_ISO)
             ->makeRequired()
-            ->setValidation(Closure::fromCallable(array($this, 'validateISO')));
+            ->setValidation($this->validateISO(...));
 
         $this->keys->register(Application_Countries_Country::COL_LABEL)
             ->makeRequired();
     }
 
-    private function validateISO(string $iso) : void
+    private function validateISO(mixed $iso) : void
     {
+        if(empty($iso) || !is_string($iso)) {
+            throw new CountryException(
+                'Invalid country ISO code',
+                'The specified ISO code is empty or not a valid string.',
+                self::ERROR_UNKNOWN_ISO_CODE
+            );
+        }
+
         $iso = strtolower($iso);
         $collection = CountryCollection::getInstance();
         $aliases = $collection->getAliases();
