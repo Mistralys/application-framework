@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\Messaging\MessagingCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\DateTimeHelper\DateIntervalExtended;
@@ -351,7 +352,7 @@ class Application_LockManager_Lock extends DBHelper_BaseRecord
         $message = $messaging->addMessage(
             $this->getLockedBy(), 
             $text, 
-            Application_Messaging::PRIORITY_HIGH, 
+            MessagingCollection::PRIORITY_HIGH,
             $visitor
         );
         

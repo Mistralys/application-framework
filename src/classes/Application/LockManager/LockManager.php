@@ -1,13 +1,11 @@
 <?php
-
 /**
- * File containing the {@link Application_LockManager} class.
- * 
  * @package Application
  * @subpackage LockManager
- * @see Application_LockManager
  */
 
+use Application\LockManager\LockingFilterCriteria;
+use Application\LockManager\LockingFilterSettings;
 use AppUtils\ClassHelper;
 
 /**
@@ -21,89 +19,88 @@ use AppUtils\ClassHelper;
  */
 class Application_LockManager extends DBHelper_BaseCollection
 {
-    public const ERROR_STATE_MAY_NOT_BE_MODIFIED = 551001;
-    public const ERROR_REVISIONABLE_IS_NOT_LOCKABLE = 551002;
-    public const ERROR_REVISIONABLE_PRIMARY_UNHANDLED = 551003;
+    public const int ERROR_STATE_MAY_NOT_BE_MODIFIED = 551001;
+    public const int ERROR_REVISIONABLE_IS_NOT_LOCKABLE = 551002;
+    public const int ERROR_REVISIONABLE_PRIMARY_UNHANDLED = 551003;
 
    /**
     * The amount of seconds to show the "Are you still there?" dialog before the automatic unlock.
-    * @var integer
     */
-    const AUTO_UNLOCK_DIALOG_DELAY = 30;
-    
+    public const int AUTO_UNLOCK_DIALOG_DELAY = 30;
+    const string TABLE_NAME = 'app_locking';
+    const string PRIMARY_NAME = 'lock_id';
+    const string COL_LOCK_LABEL = 'lock_label';
+    const string COL_SCREEN_NAME = 'screen_name';
+    const string RECORD_TYPE = 'lock';
+    const string COL_LOCKED_UNTIL = 'locked_until';
+
     public function getRecordPrimaryName() : string
     {
-        return 'lock_id';
+        return self::PRIMARY_NAME;
     }
     
     public function getRecordTableName() : string
     {
-        return 'app_locking';
+        return self::TABLE_NAME;
     }
     
     public function getRecordSearchableColumns() : array
     {
         return array(
-            'lock_label' => t('Label'),
-            'screen_name' => t('Page name')
+            self::COL_LOCK_LABEL => t('Label'),
+            self::COL_SCREEN_NAME => t('Page name')
         );
     }
     
     public function getRecordFiltersClassName() : string
     {
-        return 'Application_LockManager_FilterCriteria';
+        return LockingFilterCriteria::class;
     }
     
     public function getRecordFilterSettingsClassName() : string
     {
-        return 'Application_LockManager_FilterSettings';
+        return LockingFilterSettings::class;
     }
     
     public function getRecordClassName() : string
     {
-        return 'Application_LockManager_Lock';
+        return Application_LockManager_Lock::class;
     }
     
     public function getRecordDefaultSortKey() : string
     {
-        return 'locked_until';
+        return self::COL_LOCKED_UNTIL;
     }
     
     public function getRecordTypeName() : string
     {
-        return 'lock';
+        return self::RECORD_TYPE;
     }
     
     
    /**
     * The amount of seconds between AJAX requests to keep a user's lock alive.
-    * @var integer
     */
-    const KEEP_ALIVE_DELAY = 4;
+    public const int KEEP_ALIVE_DELAY = 4;
     
    /**
     * The amount of seconds between AJAX requests to update the UI for a visiting user.
-    * @var integer
     */
-    const REFRESH_STATUS_DELAY = 4;
+    public const int REFRESH_STATUS_DELAY = 4;
     
    /**
     * The amount of minutes before a lock is automatically removed from the database.
     * This should be slightly higher than the auto unlock delay. Note that this gets
     * extended automatically each time the user is active.
-    * 
-    * @var integer
     */
-    const EXPIRY_DELAY = 20; 
+    public const int EXPIRY_DELAY = 20;
     
    /**
     * The amount of seconds to set the expiry delay to when a user leaves the page 
     * he was locking: this allows for the user to reload the page safely without 
     * losing his lock on the page, and avoids too many lock challenges.
-    * 
-    * @var integer
     */
-    const EXPIRY_LEAVE_DELAY = 20;
+    public const int EXPIRY_LEAVE_DELAY = 20;
 
    /**
     * @var Application_Interfaces_Admin_LockableScreen
@@ -122,7 +119,7 @@ class Application_LockManager extends DBHelper_BaseCollection
         $this->adminScreen = $adminScreen;
         $request = Application_Driver::getInstance()->getRequest();
         
-        if($request->getParam('simulate_lock') == 'yes' && Application::getUser()->isDeveloper()) {
+        if($request->getBool('simulate_lock') && Application::getUser()->isDeveloper()) {
             $this->simulateLock = true;
         }
     }
@@ -362,17 +359,17 @@ class Application_LockManager extends DBHelper_BaseCollection
             $this->locked = true;
             $this->data = array(
                 'screen_url_path' => $this->adminScreen->getURLPath(),
-                'screen_name' => $name,
-                'lock_label' => $this->adminScreen->getLockLabel(),
+                self::COL_SCREEN_NAME => $name,
+                self::COL_LOCK_LABEL => $this->adminScreen->getLockLabel(),
                 'item_primary' => $this->primary,
                 'locked_by' => $currentUser->getID(),
                 'locked_time' => $now->format('Y-m-d H:i:s'),
-                'locked_until' => $expiry->format('Y-m-d H:i:s'),
+                self::COL_LOCKED_UNTIL => $expiry->format('Y-m-d H:i:s'),
                 'last_activity' => $now->format('Y-m-d H:i:s'),
                 'properties' => ''
             );
             
-            DBHelper::insertDynamic('app_locking', $this->data);
+            DBHelper::insertDynamic(self::TABLE_NAME, $this->data);
             
             return true;
         }
@@ -394,7 +391,7 @@ class Application_LockManager extends DBHelper_BaseCollection
             AND
                 `item_primary` = :item_primary",
             array(
-                'locked_until' => $expiry->format('Y-m-d H:i:s'),
+                self::COL_LOCKED_UNTIL => $expiry->format('Y-m-d H:i:s'),
                 'last_activity' => $now->format('Y-m-d H:i:s'),
                 'screen_url_path' => $this->adminScreen->getURLPath(),
                 'item_primary' => $this->primary
@@ -511,7 +508,7 @@ class Application_LockManager extends DBHelper_BaseCollection
         $this->load();
         
         if($this->locked) {
-            return new DateTime($this->data['locked_until']);
+            return new DateTime($this->data[self::COL_LOCKED_UNTIL]);
         }
     }
     
@@ -624,7 +621,7 @@ class Application_LockManager extends DBHelper_BaseCollection
             WHERE
                 `lock_id`=:lock_id",
             array(
-                'lock_id' => $lock_id
+                self::PRIMARY_NAME => $lock_id
             )
         ));
     }
@@ -643,7 +640,7 @@ class Application_LockManager extends DBHelper_BaseCollection
         $manager = new Application_LockManager();
         $manager->bindScreen($screen);
         
-        return $manager->getByID($record['lock_id']);
+        return $manager->getByID($record[self::PRIMARY_NAME]);
     }
     
     public static function start() : void
@@ -698,7 +695,7 @@ class Application_LockManager extends DBHelper_BaseCollection
     
     public static function deleteLock(Application_LockManager_Lock $lock)
     {
-        DBHelper::deleteRecords('app_locking', array('lock_id' => $lock->getID()));
+        DBHelper::deleteRecords(self::TABLE_NAME, array(self::PRIMARY_NAME => $lock->getID()));
     }
 
     public function getCollectionLabel() : string
