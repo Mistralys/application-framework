@@ -116,20 +116,11 @@ class Application_Bootstrap
 
         try
         {
-            $screen = new $class($params);
-            
-            if(!$screen instanceof Application_Bootstrap_Screen)
-            {
-                throw new BootException(
-                    'Invalid bootstrap screen',
-                    sprintf(
-                        'The screen [%s] is not an instance of [%s].',
-                        $class,
-                        Application_Bootstrap_Screen::class
-                    ),
-                    self::ERROR_INVALID_BOOTSTRAP_CLASS
-                );
-            }
+            $screen = ClassHelper::requireObjectInstanceOf(
+                Application_Bootstrap_Screen::class,
+                new $class($params),
+                self::ERROR_INVALID_BOOTSTRAP_CLASS
+            );
             
             $screen->boot();
 
@@ -237,9 +228,9 @@ class Application_Bootstrap
     * constant or the default value of a registered constant.
     * 
     * @param string $name
-    * @return string|number|bool|NULL
+    * @return string|int|float|bool|array|NULL
     */
-    public static function getSetting(string $name)
+    public static function getSetting(string $name) : string|int|float|bool|array|NULL
     {
         if(defined($name))
         {

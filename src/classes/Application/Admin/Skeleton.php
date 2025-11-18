@@ -367,7 +367,7 @@ abstract class Application_Admin_Skeleton
      *
      * @return string
      */
-    protected function renderUnauthorized()
+    protected function renderUnauthorized() : string
     {
         return $this->ui->createTemplate('content/unauthorized')->render();
     }
