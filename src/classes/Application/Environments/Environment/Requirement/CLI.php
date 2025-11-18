@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Environments_Environment_Requirement_CLI} class.
- *
  * @package Application
  * @subpackage Environments
- * @see Application_Environments_Environment_Requirement_CLI
  */
 
 declare(strict_types=1);
@@ -18,10 +15,7 @@ declare(strict_types=1);
  */
 class Application_Environments_Environment_Requirement_CLI extends Application_Environments_Environment_Requirement
 {
-   /**
-    * @var bool
-    */
-    protected static $isCLI;
+    protected static ?bool $isCLI = null;
     
     public function __construct()
     {
