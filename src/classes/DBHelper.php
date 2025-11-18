@@ -590,21 +590,11 @@ class DBHelper
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception
      */
-    public static function fetchAll($statementOrBuilder, array $variables = array()) : array
+    public static function fetchAll(string|DBHelper_StatementBuilder $statementOrBuilder, array $variables = array()) : array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
-        $result = self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
-        
-        if($result===false) 
-        {
-            throw self::createException(
-                self::ERROR_FETCHING,
-                'Failed fetching a record'
-            );
-        }
-        
-        return $result;
+        return self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

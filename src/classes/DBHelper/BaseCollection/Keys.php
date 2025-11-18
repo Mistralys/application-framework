@@ -71,7 +71,7 @@ class DBHelper_BaseCollection_Keys implements DisposableInterface
             );
         }
 
-        $key = new DBHelper_BaseCollection_Keys_Key($this, $name);
+        $key = new DBHelper_BaseCollection_Keys_Key($name);
         $this->keys[$name] = $key;
         return $key;
     }

@@ -16,6 +16,7 @@ use DBHelper\BaseCollection\DBHelperCollectionException;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
 use DBHelper\DBHelperFilterCriteriaInterface;
+use DBHelper\DBHelperFilterSettingsInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper\Traits\AfterRecordCreatedEventTrait;
 use DBHelper\Traits\BeforeCreateEventTrait;
@@ -58,12 +59,12 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     protected ?DBHelperRecordInterface $dummyRecord = null;
 
     /**
-     * @var class-string<DBHelper_BaseFilterCriteria>
+     * @var class-string<DBHelperFilterCriteriaInterface>
      */
     protected string $recordFiltersClassName;
 
     /**
-     * @var class-string<DBHelper_BaseFilterSettings>
+     * @var class-string<DBHelperFilterSettingsInterface>
      */
     protected string $recordFilterSettingsClassName;
     protected string $instanceID;

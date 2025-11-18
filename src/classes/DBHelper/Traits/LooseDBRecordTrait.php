@@ -1,13 +1,13 @@
 <?php
 /**
- * File containing the {@see DBHelper_Traits_LooseRecord} trait.
- *
  * @package DBHelper
  * @subpackage LooseRecord
- * @see DBHelper_Traits_LooseRecord
  */
 
 declare(strict_types=1);
+
+use AppUtils\ConvertHelper\JSONConverter;
+use DBHelper\Traits\LooseDBRecordInterface;
 
 /**
  * Trait for working with database records, independently of a
@@ -16,48 +16,32 @@ declare(strict_types=1);
  * Use this as a drop-in to load data from the database by ID,
  * with everything required to access and update the data.
  * 
- * Usage:
+ * ## Usage
  * 
- * - Use the trait: `use DBHelper_Traits_LooseRecord`
- * - Add the interface: `implements DBHelper_Interface_LooseRecord`
+ * - Use the trait: {@see LooseDBRecordTrait}
+ * - Add the interface: {@see LooseDBRecordInterface}
  * 
  * @package DBHelper
  * @subpackage LooseRecord
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * 
- * @see DBHelper_Interface_LooseRecord
+ * @see LooseDBRecordInterface
  */
-trait DBHelper_Traits_LooseRecord
+trait LooseDBRecordTrait
 {
    /**
     * @var array<string,string|int|float|bool>
     */
     protected array $recordData;
-    
-   /**
-    * @var integer
-    */
-    protected $recordID;
-    
-   /**
-    * @var string
-    */
-    protected $recordTable;
-    
-   /**
-    * @var string
-    */
-    protected $recordPrimary;
-    
-   /**
-    * @var boolean
-    */
-    protected $recordModified = false;
+    protected int $recordID;
+    protected string $recordTable;
+    protected string $recordPrimary;
+    protected bool $recordModified = false;
     
    /**
     * @var string[]
     */
-    protected $recordKeyNames;
+    protected array $recordKeyNames;
 
     /**
      * Creates the instance and loads the necessary data from the database.
@@ -65,7 +49,7 @@ trait DBHelper_Traits_LooseRecord
      * @param int $recordID
      * @throws DBHelper_Exception If the record's data cannot be loaded.
      *
-     * @see DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
+     * @see LooseDBRecordInterface::ERROR_CANNOT_LOAD_RECORD
      */
     public function __construct(int $recordID)
     {
@@ -83,13 +67,13 @@ trait DBHelper_Traits_LooseRecord
     /**
      * @throws DBHelper_Exception If the record's data set cannot be loaded.
      *
-     * @see DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
+     * @see LooseDBRecordInterface::ERROR_CANNOT_LOAD_RECORD
      */
     private function loadData() : void
     {
         $this->recordData = DBHelper::createFetchOne($this->recordTable)
-        ->whereValue($this->recordPrimary, strval($this->recordID))
-        ->fetch();
+            ->whereValue($this->recordPrimary, $this->recordID)
+            ->fetch();
         
         if(!empty($this->recordData))
         {
@@ -103,7 +87,7 @@ trait DBHelper_Traits_LooseRecord
                 $this->recordID,
                 $this->recordTable
             ),
-            DBHelper_Interface_LooseRecord::ERROR_CANNOT_LOAD_RECORD
+            LooseDBRecordInterface::ERROR_CANNOT_LOAD_RECORD
         );
     }
     
@@ -124,7 +108,7 @@ trait DBHelper_Traits_LooseRecord
      * @return bool Whether there were any changes to save.
      * @throws DBHelper_Exception If the record data could not be saved to the database.
      *
-     * @see DBHelper_Interface_LooseRecord::ERROR_COULD_NOT_SAVE_DATA
+     * @see LooseDBRecordInterface::ERROR_COULD_NOT_SAVE_DATA
      */
     public function save() : bool
     {
@@ -149,9 +133,9 @@ trait DBHelper_Traits_LooseRecord
                     'Tried saving the record with ID [%s] to table [%s], but this failed with an exception. Data set:<br><pre>%s</pre>',
                     $this->recordID,
                     $this->recordTable,
-                    json_encode($this->recordData, JSON_PRETTY_PRINT)
+                    JSONConverter::var2json($this->recordData, JSON_PRETTY_PRINT)
                 ),
-                DBHelper_Interface_LooseRecord::ERROR_COULD_NOT_SAVE_DATA,
+                LooseDBRecordInterface::ERROR_COULD_NOT_SAVE_DATA,
                 $e
             );
         }
@@ -178,7 +162,7 @@ trait DBHelper_Traits_LooseRecord
     
     public function getDataKeyInt(string $name) : int
     {
-        return intval($this->getDataKey($name));
+        return (int)$this->getDataKey($name);
     }
     
     public function getDataKeyBool(string $name) : bool
@@ -207,8 +191,8 @@ trait DBHelper_Traits_LooseRecord
      * @return bool
      * @throws DBHelper_Exception If the data key is not known.
      *
-     * @see DBHelper_Traits_LooseRecord::save()
-     * @see DBHelper_Interface_LooseRecord::ERROR_UNKNOWN_DATA_KEY
+     * @see LooseDBRecordTrait::save()
+     * @see LooseDBRecordInterface::ERROR_UNKNOWN_DATA_KEY
      */
     public function setDataKey(string $name, string $value) : bool
     {
@@ -240,7 +224,7 @@ trait DBHelper_Traits_LooseRecord
      */
     protected function requireValidKey(string $key) : void
     {
-        if(in_array($key, $this->recordKeyNames))
+        if(in_array($key, $this->recordKeyNames, true))
         {
             return;
         }
@@ -253,7 +237,7 @@ trait DBHelper_Traits_LooseRecord
                 $this->recordTable,
                 implode(', ', $this->recordKeyNames)
             ),
-            DBHelper_Interface_LooseRecord::ERROR_UNKNOWN_DATA_KEY
+            LooseDBRecordInterface::ERROR_UNKNOWN_DATA_KEY
         );
     }
 }

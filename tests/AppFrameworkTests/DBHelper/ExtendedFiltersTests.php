@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Feedback\FeedbackCollection;
+use Application\Feedback\FeedbackRecord;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
 final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
@@ -297,7 +299,7 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 
     // region: Support methods
 
-    private static ?Application_Feedback_Report $systemFeedback = null;
+    private static ?FeedbackRecord $systemFeedback = null;
     private static Application_User $systemUser;
 
     private function createTestRecords() : void
@@ -307,14 +309,14 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
             return;
         }
 
-        DBHelper::deleteRecords(Application_Feedback::TABLE_NAME);
+        DBHelper::deleteRecords(FeedbackCollection::TABLE_NAME);
 
         self::$systemUser = Application::createSystemUser();
 
         $feedback = Application::createFeedback();
 
         self::$systemFeedback = $feedback->addImprovement(
-            Application_Feedback::SCOPE_APPLICATION,
+            FeedbackCollection::SCOPE_APPLICATION,
             'Needs some improvement',
             '',
             self::$systemUser

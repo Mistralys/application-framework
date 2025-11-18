@@ -73,7 +73,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
     }
     
-    protected function getSearchFields() : array
+    public function getSearchFields() : array
     {
         $fields = $this->collection->getRecordSearchableKeys();
         $result = array();
@@ -153,10 +153,6 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         return $this->selectAlias ?? ('`' . $this->recordTableName . '`');
     }
     
-   /**
-    * Retrieves all matching record instances.
-    * @return DBHelperRecordInterface[]
-    */
     public function getItemsObjects() : array
     {
         $items = $this->getItemsDetailed();

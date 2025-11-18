@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\Feedback\FeedbackCollection;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
 
 final class DBHelper_JoinsTests extends DBHelperTestCase
@@ -20,7 +21,7 @@ final class DBHelper_JoinsTests extends DBHelperTestCase
         $query = $criteria->renderQuery();
 
         $this->assertStringNotContainsString("`feedback`.`feedback`", $query);
-        $this->assertStringNotContainsString(Application_Feedback::TABLE_NAME, $query);
+        $this->assertStringNotContainsString(FeedbackCollection::TABLE_NAME, $query);
     }
 
     /**
@@ -37,7 +38,7 @@ final class DBHelper_JoinsTests extends DBHelperTestCase
 
         $this->assertStringContainsString("`feedback`.`feedback`", $query);
         $this->assertStringContainsString('JOIN', $query);
-        $this->assertStringContainsString(Application_Feedback::TABLE_NAME, $query);
+        $this->assertStringContainsString(FeedbackCollection::TABLE_NAME, $query);
     }
 
     /**
@@ -54,7 +55,7 @@ final class DBHelper_JoinsTests extends DBHelperTestCase
 
         $this->assertStringContainsString("`feedback`.`feedback`", $query);
         $this->assertStringContainsString('JOIN', $query);
-        $this->assertStringContainsString(Application_Feedback::TABLE_NAME, $query);
+        $this->assertStringContainsString(FeedbackCollection::TABLE_NAME, $query);
     }
 
     /**

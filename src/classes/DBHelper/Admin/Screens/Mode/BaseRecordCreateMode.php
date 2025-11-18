@@ -14,7 +14,7 @@ abstract class BaseRecordCreateMode extends Application_Admin_Area_Mode implemen
     use RecordSettingsScreenTrait;
     use RecordCreateScreenTrait;
 
-    final public function getDefaultSubmode(): string
+    public function getDefaultSubmode(): string
     {
         return '';
     }
