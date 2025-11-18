@@ -13,6 +13,7 @@
 - Revisionables: Now fully interchangeable with DBHelper collections.
 - Revisionables: Added more interfaces for revisionable collections and records.
 - Revisionables: Retired the old plain revisionable class. Now all revisionables use the DB system.
+- Revisionables: Improved the base revisionable admin screen classes with interfaces.
 - Disposables: Added the attribute `DisposedAware` to mark methods that check disposed state.
 - Revisionables: Retired the stateless revisionables, which were never used in practice.
 - Revisionables: Removed the memory revisionables, which were also never used in practice.
@@ -32,11 +33,24 @@
 - DataGrid: Better heading row styling.
 - DataGrid: Added the method `attr()` to grid entries to set row attributes.
 - UI: Added a text link style for navigations with `TextLinkNavigation`.
+- Formable: Added `addRuleURL()`.
+- Formable: Fixed the enabled status of the form registry not being used.
+- Ratings: Refactored and modernized, added filter classes.
+- LockManager: Refactored and modernized, added filter classes.
+- Messaging: Refactored and modernized, added filter classes.
+- Feedback: Refactored and modernized, added filter classes.
+- FilterCriteria: Added integer and string item classes that can be used for object results.
+- AppSettings: Refactored and modernized, added filter classes.
 - Core: Deprecated `Application_Exception` in favor of `ApplicationException`.
+- Core: Removed PHPStan ignored type errors from the configuration.
+- Core: Modernized a number of classes to improve static code analysis.
+- Core: Added stub classes for unused classes and traits to improve static code analysis.
 - Countries: Added an interface for country API parameters to declare the `getCountry()` method.
 - Dependencies: Bumped up AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
 
 ### Breaking Changes
+- LooseRecords: Renamed the loose record trait and interface.
+- DBHelper: Refactored a majority of classes.
 - Revisionables: Completely revamped, modernized and namespaced the
   revisionables system. Migration is required.
 
