@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSelector} class.
- * 
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSelector
  */
 
 declare(strict_types=1);
