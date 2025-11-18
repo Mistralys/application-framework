@@ -270,22 +270,6 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
     abstract protected function getSelect() : string|array;
 
     /**
-     * Retrieves a list of fields in the query that gets
-     * built that can be used to search in. Must return
-     * an indexed array with field names.
-     *
-     * Example:
-     *
-     * array(
-     *     '`field_name`',
-     *     'tablename.`field_name`'
-     * )
-     *
-     * @return array<int,string|DBHelper_StatementBuilder>
-     */
-    abstract protected function getSearchFields() : array;
-
-    /**
      * Retrieves the query to run, which is very simple
      * as it is mostly made of variables. Its purpose is
      * to set which tables the contents will be selected
@@ -414,7 +398,7 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * Retrieves all matching items as an indexed array containing
      * associative array entries with the item data.
      *
-     * @return array<int,array<string,string>>
+     * @return array<int,array<string,string|int|float|bool|null>>
      * @throws Application_Exception|DBHelper_Exception
      * @see getItem()
      */

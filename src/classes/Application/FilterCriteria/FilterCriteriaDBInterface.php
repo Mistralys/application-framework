@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\FilterCriteria;
 
+use Application\Collection\CollectionItemInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_FilterCriteria_Database_Join;
 use DBHelper_StatementBuilder;
@@ -290,4 +291,26 @@ interface FilterCriteriaDBInterface extends FilterCriteriaInterface
      * @return DBHelper_StatementBuilder
      */
     public function statement(string $template) : DBHelper_StatementBuilder;
+
+    /**
+     * Retrieves all matching record instances.
+     * @return CollectionItemInterface[]
+     */
+    public function getItemsObjects() : array;
+
+    /**
+     * Retrieves a list of fields in the query that gets
+     * built that can be used to search in. Must return
+     * an indexed array with field names.
+     *
+     * Example:
+     *
+     * array(
+     *     '`field_name`',
+     *     'tablename.`field_name`'
+     * )
+     *
+     * @return array<int,string|DBHelper_StatementBuilder>
+     */
+    public function getSearchFields() : array;
 }
