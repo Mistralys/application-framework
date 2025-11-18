@@ -1,38 +1,44 @@
 <?php
 
-class Application_CustomProperties_Presets_Preset extends DBHelper_BaseRecord
+declare(strict_types=1);
+
+namespace Application\CustomProperties\Presets;
+
+use DBHelper_BaseRecord;
+
+class PropertyPresetRecord extends DBHelper_BaseRecord
 {
-    public function getLabel() : string
+    public function getLabel(): string
     {
         return $this->getRecordKey('label');
     }
-    
+
     public function getOwnerType()
     {
         return $this->getRecordKey('owner_type');
     }
-    
+
     public function getName()
     {
         return $this->getRecordKey('name');
     }
-    
-    public function isEditable()
+
+    public function isEditable() : bool
     {
         return $this->getRecordBooleanKey('editable');
     }
-    
-    public function isStructural()
+
+    public function isStructural() : bool
     {
         return $this->getRecordBooleanKey('is_structural');
     }
-    
+
     public function getDefaultValue()
     {
         return $this->getRecordKey('default_value');
     }
-    
-    public function toArray()
+
+    public function toArray() : array
     {
         return array(
             'preset_id' => $this->getID(),
@@ -45,7 +51,7 @@ class Application_CustomProperties_Presets_Preset extends DBHelper_BaseRecord
         );
     }
 
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue): void
     {
     }
 }

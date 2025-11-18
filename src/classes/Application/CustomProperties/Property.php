@@ -1,24 +1,21 @@
 <?php
 
+use Application\CustomProperties\Presets\PropertyPresetRecord;
+use Application\CustomProperties\Presets\PropertyPresetsCollection;
 use AppUtils\ConvertHelper;
 
+/**
+ * @property Application_CustomProperties $collection
+ */
 class Application_CustomProperties_Property extends DBHelper_BaseRecord
 {
-    public const ERROR_CANNOT_FIND_OWNER = 16901;
+    public const int ERROR_CANNOT_FIND_OWNER = 16901;
     
-   /**
-    * @var Application_CustomProperties
-    */
-    protected $collection;
-    
-   /**
-    * @var Application_CustomProperties_Presets 
-    */
-    protected $presets;
+    protected PropertyPresetsCollection $presets;
 
     protected $preset;
 
-    protected $editable = true;
+    protected bool $editable = true;
     
    /**
     * @var Application_Interfaces_Propertizable
@@ -103,7 +100,7 @@ class Application_CustomProperties_Property extends DBHelper_BaseRecord
     }
     
    /**
-    * @return Application_CustomProperties_Presets_Preset
+    * @return PropertyPresetRecord
     */
     public function getPreset()
     {

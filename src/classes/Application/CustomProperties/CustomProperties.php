@@ -7,6 +7,10 @@
  * @see Application_CustomProperties
  */
 
+use Application\CustomProperties\Presets\PropertyPresetRecord;
+use Application\CustomProperties\Presets\PropertyPresetsCollection;
+use Application\CustomProperties\PropertyFilterCriteria;
+use Application\CustomProperties\PropertyFilterSettings;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\Interfaces\DBHelperRecordInterface;
@@ -40,18 +44,16 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  */
 class Application_CustomProperties extends DBHelper_BaseCollection
 {
-    public const TABLE_NAME = 'custom_properties';
-    public const PRIMARY_NAME = 'property_id';
-    /**
-    * @var Application_Interfaces_Propertizable
-    */
-    protected $record;
+    public const string TABLE_NAME = 'custom_properties';
+    public const string PRIMARY_NAME = 'property_id';
+    public const string RECORD_TYPE_NAME = 'property';
+    public const string TABLE_NAME_DATA = 'custom_properties_data';
+
+    protected Application_Interfaces_Propertizable $record;
+    protected string $ownerType;
+    protected string $ownerKey;
     
-    protected $ownerType;
-    
-    protected $ownerKey;
-    
-    public function bindRecord(Application_Interfaces_Propertizable $record)
+    public function bindRecord(Application_Interfaces_Propertizable $record) : void
     {
         $this->record = $record;
         $this->ownerType = $record->getPropertiesOwnerType();
@@ -63,20 +65,17 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         $this->setIDTable(self::TABLE_NAME);
     }
     
-   /**
-    * @return Application_Interfaces_Propertizable
-    */
-    public function getRecord()
+    public function getRecord() : Application_Interfaces_Propertizable
     {
         return $this->record;
     }
     
-    public function getOwnerType()
+    public function getOwnerType() : string
     {
         return $this->ownerType;
     }
     
-    public function getOwnerKey()
+    public function getOwnerKey(): string
     {
         return $this->ownerKey;
     }
@@ -93,7 +92,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     
     public function getRecordClassName() : string
     {
-        return 'Application_CustomProperties_Property';
+        return Application_CustomProperties_Property::class;
     }
     
     public function getRecordDefaultSortKey() : string
@@ -103,22 +102,22 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     
     public function getRecordFiltersClassName() : string
     {
-        return 'Application_CustomProperties_FilterCriteria';
+        return PropertyFilterCriteria::class;
     }
     
     public function getRecordFilterSettingsClassName() : string
     {
-        return 'Application_CustomProperties_FilterSettings';
+        return PropertyFilterSettings::class;
     }
     
     public function getRecordTypeName() : string
     {
-        return 'property';
+        return self::RECORD_TYPE_NAME;
     }
     
     public function getRecordTableName() : string
     {
-        return 'custom_properties_data';
+        return self::TABLE_NAME_DATA;
     }
     
     public function getRecordPrimaryName() : string
@@ -134,23 +133,18 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * @param string $value
     * @param string $defaultValue
     * @param boolean $isStructural
-    * @param Application_CustomProperties_Presets_Preset|NULL $preset
+    * @param PropertyPresetRecord|NULL $preset
     * @return Application_CustomProperties_Property
     */
-    public function addProperty(string $label, string $name, string $value, string $defaultValue='', bool $isStructural=false, ?Application_CustomProperties_Presets_Preset $preset=null) : Application_CustomProperties_Property
+    public function addProperty(string $label, string $name, string $value, string $defaultValue='', bool $isStructural=false, ?PropertyPresetRecord $preset=null) : Application_CustomProperties_Property
     {
-        $preset_id = null;
-        if($preset) {
-            $preset_id = $preset->getID();
-        }
-        
         $property = $this->createNewRecord(array(
             'label' => $label,
             'name' => ConvertHelper::transliterate($name),
             'value' => $value,
             'default_value' => $defaultValue,
             'is_structural' => ConvertHelper::bool2string($isStructural, true),
-            'preset_id' => $preset_id
+            'preset_id' => $preset?->getID()
         ));
         
         $this->record->handle_propertyCreated($property);
@@ -158,37 +152,33 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         return $property;
     }
     
-   /**
-    * @var Application_CustomProperties_Presets
-    */
-    protected $presets;
+    protected ?PropertyPresetsCollection $presets = null;
     
    /**
     * Creates the presets collection used to manage presets for
     * this collection's owner type.
     * 
-    * @return Application_CustomProperties_Presets
+    * @return PropertyPresetsCollection
     */
-    public function getPresets()
+    public function getPresets() : PropertyPresetsCollection
     {
         if(!isset($this->presets)) {
-            require_once 'Application/CustomProperties/Presets.php';
-            $this->presets = new Application_CustomProperties_Presets();
+            $this->presets = new PropertyPresetsCollection();
             $this->presets->bindProperties($this);
         }
         
         return $this->presets;
     }
     
-    protected $injected = array();
+    protected array $injected = array();
     
    /**
     * Injects the javascript code to enable clientside support
-    * for this properties collection.
+    * for this property collection.
     * 
     * @param UI $ui
     */
-    public function injectJS(UI $ui)
+    public function injectJS(UI $ui) : void
     {
         self::injectLibraries($ui);
         
@@ -216,9 +206,9 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         }
     }
     
-    protected $jsCollectionVarName;
+    protected ?string $jsCollectionVarName = null;
     
-    public function getJSCollectionVarName()
+    public function getJSCollectionVarName() : string
     {
         if(!isset($this->jsCollectionVarName)) {
             $this->jsCollectionVarName = 'CP'.nextJSID();
@@ -227,7 +217,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         return $this->jsCollectionVarName;
     }
 
-    protected static $librariesInjected = array();
+    protected static array $librariesInjected = array();
     
    /**
     * Injects only the required javascript files for the 
@@ -236,7 +226,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * 
     * @param UI $ui
     */
-    public static function injectLibraries(UI $ui)
+    public static function injectLibraries(UI $ui) : void
     {
         $key = $ui->getInstanceKey();
         if(isset(self::$librariesInjected[$key])) {
@@ -260,7 +250,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * @param string $ownerKey
     * @return Application_Interfaces_Propertizable|NULL
     */
-    public static function resolveOwner($ownerType, $ownerKey)
+    public static function resolveOwner(string $ownerType, string $ownerKey) : ?Application_Interfaces_Propertizable
     {
         return Application_Driver::getInstance()->resolveCustomPropertiesOwner($ownerType, $ownerKey);
     }
@@ -270,9 +260,9 @@ class Application_CustomProperties extends DBHelper_BaseCollection
     * all existing properties using the specified keys table.
     * 
     * @param string $ownerType
-    * @param array $keyTable Associative array with source key => target key pairs
+    * @param array<string,string> $keyTable Associative array with source key => target key pairs
     */
-    public static function copyRecords($ownerType, $keyTable)
+    public static function copyRecords(string $ownerType, array $keyTable): void
     {
         Application::log(sprintf('CustomProperties [%s] | Copying records for [%s] keys.', $ownerType, count($keyTable)));
         
@@ -298,7 +288,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
             // clear existing records in the target key
             // to enable deleting properties.
             DBHelper::deleteRecords(
-                'custom_properties_data',
+                self::TABLE_NAME_DATA,
                 array(
                     'owner_type' => $ownerType,
                     'owner_key' => $targetKey
@@ -315,7 +305,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
                 $record['owner_key'] = $targetKey;
                 
                 DBHelper::insertOrUpdate(
-                    'custom_properties_data', 
+                    self::TABLE_NAME_DATA,
                     $record, 
                     array(self::PRIMARY_NAME, 'owner_type', 'owner_key')
                 );
@@ -325,7 +315,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         }
     }
     
-    public static function deleteKeys($ownerType, $keys)
+    public static function deleteKeys(string $ownerType, array $keys) : void
     {
         if(empty($keys)) {
             return;
@@ -346,7 +336,7 @@ class Application_CustomProperties extends DBHelper_BaseCollection
         );
     }
     
-    public static function findProperties($ownerType, $ownerKeySearch)
+    public static function findProperties(string $ownerType, $ownerKeySearch) : array
     {
         return DBHelper::fetchAll(
             "SELECT
