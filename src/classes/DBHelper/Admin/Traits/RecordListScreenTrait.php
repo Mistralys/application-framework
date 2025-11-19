@@ -115,7 +115,7 @@ trait RecordListScreenTrait
         $entries = array();
         for ($i = 0; $i < $total; $i++) {
             $item = $items[$i];
-            $entry = $this->getEntryData($item->getRecord(), $item);
+            $entry = $this->getEntryData($item->getDBRecord(), $item);
             $entry[$primaryKey] = $item->getID();
             $entries[] = $entry;
         }
