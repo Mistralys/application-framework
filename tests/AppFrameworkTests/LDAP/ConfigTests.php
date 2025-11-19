@@ -155,4 +155,13 @@ final class ConfigTests extends LDAPTestCase
         $this->assertSame(self::LDAP_MEMBER_SUFFIX, $config->getMemberSuffix());
         $this->assertSame(self::LDAP_SSL_ENABLED, $config->isSSLEnabled());
     }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $configFile = __DIR__ . '/../../application/config/test-cas-config.php';
+
+        $this->assertFileExists($configFile, 'The LDAP test configuration file is missing.');
+    }
 }
