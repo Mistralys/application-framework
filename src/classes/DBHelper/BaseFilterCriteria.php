@@ -175,7 +175,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
         $records = array();
         foreach($this->getItems() as $item) {
-            $this->collection->getByID((int)$item[$primaryName]);
+            $records[] = $this->collection->getByID((int)$item[$primaryName]);
         }
 
         return $records;
