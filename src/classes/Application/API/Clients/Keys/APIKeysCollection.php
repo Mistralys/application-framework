@@ -12,6 +12,7 @@ use Application\API\Admin\APIKeyCollectionURLs;
 use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
+use Application_User;
 use AppUtils\Microtime;
 use DBHelper\BaseCollection\BaseChildCollection;
 
@@ -125,13 +126,14 @@ class APIKeysCollection extends BaseChildCollection
     public const string COL_LAST_USED = 'last_used';
     public const string COL_USAGE_COUNT = 'usage_count';
 
-    public function createNewAPIKey(string $label) : APIKeyRecord
+    public function createNewAPIKey(string $label, Application_User $pseudoUser) : APIKeyRecord
     {
         return $this->createNewRecord(array(
             self::COL_API_KEY => $this->generateKey(),
             self::COL_LABEL => $label,
             self::COL_DATE_CREATED => Microtime::createNow(),
             self::COL_CREATED_BY => AppFactory::createUser()->getID(),
+            self::COL_PSEUDO_USER_ID => $pseudoUser->getID()
         ));
     }
 

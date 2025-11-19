@@ -20,6 +20,9 @@ trait APIClientTestTrait
             'Test API Client #'.$counter,
             'API-CLIENT-'.$counter
         )
-            ->createNewAPIKey('Test API Key #'.$this->getTestCounter('api-key'));
+            ->createNewAPIKey(
+                'Test API Key #'.$this->getTestCounter('api-key'),
+                $this->createTestUser()
+            );
     }
 }

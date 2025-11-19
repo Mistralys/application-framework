@@ -18,7 +18,9 @@ final class APIKeyCollectionTests extends APIClientTestCase
             'TESTCLIENT01'
         );
 
-        $key = $client->createNewAPIKey('Test key');
+        $pseudoUser = $this->createTestUser();
+
+        $key = $client->createNewAPIKey('Test key', $pseudoUser);
 
         $this->assertSame('Test key', $key->getLabel());
     }

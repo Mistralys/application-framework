@@ -9,6 +9,7 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\Keys\APIKeyRecord;
 use Application\API\Clients\Keys\APIKeysCollection;
 use Application\AppFactory;
+use Application_User;
 use Application_Users_User;
 use AppUtils\ClassHelper;
 use AppUtils\Interfaces\StringableInterface;
@@ -26,9 +27,9 @@ class APIClientRecord extends DBHelper_BaseRecord
         );
     }
 
-    public function createNewAPIKey(string $label) : APIKeyRecord
+    public function createNewAPIKey(string $label, Application_User $pseudoUser) : APIKeyRecord
     {
-        return $this->createAPIKeys()->createNewAPIKey($label);
+        return $this->createAPIKeys()->createNewAPIKey($label, $pseudoUser);
     }
 
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
