@@ -11,6 +11,7 @@
 - DBHelper: Added the request type base class `BaseDBRecordRequestType`.
 - DBHelper: Added more interfaces for DBHelper collections and records.
 - DBHelper: Added a formalized DB record decorator system.
+- DBHelper: Added a minimal collection interface for filter criteria collection instances to facilitate decorators.
 - Revisionables: Now fully interchangeable with DBHelper collections.
 - Revisionables: Added more interfaces for revisionable collections and records.
 - Revisionables: Retired the old plain revisionable class. Now all revisionables use the DB system.
