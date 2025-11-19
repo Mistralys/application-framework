@@ -242,7 +242,7 @@ abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
         $this->requireRecordKeyExists($name);
         
         $previous = $this->getRecordKey($name);
-        if(ConvertHelper::areStringsEqual($value, $previous)) {
+        if(ConvertHelper::areVariablesEqual($value, $previous)) {
             return false;
         }
 
