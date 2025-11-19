@@ -57,7 +57,7 @@ abstract class BaseListBuilder
     abstract protected function configureColumns(UI_DataGrid $grid): void;
     abstract protected function configureActions(UI_DataGrid $grid): void;
     abstract protected function resolveRecord(array $itemData): object;
-    abstract protected function createFilterSettings(): DBHelperFilterSettingsInterface;
+    abstract protected function createFilterSettings(): FilterSettingsInterface;
     abstract protected function preRender(): void;
 
     /**
