@@ -8,6 +8,7 @@ use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use application\assets\classes\TestDriver\API\TestGetCountryBySetAPI;
 use Application\Countries\API\AppCountryAPIInterface;
+use Application_Countries;
 use AppLocalize\Localization\Country\CountryDE;
 use Mistralys\AppFrameworkTests\TestClasses\APITestCase;
 use TestDriver\API\TestGetCountryAPI;
@@ -99,5 +100,7 @@ final class CountryAPITests extends APITestCase
         parent::setUp();
 
         $this->startTransaction();
+
+        $this->cleanUpTables(array(Application_Countries::TABLE_NAME));
     }
 }
