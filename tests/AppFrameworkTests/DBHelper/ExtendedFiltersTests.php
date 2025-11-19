@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Application\Feedback\FeedbackCollection;
 use Application\Feedback\FeedbackRecord;
 use Mistralys\AppFrameworkTests\TestClasses\DBHelperTestCase;
+use TestDriver\TestDBRecords\TestDBCollection;
 
 final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 {
@@ -28,11 +29,11 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
         $criteria = new TestDriver_FilterCriteria_TestCriteria();
         $col = $criteria->getColFeedbackText();
 
-        $this->assertCount(1, $criteria->getSelects());
+        $this->assertCount(2, $criteria->getSelects());
 
         $col->setEnabled(true);
 
-        $this->assertCount(2, $criteria->getSelects());
+        $this->assertCount(3, $criteria->getSelects());
         $this->assertContains($col->getPrimarySelectMarker(), $criteria->getCustomSelects());
     }
 
@@ -101,7 +102,7 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
 
         $this->assertFalse($col->isEnabled());
         $this->assertCount(0, $criteria->getActiveCustomColumns());
-        $this->assertCount(1, $criteria->getSelects());
+        $this->assertCount(2, $criteria->getSelects());
         $this->assertFalse($col->getUsage()->isInSelect());
 
         $criteria->enableFeedbackText();
@@ -109,7 +110,7 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
         $this->assertTrue($col->isEnabled());
         $this->assertCount(1, $criteria->getActiveCustomColumns());
         $this->assertTrue($col->getUsage()->isInSelect());
-        $this->assertCount(2, $criteria->getSelects());
+        $this->assertCount(3, $criteria->getSelects());
 
         $sql = $criteria->renderQuery();
 
@@ -327,7 +328,10 @@ final class DBHelper_ExtendedFiltersTests extends DBHelperTestCase
     {
         parent::setUp();
 
+        $this->startTransaction();
         $this->createTestRecords();
+
+        $this->cleanUpTables(array(TestDBCollection::TABLE_NAME));
     }
 
     /**
