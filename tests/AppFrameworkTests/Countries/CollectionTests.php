@@ -11,7 +11,9 @@ namespace testsuites\Countries;
 use Application\Countries\CountriesCollection;
 use Application_Countries_Country;
 use AppLocalize\Localization\Countries\CountryCollection;
+use AppLocalize\Localization\Country\CountryDE;
 use AppLocalize\Localization\Country\CountryFI;
+use AppLocalize\Localization\Country\CountryFR;
 use AppLocalize\Localization\Country\CountryZZ;
 use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
 
@@ -21,10 +23,42 @@ use Mistralys\AppFrameworkTests\TestClasses\CountriesTestCase;
  */
 final class CollectionTests extends CountriesTestCase
 {
+    public function test_defaultIsNoCountries() : void
+    {
+        $this->assertEmpty($this->countries->getAll());
+
+        $this->assertFalse($this->countries->isoExists(CountryDE::ISO_CODE));
+        $this->assertFalse($this->countries->isoExists(CountryFR::ISO_CODE));
+    }
+
     public function test_create() : void
     {
-        $this->createTestCountry('de');
-        $this->createTestCountry('fr');
+        $this->createTestCountry(CountryDE::ISO_CODE);
+        $this->createTestCountry(CountryFR::ISO_CODE);
+
+        $this->assertEquals(2, $this->countries->countRecords());
+        $this->assertCount(2, $this->countries->getAll());
+        $this->assertTrue($this->countries->isoExists(CountryDE::ISO_CODE));
+        $this->assertTrue($this->countries->isoExists(CountryFR::ISO_CODE));
+    }
+
+    public function test_filters() : void
+    {
+        $this->createTestCountry(CountryDE::ISO_CODE);
+        $this->createTestCountry(CountryFR::ISO_CODE);
+
+        $filters = $this->countries->getFilterCriteria();
+
+        $this->assertEquals(2, $filters->countItems());
+        $this->assertCount(2, $filters->getItems());
+        $this->assertCount(2, $filters->getItemsObjects());
+        $this->assertCount(2, $filters->getItemsDetailed());
+    }
+
+    public function test_collectionAccess() : void
+    {
+        $this->createTestCountry(CountryDE::ISO_CODE);
+        $this->createTestCountry(CountryFR::ISO_CODE);
 
         $collection = $this->countries->getCollection();
 
