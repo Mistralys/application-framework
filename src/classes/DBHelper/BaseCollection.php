@@ -544,6 +544,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         // use a special table for generating the record id?
         if(isset($this->recordIDTable))
         {
+            $this->log('Using a separate ID table to generate the record ID ([%s]).', $this->recordIDTable);
+
             $primary = 'DEFAULT';
             if($customID !== null) {
                 $primary = $customID;
@@ -567,6 +569,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         } 
         else 
         {
+            $this->log('Using standard insert to create the record ID.');
+
             if($customID !== null) {
                 $data[$this->recordPrimaryName] = $customID;
             }
