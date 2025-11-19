@@ -105,16 +105,17 @@ abstract class Application_FilterSettings
             );
         }
 
-        if(empty($this->id)) {
-            $this->log('Setting ID to [%s].', $id);
-        } else {
-            $this->log('Changing ID to [%s] (was [%s]).', $id, $this->id);
-        }
+        $this->log('Setting ID to [%s].', $id);
 
         $this->id = $id;
         $this->storageID = self::SETTING_PREFIX.$id;
         $this->settingsLoaded = false;
-        $this->cachedLogIdentifier = null;
+
+        $this->logIdentifier = sprintf(
+            'FilterSettings [%s] | [#%s]',
+            ClassHelper::getClassTypeName($this),
+            $this->getID()
+        );
 
         return $this;
     }
@@ -973,19 +974,10 @@ abstract class Application_FilterSettings
         return $this->id;
     }
 
-    protected ?string $cachedLogIdentifier = null;
+    protected string $logIdentifier = 'FilterSettings (Uninitialized)';
 
     public function getLogIdentifier() : string
     {
-        if(!isset($this->cachedLogIdentifier))
-        {
-            $this->cachedLogIdentifier = sprintf(
-                'FilterSettings [%s] ID [%s]',
-                ClassHelper::getClassTypeName($this),
-                $this->getID()
-            );
-        }
-
-        return $this->cachedLogIdentifier;
+        return $this->logIdentifier;
     }
 }
