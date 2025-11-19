@@ -18,7 +18,11 @@ use UI_DataGrid;
 /**
  * @method RevisionableInterface[] getAll()
  */
-interface RevisionableCollectionInterface extends IntegerCollectionInterface, DBHelperCollectionInterface
+interface RevisionableCollectionInterface
+    extends
+    IntegerCollectionInterface,
+    DBHelperCollectionInterface,
+    RevisionableCollectionFilteringInterface
 {
     // region: DBHelper collection overloads
 

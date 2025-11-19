@@ -10,11 +10,15 @@ use AppUtils\Request;
 use DBHelper\BaseCollection\Event\AfterCreateRecordEvent;
 use DBHelper\BaseCollection\Event\AfterDeleteRecordEvent;
 use DBHelper\BaseCollection\Event\BeforeCreateRecordEvent;
+use DBHelper\BaseFilterCriteria\IntegerCollectionFilteringInterface;
 use DBHelper\DBHelperFilterCriteriaInterface;
 use DBHelper\DBHelperFilterSettingsInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
-interface DBHelperCollectionInterface extends IntegerCollectionInterface
+interface DBHelperCollectionInterface
+    extends
+    IntegerCollectionInterface,
+    IntegerCollectionFilteringInterface
 {
     public const string SORT_DIR_ASC = 'ASC';
     public const string VALUE_UNDEFINED = '__undefined';

@@ -1,19 +1,22 @@
 <?php
 /**
- * @package Application
- * @subpackage Core
+ * @package DBHelper
+ * @subpackage FilterCriteria
  */
 
 declare(strict_types=1);
 
+use Application\Collection\IntegerCollectionItemInterface;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\BaseFilterCriteria\BaseCollectionFilteringInterface;
+use DBHelper\BaseFilterCriteria\IntegerCollectionFilteringInterface;
 use DBHelper\DBHelperFilterCriteriaInterface;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Base class for filter criteria to be used in conjunction
  * with DB record collections. Automatically configures the
- * application filter criteria class to be used with a records
+ * application filter criteria class to be used with a record
  * collection.
  * 
  * The basic usage for this is to extend this class, for example:
@@ -28,7 +31,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  * }
  * </pre>
  * 
- * In the collection, simply specifiy the name of the class, like so:
+ * In the collection, simply specify the name of the class, like so:
  * 
  * <pre>
  * public function getRecordFiltersClassName()
@@ -37,17 +40,27 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  * }
  * </pre>
  * 
- * @package Application
- * @subpackage Core
+ * @package DBHelper
+ * @subpackage FilterCriteria
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_DatabaseExtended implements DBHelperFilterCriteriaInterface
 {
-    protected DBHelperCollectionInterface $collection;
+    protected IntegerCollectionFilteringInterface $collection;
     protected string $recordTableName;
     protected string $recordPrimaryName;
-    
-    public function __construct(DBHelperCollectionInterface $collection)
+
+    /**
+     * The collection uses a reduced interface to limit its scope as
+     * much as possible (only the methods required for filtering).
+     *
+     * Using the full collection interface would couple this class
+     * too tightly to the collection implementation. This way, there
+     * is more freedom in how the collection is implemented.
+     *
+     * @param IntegerCollectionFilteringInterface $collection
+     */
+    public function __construct(IntegerCollectionFilteringInterface $collection)
     {
         $this->collection = $collection;
         $this->recordTableName = $collection->getRecordTableName();
@@ -55,12 +68,10 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
         parent::__construct($collection);
 
-        $this->setOrderBy($collection->getRecordDefaultSortKey(), $collection->getRecordDefaultSortDir());
-    }
-
-    public function getCollection() : DBHelperCollectionInterface
-    {
-        return $this->collection;
+        $this->setOrderBy(
+            $collection->getRecordDefaultSortKey(),
+            $collection->getRecordDefaultSortDir()
+        );
     }
 
     protected function init() : void
@@ -113,6 +124,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         }
         
         return sprintf(
+            /** @lang text */
             "SELECT 
                 {WHAT} 
             FROM 
@@ -152,23 +164,26 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
     {
         return $this->selectAlias ?? ('`' . $this->recordTableName . '`');
     }
-    
+
+    /**
+     * @return IntegerCollectionItemInterface[]
+     * @throws DBHelper_Exception
+     */
     public function getItemsObjects() : array
     {
-        $items = $this->getItemsDetailed();
-        $result = array();
+        $primaryName = $this->collection->getRecordPrimaryName();
 
-        foreach($items as $item)
-        {
-            $result[] = $item->getRecord();
+        $records = array();
+        foreach($this->getItems() as $item) {
+            $this->collection->getByID((int)$item[$primaryName]);
         }
 
-        return $result;
+        return $records;
     }
 
     /**
      * @return DBHelper_BaseFilterCriteria_Record[]
-     * @throws Application_Exception|DBHelper_Exception
+     * @throws DBHelper_Exception
      */
     public function getItemsDetailed() : array
     {

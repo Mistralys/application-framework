@@ -32,7 +32,7 @@ abstract class BaseRevisionableFilterCriteria
     protected string $revisionKeyName;
     protected string $currentRevisionsTable;
 
-    public function __construct(RevisionableCollectionInterface $collection)
+    public function __construct(RevisionableCollectionFilteringInterface $collection)
     {
         parent::__construct($collection);
 
@@ -42,11 +42,6 @@ abstract class BaseRevisionableFilterCriteria
         $this->revisionsTable = $collection->getRevisionsTableName();
         $this->currentRevisionsTable = $collection->getCurrentRevisionsTableName();
         $this->revisionKeyName = $collection->getRevisionKeyName();
-    }
-
-    public function getCollection(): RevisionableCollectionInterface
-    {
-        return $this->collection;
     }
 
     protected function resolveTableFrom() : string
