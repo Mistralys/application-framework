@@ -404,7 +404,7 @@ trait RevisionableChangelogScreenTrait
         $this->user->saveSettings();
 
         $redirectParams = $this->requireRevisionable()->getChangelogItemPrimary();
-        $redirectParams = array_merge($redirectParams, $this->getPageParams());
+        $redirectParams = array_merge($redirectParams, array_merge($this->getPageParams(), $this->getPersistVars()));
 
         $this->redirectWithSuccessMessage(
             t('The filters you selected have been applied successfully at %1$s.', date('H:i:s')),
