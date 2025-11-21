@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Application\Admin\Area\Events\UIHandlingCompleteEvent;
 use UI\Page\Navigation\QuickNavigation;
 
@@ -7,7 +9,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;
 
-    public const EVENT_UI_HANDLING_COMPLETE = 'UIHandlingComplete';
+    public const string EVENT_UI_HANDLING_COMPLETE = 'UIHandlingComplete';
 
     public function __construct(Application_Driver $driver, bool $adminMode = false)
     {
@@ -18,7 +20,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         // set the admin mode: this will be inherited all the way
         // down to modes, submodes and actions.
         $this->adminMode = $adminMode;
-        
+
         parent::__construct($driver);
         
         $this->uiStarted = false;
@@ -132,14 +134,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
      */
     public function getSubmode() : ?Application_Admin_Area_Mode_Submode
     {
-        $mode = $this->getMode();
-        
-        if($mode) 
-        {
-            return $mode->getSubmode();
-        }
-
-        return null;
+        return $this->getMode()?->getSubmode();
     }
 
     /**
@@ -148,14 +143,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
      */
     public function getAction() : ?Application_Admin_Area_Mode_Submode_Action
     {
-        $submode = $this->getSubmode();
-        
-        if($submode) 
-        {
-            return $submode->getAction();
-        }
-
-        return null;
+        return $this->getSubmode()?->getAction();
     }
 
    /**
@@ -212,7 +200,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
     * 
     * @return Application_Admin_Area[]
     */
-    public function getDependentAreas()
+    public function getDependentAreas() : array
     {
         $ids = $this->getDependencies();
         if(empty($ids)) {
@@ -229,7 +217,7 @@ abstract class Application_Admin_Area extends Application_Admin_Skeleton
         return $areas;
     }
     
-    public function callback_sortAreas(Application_Admin_Area $a, Application_Admin_Area $b)
+    public function callback_sortAreas(Application_Admin_Area $a, Application_Admin_Area $b): int
     {
         return strnatcasecmp($a->getTitle(), $b->getTitle());
     }
