@@ -320,8 +320,16 @@ class Application_Bootstrap
         register_shutdown_function(array(self::class, 'handleShutDown'));
     }
 
-    private static function initClassLoading() : void
+    private static bool $initializedClassLoading = false;
+
+    public static function initClassLoading() : void
     {
+        if(self::$initializedClassLoading) {
+            return;
+        }
+
+        self::$initializedClassLoading = true;
+
         Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
 
         ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
