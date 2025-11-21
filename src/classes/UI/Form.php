@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -160,20 +161,7 @@ class UI_Form extends UI_Renderable
 
         self::$customElementsRegistered = true;
 
-        $driver = Application_Driver::getInstance();
-        $app = $driver->getApplication();
-
-        $folders = array(
-            $app->getClassesFolder().'/UI/Form/Element',
-            $driver->getClassesFolder().'/FormElements'
-        );
-
-        foreach($folders as $folder)
-        {
-            if(!is_dir($folder)) {
-                continue;
-            }
-
+        foreach($this->getClassFolders() as $folder) {
             $names = FileHelper::createFileFinder($folder)
                 ->getPHPClassNames();
 
@@ -184,6 +172,20 @@ class UI_Form extends UI_Renderable
                 $this->registerCustomElement($id, $name);
             }
         }
+    }
+
+    private function getClassFolders() : array
+    {
+        $driver = Application_Driver::getInstance();
+        $app = $driver->getApplication();
+
+        // Start with the built-in form elements
+        $folders = array($app->getClassesFolder().'/UI/Form/Element');
+
+        // Then add application-specific and external form elements
+        array_push($folders, ...AppFactory::createFoldersManager()->choose()->formElements()->resolveFolders());
+
+        return $folders;
     }
 
    /**
