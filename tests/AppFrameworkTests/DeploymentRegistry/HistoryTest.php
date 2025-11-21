@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\DeploymentRegistry;
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application\DeploymentRegistry;
 use TestDriver\ClassFactory;
 
 final class HistoryTest extends ApplicationTestCase
