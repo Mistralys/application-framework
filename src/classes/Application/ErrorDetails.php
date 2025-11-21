@@ -49,13 +49,13 @@ class Application_ErrorDetails
     */
     protected $contentType;
     
-    public function __construct(string $title, string $abstract, string $themePath, string $themeURL, array $themeLocations, string $sentContent, string $contentType, Throwable $e, bool $develinfo=false)
+    public function __construct(string $title, string $abstract, string $themePath, string $themeURL, array $themeLocations, ?string $sentContent, string $contentType, Throwable $e, bool $develinfo=false)
     {
         $this->title = $title;
         $this->abstract = $abstract;
         $this->themePath = $themePath;
         $this->themeURL = $themeURL;
-        $this->sentContent = $sentContent;
+        $this->sentContent = (string)$sentContent;
         $this->exception = $e;
         $this->develinfo = $develinfo;
         $this->contentType = $contentType;
