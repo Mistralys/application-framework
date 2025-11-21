@@ -34,7 +34,10 @@ class Application_AjaxHandler
         $this->user = $driver->getUser();
         
         $this->requireMethodsFromFolder(FolderInfo::factory($this->driver->getApplication()->getClassesFolder().'/Application/AjaxMethods'));
-        $this->addMethodsFromFolder(FolderInfo::factory($this->driver->getClassesFolder().'/AjaxMethods'));
+
+        foreach(AppFactory::createFoldersManager()->choose()->AJAX()->resolveFolders() as $folder) {
+            $this->addMethodsFromFolder($folder);
+        }
     }
 
     public function getDriver() : Application_Driver
@@ -193,7 +196,7 @@ class Application_AjaxHandler
      * @param string|int|float|StringableInterface|NULL $message
      * @return never
      */
-    protected function sendError($message)
+    protected function sendError($message) : never
     {
         $message = toString($message);
         if(empty($message)) {
@@ -209,7 +212,7 @@ class Application_AjaxHandler
      * @return never
      * @throws ConvertHelper_Exception
      */
-    public function displayException(Throwable $e)
+    public function displayException(Throwable $e) : never
     {
         if(isDevelMode() || ($this->user->isDeveloper() && $this->request->getBool('debug'))) 
         {
