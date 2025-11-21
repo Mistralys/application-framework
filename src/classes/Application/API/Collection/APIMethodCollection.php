@@ -51,10 +51,15 @@ class APIMethodCollection extends BaseClassLoaderCollectionMulti
 
     public function getClassFolders(): array
     {
-        return array(
-            FolderInfo::factory(APP_INSTALL_FOLDER . '/classes/Application/API/Method'),
-            FolderInfo::factory(AppFactory::createDriver()->getClassesFolder() . '/API/')
+        // Add the core API methods folder
+        $folders = array(
+            FolderInfo::factory(APP_INSTALL_FOLDER . '/classes/Application/API/Method')
         );
+
+        // Add any additional API method source folders
+        array_push($folders, ...AppFactory::createFoldersManager()->choose()->API()->resolveFolders());
+
+        return $folders;
     }
 
     public function isRecursive(): bool
