@@ -27,16 +27,24 @@
 - API: Added flat and grouped overviews with filtering in the documentation.
 - API: Added links back to the application from the documentation.
 - API: Parameters now support manually selecting a value via `selectValue()`.
+- API: Using SourceFolders to load methods from external locations.
+- AJAX: Using SourceFolders to load AJAX handlers from external locations.
 - TimeTracker: Added autofill feature.
 - TimeTracker: Added flavored entry creation methods.
 - Admin: Added a base class and interface for request types.
 - Admin: Allowing AdminURLInterface as return type in some URL methods.
+- Admin: Screens are now aware of their own location on disk.
+- Admin: Screens now use their location to detect subscreens.
+- Admin: Starting to prepare for disconnecting screens from the fixed `Area` folder structure.
+- SourceFolders: Added the possibility to add external class loading folders for dynamic class locations.
+- SourceFolders: Added a dynamic class configuration method in the environment configuration.
 - DataGrid: Heading rows now support an optional subline text.
 - DataGrid: Better heading row styling.
 - DataGrid: Added the method `attr()` to grid entries to set row attributes.
 - UI: Added a text link style for navigations with `TextLinkNavigation`.
 - Formable: Added `addRuleURL()`.
 - Formable: Fixed the enabled status of the form registry not being used.
+- Forms: Using SourceFolders to load Form elements from external locations.
 - Ratings: Refactored and modernized, added filter classes.
 - LockManager: Refactored and modernized, added filter classes.
 - Messaging: Refactored and modernized, added filter classes.
@@ -47,14 +55,19 @@
 - Core: Removed PHPStan ignored type errors from the configuration.
 - Core: Modernized a number of classes to improve static code analysis.
 - Core: Added stub classes for unused classes and traits to improve static code analysis.
+- Deployment: Using SourceFolders to load deployment tasks from external locations.
 - Countries: Added an interface for country API parameters to declare the `getCountry()` method.
-- Dependencies: Bumped up AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
+- Dependencies: Updated AppUtils Core to [v2.3.17](https://github.com/Mistralys/application-utils-core/releases/tag/2.3.17).
+- Dependencies: Bumped up AppUtils Core to [v2.4.0](https://github.com/Mistralys/application-utils-core/releases/tag/2.4.0).
 
 ### Breaking Changes
+
 - LooseRecords: Renamed the loose record trait and interface.
 - DBHelper: Refactored a majority of classes.
 - Revisionables: Completely revamped, modernized and namespaced the
   revisionables system. Migration is required.
+- Environment configuration: The abstract method `_registerClassSourceFolders()`
+  must now be implemented to register class source folders, if any.
 
 ### Deprecations
 
