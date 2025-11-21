@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TestDriver;
+namespace application\assets\classes\TestDriver\Environments;
 
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\BaseEnvironmentsConfig;
 use Application\Environments\Environment;
+use Application\SourceFolders\SourceFoldersManager;
+use AppLocalize\Localization\Locale\de_DE;
+use AppLocalize\Localization\Locale\en_GB;
+use TestDriver\CustomConfigRegistry;
 use TestDriver\Environments\LocalEnvironment;
 use const TESTS_SYSTEM_EMAIL_RECIPIENTS;
 
@@ -45,16 +49,16 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
     protected function getContentLocales(): array
     {
         return array(
-            'de_DE',
-            'en_UK'
+            de_DE::LOCALE_NAME,
+            en_GB::LOCALE_NAME
         );
     }
 
     protected function getUILocales(): array
     {
         return array(
-            'de_DE',
-            'en_UK'
+            de_DE::LOCALE_NAME,
+            en_GB::LOCALE_NAME
         );
     }
 
@@ -89,6 +93,15 @@ class EnvironmentsConfig extends BaseEnvironmentsConfig
             ->setDBTestsPort(TESTSUITE_DB_PORT ?? 3306)
 
             ->setRequestLogPassword('unit-tests');
+    }
+
+    protected function _registerClassSourceFolders(SourceFoldersManager $manager): void
+    {
+        $externalFolder = __DIR__.'/../ExternalSources';
+
+        $manager->choose()->API()->addFolder($externalFolder.'/API');
+        $manager->choose()->AJAX()->addFolder($externalFolder.'/AJAX');
+        $manager->choose()->deploymentTasks()->addFolder($externalFolder.'/DeploymentTasks');
     }
 
     public function getDefaultEnvironmentID(): string

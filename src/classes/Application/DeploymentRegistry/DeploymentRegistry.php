@@ -6,12 +6,13 @@
 
 declare(strict_types=1);
 
-namespace Application;
+namespace Application\DeploymentRegistry;
 
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
-use Application\DeploymentRegistry\DeploymentTaskInterface;
+use Application\AppFactory;
 use Application\DeploymentRegistry\Tasks\WriteLocalizationFilesTask;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use Application\SourceFolders\Sources\DeploymentTaskFolders;
 use Application_Admin_Area_Devel;
 use Application_Driver;
 use Application_Exception;
@@ -20,7 +21,6 @@ use Application_Traits_Loggable;
 use AppUtils\ClassHelper;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\FileHelper\FolderInfo;
-use Application\DeploymentRegistry\DeploymentInfo;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
 /**
@@ -145,13 +145,19 @@ class DeploymentRegistry extends BaseStringPrimaryCollection implements Applicat
 
     /**
      * @return FolderInfo[]
+     * @see DeploymentTaskFolders
      */
     public function getTaskFolders() : array
     {
-        return array(
-            FolderInfo::factory(Application_Driver::getInstance()->getClassesFolder().'/DeploymentTasks'),
-            FolderInfo::factory(__DIR__.'/DeploymentRegistry/Tasks'),
-        );
+        $folders = array();
+
+        // Add the built-in task folder.
+        $folders[] = FolderInfo::factory(__DIR__.'/Tasks');
+
+        // Add any additional folders.
+        array_push($folders, ...AppFactory::createFoldersManager()->choose()->deploymentTasks()->resolveFolders());
+
+        return $folders;
     }
 
     /**
