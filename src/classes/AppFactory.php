@@ -14,12 +14,14 @@ use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application\SourceFolders\SourceFoldersManager;
 use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
 use Application\TimeTracker\TimeTrackerCollection;
@@ -62,6 +64,17 @@ use function AppUtils\parseVariable;
 class AppFactory
 {
     // region: A - Factory methods
+
+    /**
+     * Get the manager instance that handles folders from which classes
+     * are loaded dynamically.
+     *
+     * @return SourceFoldersManager
+     */
+    public static function createFoldersManager() : SourceFoldersManager
+    {
+        return SourceFoldersManager::getInstance();
+    }
 
     public static function createRequest() : Application_Request
     {
