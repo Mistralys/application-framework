@@ -249,7 +249,11 @@ function isContentTypeHTML() : bool
 function displayError(Throwable $e) : never
 {
     $develinfo = true;
-    $output = ob_get_clean();
+    $output = null;
+
+    if(ob_get_length() !== false) {
+        $output = ob_get_clean();
+    }
 
     if($e instanceof ApplicationException) {
         $output = $e->getPageOutput().$output;
