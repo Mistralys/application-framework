@@ -8,12 +8,12 @@ declare(strict_types=1);
 
 namespace Application\DeploymentRegistry\Tasks;
 
-use Application\DeploymentRegistry;
+use Application\DeploymentRegistry\BaseDeployTask;
+use Application\DeploymentRegistry\DeploymentInfo;
+use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\DeploymentRegistry\DeploymentTaskInterface;
 use Application_Driver;
 use AppUtils\Microtime;
-use Application\DeploymentRegistry\BaseDeployTask;
-use Application\DeploymentRegistry\DeploymentInfo;
 
 /**
  * Stores the deployment date for the current version in the deployment history.
@@ -23,7 +23,7 @@ use Application\DeploymentRegistry\DeploymentInfo;
  */
 class StoreDeploymentInfoTask extends BaseDeployTask
 {
-    public const TASK_NAME = 'StoreDeploymentInfo';
+    public const string TASK_NAME = 'StoreDeploymentInfo';
 
     public function getID() : string
     {
