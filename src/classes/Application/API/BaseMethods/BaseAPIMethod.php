@@ -9,6 +9,7 @@ use Application\API\APIException;
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
 use Application\API\APIResponseDataException;
+use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\ErrorResponse;
 use Application\API\ErrorResponsePayload;
 use Application\API\Parameters\APIParamManager;
@@ -232,6 +233,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->manageParams()
             ->registerParam(new APIMethodParameter())
             ->registerParam(new APIVersionParameter($this));
+
+        if($this instanceof APIKeyMethodInterface) {
+            $this->manageParamAPIKey()->register();
+        }
     }
 
     /**
