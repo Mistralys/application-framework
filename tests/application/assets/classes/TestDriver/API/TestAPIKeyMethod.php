@@ -1,0 +1,87 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TestDriver\API;
+
+use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Clients\API\APIKeyMethodInterface;
+use Application\API\Clients\API\APIKeyMethodTrait;
+use Application\API\Groups\APIGroupInterface;
+use Application\API\Traits\JSONResponseInterface;
+use Application\API\Traits\JSONResponseTrait;
+use Application\API\Traits\RequestRequestInterface;
+use Application\API\Traits\RequestRequestTrait;
+use AppUtils\ArrayDataCollection;
+
+class TestAPIKeyMethod
+    extends BaseAPIMethod
+    implements
+        RequestRequestInterface,
+        JSONResponseInterface,
+        APIKeyMethodInterface
+{
+    use RequestRequestTrait;
+    use JSONResponseTrait;
+    use APIKeyMethodTrait;
+
+    public const string METHOD_NAME = 'TestAPIKey';
+
+    public function getMethodName(): string
+    {
+        return self::METHOD_NAME;
+    }
+
+    public function getDescription(): string
+    {
+        return 'A test API method for API key handling.';
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return new TestAPIGroup();
+    }
+
+    public function getChangelog(): array
+    {
+        return array();
+    }
+
+    public function getRelatedMethodNames(): array
+    {
+        return array();
+    }
+
+    public function getVersions(): array
+    {
+        return array('1.0.0');
+    }
+
+    public function getCurrentVersion(): string
+    {
+        return '1.0.0';
+    }
+
+    protected function init(): void
+    {
+        $this->manageParamAPIKey()->register();
+    }
+
+    protected function collectRequestData(string $version): void
+    {
+    }
+
+    protected function collectResponseData(ArrayDataCollection $response, string $version): void
+    {
+    }
+
+    public function getExampleJSONResponse(): array
+    {
+        return array();
+    }
+
+    public function getReponseKeyDescriptions(): array
+    {
+        return array();
+    }
+}
