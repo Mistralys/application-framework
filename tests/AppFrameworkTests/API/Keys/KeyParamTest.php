@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AppFrameworkTests\API\Keys;
 
 use Application\API\APIManager;
-use Application\API\Clients\API\APIKeyMethodInterface;
 use Mistralys\AppFrameworkTests\TestClasses\APIClientTestCase;
 use TestDriver\API\TestAPIKeyMethod;
 
