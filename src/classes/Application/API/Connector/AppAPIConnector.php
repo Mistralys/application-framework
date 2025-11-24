@@ -8,6 +8,7 @@ use Application\Bootstrap\Screen\APIBootstrap;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use Connectors;
+use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Connector;
 use Connectors_Exception;
 use Throwable;
@@ -42,14 +43,14 @@ class AppAPIConnector extends Connectors_Connector
     /**
      * @param string $methodName
      * @param array<string,mixed>|ArrayDataCollection $params
+     * @param HTTPHeadersBasket|null $headers Optional headers to include in the request
      * @return ArrayDataCollection
      * @throws Connectors_Exception
-     * @throws Throwable
      */
-    public function fetchMethodData(string $methodName, array|ArrayDataCollection $params=array()) : ArrayDataCollection
+    public function fetchMethodData(string $methodName, array|ArrayDataCollection $params=array(), ?HTTPHeadersBasket $headers=null) : ArrayDataCollection
     {
         return $this->createAPIMethod()
-            ->fetchJSON($methodName, ArrayDataCollection::create($params));
+            ->fetchJSON($methodName, ArrayDataCollection::create($params), $headers);
     }
 
     private ?AppAPIMethod $apiMethod = null;
