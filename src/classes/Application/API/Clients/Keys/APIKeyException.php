@@ -8,5 +8,5 @@ use Application\API\Clients\APIClientException;
 
 class APIKeyException extends APIClientException
 {
-
+    public const int API_KEY_PARAM_CANNOT_BE_OPTIONAL = 187401;
 }
