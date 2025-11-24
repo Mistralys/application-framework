@@ -14,6 +14,7 @@ use Application\API\Connector\AppAPIConnector;
 use Application\API\Connector\AppAPIMethod;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
+use Application\API\Parameters\Flavors\RequiredOnlyParamInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
@@ -33,6 +34,7 @@ use Connectors_Response;
 use Connectors_ResponseCode;
 use Throwable;
 use UI;
+use UI\CSSClasses;
 use UI_Form;
 use UI_Page_Template_Custom;
 
@@ -370,7 +372,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             }
 
             $entries[] = array(
-                'header' => sb()->mono(htmlentities($param->getHeaderExample())),
+                'header' => sb()->mono($param->getHeaderExample()),
                 'description' => $markdown->render($param->getDescription()),
                 'required' => UI::prettyBool($param->isRequired())->makeYesNo()->makeDangerous()
             );
@@ -529,7 +531,16 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                 $field = $form->addText($param->getName(), $param->getLabel());
             }
 
+            $field->addClass(CSSClasses::INPUT_XXLARGE);
             $field->setComment($param->getDescription());
+
+            if($param instanceof APIHeaderParameterInterface) {
+                $field->setLabel($field->getLabel().' '.UI::label('Header')->makeInfo()->setTooltip('This parameter is sent as an HTTP header in the API request.'));
+            }
+
+            if($param instanceof RequiredOnlyParamInterface) {
+                $form->makeRequired($field);
+            }
         }
 
         $form->addPrimarySubmit('Send request')
