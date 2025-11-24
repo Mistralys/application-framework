@@ -9,10 +9,13 @@ declare(strict_types=1);
 namespace Application\API\Clients;
 
 use Application\API\Admin\APICollectionURLs;
+use Application\API\Clients\Keys\APIKeyRecord;
+use Application\API\Clients\Keys\APIKeysCollection;
 use Application\AppFactory;
 use Application_User;
 use Application_Users_User;
 use AppUtils\RegexHelper;
+use DBHelper;
 use DBHelper_BaseCollection;
 
 /**
@@ -124,6 +127,43 @@ class APIClientsCollection extends DBHelper_BaseCollection
     // endregion
 
     // region: Custom methods
+
+    /**
+     * Finds an API key across all clients, using the API key string.
+     *
+     * @param string $keyValue
+     * @return APIKeyRecord|null
+     */
+    public function findAPIKey(string $keyValue) : ?APIKeyRecord
+    {
+        $data = DBHelper::createFetchOne(APIKeysCollection::TABLE_NAME)
+            ->selectColumns(array(
+                APIKeysCollection::PRIMARY_NAME,
+                APIKeysCollection::COL_API_CLIENT_ID,
+            ))
+            ->whereValue(APIKeysCollection::COL_API_KEY, $keyValue)
+            ->fetch();
+
+        if(empty($data)) {
+            return null;
+        }
+
+        $clientID = (int)$data[APIKeysCollection::COL_API_CLIENT_ID];
+        if(!$this->idExists($clientID)) {
+            return null;
+        }
+
+        $client = $this->getByID($clientID);
+
+        $keyID = (int)$data[APIKeysCollection::PRIMARY_NAME];
+        $keys = $client->createAPIKeys();
+
+        if($keys->idExists($keyID)) {
+            return $keys->getByID($keyID);
+        }
+
+        return null;
+    }
 
     public function createNewClient(
         string $label,
