@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters;
 
+use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
 use Application\API\Parameters\Validation\Type\CallbackValidation;
 use Application\API\Parameters\Validation\Type\EnumValidation;
 use Application\API\Parameters\Validation\Type\RequiredValidation;
 use Application\API\Parameters\Validation\Type\ValueExistsCallbackValidation;
-use Application\API\Parameters\ValueLookup\SelectableParamValue;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\AppFactory;
 use Application\Validation\ValidationLoggableTrait;
@@ -18,7 +18,6 @@ use Application_Request;
 use Application_Traits_Loggable;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\OperationResult;
-use AppUtils\OperationResult_Collection;
 use AppUtils\Request\RequestParam;
 
 abstract class BaseAPIParameter implements APIParameterInterface
@@ -229,7 +228,11 @@ abstract class BaseAPIParameter implements APIParameterInterface
 
         $this->valueResolved = true;
 
-        $value = $this->resolveValue();
+        if($this instanceof APIHeaderParameterInterface) {
+            $value = $this->getHeaderValue();
+        } else {
+            $value = $this->resolveValue();
+        }
 
         if($this->validate($value)) {
             $this->value = $value;
