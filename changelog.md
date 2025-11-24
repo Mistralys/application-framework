@@ -28,6 +28,8 @@
 - API: Added links back to the application from the documentation.
 - API: Parameters now support manually selecting a value via `selectValue()`.
 - API: Using SourceFolders to load methods from external locations.
+- API: Added API key parameter handling.
+- API: Added header-based API parameters.
 - AJAX: Using SourceFolders to load AJAX handlers from external locations.
 - TimeTracker: Added autofill feature.
 - TimeTracker: Added flavored entry creation methods.
