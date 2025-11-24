@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace TestDriver\API;
 
-use AppFrameworkTests\Locales\AppLocaleAPITests;
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\ErrorResponsePayload;
 use Application\API\Groups\APIGroupInterface;
