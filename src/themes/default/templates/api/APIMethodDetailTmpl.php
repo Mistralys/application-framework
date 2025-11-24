@@ -13,6 +13,7 @@ use Application\API\APIMethodInterface;
 use Application\API\Connector\AppAPIConnector;
 use Application\API\Connector\AppAPIMethod;
 use Application\API\Parameters\APIParameterInterface;
+use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
@@ -26,6 +27,7 @@ use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Highlighter;
 use AppUtils\OutputBuffering;
 use Connectors;
+use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Exception;
 use Connectors_Response;
 use Connectors_ResponseCode;
@@ -62,6 +64,10 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $urlParams['method'] = $this->method->getMethodName();
         foreach($params as $param)
         {
+            if($param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
             $value = $values->getString($param->getName());
             if(!empty($value)) {
                 $urlParams[$param->getName()] = $value;
@@ -91,9 +97,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         {
             try
             {
-                $connector = AppAPIConnector::create(APP_URL);
-                $result = $connector->fetchMethodData($this->method->getMethodName(), $values->getData());
-                $data = $result->getData();
+                $data = $this->fetchAPIResult($values);
                 $json = JSONConverter::var2json($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
                 if($data[JSONResponseInterface::RESPONSE_KEY_STATE] === JSONResponseInterface::RESPONSE_STATE_SUCCESS) {
@@ -143,6 +147,39 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
     }
 
+    private function fetchAPIResult(ArrayDataCollection $values) : array
+    {
+        return AppAPIConnector::create(APP_URL)
+            ->fetchMethodData(
+                $this->method->getMethodName(),
+                $values->getData(),
+                $this->getHeaders($values)
+            )
+            ->getData();
+    }
+
+    /**
+     * Sets the headers for any header-based parameters of the method
+     * for the "Try it out" request.
+     *
+     * @param ArrayDataCollection $values
+     * @return HTTPHeadersBasket
+     */
+    private function getHeaders(ArrayDataCollection $values) : HTTPHeadersBasket
+    {
+        $headers = new HTTPHeadersBasket();
+
+        foreach($this->method->manageParams()->getHeaderParams() as $param)
+        {
+            $headerValue = $values->getString($param->getName());
+            if(!empty($headerValue)) {
+                $param->injectHeaderForValue($headers, $headerValue);
+            }
+        }
+
+        return $headers;
+    }
+
     protected function generateOutput(): void
     {
         $this->ui->addStylesheet('api/api-methods.css');
@@ -188,6 +225,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         </div>
         <?php
         $this->generateProperties();
+        $this->generateHeaderList();
         $this->generateParamList();
         $this->generateRulesList();
         $this->generateExample();
@@ -307,6 +345,58 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             ->setIcon(UI::icon()->setType('code', 'fas'))
             ->setContent($example)
             ->display();
+    }
+
+    private function generateHeaderList() : void
+    {
+        $params = $this->getHeaderParams();
+        if(empty($params)) {
+            return;
+        }
+
+        $markdown = MarkdownRenderer::create();
+
+        $grid = $this->ui->createDataGrid('api-method-headers');
+        $grid->enableCompactMode();
+        $grid->disableFooter();
+        $grid->addColumn('header', t('Header'))->setNowrap();
+        $grid->addColumn('description', t('Description'));
+        $grid->addColumn('required', t('Required'));
+
+        $entries = array();
+        foreach($params as $param) {
+            if(!$param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
+            $entries[] = array(
+                'header' => sb()->mono(htmlentities($param->getHeaderExample())),
+                'description' => $markdown->render($param->getDescription()),
+                'required' => UI::prettyBool($param->isRequired())->makeYesNo()->makeDangerous()
+            );
+        }
+
+        $this->ui->createSection()
+                ->setTitle('Request headers')
+                ->setAbstract('These are any HTTP headers that the client can or must include in the API request.')
+                ->setIcon(UI::icon()->variables())
+                ->collapse()
+                ->setContent($grid->render($entries))
+                ->display();
+    }
+
+    private function getHeaderParams() : array
+    {
+        $results = array();
+        foreach($this->getParamsSorted() as $param) {
+            if(!$param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
+            $results[] = $param;
+        }
+
+        return $results;
     }
 
     private function generateParamList() : void
