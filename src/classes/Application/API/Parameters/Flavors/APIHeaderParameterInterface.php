@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Parameters\Flavors;
 
 use Application\API\Parameters\APIParameterInterface;
+use Connectors\Headers\HTTPHeadersBasket;
 
 /**
  * Interface for API parameters that are passed via HTTP headers,
@@ -32,11 +33,19 @@ interface APIHeaderParameterInterface extends APIParameterInterface
      * Used for documentation purposes only.
      * @return string
      */
-    public function getHeaderName() : string;
+    public function getHeaderExample() : string;
 
     /**
      * Gets the value of the header, if it is present in the request.
      * @return string|NULL
      */
     public function getHeaderValue() : ?string;
+
+    /**
+     * Sets the header to the specified value for testing and documentation.
+     * @param HTTPHeadersBasket $headers
+     * @param string $value
+     * @return self
+     */
+    public function injectHeaderForValue(HTTPHeadersBasket $headers, string $value) : self;
 }

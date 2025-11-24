@@ -12,6 +12,7 @@ use Application\API\Parameters\Flavors\RequiredOnlyParamTrait;
 use Application\API\Parameters\Type\StringParameter;
 use Application\AppFactory;
 use AppUtils\RequestHelper;
+use Connectors\Headers\HTTPHeadersBasket;
 
 class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
 {
@@ -29,9 +30,9 @@ class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
         $this->setDescription('The API Key used to authenticate the request.');
     }
 
-    public function getHeaderName(): string
+    public function getHeaderExample(): string
     {
-        return 'Authorization: Bearer <API Key>';
+        return 'Authorization: Bearer API_KEY';
     }
 
     public function getHeaderValue(): ?string
@@ -58,5 +59,11 @@ class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
         }
 
         return AppFactory::createAPIClients()->findAPIKey($keyValue);
+    }
+
+    public function injectHeaderForValue(HTTPHeadersBasket $headers, string $value): self
+    {
+        $headers->addHeader('Authorization', 'Bearer '.$value);
+        return $this;
     }
 }
