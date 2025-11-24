@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package API
+ * @subpackage Clients
+ */
 
 declare(strict_types=1);
 
@@ -8,13 +12,23 @@ use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\Clients\Keys\APIKeyRecord;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterTrait;
+use Application\API\Parameters\Flavors\RequiredOnlyParamInterface;
 use Application\API\Parameters\Flavors\RequiredOnlyParamTrait;
 use Application\API\Parameters\Type\StringParameter;
 use Application\AppFactory;
 use AppUtils\RequestHelper;
 use Connectors\Headers\HTTPHeadersBasket;
 
-class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
+/**
+ * API parameter used to specify the API Key for authentication.
+ *
+ * @package API
+ * @subpackage Clients
+ */
+class APIKeyParam extends StringParameter
+    implements
+    APIHeaderParameterInterface,
+    RequiredOnlyParamInterface
 {
     use APIHeaderParameterTrait;
     use RequiredOnlyParamTrait;
@@ -32,7 +46,7 @@ class APIKeyParam extends StringParameter implements APIHeaderParameterInterface
 
     public function getHeaderExample(): string
     {
-        return 'Authorization: Bearer API_KEY';
+        return 'Authorization: Bearer '.sb()->tooltip(sb()->bold(sb()->warning('API_KEY')), 'The API Key assigned to your account.');
     }
 
     public function getHeaderValue(): ?string
