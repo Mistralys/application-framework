@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c5b31741cbe906cabef8bb3d284f3a9",
+    "content-hash": "9af33739eac6145992cdf73adadcfa40",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1526,16 +1526,16 @@
         },
         {
             "name": "mistralys/application-utils-core",
-            "version": "2.4.0",
+            "version": "2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Mistralys/application-utils-core.git",
-                "reference": "50deedef24d76dfa4a4f6a8b395068d33fdd2738"
+                "reference": "9051ea62a3f852eeff5b2432e17c82ea91c6fcaa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Mistralys/application-utils-core/zipball/50deedef24d76dfa4a4f6a8b395068d33fdd2738",
-                "reference": "50deedef24d76dfa4a4f6a8b395068d33fdd2738",
+                "url": "https://api.github.com/repos/Mistralys/application-utils-core/zipball/9051ea62a3f852eeff5b2432e17c82ea91c6fcaa",
+                "reference": "9051ea62a3f852eeff5b2432e17c82ea91c6fcaa",
                 "shasum": ""
             },
             "require": {
@@ -1581,9 +1581,9 @@
             "description": "Drop-in utilities for PHP applications.",
             "support": {
                 "issues": "https://github.com/Mistralys/application-utils-core/issues",
-                "source": "https://github.com/Mistralys/application-utils-core/tree/2.4.0"
+                "source": "https://github.com/Mistralys/application-utils-core/tree/2.4.1"
             },
-            "time": "2025-11-21T13:32:06+00:00"
+            "time": "2025-11-24T10:00:42+00:00"
         },
         {
             "name": "mistralys/application-utils-image",
@@ -2203,16 +2203,16 @@
         },
         {
             "name": "nette/utils",
-            "version": "v4.0.8",
+            "version": "v4.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "c930ca4e3cf4f17dcfb03037703679d2396d2ede"
+                "reference": "505a30ad386daa5211f08a318e47015b501cad30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/c930ca4e3cf4f17dcfb03037703679d2396d2ede",
-                "reference": "c930ca4e3cf4f17dcfb03037703679d2396d2ede",
+                "url": "https://api.github.com/repos/nette/utils/zipball/505a30ad386daa5211f08a318e47015b501cad30",
+                "reference": "505a30ad386daa5211f08a318e47015b501cad30",
                 "shasum": ""
             },
             "require": {
@@ -2286,9 +2286,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/utils/issues",
-                "source": "https://github.com/nette/utils/tree/v4.0.8"
+                "source": "https://github.com/nette/utils/tree/v4.0.9"
             },
-            "time": "2025-08-06T21:43:34+00:00"
+            "time": "2025-10-31T00:45:47+00:00"
         },
         {
             "name": "oomphinc/composer-installers-extender",
@@ -6447,15 +6447,15 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
+        "php": "^8.4",
+        "ext-curl": "*",
+        "ext-dom": "*",
         "ext-json": "*",
+        "ext-ldap": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "php": "^8.4",
-        "ext-simplexml": "*",
-        "ext-ldap": "*"
+        "ext-simplexml": "*"
     },
-    "platform-dev": {
-        "ext-curl": "*"
-    },
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
