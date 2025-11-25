@@ -56,7 +56,7 @@ class APIKeyHandler extends BaseParamHandler
         return null;
     }
 
-    protected function resolveValueByParam(): ?APIKeyRecord
+    protected function resolveValueFromSubject(): ?APIKeyRecord
     {
         return $this->getParam()?->getKey();
     }
