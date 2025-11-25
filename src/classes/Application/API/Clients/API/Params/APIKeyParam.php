@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\API\Clients\API\Params;
 
 use Application\API\Clients\API\APIKeyMethodInterface;
+use Application\API\Clients\APIClientException;
 use Application\API\Clients\Keys\APIKeyRecord;
 use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\Flavors\APIHeaderParameterTrait;
@@ -73,6 +74,27 @@ class APIKeyParam extends StringParameter
         }
 
         return AppFactory::createAPIClients()->findAPIKey($keyValue);
+    }
+
+    /**
+     * Like {@see self::getKey}, but always returns a value and
+     * throws an exception if no valid key is found.
+     *
+     * @return APIKeyRecord
+     * @throws APIClientException
+     */
+    public function requireKey() : APIKeyRecord
+    {
+        $key = $this->getKey();
+        if ($key !== null) {
+            return $key;
+        }
+
+        throw new APIClientException(
+            'A valid API Key is required to access this API.',
+            '',
+            APIClientException::ERROR_API_KEY_MISSING_OR_INVALID
+        );
     }
 
     public function injectHeaderForValue(HTTPHeadersBasket $headers, string $value): self
