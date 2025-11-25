@@ -1,21 +1,20 @@
--- phpMyAdmin SQL Dump
--- version 5.2.2
--- https://www.phpmyadmin.net/
+-- ------------------------------------------------------------
+-- API MANAGEMENT TABLES
+-- ------------------------------------------------------------
 --
--- Host: localhost
--- Generation Time: Nov 05, 2025 at 04:06 PM
--- Server version: 12.0.2-MariaDB
--- PHP Version: 8.4.14
+-- This adds new tables for the API client and API key
+-- management system, as well as logging of API requests.
+--
+-- Modifies existing tables...: NO
+-- Adds new tables............: YES
+-- Deletes existing tables....: NO
+-- Affects the application....: NO
+-- Possible conflicts.........: NO
+--
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
---
--- Database: `application_framework`
---
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `api_changelog`
@@ -27,8 +26,7 @@ CREATE TABLE `api_changelog` (
     `changelog_type` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `changelog_author` int(11) UNSIGNED NOT NULL,
     `changelog_data` text NOT NULL,
-    `api_client_id` int(11) UNSIGNED NOT NULL,
-    `api_key_id` int(11) UNSIGNED DEFAULT NULL
+    `api_client_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -85,6 +83,18 @@ CREATE TABLE `api_key_methods` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `api_key_method_groups`
+--
+
+CREATE TABLE `api_key_method_groups` (
+    `api_key_id` int(11) UNSIGNED NOT NULL,
+    `api_client_id` int(11) UNSIGNED NOT NULL,
+    `method_group_id` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `api_requests`
 --
 
@@ -103,7 +113,7 @@ CREATE TABLE `api_requests` (
     `source_ip` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `user_agent` varchar(220) NOT NULL,
     `error_code` int(11) UNSIGNED DEFAULT NULL,
-    `error_message` varchar(200) NOT NULL,
+    `error_message` varchar(200) NOT NULL DEFAULT '',
     `request_params` text NOT NULL,
     `response_data` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -120,8 +130,7 @@ ALTER TABLE `api_changelog`
     ADD KEY `changelog_date` (`changelog_date`),
     ADD KEY `changelog_type` (`changelog_type`),
     ADD KEY `changelog_author` (`changelog_author`),
-    ADD KEY `api_client_id` (`api_client_id`),
-    ADD KEY `api_key_id` (`api_key_id`);
+    ADD KEY `api_client_id` (`api_client_id`);
 
 --
 -- Indexes for table `api_clients`
@@ -157,9 +166,18 @@ ALTER TABLE `api_keys`
 --
 ALTER TABLE `api_key_methods`
     ADD PRIMARY KEY (`api_key_id`,`method_name`),
-    ADD KEY `method_name` (`method_name`),
     ADD KEY `api_client_id` (`api_client_id`),
-    ADD KEY `api_key_id` (`api_key_id`);
+    ADD KEY `api_key_id` (`api_key_id`),
+    ADD KEY `method_name` (`method_name`);
+
+--
+-- Indexes for table `api_key_method_groups`
+--
+ALTER TABLE `api_key_method_groups`
+    ADD PRIMARY KEY (`api_key_id`,`method_group_id`),
+    ADD KEY `api_key_id` (`api_key_id`),
+    ADD KEY `api_client_id` (`api_client_id`),
+    ADD KEY `method_group_id` (`method_group_id`);
 
 --
 -- Indexes for table `api_requests`
@@ -213,6 +231,19 @@ ALTER TABLE `api_requests`
 --
 
 --
+-- Constraints for table `api_changelog`
+--
+ALTER TABLE `api_changelog`
+    ADD CONSTRAINT `api_changelog_ibfk_1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `api_changelog_ibfk_2` FOREIGN KEY (`changelog_author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_clients`
+--
+ALTER TABLE `api_clients`
+    ADD CONSTRAINT `api_clients_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `api_keys`
 --
 ALTER TABLE `api_keys`
@@ -226,4 +257,11 @@ ALTER TABLE `api_keys`
 ALTER TABLE `api_key_methods`
     ADD CONSTRAINT `api_key_methods_ibfk_1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `api_key_methods_ibfk_2` FOREIGN KEY (`api_key_id`) REFERENCES `api_keys` (`api_key_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_key_method_groups`
+--
+ALTER TABLE `api_key_method_groups`
+    ADD CONSTRAINT `1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `2` FOREIGN KEY (`api_key_id`) REFERENCES `api_keys` (`api_key_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
