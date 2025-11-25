@@ -32,6 +32,7 @@ class RatingScreensCollection extends DBHelper_BaseCollection
     public const string COL_PATH = 'path';
     public const string COL_DISPATCHER = 'dispatcher';
     public const string COL_PARAMS = 'params';
+    public const string COL_HASH = 'hash';
     public const string TABLE_NAME = 'app_ratings_screens';
     public const string PRIMARY_NAME = 'rating_screen_id';
     public const string RECORD_TYPE_NAME = 'app_rating_screen';
@@ -108,7 +109,7 @@ class RatingScreensCollection extends DBHelper_BaseCollection
         }
 
         $data = array(
-            'hash' => $hash,
+            self::COL_HASH => $hash,
             self::COL_DISPATCHER => $info->getDispatcher(),
             self::COL_PATH => $info->getScreenPath(),
             self::COL_PARAMS => ''
@@ -138,7 +139,7 @@ class RatingScreensCollection extends DBHelper_BaseCollection
             WHERE
                 hash=:hash",
             array(
-                'hash' => $hash
+                self::COL_HASH => $hash
             )
         );
 
