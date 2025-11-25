@@ -71,6 +71,13 @@
 - Environment configuration: The abstract method `_registerClassSourceFolders()`
   must now be implemented to register class source folders, if any.
 
+### Database Changes
+
+1. The update script [2025-11-05-api-management.sql](/docs/sql/2025-11-05-api-management.sql) must be run to
+    add the necessary tables for API management.
+2. The update script [2025-10-29-users-post-update.sql](/docs/sql/2025-10-29-users-post-update.sql) should be run
+   to finish the user table migration (if the email hashes have been updated).
+
 ### Deprecations
 
 - All DBHelper base admin screen classes have been deprecated. Replacement classes
