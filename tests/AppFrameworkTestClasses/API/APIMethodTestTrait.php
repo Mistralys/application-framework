@@ -51,6 +51,8 @@ trait APIMethodTestTrait
             );
         }
 
+        $this->addToAssertionCount(1);
+
         return $response;
     }
 
