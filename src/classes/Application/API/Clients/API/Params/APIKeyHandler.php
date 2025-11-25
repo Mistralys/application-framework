@@ -34,6 +34,7 @@ class APIKeyHandler extends BaseParamHandler
     {
         if($value instanceof APIKeyRecord) {
             parent::selectValue($value);
+            $this->getParam()?->selectValue($value->getAPIKey());
         } else {
             parent::selectValue(null);
         }
