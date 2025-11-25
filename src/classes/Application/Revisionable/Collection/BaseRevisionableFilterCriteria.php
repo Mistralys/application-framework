@@ -24,7 +24,7 @@ abstract class BaseRevisionableFilterCriteria
 
     // region: X - Interface methods
 
-    public const string ALIAS_REVISION_TABLE = 'record_revs';
+    public const string ALIAS_REVISION_TABLE = 'revs';
     public const string ALIAS_CURRENT_REVISION_TABLE = 'current_revs';
 
     protected string $primaryKeyName;
