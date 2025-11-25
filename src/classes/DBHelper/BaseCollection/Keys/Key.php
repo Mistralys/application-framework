@@ -267,9 +267,11 @@ class DBHelper_BaseCollection_Keys_Key
             throw new DBHelper_Exception(
                 'Validation failed',
                 sprintf(
-                    'Value "%s" is not in the allowed set: %s',
+                    'Key [%1$s] value [%2$s] is not in the allowed set of values: '.PHP_EOL.
+                    '- %3$s',
+                    $this->getName(),
                     $value,
-                    implode(', ', $allowedValues)
+                    implode(PHP_EOL.'- ', $allowedValues)
                 ),
                 DBHelper_Exception::ERROR_KEY_VALIDATION_FAILED
             );
