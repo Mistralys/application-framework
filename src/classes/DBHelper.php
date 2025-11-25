@@ -7,13 +7,18 @@
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper\BaseCollection\BaseChildCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Exception\CLIErrorRenderer;
 use DBHelper\Exception\HTMLErrorRenderer;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper\TrackedQuery;
 use function AppUtils\parseVariable;
 
@@ -585,21 +590,11 @@ class DBHelper
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception
      */
-    public static function fetchAll($statementOrBuilder, array $variables = array()) : array
+    public static function fetchAll(string|DBHelper_StatementBuilder $statementOrBuilder, array $variables = array()) : array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
-        $result = self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
-        
-        if($result===false) 
-        {
-            throw self::createException(
-                self::ERROR_FETCHING,
-                'Failed fetching a record'
-            );
-        }
-        
-        return $result;
+        return self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -1961,7 +1956,7 @@ class DBHelper
     }
 
     /**
-     * @var array<string,DBHelper_BaseCollection>
+     * @var array<string,DBHelperCollectionInterface>
      */
     protected static array $collections = array();
 
@@ -1978,12 +1973,12 @@ class DBHelper
 
     /**
      * @param string $class
-     * @param DBHelper_BaseRecord|NULL $parentRecord
+     * @param DBHelperRecordInterface|NULL $parentRecord
      * @param bool $newInstance
-     * @return DBHelper_BaseCollection
+     * @return DBHelperCollectionInterface
      * @throws DBHelper_Exception
      */
-    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : ?DBHelper_BaseCollection
+    public static function createCollection(string $class, ?DBHelperRecordInterface $parentRecord=null, bool $newInstance=false) : DBHelperCollectionInterface
     {
         $key = $class;
         if($parentRecord) {
@@ -1995,45 +1990,18 @@ class DBHelper
         }
     
         $instance = ClassHelper::requireObjectInstanceOf(
-            DBHelper_BaseCollection::class,
+            DBHelperCollectionInterface::class,
             new $class(),
             self::ERROR_NOT_A_DBHELPER_COLLECTION
         );
 
-        if($instance->hasParentCollection())
-        {
-            if(!$parentRecord) {
-                throw new DBHelper_Exception(
-                    'No parent record specified',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record to be specified when calling createCollection.',
-                        $class
-                    ),
-                    self::ERROR_NO_PARENT_RECORD_SPECIFIED
-                );
-            }
-    
-            $parentClass = get_class($parentRecord->getCollection());
-            if($parentClass !== $instance->getParentCollectionClass()) {
-                throw new DBHelper_Exception(
-                    'Invalid parent record',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record of the collection [%s], provided was a record of type [%s].',
-                        $class,
-                        $instance->getParentCollectionClass(),
-                        get_class($parentRecord->getCollection())
-                    ),
-                    self::ERROR_INVALID_PARENT_RECORD
-                );
-            }
-    
+        if($instance instanceof BaseChildCollection) {
             $instance->bindParentRecord($parentRecord);
         }
         
         $instance->setupComplete();
 
-        if(!$newInstance)
-        {
+        if(!$newInstance) {
             self::$collections[$key] = $instance;
         }
 

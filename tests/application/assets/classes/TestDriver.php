@@ -12,6 +12,7 @@ use Application\Area\BaseTagsScreen;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\Tags\TagCollection;
+use TestDriver\Area\APIClientsArea;
 use TestDriver\Area\CountriesScreen;
 use TestDriver\Area\MediaLibraryScreen;
 use TestDriver\Area\NewsScreen;
@@ -60,6 +61,7 @@ class TestDriver extends Application_Driver
             BaseTimeTrackerArea::URL_NAME => TimeTrackerScreen::class,
             CountriesScreen::URL_NAME => CountriesScreen::class,
             UsersArea::URL_NAME => UsersArea::class,
+            APIClientsArea::URL_NAME => APIClientsArea::class
         );
 
         if(TagCollection::tableExists()) {

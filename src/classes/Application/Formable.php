@@ -634,7 +634,7 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->formableContainer;
     }
 
-    public function addHiddenVar(string $name, string $value='', ?string $id=null) : self
+    public function addHiddenVar(string $name, string|int|float|NULL $value=null, ?string $id=null) : self
     {
         $this->requireFormableInitialized();
 
@@ -787,6 +787,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
         return $this->getFormInstance()->addRuleEmail($element);
     }
 
+    public function addRuleURL(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node
+    {
+        return $this->getFormInstance()->addRuleURL($element);
+    }
+
     public function addRuleAlias(HTML_QuickForm2_Element $element, bool $allowCapitalLetters=false) : HTML_QuickForm2_Node
     {
         return $this->getFormInstance()->addRuleAlias($element, $allowCapitalLetters);
@@ -796,7 +801,11 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     * Adds a callback rule. Helper method for easier access to
     * the QuickForm API for this. The first argument of the callback
     * is always the value to validate, and the last is the
-    * rule object instance, even if custom arguments are specified.
+    * rule object instance, even if custom arguments are specified:
+    *
+    * 1. mixed $value - The value to validate
+    * 2. mixed ...$arguments - Custom arguments specified when adding the rule
+    * 3. HTML_QuickForm2_Rule $rule - The rule object instance
     *
     * @param HTML_QuickForm2_Node $element
     * @param callable $callback
@@ -856,6 +865,19 @@ abstract class Application_Formable implements Application_Interfaces_Formable
     public function addRuleNoHTML(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
     {
         return $this->getFormInstance()->addRuleNoHTML($element);
+    }
+
+    /**
+     * Marks the element as supporting Markdown syntax.
+     * The comment will be adjusted accordingly.
+     *
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
+     * @throws Application_Formable_Exception
+     */
+    public function addMarkdownSupport(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
+    {
+        return $this->getFormInstance()->addMarkdownSupport($element);
     }
 
     public function addRuleRegex(HTML_QuickForm2_Element $element, string $regex, string $message) : HTML_QuickForm2_Node

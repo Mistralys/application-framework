@@ -3,20 +3,19 @@
 declare(strict_types=1);
 
 use Application\Revisionable\RevisionableInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
 use Application\StateHandler\StateHandlerException;
 use AppUtils\Interfaces\StringableInterface;
 
 class Application_StateHandler_State implements StringableInterface
 {
-    public const ERROR_CANNOT_REPLACE_REVISIONABLE = 14101;
-    public const ERROR_INVALID_TIMED_CHANGE = 14102;
+    public const int ERROR_CANNOT_REPLACE_REVISIONABLE = 14101;
+    public const int ERROR_INVALID_TIMED_CHANGE = 14102;
 
-    public const UI_TYPE_SUCCESS = 'success';
-    public const UI_TYPE_INACTIVE = 'inactive';
-    public const UI_TYPE_DANGER = 'danger';
-    public const UI_TYPE_WARNING = 'warning';
-    public const UI_TYPE_DEFAULT = 'default';
+    public const string UI_TYPE_SUCCESS = 'success';
+    public const string UI_TYPE_INACTIVE = 'inactive';
+    public const string UI_TYPE_DANGER = 'danger';
+    public const string UI_TYPE_WARNING = 'warning';
+    public const string UI_TYPE_DEFAULT = 'default';
 
     protected string $name;
     protected string $label;
@@ -76,38 +75,25 @@ class Application_StateHandler_State implements StringableInterface
     
     public function getPrettyLabel() : string
     {
-        switch ($this->uiType) {
-            case self::UI_TYPE_SUCCESS:
-                return
-                    '<span class="text-success state-label">' .
-                    UI::icon()->published() . ' ' .
-                    $this->getLabel() .
-                    '</span>';
-
-            case self::UI_TYPE_INACTIVE:
-                return
-                    '<span class="muted state-label">' .
-                    UI::icon()->inactive() . ' ' .
-                    $this->getLabel() .
-                    '</span>';
-
-            case self::UI_TYPE_DANGER:
-                return
-                    '<span class="text-error state-label">' .
-                    UI::icon()->deleted() . ' ' .
-                    $this->getLabel() .
-                    '</span>';
-
-            case self::UI_TYPE_WARNING:
-                return
-                    '<span class="text-warning state-label">' .
-                    UI::icon()->draft() . ' ' .
-                    $this->getLabel() .
-                    '</span>';
-
-            default:
-                return $this->getLabel();
-        }
+        return match ($this->uiType) {
+            self::UI_TYPE_SUCCESS => '<span class="text-success state-label">' .
+                UI::icon()->published() . ' ' .
+                $this->getLabel() .
+                '</span>',
+            self::UI_TYPE_INACTIVE => '<span class="muted state-label">' .
+                UI::icon()->inactive() . ' ' .
+                $this->getLabel() .
+                '</span>',
+            self::UI_TYPE_DANGER => '<span class="text-error state-label">' .
+                UI::icon()->deleted() . ' ' .
+                $this->getLabel() .
+                '</span>',
+            self::UI_TYPE_WARNING => '<span class="text-warning state-label">' .
+                UI::icon()->draft() . ' ' .
+                $this->getLabel() .
+                '</span>',
+            default => $this->getLabel(),
+        };
     }
 
     /**
@@ -192,11 +178,6 @@ class Application_StateHandler_State implements StringableInterface
         return ($this->item->getRevisionTimestamp() + $this->timedDelay) - time();
     }
 
-    public function getTimeLeftLabel() : string
-    {
-        return convert_time2string($this->getTimeLeft());
-    }
-
     public function activate($ownerID, $ownerName) : self
     {
         if (!isset($this->timedState)) {
@@ -234,7 +215,7 @@ class Application_StateHandler_State implements StringableInterface
      *
      * @param Application_StateHandler_State $state
      * @return $this
-     * @see Application_Revisionable::save()
+     * @see RevisionableInterface::save()
      */
     public function setOnStructuralChange(Application_StateHandler_State $state) : self
     {
@@ -269,11 +250,11 @@ class Application_StateHandler_State implements StringableInterface
     }
 
     /**
-     * @param Application_Revisionable $revisionable
+     * @param RevisionableInterface $revisionable
      * @return $this
      * @throws StateHandlerException {@see self::ERROR_CANNOT_REPLACE_REVISIONABLE}
      */
-    public function setRevisionable(Application_Revisionable $revisionable) : self
+    public function setRevisionable(RevisionableInterface $revisionable) : self
     {
         if(!isset($this->item)) {
             $this->item = $revisionable;

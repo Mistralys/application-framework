@@ -7,29 +7,29 @@ namespace Application\Countries\Admin\Screens;
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionList;
+use Application_Countries;
 use Application_Countries_Country;
 use Application_Countries_FilterCriteria;
 use AppUtils\ClassHelper;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Entry;
 
 /**
  * @property Application_Countries_FilterCriteria $filters
  */
-class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
+class BaseListScreen extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'list';
-    public const COL_LABEL = 'label';
-    public const COL_ISO = 'iso';
-    public const COL_CURRENCY = 'currency';
-    public const COL_LANGUAGE = 'language';
-    public const COL_LOCALE_CODE = 'locale_code';
+    public const string URL_NAME = 'list';
+    public const string COL_LABEL = 'label';
+    public const string COL_ISO = 'iso';
+    public const string COL_CURRENCY = 'currency';
+    public const string COL_LANGUAGE = 'language';
+    public const string COL_LOCALE_CODE = 'locale_code';
 
     public function getURLName(): string
     {
@@ -51,12 +51,12 @@ class BaseListScreen extends Application_Admin_Area_Mode_CollectionList
         return t('Available countries');
     }
 
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): Application_Countries
     {
         return AppFactory::createCountries();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : UI_DataGrid_Entry
     {
         $country = ClassHelper::requireObjectInstanceOf(
             Application_Countries_Country::class,

@@ -7,17 +7,16 @@ namespace Application\Area\Tags;
 use Application\AppFactory;
 use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
 use Application\Tags\TagRecord;
-use Application_Admin_Area_Mode_CollectionRecord;
-use Application\Area\Tags\ViewTag\BaseTagSettingsScreen;
 use Application\Tags\TagCollection;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
 /**
  * @property TagRecord $record
  */
-abstract class BaseViewTagScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewTagScreen extends BaseRecordMode
 {
-    public const URL_NAME = 'view-tag';
+    public const string URL_NAME = 'view-tag';
 
     public function getURLName(): string
     {

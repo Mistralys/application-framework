@@ -10,6 +10,7 @@ namespace Application\API\Parameters;
 
 use Application\API\APIException;
 use Application\API\APIMethodInterface;
+use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
 use Application\API\Parameters\Rules\RuleInterface;
 use Application\API\Parameters\Rules\RuleTypeSelector;
 use Application\API\Parameters\Validation\ParamValidationResults;
@@ -118,6 +119,22 @@ class APIParamManager implements ValidationResultInterface
         ksort($this->params);
 
         return array_values($this->params);
+    }
+
+    /**
+     * @return APIHeaderParameterInterface[]
+     */
+    public function getHeaderParams() : array
+    {
+        $headerParams = array();
+
+        foreach($this->params as $param) {
+            if($param instanceof APIHeaderParameterInterface) {
+                $headerParams[] = $param;
+            }
+        }
+
+        return $headerParams;
     }
 
     /**

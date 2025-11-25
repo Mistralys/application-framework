@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use Application\Driver\DriverException;
 use Application\Interfaces\Admin\AdminScreenInterface;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
@@ -226,10 +227,10 @@ class UI_DataGrid_RedirectMessage
     * the DBHelper_Collection. Goes through the selected IDs, and deletes
     * the relevant records withing a transaction.
     * 
-    * @param DBHelper_BaseCollection $collection
+    * @param DBHelperCollectionInterface $collection
     * @return UI_DataGrid_RedirectMessage
     */
-    public function processDeleteDBRecords(DBHelper_BaseCollection $collection) : UI_DataGrid_RedirectMessage
+    public function processDeleteDBRecords(DBHelperCollectionInterface $collection) : UI_DataGrid_RedirectMessage
     {
         $ids = $this->action->getSelectedValues();
         
@@ -237,7 +238,7 @@ class UI_DataGrid_RedirectMessage
         
         foreach($ids as $id)
         {
-            $id = intval($id);
+            $id = (int)$id;
             
             if(!$collection->idExists($id))
             {

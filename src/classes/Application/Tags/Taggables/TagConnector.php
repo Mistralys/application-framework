@@ -11,9 +11,8 @@ namespace Application\Tags\Taggables;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
 use DBHelper;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
-use DBHelper_Exception;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Helper class that can be used to retrieve records
@@ -63,13 +62,10 @@ class TagConnector
 
     /**
      * @param TagRecord $tag
-     * @param DBHelper_BaseCollection $collection
-     * @return DBHelper_BaseRecord[]
-     *
-     * @throws \Application\Exception\DisposableDisposedException
-     * @throws DBHelper_Exception
+     * @param DBHelperCollectionInterface $collection
+     * @return DBHelperRecordInterface[]
      */
-    protected function getDBRecordsByTag(TagRecord $tag, DBHelper_BaseCollection $collection) : array
+    protected function getDBRecordsByTag(TagRecord $tag, DBHelperCollectionInterface $collection) : array
     {
         $ids = $this->getRecordIDsByTag($tag);
         $result = array();

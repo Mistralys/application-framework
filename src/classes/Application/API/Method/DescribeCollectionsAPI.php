@@ -9,6 +9,8 @@ declare(strict_types=1);
 namespace Application\API\Method;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
+use Application\API\Groups\FrameworkAPIGroup;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
@@ -48,6 +50,11 @@ class DescribeCollectionsAPI extends BaseAPIMethod implements RequestRequestInte
     public function getCurrentVersion(): string
     {
         return self::CURRENT_VERSION;
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return FrameworkAPIGroup::create();
     }
 
     // region: B - Setup

@@ -12,13 +12,14 @@ use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
 use Application_Admin_Wizard;
 use AppUtils\ClassHelper;
+use UI\AdminURLs\AdminURLInterface;
 
 abstract class BaseCreateScreen extends Application_Admin_Wizard
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create';
-    public const WIZARD_ID = 'CreateAppCountry';
+    public const string URL_NAME = 'create';
+    public const string WIZARD_ID = 'CreateAppCountry';
 
     public function getURLName(): string
     {
@@ -51,9 +52,9 @@ abstract class BaseCreateScreen extends Application_Admin_Wizard
         return '';
     }
 
-    public function getCanceledURL(): string
+    public function getCanceledURL(): AdminURLInterface
     {
-        return (string)AppFactory::createCountries()->adminURL()->list();
+        return AppFactory::createCountries()->adminURL()->list();
     }
 
     public function getSuccessMessage(): string

@@ -201,10 +201,6 @@ class Application_Countries_Country extends DBHelper_BaseRecord
         return $this->country->getCurrency();
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseRecord::recordRegisteredKeyModified()
-     */
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }

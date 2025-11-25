@@ -9,23 +9,22 @@ use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanRecord;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode_CollectionList;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 
-abstract class BaseTimeSpansListScreen extends Application_Admin_Area_Mode_Submode_CollectionList
+abstract class BaseTimeSpansListScreen extends BaseRecordListSubmode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'time-spans-list';
-    public const COL_TYPE = 'label';
-    public const COL_DATE_START = 'dateStart';
-    public const COL_DATE_END = 'dateEnd';
-    public const COL_DURATION = 'duration';
+    public const string URL_NAME = 'time-spans-list';
+    public const string COL_TYPE = 'label';
+    public const string COL_DATE_START = 'dateStart';
+    public const string COL_DATE_END = 'dateEnd';
+    public const string COL_DURATION = 'duration';
 
     public function getURLName(): string
     {
@@ -42,15 +41,12 @@ abstract class BaseTimeSpansListScreen extends Application_Admin_Area_Mode_Submo
         return t('Time Spans');
     }
 
-    /**
-     * @return TimeSpanCollection
-     */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): TimeSpanCollection
     {
         return AppFactory::createTimeTracker()->createTimeSpans();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $item = ClassHelper::requireObjectInstanceOf(
             TimeSpanRecord::class,

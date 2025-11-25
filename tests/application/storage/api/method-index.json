@@ -1,7 +1,9 @@
 {
     "DescribeAdminAreas": "Application\\API\\Method\\DescribeAdminAreasAPI",
     "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
+    "ExternalLoadedAPI": "TestDriver\\ExternalSources\\API\\ExternalAPIMethod",
     "GetAppCountries": "Application\\API\\Method\\GetAppCountriesAPI",
+    "TestAPIKey": "TestDriver\\API\\TestAPIKeyMethod",
     "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
     "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
     "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",

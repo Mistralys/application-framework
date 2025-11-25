@@ -11,15 +11,15 @@ use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
 use Application\TimeTracker\User\TimeTrackerRightsInterface;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property TimeEntry $record
  */
-class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+class BaseSettingsScreen extends BaseRecordSettingsSubmode
 {
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName(): string
     {
@@ -51,7 +51,7 @@ class BaseSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionE
         return AppFactory::createTimeTracker();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The time entry settings have been saved successfully at %1$s.',

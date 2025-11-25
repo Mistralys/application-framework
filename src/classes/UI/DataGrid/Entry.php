@@ -4,6 +4,7 @@
  * @subpackage Data Grids
  */
 
+use AppUtils\AttributeCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
 use AppUtils\Interfaces\ClassableInterface;
@@ -36,6 +37,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
      * @var array<string, string|int|float|StringableInterface|NULL>
      */
     protected array $data;
+    private HTMLTag $tag;
 
     /**
      * @param UI_DataGrid $grid
@@ -46,6 +48,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
         $this->id = nextJSID();
         $this->grid = $grid;
         $this->data = $data;
+        $this->tag = HTMLTag::create('tr');
     }
     
     public function getID() : string
@@ -253,7 +256,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
     public function render() : string
     {
-        return (string)HTMLTag::create('tr')
+        return (string)$this->tag
             ->id($this->getID())
             ->addClasses($this->getClasses())
             ->attr('data-refid', $this->getReferenceID())
@@ -341,4 +344,17 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     }
 
     // endregion
+
+    /**
+     * Sets an attribute for the row element.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return $this
+     */
+    public function attr(string $attribute, string $value) : self
+    {
+        $this->tag->attr($attribute, $value);
+        return $this;
+    }
 }

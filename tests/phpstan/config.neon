@@ -21,11 +21,5 @@ parameters:
             message: '#this might not be defined.#'
             path: ../../src/themes/default*
         -
-            message: '#is not nullable.#'
-            path: ../../src*
-        -
-            message: '#is unused.#'
-            path: ../../src*
-        -
-            message: '#never read, only written.#'
-            path: ../../src*
+            message: '#Expression on left side of \?\? is always null.#'
+            path: ../application/assets/classes/TestDriver/EnvironmentsConfig.php

@@ -5,7 +5,7 @@
  * servers (those should be added to the config-local.php).
  *
  * NOTE: This is now typically handled by the configuration
- * helper classes, see {@see \TestDriver\EnvironmentsConfig}.
+ * helper classes, see {@see \application\assets\classes\TestDriver\Environments\EnvironmentsConfig}.
  *
  * @package TestDriver
  * @subpackage Config
@@ -13,9 +13,9 @@
 
 declare(strict_types=1);
 
+use application\assets\classes\TestDriver\Environments\EnvironmentsConfig;
 use Application\Environments;
 use AppUtils\FileHelper\FolderInfo;
-use TestDriver\EnvironmentsConfig;
 
 if(!function_exists('boot_define')) {
     die('May not be accessed directly.');

@@ -67,7 +67,7 @@
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
     "mistralys/application-utils": ">=3.1.10",
-    "mistralys/application-utils-core": ">=2.3.13",
+    "mistralys/application-utils-core": ">=2.4.1",
     "mistralys/application-utils-collections": ">=1.1.6",
     "mistralys/application-utils-image": ">=1.2.0",
     "mistralys/application-localization": ">=2.1.2",
@@ -94,17 +94,18 @@
     "zenorocha/clipboardjs": "v2.0.8",
     "apereo/phpcas": ">=1.6.1",
     "roave/security-advisories": "dev-latest",
+    "php": "^8.4",
+    "ext-curl": "*",
+    "ext-dom": "*",
     "ext-json": "*",
+    "ext-ldap": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "php": "^8.4",
-    "ext-simplexml": "*",
-    "ext-ldap": "*"
+    "ext-simplexml": "*"
   },
   "require-dev": {
     "phpunit/phpunit": ">=9.6",
     "phpstan/phpstan": ">=1.10",
-    "ext-curl": "*",
     "css-crush/css-crush": ">=v4.1.3"
   },
   "config": {

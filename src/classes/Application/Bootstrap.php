@@ -116,20 +116,11 @@ class Application_Bootstrap
 
         try
         {
-            $screen = new $class($params);
-            
-            if(!$screen instanceof Application_Bootstrap_Screen)
-            {
-                throw new BootException(
-                    'Invalid bootstrap screen',
-                    sprintf(
-                        'The screen [%s] is not an instance of [%s].',
-                        $class,
-                        Application_Bootstrap_Screen::class
-                    ),
-                    self::ERROR_INVALID_BOOTSTRAP_CLASS
-                );
-            }
+            $screen = ClassHelper::requireObjectInstanceOf(
+                Application_Bootstrap_Screen::class,
+                new $class($params),
+                self::ERROR_INVALID_BOOTSTRAP_CLASS
+            );
             
             $screen->boot();
 
@@ -237,9 +228,9 @@ class Application_Bootstrap
     * constant or the default value of a registered constant.
     * 
     * @param string $name
-    * @return string|number|bool|NULL
+    * @return string|int|float|bool|array|NULL
     */
-    public static function getSetting(string $name)
+    public static function getSetting(string $name) : string|int|float|bool|array|NULL
     {
         if(defined($name))
         {
@@ -329,8 +320,16 @@ class Application_Bootstrap
         register_shutdown_function(array(self::class, 'handleShutDown'));
     }
 
-    private static function initClassLoading() : void
+    private static bool $initializedClassLoading = false;
+
+    public static function initClassLoading() : void
     {
+        if(self::$initializedClassLoading) {
+            return;
+        }
+
+        self::$initializedClassLoading = true;
+
         Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
 
         ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
@@ -567,9 +566,9 @@ function boot_define(string $name, $value)
  * from a registered setting or an actual constant.
  * 
  * @param string $name
- * @return string|number|bool|NULL The value, or NULL if it does not exist.
+ * @return string|int|float|bool|array<int|string,mixed>|NULL The value, or NULL if it does not exist.
  */
-function boot_constant(string $name)
+function boot_constant(string $name) : string|int|float|bool|array|NULL
 {
     return Application_Bootstrap::getSetting($name);
 }

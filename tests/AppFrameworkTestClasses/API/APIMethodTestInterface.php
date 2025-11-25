@@ -22,7 +22,7 @@ use AppUtils\OperationResult;
  *
  * @see APIMethodTestTrait
  */
-interface APIMethodTestInterface extends ApplicationTestCaseInterface, OperationResultTestInterface
+interface APIMethodTestInterface extends ApplicationTestCaseInterface, OperationResultTestInterface, APIClientTestInterface
 {
     /**
      * Asserts that the given operation result contains the code for an invalid value type,

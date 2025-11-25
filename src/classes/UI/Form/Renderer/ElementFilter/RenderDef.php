@@ -303,8 +303,7 @@ class UI_Form_Renderer_ElementFilter_RenderDef
     
     public function resolveComments() : string
     {
-        $gen = new UI_Form_Renderer_CommentGenerator($this);
-        return $gen->getComment();
+        return new UI_Form_Renderer_CommentGenerator($this)->getComment();
     }
     
     public function getSubDefs() : array

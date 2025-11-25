@@ -1,15 +1,13 @@
 <?php
 /**
- * File containing the {@link Application_Admin_Area_Devel_AppSettings} class.
- *
  * @package Application
  * @subpackage Administration
- * @see Application_Admin_Area_Devel_AppSettings
  */
 
 declare(strict_types=1);
 
-use Application\AppFactory;
+use Application\AppSettings\AppSettingsFilterCriteria;
+use Application\AppSettings\AppSettingsFilterSettings;
 use AppUtils\ConvertHelper;
 use AppUtils\OutputBuffering;
 
@@ -23,14 +21,15 @@ use AppUtils\OutputBuffering;
  */
 abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admin_Area_Mode
 {
-    public const URL_NAME = 'appsettings';
-    public const SETTING_TYPE_STRING = 'string';
+    public const string URL_NAME = 'appsettings';
+    public const string SETTING_TYPE_STRING = 'string';
+
     protected string $formName = 'devel_app_settings';
     protected UI_DataGrid $datagrid;
     protected string $elDataKeyID = '';
     protected string $elValueID = '';
-    protected Application_FilterSettings_AppSettings $filterSettings;
-    protected Application_FilterCriteria_AppSettings $filterCriteria;
+    protected AppSettingsFilterSettings $filterSettings;
+    protected AppSettingsFilterCriteria $filterCriteria;
 
     /**
      * @var array<string,array<string,mixed>>
@@ -71,8 +70,8 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
     
     protected function _handleActions() : bool
     {
-        $this->filterSettings = new Application_FilterSettings_AppSettings(self::URL_NAME);
-        $this->filterCriteria = new Application_FilterCriteria_AppSettings();
+        $this->filterSettings = new AppSettingsFilterSettings(self::URL_NAME);
+        $this->filterCriteria = new AppSettingsFilterCriteria();
 
         $this->createEditForm();
 
@@ -112,7 +111,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         return true;
     }
     
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         $this->datagrid->configure($this->filterSettings, $this->filterCriteria);
         
@@ -318,7 +317,7 @@ abstract class Application_Admin_Area_Devel_AppSettings extends Application_Admi
         
         $total = count($ids);
         
-        if ($total == 1)
+        if ($total === 1)
         {
             $this->redirectWithSuccessMessage(
                 t(

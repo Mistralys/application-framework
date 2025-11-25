@@ -12,6 +12,7 @@ use Application_Admin_Area_Mode_CollectionRecord;
 use Application_Users;
 use Application_Users_User;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @method Application_Users_User getRecord()
@@ -47,9 +48,9 @@ abstract class BaseViewUserMode extends Application_Admin_Area_Mode_CollectionRe
         return AppFactory::createUsers();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string

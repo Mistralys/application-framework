@@ -10,7 +10,7 @@ namespace TestDriver\TestDBRecords;
 
 use Application\Tags\Taggables\TagConnector;
 use Application\Tags\TagRecord;
-use DBHelper_BaseCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
  * Custom tag container for the test DB, used
@@ -20,7 +20,7 @@ use DBHelper_BaseCollection;
  * @package TestDriver
  * @subpackage Test DB Collection
  *
- * @method TestDBRecord[] getDBRecordsByTag(TagRecord $tag, DBHelper_BaseCollection $collection)
+ * @method TestDBRecord[] getDBRecordsByTag(TagRecord $tag, DBHelperCollectionInterface $collection)
  */
 class TestDBTagConnector extends TagConnector
 {

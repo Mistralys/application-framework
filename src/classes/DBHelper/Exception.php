@@ -11,6 +11,8 @@ use AppUtils\BaseException;
  */
 class DBHelper_Exception extends BaseException
 {
+    public const int ERROR_KEY_VALIDATION_FAILED = 186901;
+
     public function __construct(string $message, $details = null, $code = null, $previous = null)
     {
         if(Application::isUnitTestingRunning())

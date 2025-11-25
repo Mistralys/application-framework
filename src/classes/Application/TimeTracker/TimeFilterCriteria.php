@@ -8,6 +8,9 @@ use AppUtils\Microtime;
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
 
+/**
+ * @method TimeEntry[] getItemsObjects()
+ */
 class TimeFilterCriteria extends DBHelper_BaseFilterCriteria
 {
     private ?Microtime $fixedDate = null;

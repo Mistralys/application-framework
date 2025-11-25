@@ -11,7 +11,7 @@ use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
 use Application_Users;
 use Application_Users_User;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use UI;
 use UI\CSSClasses;
@@ -32,7 +32,7 @@ class UsersSettingsManager extends Application_Formable_RecordSettings_Extended
         $this->setDefaultsUseStorageNames(true);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

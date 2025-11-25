@@ -1,8 +1,11 @@
 <?php
 
-class TestDisposable implements Application_Interfaces_Disposable
+use Application\Disposables\DisposableInterface;
+use Application\Disposables\DisposableTrait;
+
+class TestDisposable implements DisposableInterface
 {
-    use Application_Traits_Disposable;
+    use DisposableTrait;
     use Application_Traits_Eventable;
     use Application_Traits_Loggable;
 

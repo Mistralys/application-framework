@@ -10,15 +10,18 @@ declare(strict_types=1);
 namespace Application;
 
 use Application;
+use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
+use Application\SourceFolders\SourceFoldersManager;
 use Application\SystemMails\SystemMailer;
 use Application\Tags\TagCollection;
 use Application\TimeTracker\TimeTrackerCollection;
@@ -39,6 +42,7 @@ use Application_RequestLog;
 use Application_Session;
 use Application_Sets;
 use Application_Uploads;
+use Application_User;
 use Application_Users;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -60,6 +64,17 @@ use function AppUtils\parseVariable;
 class AppFactory
 {
     // region: A - Factory methods
+
+    /**
+     * Get the manager instance that handles folders from which classes
+     * are loaded dynamically.
+     *
+     * @return SourceFoldersManager
+     */
+    public static function createFoldersManager() : SourceFoldersManager
+    {
+        return SourceFoldersManager::getInstance();
+    }
 
     public static function createRequest() : Application_Request
     {
@@ -181,6 +196,11 @@ class AppFactory
         return VersionInfo::getInstance();
     }
 
+    public static function createUser() : Application_User
+    {
+        return Application::getUser();
+    }
+
     public function createDriverSettings() : DriverSettings
     {
         return Application_Driver::createSettings();
@@ -267,6 +287,14 @@ class AppFactory
         return ClassHelper::requireObjectInstanceOf(
             TimeTrackerCollection::class,
             DBHelper::createCollection(TimeTrackerCollection::class)
+        );
+    }
+
+    public static function createAPIClients() : APIClientsCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            APIClientsCollection::class,
+            DBHelper::createCollection(APIClientsCollection::class)
         );
     }
 

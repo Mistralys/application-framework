@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API;
 
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Parameters\APIParamManager;
 use Application\API\Parameters\Validation\ParamValidationResults;
 use Application\API\Response\JSONInfoSerializer;
@@ -37,6 +38,16 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public function getInfo() : JSONInfoSerializer;
     public function getMethodName() : string;
     public function getDescription() : string;
+
+    /**
+     * The group that this method belongs to. This is used for
+     * documentation purposes, but also for organizing methods
+     * and selecting them in the API key administration.
+     *
+     * @return APIGroupInterface
+     */
+    public function getGroup() : APIGroupInterface;
+
     public function getRequestMime() : string;
     public function getResponseMime() : string;
     public function getDocumentationURL() : AdminURLInterface;
@@ -154,4 +165,12 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return $this
      */
     public function setRequestBody(string $body) : self;
+
+    /**
+     * Gets a single-line text representation of the method to use in the
+     * UI when filtering the method list by keywords.
+     *
+     * @return string
+     */
+    public function getFilterText() : string;
 }

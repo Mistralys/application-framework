@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace DBHelper\Admin;
 
 use Application\Collection\Admin\RecordSelectionTieInInterface;
-use DBHelper_BaseCollection;
-use DBHelper_BaseRecord;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Interface for admin-screen tie-in classes that
@@ -21,11 +21,11 @@ use DBHelper_BaseRecord;
  * @package DBHelper
  * @subpackage Admin Screens
  *
- * @method DBHelper_BaseRecord[] getSelectableRecords()
+ * @method DBHelperRecordInterface[] getSelectableRecords()
  */
 interface DBRecordSelectionTieInInterface extends RecordSelectionTieInInterface
 {
-    public function getCollection() : DBHelper_BaseCollection;
+    public function getCollection() : DBHelperCollectionInterface;
 
     public function getRecordID() : ?int;
 }

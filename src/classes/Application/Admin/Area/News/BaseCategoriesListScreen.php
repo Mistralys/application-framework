@@ -9,21 +9,21 @@ use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\NewsScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionList;
 use AppUtils\ClassHelper;
 use Closure;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
-abstract class BaseCategoriesListScreen extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseCategoriesListScreen extends BaseRecordListMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'categories-list';
+    public const string URL_NAME = 'categories-list';
 
-    public const COL_LABEL = 'label';
+    public const string COL_LABEL = 'label';
 
     public function getURLName(): string
     {
@@ -38,7 +38,7 @@ abstract class BaseCategoriesListScreen extends Application_Admin_Area_Mode_Coll
         return AppFactory::createNews()->createCategories();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry)
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $category = ClassHelper::requireObjectInstanceOf(Category::class, $record);
 

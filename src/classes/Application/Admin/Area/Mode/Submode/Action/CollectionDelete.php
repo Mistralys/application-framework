@@ -1,6 +1,0 @@
-<?php
-
-abstract class Application_Admin_Area_Mode_Submode_Action_CollectionDelete extends Application_Admin_Area_Mode_Submode_Action_CollectionRecord
-{
-    use Application_Traits_Admin_CollectionDelete;
-}

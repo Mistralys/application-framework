@@ -27,10 +27,10 @@ class QuickNavigation implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_NO_ACTIVE_SCREEN_SET = 110701;
-    public const ERROR_NO_CONTAINER_FOR_SCREEN = 110702;
+    public const int ERROR_NO_ACTIVE_SCREEN_SET = 110701;
+    public const int ERROR_NO_CONTAINER_FOR_SCREEN = 110702;
 
-    public const NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
+    public const string NAV_AREA_QUICK_NAVIGATION = 'area-quick-nav';
 
     private ?UI_Page_Navigation $navigation = null;
     private ?AdminScreenInterface $workScreen = null;
@@ -130,25 +130,6 @@ class QuickNavigation implements Application_Interfaces_Loggable
         }
 
         return null;
-    }
-
-    private function requireContainerByScreen(AdminScreenInterface $screen) : ScreenItemsContainer
-    {
-         $container = $this->getContainerByScreen($screen);
-
-         if($container !== null)
-         {
-             return $container;
-         }
-
-         throw new UI_Exception(
-             'Container not found for screen.',
-             sprintf(
-                 'No container for screen [%s].',
-                 $screen->getURLPath()
-             ),
-             self::ERROR_NO_CONTAINER_FOR_SCREEN
-         );
     }
 
     protected function getContainerByScreen(AdminScreenInterface $screen) : ?ScreenItemsContainer

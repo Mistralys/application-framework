@@ -13,11 +13,6 @@ class Application_OAuth
     public const ERROR_AUTH_SALT_NOT_SET = 75304;
 
     /**
-     * @var Application_Driver
-     */
-    private $driver;
-
-    /**
      * @var string
      */
     private $strategiesFolder;
@@ -44,7 +39,6 @@ class Application_OAuth
 
     public function __construct(Application_Driver $driver)
     {
-        $this->driver = $driver;
         $this->strategiesFolder = $driver->getApplication()->getClassesFolder().'/Application/OAuth/Strategy';
         $this->appStrategiesFolder = $driver->getClassesFolder().'/OAuth';
 

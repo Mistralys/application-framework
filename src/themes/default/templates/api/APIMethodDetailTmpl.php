@@ -1,4 +1,8 @@
 <?php
+/**
+ * @package API
+ * @subpackage UI
+ */
 
 declare(strict_types=1);
 
@@ -9,6 +13,8 @@ use Application\API\APIMethodInterface;
 use Application\API\Connector\AppAPIConnector;
 use Application\API\Connector\AppAPIMethod;
 use Application\API\Parameters\APIParameterInterface;
+use Application\API\Parameters\Flavors\APIHeaderParameterInterface;
+use Application\API\Parameters\Flavors\RequiredOnlyParamInterface;
 use Application\API\Parameters\ReservedParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Traits\JSONResponseInterface;
@@ -22,14 +28,22 @@ use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Highlighter;
 use AppUtils\OutputBuffering;
 use Connectors;
+use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Exception;
 use Connectors_Response;
 use Connectors_ResponseCode;
 use Throwable;
 use UI;
+use UI\CSSClasses;
 use UI_Form;
 use UI_Page_Template_Custom;
 
+/**
+ * Renders the API method detail documentation page.
+ *
+ * @package API
+ * @subpackage UI
+ */
 class APIMethodDetailTmpl extends UI_Page_Template_Custom
 {
     public const string PARAM_METHOD = 'method';
@@ -52,6 +66,10 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         $urlParams['method'] = $this->method->getMethodName();
         foreach($params as $param)
         {
+            if($param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
             $value = $values->getString($param->getName());
             if(!empty($value)) {
                 $urlParams[$param->getName()] = $value;
@@ -81,9 +99,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         {
             try
             {
-                $connector = AppAPIConnector::create(APP_URL);
-                $result = $connector->fetchMethodData($this->method->getMethodName(), $values->getData());
-                $data = $result->getData();
+                $data = $this->fetchAPIResult($values);
                 $json = JSONConverter::var2json($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
                 if($data[JSONResponseInterface::RESPONSE_KEY_STATE] === JSONResponseInterface::RESPONSE_STATE_SUCCESS) {
@@ -133,6 +149,39 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         }
     }
 
+    private function fetchAPIResult(ArrayDataCollection $values) : array
+    {
+        return AppAPIConnector::create(APP_URL)
+            ->fetchMethodData(
+                $this->method->getMethodName(),
+                $values->getData(),
+                $this->getHeaders($values)
+            )
+            ->getData();
+    }
+
+    /**
+     * Sets the headers for any header-based parameters of the method
+     * for the "Try it out" request.
+     *
+     * @param ArrayDataCollection $values
+     * @return HTTPHeadersBasket
+     */
+    private function getHeaders(ArrayDataCollection $values) : HTTPHeadersBasket
+    {
+        $headers = new HTTPHeadersBasket();
+
+        foreach($this->method->manageParams()->getHeaderParams() as $param)
+        {
+            $headerValue = $values->getString($param->getName());
+            if(!empty($headerValue)) {
+                $param->injectHeaderForValue($headers, $headerValue);
+            }
+        }
+
+        return $headers;
+    }
+
     protected function generateOutput(): void
     {
         $this->ui->addStylesheet('api/api-methods.css');
@@ -142,11 +191,16 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         OutputBuffering::start();
 
         ?>
-        <p>
+        <p class="pull-left">
             <a href="<?php echo APIManager::getInstance()->adminURL()->documentationOverview(); ?>">
                 &laquo; <?php pt('Back to overview'); ?>
             </a>
         </p>
+        <?php
+
+        $this->getPage()->createTemplate(APIMethodsMetaNav::class)->display();
+
+        ?>
         <h1><?php pt('API'); echo ' - '.$this->method->getMethodName(); ?> </h1>
         <?php
 
@@ -173,6 +227,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
         </div>
         <?php
         $this->generateProperties();
+        $this->generateHeaderList();
         $this->generateParamList();
         $this->generateRulesList();
         $this->generateExample();
@@ -237,6 +292,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
     private function generateProperties() : void
     {
         $props = $this->ui->createPropertiesGrid();
+        $props->add(t('API group'), $this->method->getGroup()->getLabel());
         $props->add(t('Request mime'), $this->method->getRequestMime());
         $props->add(t('Response mime'), $this->method->getResponseMime());
         $props->add(t('Version'), $this->method->getCurrentVersion());
@@ -291,6 +347,58 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             ->setIcon(UI::icon()->setType('code', 'fas'))
             ->setContent($example)
             ->display();
+    }
+
+    private function generateHeaderList() : void
+    {
+        $params = $this->getHeaderParams();
+        if(empty($params)) {
+            return;
+        }
+
+        $markdown = MarkdownRenderer::create();
+
+        $grid = $this->ui->createDataGrid('api-method-headers');
+        $grid->enableCompactMode();
+        $grid->disableFooter();
+        $grid->addColumn('header', t('Header'))->setNowrap();
+        $grid->addColumn('description', t('Description'));
+        $grid->addColumn('required', t('Required'));
+
+        $entries = array();
+        foreach($params as $param) {
+            if(!$param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
+            $entries[] = array(
+                'header' => sb()->mono($param->getHeaderExample()),
+                'description' => $markdown->render($param->getDescription()),
+                'required' => UI::prettyBool($param->isRequired())->makeYesNo()->makeDangerous()
+            );
+        }
+
+        $this->ui->createSection()
+                ->setTitle('Request headers')
+                ->setAbstract('These are any HTTP headers that the client can or must include in the API request.')
+                ->setIcon(UI::icon()->variables())
+                ->collapse()
+                ->setContent($grid->render($entries))
+                ->display();
+    }
+
+    private function getHeaderParams() : array
+    {
+        $results = array();
+        foreach($this->getParamsSorted() as $param) {
+            if(!$param instanceof APIHeaderParameterInterface) {
+                continue;
+            }
+
+            $results[] = $param;
+        }
+
+        return $results;
     }
 
     private function generateParamList() : void
@@ -423,7 +531,16 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
                 $field = $form->addText($param->getName(), $param->getLabel());
             }
 
+            $field->addClass(CSSClasses::INPUT_XXLARGE);
             $field->setComment($param->getDescription());
+
+            if($param instanceof APIHeaderParameterInterface) {
+                $field->setLabel($field->getLabel().' '.UI::label('Header')->makeInfo()->setTooltip('This parameter is sent as an HTTP header in the API request.'));
+            }
+
+            if($param instanceof RequiredOnlyParamInterface) {
+                $form->makeRequired($field);
+            }
         }
 
         $form->addPrimarySubmit('Send request')

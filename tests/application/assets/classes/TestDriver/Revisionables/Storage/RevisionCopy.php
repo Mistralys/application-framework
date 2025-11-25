@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables\Storage;
 
-use Application\RevisionStorage\Copy\BaseDBRevisionCopy;
+use Application\Revisionable\Storage\Copy\BaseDBRevisionCopy;
 
 class RevisionCopy extends BaseDBRevisionCopy
 {

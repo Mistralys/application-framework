@@ -1,6 +1,7 @@
 <?php
 
 use AppUtils\Interfaces\ClassableInterface;
+use AppUtils\Interfaces\StringableInterface;
 use AppUtils\NamedClosure;
 use AppUtils\OutputBuffering;
 use AppUtils\OutputBuffering_Exception;
@@ -43,10 +44,10 @@ abstract class UI_DataGrid_Action
     /**
      * @param UI_DataGrid $grid
      * @param string $name
-     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|int|float|StringableInterface|null $label
      * @throws UI_Exception
      */
-    public function __construct(UI_DataGrid $grid, string $name, $label)
+    public function __construct(UI_DataGrid $grid, string $name, string|int|float|StringableInterface|null $label)
     {
         $this->id = nextJSID();
         $this->grid = $grid;
@@ -118,11 +119,11 @@ abstract class UI_DataGrid_Action
      * - The selected item IDs
      * - [Optional arguments]
      *
-     * @param callable $callback The callback to use.
-     * @param array $arguments Optional list of arguments to include in the callback.
+     * @param callable(UI_DataGrid_Action, array, mixed...): void $callback The callback to use.
+     * @param array<int,mixed> $arguments Optional list of arguments to include in the callback.
      * @return $this
      */
-    public function setCallback(callable $callback, array $arguments=array())
+    public function setCallback(callable $callback, array $arguments=array()) : self
     {
         $this->callback = new CallableContainer($callback, $arguments);
         

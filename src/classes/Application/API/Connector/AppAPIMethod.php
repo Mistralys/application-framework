@@ -7,13 +7,21 @@ namespace Application\API\Connector;
 use Application\API\APIMethodInterface;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
+use Connectors\Headers\HTTPHeadersBasket;
 use Connectors_Connector_Method_Post;
 use Connectors_Exception;
 use Throwable;
 
 class AppAPIMethod extends Connectors_Connector_Method_Post
 {
-    public function fetchJSON(string $methodName, ArrayDataCollection $params) : ArrayDataCollection
+    /**
+     * @param string $methodName
+     * @param ArrayDataCollection $params
+     * @param HTTPHeadersBasket|NULL $headers
+     * @return ArrayDataCollection
+     * @throws Connectors_Exception
+     */
+    public function fetchJSON(string $methodName, ArrayDataCollection $params, ?HTTPHeadersBasket $headers=null) : ArrayDataCollection
     {
         $params->setKey(APIMethodInterface::REQUEST_PARAM_METHOD, $methodName);
 
@@ -21,6 +29,7 @@ class AppAPIMethod extends Connectors_Connector_Method_Post
         {
             $result = $this->createMethodRequest($methodName)
                 ->setPOSTParams($params)
+                ->setHeaders($headers)
                 ->getData();
 
             $response = $result->getResult();

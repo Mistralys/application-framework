@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTestClasses\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
@@ -68,5 +69,10 @@ class StubAPIMethod extends BaseAPIMethod implements RequestRequestInterface, JS
     public function getReponseKeyDescriptions(): array
     {
         return array();
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return new StubAPIGroup();
     }
 }

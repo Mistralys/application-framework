@@ -9,7 +9,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Select;
 use UI;
@@ -19,9 +19,9 @@ use UI;
  */
 class TagSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LABEL = 'label';
-    public const SETTING_PARENT = 'parent';
-    public const SETTING_SORT_TYPE = 'sort_type';
+    public const string SETTING_LABEL = 'label';
+    public const string SETTING_PARENT = 'parent';
+    public const string SETTING_SORT_TYPE = 'sort_type';
 
     private ?TagRecord $parentTag = null;
 
@@ -43,7 +43,7 @@ class TagSettingsManager extends Application_Formable_RecordSettings_Extended
         return $this;
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

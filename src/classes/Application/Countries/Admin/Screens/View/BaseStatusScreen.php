@@ -7,16 +7,16 @@ namespace Application\Countries\Admin\Screens\View;
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Countries;
 use Application_Countries_Country;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 
 /**
  * @property Application_Countries_Country $record
  */
-class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+class BaseStatusScreen extends BaseRecordSubmode
 {
     use AllowableMigrationTrait;
 
@@ -47,17 +47,14 @@ class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRec
         return CountryScreenRights::SCREEN_STATUS;
     }
 
-    /**
-     * @return Application_Countries
-     */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): Application_Countries
     {
         return AppFactory::createCountries();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     protected function _handleHelp(): void

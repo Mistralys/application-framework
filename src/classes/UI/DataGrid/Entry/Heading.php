@@ -1,13 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
+use AppUtils\Interfaces\StringableInterface;
+use AppUtils\OutputBuffering;
+
 class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
 {
-    protected $title;
-    
-    public function __construct(UI_DataGrid $grid, $title)
+    protected string $title;
+    private ?string $subline = null;
+
+    public function __construct(UI_DataGrid $grid, string|StringableInterface $title)
     {
         parent::__construct($grid, array());
-        $this->title = $title;
+        $this->title = toString($title);
         $this->makeNonSortable();
     }
 
@@ -28,14 +34,32 @@ class UI_DataGrid_Entry_Heading extends UI_DataGrid_Entry
             'colspan' => $this->grid->countColumns()
         );
         
-        $html =
-        '<tr '.compileAttributes($trAttribs).'>' .
-            '<td '.compileAttributes($tdAttribs).'>' .
-                $this->title .
-            '</td>' .
-        '</tr>';
+        OutputBuffering::start();
+        ?>
+        <tr <?php echo compileAttributes($trAttribs) ?>>
+            <td <?php echo compileAttributes($tdAttribs) ?>>
+                <div class="heading">
+                    <?php echo $this->title ?>
+                    <?php if($this->subline !== NULL) : ?>
+                        <div class="subline"><?php echo $this->subline ?></div>
+                    <?php endif; ?>
+                </div>
+            </td>
+        </tr>
+        <?php
         
-        return $html;
+        return OutputBuffering::get();
+    }
+
+    public function setSubline(string|StringableInterface|NULL $subline) : self
+    {
+        if($subline !== NULL) {
+            $subline = toString($subline);
+        }
+
+        $this->subline = $subline;
+
+        return $this;
     }
 }
 

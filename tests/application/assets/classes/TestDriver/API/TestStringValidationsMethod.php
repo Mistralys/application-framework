@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TestDriver\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Parameters\CommonTypes\AliasParameter;
 use Application\API\Parameters\CommonTypes\AlphabeticalParameter;
 use Application\API\Parameters\CommonTypes\AlphanumericParameter;
@@ -117,5 +118,10 @@ class TestStringValidationsMethod extends BaseAPIMethod
     public function getReponseKeyDescriptions(): array
     {
         return array();
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return new TestAPIGroup();
     }
 }

@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+
 /**
  * Wizard step trait interface: Create a DB record.
  *
@@ -20,11 +22,11 @@ declare(strict_types=1);
  */
 interface Application_Interfaces_Admin_Wizard_CreateDBRecordStep extends Application_Interfaces_Admin_Wizard_Step
 {
-    public const ERROR_NO_RECORD_CREATED_YET = 93801;
+    public const int ERROR_NO_RECORD_CREATED_YET = 93801;
 
-    public const KEY_RECORD_ID = 'record_id';
+    public const string KEY_RECORD_ID = 'record_id';
 
-    public function createCollection() : DBHelper_BaseCollection;
+    public function createCollection() : DBHelperCollectionInterface;
 
     public function createSettingsManager() : Application_Formable_RecordSettings_Extended;
 }

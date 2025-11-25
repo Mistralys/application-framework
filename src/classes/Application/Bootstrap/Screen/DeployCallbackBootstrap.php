@@ -11,7 +11,7 @@ namespace Application\Bootstrap;
 
 use Application;
 use Application\AppFactory;
-use Application\DeploymentRegistry;
+use Application\DeploymentRegistry\DeploymentRegistry;
 use Application_Bootstrap;
 use Application_Bootstrap_Screen;
 use DBHelper;

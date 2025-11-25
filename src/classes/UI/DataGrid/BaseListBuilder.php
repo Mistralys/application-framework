@@ -8,24 +8,24 @@ declare(strict_types=1);
 
 namespace UI\DataGrid;
 
-use Application\Driver\DriverException;
+use Application\ApplicationException;
+use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application_Driver;
-use Application_Exception;
-use Application_FilterSettings;
 use Application_User;
 use AppUtils\ConvertHelper;
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Microtime;
 use AppUtils\Traits\OptionableTrait;
 use DateTime;
+use DBHelper\DBHelperFilterSettingsInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI;
 use UI\Interfaces\ListBuilderInterface;
 use UI_DataGrid;
 use UI_DataGrid_Entry;
 use UI_DataGrid_Exception;
-use UI_Exception;
 use UI_Page_Sidebar;
 use UI_Renderable_Interface;
 use UI_Traits_RenderableGeneric;
@@ -53,18 +53,18 @@ abstract class BaseListBuilder
 
     abstract protected function createFilterCriteria(): FilterCriteriaInterface;
     abstract protected function configureFilters(FilterCriteriaInterface $filterCriteria): void;
-    abstract protected function configureFilterSettings(Application_FilterSettings $filterSettings): void;
+    abstract protected function configureFilterSettings(FilterSettingsInterface $filterSettings): void;
     abstract protected function configureColumns(UI_DataGrid $grid): void;
     abstract protected function configureActions(UI_DataGrid $grid): void;
     abstract protected function resolveRecord(array $itemData): object;
-    abstract protected function createFilterSettings(): Application_FilterSettings;
+    abstract protected function createFilterSettings(): FilterSettingsInterface;
     abstract protected function preRender(): void;
 
     /**
-     * @param object $record
+     * @param DBHelperRecordInterface $record
      * @return array<string,mixed>|UI_DataGrid_Entry
      */
-    abstract protected function collectEntry(object $record);
+    abstract protected function collectEntry(DBHelperRecordInterface $record) : array|UI_DataGrid_Entry;
 
     // endregion
 
@@ -114,9 +114,6 @@ abstract class BaseListBuilder
         return $this;
     }
 
-    /**
-     * @return FilterCriteriaInterface
-     */
     public function getFilterCriteria(): FilterCriteriaInterface
     {
         if (isset($this->filters)) {
@@ -128,7 +125,7 @@ abstract class BaseListBuilder
         return $this->filters;
     }
 
-    public function getFilterSettings(): ?Application_FilterSettings
+    public function getFilterSettings(): ?FilterSettingsInterface
     {
         if (!$this->hasRecords) {
             return null;
@@ -230,7 +227,7 @@ abstract class BaseListBuilder
 
     protected UI $ui;
     protected Application_User $user;
-    protected ?Application_FilterSettings $filterSettings = null;
+    protected ?FilterSettingsInterface $filterSettings = null;
     protected bool $hasRecords;
     protected ?UI_DataGrid $dataGrid = null;
     protected string $listID;
@@ -308,7 +305,7 @@ abstract class BaseListBuilder
 
     /**
      * @return array<int,array<string,mixed>|UI_DataGrid_Entry>
-     * @throws Application_Exception
+     * @throws ApplicationException
      */
     protected function collectEntries(): array
     {
@@ -365,7 +362,6 @@ abstract class BaseListBuilder
 
     /**
      * @return $this
-     * @throws Application_Exception
      */
     public function handleActions(): self
     {

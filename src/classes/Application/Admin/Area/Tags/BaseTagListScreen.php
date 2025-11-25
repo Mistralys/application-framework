@@ -5,26 +5,26 @@ declare(strict_types=1);
 namespace Application\Area\Tags;
 
 use Application\AppFactory;
-use Application_Admin_Area_Mode_CollectionList;
 use AppUtils\ClassHelper;
 use Application\Tags\TagCollection;
 use Application\Tags\TagCriteria;
 use Application\Tags\TagRecord;
 use AppUtils\ClassHelper\BaseClassHelperException;
 use Closure;
+use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 use UI;
 use UI_DataGrid_Action;
 
 /**
  * @property TagCriteria $filters
  */
-abstract class BaseTagListScreen extends Application_Admin_Area_Mode_CollectionList
+abstract class BaseTagListScreen extends BaseRecordListMode
 {
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
-    public const COL_LABEL = 'label';
+    public const string COL_LABEL = 'label';
 
     public function getURLName(): string
     {
@@ -37,12 +37,12 @@ abstract class BaseTagListScreen extends Application_Admin_Area_Mode_CollectionL
     }
 
     /**
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param DBHelper_BaseFilterCriteria_Record $entry
      * @return array<string,mixed>
      * @throws BaseClassHelperException
      */
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         $tag = ClassHelper::requireObjectInstanceOf(
             TagRecord::class,

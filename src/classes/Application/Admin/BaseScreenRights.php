@@ -33,8 +33,8 @@ use Application_User;
  */
 abstract class BaseScreenRights implements ScreenRightsInterface
 {
-    public const ERROR_SCREEN_CLASS_NOT_FOUND = 156701;
-    public const ERROR_SCREEN_CLASS_ALREADY_REGISTERED = 156702;
+    public const int ERROR_SCREEN_CLASS_NOT_FOUND = 156701;
+    public const int ERROR_SCREEN_CLASS_ALREADY_REGISTERED = 156702;
 
     /**
      * @var array<class-string,string>
@@ -44,15 +44,15 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     /**
      * Gets the right required for the target screen.
      *
-     * NOTE: Will throw an exception if the screen has no
-     * right registered. Use {@see self::screenExists()} to
-     * check if a screen has a right registered.
+     * > NOTE: Will throw an exception if the screen has no
+     * > right registered. Use {@see self::screenExists()} to
+     * > check if a screen has a right registered.
      *
-     * @param AdminScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $screen
      * @return string
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
-    public function getByScreen($screen) : string
+    public function getByScreen(AdminScreenInterface|string $screen) : string
     {
         $screenClass = $this->resolveScreenClass($screen);
 
@@ -60,11 +60,11 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     }
 
     /**
-     * @param AdminScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $screen
      * @return string
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_NOT_FOUND}
      */
-    private function resolveScreenClass($screen) : string
+    private function resolveScreenClass(AdminScreenInterface|string $screen) : string
     {
         if($screen instanceof AdminScreenInterface) {
             return get_class($screen);
@@ -124,7 +124,7 @@ abstract class BaseScreenRights implements ScreenRightsInterface
     abstract protected function _registerRights() : void;
 
     /**
-     * @param class-string $screenClass
+     * @param class-string<AdminScreenInterface> $screenClass
      * @param string $right
      * @return $this
      * @throws Application_Admin_Exception {@see self::ERROR_SCREEN_CLASS_ALREADY_REGISTERED}

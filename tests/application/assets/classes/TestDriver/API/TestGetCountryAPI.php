@@ -9,14 +9,15 @@ declare(strict_types=1);
 namespace TestDriver\API;
 
 use Application\API\BaseMethods\BaseAPIMethod;
+use Application\API\Groups\APIGroupInterface;
 use Application\API\Traits\JSONResponseInterface;
 use Application\API\Traits\JSONResponseTrait;
 use Application\API\Traits\RequestRequestInterface;
 use Application\API\Traits\RequestRequestTrait;
 use application\assets\classes\TestDriver\API\TestGetCountryBySetAPI;
+use application\assets\classes\TestDriver\APIClasses\TestDriverAPIGroup;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application\Countries\API\AppCountryAPITrait;
-use Application_Countries_Country;
 use AppUtils\ArrayDataCollection;
 
 /**
@@ -69,6 +70,11 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
     public function getCurrentVersion(): string
     {
         return self::CURRENT_VERSION;
+    }
+
+    public function getGroup(): APIGroupInterface
+    {
+        return TestDriverAPIGroup::create();
     }
 
     protected function init(): void

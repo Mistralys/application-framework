@@ -58,7 +58,7 @@ class HTML_QuickForm2_Element_ImageUploader extends HTML_QuickForm2_Element_Inpu
 
     protected function initNode() : void
     {
-        $this->setRuntimeProperty('comments-callback', array($this, 'getAutoComments'));
+        $this->setRuntimeProperty(UI_Form_Renderer_CommentGenerator::PROPERTY_COMMENTS_CALLBACK, array($this, 'getAutoComments'));
     }
     
    /**

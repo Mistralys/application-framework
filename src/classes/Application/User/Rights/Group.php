@@ -9,12 +9,6 @@ class Application_User_Rights_Group
     private Application_User_Rights_Container $rights;
     private Application_User_Rights $manager;
     private string $description = '';
-    private bool $rightsRegistered = false;
-
-    /**
-     * @var callable
-     */
-    private $rightsCallback;
 
     public function __construct(Application_User_Rights $manager, string $id, string $label, callable $rightsCallback)
     {

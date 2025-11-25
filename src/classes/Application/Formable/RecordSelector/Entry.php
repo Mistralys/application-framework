@@ -1,13 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSelector_Entry} class.
- *
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSelector_Entry
  */
 
 declare(strict_types=1);
+
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Container for a single entry in the record selector's 
@@ -22,32 +21,17 @@ declare(strict_types=1);
  */
 class Application_Formable_RecordSelector_Entry
 {
-    public const ERROR_NO_DB_RECORD_SET = 92801;
+    public const int ERROR_NO_DB_RECORD_SET = 92801;
 
-   /**
-    * @var DBHelper_BaseRecord|NULL
-    */
-    private $record;
-    
-   /**
-    * @var string
-    */
-    private $label;
-    
-   /**
-    * @var string
-    */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $category = '';
+    private ?DBHelperRecordInterface $record = null;
+    private string $label;
+    private string $id;
+    private string $category = '';
 
    /**
     * @var array<string,string>
     */
-    private $attributes = array();
+    private array $attributes = array();
     
     public function __construct(string $id, string $label)
     {
@@ -55,7 +39,7 @@ class Application_Formable_RecordSelector_Entry
         $this->id = $id;
     }
 
-    public function setRecord(DBHelper_BaseRecord $record) : Application_Formable_RecordSelector_Entry
+    public function setRecord(DBHelperRecordInterface $record) : self
     {
         $this->record = $record;
         return $this;
@@ -67,10 +51,10 @@ class Application_Formable_RecordSelector_Entry
      * NOTE: Available only if a record has been set, which will
      * be the case for the RecordSelector, but not the base selector.
      *
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      * @throws Application_Formable_Exception
      */
-    public function getRecord() : DBHelper_BaseRecord
+    public function getRecord() : DBHelperRecordInterface
     {
         if(isset($this->record))
         {

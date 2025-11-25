@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Event;
 
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
+use Application\Revisionable\Storage\Event\Application_RevisionStorage_Event_RevisionAdded;
 use Application_EventHandler_EventableEvent;
-use Application_RevisionStorage_Event_RevisionAdded;
 
 class RevisionAddedEvent extends Application_EventHandler_EventableEvent
 {
-    public function getRevisionable(): RevisionableStatelessInterface
+    public function getRevisionable(): RevisionableInterface
     {
-        return $this->getArgumentObject(0, RevisionableStatelessInterface::class);
+        return $this->getArgumentObject(0, RevisionableInterface::class);
     }
 
     public function getNumber(): int

@@ -144,6 +144,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function calculate() : self { return $this->setType('calculator'); }
+    /**
+     * @return $this
+     */
     public function calendar() : self { return $this->setType('calendar'); }
     /**
      * @return $this
@@ -897,6 +901,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      * @return $this
      */
     public function whitelist() : self { return $this->setType('star', 'far'); }
+    /**
+     * @return $this
+     */
+    public function wizard() : self { return $this->setType('hat-wizard', 'fas'); }
     /**
      * @return $this
      */

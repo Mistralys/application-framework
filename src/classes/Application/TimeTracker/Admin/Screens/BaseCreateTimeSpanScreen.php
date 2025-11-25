@@ -5,21 +5,18 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
-use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanSettingsManager;
 use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionCreate;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
-use Application\TimeTracker\TimeSettingsManager;
-use Application\TimeTracker\TimeTrackerCollection;
 
-abstract class BaseCreateTimeSpanScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode
 {
     use AllowableMigrationTrait;
 
-    public const URL_NAME = 'create-time-span';
+    public const string URL_NAME = 'create-time-span';
 
     public function getURLName(): string
     {
@@ -41,7 +38,7 @@ abstract class BaseCreateTimeSpanScreen extends Application_Admin_Area_Mode_Coll
         return new TimeSpanSettingsManager($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The time span has been added successfully at %1$s.',
@@ -57,7 +54,7 @@ abstract class BaseCreateTimeSpanScreen extends Application_Admin_Area_Mode_Coll
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         return $this->getBackOrCancelURL();
     }

@@ -10,6 +10,7 @@ namespace AppFrameworkTestClasses\API;
 
 use Application\API\APIManager;
 use Application\API\APIMethodInterface;
+use Application\API\Clients\API\APIKeyMethodInterface;
 use Application\API\ErrorResponsePayload;
 use Application\API\Parameters\APIParameterInterface;
 use Application\API\Parameters\Validation\ParamValidationInterface;
@@ -49,6 +50,8 @@ trait APIMethodTestTrait
                 $response->getAsString()
             );
         }
+
+        $this->addToAssertionCount(1);
 
         return $response;
     }
@@ -95,6 +98,10 @@ trait APIMethodTestTrait
         $method = new $methodClass(APIManager::getInstance());
 
         $this->assertInstanceOf(APIMethodInterface::class, $method, 'Must be an API method class name');
+
+        if($method instanceof APIKeyMethodInterface) {
+            $method->manageParamAPIKey()->selectKey($this->createTestAPIKey());
+        }
 
         $_REQUEST[APIMethodInterface::REQUEST_PARAM_METHOD] = $method->getMethodName();
 

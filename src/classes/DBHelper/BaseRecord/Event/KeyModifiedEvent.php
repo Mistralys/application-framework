@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace DBHelper\BaseRecord\Event;
 
 use Application_EventHandler_EventableEvent;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 class KeyModifiedEvent extends Application_EventHandler_EventableEvent
 {
-    public const EVENT_NAME = 'KeyModified';
+    public const string EVENT_NAME = 'KeyModified';
 
-    public function getRecord() : DBHelper_BaseRecord
+    public function getRecord() : DBHelperRecordInterface
     {
-        return $this->getArgumentObject(0, DBHelper_BaseRecord::class);
+        return $this->getArgumentObject(0, DBHelperRecordInterface::class);
     }
 
     public function getKeyName() : string

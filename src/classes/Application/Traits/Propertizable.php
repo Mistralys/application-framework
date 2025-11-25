@@ -1,11 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 trait Application_Traits_Propertizable
 {
-    /**
-     * @var Application_CustomProperties
-     */
-    protected $properties;
+    protected ?Application_CustomProperties $properties = null;
 
     /**
      * Retrieves the group's properties collection. This can be
@@ -14,7 +13,7 @@ trait Application_Traits_Propertizable
      *
      * @return Application_CustomProperties
      */
-    public function getProperties()
+    public function getProperties() : Application_CustomProperties
     {
         if(!isset($this->properties)) {
             $this->properties = new Application_CustomProperties();
@@ -28,7 +27,7 @@ trait Application_Traits_Propertizable
     * @param integer $property_id
     * @return Application_CustomProperties_Property
     */
-    public function getPropertyByID($property_id)
+    public function getPropertyByID(int $property_id) : Application_CustomProperties_Property
     {
         return $this->getProperties()->getByID($property_id);
     }

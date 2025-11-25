@@ -28,7 +28,7 @@ use DBHelper_BaseCollection;
  */
 class MediaCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
-    public const COLLECTION_ID = 'media';
+    public const string COLLECTION_ID = 'media';
 
     use TagCollectionTrait;
 

@@ -38,7 +38,7 @@ class Application_Countries_Selector extends Application_Formable_RecordSelector
         return $this;
     }
     
-    public function createCollection() : DBHelper_BaseCollection
+    public function createCollection() : Application_Countries
     {
         return Application_Countries::getInstance();
     }

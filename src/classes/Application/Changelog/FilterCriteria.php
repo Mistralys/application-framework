@@ -42,7 +42,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         return $query;
     }
     
-    protected function getSearchFields() : array
+    public function getSearchFields() : array
     {
         return array(
             'chlog.`changelog_data`',

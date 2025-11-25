@@ -39,8 +39,6 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
     private Microtime $time;
     private string $requestID;
     private string $sessionID;
-    private string $baseFolder;
-    private string $baseName;
     private float $duration;
 
     public function __construct(Application_Logger $logger)
@@ -197,8 +195,8 @@ class Application_RequestLog_LogWriter implements Application_Interfaces_Loggabl
             self::KEY_AUTH_ENABLED => Application::isAuthenticationEnabled(),
             self::KEY_DATABASE_ENABLED => Application::isDatabaseEnabled(),
             self::KEY_DEMO_MODE => Application::isDemoMode(),
-            self::KEY_SERVER_VARS => $_SERVER ?? null,
-            self::KEY_REQUEST_VARS => $_REQUEST ?? null,
+            self::KEY_SERVER_VARS => $_SERVER,
+            self::KEY_REQUEST_VARS => $_REQUEST,
             self::KEY_SESSION_VARS => $_SESSION ?? null,
             self::KEY_QUERY_COUNT => DBHelper::getQueryCount(),
             self::KEY_SELECT_QUERY_COUNT => DBHelper::countSelectQueries(),

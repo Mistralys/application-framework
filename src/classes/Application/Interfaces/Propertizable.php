@@ -15,7 +15,7 @@ interface Application_Interfaces_Propertizable
      * @param integer $property_id
      * @return Application_CustomProperties_Property|NULL
      */
-    public function getPropertyByID($property_id);
+    public function getPropertyByID(int $property_id) : ?Application_CustomProperties_Property;
     
     /**
      * Retrieves a string identifying the type of owner of the

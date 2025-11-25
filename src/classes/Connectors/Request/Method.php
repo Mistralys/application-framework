@@ -8,6 +8,8 @@
 
 declare(strict_types=1);
 
+use Connectors\Headers\HTTPHeadersBasket;
+
 /**
  * Method request: handles requests to a specific
  * API endpoint method.
@@ -65,6 +67,19 @@ class Connectors_Request_Method extends Connectors_Request
         $this->setGETData(Application_Localization::REQUEST_PARAM_APPLICATION_LOCALE, 'de_DE');
         
         return parent::getData();
+    }
+
+    public function setHeaders(?HTTPHeadersBasket $headers) : self
+    {
+        if($headers === null) {
+            return $this;
+        }
+
+        foreach($headers->getAll() as $header) {
+            $this->setHeader($header->getName(), $header->getValue());
+        }
+
+        return $this;
     }
 
     protected function _getHashData() : array

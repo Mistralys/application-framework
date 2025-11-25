@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Mode\Submode;
 
-use Application\Interfaces\Admin\CollectionSettingsExtendedInterface;
 use Application_Admin_Area_Mode_Submode;
-use Application_Traits_Admin_CollectionSettings;
+use DBHelper\Admin\Traits\RecordEditScreenInterface;
+use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
 
-abstract class BaseCollectionCreateExtended extends Application_Admin_Area_Mode_Submode implements CollectionSettingsExtendedInterface
+abstract class BaseCollectionCreateExtended extends Application_Admin_Area_Mode_Submode implements RecordEditScreenInterface
 {
-    use Application_Traits_Admin_CollectionSettings;
+    use RecordSettingsScreenTrait;
 
     public function isUserAllowedEditing() : bool
     {

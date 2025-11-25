@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Application\Revisionable;
 
 use Application\Traits\RevisionDependentTrait;
-use Application_Interfaces_Disposable;
+use Application\Disposables\DisposableInterface;
 
 /**
  * Interface for objects that are dependent on a revisionable's revision.
@@ -25,7 +25,7 @@ interface RevisionDependentInterface
 {
     public function getIdentification() : string;
     public function getRevision() : ?int;
-    public function getRevisionable() : RevisionableStatelessInterface;
+    public function getRevisionable() : RevisionableInterface;
 
     /**
      * Verifies that the revision-dependent object is of the same class

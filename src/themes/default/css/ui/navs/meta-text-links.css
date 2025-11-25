@@ -1,0 +1,21 @@
+UL.nav.meta-text-links{
+    list-style: none;
+    display: inline-block;
+}
+
+UL.nav.meta-text-links > LI{
+    display: inline-block;
+    border-right: solid 1px var(--color-border);
+    padding-right: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+UL.nav.meta-text-links > LI:last-child{
+    display: inline-block;
+    border-right: none;
+    margin-right: 0;
+}
+
+UL.nav.meta-text-links > LI > A:hover{
+    background: transparent;
+}

@@ -14,7 +14,7 @@ use Application_Media_Document;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Element_InputFile;
 use HTML_QuickForm2_Element_InputText;
 use HTML_QuickForm2_Element_Textarea;
@@ -42,7 +42,7 @@ class MediaSettingsManager extends Application_Formable_RecordSettings_Extended
         $this->setDefaultsUseStorageNames(true);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

@@ -12,17 +12,17 @@ use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_Setting;
 use Application_Formable_RecordSettings_ValueSet;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use UI;
 
 class TimeSpanSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_DATE_START = 'dateStart';
-    public const SETTING_DATE_END = 'dateEnd';
-    public const SETTING_TYPE = 'type';
-    public const SETTING_COMMENTS = 'comments';
-    public const SETTING_DAYS = 'days';
+    public const string SETTING_DATE_START = 'dateStart';
+    public const string SETTING_DATE_END = 'dateEnd';
+    public const string SETTING_TYPE = 'type';
+    public const string SETTING_COMMENTS = 'comments';
+    public const string SETTING_DAYS = 'days';
 
     public function __construct(Application_Formable $formable, ?TimeSpanRecord $record = null)
     {
@@ -31,7 +31,7 @@ class TimeSpanSettingsManager extends Application_Formable_RecordSettings_Extend
         $this->setDefaultsUseStorageNames(true);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

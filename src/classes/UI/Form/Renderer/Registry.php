@@ -33,7 +33,7 @@ class UI_Form_Renderer_Registry implements Application_Interfaces_Loggable
     
     public function injectJS() : void
     {
-        if($this->injected)
+        if($this->injected || !$this->enabled)
         {
             return;
         }
@@ -54,6 +54,10 @@ class UI_Form_Renderer_Registry implements Application_Interfaces_Loggable
     
     private function injectSections() : void
     {
+        if(!$this->enabled) {
+            return;
+        }
+
         $sections = $this->renderer->getSections()->getAll();
 
         $this->log('InjectJS | Found [%s] sections.', count($sections));

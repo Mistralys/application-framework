@@ -1,11 +1,13 @@
 <?php
 /**
- * File containing the {@link Application_FilterCriteria_RevisionableRevisions} class.
- *
  * @package Application
  * @subpackage Revisionable
- * @see Application_FilterCriteria_RevisionableRevisions
  */
+
+declare(strict_types=1);
+
+use Application\FilterCriteria\Items\GenericIntegerItem;
+use Application\Revisionable\Storage\BaseDBStandardizedStorage;
 
 /**
  * Generic filter criteria implementation for revisionable
@@ -20,12 +22,9 @@
  */
 class Application_FilterCriteria_RevisionableRevisions extends Application_FilterCriteria_Database
 {
-   /**
-    * @var BaseDBStandardizedStorage
-    */
-    protected $storage;
+    protected BaseDBStandardizedStorage $storage;
     
-    protected $stateless = true;
+    protected bool $stateless = false;
     
     public function __construct(BaseDBStandardizedStorage $storage)
     {
@@ -34,14 +33,9 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         $this->setOrderBy('`date`', 'ASC');
 
         $this->storage = $storage;
-        
-        $revisionable = $this->storage->getRevisionable();
-        if($revisionable instanceof Application_Revisionable) {
-            $this->stateless = false;
-        }
     }
     
-    protected function getSearchFields()
+    public function getSearchFields() : array
     {
         return array(
             "`label`",
@@ -49,7 +43,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         );
     }
     
-    protected function getQuery()
+    protected function getQuery() : string
     {
         $query =
         "SELECT
@@ -81,7 +75,7 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         return $query;
     }
 
-    protected function getSelect()
+    protected function getSelect() : array
     {
         $fields = array(
             '`'.$this->storage->getIDColumn().'` AS `revisionable_id`',
@@ -107,7 +101,25 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         return $fields;
     }
 
-    protected $states = array();
+    /**
+     * @return GenericIntegerItem[]
+     */
+    public function getItemsObjects(): array
+    {
+        $items = array();
+
+        foreach($this->getItems() as $itemData) {
+            $items[] = new GenericIntegerItem(
+                (int)$itemData['revisionable_revision'],
+                (string)$itemData['pretty_revision'],
+                $itemData
+            );
+        }
+
+        return $items;
+    }
+
+    protected array $states = array();
     
    /**
     * Selects an additional state to limit the results to.

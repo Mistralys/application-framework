@@ -1,0 +1,152 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Application\Revisionable\Collection\FilterSettings;
+
+use Application\FilterSettings\SettingDef;
+use Application\Interfaces\FilterCriteriaInterface;
+use Application\Revisionable\Collection\BaseRevisionableFilterSettings;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
+use Application\Revisionable\Collection\RevisionableFilterCriteriaInterface;
+use Application\Revisionable\RevisionableException;
+use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
+use HTML_QuickForm2_Element_Select;
+use HTML_QuickForm2_Exception;
+
+/**
+ * @property BaseRevisionableFilterSettings $settings
+ */
+class Application_RevisionableCollection_FilterSettings_StateFilter extends SettingDef
+{
+    public const int ERROR_INVALID_STATE_IN_PRESET = 16001;
+
+    protected RevisionableCollectionInterface $collection;
+
+    protected array $states = array();
+
+    protected array $presets = array();
+
+    public function __construct(BaseRevisionableFilterSettings $settings)
+    {
+        parent::__construct($settings, BaseRevisionableFilterSettings::FILTER_STATE, t('State'), 'any');
+
+        $this
+            ->setInjectCallback($this->injectElement(...))
+            ->setConfigureCallback($this->configure(...));
+
+        $this->collection = $settings->getCollection();
+
+        $states = $this->collection->createStubRecord()->getStateHandler()->getStates();
+        foreach ($states as $state) {
+            $this->states[$state->getName()] = $state;
+        }
+
+        $this->addPreset('any', t('Any state'));
+    }
+
+    /**
+     * Add a preset to add to the dropdown element: each defines a set
+     * of states that will be included/excluded when selecting the filter.
+     *
+     * @param string $presetName
+     * @param string $presetLabel
+     * @param string[] $includeStates State names to limit the list to. Leave empty to select all states.
+     * @param string[] $excludeStates
+     * @return $this
+     * @throws RevisionableException
+     */
+    public function addPreset(string $presetName, string $presetLabel, array $includeStates = array(), array $excludeStates = array()): self
+    {
+        $this->presets[$presetName] = array(
+            'label' => $presetLabel,
+            'include' => $includeStates,
+            'exclude' => $excludeStates
+        );
+
+        // check that the specified states actually exist
+        foreach ($includeStates as $stateName) {
+            $this->requireState($stateName);
+        }
+        foreach ($excludeStates as $stateName) {
+            $this->requireState($stateName);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $stateName
+     * @return void
+     * @throws RevisionableException
+     */
+    protected function requireState(string $stateName): void
+    {
+        if (isset($this->states[$stateName])) {
+            return;
+        }
+
+        throw new RevisionableException(
+            'Invalid state for preset',
+            sprintf(
+                'The revisionable of type [%s] does not have the state [%s]. Available states are [%s].',
+                $this->collection->getRecordTypeName(),
+                $stateName,
+                implode(', ', array_keys($this->states))
+            ),
+            self::ERROR_INVALID_STATE_IN_PRESET
+        );
+    }
+
+    public function configure(FilterCriteriaInterface $filterCriteria): self
+    {
+        $filters = ClassHelper::requireObjectInstanceOf(
+            RevisionableFilterCriteriaInterface::class,
+            $filterCriteria
+        );
+
+        $value = $this->settings->getSetting('state');
+
+        // it's a preset
+        if (isset($this->presets[$value])) {
+            $preset = $this->presets[$value];
+
+            foreach ($preset['include'] as $stateName) {
+                $filters->selectState($stateName);
+            }
+
+            foreach ($preset['exclude'] as $stateName) {
+                $filters->selectState($stateName, true);
+            }
+        } else if (isset($this->states[$value])) {
+            $filters->selectState($value);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds the state filter selection element to the specified form container.
+     *
+     * @return HTML_QuickForm2_Element_Select
+     * @throws BaseClassHelperException
+     * @throws HTML_QuickForm2_Exception
+     */
+    public function injectElement(): HTML_QuickForm2_Element_Select
+    {
+        $element = $this->settings->addElementSelect(BaseRevisionableFilterSettings::FILTER_STATE);
+
+        $presetGroup = $element->addOptgroup(t('Filter presets'));
+        foreach ($this->presets as $name => $def) {
+            $presetGroup->addOption($def['label'], $name);
+        }
+
+        $statesGroup = $element->addOptgroup(t('Specific states'));
+        foreach ($this->states as $state) {
+            $statesGroup->addOption($state->getLabel(), $state->getName());
+        }
+
+        return $element;
+    }
+}

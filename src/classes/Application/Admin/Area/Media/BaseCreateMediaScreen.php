@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\Media;
 
-use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property MediaRecord|NULL $record
  * @property MediaCollection $collection
  */
-abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
+abstract class BaseCreateMediaScreen extends BaseRecordCreateSubmode
 {
-    public const URL_NAME = 'create';
+    public const string URL_NAME = 'create';
 
     public function getURLName(): string
     {
@@ -34,7 +34,7 @@ abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
         return AppFactory::createMediaCollection();
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         if($record instanceof MediaRecord) {
             if($record->isTaggingEnabled()) {
@@ -47,7 +47,7 @@ abstract class BaseCreateMediaScreen extends BaseCollectionCreateExtended
         return parent::getSuccessURL($record);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The media file %1$s has been added successfully at %2$s.',

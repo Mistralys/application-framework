@@ -33,7 +33,7 @@ trait RevisionableTestTrait
             $alias = 'test_revisionable_'.$this->getTestCounter('revisionable');
         }
 
-        return $this->revCollection->createNewRevisionable($label, $alias);
+        return $this->revCollection->createNew($label, $alias);
     }
 
     protected function assertRecordIsFinalized(RevisionableRecord $record, ?string $message=null): void

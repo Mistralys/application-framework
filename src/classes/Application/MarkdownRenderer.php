@@ -35,6 +35,8 @@ class MarkdownRenderer implements OptionableInterface
     public const WRAPPER_CLASS = 'markdown';
     public const WRAPPER_TAG_OPEN = '<div class="'.self::WRAPPER_CLASS.'">';
     public const WRAPPER_TAG_CLOSE = '</div>';
+    public const string MARKDOWN_DOCUMENTATION_URL = 'https://commonmark.org/help/';
+    public const string MARKDOWN_LANGUAGE_NAME = 'Markdown';
 
     private function __construct()
     {

@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin;
 
 use Application\AppFactory;
+use Application\FilterSettingsInterface;
 use Application\Interfaces\FilterCriteriaInterface;
-use Application\TimeTracker\Admin\ListBuilder\SummarizedTicket;
 use Application\TimeTracker\Admin\ListBuilder\TicketSummaryRenderer;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeFilterCriteria;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application_FilterSettings;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\Microtime;
-use Closure;
 use DBHelper\Admin\BaseCollectionListBuilder;
 use DBHelper_BaseCollection;
 use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
@@ -29,19 +27,19 @@ use UI_DataGrid_RedirectMessage;
 
 class TimeListBuilder extends BaseCollectionListBuilder
 {
-    public const COL_START_TIME = 'start_time';
-    public const COL_END_TIME = 'end_time';
-    public const COL_DURATION = 'duration';
-    public const COL_TYPE = 'type';
-    public const COL_TICKET = 'ticket';
-    public const COL_ID = 'id';
-    public const COL_PROCESSED = 'processed';
-    public const COL_COMMENTS = 'comments';
-    public const COL_DATE = 'date';
+    public const string COL_START_TIME = 'start_time';
+    public const string COL_END_TIME = 'end_time';
+    public const string COL_DURATION = 'duration';
+    public const string COL_TYPE = 'type';
+    public const string COL_TICKET = 'ticket';
+    public const string COL_ID = 'id';
+    public const string COL_PROCESSED = 'processed';
+    public const string COL_COMMENTS = 'comments';
+    public const string COL_DATE = 'date';
 
-    public const MODE_DAY = 'day';
-    public const MODE_GLOBAL = 'global';
-    public const DEFAULT_MODE = self::MODE_GLOBAL;
+    public const string MODE_DAY = 'day';
+    public const string MODE_GLOBAL = 'global';
+    public const string DEFAULT_MODE = self::MODE_GLOBAL;
 
 
     private string $mode = self::DEFAULT_MODE;
@@ -49,10 +47,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
     private int $totalDuration = 0;
     private bool $summaryEnabled = false;
 
-    /**
-     * @return TimeTrackerCollection
-     */
-    public function getCollection(): DBHelper_BaseCollection
+    public function getCollection(): TimeTrackerCollection
     {
         return AppFactory::createTimeTracker();
     }
@@ -103,7 +98,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
             return '';
         }
 
-        $renderer = (new TicketSummaryRenderer($this->summaryEntries))
+        $renderer = new TicketSummaryRenderer($this->summaryEntries)
             ->setGridID($this->getGridID().'_summary');
 
         $this->summaryEntries = array();
@@ -122,7 +117,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
         }
     }
 
-    protected function configureFilterSettings(Application_FilterSettings $filterSettings): void
+    protected function configureFilterSettings(FilterSettingsInterface $filterSettings): void
     {
     }
 
@@ -150,7 +145,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
 
         $grid->addSumsRow()->makeCallback(
             self::COL_DURATION,
-            Closure::fromCallable(array($this, 'sumDuration'))
+            $this->sumDuration(...)
         );
     }
 
@@ -165,17 +160,17 @@ class TimeListBuilder extends BaseCollectionListBuilder
             ->setIcon(UI::icon()->delete())
             ->makeDangerous()
             ->makeConfirm(t('Do you really want to delete the selected entries?'))
-            ->setCallback(Closure::fromCallable(array($this, 'deleteEntries')));
+            ->setCallback($this->deleteEntries(...));
 
         $grid->addSeparatorAction();
 
         $grid->addAction('set_processed', t('Set processed'))
             ->setIcon(UI::icon()->yes())
-            ->setCallback(Closure::fromCallable(array($this, 'setEntriesProcessed')));
+            ->setCallback($this->setEntriesProcessed(...));
 
         $grid->addAction('set_unprocessed', t('Set not processed'))
             ->setIcon(UI::icon()->no())
-            ->setCallback(Closure::fromCallable(array($this, 'setEntriesNotProcessed')));
+            ->setCallback($this->setEntriesNotProcessed(...));
     }
 
     private function deleteEntries(UI_DataGrid_Action $action) : void
@@ -264,7 +259,7 @@ class TimeListBuilder extends BaseCollectionListBuilder
         $this->totalDuration += $timeEntry->getDuration()->getTotalSeconds();
 
         $grid = $this->getDataGrid();
-        $entry = $grid->createEntry(array());
+        $entry = $grid->createEntry();
 
         $entry->setColumnValue(self::COL_ID, $timeEntry->getID());
         $entry->setColumnValue(self::COL_DATE, sb()->link(ConvertHelper::date2listLabel($timeEntry->getDate(), false, true), $timeEntry->adminURL()->status()));
