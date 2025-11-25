@@ -21,6 +21,7 @@ use Application\API\Parameters\Handlers\BaseParamHandler;
  *
  * @method APIKeyParam register()
  * @method APIKeyParam|null getParam()
+ * @method APIKeyRecord requireValue()
  */
 class APIKeyHandler extends BaseParamHandler
 {
