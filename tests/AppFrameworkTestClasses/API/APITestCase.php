@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mistralys\AppFrameworkTests\TestClasses;
 
+use AppFrameworkTestClasses\API\APIClientTestTrait;
 use AppFrameworkTestClasses\API\APIMethodTestInterface;
 use AppFrameworkTestClasses\API\APIMethodTestTrait;
 use AppFrameworkTestClasses\ApplicationTestCase;
@@ -13,6 +14,7 @@ abstract class APITestCase extends ApplicationTestCase implements APIMethodTestI
 {
     use OperationResultTestTrait;
     use APIMethodTestTrait;
+    use APIClientTestTrait;
 
     protected function setUp(): void
     {
