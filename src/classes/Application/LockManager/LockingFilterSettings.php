@@ -8,7 +8,7 @@ use DBHelper_BaseFilterSettings;
 
 class LockingFilterSettings extends DBHelper_BaseFilterSettings
 {
-    const string SETTING_SEARCH = 'search';
+    public const string SETTING_SEARCH = 'search';
 
     protected function registerSettings(): void
     {

@@ -11,7 +11,7 @@ use DBHelper_BaseFilterSettings;
  */
 class MessagingFilterSettings extends DBHelper_BaseFilterSettings
 {
-    const string SETTING_SEARCH = 'search';
+    public const string SETTING_SEARCH = 'search';
 
     public function __construct(MessagingCollection $collection)
     {
