@@ -62,6 +62,7 @@ class APIClientsCollection extends DBHelper_BaseCollection
             ->setCurrentUserGenerator();
 
         $this->keys->register(self::COL_IS_ACTIVE)
+            ->setDefault('yes')
             ->setEnumValidation(array('yes', 'no'));
     }
 
