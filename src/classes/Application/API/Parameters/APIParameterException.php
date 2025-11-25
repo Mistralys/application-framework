@@ -12,4 +12,5 @@ class APIParameterException extends APIException
     public const int ERROR_RESERVED_PARAM_NAME = 183102;
     public const int ERROR_INVALID_PARAM_CONFIG = 183103;
     public const int ERROR_INVALID_PARAM_VALUE = 183104;
+    public const int ERROR_NO_VALUE_RESOLVABLE = 183105;
 }
