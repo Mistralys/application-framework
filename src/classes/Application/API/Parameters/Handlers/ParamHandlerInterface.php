@@ -36,7 +36,7 @@ use Application\API\Parameters\APIParameterInterface;
  * @package API
  * @subpackage Parameters
  */
-interface ParamHandlerInterface
+interface ParamHandlerInterface extends APIHandlerInterface
 {
     /**
      * Registers the parameter with the API method's parameters collection.
@@ -52,27 +52,4 @@ interface ParamHandlerInterface
      * @return APIParameterInterface|null
      */
     public function getParam() : ?APIParameterInterface;
-
-    /**
-     * Selects a value directly for this parameter, bypassing normal resolution.
-     *
-     * > NOTE: This should be the final value type returned by the parameter.
-     * > For example: If the parameter is an integer ID, this should select
-     * > the record object.
-     *
-     * @param mixed $value
-     * @return $this
-     */
-    public function selectValue(mixed $value) : self;
-
-    /**
-     * Resolves and returns the final, resolved value for this parameter.
-     *
-     * > NOTE: This will return the final value type expected from this parameter.
-     * > For example: If the parameter is an integer ID, this should return
-     * > the record object.
-     *
-     * @return mixed|NULL The resolved value, or NULL if not set/available.
-     */
-    public function resolveValue() : mixed;
 }
