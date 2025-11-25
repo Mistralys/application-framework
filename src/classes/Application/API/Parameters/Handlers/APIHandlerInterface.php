@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Handlers;
 
+use Application\API\Parameters\APIParameterException;
+
 interface APIHandlerInterface
 {
     /**
@@ -28,4 +30,13 @@ interface APIHandlerInterface
      * @return mixed|NULL The resolved value, or NULL if not set/available.
      */
     public function resolveValue() : mixed;
+
+    /**
+     * Like {@see self::resolveValue()} but with a guaranteed non-null return value.
+     * If no value can be resolved, an exception should be thrown.
+     *
+     * @return string|int|float|bool|array|object
+     * @throws APIParameterException
+     */
+    public function requireValue() : string|int|float|bool|array|object;
 }
