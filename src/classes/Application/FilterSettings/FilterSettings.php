@@ -390,9 +390,7 @@ abstract class Application_FilterSettings
     protected function getDefaultSettings() : array
     {
         return array_map(
-            static function ($def) {
-                return $def->getDefault();
-            },
+            fn($def) => $def->getDefault(),
             $this->definitions
         );
     }
