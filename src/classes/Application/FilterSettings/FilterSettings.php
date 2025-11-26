@@ -299,9 +299,9 @@ abstract class Application_FilterSettings
         );
 
         // Legacy setting support with injection methods in the filter class
-        $method = 'inject_'.str_replace('-', '_', $name);
-        if(method_exists($this, $method)) {
-            $def->setInjectCallback($this->$method(...));
+        $method = 'inject_' . str_replace('-', '_', $name);
+        if (is_callable(array($this, $method))) {
+            $def->setInjectCallback(array($this, $method));
         }
 
         $this->definitions[$name] = $def;
