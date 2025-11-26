@@ -1,5 +1,12 @@
 # Application Framework Changelog
 
+## v6.1.0 - DB Renamer dev tool
+- Renamer: Added a tool to search for and rename text in database columns.
+- Renamer: Place `DataColumnInterface` column defs into the application's `RenamerColumns` folder.
+- DBHelper: Added `getDriverName()` to get the PDO driver's name (e.g. `mariadb`).
+- DBHelper: Added `buildLIKEStatement()` with driver-aware case sensitivity handling.
+- DBHelper: Optimized `UPDATE` statements to remove unnecessary assignments.
+
 ## v6.0.0 - DBHelper, Revisionables and APIs (Breaking-XL)
 - DBHelper: Added a base record status screen trait.
 - DBHelper: Added `getRecordMicrotimeKey()` to base records.
