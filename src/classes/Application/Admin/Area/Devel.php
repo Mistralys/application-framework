@@ -5,6 +5,7 @@ use Application\Admin\Area\Devel\BaseAppConfigScreen;
 use Application\Admin\Area\Devel\BaseCacheControlScreen;
 use Application\Admin\Area\Devel\BaseCSSGenScreen;
 use Application\Admin\Area\Devel\BaseDeploymentHistoryScreen;
+use Application\Renamer\Admin\Screens\Mode\BaseRenamerMode;
 use AppUtils\Interfaces\StringableInterface;
 
 abstract class Application_Admin_Area_Devel extends Application_Admin_Area
@@ -181,17 +182,22 @@ abstract class Application_Admin_Area_Devel extends Application_Admin_Area
         );
     }
 
-    protected function registerCSSGenerator($category=null) : void
+    protected function registerRenamer(?string $category = null) : void
+    {
+        $this->registerCoreItem(BaseRenamerMode::URL_NAME, t('DB Renamer'), t('Tools'), $category);
+    }
+
+    protected function registerCSSGenerator(?string $category=null) : void
     {
         $this->registerCoreItem(BaseCSSGenScreen::URL_NAME, t('CSS Generator'), t('Tools'), $category);
     }
 
-    protected function registerUsers($category=null)
+    protected function registerUsers(?string $category=null) : void
     {
         $this->registerCoreItem('users', t('Users'), t('Tools'), $category);
     }
 
-    protected function registerRightsOverview($category=null)
+    protected function registerRightsOverview(?string $category=null) : void
     {
         $this->registerCoreItem('rightsoverview', t('User rights overview'), t('Tools'), $category);
     }
