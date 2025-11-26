@@ -109,6 +109,12 @@ interface FilterCriteriaInterface
     public function getItems() : array;
 
     /**
+     * Retrieves the primary keys for all items in the current selection.
+     * @return integer[]
+     */
+    public function getIDs() : array;
+
+    /**
      * Counts the total, unfiltered number of entries.
      * @return integer
      */
