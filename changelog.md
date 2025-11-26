@@ -6,6 +6,8 @@
 - DBHelper: Added `getDriverName()` to get the PDO driver's name (e.g. `mariadb`).
 - DBHelper: Added `buildLIKEStatement()` with driver-aware case sensitivity handling.
 - DBHelper: Optimized `UPDATE` statements to remove unnecessary assignments.
+- Core: Updated the `pristine.sql` file.
+- Core: Added a `pristine-data.sql` file with default data for new installations.
 
 ### Database Update
 
