@@ -1294,6 +1294,7 @@ class DBHelper
     public static function updateDynamic(string $table, array $data, array $primaryFields) : bool
     {
         $where = array();
+        $set = $data;
         foreach ($primaryFields as $fieldName) {
             if (!array_key_exists($fieldName, $data)) {
                 throw new DBHelper_Exception(
@@ -1307,6 +1308,8 @@ class DBHelper
                 );
             }
             $where[$fieldName] = $data[$fieldName];
+
+            unset($set[$fieldName]);
         }
 
         return self::update(
@@ -1318,7 +1321,7 @@ class DBHelper
                 WHERE
                     %s",
                 $table,
-                self::buildSetStatement($data),
+                self::buildSetStatement($set),
                 self::buildWhereFieldsStatement($where)
             ),
             $data
@@ -2089,5 +2092,92 @@ SQL;
     public static function resetTrackedQueries() : void
     {
         self::$queries = array();
+    }
+
+    public static function getDriverName() : ?string
+    {
+        $pdo = self::getDB();
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if (!is_string($driver) || $driver === '') {
+            return null;
+        }
+
+        // PDO uses 'mysql' for both MySQL and MariaDB; detect MariaDB if needed
+        if ($driver === 'mysql') {
+            $version = (string) $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            if (stripos($version, 'MariaDB') !== false) {
+                return 'mariadb';
+            }
+        }
+
+        return $driver;
+    }
+
+    /**
+     * Builds a SQL LIKE statement for the specified column,
+     * search term, and case sensitivity setting. Attempts to
+     * use the most efficient syntax for the active database
+     * driver.
+     *
+     * @param string $column
+     * @param string $searchTerm
+     * @param bool $caseSensitive
+     * @return string
+     */
+    public static function buildLIKEStatement(string $column, string $searchTerm, bool $caseSensitive) : string
+    {
+        $escaped = self::escapeForLike($searchTerm);
+        $driver = self::getDriverName();
+
+        // PostgreSQL: use ILIKE for case-insensitive
+        if ($driver === 'pgsql') {
+            $op = $caseSensitive ? 'LIKE' : 'ILIKE';
+            return sprintf("%s %s '%%%s%%' ESCAPE '\\\\'", $column, $op, $escaped);
+        }
+
+        // MySQL / MariaDB: prefer BINARY or COLLATE for case-sensitivity control
+        if ($driver === 'mysql' || $driver === 'mariadb' || $driver === null) {
+            if ($caseSensitive) {
+                // Option A: BINARY (simple, usually effective)
+                return sprintf("BINARY %s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+
+                // Option B (alternative): force a case-sensitive collation
+                // return sprintf("%s LIKE '%%%s%%' COLLATE utf8mb4_bin ESCAPE '\\\\'", $column, $escaped);
+            }
+
+            // Case-insensitive: rely on column collation (default CI) or force one:
+            return sprintf("%s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+            // Or force: return sprintf("%s LIKE '%%%s%%' COLLATE utf8mb4_unicode_ci ESCAPE '\\\\'", $column, $escaped);
+        }
+
+        // Fallback portable (less index-friendly)
+        if ($caseSensitive) {
+            return sprintf("%s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+        }
+
+        return sprintf("LOWER(%s) LIKE LOWER('%%%s%%') ESCAPE '\\\\'", $column, $escaped);
+    }
+
+    private static function escapeForLike(string $term): string
+    {
+        // We need to return a value that is safe to place inside a single-quoted SQL
+        // LIKE literal: "'...escaped...'". To achieve this we:
+        //  - escape the escape char (backslash) first by doubling it so it survives
+        //    any interpretation by PHP/DB helpers and ends up as a single backslash
+        //    in the pattern where it's used as the LIKE escape marker;
+        //  - escape SQL LIKE wildcards '%' and '_' by prefixing them with a backslash
+        //    so they are treated as literal characters in the pattern;
+        //  - escape single quotes by SQL standard doubling so the surrounding single
+        //    quotes are not broken.
+
+        $escapeChar = '\\'; // represents a single backslash in the final SQL
+
+        // Perform all replacements in a single call. The backslash is replaced
+        // with two backslashes so that the literal backslash survives into SQL.
+        return str_replace(
+            [$escapeChar, '%', '_', "'"],
+            [$escapeChar . $escapeChar, $escapeChar . '%', $escapeChar . '_', "''"],
+            $term
+        );
     }
 }
