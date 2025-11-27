@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v6.1.1 - Renamer Performance
+- Renamer: Improved memory usage when processing large amounts of data.
+
 ## v6.1.0 - DB Renamer dev tool (DB-Update-XS)
 - Renamer: Added a tool to search for and rename text in database columns.
 - Renamer: Place `DataColumnInterface` column defs into the application's `RenamerColumns` folder.
