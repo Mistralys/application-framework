@@ -88,13 +88,15 @@ class OrRule extends BaseRule
         {
             $this->logError('No valid parameter set found.');
 
-            $this->result->makeError(
-                sprintf(
-                    'At least one of the following parameter sets must be provided and be valid: %s',
-                    implode(' | ', $this->listSets())
-                ),
-                RuleInterface::VALIDATION_NO_PARAM_SET_MATCHED
-            );
+            if($this->isRequired()) {
+                $this->result->makeError(
+                    sprintf(
+                        'At least one of the following parameter sets must be provided and be valid: %s',
+                        implode(' | ', $this->listSets())
+                    ),
+                    RuleInterface::VALIDATION_NO_PARAM_SET_MATCHED
+                );
+            }
 
             foreach($this->sets as $set) {
                 foreach($set->getParams() as $param) {
