@@ -30,6 +30,7 @@ abstract class BaseRule implements RuleInterface
     private string $logIdentifier;
     private string $label;
     private string $description = '';
+    private bool $required = true;
 
     public function __construct(string $label)
     {
@@ -41,6 +42,17 @@ abstract class BaseRule implements RuleInterface
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public function isRequired() : bool
+    {
+        return $this->required;
+    }
+
+    public function setRequired(bool $required) : self
+    {
+        $this->required = $required;
+        return $this;
     }
 
     public function setDescription(string|StringableInterface $description): self

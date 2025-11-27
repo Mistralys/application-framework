@@ -1,5 +1,10 @@
 # Application Framework Changelog
 
+## v6.1.2 - Optional API rules
+- API: Added support for optional rules in API method parameters.
+- FilterCriteria: Fixed a legacy callable causing a PHP error.
+- DBHelper: Fixed `getByRequest()` causing a type error with null values.
+
 ## v6.1.1 - Renamer Performance
 - Renamer: Improved memory usage when processing large amounts of data.
 - Renamer: Clearing the index when clearing the configuration.

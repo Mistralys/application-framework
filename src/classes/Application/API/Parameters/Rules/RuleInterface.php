@@ -46,6 +46,13 @@ interface RuleInterface extends ValidationLoggableInterface
      */
     public function apply() : self;
     public function isValid() : bool;
+
+    /**
+     * NOTE: Rules are required by default.
+     * @return bool
+     */
+    public function isRequired() : bool;
+    public function setRequired(bool $required) : self;
     public function getValidationResults() : ValidationResults;
 
     /**
