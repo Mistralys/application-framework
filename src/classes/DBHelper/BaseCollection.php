@@ -24,16 +24,16 @@ use DBHelper\Traits\BeforeCreateEventTrait;
 /**
  * Base management class for a collection of database records
  * from the same table. Has methods to retrieve records, and
- * access information about records. 
+ * access information about records.
  *
  * > NOTE: Requires the primary key to be an integer auto_increment
  * > column.
  *
- * This is meant to be extended, in conjunction with 
+ * This is meant to be extended, in conjunction with
  * a custom record class based on the {@link DBHelper_BaseRecord}
  * class skeleton. Implement the abstract methods, and the
  * collection is ready to go.
- * 
+ *
  * @package Application
  * @subpackage DBHelper
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
@@ -83,18 +83,18 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     private ?string $recordIDTablePrimaryName = null;
 
     /**
-    * NOTE: classes extending this class may not create
-    * constructors with parameters. The interface must
-    * stay parameter-less to stay compatible with the
-    * <code>DBHelper::createCollection()</code> method.
-    * 
-    * > NOTE: Extend the {@see DBHelper_BaseCollection::init()} method to
-    * > handle any required initialization once the
-    * > collection has been fully set up.
-    * 
-    * @see DBHelper::createCollection()
-    * @see DBHelper_BaseCollection::init()
-    */
+     * NOTE: classes extending this class may not create
+     * constructors with parameters. The interface must
+     * stay parameter-less to stay compatible with the
+     * <code>DBHelper::createCollection()</code> method.
+     *
+     * > NOTE: Extend the {@see DBHelper_BaseCollection::init()} method to
+     * > handle any required initialization once the
+     * > collection has been fully set up.
+     *
+     * @see DBHelper::createCollection()
+     * @see DBHelper_BaseCollection::init()
+     */
     public function __construct()
     {
         self::$instanceCounter++;
@@ -178,7 +178,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
     final public function setupComplete() : void
     {
-        if($this->started) 
+        if($this->started)
         {
             throw new DBHelperCollectionException(
                 'Cannot start a collection twice.',
@@ -189,12 +189,12 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
                 DBHelperCollectionException::ERROR_CANNOT_START_TWICE
             );
         }
-        
+
         $this->started = true;
 
         $this->init();
     }
-    
+
     public function getParentRecord() : ?DBHelperRecordInterface
     {
         return null;
@@ -204,15 +204,15 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
     {
         return $this->instanceID;
     }
-    
-   /**
-    * Sets a foreign key/column that should be included in all queries.
-    * This is supposed to be used internally in the constructor as needed.
-    * 
-    * @param string $name
-    * @param string $value
-    * @return $this
-    */
+
+    /**
+     * Sets a foreign key/column that should be included in all queries.
+     * This is supposed to be used internally in the constructor as needed.
+     *
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
     final protected function setForeignKey(string $name, string $value) : self
     {
         $this->foreignKeys[$name] = $value;
@@ -221,7 +221,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
         return $this;
     }
-    
+
     public function getForeignKeys() : array
     {
         return $this->foreignKeys;
@@ -253,13 +253,13 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         if(isset($this->records[$record_id])) {
             return $this->records[$record_id];
         }
-        
+
         $this->checkRecordPrerequisites();
 
         $class = $this->resolveRecordClass($record_id);
         $record = new $class($record_id, $this);
         $this->records[$record_id] = $record;
-        
+
         return $record;
     }
 
@@ -329,11 +329,23 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
         $request->registerParam($paramName)
             ->setInteger()
-            ->setCallback(array($this, 'idExists'));
+            ->setCallback(function(mixed $value) : bool {
+                if(is_numeric($value)) {
+                    return $this->idExists((int)$value);
+                }
+
+                return false;
+            });
 
         $request->registerParam($this->getRecordPrimaryName())
             ->setInteger()
-            ->setCallback(array($this, 'idExists'));
+            ->setCallback(function(mixed $value) : bool {
+                if(is_numeric($value)) {
+                    return $this->idExists((int)$value);
+                }
+
+                return false;
+            });
     }
 
     public function getByKey(string $key, string $value) : ?DBHelperRecordInterface
@@ -342,10 +354,10 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         {
             return $this->getByID((int)$value);
         }
-        
+
         $where = $this->foreignKeys;
         $where[$key] = $value;
-        
+
         $query = sprintf(
             "SELECT
                 `%s`
@@ -363,18 +375,18 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             $this->recordSortKey,
             $this->recordSortDir
         );
-        
+
         $id = DBHelper::fetchKeyInt(
             $this->recordPrimaryName,
             $query,
             $where
         );
-        
-        if($id > 0) 
+
+        if($id > 0)
         {
             return $this->getByID($id);
         }
-        
+
         return null;
     }
 
@@ -397,8 +409,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
 
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
-        
-        $query = sprintf( 
+
+        $query = sprintf(
             "SELECT
                 `%s`
             FROM
@@ -411,7 +423,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         );
 
         $id = DBHelper::fetchKey(
-            $this->recordPrimaryName, 
+            $this->recordPrimaryName,
             $query,
             $where
         );
@@ -426,9 +438,9 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         if(isset($this->dummyRecord)) {
             return $this->dummyRecord;
         }
-        
+
         $this->dummyRecord = $this->getByID(DBHelperRecordInterface::STUB_ID);
-        
+
         if(isset($this->recordIDTable) && $this->recordIDTable === $this->recordTable) {
             throw new DBHelperCollectionException(
                 'Duplicate DB collection tables',
@@ -439,8 +451,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
                 ),
                 DBHelperCollectionException::ERROR_IDTABLE_SAME_TABLE_NAME
             );
-        } 
-        
+        }
+
         return $this->dummyRecord;
     }
 
@@ -559,15 +571,15 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
                 $this->recordIDTablePrimaryName,
                 $primary
             ));
-            
+
             $data[$this->recordPrimaryName] = $record_id;
-            
+
             DBHelper::insertDynamic(
                 $this->recordTable,
                 $data
             );
-        } 
-        else 
+        }
+        else
         {
             $this->log('Using standard insert to create the record ID.');
 
@@ -744,7 +756,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         ));
 
         DBHelper::requireTransaction('Delete a record');
-        
+
         if(!is_a($record, $this->getRecordClassName(), true))
         {
             throw new DBHelperCollectionException(
@@ -757,16 +769,16 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
                 DBHelperCollectionException::ERROR_CANNOT_DELETE_OTHER_COLLECTION_RECORD
             );
         }
-        
+
         $record_id = $record->getID();
-        
+
         $where = $this->foreignKeys;
         $where[$this->recordPrimaryName] = $record_id;
 
         $this->idLookup[$record_id] = false;
         $this->allRecords = null;
 
-        if(isset($this->records[$record_id])) 
+        if(isset($this->records[$record_id]))
         {
             unset($this->records[$record_id]);
         }
@@ -779,12 +791,12 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
             $this->recordTable,
             $where
         );
-        
+
         if($silent)
         {
             $context->makeSilent();
         }
-        
+
         $record->onDeleted($context);
 
         $this->triggerAfterDeleteRecord($record, $context);
@@ -837,18 +849,18 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return isset($this->records[$recordID]);
     }
 
-     protected function _dispose() : void
-     {
-         $this->dummyRecord = null;
+    protected function _dispose() : void
+    {
+        $this->dummyRecord = null;
 
-         $this->invalidateMemoryCache();
-     }
+        $this->invalidateMemoryCache();
+    }
 
-     public function getChildDisposables() : array
-     {
-         $disposables = $this->records;
-         $disposables[] = $this->keys;
+    public function getChildDisposables() : array
+    {
+        $disposables = $this->records;
+        $disposables[] = $this->keys;
 
-         return $disposables;
-     }
+        return $disposables;
+    }
 }
