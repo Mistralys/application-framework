@@ -11,6 +11,21 @@ use DBHelper_Exception;
 abstract class BaseDataColumn implements DataColumnInterface
 {
     /**
+     * Implementing classes can provide additional WHERE conditions for the
+     * index SELECT statement. Each entry should be a full SQL condition
+     * fragment without the "WHERE" keyword (e.g. "status = 'active'").
+     *
+     * All returned conditions will be AND-ed together with the LIKE
+     * statement for the column search.
+     *
+     * @return array<int,string>
+     */
+    protected function _getWhereStatements() : array
+    {
+        return array();
+    }
+
+    /**
      * Indexes entries matching the search term into the renamer index table.
      *
      * This implementation uses a single `INSERT ... SELECT ...` statement to
@@ -19,11 +34,12 @@ abstract class BaseDataColumn implements DataColumnInterface
      *
      * @param string $searchTerm
      * @param bool $caseSensitive
+     * @param string|null $extraWhere Optional additional WHERE condition to AND with the LIKE statement.
      * @return void
      *
      * @throws DBHelper_Exception
      */
-    public function indexEntries(string $searchTerm, bool $caseSensitive) : void
+    final public function indexEntries(string $searchTerm, bool $caseSensitive, ?string $extraWhere = null) : void
     {
         // Build and execute the INSERT ... SELECT statement directly into the index table.
         $sql = sprintf(
@@ -47,14 +63,36 @@ abstract class BaseDataColumn implements DataColumnInterface
             $this->buildJSONParts(),
             RenamerIndex::COL_PRIMARY_VALUES,
             $this->getTableName(),
-            DBHelper::buildLIKEStatement(
-                $this->getColumnName(),
-                $searchTerm,
-                $caseSensitive
-            )
+            $this->buildWhereStatements($searchTerm, $caseSensitive)
         );
 
         DBHelper::insert($sql, array('column_id' => $this->getID()));
+    }
+
+    private function getWhereStatements(string $searchTerm, bool $caseSensitive) : array
+    {
+        $statements = array(DBHelper::buildLIKEStatement(
+            $this->getColumnName(),
+            $searchTerm,
+            $caseSensitive
+        ));
+
+        array_push($statements, ...$this->_getWhereStatements());
+
+        return $statements;
+    }
+
+    private function buildWhereStatements(string $searchTerm, bool $caseSensitive) : string
+    {
+        // Join all conditions with AND, wrapping each in parentheses
+        $wrapped = array_map(
+            static function (string $part) : string {
+                return '(' . $part . ')';
+            },
+            $this->getWhereStatements($searchTerm, $caseSensitive)
+        );
+
+        return implode(' AND ', $wrapped);
     }
 
     /**
