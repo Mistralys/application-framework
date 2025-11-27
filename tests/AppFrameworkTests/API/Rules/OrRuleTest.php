@@ -130,4 +130,20 @@ final class OrRuleTest extends APITestCase
         $this->assertResultInvalid($rule);
         $this->assertResultHasCode($rule, RuleInterface::VALIDATION_NO_PARAM_SET_MATCHED);
     }
+
+    public function test_makeRuleNotRequired() : void
+    {
+        $paramA = new StringParameter('paramA', 'Param A');
+        $paramB = new StringParameter('paramB', 'Param B');
+
+        $rule = new OrRule('Rule label')
+            ->addSet(new ParamSet('a', $paramA))
+            ->addSet(new ParamSet('b', $paramB));
+
+        $rule->setRequired(false);
+        $rule->preValidate();
+        $rule->apply();
+
+        $this->assertResultValid($rule);
+    }
 }
