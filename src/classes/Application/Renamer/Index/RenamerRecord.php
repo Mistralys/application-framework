@@ -55,26 +55,6 @@ class RenamerRecord extends DBHelper_BaseRecord
         return $this->getRecordStringKey(RenamerIndex::COL_HASH);
     }
 
-    public static function insert(DataColumnInterface $column, array $data) : void
-    {
-        $columnName = $column->getColumnName();
-
-        // We are only using the matched text for hash calculation,
-        // but do not keep it to avoid the overhead. We can fetch
-        // it again later if needed, using the primary values.
-        $matchedText = $data[$columnName] ?? '';
-        unset($data[$columnName]);
-
-        DBHelper::insertDynamic(
-            RenamerIndex::TABLE_NAME,
-            array(
-                RenamerIndex::COL_COLUMN_ID => $column->getID(),
-                RenamerIndex::COL_HASH => md5($matchedText),
-                RenamerIndex::COL_PRIMARY_VALUES => JSONConverter::var2json($data)
-            )
-        );
-    }
-
     public function countMatches() : int
     {
         return DBHelper::fetchCount(
