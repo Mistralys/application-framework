@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Index;
 
+use Application\Interfaces\FilterCriteriaInterface;
 use DBHelper_BaseFilterCriteria;
 use DBHelper_StatementBuilder_ValuesContainer;
 use Application\Renamer\DataColumnInterface;
@@ -15,7 +16,19 @@ class RenamerFilterCriteria extends DBHelper_BaseFilterCriteria
     protected function init(): void
     {
         $this->addGroupBy(RenamerIndex::COL_HASH);
-        $this->addGroupBy(RenamerIndex::PRIMARY_NAME);
+
+        $this->setOrderBy(RenamerIndex::PRIMARY_NAME);
+    }
+
+    protected function getSelect(): array
+    {
+        // Select the hash and the minimum primary name for grouping
+        // to have a consistent representative for each group, and
+        // keep the database happy even with `FULL_GROUP_BY` enabled.
+        return array(
+            RenamerIndex::COL_HASH,
+            'MIN('.RenamerIndex::PRIMARY_NAME.') AS '.RenamerIndex::PRIMARY_NAME
+        );
     }
 
     public function selectColumn(DataColumnInterface $column) : self
