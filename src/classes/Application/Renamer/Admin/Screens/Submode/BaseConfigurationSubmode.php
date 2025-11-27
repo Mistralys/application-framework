@@ -6,6 +6,7 @@ namespace Application\Renamer\Admin\Screens\Submode;
 
 use Application\AppFactory;
 use Application\Development\DevScreenRights;
+use Application\Renamer\Index\RenamerIndex;
 use Application\Renamer\RenamerSettingsManager;
 use Application\Renamer\RenamingManager;
 use Application\Traits\AllowableMigrationTrait;
@@ -13,6 +14,7 @@ use Application_Admin_Area_Mode_Submode;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\Microtime;
+use DBHelper;
 use Maileditor\Renamer\RenamerConfig;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
@@ -53,6 +55,8 @@ abstract class BaseConfigurationSubmode extends Application_Admin_Area_Mode_Subm
     public static function clearConfig() : void
     {
         AppFactory::createDriver()->getSettings()->delete(self::CONFIG_VAR_NAME);
+
+        DBHelper::deleteRecords(RenamerIndex::TABLE_NAME);
     }
 
     protected function _handleActions(): bool
