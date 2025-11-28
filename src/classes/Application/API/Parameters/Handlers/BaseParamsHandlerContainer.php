@@ -4,32 +4,30 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Handlers;
 
-use Application\API\APIManager;
 use Application\API\APIMethodInterface;
-use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\APIParamManager;
 
 abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInterface
 {
-    private APIParamManager $manager;
-
     /**
      * @var APIHandlerInterface[]
      */
     private array $handlers = array();
+    private APIMethodInterface $method;
 
-    public function __construct(APIParamManager|APIMethodInterface $manager)
+    public function __construct(APIMethodInterface $method)
     {
-        if($manager instanceof APIMethodInterface) {
-            $manager = $manager->manageParams();
-        }
+        $this->method = $method;
+    }
 
-        $this->manager = $manager;
+    public function getMethod(): APIMethodInterface
+    {
+        return $this->method;
     }
 
     public function getManager() : APIParamManager
     {
-        return $this->manager;
+        return $this->method->manageParams();
     }
 
     protected function registerHandler(APIHandlerInterface $handler) : void
@@ -68,6 +66,21 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
         return $results;
     }
 
+    /**
+     * @return string[]
+     */
+    public function getParamNames() : array
+    {
+        $results = array();
+        foreach($this->getManager()->getParams() as $param) {
+            $results[] = $param->getName();
+        }
+
+        sort($results);
+
+        return $results;
+    }
+
     public function requireValue() : string|int|float|bool|array|object
     {
         $value = $this->resolveValue();
@@ -76,15 +89,14 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
             return $value;
         }
 
-        throw new APIParameterException(
-            'No value could be resolved from any of the API parameters.',
-            sprintf(
-                'The following parameters have been checked in the handler: '.PHP_EOL.
+        $this->method->errorResponse(APIMethodInterface::ERROR_NO_VALUE_AVAILABLE)
+            ->setErrorMessage(
+                'Value not specified, parameters could not be resolved to a known record. '.PHP_EOL.
+                'The following parameters were available in the method: '.PHP_EOL.
                 '- %s',
-                implode(PHP_EOL.'- ', $this->getIDs())
-            ),
-            APIParameterException::ERROR_NO_VALUE_RESOLVABLE
-        );
+                implode(PHP_EOL.'- ', $this->getParamNames())
+            )
+            ->send();
     }
 
     /**
