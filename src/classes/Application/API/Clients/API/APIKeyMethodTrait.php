@@ -16,7 +16,7 @@ trait APIKeyMethodTrait
     final public function manageParamAPIKey() : APIKeyHandler
     {
         if(!isset($this->apiKeyHandler)) {
-            $this->apiKeyHandler = new APIKeyHandler($this->manageParams());
+            $this->apiKeyHandler = new APIKeyHandler($this);
         }
 
         return $this->apiKeyHandler;
