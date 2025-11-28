@@ -20,6 +20,11 @@ abstract class BaseAPIHandler implements APIHandlerInterface
         $this->manager = $this->method->manageParams();
     }
 
+    public function getMethod(): APIMethodInterface
+    {
+        return $this->method;
+    }
+
     public function selectValue(mixed $value) : self
     {
         $this->selectedValue = $value;
