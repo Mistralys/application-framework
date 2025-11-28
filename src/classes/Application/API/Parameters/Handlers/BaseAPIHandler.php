@@ -11,15 +11,13 @@ use Application\API\Parameters\APIParamManager;
 abstract class BaseAPIHandler implements APIHandlerInterface
 {
     protected mixed $selectedValue = null;
+    protected APIMethodInterface $method;
     protected APIParamManager $manager;
 
-    public function __construct(APIParamManager|APIMethodInterface $manager)
+    public function __construct(APIMethodInterface $method)
     {
-        if($manager instanceof APIMethodInterface) {
-            $manager = $manager->manageParams();
-        }
-
-        $this->manager = $manager;
+        $this->method = $method;
+        $this->manager = $this->method->manageParams();
     }
 
     public function selectValue(mixed $value) : self
@@ -37,13 +35,32 @@ abstract class BaseAPIHandler implements APIHandlerInterface
     {
         $value = $this->resolveValue();
 
-        if($value === null) {
-            throw new APIParameterException(
-                'Required parameter value is missing.'
-            );
+        if($value !== null) {
+            return $value;
         }
 
-        return $value;
+        $this->method->errorResponse(APIMethodInterface::ERROR_NO_VALUE_AVAILABLE)
+            ->setErrorMessage(
+                'Value not specified, parameters could not be resolved to a known record. '.PHP_EOL.
+                'The method has used the following parameters to resolve a value: '.PHP_EOL.
+                '- %s',
+                implode(PHP_EOL.'- ', $this->getParamNames())
+            )
+            ->send();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getParamNames() : array
+    {
+        $result = array();
+
+        foreach($this->getParams() as $param) {
+            $result[] = $param->getName();
+        }
+
+        return $result;
     }
 
     /**
