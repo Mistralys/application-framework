@@ -72,27 +72,33 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
     public function getParamNames() : array
     {
         $results = array();
-        foreach($this->getManager()->getParams() as $param) {
-            $results[] = $param->getName();
+        foreach($this->getAll() as $handler) {
+            foreach($handler->getParams() as $param) {
+                $results[] = $param->getName();
+            }
         }
+
+        $results = array_unique($results);
 
         sort($results);
 
         return $results;
     }
 
+    abstract protected function isValidValueType(string|int|float|bool|array|object $value) : bool;
+
     public function requireValue() : string|int|float|bool|array|object
     {
         $value = $this->resolveValue();
 
-        if(!$value !== null) {
+        if($value !== null && $this->isValidValueType($value)) {
             return $value;
         }
 
         $this->method->errorResponse(APIMethodInterface::ERROR_NO_VALUE_AVAILABLE)
             ->setErrorMessage(
                 'Value not specified, parameters could not be resolved to a known record. '.PHP_EOL.
-                'The following parameters were available in the method: '.PHP_EOL.
+                'The method has used the following parameters to resolve a value: '.PHP_EOL.
                 '- %s',
                 implode(PHP_EOL.'- ', $this->getParamNames())
             )
