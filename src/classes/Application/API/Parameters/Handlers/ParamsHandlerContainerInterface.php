@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Handlers;
 
+use Application\API\APIMethodInterface;
 use Application\API\Parameters\APIParamManager;
 
 interface ParamsHandlerContainerInterface
 {
+    public function getMethod() : APIMethodInterface;
     public function getManager() : APIParamManager;
 
     /**
@@ -20,9 +22,10 @@ interface ParamsHandlerContainerInterface
 
     /**
      * Like {@see self::resolveValue()}, but guarantees a non-null return value.
-     * If no value can be resolved, an exception is thrown.
+     * If no value can be resolved, en error response is sent.
      *
      * @return string|int|float|bool|array<int|string,mixed>|object
+     * @see APIMethodInterface::ERROR_NO_VALUE_AVAILABLE
      */
     public function requireValue() : string|int|float|bool|array|object;
 
