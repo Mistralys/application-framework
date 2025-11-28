@@ -36,6 +36,7 @@ class ErrorResponse
     private APIMethodInterface $method;
 
     /**
+     * @param APIMethodInterface $method
      * @param int $errorCode
      * @param callable $sendCallback {@see Application\API\BaseMethods\BaseAPIMethod::sendErrorResponse()}
      */
