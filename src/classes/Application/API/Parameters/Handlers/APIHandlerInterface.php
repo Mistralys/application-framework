@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Handlers;
 
+use Application\API\APIMethodInterface;
 use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\APIParameterInterface;
 
 interface APIHandlerInterface
 {
+    public function getMethod() : APIMethodInterface;
+
     /**
      * Selects a value directly for this parameter or rule, bypassing normal resolution.
      *
@@ -34,10 +37,10 @@ interface APIHandlerInterface
 
     /**
      * Like {@see self::resolveValue()} but with a guaranteed non-null return value.
-     * If no value can be resolved, an exception should be thrown.
+     * If no value can be resolved, an error response will be sent and execution halted.
      *
      * @return string|int|float|bool|array|object
-     * @throws APIParameterException
+     * @see APIMethodInterface::ERROR_NO_VALUE_AVAILABLE
      */
     public function requireValue() : string|int|float|bool|array|object;
 
@@ -46,4 +49,9 @@ interface APIHandlerInterface
      * @return APIParameterInterface[]
      */
     public function getParams() : array;
+
+    /**
+     * @return string[]
+     */
+    public function getParamNames() : array;
 }
