@@ -3,6 +3,7 @@
 ## v6.1.2 - Optional API rules
 - API: Added support for optional rules in API method parameters.
 - API: Added `selectValue()` to parameter containers.
+- API: Handlers now send an error response if required parameters are missing.
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
 
