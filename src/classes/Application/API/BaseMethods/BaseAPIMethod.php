@@ -22,7 +22,6 @@ use Application\API\ResponsePayload;
 use Application\API\Traits\JSONRequestInterface;
 use Application_CORS;
 use Application_Driver;
-use Application_Exception;
 use Application_Interfaces_Loggable;
 use Application_Request;
 use Application_Traits_Loggable;
@@ -139,7 +138,6 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
     /**
      * @return void
      * @throws APIResponseDataException When in return mode - see class description
-     * @throws Application_Exception
      */
     private function _process(): void
     {
@@ -202,7 +200,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
     public function selectVersion(string $version) : self
     {
-        if(!in_array($version, $this->getVersions())) {
+        if(!in_array($version, $this->getVersions(), true)) {
             throw new APIException(
                 'Invalid API version selected',
                 sprintf(
@@ -244,10 +242,10 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
      * request's getParam Method.
      *
      * @param string $name
-     * @param string|array<mixed>|int|float|bool|NULL $default
+     * @param string|array<int|string,mixed>|int|float|bool|NULL $default
      * @return mixed|NULL
      */
-    final protected function getParam(string $name, $default = null)
+    final protected function getParam(string $name, $default = null) : mixed
     {
         return $this->request->getParam($name, $default);
     }
@@ -337,7 +335,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
 
         $requestedVersion = (string)$this->request->getParam(APIMethodInterface::REQUEST_PARAM_API_VERSION);
 
-        if(!empty($requestedVersion) && in_array($requestedVersion, $this->getVersions())) {
+        if(!empty($requestedVersion) && in_array($requestedVersion, $this->getVersions(), true)) {
             $this->selectVersion($requestedVersion);
             return $requestedVersion;
         }
@@ -407,7 +405,7 @@ abstract class BaseAPIMethod implements APIMethodInterface, Application_Interfac
         $this->processExit();
     }
 
-    protected function errorResponse(int $errorCode) : ErrorResponse
+    public function errorResponse(int $errorCode) : ErrorResponse
     {
         return new ErrorResponse($this, $errorCode, $this->sendErrorResponse(...))
             ->addData($this->collectRequestErrorData());

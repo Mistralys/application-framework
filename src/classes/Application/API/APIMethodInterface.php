@@ -28,11 +28,13 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
     public const int ERROR_REQUEST_DATA_EXCEPTION = 183001;
     public const int ERROR_RESPONSE_DATA_EXCEPTION = 183002;
     public const int ERROR_INVALID_REQUEST_PARAMS = 183003;
+    public const int ERROR_NO_VALUE_AVAILABLE = 183004;
 
     public const string REQUEST_PARAM_API_VERSION = 'apiVersion';
     public const string REQUEST_PARAM_METHOD = 'method';
 
     public const string RESPONSE_KEY_ERROR_REQUEST_DATA = 'requestData';
+
 
 
     public function getInfo() : JSONInfoSerializer;
@@ -173,4 +175,6 @@ interface APIMethodInterface extends StringPrimaryRecordInterface
      * @return string
      */
     public function getFilterText() : string;
+
+    public function errorResponse(int $errorCode) : ErrorResponse;
 }
