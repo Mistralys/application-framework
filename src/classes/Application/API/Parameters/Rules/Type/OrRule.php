@@ -204,4 +204,15 @@ class OrRule extends BaseRule
 
         return $sel->render();
     }
+
+    public function getParams(): array
+    {
+        $results = array();
+
+        foreach($this->sets as $set) {
+            array_push($results, ...$set->getParams());
+        }
+
+        return $results;
+    }
 }

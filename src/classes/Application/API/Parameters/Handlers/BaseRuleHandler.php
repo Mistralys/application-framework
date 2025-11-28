@@ -26,4 +26,13 @@ abstract class BaseRuleHandler extends BaseAPIHandler implements RuleHandlerInte
     {
         return $this->rule;
     }
+
+    public function getParams(): array
+    {
+        if(isset($this->rule)) {
+            return $this->rule->getParams();
+        }
+
+        return array();
+    }
 }

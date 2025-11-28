@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Rules;
 
+use Application\API\Parameters\APIParameterInterface;
 use Application\Validation\ValidationLoggableInterface;
 use Application\Validation\ValidationResults;
 use AppUtils\Interfaces\StringableInterface;
@@ -63,4 +64,9 @@ interface RuleInterface extends ValidationLoggableInterface
      */
     public function preValidate() : void;
     public function renderDocumentation(UI $ui) : string;
+
+    /**
+     * @return APIParameterInterface[]
+     */
+    public function getParams() : array;
 }

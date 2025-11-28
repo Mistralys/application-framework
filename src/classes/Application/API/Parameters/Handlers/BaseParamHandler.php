@@ -42,4 +42,13 @@ abstract class BaseParamHandler extends BaseAPIHandler implements ParamHandlerIn
     {
         return $this->param;
     }
+
+    public function getParams() : array
+    {
+        if(isset($this->param)) {
+            return array($this->param);
+        }
+
+        return array();
+    }
 }

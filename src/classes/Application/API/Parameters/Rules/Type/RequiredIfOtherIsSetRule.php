@@ -38,6 +38,14 @@ class RequiredIfOtherIsSetRule extends BaseRule
         return self::RULE_ID;
     }
 
+    public function getParams(): array
+    {
+        return array(
+            $this->target,
+            $this->other
+        );
+    }
+
     protected function _validate(): void
     {
         if($this->other->isInvalidated() || $this->target->isInvalidated()) {

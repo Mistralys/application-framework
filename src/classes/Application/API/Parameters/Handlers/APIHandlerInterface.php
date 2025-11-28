@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\API\Parameters\Handlers;
 
 use Application\API\Parameters\APIParameterException;
+use Application\API\Parameters\APIParameterInterface;
 
 interface APIHandlerInterface
 {
@@ -39,4 +40,10 @@ interface APIHandlerInterface
      * @throws APIParameterException
      */
     public function requireValue() : string|int|float|bool|array|object;
+
+    /**
+     * Returns the list of parameters managed by this handler.
+     * @return APIParameterInterface[]
+     */
+    public function getParams() : array;
 }
