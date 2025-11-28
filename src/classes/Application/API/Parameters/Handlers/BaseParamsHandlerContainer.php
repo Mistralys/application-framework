@@ -86,4 +86,23 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
             APIParameterException::ERROR_NO_VALUE_RESOLVABLE
         );
     }
+
+    /**
+     * Selects the given value in all handlers that support value selection.
+     *
+     * > NOTE: This should be the final value type returned by the parameter or rule.
+     *  > For example: If the parameter is an integer ID, this should select
+     *  > the record object.
+     *
+     * @param mixed $value
+     * @return $this
+     */
+    public function selectValue(string|int|float|bool|array|object $value): self
+    {
+        foreach($this->handlers as $handler) {
+            $handler->selectValue($value);
+        }
+
+        return $this;
+    }
 }

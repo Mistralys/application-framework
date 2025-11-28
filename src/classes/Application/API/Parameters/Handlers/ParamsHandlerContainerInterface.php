@@ -25,4 +25,11 @@ interface ParamsHandlerContainerInterface
      * @return string|int|float|bool|array<int|string,mixed>|object
      */
     public function requireValue() : string|int|float|bool|array|object;
+
+    /**
+     * Selects the given value in all handlers that support value selection.
+     * @param string|int|float|bool|array|object $value
+     * @return $this
+     */
+    public function selectValue(string|int|float|bool|array|object $value): self;
 }
