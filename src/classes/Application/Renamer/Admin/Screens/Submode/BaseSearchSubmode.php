@@ -16,8 +16,6 @@ abstract class BaseSearchSubmode extends Application_Admin_Area_Mode_Submode
 
     public const string URL_NAME = 'search';
 
-    private RenamerIndexRunner $runner;
-
     public function getURLName(): string
     {
         return self::URL_NAME;

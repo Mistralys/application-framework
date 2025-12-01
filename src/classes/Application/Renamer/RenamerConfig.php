@@ -30,7 +30,7 @@ class RenamerConfig
 
     public function getColumnIDs() : array
     {
-        return $this->data->getJSONArray(self::KEY_COLUMN_IDS) ?? array();
+        return $this->data->getJSONArray(self::KEY_COLUMN_IDS);
     }
 
     public function isCaseSensitive() : bool
