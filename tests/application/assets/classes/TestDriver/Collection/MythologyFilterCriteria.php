@@ -20,4 +20,19 @@ class MythologyFilterCriteria extends Application_FilterCriteria
     {
         return MythologyRecordCollection::getInstance()->getAll();
     }
+
+    public function getIDs(): array
+    {
+        $ids = [];
+        foreach ($this->getItems() as $item) {
+            $ids[] = $item->getID();
+        }
+
+        return $ids;
+    }
+
+    public function getPrimaryKeyName(): string
+    {
+        return '';
+    }
 }

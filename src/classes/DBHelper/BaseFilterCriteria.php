@@ -202,19 +202,9 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
 
         return $records;
     }
-    
-   /**
-    * Retrieves the primary keys for all items in the current selection.
-    * @return integer[]
-    */
-    public function getIDs() : array
+
+    public function getPrimaryKeyName() : string
     {
-        $items = $this->getItems();
-        $ids = array();
-        foreach($items as $item) {
-            $ids[] = (int)$item[$this->recordPrimaryName];
-        }
-        
-        return $ids;
+        return $this->recordPrimaryName;
     }
 }

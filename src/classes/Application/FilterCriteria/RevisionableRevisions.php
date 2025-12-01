@@ -75,6 +75,11 @@ class Application_FilterCriteria_RevisionableRevisions extends Application_Filte
         return $query;
     }
 
+    public function getPrimaryKeyName(): string
+    {
+        return $this->storage->getRevisionColumn();
+    }
+
     protected function getSelect() : array
     {
         $fields = array(

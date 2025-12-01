@@ -112,7 +112,7 @@ abstract class BaseParamsHandlerContainer implements ParamsHandlerContainerInter
      *  > For example: If the parameter is an integer ID, this should select
      *  > the record object.
      *
-     * @param mixed $value
+     * @param string|int|float|bool|array<int|string,mixed>|object $value
      * @return $this
      */
     public function selectValue(string|int|float|bool|array|object $value): self

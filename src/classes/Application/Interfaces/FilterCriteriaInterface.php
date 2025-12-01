@@ -110,9 +110,11 @@ interface FilterCriteriaInterface
 
     /**
      * Retrieves the primary keys for all items in the current selection.
-     * @return integer[]
+     * @return array<int,integer|string>
      */
     public function getIDs() : array;
+
+    public function getPrimaryKeyName() : string;
 
     /**
      * Counts the total, unfiltered number of entries.

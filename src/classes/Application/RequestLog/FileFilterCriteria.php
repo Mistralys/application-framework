@@ -4,16 +4,31 @@ declare(strict_types=1);
 
 class Application_RequestLog_FileFilterCriteria extends Application_FilterCriteria
 {
-    /**
-     * @var Application_RequestLog_LogItems_Hour
-     */
-    private $hour;
+    private Application_RequestLog_LogItems_Hour $hour;
 
     public function __construct(Application_RequestLog_LogItems_Hour $hour, ...$args)
     {
         $this->hour = $hour;
         
         parent::__construct($hour, ...$args);
+    }
+
+    public function getPrimaryKeyName(): string
+    {
+        return '';
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getIDs() : array
+    {
+        $ids = array();
+        foreach($this->getItems() as $item) {
+            $ids[] = $item->getFileInfo()->getID();
+        }
+
+        return $ids;
     }
 
     // region: Access items collection

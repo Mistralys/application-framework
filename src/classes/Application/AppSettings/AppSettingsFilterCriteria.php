@@ -42,9 +42,15 @@ class AppSettingsFilterCriteria extends Application_FilterCriteria_DatabaseExten
         );
     }
 
+    public function getPrimaryKeyName(): string
+    {
+        return self::COL_DATA_KEY;
+    }
+
     protected function getQuery() : string
     {
         return sprintf(
+            /** @lang text */
             'SELECT {WHAT} FROM `%1$s` {JOINS} {WHERE} {GROUPBY} {ORDERBY} {LIMIT}',
             self::TABLE_NAME
         );

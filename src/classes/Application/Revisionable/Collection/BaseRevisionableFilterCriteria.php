@@ -122,19 +122,9 @@ abstract class BaseRevisionableFilterCriteria
         return $result;
     }
 
-    /**
-     * Retrieves all revisionable IDs for the current filters.
-     * @return integer[]
-     */
-    public function getIDs(): array
+    public function getPrimaryKeyName(): string
     {
-        $items = $this->getItems();
-        $ids = array();
-        foreach ($items as $item) {
-            $ids[] = (int)$item[$this->primaryKeyName];
-        }
-
-        return $ids;
+        return $this->primaryKeyName;
     }
 
     /**

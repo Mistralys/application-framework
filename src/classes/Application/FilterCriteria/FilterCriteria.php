@@ -31,10 +31,10 @@ abstract class Application_FilterCriteria
     use Application_Traits_Instanceable;
     use Application_Traits_Eventable;
 
-    public const ERROR_INVALID_SORTING_ORDER = 710003;
-    public const ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
+    public const int ERROR_INVALID_SORTING_ORDER = 710003;
+    public const int ERROR_NON_SCALAR_CRITERIA_VALUE = 710005;
 
-    public const EVENT_APPLY_FILTERS = 'ApplyFilters';
+    public const string EVENT_APPLY_FILTERS = 'ApplyFilters';
 
     protected ?string $orderField = null;
     protected string $orderDir = FilterCriteriaInterface::ORDER_DIR_ASCENDING;
@@ -48,7 +48,7 @@ abstract class Application_FilterCriteria
     protected OperationResult_Collection $messages;
 
     /**
-     * @var array<string,mixed[]>
+     * @var array<string,array<int,mixed>>
      */
     protected array $criteriaItems = array();
 
@@ -170,7 +170,23 @@ abstract class Application_FilterCriteria
         $class = get_class($this);
         return new $class(...$this->constructorArguments);
     }
-    
+
+    /**
+     * Retrieves all record IDs for the current filters.
+     * @return array<int,integer|string>
+     */
+    public function getIDs() : array
+    {
+        $primary = $this->getPrimaryKeyName();
+
+        $ids = array();
+        foreach($this->getItems() as $item) {
+            $ids[] = (int)$item[$primary];
+        }
+
+        return $ids;
+    }
+
     protected function getConnector(string $searchTerm) : ?string
     {
         if (!isset($this->connectors)) {
@@ -179,14 +195,11 @@ abstract class Application_FilterCriteria
                 'OR' => t('OR')
             );
         }
-        
-        foreach ($this->connectors as $connector => $translation) {
-            if ($searchTerm === $connector || $searchTerm === $translation) {
-                return $connector;
-            }
-        }
-        
-        return null;
+
+        return array_find_key(
+            $this->connectors,
+            fn($translation, $connector) => $searchTerm === $connector || $searchTerm === $translation
+        );
     }
 
     /**
@@ -239,7 +252,7 @@ abstract class Application_FilterCriteria
             return $orderDir;
         }
 
-        throw new Application_Exception(
+        throw new FilterCriteriaException(
             'Invalid sorting order',
             sprintf(
                 'The sorting order [%1$s] is not a valid order string.',
@@ -401,7 +414,7 @@ abstract class Application_FilterCriteria
      *
      * @see Application_FilterCriteria::ERROR_NON_SCALAR_CRITERIA_VALUE
      */
-    protected function selectCriteriaValue(string $type, $value) : self
+    protected function selectCriteriaValue(string $type, mixed $value) : self
     {
         if(empty($value)) {
             return $this;
@@ -438,7 +451,7 @@ abstract class Application_FilterCriteria
      * Selects several values at once.
      *
      * @param string $type
-     * @param array<mixed> $values
+     * @param array<int|string,mixed> $values
      * @return $this
      * @throws BaseException
      * @throws FilterCriteriaException
@@ -476,14 +489,10 @@ abstract class Application_FilterCriteria
      */
     protected function hasCriteriaValues(...$types) : bool
     {
-        foreach($types as $type)
-        {
-            if(isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type])) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $types,
+            fn($type) => isset($this->criteriaItems[$type]) && !empty($this->criteriaItems[$type])
+        );
     }
 
     public function isCount() : bool
