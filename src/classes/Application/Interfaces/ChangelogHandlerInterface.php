@@ -28,7 +28,7 @@ interface ChangelogHandlerInterface
 
     /**
      * @param string $type
-     * @param array<mixed> $data
+     * @param array<int|string,mixed> $data
      * @return string
      */
     public function getEntryText(string $type, array $data) : string;
@@ -46,7 +46,7 @@ interface ChangelogHandlerInterface
      *  </pre>
      *
      * @param string $type
-     * @param array<mixed> $data
+     * @param array<int|string,mixed> $data
      * @return array{before:string,after:string}|null
      */
     public function getEntryDiff(string $type, array $data = array()): ?array;

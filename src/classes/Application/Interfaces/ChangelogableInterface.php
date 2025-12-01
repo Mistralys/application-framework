@@ -65,7 +65,7 @@ interface ChangelogableInterface
      * change made with this changelog entry.
      *
      * @param string $type
-     * @param array<mixed> $data
+     * @param array<int|string,mixed> $data
      * @return string
      */
     public function getChangelogEntryText(string $type, array $data = array()): string;
@@ -83,7 +83,7 @@ interface ChangelogableInterface
      * </pre>
      *
      * @param string $type
-     * @param array<mixed> $data
+     * @param array<int|string,mixed> $data
      * @return array{before:string,after:string}|null
      */
     public function getChangelogEntryDiff(string $type, array $data = array()): ?array;

@@ -524,7 +524,7 @@ class DBHelper
      * Fetches a single entry as an associative array from a SELECT query.
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
-     * @return array<mixed>|NULL
+     * @return array<int|string,mixed>|NULL
      * @throws DBHelper_Exception
      * @throws JsonException
      */

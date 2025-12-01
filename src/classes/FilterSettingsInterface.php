@@ -86,7 +86,7 @@ interface FilterSettingsInterface
      * Retrieves all settings as an associative array with
      * setting name > value pairs.
      *
-     * @return array<string,string|number|array<mixed>|bool|NULL>
+     * @return array<string,string|number|array<int|string,mixed>|bool|NULL>
      */
     public function getSettings(): array;
 
@@ -95,13 +95,13 @@ interface FilterSettingsInterface
      * has been explicitly set, returns the default value.
      *
      * @param string $name
-     * @return string|array<mixed>|number|bool|NULL
+     * @return string|array<int|string,mixed>|number|bool|NULL
      */
     public function getSetting(string $name);
 
     /**
      * @param string $name
-     * @return array<mixed>
+     * @return array<int|string,mixed>
      * @deprecated Use {@see getSettingArray()} instead.
      */
     public function getArraySetting(string $name): array;
@@ -116,7 +116,7 @@ interface FilterSettingsInterface
 
     /**
      * @param string $name
-     * @param string|number|array<mixed>|bool|NULL $value
+     * @param string|number|array<int|string,mixed>|bool|NULL $value
      * @return $this
      * @throws JsonException
      */

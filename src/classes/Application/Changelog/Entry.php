@@ -170,7 +170,7 @@ class Application_Changelog_Entry
     }
 
     /**
-     * @var array<mixed>|null
+     * @var array<int|string,mixed>|null
      */
     protected ?array $diff = null;
 

@@ -174,8 +174,8 @@ abstract class Application_User
      * Sets an array setting: serializes the data to store it as a string.
      *
      * @param string $name
-     * @param array<mixed> $default
-     * @return array<mixed>
+     * @param array<int|string,mixed> $default
+     * @return array<int|string,mixed>
      */
     public function getArraySetting(string $name, array $default=array()) : array
     {
