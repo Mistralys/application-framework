@@ -42,7 +42,7 @@ class AppSettingsFilterCriteria extends Application_FilterCriteria_DatabaseExten
         );
     }
 
-    public function getPrimaryKeyName(): string
+    public function getIDKeyName(): string
     {
         return self::COL_DATA_KEY;
     }

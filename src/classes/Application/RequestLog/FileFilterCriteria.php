@@ -13,7 +13,7 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
         parent::__construct($hour, ...$args);
     }
 
-    public function getPrimaryKeyName(): string
+    public function getIDKeyName(): string
     {
         return '';
     }

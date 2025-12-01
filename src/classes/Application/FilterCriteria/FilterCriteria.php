@@ -177,7 +177,7 @@ abstract class Application_FilterCriteria
      */
     public function getIDs() : array
     {
-        $primary = $this->getPrimaryKeyName();
+        $primary = $this->getIDKeyName();
 
         $ids = array();
         foreach($this->getItems() as $item) {

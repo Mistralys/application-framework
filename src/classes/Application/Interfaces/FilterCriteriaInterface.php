@@ -102,7 +102,7 @@ interface FilterCriteriaInterface
      * Retrieves all matching items as an indexed array containing
      * associative array entries with the item data.
      *
-     * @return array
+     * @return array<int,array<string,mixed>>
      * @throws Application_Exception
      * @see getItem()
      */
@@ -114,7 +114,14 @@ interface FilterCriteriaInterface
      */
     public function getIDs() : array;
 
-    public function getPrimaryKeyName() : string;
+    /**
+     * Gets the name of the field in which the unique ID/key
+     * of each entry is stored. Used in the default implementation
+     * of {@see Application_FilterCriteria::getIDs()}.
+     *
+     * @return string
+     */
+    public function getIDKeyName() : string;
 
     /**
      * Counts the total, unfiltered number of entries.

@@ -122,7 +122,7 @@ abstract class BaseRevisionableFilterCriteria
         return $result;
     }
 
-    public function getPrimaryKeyName(): string
+    public function getIDKeyName(): string
     {
         return $this->primaryKeyName;
     }

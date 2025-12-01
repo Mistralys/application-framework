@@ -203,7 +203,7 @@ abstract class DBHelper_BaseFilterCriteria extends Application_FilterCriteria_Da
         return $records;
     }
 
-    public function getPrimaryKeyName() : string
+    public function getIDKeyName() : string
     {
         return $this->recordPrimaryName;
     }

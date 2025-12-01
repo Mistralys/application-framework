@@ -31,7 +31,7 @@ class MythologyFilterCriteria extends Application_FilterCriteria
         return $ids;
     }
 
-    public function getPrimaryKeyName(): string
+    public function getIDKeyName(): string
     {
         return '';
     }

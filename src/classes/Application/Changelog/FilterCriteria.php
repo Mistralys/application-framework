@@ -18,7 +18,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $this->changelog = $changelog;
     }
 
-    public function getPrimaryKeyName(): string
+    public function getIDKeyName(): string
     {
         return 'changelog_id';
     }
