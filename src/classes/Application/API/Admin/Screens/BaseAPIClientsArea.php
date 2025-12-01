@@ -8,10 +8,9 @@ declare(strict_types=1);
 
 namespace Application\API\Admin\Screens;
 
+use Application\Admin\BaseArea;
 use Application\API\Admin\APIScreenRights;
 use Application\API\APIManager;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area;
 use UI;
 use UI_Icon;
 
@@ -21,10 +20,8 @@ use UI_Icon;
  * @package API
  * @subpackage Admin
  */
-abstract class BaseAPIClientsArea extends Application_Admin_Area
+abstract class BaseAPIClientsArea extends BaseArea
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'api-clients';
 
     public function getURLName() : string

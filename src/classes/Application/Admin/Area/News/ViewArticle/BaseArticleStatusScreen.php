@@ -4,21 +4,18 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News\ViewArticle;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 use UI;
 
 /**
  * @property BaseViewArticleScreen $mode
  */
-abstract class BaseArticleStatusScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseArticleStatusScreen extends BaseSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'status';
-    public const REQUEST_PARAM_PUBLISH = 'publish';
+    public const string URL_NAME = 'status';
+    public const string REQUEST_PARAM_PUBLISH = 'publish';
 
     public function getURLName(): string
     {

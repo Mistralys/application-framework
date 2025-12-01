@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens\ListScreen;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 use AppUtils\ArrayDataCollection;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseGlobalSettingsScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseGlobalSettingsScreen extends BaseSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'time-settings';
-    public const SETTING_BASE_TICKET_URL = 'base-ticket-url';
-    public const FORM_NAME = 'time-settings';
+    public const string URL_NAME = 'time-settings';
+    public const string SETTING_BASE_TICKET_URL = 'base-ticket-url';
+    public const string FORM_NAME = 'time-settings';
 
     public function getURLName(): string
     {

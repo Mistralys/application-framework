@@ -13,7 +13,6 @@ use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientRecordSettings;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI\AdminURLs\AdminURLInterface;
@@ -26,8 +25,6 @@ use UI\AdminURLs\AdminURLInterface;
  */
 abstract class BaseCreateAPIClientMode extends BaseRecordCreateMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create';
 
     public function getURLName() : string

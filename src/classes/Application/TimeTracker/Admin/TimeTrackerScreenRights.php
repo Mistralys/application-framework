@@ -46,6 +46,9 @@ class TimeTrackerScreenRights extends BaseScreenRights
         BaseCreateTimeSpanScreen::class => self::SCREEN_TIME_SPANS_CREATE,
         BaseGlobalSettingsScreen::class => self::SCREEN_GLOBAL_SETTINGS,
     );
+    public const string SCREEN_VIEW_SETTINGS = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
+    public const string SCREEN_VIEW_SETTINGS_EDIT = TimeTrackerRightsInterface::RIGHT_EDIT_TIME_ENTRIES;
+    public const string SCREEN_VIEW_STATUS = TimeTrackerRightsInterface::RIGHT_VIEW_TIME_ENTRIES;
 
     protected function _registerRights(): void
     {

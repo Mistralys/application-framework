@@ -12,6 +12,7 @@ use TestDriver\TestDBRecords\TestDBCollection;
 use Application_Formable_RecordSettings_ValueSet;
 use TestDriver\ClassFactory;
 use TestDriver\TestDBRecords\TestSettingsManagerLegacy;
+use testsuites\DBHelper\RecordTest;
 
 /**
  * @see TestSettingsManagerLegacy
@@ -23,6 +24,11 @@ class CollectionCreateManagerLegacyScreen
     use TestingScreenTrait;
 
     public const string URL_NAME = 'collection-create-legacy';
+
+    public function getRequiredRight(): ?string
+    {
+        return null;
+    }
 
     public function createCollection() : TestDBCollection
     {

@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Admin\Screens\Submode;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\Revisionable\Admin\Traits\RevisionableChangelogScreenInterface;
 use Application\Revisionable\Admin\RequestTypes\RevisionableScreenTrait;
 use Application\Revisionable\Admin\Traits\RevisionableChangelogScreenTrait;
-use Application_Admin_Area_Mode_Submode;
 
 /**
  * Base class for changelog screens for revisionable items.
@@ -21,7 +21,7 @@ use Application_Admin_Area_Mode_Submode;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class BaseRevisionableChangelogSubmode
-    extends Application_Admin_Area_Mode_Submode
+    extends BaseSubmode
     implements RevisionableChangelogScreenInterface
 {
     use RevisionableChangelogScreenTrait;

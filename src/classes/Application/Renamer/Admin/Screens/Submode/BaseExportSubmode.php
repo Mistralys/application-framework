@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Application\Renamer\Admin\Screens\Submode;
 
 use Application;
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\Development\DevScreenRights;
 use Application\Renamer\RenamerException;
 use Application\Renamer\RenamingManager;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 
-abstract class BaseExportSubmode extends Application_Admin_Area_Mode_Submode
+abstract class BaseExportSubmode extends BaseSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'export';
 
     public function getURLName(): string

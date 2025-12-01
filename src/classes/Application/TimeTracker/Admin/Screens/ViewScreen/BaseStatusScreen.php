@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Application\Admin\Area\TimeTracker\ViewScreen;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
@@ -15,7 +16,7 @@ use UI_Themes_Theme_ContentRenderer;
 /**
  * @property TimeEntry $record
  */
-abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class BaseStatusScreen extends BaseRecordSubmode
 {
     public const string URL_NAME = 'status';
 
@@ -32,6 +33,11 @@ abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_Coll
     public function getTitle(): string
     {
         return t('Status');
+    }
+
+    public function getRequiredRight(): string
+    {
+        return TimeTrackerScreenRights::SCREEN_VIEW_STATUS;
     }
 
     public function getDefaultAction(): string

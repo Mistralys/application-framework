@@ -8,7 +8,6 @@ use Application\Development\DevScreenRights;
 use Application\Renamer\Index\RenamerIndex;
 use Application\Renamer\Index\RenamerRecord;
 use Application\Renamer\RenamingManager;
-use Application\Traits\AllowableMigrationTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
@@ -17,14 +16,11 @@ use DBHelper_BaseFilterCriteria_Record;
 use Maileditor\Renamer\RenamerConfig;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
-use UI_Badge;
 use UI_DataGrid_Entry;
 use UI_Themes_Theme_ContentRenderer;
 
 class BaseResultsSubmode extends BaseRecordListSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'results';
     public const string COL_COLUMN = 'column';
     public const string COL_MATCHED_TEXT = 'matched_text';

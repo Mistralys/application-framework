@@ -8,7 +8,6 @@ use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanRecord;
-use Application\Traits\AllowableMigrationTrait;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
@@ -18,8 +17,6 @@ use UI;
 
 abstract class BaseTimeSpansListScreen extends BaseRecordListSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'time-spans-list';
     public const string COL_TYPE = 'label';
     public const string COL_DATE_START = 'dateStart';

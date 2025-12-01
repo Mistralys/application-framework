@@ -5,22 +5,19 @@ declare(strict_types=1);
 namespace Application\Users\Admin\Screens\Submode;
 
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application\Users\UsersSettingsManager;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property Application_Users_User $record
  */
-abstract class BaseUserSettingsSubmode extends Application_Admin_Area_Mode_Submode_CollectionEdit
+abstract class BaseUserSettingsSubmode extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'settings';
 
     public function getURLName(): string

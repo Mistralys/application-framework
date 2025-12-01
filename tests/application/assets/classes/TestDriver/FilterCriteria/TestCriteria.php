@@ -68,6 +68,11 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         );
     }
 
+    public function getIDKeyName(): string
+    {
+        return Application_Users::PRIMARY_NAME;
+    }
+
     public function getSearchFields() : array
     {
         return array(
@@ -88,6 +93,7 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
     protected function getQuery() : DBHelper_StatementBuilder
     {
         return $this->statement(
+            /** @lang text */
             "SELECT 
                 {WHAT} 
             FROM 

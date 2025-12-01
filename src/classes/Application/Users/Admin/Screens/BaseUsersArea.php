@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Application\Users\Admin\Screens;
 
-use Application\Traits\AllowableMigrationTrait;
+use Application\Admin\BaseArea;
 use Application\Users\Admin\Screens\Mode\BaseUserListMode;
 use Application\Users\Admin\UserAdminScreenRights;
-use Application_Admin_Area;
 use UI;
 use UI_Icon;
 
-abstract class BaseUsersArea extends Application_Admin_Area
+abstract class BaseUsersArea extends BaseArea
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'users';
 
     public function getURLName(): string

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\Screens\AutoFillScreen\WorkBlock;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\Types\TimeEntryTypes;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
@@ -22,10 +21,8 @@ use UI\CSSClasses;
 use UI_Page_Section;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseAutoFillScreen extends Application_Admin_Area_Mode
+abstract class BaseAutoFillScreen extends BaseMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'auto-fill';
     public const string FORM_NAME = 'auto-fill-times';
 

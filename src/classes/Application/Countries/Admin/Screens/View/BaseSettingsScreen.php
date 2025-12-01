@@ -7,7 +7,6 @@ namespace Application\Countries\Admin\Screens\View;
 use Application\AppFactory;
 use Application\Countries\CountrySettingsManager;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
@@ -18,8 +17,6 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  */
 abstract class BaseSettingsScreen extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'settings';
 
     public function getURLName(): string

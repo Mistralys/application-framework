@@ -26,6 +26,11 @@ class CollectionCreateManagerExtendedScreen
 
     public const string URL_NAME = 'collection-create-manager-ex';
 
+    public function getRequiredRight(): ?string
+    {
+        return null;
+    }
+
     public function createCollection() : TestDBCollection
     {
         return ClassFactory::createTestDBCollection();

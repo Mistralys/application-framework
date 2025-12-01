@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Screens\Mode;
 
-use Application_Admin_Area_Mode;
+use Application\Admin\Area\BaseMode;
 use DBHelper\Admin\Traits\RecordCreateScreenInterface;
 use DBHelper\Admin\Traits\RecordCreateScreenTrait;
 use DBHelper\Admin\Traits\RecordSettingsScreenTrait;
 
-abstract class BaseRecordCreateMode extends Application_Admin_Area_Mode implements RecordCreateScreenInterface
+abstract class BaseRecordCreateMode extends BaseMode implements RecordCreateScreenInterface
 {
     use RecordSettingsScreenTrait;
     use RecordCreateScreenTrait;

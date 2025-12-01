@@ -9,7 +9,6 @@ use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
@@ -19,8 +18,6 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  */
 abstract class BaseCreateArticleScreen extends BaseRecordCreateSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create-article';
 
     public function getURLName(): string

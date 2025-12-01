@@ -10,7 +10,6 @@ use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
@@ -20,8 +19,6 @@ use UI\AdminURLs\AdminURLInterface;
  */
 abstract class BaseViewScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'view';
 
     public function getURLName(): string

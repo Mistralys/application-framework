@@ -8,10 +8,10 @@ declare(strict_types=1);
 
 namespace Application\Revisionable\Admin\Screens\Mode;
 
+use Application\Admin\Area\BaseMode;
 use Application\Revisionable\Admin\Traits\RevisionableChangelogScreenInterface;
 use Application\Revisionable\Admin\RequestTypes\RevisionableScreenTrait;
 use Application\Revisionable\Admin\Traits\RevisionableChangelogScreenTrait;
-use Application_Admin_Area_Mode;
 
 /**
  * Base class for changelog screens for revisionable items.
@@ -21,7 +21,7 @@ use Application_Admin_Area_Mode;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
 abstract class BaseRevisionableChangelogMode
-    extends Application_Admin_Area_Mode
+    extends BaseMode
     implements RevisionableChangelogScreenInterface
 {
     use RevisionableChangelogScreenTrait;

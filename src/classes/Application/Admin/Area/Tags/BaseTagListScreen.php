@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Area\Tags;
 
 use Application\AppFactory;
+use Application\Tags\Admin\TagScreenRights;
 use AppUtils\ClassHelper;
 use Application\Tags\TagCollection;
 use Application\Tags\TagCriteria;
@@ -29,6 +30,11 @@ abstract class BaseTagListScreen extends BaseRecordListMode
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return TagScreenRights::SCREEN_LIST;
     }
 
     protected function createCollection(): TagCollection
@@ -96,11 +102,6 @@ abstract class BaseTagListScreen extends BaseRecordListMode
     public function getBackOrCancelURL(): string
     {
         return $this->createCollection()->getAdminURL();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return true;
     }
 
     public function getNavigationTitle(): string

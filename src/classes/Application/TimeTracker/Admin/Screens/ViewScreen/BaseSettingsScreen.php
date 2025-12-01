@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens\ViewScreen;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeSpans\SidebarSpans;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\TimeTracker\User\TimeTrackerRightsInterface;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
@@ -31,9 +31,21 @@ class BaseSettingsScreen extends BaseRecordSettingsSubmode
         return t('Settings');
     }
 
+    public function getRequiredRight(): string
+    {
+        return TimeTrackerScreenRights::SCREEN_VIEW_SETTINGS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array(
+            t('Edit settings') => TimeTrackerScreenRights::SCREEN_VIEW_SETTINGS_EDIT,
+        );
+    }
+
     public function isUserAllowedEditing(): bool
     {
-        return $this->user instanceof TimeTrackerRightsInterface && $this->user->canEditTimeEntries();
+        return $this->user->can(TimeTrackerScreenRights::SCREEN_VIEW_SETTINGS_EDIT);
     }
 
     public function isEditable(): bool
@@ -66,6 +78,6 @@ class BaseSettingsScreen extends BaseRecordSettingsSubmode
 
     protected function _handleBeforeSidebar() : void
     {
-        (new SidebarSpans($this->record->getDate(), $this->sidebar))->addItems();
+        new SidebarSpans($this->record->getDate(), $this->sidebar)->addItems();
     }
 }

@@ -8,7 +8,6 @@ use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use AppUtils\ClassHelper;
 use Closure;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
@@ -19,8 +18,6 @@ use UI_DataGrid_Action;
 
 abstract class BaseCategoriesListScreen extends BaseRecordListMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'categories-list';
 
     public const string COL_LABEL = 'label';

@@ -9,7 +9,6 @@ use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use Application_User;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
@@ -26,8 +25,6 @@ use UI_DataGrid_Action;
  */
 abstract class BaseNewsListScreen extends BaseRecordListMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = self::URL_NAME_DEFAULT;
     public const string COLUMN_ID = 'id';
     public const string COLUMN_LABEL = 'label';

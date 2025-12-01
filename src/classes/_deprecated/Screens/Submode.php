@@ -1,12 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Admin_Area_Mode_Submode} class.
- * 
  * @package Application
  * @subpackage Admin
- * @see Application_Admin_Area_Mode_Submode
  */
 
+declare(strict_types=1);
+
+use Application\Admin\Area\Mode\BaseSubmode;
 use AppUtils\ClassHelper;
 
 /**
@@ -15,6 +15,7 @@ use AppUtils\ClassHelper;
  * @package Application
  * @subpackage Admin
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
+ * @deprecated Use {@see BaseSubmode} instead.
  */
 abstract class Application_Admin_Area_Mode_Submode extends Application_Admin_Skeleton
 {

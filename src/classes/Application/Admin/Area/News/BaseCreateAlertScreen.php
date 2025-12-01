@@ -8,13 +8,10 @@ use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 abstract class BaseCreateAlertScreen extends BaseCreateArticleScreen
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create-alert';
 
     public function getURLName(): string

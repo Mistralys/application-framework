@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
-use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
 use Application\TimeTracker\Export\TimeExporter;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseExportScreen extends Application_Admin_Area_Mode
+abstract class BaseExportScreen extends BaseMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'export';
-    public const REQUEST_PARAM_CONFIRM = 'confirm';
+    public const string URL_NAME = 'export';
+    public const string REQUEST_PARAM_CONFIRM = 'confirm';
 
     private TimeTrackerCollection $timeTracker;
 

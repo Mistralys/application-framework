@@ -7,15 +7,12 @@ namespace Application\TimeTracker\Admin\Screens;
 use Application\AppFactory;
 use Application\TimeTracker\TimeSpans\TimeSpanCollection;
 use Application\TimeTracker\TimeSpans\TimeSpanSettingsManager;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 
 abstract class BaseCreateTimeSpanScreen extends BaseRecordCreateMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create-time-span';
 
     public function getURLName(): string

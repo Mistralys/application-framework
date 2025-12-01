@@ -9,10 +9,13 @@ use AppUtils\FileHelper;
  */
 class Application_RequestLog_LogFile extends Application_RequestLog_AbstractLogItem
 {
-    /**
-     * @var Application_RequestLog_LogInfo|NULL
-     */
-    private $fileInfo;
+    public const string KEY_FILE_ID = 'fileID';
+    public const string KEY_FILE_LABEL = 'fileLabel';
+    public const string KEY_FILE_NAME = 'fileName';
+    public const string KEY_FILE_PATH = 'filePath';
+    public const string KEY_REQUEST_ID = 'requestID';
+
+    private ?Application_RequestLog_LogInfo $fileInfo = null;
 
     /**
      * @return Application_RequestLog_LogItems_Hour
@@ -65,6 +68,17 @@ class Application_RequestLog_LogFile extends Application_RequestLog_AbstractLogI
             '%s | File [%s]',
             $this->parent->getLogIdentifier(),
             $this->getFileName()
+        );
+    }
+
+    public function toArray() : array
+    {
+        return array(
+            self::KEY_FILE_ID => $this->getID(),
+            self::KEY_FILE_LABEL => $this->getLabel(),
+            self::KEY_FILE_NAME => $this->getFileName(),
+            self::KEY_FILE_PATH => $this->getFilePath(),
+            self::KEY_REQUEST_ID => $this->getRequestID()
         );
     }
 }

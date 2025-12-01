@@ -1,5 +1,8 @@
 # Application Framework Changelog
 
+## v6.2.0 - Admin Screen Update
+- AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
+
 ## v6.1.2 - Optional API rules
 - API: Added support for optional rules in API method parameters.
 - API: Added `selectValue()` to parameter containers.

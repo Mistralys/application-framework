@@ -12,7 +12,6 @@ use Application\API\Admin\APIScreenRights;
 use Application\API\Clients\APIClientRecord;
 use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordListMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
@@ -28,8 +27,6 @@ use UI_DataGrid_Entry;
  */
 abstract class BaseClientsListMode extends BaseRecordListMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'list';
     public const string COL_LABEL = 'label';
     public const string COL_FOREIGN_ID = 'foreign_id';
@@ -57,6 +54,9 @@ abstract class BaseClientsListMode extends BaseRecordListMode
         return APIScreenRights::SCREEN_CLIENTS_LIST;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getFeatureRights(): array
     {
         return array(

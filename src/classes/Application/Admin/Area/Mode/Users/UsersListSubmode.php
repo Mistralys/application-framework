@@ -12,10 +12,12 @@ namespace Application\Admin\Area\Mode\Users;
 use Application\AppFactory;
 use Application\AppFactory\AppFactoryException;
 use Application\Exception\UnexpectedInstanceException;
+use Application\Users\Admin\UserAdminScreenRights;
 use Application_Admin_Area_Mode_Submode_CollectionList;
 use Application_Admin_Area_Mode_Users;
 use Application_Users;
 use Application_Users_User;
+use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
 
@@ -29,14 +31,14 @@ use DBHelper_BaseFilterCriteria_Record;
  *
  * @property Application_Admin_Area_Mode_Users $mode
  */
-abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_CollectionList
+abstract class UsersListSubmode extends BaseRecordListSubmode
 {
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
-    public const COL_FIRST_NAME = 'firstname';
-    public const COL_LAST_NAME = 'lastname';
-    public const COL_EMAIL = 'email';
-    public const COL_ID = 'id';
+    public const string COL_FIRST_NAME = 'firstname';
+    public const string COL_LAST_NAME = 'lastname';
+    public const string COL_EMAIL = 'email';
+    public const string COL_ID = 'id';
 
     public function getNavigationTitle() : string
     {
@@ -51,6 +53,11 @@ abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_Coll
     public function getTitle() : string
     {
         return t('Users list');
+    }
+
+    public function getRequiredRight(): string
+    {
+        return UserAdminScreenRights::SCREEN_LIST;
     }
 
     /**

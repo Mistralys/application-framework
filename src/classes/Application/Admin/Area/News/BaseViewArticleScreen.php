@@ -9,7 +9,6 @@ use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
@@ -18,8 +17,6 @@ use UI;
  */
 abstract class BaseViewArticleScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'view';
 
     public function getURLName(): string

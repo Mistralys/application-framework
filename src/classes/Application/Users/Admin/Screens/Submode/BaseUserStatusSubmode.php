@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Application\Users\Admin\Screens\Submode;
 
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\UserAdminScreenRights;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ConvertHelper;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
@@ -18,10 +17,8 @@ use UI_Themes_Theme_ContentRenderer;
 /**
  * @method Application_Users_User getRecord()
  */
-abstract class BaseUserStatusSubmode extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class BaseUserStatusSubmode extends BaseRecordSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'status';
 
     public function getURLName(): string

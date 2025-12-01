@@ -1,5 +1,18 @@
 <?php
+/**
+ * @package Application
+ * @subpackage Administration
+ */
 
+declare(strict_types=1);
+
+use Application\Admin\Area\Mode\Submode\BaseAction;
+
+/**
+ * @package Application
+ * @subpackage Administration
+ * @deprecated Use {@see BaseAction} instead.
+ */
 abstract class Application_Admin_Area_Mode_Submode_Action extends Application_Admin_Skeleton
 {
     use Application_Traits_Admin_Screen;

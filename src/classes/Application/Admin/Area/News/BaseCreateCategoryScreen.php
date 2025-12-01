@@ -9,7 +9,6 @@ use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
@@ -19,8 +18,6 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  */
 abstract class BaseCreateCategoryScreen extends BaseRecordCreateSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create-category';
 
     public function getURLName(): string

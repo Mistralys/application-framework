@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\Users\Admin\Screens\Mode;
 
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application_Users;
 use Application_Users_User;
@@ -18,8 +17,6 @@ use UI_DataGrid_Entry;
 
 abstract class BaseUserListMode extends BaseRecordListMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'list';
     public const string COL_NAME = 'name';
     public const string COL_EMAIL = 'email';

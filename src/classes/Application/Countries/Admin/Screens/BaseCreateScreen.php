@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin\Screens;
 
+use Application\Admin\Wizard\BaseWizardMode;
 use Application\AppFactory;
 use Application\Countries\Admin\Screens\Create\ConfirmStep;
 use Application\Countries\Admin\Screens\Create\CountrySettingsStep;
 use Application\Countries\Admin\Screens\Create\SourceCountrySelectionStep;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Wizard;
 use AppUtils\ClassHelper;
 use UI\AdminURLs\AdminURLInterface;
 
-abstract class BaseCreateScreen extends Application_Admin_Wizard
+abstract class BaseCreateScreen extends BaseWizardMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create';
     public const string WIZARD_ID = 'CreateAppCountry';
 

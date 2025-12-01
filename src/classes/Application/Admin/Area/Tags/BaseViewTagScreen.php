@@ -6,6 +6,7 @@ namespace Application\Area\Tags;
 
 use Application\AppFactory;
 use Application\Area\Tags\ViewTag\BaseTagTreeScreen;
+use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\TagRecord;
 use Application\Tags\TagCollection;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
@@ -23,14 +24,14 @@ abstract class BaseViewTagScreen extends BaseRecordMode
         return self::URL_NAME;
     }
 
+    public function getRequiredRight(): string
+    {
+        return TagScreenRights::SCREEN_VIEW;
+    }
+
     public function getDefaultSubmode(): string
     {
         return BaseTagTreeScreen::URL_NAME;
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return true;
     }
 
     public function getNavigationTitle(): string

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Media;
 
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_User;
@@ -33,6 +34,11 @@ abstract class BaseMediaListScreen extends BaseRecordListMode
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_LIST;
     }
 
     /**
@@ -151,11 +157,6 @@ abstract class BaseMediaListScreen extends BaseRecordListMode
     public function getBackOrCancelURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->canViewMedia();
     }
 
     public function getNavigationTitle(): string

@@ -9,7 +9,6 @@ use Application\AppFactory;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
@@ -18,8 +17,6 @@ use UI;
  */
 abstract class BaseViewCategoryScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'view-category';
 
     public function getURLName(): string

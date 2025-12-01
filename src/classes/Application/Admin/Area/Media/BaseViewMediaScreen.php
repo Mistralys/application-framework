@@ -6,6 +6,7 @@ namespace Application\Admin\Area\Media;
 
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
@@ -24,6 +25,11 @@ abstract class BaseViewMediaScreen extends BaseRecordMode
         return self::URL_NAME;
     }
 
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_VIEW;
+    }
+
     protected function createCollection() : MediaCollection
     {
         return AppFactory::createMediaCollection();
@@ -37,11 +43,6 @@ abstract class BaseViewMediaScreen extends BaseRecordMode
     public function getDefaultSubmode(): string
     {
         return BaseMediaStatusScreen::URL_NAME;
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->canViewMedia();
     }
 
     public function getNavigationTitle(): string

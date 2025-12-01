@@ -4,22 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Admin\Screens\Submode;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\Development\DevScreenRights;
 use Application\Renamer\Index\RenamerIndex;
 use Application\Renamer\RenamingManager;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 use DBHelper;
 use Maileditor\Renamer\RenamerConfig;
 use UI;
 use UI\CSSClasses;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseReplaceSubmode extends Application_Admin_Area_Mode_Submode
+abstract class BaseReplaceSubmode extends BaseSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'replace';
     public const string SETTING_REPLACE = 'replace';
 

@@ -47,6 +47,11 @@ class CollectionCreateBasicScreen
         return ClassFactory::createTestDBCollection();
     }
 
+    public function getRequiredRight(): ?string
+    {
+        return null;
+    }
+
     public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return 'Success';

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Media\View;
 
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Media\Collection\MediaSettingsManager;
@@ -21,6 +22,23 @@ abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
     public function getURLName() : string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_VIEW_SETTINGS;
+    }
+
+    public function getFeatureRights() : array
+    {
+        return array(
+            t('Edit the settings') => MediaScreenRights::SCREEN_VIEW_SETTINGS_EDIT
+        );
+    }
+
+    public function isUserAllowedEditing(): bool
+    {
+        return $this->user->can(MediaScreenRights::SCREEN_VIEW_SETTINGS_EDIT);
     }
 
     public function getSettingsManager() : MediaSettingsManager
@@ -45,11 +63,6 @@ abstract class BaseMediaSettingsScreen extends BaseRecordSettingsSubmode
     public function getBackOrCancelURL(): string
     {
         return (string)$this->createCollection()->adminURL()->list();
-    }
-
-    public function isUserAllowedEditing(): bool
-    {
-        return $this->user->canEditMedia();
     }
 
     public function isEditable(): bool

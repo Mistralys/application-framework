@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Area\Tags\ViewTag;
 
 use Application\AppFactory;
+use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
 use Application\Tags\TagSettingsManager;
@@ -23,9 +24,21 @@ abstract class BaseTagSettingsScreen extends BaseRecordSettingsSubmode
         return self::URL_NAME;
     }
 
+    public function getRequiredRight(): string
+    {
+        return TagScreenRights::SCREEN_VIEW_SETTINGS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array(
+            t('Edit the settings') => TagScreenRights::SCREEN_VIEW_SETTINGS_EDIT,
+        );
+    }
+
     public function isUserAllowedEditing(): bool
     {
-        return true;
+        return $this->user->can(TagScreenRights::SCREEN_VIEW_SETTINGS_EDIT);
     }
 
     public function isEditable(): bool

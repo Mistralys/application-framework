@@ -18,6 +18,9 @@ use Application\Collection\StringCollectionItemInterface;
  */
 class MythologicalRecord implements StringCollectionItemInterface
 {
+    public const string KEY_ID = 'id';
+    public const string KEY_LABEL = 'label';
+
     private string $id;
     private string $label;
 
@@ -35,5 +38,13 @@ class MythologicalRecord implements StringCollectionItemInterface
     public function getLabel(): string
     {
         return $this->label;
+    }
+
+    public function toArray() : array
+    {
+        return array(
+            self::KEY_ID => $this->getID(),
+            self::KEY_LABEL => $this->getLabel(),
+        );
     }
 }

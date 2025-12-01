@@ -15,20 +15,7 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
 
     public function getIDKeyName(): string
     {
-        return '';
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getIDs() : array
-    {
-        $ids = array();
-        foreach($this->getItems() as $item) {
-            $ids[] = $item->getFileInfo()->getID();
-        }
-
-        return $ids;
+        return Application_RequestLog_LogFile::KEY_FILE_ID;
     }
 
     // region: Access items collection
@@ -38,18 +25,32 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
         return $this->hour->countFiles();
     }
 
+    public function getItems(): array
+    {
+        $items = array();
+        foreach($this->getItemsObjects() as $item) {
+            $items[] = $item->toArray();
+        }
+
+        return $items;
+    }
+
     /**
      * @return Application_RequestLog_LogFile[]
      */
-    public function getItems() : array
+    public function getItemsObjects() : array
     {
         return $this->filterItems($this->hour->getFiles());
     }
 
+    /**
+     * @param UI_DataGrid $grid
+     * @return Application_RequestLog_LogFile[]
+     */
     public function getFilesForGrid(UI_DataGrid $grid) : array
     {
         return array_slice(
-            $this->getItems(),
+            $this->getItemsObjects(),
             $grid->getOffset(),
             $grid->getLimit()
         );

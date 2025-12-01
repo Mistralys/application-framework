@@ -7,13 +7,11 @@ namespace Application\API\Admin\Screens;
 use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
 use Application\API\Clients\APIClientRecordSettings;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
 abstract class BaseAPIClientSettingsScreen extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
     use APIClientRecordScreenTrait;
 
     public const string URL_NAME = 'settings';

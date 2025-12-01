@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Application\Renamer\Admin\Screens\Mode;
 
+use Application\Admin\Area\BaseMode;
 use Application\Development\DevScreenRights;
 use Application\Renamer\Admin\Screens\Submode\BaseConfigurationSubmode;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use UI;
 
-abstract class BaseRenamerMode extends Application_Admin_Area_Mode
+abstract class BaseRenamerMode extends BaseMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'renamer';
 
     public function getURLName(): string

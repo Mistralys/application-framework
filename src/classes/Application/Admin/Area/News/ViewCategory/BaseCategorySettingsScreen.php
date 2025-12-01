@@ -10,7 +10,6 @@ use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
@@ -21,8 +20,6 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  */
 abstract class BaseCategorySettingsScreen extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'settings';
 
     public function getURLName(): string
@@ -50,6 +47,9 @@ abstract class BaseCategorySettingsScreen extends BaseRecordSettingsSubmode
         return NewsScreenRights::SCREEN_CATEGORY_SETTINGS;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getFeatureRights(): array
     {
         return array(

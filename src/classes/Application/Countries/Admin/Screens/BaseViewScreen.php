@@ -7,7 +7,6 @@ namespace Application\Countries\Admin\Screens;
 use Application\AppFactory;
 use Application\Countries\Admin\Screens\View\BaseStatusScreen;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper\Admin\Screens\Mode\BaseRecordMode;
@@ -19,8 +18,6 @@ use UI\AdminURLs\AdminURLInterface;
  */
 abstract class BaseViewScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'view';
 
     public function getURLName(): string

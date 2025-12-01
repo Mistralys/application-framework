@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 
-abstract class BaseListScreen extends Application_Admin_Area_Mode
+abstract class BaseListScreen extends BaseMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
     public function getURLName(): string
     {

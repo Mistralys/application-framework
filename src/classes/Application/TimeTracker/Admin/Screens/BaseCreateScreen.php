@@ -6,7 +6,6 @@ namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
@@ -16,8 +15,6 @@ use UI\AdminURLs\AdminURLInterface;
 
 abstract class BaseCreateScreen extends BaseRecordCreateMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create';
 
     public function getTitle(): string

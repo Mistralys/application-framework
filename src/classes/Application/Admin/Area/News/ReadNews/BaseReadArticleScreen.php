@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News\ReadNews;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 use NewsCentral\Entries\NewsArticle;
 use UI;
+use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseReadArticleScreen extends BaseSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'article';
-    public const REQUEST_PARAM_ARTICLE = 'id';
+    public const string URL_NAME = 'article';
+    public const string REQUEST_PARAM_ARTICLE = 'id';
     private NewsArticle $article;
 
     public function getURLName(): string
@@ -77,7 +75,7 @@ abstract class BaseReadArticleScreen extends Application_Admin_Area_Mode_Submode
         return true;
     }
 
-    protected function _renderContent()
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
         return $this->renderer
             ->appendContent($this->ui->createTemplate('news/entry-article-detail')

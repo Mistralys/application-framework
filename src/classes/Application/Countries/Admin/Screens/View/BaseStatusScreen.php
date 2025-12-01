@@ -6,7 +6,6 @@ namespace Application\Countries\Admin\Screens\View;
 
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
@@ -18,9 +17,7 @@ use UI_PropertiesGrid;
  */
 class BaseStatusScreen extends BaseRecordSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'status';
+    public const string URL_NAME = 'status';
 
     public function getURLName(): string
     {

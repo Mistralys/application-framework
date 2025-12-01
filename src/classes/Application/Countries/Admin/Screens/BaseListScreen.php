@@ -6,7 +6,6 @@ namespace Application\Countries\Admin\Screens;
 
 use Application\AppFactory;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 use Application_Countries;
 use Application_Countries_Country;
 use Application_Countries_FilterCriteria;
@@ -22,8 +21,6 @@ use UI_DataGrid_Entry;
  */
 class BaseListScreen extends BaseRecordListMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'list';
     public const string COL_LABEL = 'label';
     public const string COL_ISO = 'iso';

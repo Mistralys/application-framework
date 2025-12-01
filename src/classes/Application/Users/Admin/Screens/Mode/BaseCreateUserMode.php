@@ -5,19 +5,16 @@ declare(strict_types=1);
 namespace Application\Users\Admin\Screens\Mode;
 
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\UserAdminScreenRights;
 use Application\Users\UsersSettingsManager;
-use Application_Admin_Area_Mode_CollectionCreate;
 use Application_Users;
 use Application_Users_User;
 use AppUtils\ClassHelper;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
 use DBHelper\Interfaces\DBHelperRecordInterface;
 
-abstract class BaseCreateUserMode extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateUserMode extends BaseRecordCreateMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'create';
 
     public function getURLName(): string

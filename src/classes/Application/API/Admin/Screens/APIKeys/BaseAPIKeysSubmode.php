@@ -6,12 +6,10 @@ namespace Application\API\Admin\Screens\APIKeys;
 
 use Application\API\Admin\APIScreenRights;
 use Application\API\Admin\Traits\APIClientRecordScreenTrait;
-use Application\Traits\AllowableMigrationTrait;
 use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 
 class BaseAPIKeysSubmode extends BaseRecordSubmode
 {
-    use AllowableMigrationTrait;
     use APIClientRecordScreenTrait;
 
     public const string URL_NAME = 'api_keys';

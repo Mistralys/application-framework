@@ -1,5 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
+use Application\Admin\Wizard\BaseWizardMode;
+
+/**
+ * @package Application
+ * @subpackage Admin
+ * @deprecated Use {@see BaseWizardMode} instead.
+ */
 abstract class Application_Admin_Wizard extends Application_Admin_Area_Mode implements Application_Interfaces_Admin_Wizardable
 {
     use Application_Traits_Admin_Wizard;

@@ -5,22 +5,19 @@ declare(strict_types=1);
 namespace Application\Users\Admin\Screens\Mode;
 
 use Application\AppFactory;
-use Application\Traits\AllowableMigrationTrait;
 use Application\Users\Admin\Screens\Submode\BaseUserStatusSubmode;
 use Application\Users\Admin\UserAdminScreenRights;
-use Application_Admin_Area_Mode_CollectionRecord;
 use Application_Users;
 use Application_Users_User;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @method Application_Users_User getRecord()
  */
-abstract class BaseViewUserMode extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewUserMode extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
     public const string URL_NAME = 'view';
 
     public function getURLName(): string

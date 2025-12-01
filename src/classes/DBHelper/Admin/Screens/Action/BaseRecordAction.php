@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace DBHelper\Admin\Screens\Action;
 
-use Application_Admin_Area_Mode_Submode_Action;
+use Application\Admin\Area\Mode\Submode\BaseAction;
 use DBHelper\Admin\Traits\RecordScreenInterface;
 use DBHelper\Admin\Traits\RecordScreenTrait;
 
@@ -21,8 +21,9 @@ use DBHelper\Admin\Traits\RecordScreenTrait;
  * @subpackage Admin
  */
 abstract class BaseRecordAction
-    extends Application_Admin_Area_Mode_Submode_Action
-    implements RecordScreenInterface
+    extends BaseAction
+    implements
+    RecordScreenInterface
 {
     use RecordScreenTrait;
 }

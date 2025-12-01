@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Application\Countries\Admin\Screens;
 
+use Application\Admin\BaseArea;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area;
 use UI;
 use UI_Icon;
 
-abstract class BaseAreaScreen extends Application_Admin_Area
+abstract class BaseAreaScreen extends BaseArea
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'countries';
+    public const string URL_NAME = 'countries';
 
     public function getURLName(): string
     {
