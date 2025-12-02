@@ -109,7 +109,7 @@ trait APIMethodTestTrait
             $_REQUEST[$key] = $value;
         }
 
-        $this->assertSuccessfulResponse(new $methodClass(APIManager::getInstance())->processReturn());
+        $this->assertSuccessfulResponse($method->processReturn());
     }
 
     public function assertParamInvalidWithValue(APIParameterInterface $param, mixed $value) : void
