@@ -54,9 +54,14 @@ class APIMethodDocTag extends BaseCustomTag
     public function render(): string
     {
         return sprintf(
-            '[%1$s](%2$s)',
+            '<a href="%2$s">%1$s</a>',
             $this->methodName,
             APIManager::getInstance()->adminURL()->methodDocumentation($this->methodName)
         );
+    }
+
+    public function getMethodName() : string
+    {
+        return $this->methodName;
     }
 }
