@@ -497,6 +497,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
     {
         $defaults = array();
         $params = $this->getParamsSorted();
+        $markdown = MarkdownRenderer::create();
 
         foreach($params as $param)
         {
@@ -532,7 +533,7 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             }
 
             $field->addClass(CSSClasses::INPUT_XXLARGE);
-            $field->setComment($param->getDescription());
+            $field->setComment($markdown->render($param->getDescription()));
 
             if($param instanceof APIHeaderParameterInterface) {
                 $field->setLabel($field->getLabel().' '.UI::label('Header')->makeInfo()->setTooltip('This parameter is sent as an HTTP header in the API request.'));
