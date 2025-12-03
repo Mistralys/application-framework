@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application;
 
 use Application\MarkdownRenderer\BaseCustomTag;
+use Application\MarkdownRenderer\CustomTags\APIMethodDocTag;
 use Application\MarkdownRenderer\CustomTags\MediaTag;
 use AppUtils\AttributeCollection;
 use AppUtils\ConvertHelper;
@@ -127,6 +128,7 @@ class MarkdownRenderer implements OptionableInterface
     private function preParse(string $markdown) : string
     {
         array_push($this->tags, ...MediaTag::findTags($markdown));
+        array_push($this->tags, ...APIMethodDocTag::findTags($markdown));
 
         foreach($this->tags as $tag)
         {
