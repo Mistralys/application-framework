@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AppFrameworkTests\MarkdownParser;
 
 use Application\MarkdownRenderer;
+use Application\MarkdownRenderer\CustomTags\APIMethodDocTag;
 use Application\MarkdownRenderer\CustomTags\MediaTag;
 use Application_Media_Document_Image;
 use Mistralys\AppFrameworkTests\TestClasses\MediaTestCase;
@@ -82,5 +83,25 @@ final class ParseTest extends MediaTestCase
         $this->assertSame(array('width' => '78'), MarkdownRenderer::parseParams('width="78"')->getAttributes());
         $this->assertSame(array('width' => '78', 'height' => '90'), MarkdownRenderer::parseParams('width="78" height="90"')->getAttributes());
         $this->assertSame(array('width' => '"argh"'), MarkdownRenderer::parseParams('width="\"argh\""')->getAttributes());
+    }
+
+    public function test_parseAPIMethodTags() : void
+    {
+        $text = '{api: MethodName}';
+
+        $tags = APIMethodDocTag::findTags($text);
+        $this->assertCount(1, $tags);
+        $tag = $tags[0];
+
+        $this->assertSame('MethodName', $tag->getMethodName());
+    }
+
+    public function test_renderAPIMethodMarkdown() : void
+    {
+        $text = '{api: MethodName}';
+
+        $html = MarkdownRenderer::create()->render($text);
+
+        $this->assertStringContainsString('MethodName</a>', $html);
     }
 }
