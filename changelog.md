@@ -1,12 +1,11 @@
 # Application Framework Changelog
 
-## v6.2.0 - Admin Screen Update
-- AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
-
-## v6.1.2 - Optional API rules
+## v6.2.0 - API improvements
 - API: Added support for optional rules in API method parameters.
 - API: Added `selectValue()` to parameter containers.
 - API: Handlers now send an error response if required parameters are missing.
+- API: Methods can now be linked in documentation with the `{api: MethodName}` tag.
+- AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
 
