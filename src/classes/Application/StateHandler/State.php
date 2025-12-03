@@ -96,6 +96,16 @@ class Application_StateHandler_State implements StringableInterface
         };
     }
 
+    public function getIcon() : UI_Icon
+    {
+        return match ($this->uiType) {
+            self::UI_TYPE_SUCCESS => UI::icon()->published(),
+            self::UI_TYPE_INACTIVE => UI::icon()->inactive(),
+            self::UI_TYPE_DANGER => UI::icon()->deleted(),
+            default => UI::icon()->draft()
+        };
+    }
+
     /**
      * Retrieves a badge instance of the item's state.
      * @return UI_Label
@@ -134,6 +144,13 @@ class Application_StateHandler_State implements StringableInterface
         return $this->getLabel();
     }
 
+    /**
+     * Adds a dependency to this state (i.e. a state that can be
+     * transitioned to from this state).
+     *
+     * @param Application_StateHandler_State $state
+     * @return void
+     */
     public function addDependency(Application_StateHandler_State $state) : void
     {
         $name = $state->getName();
@@ -141,6 +158,17 @@ class Application_StateHandler_State implements StringableInterface
         if (!in_array($name, $this->dependencies, true)) {
             $this->dependencies[] = $name;
         }
+    }
+
+    /**
+     * Gets a list of state names that are dependencies of this state
+     * (i.e. states that can be transitioned to from this state).
+     *
+     * @return string[]
+     */
+    public function getDependencies() : array
+    {
+        return $this->dependencies;
     }
 
     public function hasDependency(Application_StateHandler_State $state) : bool
