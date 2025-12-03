@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Countries\API\ParamSets;
 
-use Application\Countries\API\AppCountryIDParam;
+use Application\Countries\API\Params\AppCountryIDParam;
 use Application_Countries_Country;
 
 class CountryIDSet extends BaseAppCountryParamSet
@@ -20,7 +20,7 @@ class CountryIDSet extends BaseAppCountryParamSet
 
     protected function initParams(): void
     {
-        $this->param = $this->getMethod()->registerAppCountryID();
+        $this->param = $this->getMethod()->manageAppCountryParams()->manageID()->register();
         $this->registerParam($this->param);
     }
 

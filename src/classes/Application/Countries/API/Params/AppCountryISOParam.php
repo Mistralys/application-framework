@@ -6,13 +6,14 @@
 
 declare(strict_types=1);
 
-namespace Application\Countries\API;
+namespace Application\Countries\API\Params;
 
 use Application\API\Parameters\Type\StringParameter;
 use Application\API\Parameters\ValueLookup\SelectableParamValue;
 use Application\API\Parameters\ValueLookup\SelectableValueParamInterface;
 use Application\API\Parameters\ValueLookup\SelectableValueParamTrait;
 use Application\AppFactory;
+use Application\Countries\API\AppCountryAPIInterface;
 use Application_Countries_Country;
 
 /**

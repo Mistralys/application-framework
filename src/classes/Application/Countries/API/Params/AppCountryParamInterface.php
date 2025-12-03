@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application\Countries\API;
+namespace Application\Countries\API\Params;
 
 use Application\API\Parameters\APIParameterInterface;
 use Application_Countries_Country;

@@ -9,8 +9,6 @@ declare(strict_types=1);
 namespace Application\Countries\API;
 
 use Application\API\APIMethodInterface;
-use Application\Countries\API\ParamSets\AppCountryParamRule;
-use Application_Countries_Country;
 
 /**
  * Interface for API methods that work with countries.
@@ -26,12 +24,5 @@ interface AppCountryAPIInterface extends APIMethodInterface
     public const string KEY_COUNTRY_ID = 'countryID';
     public const string KEY_COUNTRY_ISO = 'isoCode';
 
-    public function selectAppCountry(Application_Countries_Country $country) : self;
-    public function getAppCountryIDParam() : ?AppCountryIDParam;
-    public function getAppCountryISOParam() : ?AppCountryISOParam;
-    public function registerAppCountryID() : AppCountryIDParam;
-    public function registerAppCountryISO() : AppCountryISOParam;
-    public function resolveAppCountry() : ?Application_Countries_Country;
-    public function requireAppCountry() : Application_Countries_Country;
-    public function getAppCountryParamRule() : ?AppCountryParamRule;
+    public function manageAppCountryParams() : AppCountryParamsContainer;
 }

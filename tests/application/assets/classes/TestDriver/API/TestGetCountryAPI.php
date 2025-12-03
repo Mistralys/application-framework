@@ -79,8 +79,8 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function init(): void
     {
-        $this->registerAppCountryID();
-        $this->registerAppCountryISO();
+        $this->manageAppCountryParams()->manageID()->register();
+        $this->manageAppCountryParams()->manageISO()->register();
     }
 
     protected function collectRequestData(string $version): void
@@ -89,7 +89,7 @@ class TestGetCountryAPI extends BaseAPIMethod implements RequestRequestInterface
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $response->setKey(self::KEY_COUNTRY_ID, $this->resolveAppCountry()?->getID());
+        $response->setKey(self::KEY_COUNTRY_ID, $this->manageAppCountryParams()->resolveValue()?->getID());
     }
 
     public function getExampleJSONResponse(): array

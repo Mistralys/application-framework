@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Countries\API\ParamSets;
 
-use Application\Countries\API\AppCountryISOParam;
+use Application\Countries\API\Params\AppCountryISOParam;
 use Application_Countries_Country;
 
 class CountryISOSet extends BaseAppCountryParamSet
@@ -20,7 +20,7 @@ class CountryISOSet extends BaseAppCountryParamSet
 
     protected function initParams(): void
     {
-        $this->param = $this->getMethod()->registerAppCountryISO();
+        $this->param = $this->getMethod()->manageAppCountryParams()->manageISO()->register();
         $this->registerParam($this->param);
     }
 

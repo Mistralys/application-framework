@@ -83,12 +83,12 @@ class TestGetCountryBySetAPI
 
     protected function init(): void
     {
-        $this->registerAppCountryParams();
+        $this->manageAppCountryParams()->manageAllParamsRule()->register();
     }
 
     public function getCountry() : ?Application_Countries_Country
     {
-        return $this->getAppCountryParamRule()?->getCountry();
+        return $this->manageAppCountryParams()->manageAllParamsRule()?->resolveValue();
     }
 
     protected function collectRequestData(string $version): void
@@ -97,7 +97,7 @@ class TestGetCountryBySetAPI
 
     protected function collectResponseData(ArrayDataCollection $response, string $version): void
     {
-        $country = $this->requireAppCountry();
+        $country = $this->manageAppCountryParams()->requireValue();
 
         $response->setKey(self::KEY_COUNTRY_ID, $country->getID());
     }
