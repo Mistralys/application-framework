@@ -17,6 +17,7 @@ use Application\Locales\API\AppLocaleAPIInterface;
 use Application\Locales\API\AppLocaleAPIResponseInterface;
 use Application\Locales\API\AppLocaleAPITrait;
 use Application\Locales\API\LocalesAPIGroup;
+use AppLocalize\Localization;
 use AppUtils\ArrayDataCollection;
 
 class GetAppLocalesAPI extends BaseAPIMethod
@@ -93,7 +94,8 @@ class GetAppLocalesAPI extends BaseAPIMethod
             AppLocaleAPIResponseInterface::KEY_LOCALE_LANGUAGE_CODE => $locale->getLangISO(),
             AppLocaleAPIResponseInterface::KEY_LOCALE_COUNTRY_CODE => $locale->getCountryISO(),
             AppLocaleAPIResponseInterface::KEY_LOCALE_LABEL => $locale->getLabel(),
-            AppLocaleAPIResponseInterface::KEY_LOCALE_LABEL_INVARIANT => $loc->getLabelInvariant()
+            AppLocaleAPIResponseInterface::KEY_LOCALE_LABEL_INVARIANT => $loc->getLabelInvariant(),
+            AppLocaleAPIResponseInterface::KEY_LOCALE_AVAILABLE_FOR_UI => Localization::appLocaleExists($locale->getID())
         );
     }
 
@@ -122,8 +124,9 @@ class GetAppLocalesAPI extends BaseAPIMethod
     public function getDescription(): string
     {
         return <<<'MARKDOWN'
-Retrieves a list of all available application locales 
-(for the user interface) along with all relevant details.
+Retrieves a list of all known locales along with all 
+relevant details. This also shows which of the locales are
+available for use in the application's user interface.
 MARKDOWN;
     }
 

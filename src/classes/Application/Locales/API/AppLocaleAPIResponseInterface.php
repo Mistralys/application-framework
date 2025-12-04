@@ -12,4 +12,5 @@ interface AppLocaleAPIResponseInterface
     public const string KEY_LOCALE_LANGUAGE_CODE = 'languageCode';
     public const string KEY_LOCALE_LABEL = 'label';
     public const string KEY_LOCALE_LABEL_INVARIANT = 'labelInvariant';
+    public const string KEY_LOCALE_AVAILABLE_FOR_UI = 'isAvailableForUI';
 }
