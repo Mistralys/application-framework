@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Application\API\Parameters\Handlers;
 
+use Application\API\Parameters\APIParameterException;
 use Application\API\Parameters\APIParameterInterface;
 
 /**
@@ -41,6 +42,24 @@ abstract class BaseParamHandler extends BaseAPIHandler implements ParamHandlerIn
     public function getParam() : ?APIParameterInterface
     {
         return $this->param;
+    }
+
+    public function requireParam() : APIParameterInterface
+    {
+        $param = $this->getParam();
+
+        if($param !== null) {
+            return $param;
+        }
+
+        throw new APIParameterException(
+            'Requested parameter has not been registered.',
+            sprintf(
+                'In handler class [%s].',
+                get_class($this)
+            ),
+            APIParameterException::ERROR_PARAM_NOT_REGISTERED
+        );
     }
 
     public function getParams() : array
