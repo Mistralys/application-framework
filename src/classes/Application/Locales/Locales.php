@@ -9,6 +9,7 @@ use Application\Locales\Locale;
 use AppLocalize\Localization\Locale\en_US;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\Collections\CollectionException;
+use AppUtils\FileHelper\FolderInfo;
 
 /**
  * Locale collection class, used to fetch information on the
@@ -45,6 +46,11 @@ class Locales extends BaseStringPrimaryCollection
         // Register events to reset the collection when the countries change
         $countries->onAfterCreateRecord($this->reset(...));
         $countries->onAfterDeleteRecord($this->reset(...));
+    }
+
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods');
     }
 
     public function getDefaultID(): string
