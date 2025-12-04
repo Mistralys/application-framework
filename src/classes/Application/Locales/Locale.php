@@ -65,6 +65,11 @@ class Locale implements StringPrimaryRecordInterface
         return $this->locale->getLabel();
     }
 
+    public function getLocalizationLocale() : LocaleInterface
+    {
+        return $this->locale;
+    }
+
     /**
      * @return string The ISO code of the language, e.g., `en`.
      */
