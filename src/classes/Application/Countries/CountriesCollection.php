@@ -11,6 +11,7 @@ namespace Application\Countries;
 use Application\AppFactory;
 use Application_Countries;
 use Application_Countries_Country;
+use AppUtils\FileHelper\FolderInfo;
 
 /**
  * Utility class for working with collections of countries,
@@ -73,6 +74,11 @@ class CountriesCollection
         }
 
         return $this;
+    }
+
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods');
     }
 
     public function hasCountries() : bool
