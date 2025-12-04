@@ -91,7 +91,11 @@ class APIMethodDetailTmpl extends UI_Page_Template_Custom
             ->makeNotDismissable()
             ->setContent(sb()
                 ->add('API URL generated for your selected parameters:')
-                ->para(str_replace('&', '&<wbr>', (string)sb()->link($url, $url, true)))
+                ->para((string)sb()->link(
+                    str_replace('&', '&<wbr>', $url),
+                    $url,
+                    true
+                ))
             )
             ->display();
 
