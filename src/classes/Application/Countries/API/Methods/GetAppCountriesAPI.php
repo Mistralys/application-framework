@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-namespace Application\API\Method;
+namespace Application\Countries\API\Methods;
 
 use Application\API\BaseMethods\BaseAPIMethod;
 use Application\API\Groups\APIGroupInterface;
@@ -17,6 +17,7 @@ use Application\API\Traits\RequestRequestTrait;
 use Application\AppFactory;
 use Application\Countries\API\AppCountryAPIInterface;
 use Application\Countries\API\CountriesAPIGroup;
+use Application\Locales\API\Methods\GetAppLocalesAPI;
 use Application_Countries;
 use Application_Countries_Country;
 use AppLocalize\Localization\Country\CountryDE;
@@ -154,7 +155,9 @@ MARKDOWN,
 
     public function getRelatedMethodNames(): array
     {
-        return array();
+        return array(
+            GetAppLocalesAPI::METHOD_NAME
+        );
     }
 
     public function getExampleJSONResponse(): array
