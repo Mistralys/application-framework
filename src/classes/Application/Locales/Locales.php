@@ -6,9 +6,7 @@ namespace Application;
 
 use Application\Languages\Language;
 use Application\Locales\Locale;
-use AppLocalize\Localization;
 use AppLocalize\Localization\Locale\en_US;
-use AppLocalize\Localization\Locales\LocalesCollection;
 use AppUtils\Collections\BaseStringPrimaryCollection;
 use AppUtils\Collections\CollectionException;
 
