@@ -19,7 +19,6 @@ use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
 use Application\Driver\DriverSettings;
 use Application\Driver\VersionInfo;
-use Application\Locales\Locales;
 use Application\Media\Collection\MediaCollection;
 use Application\NewsCentral\NewsCollection;
 use Application\SourceFolders\SourceFoldersManager;
@@ -303,7 +302,7 @@ class AppFactory
 
     // region: X - Support methods
 
-    public const ERROR_INVALID_INSTANCE_CLASS = 128401;
+    public const int ERROR_INVALID_INSTANCE_CLASS = 128401;
 
     /**
      * @var array<string,object>
