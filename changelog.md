@@ -5,6 +5,8 @@
 - API: Added `selectValue()` to parameter containers.
 - API: Handlers now send an error response if required parameters are missing.
 - API: Methods can now be linked in documentation with the `{api: MethodName}` tag.
+- API: Added the `GetAppLocales` method.
+- API: Now loading internal framework methods from thematic source folders.
 - AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
