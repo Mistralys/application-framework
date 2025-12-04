@@ -10,6 +10,7 @@
 - AdminScreens: `getRequiredRight()` can now return `null` when no right is required.
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
+- DBHelper: Added `addWhereColumnNOT_LIKE()` to the filter criteria.
 
 ## v6.1.1 - Renamer Performance
 - Renamer: Improved memory usage when processing large amounts of data.
