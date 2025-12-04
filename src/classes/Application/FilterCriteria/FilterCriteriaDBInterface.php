@@ -109,6 +109,13 @@ interface FilterCriteriaDBInterface extends FilterCriteriaInterface
 
     /**
      * @param string|DBHelper_StatementBuilder $column
+     * @param string|string[] $value
+     * @return $this
+     */
+    public function addWhereColumnNOT_LIKE(string|DBHelper_StatementBuilder $column, string|array $value) : self;
+
+    /**
+     * @param string|DBHelper_StatementBuilder $column
      * @param string[] $values
      * @return $this
      */

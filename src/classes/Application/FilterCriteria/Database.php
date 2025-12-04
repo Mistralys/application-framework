@@ -548,6 +548,27 @@ abstract class Application_FilterCriteria_Database extends Application_FilterCri
      * @inheritDoc
      * @throws FilterCriteriaException
      */
+    public function addWhereColumnNOT_LIKE(string|DBHelper_StatementBuilder $column, string|array $value) : self
+    {
+        $column = $this->quoteColumnName($column);
+
+        if(is_array($value))
+        {
+            foreach($value as $entry)
+            {
+                $this->addWhereColumnNOT_Like($column, $entry);
+            }
+
+            return $this;
+        }
+
+        return $this->addWhere($column." NOT LIKE ".$this->generatePlaceholder('%'.$value.'%'));
+    }
+
+    /**
+     * @inheritDoc
+     * @throws FilterCriteriaException
+     */
     public function addWhereColumnNOT_IN(string|DBHelper_StatementBuilder $column, array $values) : self
     {
         return $this->addWhereColumnIN($column, $values, true);
