@@ -6,6 +6,7 @@
  * @package Application
  */
 
+use Application\API\APIFoldersManager;
 use Application\API\APIManager;
 use Application\AppFactory;
 use Application\ConfigSettings\AppConfig;
@@ -200,6 +201,10 @@ class Application
                 Application_EventHandler_Event_DriverInstantiated::class
             );
         }
+
+        // Allow the API manager to register all framework-internal
+        // API method locations
+        new APIFoldersManager(AppFactory::createFoldersManager()->choose()->API())->register();
 
         // let the driver prepare the startup, namely determine which
         // administration areas are available. The driver's getPageID
