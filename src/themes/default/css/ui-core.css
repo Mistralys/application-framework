@@ -9,13 +9,22 @@
     --box-spacing-xl: 35px;
 }
 
+HTML, BODY{
+    height: 100%;
+    margin: 0;
+}
+
 BODY {
-    padding-top: 3.5rem;
-    position: absolute; /* to make it fill the viewport even in smaller resolutions */
-    min-width: fit-content; /* to fix the body being smaller than the content in smaller resolutions */
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     color: var(--color-text);
     background: var(--color-bg-document);
+}
+
+#content_area{
+    flex: 1;
+    background: var(--color-bg-content);
 }
 
 .clickable {
@@ -172,7 +181,7 @@ UL.nav > LI{
 /* region: Navigation - Quicknav */
 
 BODY.with-quicknav{
-    padding-top: 5.5rem;
+    /*padding-top: 5.5rem;*/
 }
 
 #app-quicknav .nav > LI > A{
@@ -212,10 +221,6 @@ BODY.with-quicknav{
     width: 32px;
     height: 32px;
     background-position: center top;
-}
-
-#content_area {
-    background: var(--color-bg-content);
 }
 
 #content_frame {
