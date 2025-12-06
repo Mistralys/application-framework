@@ -15,7 +15,7 @@ interface Application_Interfaces_Propertizable
      * @param integer $property_id
      * @return Application_CustomProperties_Property|NULL
      */
-    public function getPropertyByID($property_id);
+    public function getPropertyByID(int $property_id) : ?Application_CustomProperties_Property;
     
     /**
      * Retrieves a string identifying the type of owner of the
@@ -58,7 +58,7 @@ interface Application_Interfaces_Propertizable
      * In most cases, this will be the same instance. In case of
      * revisionables, this may be a transaction instance.
      *
-     * @return Application_Interfaces_Propertizable
+     * @return $this
      */
     public function startPropertiesTransaction();
     
@@ -67,7 +67,7 @@ interface Application_Interfaces_Propertizable
      * should also return the relevant instance of the propertizable
      * item.
      *
-     * @return Application_Interfaces_Propertizable
+     * @return $this
      */
     public function endPropertiesTransaction();
     

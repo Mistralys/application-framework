@@ -53,7 +53,7 @@ class Application_Traits_Stubs_Admin_Wizard_CreateDBRecordStub
 
     }
 
-    public function createCollection() : DBHelper_BaseCollection
+    public function createCollection() : Application_Countries
     {
         return Application_Countries::getInstance();
     }

@@ -13,6 +13,7 @@ use Application\Interfaces\ChangelogableInterface;
 use Application_Countries_Country;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application_Formable_Generic;
+use Application_RequestLog;
 use Application_Session_Base;
 use Application_User;
 use AppLocalize\Localization\Locales\LocaleInterface;
@@ -87,25 +88,15 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     protected function enableLogging(): void
     {
         AppFactory::createLogger()->logModeEcho();
+
+        Application_RequestLog::setActive(true);
     }
 
     protected function disableLogging(): void
     {
         AppFactory::createLogger()->logModeNone();
-    }
 
-    protected function isRunViaApplication(): bool
-    {
-        return boot_defined(BaseConfigRegistry::FRAMEWORK_TESTS) !== true;
-    }
-
-    protected function skipIfRunViaApplication(): bool
-    {
-        if ($this->isRunViaApplication()) {
-            $this->markTestSkipped();
-        }
-
-        return false;
+        Application_RequestLog::setActive(false);
     }
 
     protected function createTestFormable(array $defaultValues = array()): Application_Formable_Generic
@@ -208,7 +199,7 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
 
     protected function setUp(): void
     {
-        Localization::selectAppLocale('en_UK');
+        Localization::selectAppLocale(Localization::BUILTIN_LOCALE_NAME);
         AppFactory::createLogger()->reset();
         Application_Session_Base::setRedirectsEnabled(true);
         UI::selectDefaultInstance();
@@ -249,6 +240,22 @@ abstract class ApplicationTestCase extends TestCase implements ApplicationTestCa
     }
 
     // region Custom assertions
+
+    /**
+     * Asserts that the default locale is currently selected ({@see Localization::BUILTIN_LOCALE_NAME}).
+     * @return void
+     */
+    public function assertDefaultLocaleSelected() : void
+    {
+        $this->assertSame(
+            Localization::BUILTIN_LOCALE_NAME,
+            Localization::getAppLocaleName(),
+            sprintf(
+                'The default locale must be selected, currently %s is selected.',
+                Localization::getAppLocaleName()
+            )
+        );
+    }
 
     /**
      * Checks if the changelogable has the specified changelog entry type in its queue.

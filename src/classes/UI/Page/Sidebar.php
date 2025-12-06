@@ -7,6 +7,7 @@
  * @see UI_Page_Sidebar
  */
 
+use Application\FilterSettingsInterface;
 use Application\Revisionable\RevisionableInterface;
 use AppUtils\Interfaces\StringableInterface;
 
@@ -557,7 +558,7 @@ class UI_Page_Sidebar implements
         return $panel;
     }
     
-    public function addFilterSettings(Application_FilterSettings $settings, $title=null): UI_Page_Sidebar_Item_Template
+    public function addFilterSettings(FilterSettingsInterface $settings, $title=null): UI_Page_Sidebar_Item_Template
     {
         return $this->addTemplate(
             'sidebar.filter-settings',

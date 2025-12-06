@@ -17,11 +17,13 @@ class Application_RequestLog_LogInfo
      * @var array<string|int,mixed>
      */
     private array $data;
+    private string $id;
 
 
     public function __construct(string $sidecarPath)
     {
         $this->sidecarPath = $sidecarPath;
+        $this->id = md5($sidecarPath);
     }
 
     public static function generateBaseName(Microtime $time, string $sessionID, string $requestID) : string
@@ -45,6 +47,11 @@ class Application_RequestLog_LogInfo
         $this->loaded = true;
         $this->data = FileHelper::parseJSONFile($this->sidecarPath);
         $this->time = new Microtime($this->data[Application_RequestLog_LogWriter::KEY_MICRO_TIME]);
+    }
+
+    public function getID(): string
+    {
+        return $this->id;
     }
 
     public function getFileLabel() : string

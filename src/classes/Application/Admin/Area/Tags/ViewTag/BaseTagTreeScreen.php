@@ -5,21 +5,27 @@ declare(strict_types=1);
 namespace Application\Area\Tags\ViewTag;
 
 use Application\AppFactory;
+use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
 
 /**
  * @property TagRecord $record
  */
-class BaseTagTreeScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+class BaseTagTreeScreen extends BaseRecordSubmode
 {
-    public const URL_NAME = 'tag-tree';
-    public const REQUEST_PARAM_DELETE_TAG = 'delete-tag';
+    public const string URL_NAME = 'tag-tree';
+    public const string REQUEST_PARAM_DELETE_TAG = 'delete-tag';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return TagScreenRights::SCREEN_VIEW_TAG_TREE;
     }
 
     protected function createCollection() : TagCollection

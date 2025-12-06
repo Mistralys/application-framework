@@ -24,7 +24,7 @@ interface NamedItemInterface
     public function setName(string $name) : self;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName() : string;
+    public function getName() : ?string;
 }

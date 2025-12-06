@@ -15,7 +15,7 @@ use Application\AppFactory;
  * Template for the logout screen shown to users when they have logged out.
  *
  * @package UserInterface
- * @subackage Templates
+ * @subpackage Templates
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
  * @see Application_Bootstrap_Screen_RequestLog::renderMonthView()

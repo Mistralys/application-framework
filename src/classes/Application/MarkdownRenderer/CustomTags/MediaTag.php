@@ -26,7 +26,7 @@ use Dom\Attr;
  */
 class MediaTag extends BaseCustomTag
 {
-    public const DEFAULT_VISUAL_CLASS_NAME = 'visual';
+    public const string DEFAULT_VISUAL_CLASS_NAME = 'visual';
     private int $mediaID;
 
     public function __construct(string $matchedText, int $mediaID, AttributeCollection $params)

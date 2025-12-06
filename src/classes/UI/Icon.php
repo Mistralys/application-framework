@@ -88,6 +88,14 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function apiClients() : self { return $this->setType('project-diagram', 'fas'); }
+    /**
+     * @return $this
+     */
+    public function apiKeys() : self { return $this->setType('key', 'fas'); }
+    /**
+     * @return $this
+     */
     public function attentionRequired() : self { return $this->setType('exclamation-triangle'); }
     /**
      * @return $this
@@ -133,6 +141,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
      * @return $this
      */
     public function cache() : self { return $this->setType('memory', 'fas'); }
+    /**
+     * @return $this
+     */
+    public function calculate() : self { return $this->setType('calculator'); }
     /**
      * @return $this
      */
@@ -892,6 +904,10 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     /**
      * @return $this
      */
+    public function wizard() : self { return $this->setType('hat-wizard', 'fas'); }
+    /**
+     * @return $this
+     */
     public function wordwrap() : self { return $this->setType('terminal', 'fas'); }
     /**
      * @return $this
@@ -936,11 +952,21 @@ class UI_Icon implements StringableInterface, UI_Renderable_Interface
     }
 
     /**
+     * Gets the icon's type/name, e.g. `folder-open`.
      * @return string
      */
     public function getType() : string
     {
         return $this->name;
+    }
+
+    /**
+     * Gets the icon's prefix, e.g. `fa` or `fas`.
+     * @return string
+     */
+    public function getPrefix(): string
+    {
+        return $this->prefix;
     }
 
     /**

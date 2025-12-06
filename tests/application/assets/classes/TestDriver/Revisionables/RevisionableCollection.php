@@ -4,30 +4,29 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
+use Application\Revisionable\Collection\BaseRevisionableCollection;
+use Application\Revisionable\Collection\RevisionableCollectionInterface;
 use Application\Revisionable\RevisionableInterface;
-use Application_RevisionableCollection;
-use Application_Traits_Disposable;
-use Application_Traits_Eventable;
 use Application_User;
 use AppUtils\ClassHelper;
 use TestDriver\Revisionables\Storage\RevisionableStorage;
 use TestDriver\Revisionables\Storage\RevisionCopy;
 
 /**
- * @method RevisionableRecord createNewRecord(string $label, ?Application_User $author = null, array $data = array())
- * @method RevisionableRecord createDummyRecord()
+ * @method RevisionableRecord createNewRevisionable(string $label, ?Application_User $author = null, array $data = array())
+ * @method RevisionableRecord createStubRecord()
  */
-class RevisionableCollection extends Application_RevisionableCollection
+class RevisionableCollection extends BaseRevisionableCollection
 {
-    public const TABLE_NAME = 'revisionables';
-    public const TABLE_REVISIONS = 'revisionables_revisions';
-    public const TABLE_CURRENT_REVISIONS = 'revisionables_current_revisions';
-    public const TABLE_CHANGELOG = 'revisionables_changelog';
+    public const string TABLE_NAME = 'revisionables';
+    public const string TABLE_REVISIONS = 'revisionables_revisions';
+    public const string TABLE_CURRENT_REVISIONS = 'revisionables_current_revisions';
+    public const string TABLE_CHANGELOG = 'revisionables_changelog';
 
-    public const PRIMARY_NAME = 'revisionable_id';
-    public const COL_REV_ID = 'revisionable_revision';
-    public const COL_REV_STRUCTURAL = 'structural';
-    public const COL_REV_ALIAS = 'alias';
+    public const string PRIMARY_NAME = 'revisionable_id';
+    public const string COL_REV_ID = 'revisionable_revision';
+    public const string COL_REV_STRUCTURAL = 'structural';
+    public const string COL_REV_ALIAS = 'alias';
 
     private static ?RevisionableCollection $instance = null;
 
@@ -40,9 +39,9 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::$instance;
     }
 
-    public function createNewRevisionable(string $label, string $alias) : RevisionableRecord
+    public function createNew(string $label, string $alias) : RevisionableRecord
     {
-        return $this->createNewRecord(
+        return $this->createNewRevisionable(
             $label,
             null,
             array(
@@ -53,7 +52,7 @@ class RevisionableCollection extends Application_RevisionableCollection
 
     // region: X - Interface methods
 
-    public function getPrimaryRequestName(): string
+    public function getRecordRequestPrimaryName(): string
     {
         return self::PRIMARY_NAME;
     }
@@ -129,7 +128,7 @@ class RevisionableCollection extends Application_RevisionableCollection
     public function getRecordSearchableColumns() : array
     {
         return array(
-            self::COL_REV_LABEL => t('Label'),
+            RevisionableCollectionInterface::COL_REV_LABEL => t('Label'),
             self::COL_REV_ALIAS => t('Alias')
         );
     }
@@ -139,14 +138,9 @@ class RevisionableCollection extends Application_RevisionableCollection
         return self::TABLE_CURRENT_REVISIONS;
     }
 
-    public function getPrimaryKeyName(): string
+    public function getRecordPrimaryName(): string
     {
         return self::PRIMARY_NAME;
-    }
-
-    public function getTableName(): string
-    {
-        return self::TABLE_NAME;
     }
 
     public function getRevisionsTableName(): string
@@ -178,5 +172,4 @@ class RevisionableCollection extends Application_RevisionableCollection
     {
         return '';
     }
-
 }

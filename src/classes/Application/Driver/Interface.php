@@ -8,6 +8,7 @@
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * Interface for driver classes.
@@ -47,7 +48,21 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
 
     public function getActiveArea() : Application_Admin_Area;
 
-    public function getActiveScreen() : AdminScreenInterface;
+    /**
+     * Gets the active admin screen, if any.
+     *
+     * For example, this may return null when the
+     * application is not running in UI mode.
+     *
+     * @return AdminScreenInterface|null
+     */
+    public function getActiveScreen() : ?AdminScreenInterface;
+
+    /**
+     * Gets the active admin screen, throwing an exception if none is active.
+     * @return AdminScreenInterface
+     */
+    public function requireActiveScreen() : AdminScreenInterface;
 
     public function getPage() : ?UI_Page;
 
@@ -121,10 +136,10 @@ interface Application_Driver_Interface extends Application_Interfaces_Loggable
     public function getAdminURLChangelog(array $params=array()) : string;
 
     /**
-     * @param string|array<string,string|number>|NULL $paramsOrURL
+     * @param string|array<string,string|number>|AdminURLInterface|NULL $paramsOrURL
      * @return never
      */
-    public function redirectTo($paramsOrURL = null);
+    public function redirectTo(string|array|AdminURLInterface|NULL $paramsOrURL = null) : never;
 
     /**
      * Adds an informational message and redirects to the target URL.

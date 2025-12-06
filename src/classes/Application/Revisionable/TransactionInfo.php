@@ -11,12 +11,12 @@ class TransactionInfo
     public const TRANSACTION_CHANGED = 'changed';
 
     private string $result;
-    private RevisionableStatelessInterface $revisionable;
+    private RevisionableInterface $revisionable;
     private ?int $newRevision;
     private int $sourceRevision;
     private bool $simulated;
 
-    public function __construct(RevisionableStatelessInterface $revisionable, string $result, bool $simulated, int $sourceRevision, ?int $newRevision)
+    public function __construct(RevisionableInterface $revisionable, string $result, bool $simulated, int $sourceRevision, ?int $newRevision)
     {
         $this->sourceRevision = $sourceRevision;
         $this->newRevision = $newRevision;
@@ -35,7 +35,7 @@ class TransactionInfo
         return $this->sourceRevision;
     }
 
-    public function getRevisionable() : RevisionableStatelessInterface
+    public function getRevisionable() : RevisionableInterface
     {
         return $this->revisionable;
     }

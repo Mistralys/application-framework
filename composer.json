@@ -66,16 +66,17 @@
     "psr/log": ">=1.1.0",
     "mistralys/application-framework-docs": ">=1.0.1",
     "mistralys/appframework-ckeditor5": ">=1.0.0",
-    "mistralys/application-utils": ">=3.1.6",
-    "mistralys/application-utils-core": ">=2.3.10",
-    "mistralys/application-utils-collections": ">=1.1.1",
+    "mistralys/application-utils": ">=3.1.10",
+    "mistralys/application-utils-core": ">=2.4.1",
+    "mistralys/application-utils-collections": ">=1.1.6",
     "mistralys/application-utils-image": ">=1.2.0",
-    "mistralys/application-localization": ">=2.0.0",
+    "mistralys/application-localization": ">=2.1.2",
     "mistralys/changelog-parser": ">=1.0.1",
     "mistralys/deepl-xml-translator": ">=2.0.2",
     "mistralys/subsetsum": ">=1.0.2",
     "mistralys/markdown-viewer": ">=1.3.1",
     "mistralys/html_quickform2": ">=2.3.6",
+    "mistralys/variable-hasher": ">=1.0.0",
     "mistralys/version-parser": ">=2.1.1",
     "pear/http_request2": "^v2.5.1",
     "phpmailer/phpmailer": "^v6.9.1",
@@ -91,24 +92,23 @@
     "hybridauth/hybridauth": "^3.8.2",
     "league/commonmark": "^2.6.0",
     "zenorocha/clipboardjs": "v2.0.8",
-    "apereo/phpcas": "^1.6.1",
+    "apereo/phpcas": ">=1.6.1",
     "roave/security-advisories": "dev-latest",
+    "php": "^8.4",
+    "ext-curl": "*",
+    "ext-dom": "*",
     "ext-json": "*",
+    "ext-ldap": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "php": "^7.4|^8",
     "ext-simplexml": "*"
   },
   "require-dev": {
     "phpunit/phpunit": ">=9.6",
     "phpstan/phpstan": ">=1.10",
-    "ext-curl": "*",
-    "css-crush/css-crush": "v4.1.3"
+    "css-crush/css-crush": ">=v4.1.3"
   },
   "config": {
-    "platform": {
-      "php": "7.4"
-    },
     "allow-plugins": {
       "php-http/discovery": true,
       "composer/installers": true,
@@ -116,8 +116,11 @@
     }
   },
   "scripts": {
-    "post-autoload-dump": "Application\\Composer\\ComposerScripts::clearClassCache",
-    "clear-class-cache": "Application\\Composer\\ComposerScripts::clearClassCache",
-    "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches"
+    "post-autoload-dump": "Application\\Composer\\ComposerScripts::clearCaches",
+    "clear-caches": "Application\\Composer\\ComposerScripts::clearCaches",
+    "build": [
+      "@composer dumpautoload",
+      "Application\\Composer\\ComposerScripts::build"
+    ]
   }
 }

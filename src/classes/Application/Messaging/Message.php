@@ -1,145 +1,129 @@
 <?php
+/**
+ * @package Messaging
+ * @subpackage Collection
+ */
 
+declare(strict_types=1);
+
+use Application\Messaging\MessagingCollection;
+use Application\Messaging\MessagingException;
+use AppUtils\ConvertHelper;
+use AppUtils\Microtime;
+
+/**
+ * @package Messaging
+ * @subpackage Collection
+ */
 class Application_Messaging_Message extends DBHelper_BaseRecord
 {
-    public const ERROR_INVALID_CUSTOM_DATA = 13501;
-    
-   /**
-    * @var Application_Messaging
-    */
-    protected $messaging;
-    
-    protected $data;
-    
-    protected function init()
-    {
-        $this->messaging = Application::createMessaging();
-    }
-    
     public function getLabel() : string
     {
         return $this->getMessage();
     }
-    
-    public function getMessage()
+
+    public function getMessage() : string
     {
-        return $this->getRecordKey('message');
+        return $this->getRecordStringKey(MessagingCollection::COL_MESSAGE);
     }
     
-    public function getPriority()
+    public function getPriority() : string
     {
-        return $this->getRecordKey('priority');
+        return $this->getRecordStringKey(MessagingCollection::COL_PRIORITY);
     }
     
-    public function setPriority($priority)
+    public function setPriority(string $priority) : bool
     {
-        Application_Messaging::requirePriorityExists($priority);
-        return $this->setRecordKey('priority', $priority);
+        MessagingCollection::requirePriorityExists($priority);
+        return $this->setRecordKey(MessagingCollection::COL_PRIORITY, $priority);
     }
     
-    public function setCustomData($dataString)
+    public function setCustomData(int|float|string|null $dataString) : bool
     {
-        if(!is_string($dataString) && !is_numeric($dataString)) {
-            throw new Application_Exception(
-                'Invalid custom message data',
-                sprintf(
-                    'The custom data must be a string, [%s] given.',
-                    gettype($dataString)
-                ),
-                self::ERROR_INVALID_CUSTOM_DATA
-            );
-        }
-        
-        return $this->setRecordKey('custom_data', $dataString);
+        return $this->setRecordKey(MessagingCollection::COL_CUSTOM_DATA, $dataString);
     }
     
-    public function getInReplyToID()
+    public function getInReplyToID() : int
     {
-        return $this->getRecordKey('in_reply_to');
+        return $this->getRecordIntKey(MessagingCollection::COL_IN_REPLY_TO);
     }
     
-    public function isReply()
+    public function isReply() : bool
     {
         $id = $this->getInReplyToID();
-        return !empty($id);
+        return $id > 0;
     }
     
-    public function getFromUser()
+    public function getFromUser() : Application_User
     {
-        return Application::getUser()->createByID($this->getFromUserID());
+        return Application::createUser($this->getFromUserID());
     }
     
-    public function getFromUserID()
+    public function getFromUserID() : int
     {
-        return $this->getRecordKey('from_user');
+        return $this->getRecordIntKey(MessagingCollection::COL_FROM_USER);
     }
     
-    public function getToUserID()
+    public function getToUserID() : int
     {
-        return $this->getRecordKey('to_user');
+        return $this->getRecordIntKey(MessagingCollection::COL_TO_USER);
     }
     
-    public function getToUser()
+    public function getToUser() : Application_User
     {
-        return Application::getUser()->createByID($this->getToUserID());
+        return Application::createUser($this->getToUserID());
     }
     
-    public function getPriorityPretty()
+    public function getPriorityPretty() : string
     {
-        return Application_Messaging::getPriorityLabel($this->getPriority());
+        return MessagingCollection::getPriorityLabel($this->getPriority());
     }
     
-    public function getDateSent()
+    public function getDateSent() : Microtime
     {
-        return new DateTime($this->getRecordKey('date_sent'));
+        return Microtime::createFromString($this->getRecordKey(MessagingCollection::COL_DATE_SENT));
     }
     
-    public function getDateReceived()
+    public function getDateReceived() : ?Microtime
     {
-        $date = $this->getRecordKey('date_received');
-        if(!empty($date)) {
-            return new DateTime($date);
-        }
-        
-        return null;
+        return $this->getRecordMicrotimeKey(MessagingCollection::COL_DATE_RECEIVED);
     }
 
-    public function getDateResponded()
+    public function getDateResponded() : ?Microtime
     {
-        $date = $this->getRecordKey('date_responded');
-        if(!empty($date)) {
-            return new DateTime($date);
+        return $this->getRecordMicrotimeKey(MessagingCollection::COL_DATE_RESPONDED);
+    }
+    
+    public function getResponse() : string
+    {
+        return $this->getRecordStringKey(MessagingCollection::COL_RESPONSE);
+    }
+    
+    public function getCustomData() : string|int|float|null
+    {
+        $data = $this->getRecordKey(MessagingCollection::COL_CUSTOM_DATA);
+        if(is_string($data) || is_numeric($data)) {
+            return $data;
         }
-    
+
         return null;
-    }
-    
-    public function getResponse()
-    {
-        return $this->getRecordKey('response');
-    }
-    
-    public function getCustomData()
-    {
-        return $this->getRecordKey('custom_data');
     }
     
    /**
     * Retrieves the amount of time since the message was created.
     * @return DateInterval
     */
-    public function getAge()
+    public function getAge() : DateInterval
     {
-        $now = new DateTime();
-        return $now->diff($this->getDateSent());
+        return new DateTime()->diff($this->getDateSent());
     }
     
-    public function getAgePretty()
+    public function getAgePretty() : string
     {
-        return AppUtils\ConvertHelper::interval2string($this->getAge());
+        return ConvertHelper::interval2string($this->getAge());
     }
     
-    public function toArray()
+    public function toArray() : array
     {
         $dateReceived = $this->getDateReceived();
         
@@ -157,25 +141,25 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
         return array(
             'message_id' => $this->getID(),
             'is_reply' => $this->isReply(),
-            'in_reply_to' => $this->getInReplyToID(),
-            'from_user' => $this->getFromUserID(),
+            MessagingCollection::COL_IN_REPLY_TO => $this->getInReplyToID(),
+            MessagingCollection::COL_FROM_USER => $this->getFromUserID(),
             'from_user_name' => $this->getFromUser()->getName(),
-            'to_user' => $this->getToUserID(),
+            MessagingCollection::COL_TO_USER => $this->getToUserID(),
             'to_user_name' => $this->getToUser()->getName(),
             'message' => $this->getMessage(),
             'priority' => $this->getPriority(),
             'priority_pretty' => $this->getPriorityPretty(),
-            'date_sent' => $this->getDateSent()->format('Y-m-d H:i:s'),
-            'date_received' => $dateReceived,
+            MessagingCollection::COL_DATE_SENT => $this->getDateSent()->format('Y-m-d H:i:s'),
+            MessagingCollection::COL_DATE_RECEIVED => $dateReceived,
             'responded' => $responded,
-            'date_responded' => $dateResponded,
-            'response' => $this->getResponse(),
-            'custom_data' => $this->getCustomData(),
+            MessagingCollection::COL_DATE_RESPONDED => $dateResponded,
+            MessagingCollection::COL_RESPONSE => $this->getResponse(),
+            MessagingCollection::COL_CUSTOM_DATA => $this->getCustomData(),
             'age_pretty' => $this->getAgePretty()
         );
     }
     
-    public function delete()
+    public function delete() : void
     {
         DBHelper::requireTransaction('Delete a message');
         DBHelper::deleteRecords('app_messaging', array('message_id' => $this->getID()));
@@ -188,29 +172,13 @@ class Application_Messaging_Message extends DBHelper_BaseRecord
     * @param Application_LockManager_Lock $lock
     * @return boolean
     */
-    public function setLock(Application_LockManager_Lock $lock)
+    public function setLock(Application_LockManager_Lock $lock) : bool
     {
-        return $this->setRecordKey('lock_id', $lock->getID());
+        return $this->setRecordKey(MessagingCollection::COL_LOCK_ID, $lock->getID());
     }
     
-    public function getRecordPrimaryName() : string
-    {
-        return 'message_id';
-    }
-    
-    public function getRecordTable()
-    {
-        return 'app_messaging';
-    }
-    
-    public function getRecordTypeName() : string
-    {
-        return 'message';
-    }
-
-    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
+    protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
         // nothing to do here.
     }
-
 }

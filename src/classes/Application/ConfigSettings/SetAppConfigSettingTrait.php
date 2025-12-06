@@ -477,6 +477,7 @@ trait SetAppConfigSettingTrait
     }
 
     /**
+     * The LDAP server host without the protocol. e.g. `ldap.mistralys.eu`.
      * @param string $host
      * @return $this
      */
@@ -486,10 +487,23 @@ trait SetAppConfigSettingTrait
     }
 
     /**
-     * @param int $port
+     * Whether to enable SSL for the LDAP connection.
+     *
+     * Defaults to `true`.
+     *
+     * @param bool $enabled
      * @return $this
      */
-    public function setLDAPPort(int $port) : self
+    public function setLDAPSSLEnabled(bool $enabled) : self
+    {
+        return $this->setBootDefine(BaseConfigRegistry::LDAP_SSL_ENABLED, $enabled);
+    }
+
+    /**
+     * @param int|NULL $port Set to `NULL` to use the default port.
+     * @return $this
+     */
+    public function setLDAPPort(?int $port) : self
     {
         return $this->setBootDefine(BaseConfigRegistry::LDAP_PORT, $port);
     }

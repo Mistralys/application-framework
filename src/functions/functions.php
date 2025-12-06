@@ -5,13 +5,15 @@
  * @subpackage Core
  */
 
+declare(strict_types=1);
+
+use Application\AppFactory;
+use Application\ApplicationException;
 use Application\ConfigSettings\BaseConfigRegistry;
-use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
+use Application\Driver\DriverException;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper_Exception;
-use AppUtils\FileHelper;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\XMLHelper;
 use function AppUtils\parseURL;
@@ -28,7 +30,7 @@ const ERROR_OBJECT_SORTBYLABEL_METHOD_MISSING = 64402;
  *
  * @param array<int,object> $array
  */
-function object_sortByWeight(&$array)
+function object_sortByWeight(array &$array): void
 {
 	uasort($array, 'callback_object_sortByWeight');
 }
@@ -41,7 +43,7 @@ function object_sortByWeight(&$array)
  *
  * @param array<int,object> $array
  */
-function object_sortByLabel(&$array)
+function object_sortByLabel(array &$array) : void
 {
 	uasort($array, 'callback_object_sortByLabel');
 }
@@ -52,11 +54,11 @@ function object_sortByLabel(&$array)
  * @param object $b
  * @return int
  */
-function callback_object_sortByWeight($a, $b) : int
+function callback_object_sortByWeight(object $a, object $b) : int
 {
     if(!method_exists($a, 'getWeight') || !method_exists($b, 'getWeight'))
     {
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Target object does not implement the [getWeight] method.',
             '',
             ERROR_OBJECT_SORTBYWEIGHT_METHOD_MISSING
@@ -85,11 +87,11 @@ function callback_object_sortByWeight($a, $b) : int
  * @param object $b
  * @return int
  */
-function callback_object_sortByLabel($a, $b)
+function callback_object_sortByLabel(object $a, object $b) : int
 {
     if(!method_exists($a, 'getLabel') || !method_exists($b, 'getLabel'))
     {
-        throw new Application_Exception(
+        throw new ApplicationException(
             'Target object does not implement the [getLabel] method.',
             '',
             ERROR_OBJECT_SORTBYLABEL_METHOD_MISSING
@@ -107,7 +109,7 @@ function callback_object_sortByLabel($a, $b)
  * @param string $img
  * @return string
  */
-function imageURL($img)
+function imageURL(string $img) : string
 {
     return UI::getInstance()->getTheme()->getImageURL($img);
 }
@@ -118,11 +120,11 @@ function imageURL($img)
  *
  * @return string
  */
-function nextJSID()
+function nextJSID() : string
 {
     $session = Application::getSession();
     
-    $value = intval($session->getValue('jsid_counter')) + 1;
+    $value = (int)$session->getValue('jsid_counter') + 1;
     
     $session->setValue('jsid_counter', $value);
     
@@ -130,39 +132,26 @@ function nextJSID()
 }
 
 /**
- * Returns the currently active UI object from
- * the application.
- *
- * @return UI
- */
-function getUI()
-{
-	global $app;
-
-	return $app->getUI();
-}
-
-/**
  * Takes an array of name => value pairs and generates
  * the corresponding attributes string for use in an
  * HTML tag. Returns the list of attributes with a
  * space in front and back so this can be safely inserted
- * withut spaces around it.
+ * without spaces around it.
  *
- * @param array $attributes
+ * @param array<string,string|int> $attributes
  * @return string
  */
-function compileAttributes( $attributes )
+function compileAttributes( array $attributes ) : string
 {
 	$tokens = array();
 	foreach( $attributes as $name => $value ) 
 	{
-		if(empty($value) && $value!==0) {
+		if(empty($value) && $value !== 0) {
 			continue;
 		}
 
 		// property
-		if($name == $value) {
+		if($name === $value) {
 		    $tokens[] = $name;
 		} else {
 		    $tokens[] = $name.'="'.$value.'"';
@@ -181,10 +170,10 @@ function compileAttributes( $attributes )
  * turns them into a style string that can be used
  * in the HTML style attribute.
  * 
- * @param array $styles
+ * @param array<string,string|int>$styles
  * @return string
  */
-function compileStyles($styles)
+function compileStyles(array $styles) : string
 {
     $tokens = array();
     foreach($styles as $name => $value) {
@@ -203,38 +192,28 @@ function compileStyles($styles)
 function getContentType() : string
 {
     $headers = headers_list();
-    foreach($headers as $header) {
+    foreach ($headers as $header) {
         $tokens = explode(':', $header);
-        if(!stristr($tokens[0], 'content-type')) {
+        if (stripos($tokens[0], 'content-type') === false) {
             continue;
         }
-    
+
         return $tokens[1];
     }
-    
-    return '';
-}
 
-function isContentTypeText() : bool
-{
-    $contentType = getContentType();
-    if($contentType && stristr($contentType, 'text/plain')) {
-        return true;
-    }
-    
-    return false;
+    return '';
 }
 
 /**
  * Checks whether the current script is running from the command line.
  * @return boolean
  */
-function isCLI()
+function isCLI() : bool
 {
-    return php_sapi_name() == "cli";
+    return PHP_SAPI === "cli";
 }
 
-function isContentTypeHTML()
+function isContentTypeHTML() : bool
 {
     if(isCLI()) {
         return false;
@@ -248,7 +227,7 @@ function isContentTypeHTML()
         return true;
     }
     
-    if(stristr($contentType, 'text/html')) {
+    if(stripos($contentType, 'text/html') !== false) {
         return true;
     }
     
@@ -267,12 +246,16 @@ function isContentTypeHTML()
  * @param Throwable $e
  * @return never
  */
-function displayError(Throwable $e)
+function displayError(Throwable $e) : never
 {
     $develinfo = true;
-    $output = ob_get_clean();
+    $output = null;
 
-    if($e instanceof Application_Exception) {
+    if(ob_get_length() !== false) {
+        $output = ob_get_clean();
+    }
+
+    if($e instanceof ApplicationException) {
         $output = $e->getPageOutput().$output;
     }
 
@@ -321,8 +304,8 @@ function displayError(Throwable $e)
         APP_ERROR_PAGE_TITLE, 
         'An unexpected issue came up, and the system decided to stop the current operation to avoid breaking anything. '.
         'While this is certainly inconvenient, we invite you to review the error details below - they may shed some light on possible solutions. ',
-        $themeLocation[1],
-        $themeLocation[0],
+        $themeLocation[1] ?? '(unknown)',
+        $themeLocation[0] ?? '(unknown)',
         $locations,
         $output,
         $contentType,
@@ -345,7 +328,7 @@ function renderExceptionInfo(Throwable $e, bool $develinfo=false, bool $html=fal
     $type = get_class($e);
     $prev = $e->getPrevious();
     
-    if(!empty($prev))
+    if($prev !== null)
     {
         $type = get_class($prev);
     }
@@ -415,21 +398,21 @@ function getRequestURI()
 }
 
 /**
- * Shorthand for using the ConvertHelper bool2string
+ * Shorthand for using the ConvertHelper {@see ConvertHelper::bool2string()}
  * method, which will return the false string if an
  * exception occurs.
  *
- * @param boolean|string|int $bool
+ * @param boolean|string|int|null $bool
  * @param bool $yesno
  * @return string
  */
-function bool2string($bool, bool $yesno=false) : string
+function bool2string(bool|string|int|null $bool, bool $yesno=false) : string
 {
     try
     {
         return ConvertHelper::bool2string($bool, $yesno);
     }
-    catch (ConvertHelper_Exception $e)
+    catch (ConvertHelper_Exception)
     {
         return bool2string(false, $yesno);
     }
@@ -439,13 +422,13 @@ function bool2string($bool, bool $yesno=false) : string
  * @param mixed $string
  * @return bool
  */
-function string2bool($string) : bool
+function string2bool(mixed $string) : bool
 {
     try
     {
         return ConvertHelper::string2bool($string);
     }
-    catch (ConvertHelper_Exception $e)
+    catch (ConvertHelper_Exception)
     {
         return string2bool('false');
     }
@@ -527,7 +510,7 @@ function renderTrace(Throwable $e) : string
 		}
 		
 		$args = array();
-		if(isset($entry['args']) && !empty($entry['args'])) 
+		if(empty($entry['args']))
 		{
 			foreach($entry['args'] as $arg) {
 				switch(gettype($arg)) {
@@ -538,7 +521,7 @@ function renderTrace(Throwable $e) : string
 						break;
 
 					case 'array':
-					    $json = json_encode($arg, JSON_PRETTY_PRINT);
+					    $json = JSONConverter::var2json($arg, JSON_PRETTY_PRINT);
 					    if(strlen($json) > 1000) {
 					        $json = substr($json, 0, 1000).' [...]';
 					    }
@@ -616,148 +599,6 @@ function renderTrace(Throwable $e) : string
 }
 
 /**
- * Converts the specified amount of seconds into
- * a human readable string split in months, weeks,
- * days, hours, minutes and seconds.
- *
- * @param float $seconds
- * @return string
- */
-function convert_time2string($seconds)
-{
-	static $units = null;
-	if(is_null($units)) {
-		$units = array(
-			array(
-				'value' => 31*7*24*3600,
-				'singular' => t('month'),
-				'plural' => t('months')
-			),
-			array(
-				'value' => 7*24*3600,
-				'singular' => t('week'),
-				'plural' => t('months')
-			),
-			array(
-				'value' => 24*3600,
-				'singular' => t('day'),
-				'plural' => t('days')
-			),
-			array(
-				'value' => 3600,
-				'singular' => t('hour'),
-				'plural' => t('hours')
-			),
-			array(
-				'value' => 60,
-				'singular' => t('minute'),
-				'plural' => t('minutes')
-			),
-			array(
-				'value' => 1,
-				'singular' => t('second'),
-				'plural' => t('seconds')
-			)
-		);
-	}
-
-	// specifically handle zero
-	if($seconds <= 0 ) {
-		return '0 '.t('seconds');
-	}
-
-	$tokens = array();
-	foreach($units as $def) {
-		$quot = intval($seconds/$def['value']);
-		if($quot) {
-			$item = $quot.' ';
-			if(abs($quot) > 1) {
-				$item .= $def['plural'];
-			} else {
-				$item .= $def['singular'];
-			}
-
-			$tokens[] = $item;
-			$seconds -= $quot * $def['value'];
-		}
-	}
-
-	$last = array_pop($tokens);
-	if(empty($tokens)) {
-		return $last;
-	}
-
-	return implode(', ', $tokens).' '.t('and').' '.$last;
-}
-
-/**
- * Converts a timestamp into an easily understandable
- * format, e.g. "2 hours", "1 day", "3 months"
- *
- * If you set the date to parameter, the difference
- * will be calculated between the two dates and not
- * the current time.
- *
- * @param DateTime|int $datefrom
- * @param DateTime|int $dateto
- * @return string
- */
-function convert_duration2string( $datefrom, $dateto = -1 )
-{
-    return ConvertHelper::duration2string($datefrom, $dateto);
-}
-
-/**
- * Creates XML markup to describe an application error
- * when using XML services.
- *
- * @param mixed $code
- * @param string $message
- * @param string $title
- * @return string
- */
-function xml_buildError($code, $message, $title)
-{
-	$xml = new DOMDocument('1.0', 'UTF-8');
-	$xml->formatOutput = true;
-
-	$helper = new AppUtils\XMLHelper($xml);
-
-	$root = $helper->createRoot('error');
-	$helper->addTextTag($root, 'id', $code);
-	$helper->addTextTag($root, 'message', $message);
-	$helper->addTextTag($root, 'title', $title);
-
-	return $xml->saveXML();
-}
-
-function xml_buildSuccess($message)
-{
-	$xml = new DOMDocument('1.0', 'UTF-8');
-	$xml->formatOutput = true;
-
-	$helper = new AppUtils\XMLHelper($xml);
-
-	$root = $helper->createRoot('success');
-	$helper->addTextTag($root, 'message', $message);
-	$helper->addTextTag($root, 'time', date('Y-m-d H:i:s'));
-
-	return $xml->saveXML();
-}
-
-/**
- * Removes any tags from the string, trims it and converts
- * special characters to HTML entities.
- *
- * @param string $string
- * @return string
- */
-function convert_cleanRequestString($string)
-{
-	return htmlspecialchars(trim(strip_tags($string)), ENT_QUOTES, 'UTF-8');
-}
-
-/**
  * Sends the specified XML string to the browser with
  * the correct headers and terminates the request.
  *
@@ -770,7 +611,7 @@ function displayXML(string $xml) : void
     Application::exit();
 }
 
-function displayExceptionXML(Exception $e, $code, string $title, bool $debug=false)
+function displayExceptionXML(Exception $e, int|string $code, string $title, bool $debug=false) : never
 {
     $message = rtrim($e->getMessage(), '.').'.';
     
@@ -781,7 +622,7 @@ function displayExceptionXML(Exception $e, $code, string $title, bool $debug=fal
         'exception_line' => $e->getLine()
     );
     
-    if($e instanceof Application_Exception) {
+    if($e instanceof ApplicationException) {
         $customInfo['exception_info'] = $e->getDeveloperInfo();
         $customInfo['exception_id'] = $e->getID();
     }
@@ -803,14 +644,20 @@ function displayExceptionXML(Exception $e, $code, string $title, bool $debug=fal
 
 /**
  * Creates the XML structure for an error response, and
- * sends the XML to the browser with a HTTP 400 response
+ * sends the XML to the browser with an HTTP 400 response
  * header.
  *
- * @param int $errorCode
+ * @param int|string $errorCode
  * @param string $errorMessage
  * @param string $title
+ * @param array<string,mixed> $customInfo
+ * @param bool $debug
+ * @return never
+ * @throws DOMException
+ * @throws JsonException
+ * @throws DriverException
  */
-function displayErrorXML($errorCode, $errorMessage, $title, $customInfo=array(), $debug=false)
+function displayErrorXML(int|string $errorCode, string $errorMessage, string $title, array $customInfo=array(), bool $debug=false) : never
 {
 	$driver = Application_Driver::getInstance();
 	if(method_exists($driver, 'getCampaign')) {
@@ -819,11 +666,12 @@ function displayErrorXML($errorCode, $errorMessage, $title, $customInfo=array(),
 		$customInfo['campaign_label'] = $campaign->getLabel();
 	}
 	
-	if(isset($_REQUEST['debug']) && $_REQUEST['debug']=='yes') {
-	    Application::log('Send XML error', true);
-	    Application::log('Error code: '.$errorCode);
-	    Application::log('Error message: '.nl2br($errorMessage));
-	    Application::log('Error title: '.$title);
+	if(isset($_REQUEST['debug']) && $_REQUEST['debug'] === 'yes') {
+        $logger = AppFactory::createLogger();
+	    $logger->log('Send XML error', true);
+        $logger->log('Error code: '.$errorCode);
+        $logger->log('Error message: '.nl2br($errorMessage));
+        $logger->log('Error title: '.$title);
 	    exit;
 	}
 	
@@ -840,88 +688,12 @@ function displayErrorXML($errorCode, $errorMessage, $title, $customInfo=array(),
 }
 
 /**
- * Sends the specified CSV string to the browser with
- * the correct headers and terminates the request.
- *
- * @param string $csv
- * @param string $filename 
- * @param boolean $debug In debug mode, HTML is added to display the CSV better.
- */
-function displayCSV($csv, $filename='download.csv', $debug=false)
-{
-    if($debug) {
-        echo
-        '<hr>'.
-        '<code>'.t('CSV File:').' '.$filename.'</code>'.
-        '<hr>'.
-        '<pre>'.$csv.'</pre>'.
-        '<hr>';
-        exit;
-    } 
-    
-	header('Content-Type:text/plain; charset=utf-8');
-    echo $csv;
-	exit;
-}
-
-/**
- * Sends the specified CSV string to the browser with
- * the correct headers to trigger a download of the CSV
- * to a local file and terminates the request.
- *
- * @param string $csv
- * @param string $filename
- * @return never
- */
-function downloadCSV(string $csv, string $filename='download.csv')
-{
-    header('Content-type:text/csv; charset=UTF-8');
-	header('Content-Disposition: attachment; filename="'.$filename.'"');
-	
-	$boms = FileHelper::createUnicodeHandling()->getUTFBOMs();
-	
-	echo 
-	$boms['UTF8'].
-	$csv;
-	exit;
-}
-
-/**
- * Sends the specified XML string to the browser with
- * the correct headers to triggr a download of the XML
- * to a local file and terminates the request.
- *
- * @param string $xml
- * @param string $filename
- */
-function downloadXML(string $xml, string $filename='download.xml') : void
-{
-	XMLHelper::downloadXML($xml, $filename);
-
-	Application::exit();
-}
-
-/**
  * Checks whether the current operating system is windows.
  * @return boolean
  */
-function isOSWindows()
+function isOSWindows() : bool
 {
-    if(substr(PHP_OS, 0, 3) == 'WIN') {
-        return true;
-    }
-
-    return false;
-}
-
-function loadtimeError($message, $code)
-{
-    header('Content-Type:text/plain; charset=UTF-8');
-    die(sprintf(
-        'FATAL LOADTIME ERROR [%s]: %s',
-        $code,
-        $message
-    ));
+    return str_starts_with(PHP_OS, 'WIN');
 }
 
 /**
@@ -972,7 +744,7 @@ function subset_sum(array $numbers, float $target) : array
  * @param mixed $var
  * @return string
  */
-function var_dump_get($var)
+function var_dump_get(mixed $var) : string
 {
     ob_start();
     var_dump($var);
@@ -985,7 +757,7 @@ function var_dump_get($var)
  */
 function t() : string
 {
-    return call_user_func_array('\AppLocalize\t', func_get_args());
+    return \AppLocalize\t(...func_get_args());
 }
 
 /**
@@ -994,7 +766,7 @@ function t() : string
  */
 function pt() : void
 {
-    call_user_func_array('\AppLocalize\pt', func_get_args());
+    \AppLocalize\pt(...func_get_args());
 }
 
 /**
@@ -1003,7 +775,7 @@ function pt() : void
  */
 function pts() : void
 {
-    call_user_func_array('\AppLocalize\pts', func_get_args());
+    \AppLocalize\pts(...func_get_args());
 }
 
 /**
@@ -1025,12 +797,22 @@ function sb() : UI_StringBuilder
  *
  * @see UI::ERROR_NOT_A_RENDERABLE
  */
-function toString($subject) : string
+function toString(mixed $subject) : string
 {
     // avoid the additional function call
     if(is_string($subject))
     {
         return $subject;
+    }
+
+    if($subject === false)
+    {
+        return 'false';
+    }
+
+    if($subject === true)
+    {
+        return 'true';
     }
 
     if($subject === null)
@@ -1039,41 +821,6 @@ function toString($subject) : string
     }
 
     return (string)UI::requireRenderable($subject);
-}
-
-/**
- * Can be used to ensure that the specified object
- * is an instance of the target class. It the type
- * matches, the object is returned, and an exception
- * is thrown otherwise.
- *
- * NOTE: This is PHPStan friendly.
- *
- * Usage:
- *
- * ```
- * function createClass() : ClassName
- * {
- *     $object = $this->getObject();
- *
- *     return ensureType(ClassName::class, $object);
- * }
- * ```
- *
- * @param string $className
- * @param object $object
- * @param int $code Optional code to override the built-in error code.
- * @return object
- *
- *
- * @throws ClassNotExistsException
- * @throws ClassNotImplementsException
- *
- * @deprecated Use {@see ClassHelper::requireObjectInstanceOf()} instead.
- */
-function ensureType(string $className, object $object, int $code=0)
-{
-    return ClassHelper::requireObjectInstanceOf($className, $object, $code);
 }
 
 /**
@@ -1104,13 +851,11 @@ function isDevelMode() : bool
 
 /**
  * 
- * @param object|string $subject
+ * @param object|class-string|string $subject
  * @return string
  */
-function getClassTypeName($subject) : string
+function getClassTypeName(object|string $subject) : string
 {
-    $className = '';
-    
     if(is_object($subject))
     {
         $className = get_class($subject);
@@ -1130,10 +875,10 @@ function getClassTypeName($subject) : string
 /**
  * Retrieves the last value in the specified array.
  * 
- * @param array $array
+ * @param array<int|string,mixed> $array
  * @return mixed|NULL The value, or NULL if the array is empty.
  */
-function array_value_get_last(array &$array)
+function array_value_get_last(array &$array) : mixed
 {
     if(empty($array))
     {
@@ -1220,17 +965,17 @@ function statementBuilder(string $statementTemplate, ?DBHelper_StatementBuilder_
     return $builder;
 }
 
-function statementValues() : DBHelper_StatementBuilder_ValuesContainer
+function statementValues(?DBHelper_StatementBuilder_ValuesContainer $container=null) : DBHelper_StatementBuilder_ValuesContainer
 {
-    return new DBHelper_StatementBuilder_ValuesContainer();
+    return $container ?? new DBHelper_StatementBuilder_ValuesContainer();
 }
 
 /**
  * Fetches the home folder of the current user.
  *
- * NOTE: Meant to be used when working locally
- * on a project. Supports Windows, Linux and
- * MacOS.
+ * > NOTE: Meant to be used when working locally
+ * > on a project. Supports Windows, Linux and
+ * > macOS.
  *
  * @return string
  */

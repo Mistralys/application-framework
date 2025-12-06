@@ -9,14 +9,13 @@ declare(strict_types=1);
 use Application\AppFactory;
 use Application\Countries\Admin\CountryAdminURLs;
 use Application\Countries\Rights\CountryScreenRights;
-use Application\Languages;
 use Application\Languages\Language;
 use Application\Languages\LanguageException;
 use AppLocalize\Localization;
 use AppLocalize\Localization\Countries\CountryCollection;
 use AppLocalize\Localization\Countries\CountryInterface;
 use AppLocalize\Localization\Country\CountryGB;
-use AppLocalize\Localization\Currencies\CurrencyInterface;
+use AppLocalize\Localization\Currencies\CountryCurrencyInterface;
 
 /**
  * Country data type; handles an individual country and its information.
@@ -27,15 +26,13 @@ use AppLocalize\Localization\Currencies\CurrencyInterface;
  */
 class Application_Countries_Country extends DBHelper_BaseRecord
 {
-    public const ERROR_UNKNOWN_LANGUAGE_CODE = 37801;
-
     /**
      * @deprecated Use the ISO instead, which is more reliable: {@see self::COUNTRY_INDEPENDENT_ISO}
      */
-    public const COUNTRY_INDEPENDENT_ID = 9999;
-    public const COUNTRY_INDEPENDENT_ISO = 'zz';
-    public const COL_ISO = 'iso';
-    public const COL_LABEL = 'label';
+    public const int COUNTRY_INDEPENDENT_ID = 9999;
+    public const string COUNTRY_INDEPENDENT_ISO = 'zz';
+    public const string COL_ISO = 'iso';
+    public const string COL_LABEL = 'label';
 
     protected CountryInterface $country;
 
@@ -193,17 +190,13 @@ class Application_Countries_Country extends DBHelper_BaseRecord
     
    /**
     * The currency used in this country.
-    * @return CurrencyInterface
+    * @return CountryCurrencyInterface
     */
-    public function getCurrency() : CurrencyInterface
+    public function getCurrency() : CountryCurrencyInterface
     {
         return $this->country->getCurrency();
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseRecord::recordRegisteredKeyModified()
-     */
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue) : void
     {
     }

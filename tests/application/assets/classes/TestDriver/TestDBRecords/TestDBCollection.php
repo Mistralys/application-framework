@@ -6,8 +6,6 @@ namespace TestDriver\TestDBRecords;
 
 use Application\Tags\Taggables\TagCollectionInterface;
 use Application\Tags\Taggables\TagCollectionTrait;
-use Application\Tags\Taggables\TagConnector;
-use Application\Tags\Taggables\TaggableInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use DBHelper;
@@ -24,18 +22,18 @@ use TestDriver\OfflineEvents\RegisterTagCollections\RegisterTestDBCollection;
  */
 class TestDBCollection extends DBHelper_BaseCollection implements TagCollectionInterface
 {
-    public const COLLECTION_ID = 'test_db_records';
+    public const string COLLECTION_ID = 'test_db_records';
 
     use TagCollectionTrait;
 
-    public const TABLE_NAME = 'test_records';
-    public const TABLE_NAME_DATA = 'test_records_data';
+    public const string TABLE_NAME = 'test_records';
+    public const string TABLE_NAME_DATA = 'test_records_data';
 
-    public const PRIMARY_NAME = 'record_id';
+    public const string PRIMARY_NAME = 'record_id';
 
-    public const COL_ALIAS = 'alias';
-    public const COL_LABEL = 'label';
-    public const REQUEST_PRIMARY_NAME = self::PRIMARY_NAME;
+    public const string COL_ALIAS = 'alias';
+    public const string COL_LABEL = 'label';
+    public const string REQUEST_PRIMARY_NAME = self::PRIMARY_NAME;
 
     private static ?self $instance = null;
 

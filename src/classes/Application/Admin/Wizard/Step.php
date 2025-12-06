@@ -39,7 +39,7 @@ abstract class Application_Admin_Wizard_Step extends Application_Admin_Skeleton
    /**
     * @var array<string,mixed>
     */
-    protected array $data;
+    protected ?array $data = null;
 
    /**
     * @var string[]

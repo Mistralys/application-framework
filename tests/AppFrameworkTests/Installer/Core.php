@@ -19,10 +19,6 @@ final class Installer_CoreTest extends ApplicationTestCase
      */
     public function test_loadTasks(): void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Create installer');
 
         $installer = Application::createInstaller();
@@ -36,10 +32,6 @@ final class Installer_CoreTest extends ApplicationTestCase
 
     public function test_getTaskByID() : void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Get a task by its ID');
 
         $installer = Application::createInstaller();

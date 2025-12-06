@@ -8,6 +8,7 @@
 
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ConvertHelper;
 use Connectors\Connector\BaseConnectorMethod;
 
 /**
@@ -24,24 +25,16 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     use Application_Traits_Simulatable;
     use Application_Traits_Loggable;
 
-    public const ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
+    public const int ERROR_NO_ACTIVE_RESPONSE_AVAILABLE = 42401;
     
     protected ?string $cachedID = null;
 
     /**
      * @var array<string,string>
      */
-    protected $params = array();
-
-    /**
-     * @var bool
-     */
-    protected $debug = false;
-
-    /**
-     * @var Connectors_Response|null
-     */
-    protected $activeResponse;
+    protected array $params = array();
+    protected bool $debug = false;
+    protected ?Connectors_Response $activeResponse;
 
     public function __construct()
     {
@@ -79,7 +72,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
    /**
     * Retrieves the connector's ID (name). e.g. <code>Editor</code>.
     * This is the name of the connector file without the extension 
-    * (case sensitive).
+    * (case-sensitive).
     * 
     * @return string
     */
@@ -116,28 +109,26 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     * accept a method parameter for the method to call.
     * 
     * @param string $method The endpoint method to call, added as a GET parameter in the request URL
-    * @param array $postData The data that will be sent along via POST
-    * @param array $getData GET data to append to the URL
+    * @param array<int|string,mixed> $postData The data that will be sent along via POST
+    * @param array<int|string,mixed> $getData GET data to append to the URL
     * @return Connectors_Request_Method
     */
-    protected function createMethodRequest(string $method, array $postData=array(), array $getData=array())
+    protected function createMethodRequest(string $method, array $postData=array(), array $getData=array()) : Connectors_Request_Method
     {
-        $request = new Connectors_Request_Method($this, $this->getURL(), $method, $postData, $getData);
-        return $request;
+        return new Connectors_Request_Method($this, $this->getURL(), $method, $postData, $getData);
     }
     
    /**
     * Creates a new request to a specific target url path.
     * 
     * @param string $url
-    * @param array $postData
-    * @param array $getData
+    * @param array<int|string,mixed> $postData
+    * @param array<int|string,mixed> $getData
     * @return Connectors_Request_URL
     */
-    protected function createURLRequest(string $url, array $postData=array(), array $getData=array())
+    protected function createURLRequest(string $url, array $postData=array(), array $getData=array()) : Connectors_Request_URL
     {
-        $request = new Connectors_Request_URL($this, $url, $postData, $getData);
-        return $request;
+        return new Connectors_Request_URL($this, $url, $postData, $getData);
     }
     
    /**
@@ -145,32 +136,32 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     * a method request.
     * 
     * @param string $method
-    * @param array $postData
+    * @param array<int|string,mixed> $postData
     * @throws Application_Exception
-    * @return array|bool
+    * @return array<int|string,mixed>|bool
     */
-    protected function getMethodData(string $method, array $postData=array())
+    protected function getMethodData(string $method, array $postData=array()) : array|bool
     {
         return $this->fetchResponse($this->createMethodRequest($method, $postData, $this->params));
     }
 
     /**
      * @param string $url
-     * @param array $postData
-     * @return array|false
+     * @param array<int|string,mixed> $postData
+     * @return array<int|string,mixed>|false
      * @throws Application_Exception
      */
-    protected function getURLData(string $url, array $postData=array())
+    protected function getURLData(string $url, array $postData=array()) : array|false
     {
         return $this->fetchResponse($this->createURLRequest($url, $postData, $this->params));
     }
 
     /**
      * @param Connectors_Request $request
-     * @return array|false
+     * @return array<int|string,mixed>|false
      * @throws Application_Exception
      */
-    protected function fetchResponse(Connectors_Request $request)
+    protected function fetchResponse(Connectors_Request $request) : array|false
     {
         $this->activeResponse = $request->getData();
         
@@ -213,12 +204,16 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     * which is sent via POST.
     * 
     * @param string $name
-    * @param string|int|float $value
+    * @param string|int|float|bool $value
     * @return Connectors_Connector  
     */
-    public function addParam($name, $value)
+    public function addParam(string $name, string|int|float|bool $value) : self
     {
-        $this->params[$name] = strval($value);
+        if(is_bool($value)) {
+            $value = ConvertHelper::boolStrict2string($value);
+        }
+
+        $this->params[$name] = (string)$value;
         return $this;
     }
     
@@ -226,7 +221,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
      * @param bool $state
      * @return $this
      */
-    public function setDebug(bool $state=true)
+    public function setDebug(bool $state=true) : self
     {
         $this->debug = $state;
         return $this;
@@ -239,16 +234,24 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
     
    /**
     * Creates a new connector method instance, which is
-    * loaded for the current connector type. The class name
-    * follows this scheme:
+    * loaded for the current connector type.
+    *
+    * ## Legacy class names
+    *
+    * For legacy methods, the class name follows this scheme:
     * 
-    * <code>Connectors_Connector_(ConnectorName)_Method_(MethodName)</code>
+    * ```
+    * Connectors_Connector_(ConnectorName)_Method_(MethodName)
+    * ```
     * 
-    * @param string|class-string $nameOrClass
+    * @param string|class-string<BaseConnectorMethod> $nameOrClass
+    * @param mixed ...$constructorArgs Additional arguments to pass to the method constructor.
+    *                                  Note: The connector instance is always passed as the
+    *                                  first argument.
     * @return BaseConnectorMethod
     * @throws BaseClassHelperException
     */
-    public function createMethod(string $nameOrClass) : BaseConnectorMethod
+    public function createMethod(string $nameOrClass, ...$constructorArgs) : BaseConnectorMethod
     {
         if(class_exists($nameOrClass)) {
             $class = $nameOrClass;
@@ -262,7 +265,7 @@ abstract class Connectors_Connector implements Application_Interfaces_Simulatabl
         
         return ClassHelper::requireObjectInstanceOf(
             BaseConnectorMethod::class,
-            new $class($this)
+            new $class($this, ...$constructorArgs)
         );
     }
 }

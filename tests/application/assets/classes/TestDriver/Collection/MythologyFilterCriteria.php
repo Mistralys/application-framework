@@ -13,11 +13,26 @@ class MythologyFilterCriteria extends Application_FilterCriteria
         return count($this->getItems());
     }
 
+    public function getItems() : array
+    {
+        $result = array();
+        foreach($this->getItemsObjects() as $item) {
+            $result[] = $item->toArray();
+        }
+
+        return $result;
+    }
+
     /**
      * @return MythologicalRecord[]
      */
-    public function getItems(): array
+    public function getItemsObjects(): array
     {
         return MythologyRecordCollection::getInstance()->getAll();
+    }
+
+    public function getIDKeyName(): string
+    {
+        return MythologicalRecord::KEY_ID;
     }
 }

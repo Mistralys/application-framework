@@ -7,7 +7,9 @@
 declare(strict_types=1);
 
 use Application\Exception\UnexpectedInstanceException;
+use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
+use AppUtils\ConvertHelper\JSONConverter;
 use AppUtils\ConvertHelper\JSONConverter\JSONConverterException;
 use AppUtils\FileHelper_Exception;
 use Connectors\Request\RequestSerializer;
@@ -25,11 +27,11 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 {
     use Application_Traits_Loggable;
 
-    public const ERROR_INVALID_AUTH_SCHEME = 339001;
-    public const ERROR_REQUEST_FAILED = 339002;
-    public const ERROR_NO_REQUEST_SENT_YET = 339005;
-    public const ERROR_INVALID_DATA_VALUE = 339006;
-    public const ERROR_INVALID_METHOD = 339008;
+    public const int ERROR_INVALID_AUTH_SCHEME = 339001;
+    public const int ERROR_REQUEST_FAILED = 339002;
+    public const int ERROR_NO_REQUEST_SENT_YET = 339005;
+    public const int ERROR_INVALID_DATA_VALUE = 339006;
+    public const int ERROR_INVALID_METHOD = 339008;
 
     protected string $url;
     protected int $timeoutSeconds = 0;
@@ -88,7 +90,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @throws Application_Exception
      * @throws Connectors_Exception
      */
-    public function __construct(Connectors_Connector $connector, string $url, array $postData=array(), array $getData=array(), ?string $id=null)
+    public function __construct(Connectors_Connector $connector, string $url, array $postData = array(), array $getData = array(), ?string $id = null)
     {
         // Remove any GET parameters from the target URL, and
         // merge them into the get data collection. We use only
@@ -97,8 +99,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $getData = array_merge($info->getParams(), $getData);
 
         $names = array_keys($getData);
-        foreach($names as $name)
-        {
+        foreach ($names as $name) {
             $info->removeParam($name);
         }
 
@@ -107,14 +108,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $this->cache = new Connectors_Request_Cache($this);
         $this->id = $id ?? $this->createID();
 
-        if(!empty($postData)) {
-            foreach($postData as $name => $value) {
+        if (!empty($postData)) {
+            foreach ($postData as $name => $value) {
                 $this->setPOSTData($name, $value);
             }
         }
-        
-        if(!empty($getData)) {
-            foreach($getData as $name => $value) {
+
+        if (!empty($getData)) {
+            foreach ($getData as $name => $value) {
                 $this->setGETData($name, $value);
             }
         }
@@ -126,7 +127,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @throws Connectors_Exception
      * @throws JSONConverterException
      */
-    public function serialize() : string
+    public function serialize(): string
     {
         return RequestSerializer::serialize($this);
     }
@@ -147,7 +148,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @throws JSONConverterException
      * @throws UnexpectedInstanceException
      */
-    public static function unserialize(string $json) : ?Connectors_Request
+    public static function unserialize(string $json): ?Connectors_Request
     {
         return RequestSerializer::unserialize($json);
     }
@@ -157,7 +158,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      *
      * @return string
      */
-    public function getID() : string
+    public function getID(): string
     {
         return $this->id;
     }
@@ -168,51 +169,50 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return string
      * @throws Application_Exception
      */
-    private function createID() : string
+    private function createID(): string
     {
         $user = Application::getUser();
 
-        return $user->getID().'-'.microtime(true);
+        return $user->getID() . '-' . microtime(true);
     }
 
-   /**
-    * Tells the request to use authentication in the requested URL.
-    * 
-    * @param string $user
-    * @param string $password
-    * @return $this
-    */
-    public function useAuth(string $user, string $password) : self
+    /**
+     * Tells the request to use authentication in the requested URL.
+     *
+     * @param string $user
+     * @param string $password
+     * @return $this
+     */
+    public function useAuth(string $user, string $password): self
     {
         $this->log(sprintf('Enabling use of authentication with user [%s].', $user));
-        
+
         $this->auth = array(
             'user' => $user,
             'password' => $password
         );
-        
+
         return $this;
     }
 
-   /**
-    * Tells the request to use a proxy server.
-    * 
-    * @param string $host
-    * @param string $port
-    * @param string $user
-    * @param string $password
-    * @param string $authScheme
-    * @throws Connectors_Exception
-    * @return $this
-    */
-    public function useProxy(string $host, string $port, string $user, string $password, string $authScheme=HTTP_Request2::AUTH_DIGEST) : self
+    /**
+     * Tells the request to use a proxy server.
+     *
+     * @param string $host
+     * @param string $port
+     * @param string $user
+     * @param string $password
+     * @param string $authScheme
+     * @return $this
+     * @throws Connectors_Exception
+     */
+    public function useProxy(string $host, string $port, string $user, string $password, string $authScheme = HTTP_Request2::AUTH_DIGEST): self
     {
         $this->log(sprintf('Enabling use of the proxy [%s].', $host));
-        
+
         $validAuths = array(HTTP_Request2::AUTH_BASIC, HTTP_Request2::AUTH_DIGEST);
-        
-        if(!in_array($authScheme, $validAuths, true))
-        {
+
+        if (!in_array($authScheme, $validAuths, true)) {
             $ex = new Connectors_Exception(
                 $this->connector,
                 'Invalid authentication scheme',
@@ -223,12 +223,12 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
                 ),
                 self::ERROR_INVALID_AUTH_SCHEME
             );
-            
+
             $ex->setRequest($this);
-            
+
             throw $ex;
         }
-        
+
         $this->proxyConfig = array(
             'proxy_host' => $host,
             'proxy_port' => $port,
@@ -246,7 +246,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      *
      * @return string
      */
-    public function getBaseURL() : string
+    public function getBaseURL(): string
     {
         return $this->url;
     }
@@ -257,16 +257,16 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return string
      * @throws Connectors_Exception
      */
-    public function getRequestURL() : string
+    public function getRequestURL(): string
     {
         return $this->buildURL();
     }
-    
-   /**
-    * Gets the request instance (available after sending a request).
-    * @return HTTP_Request2|NULL
-    */
-    public function getRequest() : ?HTTP_Request2
+
+    /**
+     * Gets the request instance (available after sending a request).
+     * @return HTTP_Request2|NULL
+     */
+    public function getRequest(): ?HTTP_Request2
     {
         return $this->request;
     }
@@ -274,21 +274,21 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
     /**
      * @throws Connectors_Exception
      */
-    protected function requireResponse() : void
+    protected function requireResponse(): void
     {
-        if(isset($this->response)) {
+        if (isset($this->response)) {
             return;
         }
-        
+
         $ex = new Connectors_Exception(
             $this->connector,
             'No request sent yet',
             'Cannot access some information before the request has been sent using the [getData] method.',
-            self::ERROR_NO_REQUEST_SENT_YET    
+            self::ERROR_NO_REQUEST_SENT_YET
         );
-        
+
         $ex->setRequest($this);
-        
+
         throw $ex;
     }
 
@@ -296,38 +296,37 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return float
      * @throws Connectors_Exception
      */
-    public function getTimeTaken() : float
+    public function getTimeTaken(): float
     {
         $this->requireResponse();
-        
+
         return $this->timeTaken;
     }
-    
-   /**
-    * Sets the method to use to send the request: either
-    * POST or GET.
-    * 
-    * @param string $method
-    * @throws Connectors_Exception
-    * @return $this
-    */
-    public function setHTTPMethod(string $method) : self
+
+    /**
+     * Sets the method to use to send the request: either
+     * POST or GET.
+     *
+     * @param string $method
+     * @return $this
+     * @throws Connectors_Exception
+     */
+    public function setHTTPMethod(string $method): self
     {
 
-        if(!in_array($method, self::$validHTTPMethods, true))
-        {
+        if (!in_array($method, self::$validHTTPMethods, true)) {
             $ex = new Connectors_Exception(
                 $this->connector,
                 sprintf('Invalid request method [%s]', $method),
                 'The method [%s] is not a valid request method. Valid methods are available in the constants HTTP_Request2::METHOD_POST and HTTP_Request2::METHOD_GET.',
                 self::ERROR_INVALID_METHOD
             );
-            
+
             $ex->setRequest($this);
-            
+
             throw $ex;
         }
-        
+
         $this->HTTPMethod = $method;
         return $this;
     }
@@ -336,7 +335,7 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Application_Exception
      */
-    public function makeGET() : self
+    public function makeGET(): self
     {
         return $this->setHTTPMethod(HTTP_Request2::METHOD_GET);
     }
@@ -345,121 +344,156 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Connectors_Exception
      */
-    public function makePOST() : self
+    public function makePOST(): self
     {
         return $this->setHTTPMethod(HTTP_Request2::METHOD_POST);
     }
-    
-    public function isPOST() : bool
+
+    public function isPOST(): bool
     {
         return $this->isHTTPMethod(HTTP_Request2::METHOD_POST);
     }
-    
-    public function isPUT() : bool
+
+    public function isPUT(): bool
     {
         return $this->isHTTPMethod(HTTP_Request2::METHOD_PUT);
     }
-    
-    public function isGET() : bool
+
+    public function isGET(): bool
     {
         return $this->isHTTPMethod(HTTP_Request2::METHOD_GET);
     }
-    
-    public function isHTTPMethod(string $method) : bool
+
+    public function isHTTPMethod(string $method): bool
     {
         return $this->HTTPMethod === $method;
     }
-    
-    public function getPayload() : array
+
+    public function getPayload(): array
     {
         return array_merge($this->getData, $this->postData);
     }
-    
-    public function getHTTPMethod() : string
+
+    public function getHTTPMethod(): string
     {
         return $this->HTTPMethod;
     }
-    
-   /**
-    * Sets the timeout for the request in seconds.
-    * Set to 0 for no limit.
-    * 
-    * @param int $seconds
-    * @return $this
-    */
-    public function setTimeout(int $seconds) : self
+
+    /**
+     * Sets the timeout for the request in seconds.
+     * Set to 0 for no limit.
+     *
+     * @param int $seconds
+     * @return $this
+     */
+    public function setTimeout(int $seconds): self
     {
         $this->timeoutSeconds = $seconds;
         return $this;
     }
-    
-   /**
-    * Sets the body of the request to send.
-    * 
-    * @param string $content
-    * @return $this
-    */
-    public function setBody(string $content) : self
+
+    /**
+     * Sets the body of the request to send.
+     *
+     * @param string $content
+     * @return $this
+     */
+    public function setBody(string $content): self
     {
         $this->body = $content;
-        
+
         return $this;
+    }
+
+    /**
+     * Sets the body of the request from a JSON string or a data array.
+     * Automatically sets the matching content type.
+     *
+     * @param string|array<string|int,mixed>|ArrayDataCollection $json
+     * @return $this
+     */
+    public function setBodyJSON(string|array|ArrayDataCollection $json): self
+    {
+        if ($json instanceof ArrayDataCollection) {
+            $json = JSONConverter::var2json($json->getData());
+        } else if (is_array($json)) {
+            $json = JSONConverter::var2json($json);
+        }
+
+        return $this
+            ->setBody($json)
+            ->setContentType('application/json; charset=utf-8');
     }
 
     /**
      * @param string $mime
      * @return $this
      */
-    public function setContentType(string $mime) : self
+    public function setContentType(string $mime): self
     {
         return $this->setHeader('Content-Type', $mime);
     }
-    
-   /**
-    * Gives the request the <code>multipart/form-data</code>
-    * content type for file uploads.
-    * 
-    * @return $this
-    */
-    public function makeMultipart() : self
+
+    public const string AUTH_SCHEME_BASIC = 'Basic';
+    public const string AUTH_SCHEME_DIGEST = 'Digest';
+
+    /**
+     * Sets the `Authorization` request header.
+     *
+     * @param string $scheme The auth scheme to use, e.g. {@see self::AUTH_SCHEME_BASIC} or {@see self::AUTH_SCHEME_DIGEST}.
+     * @param string $value The value matching the selected auth scheme.
+     * @return $this
+     */
+    public function setAuthorization(string $scheme, string $value): self
     {
-        return $this->setContentType('multipart/form-data; boundary='.$this->getBoundary());
+        return $this->setHeader('Authorization', $scheme . ' ' . $value);
+    }
+
+    /**
+     * Gives the request the <code>multipart/form-data</code>
+     * content type for file uploads.
+     *
+     * @return $this
+     */
+    public function makeMultipart(): self
+    {
+        return $this->setContentType('multipart/form-data; boundary=' . $this->getBoundary());
     }
 
     /**
      * @return array<string,string>
      */
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         return $this->headers;
     }
-    
-   /**
-    * Retrieves the string that is used to separate mime boundaries.
-    * 
-    * @return string
-    */
-    public function getBoundary() : string
+
+    /**
+     * Retrieves the string that is used to separate mime boundaries.
+     *
+     * @return string
+     */
+    public function getBoundary(): string
     {
         return md5('connectors-multipart-request-boundary');
     }
-    
-   /**
-    * Sets an HTTP header to send with the request. Overwrites
-    * existing headers.
-    * 
-    * @param string $name
-    * @param string $value
-    * @return $this
-    */
-    public function setHeader(string $name, string $value) : self
+
+    /**
+     * Sets an HTTP header to send with the request. Overwrites
+     * existing headers.
+     *
+     * @param string $name
+     * @param string $value
+     * @return $this
+     */
+    public function setHeader(string $name, string $value): self
     {
         $this->headers[$name] = $value;
-        
+
         return $this;
     }
 
-    public function getCache() : Connectors_Request_Cache
+    public function getCache(): Connectors_Request_Cache
     {
         return $this->cache;
     }
@@ -474,21 +508,20 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @throws HTTP_Request2_LogicException
      * @throws FileHelper_Exception
      */
-    public function getData() : Connectors_Response
+    public function getData(): Connectors_Response
     {
         $url = $this->buildURL();
-        
+
         $this->log(sprintf('Fetching data for URL: [%s].', $url));
 
         $this->handleRequestStarted();
 
         // Bypass the request entirely if the cache is valid.
-        if($this->cache->isValid())
-        {
+        if ($this->cache->isValid()) {
             $this->log('Cache | Cache is valid, fetching cached response.');
 
             $response = $this->cache->fetchResponse();
-            if($response !== null) {
+            if ($response !== null) {
                 return $response;
             }
 
@@ -498,17 +531,14 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         $this->log('Cache is not valid, fetching live data.');
 
         $request = $this->createRequest();
-        
-        if(!$this->connector->isLiveRequestsEnabled())
-        {
+
+        if (!$this->connector->isLiveRequestsEnabled()) {
             $result = $this->simulateResponse($request);
-        }
-        else 
-        {
+        } else {
             $this->log('Sending the live request.');
             $result = $request->send();
         }
-    
+
         $this->handleRequestCompleted();
 
         $response = $this->createResponse($result);
@@ -527,83 +557,82 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return HTTP_Request2_Response
      * @throws HTTP_Request2_MessageException
      */
-    protected function simulateResponse(HTTP_Request2 $request) : HTTP_Request2_Response
-    {   
+    protected function simulateResponse(HTTP_Request2 $request): HTTP_Request2_Response
+    {
         $this->log('Simulation mode | Creating a simulated response.');
-            
+
         $responseCode = 200;
-        
-        if(isset($this->codesByMethod[$this->HTTPMethod])) 
-        {
+
+        if (isset($this->codesByMethod[$this->HTTPMethod])) {
             $responseCode = $this->codesByMethod[$this->HTTPMethod][0];
         }
-        
+
         return new HTTP_Request2_Response(
-            'HTTP/1.0 '.$responseCode.' Simulation OK', 
-            true, 
+            'HTTP/1.0 ' . $responseCode . ' Simulation OK',
+            true,
             $request->getUrl()->getURL()
         );
     }
-    
-    protected function handleRequestStarted() : void
+
+    protected function handleRequestStarted(): void
     {
         $this->timeStart = microtime(true);
     }
-    
-    protected function handleRequestCompleted() : void
+
+    protected function handleRequestCompleted(): void
     {
         $end = microtime(true);
-        
+
         $this->timeTaken = $end - $this->timeStart;
-        
+
         $this->log(sprintf('Time taken: [%s].', number_format($this->timeTaken, 4)));
     }
-    
-   /**
-    * Builds the full URL for the request, appending any
-    * GET variables that may have been added.
-    * 
-    * @throws Connectors_Exception If the URL is invalid.
-    * @return string
-    */
-    protected function buildURL() : string
+
+    /**
+     * Builds the full URL for the request, appending any
+     * GET variables that may have been added.
+     *
+     * @return string
+     * @throws Connectors_Exception If the URL is invalid.
+     */
+    protected function buildURL(): string
     {
         $url = $this->url;
         $getData = $this->getData;
-        
-        if(empty($getData)) {
+
+        if (empty($getData)) {
             return $url;
         }
 
         $info = parseURL($url);
 
-        foreach($this->getData as $name => $value) {
+        foreach ($this->getData as $name => $value) {
             $info->setParam($name, $value);
         }
 
         return $info->getNormalized();
     }
 
-   /**
-    * Creates a connector response instance from an HTTP_Request2
-    * response object. 
-    * 
-    * @param HTTP_Request2_Response $response
-    * @throws Connectors_Exception If the response code is not valid for the type of HTTP method.
-    * @return Connectors_Response
-    */
-    protected function createResponse(HTTP_Request2_Response $response) : Connectors_Response
+    /**
+     * Creates a connector response instance from an HTTP_Request2
+     * response object.
+     *
+     * @param HTTP_Request2_Response $response
+     * @return Connectors_Response
+     * @throws Connectors_Exception If the response code is not valid for the type of HTTP method.
+     */
+    protected function createResponse(HTTP_Request2_Response $response): Connectors_Response
     {
-        if(!$this->isValidResponseCode($response->getStatus())) {
+        if (!$this->isValidResponseCode($response->getStatus())) {
             throw $this->createResponseException($response);
         }
-        
+
         $this->response = new Connectors_Response($this, $response);
-        
+
         return $this->response;
     }
 
-    private function createResponseException(HTTP_Request2_Response $response) : Connectors_Exception
+    private function createResponseException(HTTP_Request2_Response $response): Connectors_Exception
     {
         $body = $response->getBody();
 
@@ -611,10 +640,10 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
             $this->connector,
             'Remote API request failed, invalid response code.',
             sprintf(
-                'Got response code [%s], valid response codes are [%s].'.PHP_EOL.
-                'Response message is [%s].'.PHP_EOL.
-                'Accessed from API endpoint at [%s].'.PHP_EOL.
-                'Response body (%s characters):'.PHP_EOL.
+                'Got response code [%s], valid response codes are [%s].' . PHP_EOL .
+                'Response message is [%s].' . PHP_EOL .
+                'Accessed from API endpoint at [%s].' . PHP_EOL .
+                'Response body (%s characters):' . PHP_EOL .
                 '%s',
                 $response->getStatus(),
                 implode(', ', $this->getCodesByMethod($this->HTTPMethod)),
@@ -632,6 +661,35 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return $ex;
     }
 
+    public const string ADAPTER_CURL = 'curl';
+    public const string ADAPTER_SOCKETS = 'socket';
+
+    /**
+     * @var array<string,string>
+     */
+    public const array ADAPTER_CLASSES = array(
+        self::ADAPTER_CURL => HTTP_Request2_Adapter_Curl::class,
+        self::ADAPTER_SOCKETS => HTTP_Request2_Adapter_Socket::class
+    );
+
+    private string $adapter = self::ADAPTER_CURL;
+
+    public function useCURL(): self
+    {
+        return $this->setAdapter(self::ADAPTER_CURL);
+    }
+
+    public function useSockets(): self
+    {
+        return $this->setAdapter(self::ADAPTER_SOCKETS);
+    }
+
+    public function setAdapter(string $adapter): self
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
     /**
      * Creates and configures the HTTP request instance used
      * to send the request.
@@ -640,25 +698,20 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @throws Connectors_Exception
      * @throws HTTP_Request2_LogicException
      */
-    protected function createRequest() : HTTP_Request2
+    protected function createRequest(): HTTP_Request2
     {
         $this->log('Creating and configuring request.');
         $this->log(sprintf('HTTP request method: [%s].', $this->HTTPMethod));
         $this->log(sprintf('Simulation mode: [%s]', bool2string($this->connector->isSimulationEnabled())));
         $this->log(sprintf('Live requests: [%s] (turn on in simulation mode with parameter live-requests=yes)', bool2string($this->connector->isLiveRequestsEnabled())));
-        
+
         $req = new HTTP_Request2($this->buildURL(), $this->HTTPMethod);
-        $req->setAdapter('curl');
-        $req->setConfig('follow_redirects', true);
-        $req->setConfig('ssl_verify_peer', false);
-        $req->setConfig('ssl_verify_host', false);
-        
-        if(!empty($this->headers))
-        {
-            foreach($this->headers as $name => $value)
-            {
+        $this->configureAdapter($req);
+
+        if (!empty($this->headers)) {
+            foreach ($this->headers as $name => $value) {
                 $req->setHeader($name, $value);
-                
+
                 $this->log(sprintf(
                     'Using header [%s] with value [%s].',
                     $name,
@@ -666,38 +719,33 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
                 ));
             }
         }
-        
-        if(isset($this->timeoutSeconds))
-        {
+
+        if (isset($this->timeoutSeconds)) {
             $this->log(sprintf(
                 'Timeout is set to %s seconds (%s).',
                 $this->timeoutSeconds,
                 ConvertHelper::time2string($this->timeoutSeconds)
             ));
-            
+
             $req->setConfig('timeout', $this->timeoutSeconds);
         }
-        
-        if($this->isPUT() || $this->isPOST())
-        {
+
+        if ($this->isPUT() || $this->isPOST()) {
             $totalSize = 0;
 
-            if(!empty($this->postData))
-            {
-                foreach($this->postData as $param => $value)
-                {
+            if (!empty($this->postData)) {
+                foreach ($this->postData as $param => $value) {
                     $req->addPostParameter($param, $value);
                 }
 
                 $dataSize = strlen(serialize($this->postData));
                 $totalSize += $dataSize;
-                
+
                 $this->log(sprintf('Also sending data keys via POST: [%s].', implode(', ', array_keys($this->postData))));
                 $this->log(sprintf('POST data length: [%s] characters (approximate).', number_format($dataSize, 0, '.', ' ')));
             }
-            
-            if(!empty($this->body))
-            {
+
+            if (!empty($this->body)) {
                 $req->setBody($this->body);
 
                 $bodySize = strlen($this->body);
@@ -715,48 +763,62 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
 
             $this->log('POST maximum size: [%s]', ini_get('post_max_size'));
         }
-        
+
         // when not in a development environment, make sure
         // we use the proxy to connect to the target URL.
-        if(isset($this->proxyConfig) && !Application::isDevelEnvironment())
-        {
+        if (isset($this->proxyConfig) && !Application::isDevelEnvironment()) {
             $req->setConfig($this->proxyConfig);
-            
+
             $this->log(sprintf('Proxy is enabled via host [%s].', $this->proxyConfig['proxy_host']));
         }
-        
-        if(isset($this->auth))
-        {
+
+        if (isset($this->auth)) {
             $req->setAuth($this->auth['user'], $this->auth['password']);
-            
+
             $this->log(sprintf('Using authentication with user [%s].', $this->auth['user']));
         }
-        
+
         $this->request = $req;
-        
+
         return $req;
     }
-    
-   /**
-    * Valid HTTP response codes by request method.
-    * @var array<string,array<int,int>>
-    */
+
+    private function configureAdapter(HTTP_Request2 $req): void
+    {
+        $this->log('Using the adapter [%s] for the request.', $this->adapter);
+
+        $req->setAdapter(self::ADAPTER_CLASSES[$this->adapter] ?? self::ADAPTER_CLASSES[self::ADAPTER_CURL]);
+
+        $req->setConfig('follow_redirects', true);
+        $req->setConfig('ssl_verify_peer', false);
+        $req->setConfig('ssl_verify_host', false);
+    }
+
+    /**
+     * Valid HTTP response codes by request method.
+     * @var array<string,array<int,int>>
+     */
     protected array $codesByMethod = array(
         HTTP_Request2::METHOD_GET => array(200),
         HTTP_Request2::METHOD_DELETE => array(200, 204),
-        HTTP_Request2::METHOD_PUT => array(201, 202),
+        HTTP_Request2::METHOD_PUT => array(
+            200, // OK (general purpose)
+            201, // Created
+            202, // Accepted
+            204  // OK, Created, Accepted, Empty response content
+        ),
         HTTP_Request2::METHOD_POST => array(200, 201, 202)
     );
-    
-   /**
-    * Checks whether the specified response code is
-    * valid for the currently configured HTTP request
-    * method.
-    *  
-    * @param int $code
-    * @return boolean
-    */
-    public function isValidResponseCode(int $code) : bool
+
+    /**
+     * Checks whether the specified response code is
+     * valid for the currently configured HTTP request
+     * method.
+     *
+     * @param int $code
+     * @return boolean
+     */
+    public function isValidResponseCode(int $code): bool
     {
         $codes = $this->getCodesByMethod($this->HTTPMethod);
 
@@ -772,22 +834,21 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @see HTTP_Request2::METHOD_POST
      * @see HTTP_Request2::METHOD_PUT
      */
-    public function getCodesByMethod(string $method) : array
+    public function getCodesByMethod(string $method): array
     {
-        if(isset($this->codesByMethod[$method]))
-        {
+        if (isset($this->codesByMethod[$method])) {
             return $this->codesByMethod[$method];
         }
 
         return array(200);
     }
-    
-    public function getConnector() : Connectors_Connector
+
+    public function getConnector(): Connectors_Connector
     {
         return $this->connector;
     }
-    
-    public function getLogIdentifier() : string
+
+    public function getLogIdentifier(): string
     {
         return sprintf(
             'Connector [%s] | Request',
@@ -801,43 +862,64 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Connectors_Exception
      */
-    public function setPOSTData(string $name, $value) : self
+    public function setPOSTData(string $name, mixed $value): self
     {
-        if(!is_string($value) && !is_numeric($value)) 
-        {
+        if (empty($value) && $value !== '0' && $value !== 0 && $value !== false) {
+            return $this;
+        }
+
+        if (!is_string($value) && !is_numeric($value)) {
             $ex = new Connectors_Exception(
                 $this->connector,
                 'Invalid data value',
                 sprintf(
                     'The data key value [%s] must be a string or a number. Complex types like [%s] cannot be used.',
                     $name,
-                    gettype($value)    
+                    gettype($value)
                 ),
                 self::ERROR_INVALID_DATA_VALUE
             );
-            
+
             $ex->setRequest($this);
-            
+
             throw $ex;
         }
-        
+
         $this->postData[$name] = (string)$value;
+        return $this;
+    }
+
+    /**
+     * @param array<int|string,mixed>|ArrayDataCollection $params
+     * @return $this
+     * @throws Connectors_Exception
+     */
+    public function setPOSTParams(array|ArrayDataCollection $params): self
+    {
+        if ($params instanceof ArrayDataCollection) {
+            $params = $params->getData();
+        }
+
+        foreach ($params as $name => $value) {
+            $this->setPOSTData($name, $value);
+        }
+
         return $this;
     }
 
     /**
      * @return array<string,string>
      */
-    public function getGetData() : array
+    public function getGetData(): array
     {
         return $this->getData;
     }
-    
-   /**
-    * Retrieves the data to be sent via post, if any.
-    * @return array<string,string>
-    */
-    public function getPostData() : array
+
+    /**
+     * Retrieves the data to be sent via post, if any.
+     * @return array<string,string>
+     */
+    public function getPostData(): array
     {
         return $this->postData;
     }
@@ -850,37 +932,35 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @return $this
      * @throws Connectors_Exception
      */
-    public function setGETData(string $name, $value) : self
+    public function setGETData(string $name, mixed $value): self
     {
-        if(!is_string($value) && !is_numeric($value)) 
-        {
+        if (!is_string($value) && !is_numeric($value)) {
             $ex = new Connectors_Exception(
                 $this->connector,
                 'Invalid data value',
                 sprintf(
                     'The data key value [%s] must be a string or a number. Complex types like [%s] cannot be used.',
                     $name,
-                    gettype($value)    
+                    gettype($value)
                 ),
                 self::ERROR_INVALID_DATA_VALUE
             );
-            
+
             $ex->setRequest($this);
-            
+
             throw $ex;
         }
-        
+
         $this->getData[$name] = (string)$value;
         return $this;
     }
-    
-    public function getBody() : string
+
+    public function getBody(): string
     {
-        if(isset($this->request)) 
-        {
+        if (isset($this->request)) {
             return (string)$this->request->getBody();
         }
-        
+
         return '';
     }
 
@@ -894,13 +974,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * @param int $durationSeconds
      * @return $this
      */
-    public function setCacheEnabled(bool $enabled=true, int $durationSeconds = 0) : self
+    public function setCacheEnabled(bool $enabled = true, int $durationSeconds = 0): self
     {
         $this->cache->setEnabled($enabled, $durationSeconds);
         return $this;
     }
 
-    public function getCacheHash() : string
+    public function getCacheHash(): string
     {
         return md5(serialize($this->getHashData()));
     }
@@ -910,9 +990,9 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
      * individual requests to create a hash for caching
      * purposes.
      *
-     * @return array<mixed>
+     * @return array<int,mixed>
      */
-    protected function getHashData() : array
+    protected function getHashData(): array
     {
         $data = array(
             $this->getPayload(),
@@ -924,13 +1004,13 @@ abstract class Connectors_Request implements Application_Interfaces_Loggable
         return array_merge($data, $this->_getHashData());
     }
 
-    abstract protected function _getHashData() : array;
+    abstract protected function _getHashData(): array;
 
 
     /**
      * @return int Timeout duration in seconds.
      */
-    public function getTimeout() : int
+    public function getTimeout(): int
     {
         return $this->timeoutSeconds;
     }

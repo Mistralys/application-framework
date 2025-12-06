@@ -1,45 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 use AppLocalize\Localization\Locales\LocaleInterface;
 use AppLocalize\Localization;
 use AppUtils\ConvertHelper;
 
 class Application_Maintenance_Plan
 {
-    /**
-     * @var Application_Maintenance
-     */
-    protected $maintenance;
-    
-    /**
-     * @var DateTime
-     */
-    protected $start;
-    
-    /**
-     * @var DateInterval
-     */
-    protected $duration;
-    
-   /**
-    * @var string
-    */
-    protected $durationString;
+    protected Application_Maintenance $maintenance;
+    protected DateTime $start;
+    protected ?DateInterval $duration;
+    protected string $durationString;
     
    /**
     * @var array<string,string>
     */
-    protected $infoTexts;
+    protected array $infoTexts;
     
-    /**
-     * @var DateTime
-     */
-    protected $end;
+    protected ?DateTime $end = null;
     
-   /**
-    * @var integer
-    */
-    protected $id;
+    protected int $id;
     
     public function __construct(Application_Maintenance $maintenance, int $id, DateTime $start, string $durationString)
     {
@@ -58,7 +39,7 @@ class Application_Maintenance_Plan
      * Checks whether this plan is currently enabled.
      * @return boolean
      */
-    public function isEnabled()
+    public function isEnabled() : bool
     {
         $now = new DateTime();
         
@@ -66,15 +47,10 @@ class Application_Maintenance_Plan
             return false;
         }
         
-        $end = $this->getEnd();
-        if($now < $end) {
-            return true;
-        }
-        
-        return false;
+        return $now < $this->getEnd();
     }
     
-    public function hasInfoText(?LocaleInterface $locale=null)
+    public function hasInfoText(?LocaleInterface $locale=null) : bool
     {
         if(!$locale) {
             $locale = Localization::getAppLocale();
@@ -117,7 +93,7 @@ class Application_Maintenance_Plan
     public function getEnd() : DateTime
     {
         if(!isset($this->end)) {
-            $this->end = new DateTime($this->start->format(DateTime::ISO8601));
+            $this->end = new DateTime($this->start->format(DateTimeInterface::ATOM));
             $this->end->add($this->getDuration());
         }
         
@@ -144,7 +120,7 @@ class Application_Maintenance_Plan
     {
         return array(
             'id' => $this->id,
-            'start' => $this->start->format(DateTime::ISO8601),
+            'start' => $this->start->format(DateTimeInterface::ATOM),
             'duration' => $this->durationString,
             'infoTexts' => $this->infoTexts
         );
@@ -153,12 +129,8 @@ class Application_Maintenance_Plan
     public function isValid() : bool
     {
         $now = new DateTime();
-        
-        if($this->getEnd() > $now) {
-            return true;
-        }
-        
-        return false;
+
+        return $this->getEnd() > $now;
     }
     
     public function getEnabledBadge() : string
@@ -182,7 +154,6 @@ class Application_Maintenance_Plan
     
     public function getCountdown() : DateInterval
     {
-        $now = new DateTime();
-        return $now->diff($this->start);
+        return new DateTime()->diff($this->start);
     }
 }

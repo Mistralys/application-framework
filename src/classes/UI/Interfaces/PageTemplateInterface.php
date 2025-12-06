@@ -64,7 +64,7 @@ interface PageTemplateInterface
      * @param array<string,string|int|float> $params
      * @return string
      */
-    public function buildURL(array $params) : string;
+    public function buildURL(array $params=array()) : string;
 
     public function getImageURL(string $imageName) : string;
 

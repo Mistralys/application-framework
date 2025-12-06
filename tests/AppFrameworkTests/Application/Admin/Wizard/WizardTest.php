@@ -2,8 +2,9 @@
 
 namespace testsuites\Application\Admin\Wizard;
 
+use Application_Countries;
 use Application_Driver;
-use AppUtils\ConvertHelper;
+use AppLocalize\Localization\Country\CountryGB;
 use AppFrameworkTestClasses\ApplicationTestCase;
 use TestDriver_Area_WizardTest_Wizard;
 
@@ -15,6 +16,9 @@ final class WizardTest extends ApplicationTestCase
     {
         parent::setUp();
         $this->startTransaction();
+
+        $this->cleanUpTables(array(Application_Countries::TABLE_NAME));
+
         $driver = Application_Driver::getInstance();
         $screen = $driver->getScreenByPath('wizardtest.wizard');
 
@@ -37,7 +41,7 @@ final class WizardTest extends ApplicationTestCase
         $summaryStep->process();
         $this->assertTrue($summaryStep->isComplete());
 
-        $this->wizard->changeCountry('UK');
+        $this->wizard->changeCountry(CountryGB::ISO_CODE);
         $countriesStep->process();
         $this->assertFalse($ticketStep->isComplete());
         $this->assertFalse($summaryStep->isComplete());

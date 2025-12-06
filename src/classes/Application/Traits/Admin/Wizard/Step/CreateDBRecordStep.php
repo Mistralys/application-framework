@@ -7,6 +7,8 @@
 declare(strict_types=1);
 
 use AppUtils\BaseException;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Step in a record creation wizard: Confirm the selection, and
@@ -23,7 +25,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
 {
     // region: Step abstract methods
 
-    abstract public function createCollection() : DBHelper_BaseCollection;
+    abstract public function createCollection() : DBHelperCollectionInterface;
 
     abstract public function createSettingsManager() : Application_Formable_RecordSettings_Extended;
 
@@ -37,13 +39,13 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     /**
      * Can be overridden to perform additional actions after the record has been created.
      *
-     * NOTE: A DB transaction is still active at this point.
+     * > NOTE: A DB transaction is still active at this point.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @return void
      * @overridable
      */
-    protected function _onRecordCreated(DBHelper_BaseRecord $record) : void
+    protected function _onRecordCreated(DBHelperRecordInterface $record) : void
     {
     }
 
@@ -74,11 +76,10 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     }
 
     /**
-     * @return DBHelper_BaseRecord
-     * @throws Application_Exception
-     * @throws DBHelper_Exception
+     * @return DBHelperRecordInterface
+     * @throws Application_Admin_WizardException
      */
-    public function getRecord() : DBHelper_BaseRecord
+    public function getRecord() : DBHelperRecordInterface
     {
         $collection = $this->createCollection();
 
@@ -87,7 +88,7 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
             return $collection->getByID($id);
         }
 
-        throw new Application_Exception(
+        throw new Application_Admin_WizardException(
             'No record instance has been created yet.',
             '',
             Application_Interfaces_Admin_Wizard_CreateDBRecordStep::ERROR_NO_RECORD_CREATED_YET
@@ -140,10 +141,10 @@ trait Application_Traits_Admin_Wizard_CreateDBRecordStep
     /**
      * Creates the mailing and the initial audience.
      *
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      * @throws BaseException
      */
-    protected function createRecord() : DBHelper_BaseRecord
+    protected function createRecord() : DBHelperRecordInterface
     {
         $this->log(sprintf('Creating the %s record.', $this->createCollection()->getRecordTypeName()));
 

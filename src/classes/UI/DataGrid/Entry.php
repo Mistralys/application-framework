@@ -4,13 +4,14 @@
  * @subpackage Data Grids
  */
 
+declare(strict_types=1);
+
 use AppUtils\ConvertHelper;
 use AppUtils\HTMLTag;
 use AppUtils\Interfaces\ClassableInterface;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Traits\ClassableTrait;
 use UI\DataGrid\EntryClientCommands;
-use UI\DataGrid\GridClientCommands;
 
 /**
  * Container for a single row in a data grid. Offers an API
@@ -26,26 +27,28 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
 {
     use ClassableTrait;
 
-    public const ERROR_MISSING_PRIMARY_VALUE = 536001;
+    public const int ERROR_MISSING_PRIMARY_VALUE = 536001;
     
     protected UI_DataGrid $grid;
     protected string $id;
     private bool $countable = true;
 
     /**
-     * @var array<string, string|int|float|StringableInterface|NULL>
+     * @var array<string, string|int|float|StringableInterface|DateTime|NULL>
      */
     protected array $data;
+    private HTMLTag $tag;
 
     /**
      * @param UI_DataGrid $grid
-     * @param array<string, string|int|float|StringableInterface|NULL> $data
+     * @param array<string, string|int|float|DateTime|StringableInterface|NULL> $data
      */
     public function __construct(UI_DataGrid $grid, array $data)
     {
         $this->id = nextJSID();
         $this->grid = $grid;
         $this->data = $data;
+        $this->tag = HTMLTag::create('tr');
     }
     
     public function getID() : string
@@ -109,7 +112,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
      * @param mixed $value
      * @return $this
      */
-    public function setColumnValue(string $name, $value) : self
+    public function setColumnValue(string $name, mixed $value) : self
     {
         $this->data[$name] = $value;
         return $this;
@@ -212,7 +215,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     /**
      * @return mixed|null
      */
-    public function getPrimaryValue()
+    public function getPrimaryValue() : mixed
     {
         return $this->getValue($this->grid->getPrimaryField());
     }
@@ -221,13 +224,9 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
      * @param string $name
      * @return mixed|null
      */
-    public function getValue(string $name)
+    public function getValue(string $name) : mixed
     {
-        if(isset($this->data[$name])) {
-            return $this->data[$name];
-        }
-        
-        return null;
+        return $this->data[$name] ?? null;
     }
     
     public function getValueForColumn(UI_DataGrid_Column $column) : string
@@ -260,7 +259,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     
     public function render() : string
     {
-        return (string)HTMLTag::create('tr')
+        return (string)$this->tag
             ->id($this->getID())
             ->addClasses($this->getClasses())
             ->attr('data-refid', $this->getReferenceID())
@@ -316,14 +315,9 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
      * @param string $offset
      * @return mixed|null
      */
-    #[\ReturnTypeWillChange]
-    public function offsetGet($offset)
+    public function offsetGet($offset) : mixed
     {
-        if(isset($this->data[$offset])) {
-            return $this->data[$offset];
-        }
-
-        return null;
+        return $this->data[$offset] ?? null;
     }
 
     /**
@@ -331,7 +325,7 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
      * @param mixed $value
      * @return void
      */
-    public function offsetSet($offset, $value) : void
+    public function offsetSet($offset, mixed $value) : void
     {
         $this->data[$offset] = $value;
     }
@@ -348,4 +342,17 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     }
 
     // endregion
+
+    /**
+     * Sets an attribute for the row element.
+     *
+     * @param string $attribute
+     * @param string $value
+     * @return $this
+     */
+    public function attr(string $attribute, string $value) : self
+    {
+        $this->tag->attr($attribute, $value);
+        return $this;
+    }
 }

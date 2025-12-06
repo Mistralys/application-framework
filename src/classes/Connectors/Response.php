@@ -373,7 +373,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
     }
 
     /**
-     * @return array<mixed>
+     * @return array<int|string,mixed>
      * @deprecated Use getError()->getCode() instead.
      */
     public function getErrorData() : array
@@ -424,7 +424,7 @@ class Connectors_Response implements Application_Interfaces_Loggable
      * Retrieves the decoded JSON data returned
      * by the endpoint, if any.
      *
-     * @return array<mixed>
+     * @return array<int|string,mixed>
      */
     public function getData() : array
     {

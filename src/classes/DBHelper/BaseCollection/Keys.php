@@ -2,25 +2,26 @@
 
 declare(strict_types=1);
 
-class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
+use Application\Disposables\DisposableInterface;
+use Application\Disposables\DisposableTrait;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+
+class DBHelper_BaseCollection_Keys implements DisposableInterface
 {
     use Application_Traits_Loggable;
     use Application_Traits_Eventable;
-    use Application_Traits_Disposable;
+    use DisposableTrait;
 
-    public const ERROR_KEY_ALREADY_REGISTERED = 71401;
+    public const int ERROR_KEY_ALREADY_REGISTERED = 71401;
 
-    /**
-     * @var DBHelper_BaseCollection
-     */
-    private $collection;
+    private DBHelperCollectionInterface $collection;
 
     /**
      * @var array<string,DBHelper_BaseCollection_Keys_Key>
      */
-    private $keys = array();
+    private array $keys = array();
 
-    public function __construct(DBHelper_BaseCollection $collection)
+    public function __construct(DBHelperCollectionInterface $collection)
     {
         $this->collection = $collection;
     }
@@ -70,7 +71,7 @@ class DBHelper_BaseCollection_Keys implements Application_Interfaces_Disposable
             );
         }
 
-        $key = new DBHelper_BaseCollection_Keys_Key($this, $name);
+        $key = new DBHelper_BaseCollection_Keys_Key($name);
         $this->keys[$name] = $key;
         return $key;
     }

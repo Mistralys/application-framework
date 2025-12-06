@@ -1,6 +1,7 @@
 <?php
 
 use Application\Interfaces\Admin\AdminScreenInterface;
+use UI\AdminURLs\AdminURLInterface;
 
 interface Application_Interfaces_Admin_Wizardable extends AdminScreenInterface
 {
@@ -60,9 +61,9 @@ interface Application_Interfaces_Admin_Wizardable extends AdminScreenInterface
      * Returns the URL to send the user too once the
      * wizard has been successfully completed.
      *
-     * @return string
+     * @return string|AdminURLInterface
      */
-    public function getSuccessURL() : string;
+    public function getSuccessURL() : string|AdminURLInterface;
 
     /**
      * The ID of the wizard: this is an arbitrary string that
@@ -133,7 +134,7 @@ interface Application_Interfaces_Admin_Wizardable extends AdminScreenInterface
      * Returns the URL to which the user should be sent
      * if they click the cancel button.
      *
-     * @return string
+     * @return string|AdminURLInterface
      */
-    public function getCanceledURL() : string;
+    public function getCanceledURL() : string|AdminURLInterface;
 }

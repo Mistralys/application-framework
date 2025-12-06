@@ -6,18 +6,16 @@ namespace Application\TimeTracker\Admin\Screens;
 
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeUIManager;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionCreate;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeSettingsManager;
 use Application\TimeTracker\TimeTrackerCollection;
+use UI\AdminURLs\AdminURLInterface;
 
-abstract class BaseCreateScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateScreen extends BaseRecordCreateMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'create';
+    public const string URL_NAME = 'create';
 
     public function getTitle(): string
     {
@@ -34,7 +32,7 @@ abstract class BaseCreateScreen extends Application_Admin_Area_Mode_CollectionCr
         return new TimeSettingsManager($this);
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The time entry has been added successfully at %1$s.',
@@ -50,7 +48,7 @@ abstract class BaseCreateScreen extends Application_Admin_Area_Mode_CollectionCr
             ->makeLinked($this->createCollection()->adminURL()->list());
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string|AdminURLInterface
     {
         return $this->getBackOrCancelURL();
     }

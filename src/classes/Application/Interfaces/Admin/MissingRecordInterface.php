@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace Application\Interfaces\Admin;
 
+use UI\AdminURLs\AdminURLInterface;
+
 /**
  * Interface for screens that can provide a URL to
  * redirect to in case the target record is missing.
@@ -17,5 +19,5 @@ namespace Application\Interfaces\Admin;
  */
 interface MissingRecordInterface
 {
-    public function getRecordMissingURL(): string;
+    public function getRecordMissingURL(): string|AdminURLInterface;
 }

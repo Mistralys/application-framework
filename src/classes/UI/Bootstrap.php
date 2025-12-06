@@ -1,10 +1,20 @@
 <?php
+/**
+ * @package User Interface
+ * @subpackage Bootstrap
+ */
 
 declare(strict_types=1);
 
 use AppUtils\ConvertHelper;
 use AppUtils\Traits\ClassableTrait;
 
+/**
+ * Abstract class for Bootstrap elements in the User Interface.
+ *
+ * @package User Interface
+ * @subpackage Bootstrap
+ */
 abstract class UI_Bootstrap extends UI_Renderable
     implements
     UI_Interfaces_Bootstrap,
@@ -13,10 +23,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     use ClassableTrait;
     use UI_Traits_Conditional;
     
-   /**
-    * @var string
-    */    
-    protected string $name;
+    protected ?string $name = null;
     
    /**
     * @var UI_Bootstrap[]
@@ -40,7 +47,7 @@ abstract class UI_Bootstrap extends UI_Renderable
    /**
     * Sets the element's name, which can be used to retrieve it when used in collections.
     * @param string $name
-    * @return UI_Bootstrap
+    * @return $this
     */
     public function setName(string $name) : self
     {
@@ -48,7 +55,7 @@ abstract class UI_Bootstrap extends UI_Renderable
         return $this;
     }
     
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -60,7 +67,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     */
     public function isNamed(string $name) : bool
     {
-        return $this->name === $name;
+        return isset($this->name) && $this->name === $name;
     }
 
     public function getID() : string
@@ -80,7 +87,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     /**
      * @var array<string,string>
      */
-    protected $attributes = array();
+    protected array $attributes = array();
 
     /**
      * @param string $name
@@ -125,7 +132,7 @@ abstract class UI_Bootstrap extends UI_Renderable
     /**
      * @var array<string,string>
      */
-    protected $styles = array();
+    protected array $styles = array();
 
     /**
      * @param string $name

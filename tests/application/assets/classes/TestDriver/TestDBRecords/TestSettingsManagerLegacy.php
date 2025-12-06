@@ -7,7 +7,7 @@ namespace TestDriver\TestDBRecords;
 use Application_Exception;
 use Application_Formable_RecordSettings;
 use Application_Formable_RecordSettings_ValueSet;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use UI;
 
@@ -123,7 +123,7 @@ class TestSettingsManagerLegacy extends Application_Formable_RecordSettings
         return true;
     }
 
-    protected function _afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    protected function _afterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
         self::verifyDataSet($data);
     }

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+echo "-------------------------------------------------------"
+echo "RUNNING MOCK LDAP SERVER WITH MOKAPI"
+echo "-------------------------------------------------------"
+echo ""
+
+mokapi ldap.yaml

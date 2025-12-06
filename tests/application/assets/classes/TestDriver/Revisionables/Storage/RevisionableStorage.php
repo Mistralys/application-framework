@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables\Storage;
 
-use BaseDBCollectionStorage;
+use Application\Revisionable\Storage\BaseDBCollectionStorage;
 use TestDriver\Revisionables\RevisionableRecord;
 
 /**

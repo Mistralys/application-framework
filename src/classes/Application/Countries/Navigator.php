@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the class {@see Application_Countries_Navigator}.
- *
  * @package Application
  * @subpackage Countries
- * @see Application_Countries_Navigator
  */
 
 declare(strict_types=1);
@@ -22,53 +19,26 @@ use AppUtils\Interfaces\StringableInterface;
  */
 class Application_Countries_Navigator extends UI_Renderable
 {
-    public const REQUEST_PARAM_COUNTRY_ID = Application_Countries::PRIMARY_NAME;
+    public const string REQUEST_PARAM_COUNTRY_ID = Application_Countries::PRIMARY_NAME;
 
-   /**
-    * @var Application_Countries
-    */
-    protected $collection;
+    protected Application_Countries $collection;
+    protected Application_Countries_FilterCriteria $filters;
+    protected ?Application_Countries_Country $activeCountry = null;
     
    /**
-    * @var Application_Countries_FilterCriteria
+    * @var Application_Countries_Country[]|NULL
     */
-    protected $filters;
-    
-   /**
-    * @var Application_Countries_Country|NULL
-    */
-    protected $activeCountry;
-    
-   /**
-    * @var Application_Countries_Country[]
-    */
-    protected $countries;
+    protected ?array $countries = null;
 
-    /**
-     * @var bool
-     */
-    protected $autoSelect = true;
+    protected bool $autoSelect = true;
 
     /**
      * @var array<string,string|number>
      */
-    protected $urlParams = array();
+    protected array $urlParams = array();
 
-    /**
-     * @var bool
-     */
-    private $autoSelected = false;
-
-    /**
-     * @var bool
-     */
-    private $savingEnabled = false;
-
-    /**
-     * @var string
-     */
-    private $storageName;
-
+    private bool $autoSelected = false;
+    private ?string $storageName = null;
     private string $dispatcher = '';
 
     public function __construct(Application_Countries $collection)
@@ -132,7 +102,7 @@ class Application_Countries_Navigator extends UI_Renderable
      * @param string|int|float|bool|StringableInterface|NULL $value
      * @return $this
      */
-    public function setURLParam(string $name, $value) : Application_Countries_Navigator
+    public function setURLParam(string $name, string|int|float|bool|StringableInterface|NULL $value) : Application_Countries_Navigator
     {
         $param = (string)$value;
 
@@ -218,7 +188,7 @@ class Application_Countries_Navigator extends UI_Renderable
 
     private function saveActiveCountry(Application_Countries_Country $country) : void
     {
-        if($this->savingEnabled === true)
+        if($this->storageName !== null)
         {
             Application_Driver::createSettings()->setInt($this->storageName, $country->getID());
         }
@@ -226,7 +196,7 @@ class Application_Countries_Navigator extends UI_Renderable
 
     private function getSavedCountry() : ?Application_Countries_Country
     {
-        if($this->savingEnabled === false)
+        if($this->storageName === null)
         {
             return null;
         }
@@ -294,13 +264,17 @@ class Application_Countries_Navigator extends UI_Renderable
      * automatically if no country is specifically selected
      * in the request parameters.
      *
-     * @param string $storageName Used to identify the navigator: all instances using the same name share the stored country setting.
+     * @param string|NULL $storageName Used to identify the navigator: all instances using the same name share the stored country setting. Set to NULL to disable storage again.
      * @return $this
      */
-    public function enableCountryStorage(string $storageName) : Application_Countries_Navigator
+    public function enableCountryStorage(?string $storageName) : Application_Countries_Navigator
     {
-        $this->savingEnabled = true;
-        $this->storageName = 'countries_navigator_'.$storageName;
+        if($storageName !== null) {
+            $this->storageName = 'countries_navigator_'.$storageName;
+        } else {
+            $this->storageName = null;
+        }
+
         return $this;
     }
 }

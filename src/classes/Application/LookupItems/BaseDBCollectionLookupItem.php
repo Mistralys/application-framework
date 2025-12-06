@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Application\LookupItems;
 
-use DBHelper_BaseCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
  * Specialized item lookup class for use with DBHelper collections.
@@ -20,9 +20,9 @@ use DBHelper_BaseCollection;
  */
 abstract class BaseDBCollectionLookupItem extends BaseLookupItem
 {
-    protected const TABLE_ALIAS = 'main_tbl';
+    protected const string TABLE_ALIAS = 'main_tbl';
 
-    abstract protected function getCollection() : DBHelper_BaseCollection;
+    abstract protected function getCollection() : DBHelperCollectionInterface;
 
     protected function idExists(int $id): bool
     {

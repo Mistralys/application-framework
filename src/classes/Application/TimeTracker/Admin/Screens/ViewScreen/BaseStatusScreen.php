@@ -5,19 +5,20 @@ declare(strict_types=1);
 namespace Application\Admin\Area\TimeTracker\ViewScreen;
 
 use Application\AppFactory;
+use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
 /**
  * @property TimeEntry $record
  */
-abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
+abstract class BaseStatusScreen extends BaseRecordSubmode
 {
-    public const URL_NAME = 'status';
+    public const string URL_NAME = 'status';
 
     public function getURLName(): string
     {
@@ -34,6 +35,11 @@ abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_Coll
         return t('Status');
     }
 
+    public function getRequiredRight(): string
+    {
+        return TimeTrackerScreenRights::SCREEN_VIEW_STATUS;
+    }
+
     public function getDefaultAction(): string
     {
         return '';
@@ -42,14 +48,14 @@ abstract class BaseStatusScreen extends Application_Admin_Area_Mode_Submode_Coll
     /**
      * @return TimeTrackerCollection
      */
-    protected function createCollection(): DBHelper_BaseCollection
+    protected function createCollection(): TimeTrackerCollection
     {
         return AppFactory::createTimeTracker();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)AppFactory::createTimeTracker()->adminURL()->list();
+        return AppFactory::createTimeTracker()->adminURL()->list();
     }
 
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer

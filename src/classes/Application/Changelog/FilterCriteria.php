@@ -18,6 +18,11 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         $this->changelog = $changelog;
     }
 
+    public function getIDKeyName(): string
+    {
+        return 'changelog_id';
+    }
+
     protected function getQuery() : string
     {
         $primary = $this->changelog->getPrimary();
@@ -26,15 +31,18 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
             $this->addPlaceholder($name, $value);
         }
         
-        $query =
-        "SELECT
-            {WHAT}
-        FROM
-            `".$this->changelog->getTableName()."` AS chlog
-        {JOINS}
-        {WHERE}
-        {ORDERBY}
-        {LIMIT}";
+        $query = sprintf(
+            /** @lang text */
+            "SELECT
+                {WHAT}
+            FROM
+                `%s` AS chlog
+            {JOINS}
+            {WHERE}
+            {ORDERBY}
+            {LIMIT}",
+            $this->changelog->getTableName()
+        );
         
         // let the changelog owner adjust the filters as needed
         $this->changelog->getOwner()->configureChangelogFilters($this);
@@ -42,7 +50,7 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
         return $query;
     }
     
-    protected function getSearchFields() : array
+    public function getSearchFields() : array
     {
         return array(
             'chlog.`changelog_data`',
@@ -152,11 +160,9 @@ class Application_Changelog_FilterCriteria extends Application_FilterCriteria_Da
 
     protected function _registerJoins() : void
     {
-        // TODO: Implement _registerJoins() method.
     }
 
     protected function _registerStatementValues(DBHelper_StatementBuilder_ValuesContainer $container) : void
     {
-        // TODO: Implement _registerStatementValues() method.
     }
 }

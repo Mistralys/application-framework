@@ -10,8 +10,12 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use AppUtils\ArrayDataCollection;
+use AppUtils\AttributeCollection;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper_Exception;
+use AppUtils\Microtime;
+use AppUtils\OperationResult;
 
 /**
  * Used to log messages while the application is running.
@@ -19,26 +23,28 @@ use AppUtils\FileHelper_Exception;
  * @package Application
  * @subpackage Logging
  * @author Sebastian Mordziol <s.mordziol@mistralys.com>
+ *
+ * @phpstan-type LoggableArgument OperationResult|Microtime|DateTime|AttributeCollection|ArrayDataCollection|FileHelper\PathInfoInterface|array|mixed
  */
 class Application_Logger
 {
-    public const LOG_MODE_FILE = 1;
-    public const LOG_MODE_ECHO = 2;
-    public const LOG_MODE_NONE = 3;
+    public const int LOG_MODE_FILE = 1;
+    public const int LOG_MODE_ECHO = 2;
+    public const int LOG_MODE_NONE = 3;
 
-    public const LOG_MODE_DEFAULT = self::LOG_MODE_NONE;
+    public const int LOG_MODE_DEFAULT = self::LOG_MODE_NONE;
 
-    public const LINE_LENGTH = 65;
+    public const int LINE_LENGTH = 65;
 
-    public const CATEGORY_GENERAL = 'GEN';
-    public const CATEGORY_UI = 'UI';
-    public const CATEGORY_ERROR = 'ERR';
-    public const CATEGORY_EVENT = 'EVENT';
-    public const CATEGORY_REQUEST = 'REQ';
+    public const string CATEGORY_GENERAL = 'GEN';
+    public const string CATEGORY_UI = 'UI';
+    public const string CATEGORY_ERROR = 'ERR';
+    public const string CATEGORY_EVENT = 'EVENT';
+    public const string CATEGORY_REQUEST = 'REQ';
 
-    public const HTML_MODE_DEFAULT = false;
-    public const LOGGING_ENABLED_DEFAULT = true;
-    public const MEMORY_STORAGE_ENABLED_DEFAULT = true;
+    public const bool HTML_MODE_DEFAULT = false;
+    public const bool LOGGING_ENABLED_DEFAULT = true;
+    public const bool MEMORY_STORAGE_ENABLED_DEFAULT = true;
 
     private int $logMode = self::LOG_MODE_DEFAULT;
     private bool $html = self::HTML_MODE_DEFAULT;
@@ -193,11 +199,13 @@ class Application_Logger
      * Logs a message, but only if the application
      * is in developer mode.
      *
-     * @param string|number|array|null $message Arrays are automatically dumped.
+     * @param mixed|null $message Arrays are automatically dumped.
      * @param bool $header
+     * @param string $category
      * @return Application_Logger
+     * @throws JsonException
      */
-    public function log($message = null, bool $header=false, string $category=self::CATEGORY_GENERAL) : Application_Logger
+    public function log(mixed $message = null, bool $header=false, string $category=self::CATEGORY_GENERAL) : Application_Logger
     {
         if($header === true)
         {
@@ -213,8 +221,8 @@ class Application_Logger
         {
             return $this->logData($message);
         }
-        
-        return $this->addLogMessage((string)$message, $category, true);
+
+        return $this->addLogMessage(self::filterArg($message), $category, true);
     }
 
     /**
@@ -281,6 +289,41 @@ class Application_Logger
         return $this;
     }
 
+    /**
+     * Logs a request log message that will only be added to the
+     * log if the request log is active.
+     *
+     * @param string $message
+     * @param mixed ...$args
+     * @return $this
+     */
+    public function logRequestLog(string $message, ...$args) : self
+    {
+        if(!$this->isLoggingEnabled() || !Application_RequestLog::isActive()) {
+            return $this;
+        }
+
+        return $this->addLogMessage($message, self::CATEGORY_REQUEST, ...$args);
+    }
+
+    /**
+     * Logs data that will only be added to the
+     * log if the request log is active.
+     *
+     * @param mixed $data
+     * @param string|null $label
+     * @return $this
+     * @throws JsonException
+     */
+    public function logRequestLogData(mixed $data, ?string $label) : self
+    {
+        if(!$this->isLoggingEnabled() || !Application_RequestLog::isActive()) {
+            return $this;
+        }
+
+        return $this->logData($data, self::CATEGORY_REQUEST, $label);
+    }
+
     public function logSeparator() : Application_Logger
     {
         return $this->addLogMessage($this->separator, '', false);
@@ -315,29 +358,30 @@ class Application_Logger
     }
 
     /**
-     * Logs a data array.
+     * Specialized in logging array data sets.
      *
-     * @param array<mixed> $data
+     * @param ArrayDataCollection|array|mixed $data
      * @param string|NULL $category
      * @param string|NULL $label Label to display above the data dump.
-     * @return Application_Logger
+     * @return $this
      * @throws JsonException
      */
-    public function logData(array $data, ?string $category=null, ?string $label=null) : Application_Logger
+    public function logData(mixed $data, ?string $category=null, ?string $label=null) : self
     {
         if(empty($category)) {
             $category = self::CATEGORY_GENERAL;
         }
 
-        if(empty($label)) {
-            $label = 'Data dump:';
+        if(!$this->isLoggingEnabled($category)) {
+            return $this;
         }
 
-        $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
-        $json = str_replace('\/', '/', $json);
+        if(empty($label)) {
+            $label = 'Data dump';
+        }
 
-        $this->addLogMessage($label, $category, true);
-        $this->addLogMessage($json, '', false);
+        $this->addLogMessage(trim($label, ':').':', $category, true);
+        $this->enqueueMessage(self::filterArg($data));
         
         return $this;
     }
@@ -361,10 +405,10 @@ class Application_Logger
      * @param string $message
      * @param string|NULL $category
      * @param bool|NULL $withTime
-     * @param mixed ...$args
+     * @param mixed ...$args Will be converted to something readable using {@see self::filterArgs()}.
      * @return $this
      */
-    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : Application_Logger
+    private function addLogMessage(string $message, ?string $category=self::CATEGORY_GENERAL, ?bool $withTime=true, ...$args) : self
     {
         if (empty($category)) {
             $category = self::CATEGORY_GENERAL;
@@ -376,6 +420,7 @@ class Application_Logger
         }
 
         if(!empty($args)) {
+            $args = self::filterArgs($args);
             $message = sprintf($message, ...$args);
         }
 
@@ -383,8 +428,16 @@ class Application_Logger
             $message = $this->getTime().' | '.$message;
         }
 
-        $message = $category . ' | ' . $message;
+        return $this->enqueueMessage($category . ' | ' . $message);
+    }
 
+    /**
+     * @param string $message
+     * @return $this
+     * @throws FileHelper_Exception
+     */
+    private function enqueueMessage(string $message) : self
+    {
         if($this->memoryStorageEnabled === true) {
             $this->log[] = $message;
         }
@@ -402,11 +455,93 @@ class Application_Logger
 
             error_log($message, 3, $this->logFile);
         }
-        
+
         return $this;
     }
 
+    /**
+     * Filters the arguments passed to the log method,
+     * so that they are suitable for logging.
+     *
+     * Converts arrays to JSON strings, objects to their
+     * class names, and resources to their type.
+     *
+     * @param array<string|int,LoggableArgument> $args
+     * @return array<string|int,string>
+     * @throws JsonException
+     */
+    public static function filterArgs(array $args) : array
+    {
+        return array_map(
+            static function ($arg) : string {
+                return self::filterArg($arg);
+            },
+            $args
+        );
+    }
 
+    /**
+     * Converts any variable to a string that is suitable for logging.
+     * Some known types are automatically converted to a more readable format,
+     * like {@see OperationResult}, {@see ArrayDataCollection} and more.
+     *
+     * @param LoggableArgument $arg
+     * @return string
+     * @throws JsonException
+     */
+    public static function filterArg(mixed $arg) : string
+    {
+        if($arg instanceof OperationResult) {
+            return '[operationResult]'.PHP_EOL.$arg.PHP_EOL.'[/operationResult]';
+        }
+
+        if($arg instanceof Microtime) {
+            return '[microtime="'.$arg->getISODate(true).'"]';
+        }
+
+        if($arg instanceof DateTime) {
+            return '[dateTime="'.$arg->format(Microtime::FORMAT_ISO_TZ).'"]';
+        }
+
+        if($arg instanceof AttributeCollection) {
+            return '[attributeCollection]'.PHP_EOL.self::filterArg($arg->getAttributes()).PHP_EOL.'[/attributeCollection]';
+        }
+
+        if($arg instanceof ArrayDataCollection) {
+            return '[arrayDataCollection]'.PHP_EOL.self::filterArg($arg->getData()).PHP_EOL.'[/arrayDataCollection]';
+        }
+
+        if($arg instanceof FileHelper\PathInfoInterface) {
+            return '[pathInfo="'.$arg->getPath().'"]';
+        }
+
+        if(is_array($arg))
+        {
+            return str_replace('\/', '/', json_encode($arg, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT));
+        }
+
+        if(is_object($arg))
+        {
+            return '[object="'.get_class($arg).'"]';
+        }
+
+        if(is_null($arg))
+        {
+            return 'NULL';
+        }
+
+        if(is_bool($arg))
+        {
+            return bool2string($arg);
+        }
+
+        if(is_resource($arg))
+        {
+            return '[resource="'.get_resource_type($arg).'"]';
+        }
+
+        return (string)$arg;
+    }
     
     private function format(string $message) : string
     {
@@ -415,7 +550,7 @@ class Application_Logger
             return $message.PHP_EOL;
         }
         
-        if(strpos($message, "\n") !== false)
+        if(str_contains($message, "\n"))
         {
             $message = '<pre>'.$message.'</pre>';
         }

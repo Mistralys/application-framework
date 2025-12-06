@@ -41,7 +41,7 @@ class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMeth
         $payload = array(
             'owner_primary' => $primary,
             'type_name' => $type,
-            'stateless' => $revisionable instanceof Application_Revisionable,
+            'stateless' => false,
             'revisions' => array()
         );
 
@@ -58,14 +58,11 @@ class Application_AjaxMethods_GetChangelogRevisions extends Application_AjaxMeth
                 'owner_id' => $revisionable->getRevisionAuthorID(),
             );
             
-            if($revisionable instanceof Application_Revisionable) 
-            {
-                $data['amount_changes'] = $revisionable->countChangelogEntries();
-                $data['state'] = $revisionable->getStateName();
-                $data['state_label_pretty'] = $revisionable->getCurrentPrettyStateLabel();
-                $data['state_label'] = $revisionable->getCurrentStateLabel();
-            }
-            
+            $data['amount_changes'] = $revisionable->countChangelogEntries();
+            $data['state'] = $revisionable->getStateName();
+            $data['state_label_pretty'] = $revisionable->getCurrentPrettyStateLabel();
+            $data['state_label'] = $revisionable->getCurrentStateLabel();
+
             $payload['revisions'][] = $data;
         }
         

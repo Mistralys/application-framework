@@ -4,24 +4,21 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News;
 
-use Application\Admin\Area\Mode\BaseCollectionCreateExtended;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
-use Application\Traits\AllowableMigrationTrait;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordCreateSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property NewsEntry|NULL $record
  * @property NewsCollection $collection
  */
-abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
+abstract class BaseCreateArticleScreen extends BaseRecordCreateSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'create-article';
+    public const string URL_NAME = 'create-article';
 
     public function getURLName(): string
     {
@@ -46,7 +43,7 @@ abstract class BaseCreateArticleScreen extends BaseCollectionCreateExtended
         return AppFactory::createNews();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The news article has been created successfully at %1$s.',

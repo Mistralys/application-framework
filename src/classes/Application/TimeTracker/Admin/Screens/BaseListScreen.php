@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens;
 
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
+use UI;
 
-abstract class BaseListScreen extends Application_Admin_Area_Mode
+abstract class BaseListScreen extends BaseMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
     public function getURLName(): string
     {
@@ -57,5 +55,7 @@ abstract class BaseListScreen extends Application_Admin_Area_Mode
 
         $this->subnav->addURL(t('Global'), $urls->globalList());
         $this->subnav->addURL(t('Day'), $urls->dayList());
+        $this->subnav->addURL(t('Time Spans'), $urls->timeSpans());
+        $this->subnav->addURL(t('Settings'), $urls->globalSettings())->setIcon(UI::icon()->settings());
     }
 }

@@ -7,13 +7,18 @@
 use Application\ConfigSettings\AppConfig;
 use Application\ConfigSettings\BaseConfigRegistry;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Highlighter;
 use AppUtils\Interfaces\StringableInterface;
 use AppUtils\Microtime;
+use DBHelper\BaseCollection\BaseChildCollection;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 use DBHelper\Exception\CLIErrorRenderer;
 use DBHelper\Exception\HTMLErrorRenderer;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper\TrackedQuery;
 use function AppUtils\parseVariable;
 
@@ -519,7 +524,7 @@ class DBHelper
      * Fetches a single entry as an associative array from a SELECT query.
      * @param string|DBHelper_StatementBuilder $statementOrBuilder The full SQL query to run with placeholders for variables
      * @param array<string,string|number|StringableInterface|Microtime|DateTime|bool|NULL> $variables Associative array with placeholders and values to replace in the query
-     * @return array<mixed>|NULL
+     * @return array<int|string,mixed>|NULL
      * @throws DBHelper_Exception
      * @throws JsonException
      */
@@ -585,21 +590,11 @@ class DBHelper
      * @return array<int,array<string,string>>
      * @throws DBHelper_Exception
      */
-    public static function fetchAll($statementOrBuilder, array $variables = array()) : array
+    public static function fetchAll(string|DBHelper_StatementBuilder $statementOrBuilder, array $variables = array()) : array
     {
         self::executeAndRegister(DBHelper_OperationTypes::TYPE_SELECT, $statementOrBuilder, $variables);
         
-        $result = self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
-        
-        if($result===false) 
-        {
-            throw self::createException(
-                self::ERROR_FETCHING,
-                'Failed fetching a record'
-            );
-        }
-        
-        return $result;
+        return self::$activeStatement->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -1299,6 +1294,7 @@ class DBHelper
     public static function updateDynamic(string $table, array $data, array $primaryFields) : bool
     {
         $where = array();
+        $set = $data;
         foreach ($primaryFields as $fieldName) {
             if (!array_key_exists($fieldName, $data)) {
                 throw new DBHelper_Exception(
@@ -1312,6 +1308,8 @@ class DBHelper
                 );
             }
             $where[$fieldName] = $data[$fieldName];
+
+            unset($set[$fieldName]);
         }
 
         return self::update(
@@ -1323,7 +1321,7 @@ class DBHelper
                 WHERE
                     %s",
                 $table,
-                self::buildSetStatement($data),
+                self::buildSetStatement($set),
                 self::buildWhereFieldsStatement($where)
             ),
             $data
@@ -1961,7 +1959,7 @@ class DBHelper
     }
 
     /**
-     * @var array<string,DBHelper_BaseCollection>
+     * @var array<string,DBHelperCollectionInterface>
      */
     protected static array $collections = array();
 
@@ -1978,12 +1976,12 @@ class DBHelper
 
     /**
      * @param string $class
-     * @param DBHelper_BaseRecord|NULL $parentRecord
+     * @param DBHelperRecordInterface|NULL $parentRecord
      * @param bool $newInstance
-     * @return DBHelper_BaseCollection
+     * @return DBHelperCollectionInterface
      * @throws DBHelper_Exception
      */
-    public static function createCollection(string $class, ?DBHelper_BaseRecord $parentRecord=null, bool $newInstance=false) : ?DBHelper_BaseCollection
+    public static function createCollection(string $class, ?DBHelperRecordInterface $parentRecord=null, bool $newInstance=false) : DBHelperCollectionInterface
     {
         $key = $class;
         if($parentRecord) {
@@ -1995,45 +1993,18 @@ class DBHelper
         }
     
         $instance = ClassHelper::requireObjectInstanceOf(
-            DBHelper_BaseCollection::class,
+            DBHelperCollectionInterface::class,
             new $class(),
             self::ERROR_NOT_A_DBHELPER_COLLECTION
         );
 
-        if($instance->hasParentCollection())
-        {
-            if(!$parentRecord) {
-                throw new DBHelper_Exception(
-                    'No parent record specified',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record to be specified when calling createCollection.',
-                        $class
-                    ),
-                    self::ERROR_NO_PARENT_RECORD_SPECIFIED
-                );
-            }
-    
-            $parentClass = get_class($parentRecord->getCollection());
-            if($parentClass !== $instance->getParentCollectionClass()) {
-                throw new DBHelper_Exception(
-                    'Invalid parent record',
-                    sprintf(
-                        'The DBHelper collection class [%s] requires a parent record of the collection [%s], provided was a record of type [%s].',
-                        $class,
-                        $instance->getParentCollectionClass(),
-                        get_class($parentRecord->getCollection())
-                    ),
-                    self::ERROR_INVALID_PARENT_RECORD
-                );
-            }
-    
+        if($instance instanceof BaseChildCollection) {
             $instance->bindParentRecord($parentRecord);
         }
         
         $instance->setupComplete();
 
-        if(!$newInstance)
-        {
+        if(!$newInstance) {
             self::$collections[$key] = $instance;
         }
 
@@ -2121,5 +2092,92 @@ SQL;
     public static function resetTrackedQueries() : void
     {
         self::$queries = array();
+    }
+
+    public static function getDriverName() : ?string
+    {
+        $pdo = self::getDB();
+        $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if (!is_string($driver) || $driver === '') {
+            return null;
+        }
+
+        // PDO uses 'mysql' for both MySQL and MariaDB; detect MariaDB if needed
+        if ($driver === 'mysql') {
+            $version = (string) $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            if (stripos($version, 'MariaDB') !== false) {
+                return 'mariadb';
+            }
+        }
+
+        return $driver;
+    }
+
+    /**
+     * Builds a SQL LIKE statement for the specified column,
+     * search term, and case sensitivity setting. Attempts to
+     * use the most efficient syntax for the active database
+     * driver.
+     *
+     * @param string $column
+     * @param string $searchTerm
+     * @param bool $caseSensitive
+     * @return string
+     */
+    public static function buildLIKEStatement(string $column, string $searchTerm, bool $caseSensitive) : string
+    {
+        $escaped = self::escapeForLike($searchTerm);
+        $driver = self::getDriverName();
+
+        // PostgreSQL: use ILIKE for case-insensitive
+        if ($driver === 'pgsql') {
+            $op = $caseSensitive ? 'LIKE' : 'ILIKE';
+            return sprintf("%s %s '%%%s%%' ESCAPE '\\\\'", $column, $op, $escaped);
+        }
+
+        // MySQL / MariaDB: prefer BINARY or COLLATE for case-sensitivity control
+        if ($driver === 'mysql' || $driver === 'mariadb' || $driver === null) {
+            if ($caseSensitive) {
+                // Option A: BINARY (simple, usually effective)
+                return sprintf("BINARY %s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+
+                // Option B (alternative): force a case-sensitive collation
+                // return sprintf("%s LIKE '%%%s%%' COLLATE utf8mb4_bin ESCAPE '\\\\'", $column, $escaped);
+            }
+
+            // Case-insensitive: rely on column collation (default CI) or force one:
+            return sprintf("%s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+            // Or force: return sprintf("%s LIKE '%%%s%%' COLLATE utf8mb4_unicode_ci ESCAPE '\\\\'", $column, $escaped);
+        }
+
+        // Fallback portable (less index-friendly)
+        if ($caseSensitive) {
+            return sprintf("%s LIKE '%%%s%%' ESCAPE '\\\\'", $column, $escaped);
+        }
+
+        return sprintf("LOWER(%s) LIKE LOWER('%%%s%%') ESCAPE '\\\\'", $column, $escaped);
+    }
+
+    private static function escapeForLike(string $term): string
+    {
+        // We need to return a value that is safe to place inside a single-quoted SQL
+        // LIKE literal: "'...escaped...'". To achieve this we:
+        //  - escape the escape char (backslash) first by doubling it so it survives
+        //    any interpretation by PHP/DB helpers and ends up as a single backslash
+        //    in the pattern where it's used as the LIKE escape marker;
+        //  - escape SQL LIKE wildcards '%' and '_' by prefixing them with a backslash
+        //    so they are treated as literal characters in the pattern;
+        //  - escape single quotes by SQL standard doubling so the surrounding single
+        //    quotes are not broken.
+
+        $escapeChar = '\\'; // represents a single backslash in the final SQL
+
+        // Perform all replacements in a single call. The backslash is replaced
+        // with two backslashes so that the literal backslash survives into SQL.
+        return str_replace(
+            [$escapeChar, '%', '_', "'"],
+            [$escapeChar . $escapeChar, $escapeChar . '%', $escapeChar . '_', "''"],
+            $term
+        );
     }
 }

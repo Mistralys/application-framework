@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
+use Application\MarkdownRenderer;
 use AppUtils\ClassHelper;
 
 class UI_Form_Renderer_CommentGenerator
 {
+    public const string PROPERTY_COMMENTS_CALLBACK = 'comments-callback';
+    public const string PROPERTY_MARKDOWN_SUPPORT = 'markdown_support';
+
     private UI_Form_Renderer_ElementFilter_RenderDef $renderDef;
     private UI_StringBuilder $parts;
     
@@ -15,6 +19,7 @@ class UI_Form_Renderer_CommentGenerator
         $this->parts = sb();
         
         $this->addExistingComment();
+        $this->addMarkdownComment();
         $this->addTypeComment();
         $this->addLengthComment();
         $this->addCallbackComments();
@@ -40,7 +45,7 @@ class UI_Form_Renderer_CommentGenerator
         // Fix missing dots
         $lastChar = mb_substr($comment, -1);
         
-        if($lastChar != '.' && $lastChar != '>') 
+        if($lastChar !== '.' && $lastChar !== '>')
         {
             $comment .= '.';
         }
@@ -90,7 +95,7 @@ class UI_Form_Renderer_CommentGenerator
         
         $tokens = explode('-', $length);
         
-        if($tokens[0] == $tokens[1]) 
+        if($tokens[0] === $tokens[1])
         {
             $this->parts->t('Exactly %1$s characters.', $tokens[0]);
         } 
@@ -103,7 +108,7 @@ class UI_Form_Renderer_CommentGenerator
     private function addCallbackComments() : void
     {
         // elements can add a callback to generate the comments as needed.
-        $callback = $this->renderDef->getElement()->getRuntimeProperty('comments-callback');
+        $callback = $this->getProperty(self::PROPERTY_COMMENTS_CALLBACK);
         
         if(empty($callback))
         {
@@ -112,7 +117,7 @@ class UI_Form_Renderer_CommentGenerator
         
         Application::requireCallableValid($callback);
             
-        $text = (string)call_user_func($callback);
+        $text = (string)$callback();
             
         if(!ctype_space($text))
         {
@@ -122,32 +127,30 @@ class UI_Form_Renderer_CommentGenerator
 
     private function getTypeClass() : string
     {
-        switch($this->renderDef->getDataType())
-        {
-            case 'iso-date':
-                return UI_Form_Renderer_CommentGenerator_DataType_ISODate::class;
-                
-            case 'date':
-                return UI_Form_Renderer_CommentGenerator_DataType_Date::class;
-                
-            case 'integer':
-                return UI_Form_Renderer_CommentGenerator_DataType_Integer::class;
-                
-            case 'float':
-                return UI_Form_Renderer_CommentGenerator_DataType_Float::class;
-                
-            case 'filename':
-            case 'phone':
-            case 'email':
-            case 'alias':
-            case 'alias_capitals':
-            case 'label':
-            case 'nohtml':
-            case 'name_or_title':
-            case 'hexcolor':
-                return UI_Form_Renderer_CommentGenerator_DataType_RegexHint::class;
+        return match ($this->renderDef->getDataType()) {
+            'iso-date' => UI_Form_Renderer_CommentGenerator_DataType_ISODate::class,
+            'date' => UI_Form_Renderer_CommentGenerator_DataType_Date::class,
+            'integer' => UI_Form_Renderer_CommentGenerator_DataType_Integer::class,
+            'float' => UI_Form_Renderer_CommentGenerator_DataType_Float::class,
+            'filename', 'phone', 'email', 'alias', 'alias_capitals', 'label', 'nohtml', 'name_or_title', 'hexcolor' => UI_Form_Renderer_CommentGenerator_DataType_RegexHint::class,
+            default => '',
+        };
+    }
+
+    private function addMarkdownComment() : void
+    {
+        if($this->getProperty(self::PROPERTY_MARKDOWN_SUPPORT) !== true) {
+            return;
         }
-        
-        return '';
+
+        $this->parts->t(
+            'You may use %1$s syntax for formatting, links and more.',
+            sb()->link(MarkdownRenderer::MARKDOWN_LANGUAGE_NAME, MarkdownRenderer::MARKDOWN_DOCUMENTATION_URL, true)
+        );
+    }
+
+    private function getProperty(string $name) : mixed
+    {
+        return $this->renderDef->getElement()->getRuntimeProperty($name);
     }
 }

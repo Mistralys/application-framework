@@ -6,12 +6,14 @@ namespace Application\Admin\Area\Media\View;
 
 use Application\AppFactory;
 use Application\MarkdownRenderer;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application_Admin_Area_Mode_Submode_CollectionRecord;
 use Application_Media_Document;
 use AppUtils\FileHelper;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 use UI_PropertiesGrid;
 use UI_Themes_Theme_ContentRenderer;
 
@@ -20,9 +22,9 @@ use UI_Themes_Theme_ContentRenderer;
  */
 abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode_CollectionRecord
 {
-    public const URL_NAME = 'status';
-    public const REQUEST_PARAM_DOWNLOAD = 'download';
-    public const TUMBNAIL_SIZE = 460;
+    public const string URL_NAME = 'status';
+    public const string REQUEST_PARAM_DOWNLOAD = 'download';
+    public const int TUMBNAIL_SIZE = 460;
     private Application_Media_Document $document;
 
     public function getURLName(): string
@@ -30,14 +32,19 @@ abstract class BaseMediaStatusScreen extends Application_Admin_Area_Mode_Submode
         return self::URL_NAME;
     }
 
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_VIEW_STATUS;
+    }
+
     protected function createCollection() : MediaCollection
     {
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string

@@ -21,9 +21,9 @@ class Application_Driver_AdminInfo implements OptionableInterface
     protected $driver;
     
    /**
-    * @var array
+    * @var array<string,array<string,mixed>>
     */
-    protected $areas = array();
+    protected array $areas = array();
     
    /**
     * @var Application_Admin_Skeleton[]
@@ -53,15 +53,13 @@ class Application_Driver_AdminInfo implements OptionableInterface
             'check-syntax' => false
         );
     }
-    
+
+    /**
+     * @return array<string,array<string,mixed>>
+     */
     public function toArray() : array
     {
         return $this->areas;
-    }
-    
-    public function getInstances() 
-    {
-        return $this->instances;
     }
     
     public function analyzeFiles() : Application_Driver_AdminInfo

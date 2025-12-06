@@ -10,18 +10,16 @@ use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\TimeEntry;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property TimeEntry $record
  */
-abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'view';
+    public const string URL_NAME = 'view';
 
     public function getURLName(): string
     {
@@ -43,9 +41,9 @@ abstract class BaseViewScreen extends Application_Admin_Area_Mode_CollectionReco
         return AppFactory::createTimeTracker();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)AppFactory::createTimeTracker()->adminURL()->list();
+        return AppFactory::createTimeTracker()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string

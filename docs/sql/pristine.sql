@@ -1,15 +1,123 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.3
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Mar 28, 2025 at 01:11 PM
--- Server version: 11.6.2-MariaDB
--- PHP Version: 7.4.33
+-- Generation Time: Nov 26, 2025 at 09:32 PM
+-- Server version: 12.1.2-MariaDB
+-- PHP Version: 8.4.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
+
+--
+-- Database: `application_framework`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_changelog`
+--
+
+CREATE TABLE `api_changelog` (
+    `changelog_id` bigint(11) UNSIGNED NOT NULL,
+    `changelog_date` datetime NOT NULL,
+    `changelog_type` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `changelog_author` int(11) UNSIGNED NOT NULL,
+    `changelog_data` text NOT NULL,
+    `api_client_id` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_clients`
+--
+
+CREATE TABLE `api_clients` (
+    `api_client_id` int(11) UNSIGNED NOT NULL,
+    `label` varchar(180) NOT NULL,
+    `foreign_id` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `date_created` datetime NOT NULL DEFAULT current_timestamp(),
+    `created_by` int(11) UNSIGNED NOT NULL,
+    `is_active` enum('yes','no') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'yes',
+    `comments` text NOT NULL DEFAULT ''
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_keys`
+--
+
+CREATE TABLE `api_keys` (
+    `api_key_id` int(11) UNSIGNED NOT NULL,
+    `api_client_id` int(11) UNSIGNED NOT NULL,
+    `api_key` varchar(120) NOT NULL,
+    `pseudo_user` int(11) UNSIGNED NOT NULL,
+    `label` varchar(180) NOT NULL,
+    `comments` text NOT NULL DEFAULT '',
+    `grant_all_methods` enum('yes','no') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'no',
+    `date_created` datetime NOT NULL DEFAULT current_timestamp(),
+    `created_by` int(11) UNSIGNED NOT NULL,
+    `expiry_delay` varchar(180) DEFAULT NULL,
+    `expiry_date` datetime DEFAULT NULL,
+    `expired` enum('yes','no') NOT NULL DEFAULT 'no',
+    `last_used` datetime DEFAULT NULL,
+    `usage_count` int(11) UNSIGNED NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_key_methods`
+--
+
+CREATE TABLE `api_key_methods` (
+    `api_key_id` int(11) UNSIGNED NOT NULL,
+    `api_client_id` int(11) UNSIGNED NOT NULL,
+    `method_name` varchar(180) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='List of API method names allowed to be used with this API key.';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_key_method_groups`
+--
+
+CREATE TABLE `api_key_method_groups` (
+    `api_key_id` int(11) UNSIGNED NOT NULL,
+    `api_client_id` int(11) UNSIGNED NOT NULL,
+    `method_group_id` varchar(80) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_requests`
+--
+
+CREATE TABLE `api_requests` (
+    `api_request_id` int(11) UNSIGNED NOT NULL,
+    `api_key_id` int(11) UNSIGNED DEFAULT NULL,
+    `api_client_id` int(11) UNSIGNED DEFAULT NULL,
+    `app_instance` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'Name of the application instance that served the request',
+    `request_time` datetime NOT NULL DEFAULT current_timestamp(),
+    `method_name` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL COMMENT 'The requested API method name',
+    `app_locale` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `http_method` enum('get','post','put','delete') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `status_code` int(4) UNSIGNED NOT NULL,
+    `status_name` enum('success','error') CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `duration_ms` int(11) UNSIGNED NOT NULL,
+    `source_ip` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `user_agent` varchar(220) NOT NULL,
+    `error_code` int(11) UNSIGNED DEFAULT NULL,
+    `error_message` varchar(200) NOT NULL DEFAULT '',
+    `request_params` text NOT NULL,
+    `response_data` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -51,7 +159,7 @@ CREATE TABLE `app_locking_messages` (
 CREATE TABLE `app_messagelog` (
     `log_id` bigint(11) UNSIGNED NOT NULL,
     `date` datetime NOT NULL,
-    `type` varchar(60) CHARACTER SET ascii NOT NULL,
+    `type` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `message` text NOT NULL,
     `user_id` int(11) UNSIGNED NOT NULL,
     `category` varchar(180) NOT NULL
@@ -87,11 +195,11 @@ CREATE TABLE `app_messaging` (
 CREATE TABLE `app_news` (
     `news_id` int(11) UNSIGNED NOT NULL,
     `parent_news_id` int(11) UNSIGNED DEFAULT NULL,
-    `news_type` varchar(60) CHARACTER SET ascii NOT NULL,
+    `news_type` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `label` varchar(120) NOT NULL,
     `author` int(11) UNSIGNED NOT NULL,
-    `locale` varchar(5) CHARACTER SET ascii NOT NULL,
-    `status` varchar(20) CHARACTER SET ascii NOT NULL DEFAULT 'draft',
+    `locale` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `status` varchar(20) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'draft',
     `synopsis` text NOT NULL DEFAULT '',
     `article` mediumtext NOT NULL DEFAULT '',
     `date_created` datetime NOT NULL,
@@ -146,7 +254,7 @@ CREATE TABLE `app_news_reactions` (
 CREATE TABLE `app_news_related` (
     `news_id` int(11) UNSIGNED NOT NULL,
     `related_news_id` int(11) UNSIGNED NOT NULL,
-    `relation_type` varchar(160) CHARACTER SET ascii NOT NULL,
+    `relation_type` varchar(160) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `relation_params` text NOT NULL COMMENT 'JSON configuration.'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -197,7 +305,7 @@ CREATE TABLE `app_ratings` (
 
 CREATE TABLE `app_ratings_screens` (
     `rating_screen_id` int(11) UNSIGNED NOT NULL,
-    `hash` varchar(32) CHARACTER SET ascii NOT NULL,
+    `hash` varchar(32) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `dispatcher` varchar(250) NOT NULL,
     `path` varchar(250) NOT NULL,
     `params` text NOT NULL
@@ -210,7 +318,7 @@ CREATE TABLE `app_ratings_screens` (
 --
 
 CREATE TABLE `app_settings` (
-    `data_key` varchar(80) CHARACTER SET ascii NOT NULL,
+    `data_key` varchar(80) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `data_value` mediumtext NOT NULL,
     `data_role` enum('cache','persistent') NOT NULL DEFAULT 'cache'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -223,27 +331,9 @@ CREATE TABLE `app_settings` (
 
 CREATE TABLE `countries` (
     `country_id` int(11) UNSIGNED NOT NULL,
-    `iso` varchar(2) CHARACTER SET ascii NOT NULL,
+    `iso` varchar(2) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `label` varchar(180) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Supported application countries';
-
---
--- Dumping data for table `countries`
---
-
-INSERT INTO `countries` (`country_id`, `iso`, `label`) VALUES
-    (1, 'de', 'Germany'),
-    (2, 'fr', 'France'),
-    (3, 'es', 'Spain'),
-    (4, 'uk', 'United Kingdom'),
-    (5, 'pl', 'Poland'),
-    (6, 'it', 'Italy'),
-    (7, 'us', 'United States'),
-    (8, 'ro', 'Romania'),
-    (9, 'ca', 'Canada'),
-    (10, 'at', 'Austria'),
-    (11, 'mx', 'Mexico'),
-    (9999, 'zz', 'Country-independent');
 
 -- --------------------------------------------------------
 
@@ -263,9 +353,9 @@ CREATE TABLE `custom_properties` (
 
 CREATE TABLE `custom_properties_data` (
     `property_id` int(11) UNSIGNED NOT NULL,
-    `owner_type` varchar(250) CHARACTER SET ascii NOT NULL,
-    `owner_key` varchar(250) CHARACTER SET ascii NOT NULL,
-    `name` varchar(180) CHARACTER SET ascii NOT NULL,
+    `owner_type` varchar(250) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `owner_key` varchar(250) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `name` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
     `value` text NOT NULL,
     `label` varchar(180) NOT NULL,
@@ -281,7 +371,7 @@ CREATE TABLE `custom_properties_data` (
 
 CREATE TABLE `custom_properties_presets` (
     `preset_id` int(11) UNSIGNED NOT NULL,
-    `owner_type` varchar(250) CHARACTER SET ascii NOT NULL,
+    `owner_type` varchar(250) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `editable` enum('yes','no') NOT NULL DEFAULT 'yes',
     `name` varchar(180) NOT NULL,
     `is_structural` enum('yes','no') NOT NULL DEFAULT 'no',
@@ -301,8 +391,8 @@ CREATE TABLE `feedback` (
     `date` datetime NOT NULL,
     `feedback` text NOT NULL,
     `request_params` text NOT NULL,
-    `feedback_scope` varchar(40) CHARACTER SET ascii NOT NULL DEFAULT 'application',
-    `feedback_type` varchar(40) CHARACTER SET ascii NOT NULL
+    `feedback_scope` varchar(40) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL DEFAULT 'application',
+    `feedback_type` varchar(40) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -314,9 +404,13 @@ CREATE TABLE `feedback` (
 CREATE TABLE `known_users` (
     `user_id` int(11) UNSIGNED NOT NULL,
     `foreign_id` varchar(250) NOT NULL,
+    `foreign_nickname` varchar(180) DEFAULT NULL,
     `firstname` varchar(250) NOT NULL,
     `lastname` varchar(250) NOT NULL,
-    `email` text NOT NULL
+    `nickname` varchar(180) DEFAULT NULL,
+    `email` text NOT NULL,
+    `email_md5` varchar(32) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `date_registered` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -326,7 +420,7 @@ CREATE TABLE `known_users` (
 --
 
 CREATE TABLE `locales_application` (
-    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL
+    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -336,7 +430,7 @@ CREATE TABLE `locales_application` (
 --
 
 CREATE TABLE `locales_content` (
-    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL
+    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -349,9 +443,9 @@ CREATE TABLE `media` (
     `media_id` int(11) UNSIGNED NOT NULL,
     `user_id` int(11) UNSIGNED NOT NULL,
     `media_date_added` datetime NOT NULL,
-    `media_type` varchar(100) CHARACTER SET ascii NOT NULL,
+    `media_type` varchar(100) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `media_name` varchar(240) NOT NULL,
-    `media_extension` varchar(20) CHARACTER SET ascii NOT NULL,
+    `media_extension` varchar(20) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `file_size` int(11) UNSIGNED NOT NULL DEFAULT 0,
     `keywords` varchar(500) NOT NULL DEFAULT '',
     `description` varchar(1200) NOT NULL DEFAULT ''
@@ -365,8 +459,8 @@ CREATE TABLE `media` (
 
 CREATE TABLE `media_configurations` (
     `config_id` int(11) UNSIGNED NOT NULL,
-    `type_id` varchar(60) CHARACTER SET ascii NOT NULL,
-    `config_key` varchar(32) CHARACTER SET ascii NOT NULL,
+    `type_id` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `config_key` varchar(32) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `config` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -380,6 +474,19 @@ CREATE TABLE `media_tags` (
     `media_id` int(11) UNSIGNED NOT NULL,
     `tag_id` int(11) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Connects media documents with tags.';
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `renamer_index`
+--
+
+CREATE TABLE `renamer_index` (
+    `index_id` bigint(11) UNSIGNED NOT NULL,
+    `column_id` varchar(80) NOT NULL,
+    `hash` varchar(32) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
+    `primary_values` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -403,7 +510,7 @@ CREATE TABLE `revisionables_changelog` (
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
     `changelog_date` datetime NOT NULL,
     `changelog_author` int(11) UNSIGNED NOT NULL,
-    `changelog_type` varchar(160) CHARACTER SET ascii NOT NULL,
+    `changelog_type` varchar(160) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `changelog_data` mediumtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -429,7 +536,7 @@ CREATE TABLE `revisionables_revisions` (
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
     `pretty_revision` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
-    `alias` varchar(160) CHARACTER SET ascii NOT NULL,
+    `alias` varchar(160) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `state` enum('draft','finalized','inactive','deleted') NOT NULL DEFAULT 'draft',
     `date` datetime NOT NULL,
     `author` int(11) UNSIGNED NOT NULL,
@@ -446,7 +553,7 @@ CREATE TABLE `revisionables_revisions` (
 CREATE TABLE `revisionables_revisions_data` (
     `revisionable_id` int(11) UNSIGNED NOT NULL,
     `revisionable_revision` int(11) UNSIGNED NOT NULL,
-    `data_key` varchar(300) CHARACTER SET ascii NOT NULL,
+    `data_key` varchar(300) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `data_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -460,7 +567,7 @@ CREATE TABLE `tags` (
     `tag_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
     `parent_tag_id` int(11) DEFAULT NULL,
-    `sort_type` varchar(60) CHARACTER SET ascii NOT NULL,
+    `sort_type` varchar(60) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `sort_weight` int(11) NOT NULL DEFAULT 0,
     `weight` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -473,7 +580,7 @@ CREATE TABLE `tags` (
 
 CREATE TABLE `tags_registry` (
     `tag_id` int(11) UNSIGNED NOT NULL,
-    `registry_key` varchar(180) CHARACTER SET ascii NOT NULL
+    `registry_key` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -484,7 +591,7 @@ CREATE TABLE `tags_registry` (
 
 CREATE TABLE `tags_translations` (
     `tag_id` int(11) UNSIGNED NOT NULL,
-    `locale_name` varchar(5) CHARACTER SET ascii NOT NULL,
+    `locale_name` varchar(5) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `locale_label` varchar(160) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Stores tag label translations.';
 
@@ -497,7 +604,7 @@ CREATE TABLE `tags_translations` (
 CREATE TABLE `test_records` (
     `record_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(180) NOT NULL,
-    `alias` varchar(160) CHARACTER SET ascii NOT NULL
+    `alias` varchar(160) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -538,6 +645,8 @@ CREATE TABLE `time_tracker_entries` (
     `duration` int(11) UNSIGNED NOT NULL,
     `type` varchar(40) NOT NULL,
     `ticket` varchar(160) NOT NULL,
+    `ticket_url` text NOT NULL DEFAULT '',
+    `processed` enum('yes','no') NOT NULL DEFAULT 'no',
     `comments` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
@@ -551,7 +660,24 @@ CREATE TABLE `time_tracker_entry_data` (
     `time_entry_id` int(11) UNSIGNED NOT NULL,
     `name` varchar(180) NOT NULL,
     `value` mediumtext NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `time_tracker_time_spans`
+--
+
+CREATE TABLE `time_tracker_time_spans` (
+    `time_span_id` int(11) UNSIGNED NOT NULL,
+    `user_id` int(11) UNSIGNED NOT NULL,
+    `type` varchar(40) NOT NULL,
+    `date_start` date NOT NULL,
+    `date_end` date NOT NULL,
+    `days` int(11) UNSIGNED NOT NULL,
+    `processed` enum('yes','no') NOT NULL DEFAULT 'no',
+    `comments` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -563,7 +689,7 @@ CREATE TABLE `time_tracker_types` (
     `time_type_id` int(11) UNSIGNED NOT NULL,
     `label` varchar(160) NOT NULL,
     `description` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -588,13 +714,89 @@ CREATE TABLE `uploads` (
 
 CREATE TABLE `user_settings` (
     `user_id` int(11) UNSIGNED NOT NULL,
-    `setting_name` varchar(180) CHARACTER SET ascii NOT NULL,
+    `setting_name` varchar(180) CHARACTER SET ascii COLLATE ascii_general_ci NOT NULL,
     `setting_value` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `api_changelog`
+--
+ALTER TABLE `api_changelog`
+    ADD PRIMARY KEY (`changelog_id`),
+    ADD KEY `changelog_date` (`changelog_date`),
+    ADD KEY `changelog_type` (`changelog_type`),
+    ADD KEY `changelog_author` (`changelog_author`),
+    ADD KEY `api_client_id` (`api_client_id`);
+
+--
+-- Indexes for table `api_clients`
+--
+ALTER TABLE `api_clients`
+    ADD PRIMARY KEY (`api_client_id`),
+    ADD KEY `label` (`label`),
+    ADD KEY `foreignID` (`foreign_id`),
+    ADD KEY `date_created` (`date_created`),
+    ADD KEY `created_by` (`created_by`),
+    ADD KEY `is_active` (`is_active`);
+
+--
+-- Indexes for table `api_keys`
+--
+ALTER TABLE `api_keys`
+    ADD PRIMARY KEY (`api_key_id`),
+    ADD KEY `api_client_id` (`api_client_id`),
+    ADD KEY `key` (`api_key`),
+    ADD KEY `label` (`label`),
+    ADD KEY `all_methods` (`grant_all_methods`),
+    ADD KEY `date_created` (`date_created`),
+    ADD KEY `expiry_delay` (`expiry_delay`),
+    ADD KEY `expiry_date` (`expiry_date`),
+    ADD KEY `created_by` (`created_by`),
+    ADD KEY `expired` (`expired`),
+    ADD KEY `last_used` (`last_used`),
+    ADD KEY `usage_count` (`usage_count`),
+    ADD KEY `pseudo_user` (`pseudo_user`);
+
+--
+-- Indexes for table `api_key_methods`
+--
+ALTER TABLE `api_key_methods`
+    ADD PRIMARY KEY (`api_key_id`,`method_name`),
+    ADD KEY `api_client_id` (`api_client_id`),
+    ADD KEY `api_key_id` (`api_key_id`),
+    ADD KEY `method_name` (`method_name`);
+
+--
+-- Indexes for table `api_key_method_groups`
+--
+ALTER TABLE `api_key_method_groups`
+    ADD PRIMARY KEY (`api_key_id`,`method_group_id`),
+    ADD KEY `api_key_id` (`api_key_id`),
+    ADD KEY `api_client_id` (`api_client_id`),
+    ADD KEY `method_group_id` (`method_group_id`);
+
+--
+-- Indexes for table `api_requests`
+--
+ALTER TABLE `api_requests`
+    ADD PRIMARY KEY (`api_request_id`),
+    ADD KEY `request_time` (`request_time`),
+    ADD KEY `api_key_id` (`api_key_id`),
+    ADD KEY `api_client_id` (`api_client_id`),
+    ADD KEY `method_name` (`method_name`),
+    ADD KEY `app_instance` (`app_instance`),
+    ADD KEY `app_locale` (`app_locale`),
+    ADD KEY `http_method` (`http_method`),
+    ADD KEY `status_code` (`status_code`),
+    ADD KEY `status_name` (`status_name`),
+    ADD KEY `duration_ms` (`duration_ms`),
+    ADD KEY `source_ip` (`source_ip`),
+    ADD KEY `user_agent` (`user_agent`),
+    ADD KEY `error_code` (`error_code`);
 
 --
 -- Indexes for table `app_locking`
@@ -781,7 +983,11 @@ ALTER TABLE `feedback`
 --
 ALTER TABLE `known_users`
     ADD PRIMARY KEY (`user_id`),
-    ADD KEY `foreign_id` (`foreign_id`);
+    ADD KEY `foreign_id` (`foreign_id`),
+    ADD KEY `foreign_nickname` (`foreign_nickname`),
+    ADD KEY `nickname` (`nickname`),
+    ADD KEY `email_md5` (`email_md5`),
+    ADD KEY `date_created` (`date_registered`);
 
 --
 -- Indexes for table `locales_application`
@@ -817,6 +1023,14 @@ ALTER TABLE `media_tags`
     ADD PRIMARY KEY (`media_id`,`tag_id`),
     ADD KEY `media_id` (`media_id`),
     ADD KEY `tag_id` (`tag_id`);
+
+--
+-- Indexes for table `renamer_index`
+--
+ALTER TABLE `renamer_index`
+    ADD PRIMARY KEY (`index_id`),
+    ADD KEY `column_id` (`column_id`),
+    ADD KEY `hash` (`hash`);
 
 --
 -- Indexes for table `revisionables`
@@ -923,7 +1137,8 @@ ALTER TABLE `time_tracker_entries`
     ADD KEY `date` (`date`),
     ADD KEY `type` (`type`),
     ADD KEY `ticket` (`ticket`),
-    ADD KEY `duration` (`duration`);
+    ADD KEY `duration` (`duration`),
+    ADD KEY `processed` (`processed`);
 
 --
 -- Indexes for table `time_tracker_entry_data`
@@ -931,6 +1146,18 @@ ALTER TABLE `time_tracker_entries`
 ALTER TABLE `time_tracker_entry_data`
     ADD KEY `time_entry_id` (`time_entry_id`),
     ADD KEY `name` (`name`);
+
+--
+-- Indexes for table `time_tracker_time_spans`
+--
+ALTER TABLE `time_tracker_time_spans`
+    ADD PRIMARY KEY (`time_span_id`),
+    ADD KEY `user_id` (`user_id`),
+    ADD KEY `date_end` (`date_end`),
+    ADD KEY `date_start` (`date_start`),
+    ADD KEY `processed` (`processed`),
+    ADD KEY `type` (`type`),
+    ADD KEY `days` (`days`);
 
 --
 -- Indexes for table `time_tracker_types`
@@ -956,6 +1183,30 @@ ALTER TABLE `user_settings`
 --
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `api_changelog`
+--
+ALTER TABLE `api_changelog`
+    MODIFY `changelog_id` bigint(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `api_clients`
+--
+ALTER TABLE `api_clients`
+    MODIFY `api_client_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `api_keys`
+--
+ALTER TABLE `api_keys`
+    MODIFY `api_key_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `api_requests`
+--
+ALTER TABLE `api_requests`
+    MODIFY `api_request_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `app_locking`
@@ -1048,6 +1299,12 @@ ALTER TABLE `media_configurations`
     MODIFY `config_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `renamer_index`
+--
+ALTER TABLE `renamer_index`
+    MODIFY `index_id` bigint(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `revisionables`
 --
 ALTER TABLE `revisionables`
@@ -1084,6 +1341,12 @@ ALTER TABLE `time_tracker_entries`
     MODIFY `time_entry_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `time_tracker_time_spans`
+--
+ALTER TABLE `time_tracker_time_spans`
+    MODIFY `time_span_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `time_tracker_types`
 --
 ALTER TABLE `time_tracker_types`
@@ -1098,6 +1361,41 @@ ALTER TABLE `uploads`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `api_changelog`
+--
+ALTER TABLE `api_changelog`
+    ADD CONSTRAINT `api_changelog_ibfk_1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `api_changelog_ibfk_2` FOREIGN KEY (`changelog_author`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_clients`
+--
+ALTER TABLE `api_clients`
+    ADD CONSTRAINT `api_clients_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_keys`
+--
+ALTER TABLE `api_keys`
+    ADD CONSTRAINT `api_keys_ibfk_1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `api_keys_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `api_keys_ibfk_3` FOREIGN KEY (`pseudo_user`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_key_methods`
+--
+ALTER TABLE `api_key_methods`
+    ADD CONSTRAINT `api_key_methods_ibfk_1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `api_key_methods_ibfk_2` FOREIGN KEY (`api_key_id`) REFERENCES `api_keys` (`api_key_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `api_key_method_groups`
+--
+ALTER TABLE `api_key_method_groups`
+    ADD CONSTRAINT `1` FOREIGN KEY (`api_client_id`) REFERENCES `api_clients` (`api_client_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    ADD CONSTRAINT `2` FOREIGN KEY (`api_key_id`) REFERENCES `api_keys` (`api_key_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `app_locking`
@@ -1244,12 +1542,6 @@ ALTER TABLE `time_tracker_entry_data`
 ALTER TABLE `uploads`
     ADD CONSTRAINT `uploads_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
     ADD CONSTRAINT `uploads_ibfk_2` FOREIGN KEY (`media_id`) REFERENCES `media` (`media_id`) ON DELETE SET NULL ON UPDATE SET NULL;
-
---
--- Constraints for table `user_emails`
---
-ALTER TABLE `user_emails`
-    ADD CONSTRAINT `user_emails_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `known_users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user_settings`

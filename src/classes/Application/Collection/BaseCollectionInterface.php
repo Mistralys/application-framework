@@ -7,41 +7,37 @@
 namespace Application\Collection;
 
 use Application\Interfaces\FilterCriteriaInterface;
-use Application_Interfaces_Disposable;
+use Application\Revisionable\RevisionableInterface;
+use Application\Disposables\DisposableInterface;
 
 /**
+ * Base interface for collections.
+ *
+ * > NOTE: Use the type-specific collection interfaces
+ * > (e.g., {@see IntegerCollectionInterface}) instead
+ * > of this one where possible.
+ *
  * @package Application
  * @subpackage Collection
+ *
+ * @see IntegerCollectionInterface
+ * @see StringCollectionInterface
  */
-interface BaseCollectionInterface extends Application_Interfaces_Disposable
+interface BaseCollectionInterface extends DisposableInterface
 {
-    /**
-     * @return FilterCriteriaInterface
-     */
-    public function getFilterCriteria();
+    public function getFilterCriteria() : FilterCriteriaInterface;
 
     /**
-     * Checks whether the specified collection record ID exists.
-     * @param int|string|NULL $record_id
-     * @return boolean
+     * Creates a non-functional stub record to access information
+     * that only instances can provide.
+     *
+     * @return RevisionableInterface
      */
-    public function idExists($record_id): bool;
-
-    /**
-     * @return CollectionItemInterface
-     */
-    public function createDummyRecord();
+    public function createStubRecord() : CollectionItemInterface;
 
     /**
      * Retrieves all available collection records.
      * @return CollectionItemInterface[]
      */
     public function getAll(): array;
-
-    /**
-     * Retrieves a collection record by its primary key.
-     * @param int|string $record_id
-     * @return CollectionItemInterface
-     */
-    public function getByID($record_id): CollectionItemInterface;
 }

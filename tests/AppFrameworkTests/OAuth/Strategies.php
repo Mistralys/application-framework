@@ -54,10 +54,6 @@ final class OAuth_StrategiesTest extends ApplicationTestCase
 
     public function test_getStrategies(): void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Getting all strategies');
 
         $strategies = $this->oauth->getStrategies();
@@ -80,10 +76,6 @@ final class OAuth_StrategiesTest extends ApplicationTestCase
 
     public function test_hasStrategies() : void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Are strategies enabled?');
 
         $this->assertTrue($this->oauth->hasStrategies());
@@ -91,10 +83,6 @@ final class OAuth_StrategiesTest extends ApplicationTestCase
 
     public function test_isStrategyEnabled() : void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Is strategy enabled?');
 
         $this->assertTrue($this->oauth->isStrategyEnabled('Google'));
@@ -104,10 +92,6 @@ final class OAuth_StrategiesTest extends ApplicationTestCase
 
     public function test_getByName() : void
     {
-        if($this->skipIfRunViaApplication()) {
-            return;
-        }
-
         $this->startTest('Get strategy by name');
 
         $strategy = $this->oauth->getByName('Google');

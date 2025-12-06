@@ -5,32 +5,40 @@ declare(strict_types=1);
 namespace Application\Area\Tags\ViewTag;
 
 use Application\AppFactory;
-use Application_Admin_Area_Mode_Submode_CollectionEdit;
-use Application_Formable_RecordSettings;
+use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\TagCollection;
 use Application\Tags\TagRecord;
-use DBHelper_BaseRecord;
+use Application\Tags\TagSettingsManager;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property TagRecord $record
  */
-abstract class BaseTagSettingsScreen extends Application_Admin_Area_Mode_Submode_CollectionEdit
+abstract class BaseTagSettingsScreen extends BaseRecordSettingsSubmode
 {
-    public const URL_NAME = 'tag-settings';
+    public const string URL_NAME = 'tag-settings';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
     }
 
-    public function getDefaultAction(): string
+    public function getRequiredRight(): string
     {
-        return '';
+        return TagScreenRights::SCREEN_VIEW_SETTINGS;
+    }
+
+    public function getFeatureRights(): array
+    {
+        return array(
+            t('Edit the settings') => TagScreenRights::SCREEN_VIEW_SETTINGS_EDIT,
+        );
     }
 
     public function isUserAllowedEditing(): bool
     {
-        return true;
+        return $this->user->can(TagScreenRights::SCREEN_VIEW_SETTINGS_EDIT);
     }
 
     public function isEditable(): bool
@@ -43,7 +51,7 @@ abstract class BaseTagSettingsScreen extends Application_Admin_Area_Mode_Submode
         return AppFactory::createTags();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The tag settings have been saved successfully at %1$s.',
@@ -51,7 +59,7 @@ abstract class BaseTagSettingsScreen extends Application_Admin_Area_Mode_Submode
         );
     }
 
-    public function getSettingsManager(): ?Application_Formable_RecordSettings
+    public function getSettingsManager(): ?TagSettingsManager
     {
         return $this->createCollection()->createSettingsManager($this, $this->record);
     }

@@ -1,13 +1,12 @@
 <?php
 /**
- * File containing the {@see Application_Traits_Admin_Screen} trait.
- * 
  * @package Application
  * @subpackage Admin
- * @see Application_Traits_Admin_Screen
  */
 
-use Application\Admin\ScreenEvents;
+declare(strict_types=1);
+
+use Application\Admin\ScreenException;
 use Application\Admin\Screens\Events\ActionsHandledEvent;
 use Application\Admin\Screens\Events\BeforeActionsHandledEvent;
 use Application\Admin\Screens\Events\BeforeBreadcrumbHandledEvent;
@@ -20,6 +19,8 @@ use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
+use AppUtils\FileHelper\FileInfo;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper_Exception;
 use AppUtils\Interfaces\RenderableInterface;
 use UI\Page\Navigation\QuickNavigation;
@@ -371,11 +372,8 @@ trait Application_Traits_Admin_Screen
         {
             return false;
         }
-        
-        if($sub !== null)
-        {
-            $sub->$publicMethod();
-        }
+
+        $sub?->$publicMethod();
         
         return true;
     }
@@ -723,7 +721,7 @@ trait Application_Traits_Admin_Screen
     * 
     * @return AdminScreenInterface[]
     */
-    public function getParentScreens()
+    final public function getParentScreens(): array
     {
         if(isset($this->parentScreens))
         {
@@ -763,9 +761,9 @@ trait Application_Traits_Admin_Screen
     }
     
    /**
-    * Retrieves an URL to this screen.
+    * Retrieves a URL to this screen.
     * 
-    * @param array $params
+    * @param array<string,mixed> $params
     */
     public function getURL(array $params = array()) : string
     {
@@ -851,9 +849,9 @@ trait Application_Traits_Admin_Screen
         $this->active = false;
         
         $mine = $this->getURLPath();
-        $current = $this->driver->getActiveScreen()->getURLPath();
+        $current = $this->driver->requireActiveScreen()->getURLPath();
         
-        $this->active = substr($current, 0, strlen($mine)) === $mine;
+        $this->active = str_starts_with($current, $mine);
         
         return $this->active;
     }
@@ -879,7 +877,7 @@ trait Application_Traits_Admin_Screen
     /**
      * Retrieves a list of IDs of all subscreens available for the screen, if any.
      *
-     * NOTE: Does not check if the file contains a valid subscreen class.
+     * > NOTE: Does not check if the file contains a valid subscreen class.
      *
      * @return array<string,string> Class ID => URL name pairs
      *
@@ -903,7 +901,8 @@ trait Application_Traits_Admin_Screen
         }
 
         $ids = FileHelper::createFileFinder($folder)
-            ->getPHPClassNames();
+            ->getFiles()
+            ->PHPClassNames();
 
         foreach($ids as $id)
         {
@@ -932,7 +931,18 @@ trait Application_Traits_Admin_Screen
         
         return $this->subscreenIDs;
     }
-    
+
+    private ?FolderInfo $folder = null;
+
+    public function getFolder() : FolderInfo
+    {
+        if(!isset($this->folder)) {
+            $this->folder = FileInfo::factory(ClassHelper::getClassSourceFile(get_class($this)))->getFolder();
+        }
+
+        return $this->folder;
+    }
+
    /**
     * Retrieves the path to the screen's subscreens folder.
     * 
@@ -940,12 +950,7 @@ trait Application_Traits_Admin_Screen
     */
     public function getSubscreensFolder() : string
     {
-        return sprintf(
-            '%s/assets/classes/%s/Area/%s',
-            APP_ROOT,
-            $this->driver->getID(),
-            str_replace('_', '/', $this->getIDPath())
-        );
+        return $this->getFolder()->getPath().'/'.$this->getID();
     }
     
    /**
@@ -1052,7 +1057,8 @@ trait Application_Traits_Admin_Screen
             return $screenID;
         }
         
-        throw new Application_Exception(
+        throw new ScreenException(
+            $this,
             'No such child administration screen.',
             sprintf(
                 'The administration screen [%s] has no child screen [%s]. Available child screens are [%s]. Looking in URL parameter [%s].',
@@ -1147,7 +1153,8 @@ trait Application_Traits_Admin_Screen
         
         if($pos === false)
         {
-            throw new Application_Exception(
+            throw new ScreenException(
+                $this,
                 'Screen URL parameter not present.',
                 sprintf(
                     'The URL parameter [%s] of screen [%s] was not found in the driver\'s URL parameters list: [%s].',

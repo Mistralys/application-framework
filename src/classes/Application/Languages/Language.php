@@ -12,6 +12,7 @@ use Application\AppFactory;
 use Application\Languages;
 use Application\Locales\Locale;
 use Application_Countries_Country;
+use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\Interfaces\StringPrimaryRecordInterface;
 
 /**
@@ -23,14 +24,15 @@ use AppUtils\Interfaces\StringPrimaryRecordInterface;
 class Language implements StringPrimaryRecordInterface
 {
     private string $iso;
-    private ?string $label = null;
+    private LocaleInterface $locale;
 
     /**
      * @param string $iso Two-letter ISO code, e.g. "en", "de".
      */
-    public function __construct(string $iso)
+    public function __construct(string $iso, LocaleInterface $locale)
     {
         $this->iso = strtolower($iso);
+        $this->locale = $locale;
     }
 
     public function getID(): string
@@ -40,17 +42,10 @@ class Language implements StringPrimaryRecordInterface
 
     /**
      * @return string Translated language label.
-     * @throws LanguageException
      */
     public function getLabel(): string
     {
-        if(isset($this->label)) {
-            return $this->label;
-        }
-
-        $this->label = Languages::getLabelByISO($this->getISO());
-
-        return $this->label;
+        return $this->locale->getLabel();
     }
 
     /**

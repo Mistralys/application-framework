@@ -37,7 +37,7 @@ class Application_Formable_RecordSettings_Setting implements RuntimePropertizabl
     protected bool $required = false;
     
    /**
-    * @var array{arguments:array<mixed>,callback:callable}|NULL
+    * @var array{arguments:array<int|string,mixed>,callback:callable}|NULL
     */
     protected ?array $callback = null;
 

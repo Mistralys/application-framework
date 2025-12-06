@@ -1,13 +1,14 @@
 <?php
 /**
- * File containing the trait {@see Application_Session_AuthTypes_OAuth}.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_AuthTypes_OAuth
  */
 
 declare(strict_types=1);
+
+use Application\AppFactory;
+use Hybridauth\Adapter\AdapterInterface;
+use Hybridauth\User\Profile;
 
 /**
  * Drop-in trait for using OpenAuth authentication.
@@ -36,35 +37,23 @@ declare(strict_types=1);
  */
 trait Application_Session_AuthTypes_OAuth
 {
-    /**
-     * @var Application_OAuth
-     */
-    protected $oauth;
-
-    /**
-     * @var Application_Request
-     */
-    protected $request;
-
-    /**
-     * @var \Hybridauth\Hybridauth
-     */
-    protected $authenticator;
+    protected Application_OAuth $oauth;
+    protected Application_Request $request;
 
     /**
      * Retrieves the foreign ID to use from the user profile information,
      * if any. Return an empty string if not needed.
      *
-     * @param \Hybridauth\User\Profile $profile
+     * @param Profile $profile
      * @return string
      */
-    abstract protected function getForeignID(\Hybridauth\User\Profile $profile) : string;
+    abstract protected function getForeignID(Profile $profile) : string;
 
-    public function handleLogin() : Application_Users_User
+    protected function sendAuthenticationCallbacks(): ?Application_Users_User
     {
-        $this->request = $this->driver->getRequest();
-        $this->oauth = new Application_OAuth($this->driver);
-        $this->authenticator = $this->oauth->createAuthenticator();
+        $driver = AppFactory::createDriver();
+        $this->request = $driver->getRequest();
+        $this->oauth = new Application_OAuth($driver);
 
         $user = $this->checkLoginState();
 
@@ -87,18 +76,16 @@ trait Application_Session_AuthTypes_OAuth
         throw new Application_Exception(
             'Authentication did not exit',
             'The authentication must either show the login screen, or authenticate a user.',
-            Application_Session_AuthTypes_CASInterface::ERROR_AUTH_DID_NOT_EXIT
+            Application_Session_AuthTypes_OAuthInterface::ERROR_AUTH_DID_NOT_EXIT
         );
     }
 
     public function getRequestedName() : string
     {
-        return strval(
-            $this->request
-                ->registerParam('strategy')
-                ->setEnum($this->oauth->getAvailableNames())
-                ->get()
-        );
+        return (string)$this->request
+            ->registerParam('strategy')
+            ->setEnum($this->oauth->getAvailableNames())
+            ->get();
     }
 
     private function checkLoginState() : ?Application_Users_User
@@ -113,24 +100,24 @@ trait Application_Session_AuthTypes_OAuth
         return null;
     }
 
-    private function autoLogin(\Hybridauth\Adapter\AdapterInterface $adapter) : Application_Users_User
+    private function autoLogin(AdapterInterface $adapter) : Application_Users_User
     {
         $profile = $adapter->getUserProfile();
-        $email = strval($profile->email);
+        $email = (string)$profile->email;
 
         if(empty($email))
         {
             throw new OAuth_Exception(
                 'Empty user data',
                 'The user that is connected has no email address.',
-                self::ERROR_USER_NO_EMAIL_ADDRESS
+                Application_Session_AuthTypes_OAuthInterface::ERROR_USER_NO_EMAIL_ADDRESS
             );
         }
 
         return $this->registerUser(
             $email,
-            strval($profile->firstName),
-            strval($profile->lastName),
+            (string)$profile->firstName,
+            (string)$profile->lastName,
             $this->getForeignID($profile)
         );
     }
@@ -157,10 +144,17 @@ trait Application_Session_AuthTypes_OAuth
      */
     private function handleLoginScreen() : void
     {
+        $page = new UI_Page(UI::getInstance(), 'oauth-login-screen');
+
         displayHTML(
-            $this->createTemplate('oauth/select-strategy')
+            $page->createTemplate('oauth/select-strategy')
                 ->setVar('oauth', $this->oauth)
                 ->render()
         );
+    }
+
+    public function getAuthTypeID(): string
+    {
+        return Application_Session_AuthTypes_OAuthInterface::TYPE_ID;
     }
 }

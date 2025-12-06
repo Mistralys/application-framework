@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace TestDriver\Revisionables;
 
-use Application_RevisionableCollection_FilterSettings;
+use Application\Revisionable\Collection\BaseRevisionableFilterSettings;
 
-class RevisionableFilterSettings extends Application_RevisionableCollection_FilterSettings
+class RevisionableFilterSettings extends BaseRevisionableFilterSettings
 {
     protected function registerSettings(): void
     {

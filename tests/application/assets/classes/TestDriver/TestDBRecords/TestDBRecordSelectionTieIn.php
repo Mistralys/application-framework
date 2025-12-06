@@ -10,7 +10,6 @@ namespace TestDriver\TestDBRecords;
 
 use Application\Collection\CollectionItemInterface;
 use DBHelper\Admin\BaseDBRecordSelectionTieIn;
-use DBHelper_BaseCollection;
 use TestDriver\ClassFactory;
 use UI_Bootstrap_BigSelection_Item_Regular;
 
@@ -29,10 +28,7 @@ class TestDBRecordSelectionTieIn extends BaseDBRecordSelectionTieIn
         return t('Please select a test DB record.');
     }
 
-    /**
-     * @return TestDBCollection
-     */
-    public function getCollection(): DBHelper_BaseCollection
+    public function getCollection(): TestDBCollection
     {
         return ClassFactory::createTestDBCollection();
     }

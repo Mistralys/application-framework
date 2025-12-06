@@ -4,25 +4,22 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News\ReadNews;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsFilterCriteria;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
-use Application_FilterCriteria;
 use AppUtils\PaginationHelper;
 use UI;
 use UI\PaginationRenderer;
 
-abstract class BaseReadArticlesScreen extends Application_Admin_Area_Mode_Submode
+abstract class BaseReadArticlesScreen extends BaseSubmode
 {
-    use AllowableMigrationTrait;
+    public const string URL_NAME = 'articles';
+    public const string REQUEST_PARAM_PAGE_NUMBER = 'news-page';
 
-    public const URL_NAME = 'articles';
-    public const REQUEST_PARAM_PAGE_NUMBER = 'news-page';
     private NewsFilterCriteria $filters;
     private PaginationRenderer $paginator;
 

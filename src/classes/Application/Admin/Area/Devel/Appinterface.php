@@ -42,11 +42,6 @@ abstract class Application_Admin_Area_Devel_Appinterface extends Application_Adm
     private array $examples=array();
 
    /**
-    * @var string[]
-    */
-    private array $exampleIDs = array();
-
-   /**
     * @var ExampleFile|NULL
     */
     private ?ExampleFile $activeExample = null;

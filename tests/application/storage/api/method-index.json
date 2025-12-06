@@ -1,0 +1,16 @@
+{
+    "DescribeAdminAreas": "Application\\API\\Method\\DescribeAdminAreasAPI",
+    "DescribeCollections": "Application\\API\\Method\\DescribeCollectionsAPI",
+    "ExternalLoadedAPI": "TestDriver\\ExternalSources\\API\\ExternalAPIMethod",
+    "GetAppCountries": "Application\\Countries\\API\\Methods\\GetAppCountriesAPI",
+    "GetAppLocales": "Application\\Locales\\API\\Methods\\GetAppLocalesAPI",
+    "TestAPIKey": "TestDriver\\API\\TestAPIKeyMethod",
+    "TestAppLocale": "TestDriver\\API\\TestAppLocaleMethod",
+    "TestDryRun": "TestDriver\\API\\TestDryRunMethod",
+    "TestErrorResponse": "TestDriver\\API\\TestErrorResponseMethod",
+    "TestGetCountry": "TestDriver\\API\\TestGetCountryAPI",
+    "TestGetCountryBySet": "application\\assets\\classes\\TestDriver\\API\\TestGetCountryBySetAPI",
+    "TestJSON2JSONMethod": "TestDriver\\API\\TestJSON2JSONMethod",
+    "TestStringValidations": "TestDriver\\API\\TestStringValidationsMethod",
+    "TestVersioned": "TestDriver\\API\\TestVersionedMethod"
+}

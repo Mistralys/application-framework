@@ -8,7 +8,7 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use TestDriver\ClassFactory;
 use UI;
@@ -119,7 +119,7 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
         return $this->getUser()->isDeveloper();
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 
@@ -131,7 +131,7 @@ class TestSettingsManagerExtended extends Application_Formable_RecordSettings_Ex
     {
     }
 
-    protected function _afterSave(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $data): void
+    protected function _afterSave(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $data): void
     {
         self::verifyValueSet($data);
     }

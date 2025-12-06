@@ -12,16 +12,14 @@ namespace Application\Admin\Area\Mode\Users;
 use Application\AppFactory;
 use Application\AppFactory\AppFactoryException;
 use Application\Exception\UnexpectedInstanceException;
+use Application\Users\Admin\UserAdminScreenRights;
 use Application_Admin_Area_Mode_Submode_CollectionList;
 use Application_Admin_Area_Mode_Users;
-use Application_Driver;
 use Application_Users;
 use Application_Users_User;
-use AppUtils\ClassHelper\ClassNotExistsException;
-use AppUtils\ClassHelper\ClassNotImplementsException;
-use DBHelper_BaseCollection;
+use DBHelper\Admin\Screens\Submode\BaseRecordListSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use DBHelper_BaseFilterCriteria_Record;
-use DBHelper_BaseRecord;
 
 /**
  * Abstract submode for the users list screen in the
@@ -33,14 +31,14 @@ use DBHelper_BaseRecord;
  *
  * @property Application_Admin_Area_Mode_Users $mode
  */
-abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_CollectionList
+abstract class UsersListSubmode extends BaseRecordListSubmode
 {
-    public const URL_NAME = 'list';
+    public const string URL_NAME = 'list';
 
-    public const COL_FIRST_NAME = 'firstname';
-    public const COL_LAST_NAME = 'lastname';
-    public const COL_EMAIL = 'email';
-    public const COL_ID = 'id';
+    public const string COL_FIRST_NAME = 'firstname';
+    public const string COL_LAST_NAME = 'lastname';
+    public const string COL_EMAIL = 'email';
+    public const string COL_ID = 'id';
 
     public function getNavigationTitle() : string
     {
@@ -57,16 +55,21 @@ abstract class UsersListSubmode extends Application_Admin_Area_Mode_Submode_Coll
         return t('Users list');
     }
 
+    public function getRequiredRight(): string
+    {
+        return UserAdminScreenRights::SCREEN_LIST;
+    }
+
     /**
      * @return Application_Users
      * @throws AppFactoryException
      */
-    protected function createCollection() : DBHelper_BaseCollection
+    protected function createCollection() : Application_Users
     {
         return AppFactory::createUsers();
     }
 
-    protected function getEntryData(DBHelper_BaseRecord $record, DBHelper_BaseFilterCriteria_Record $entry) : array
+    protected function getEntryData(DBHelperRecordInterface $record, DBHelper_BaseFilterCriteria_Record $entry) : array
     {
         if ($record instanceof Application_Users_User)
         {

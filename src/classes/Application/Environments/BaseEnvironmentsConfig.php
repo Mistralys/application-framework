@@ -9,10 +9,15 @@ declare(strict_types=1);
 
 namespace Application\Environments;
 
+use Application;
+use Application\AppFactory;
 use Application\ConfigSettings\BaseConfigRegistry;
 use Application\Environments\EnvironmentSetup\BaseEnvironmentConfig;
 use Application\Environments\Events\IncludesLoaded;
 use Application\Environments;
+use Application\SourceFolders\SourceFoldersManager;
+use Application_Bootstrap;
+use Application_EventHandler;
 use AppUtils\ClassHelper;
 use AppUtils\FileHelper\FolderInfo;
 
@@ -64,6 +69,8 @@ abstract class BaseEnvironmentsConfig
         // Enable the logging per default to ensure that
         // environment log messages are kept.
         boot_define(BaseConfigRegistry::LOGGING_ENABLED, true);
+
+        Application_Bootstrap::initClassLoading();
 
         $this->configFolder = $configFolder;
         $this->environments = Environments::getInstance();
@@ -146,6 +153,21 @@ abstract class BaseEnvironmentsConfig
      */
     abstract protected function getEnvironmentClasses() : array;
 
+    /**
+     * Use this method to register source folders
+     * for class loading that are outside the regular
+     * application structure.
+     *
+     * > NOTE: This method is called only once the
+     * > application driver has been instantiated, to
+     * > allow loading source folders that depend on
+     * > the driver.
+     *
+     * @param SourceFoldersManager $manager
+     * @return void
+     */
+    abstract protected function _registerClassSourceFolders(SourceFoldersManager $manager) : void;
+
     private function registerEnvironments() : void
     {
         $classes = $this->getEnvironmentClasses();
@@ -159,6 +181,20 @@ abstract class BaseEnvironmentsConfig
                 )
             );
         }
+
+        Application_EventHandler::addListener(
+            Application::EVENT_DRIVER_INSTANTIATED,
+            $this->triggerDriverInstantiated(...)
+        );
+    }
+
+    /**
+     * Triggered once the application driver has been instantiated.
+     * @return void
+     */
+    private function triggerDriverInstantiated() : void
+    {
+        $this->_registerClassSourceFolders(AppFactory::createFoldersManager());
     }
 
     /**

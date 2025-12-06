@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 class Application_RequestLog_FileFilterCriteria extends Application_FilterCriteria
 {
-    /**
-     * @var Application_RequestLog_LogItems_Hour
-     */
-    private $hour;
+    private Application_RequestLog_LogItems_Hour $hour;
 
     public function __construct(Application_RequestLog_LogItems_Hour $hour, ...$args)
     {
         $this->hour = $hour;
         
         parent::__construct($hour, ...$args);
+    }
+
+    public function getIDKeyName(): string
+    {
+        return Application_RequestLog_LogFile::KEY_FILE_ID;
     }
 
     // region: Access items collection
@@ -23,18 +25,32 @@ class Application_RequestLog_FileFilterCriteria extends Application_FilterCriter
         return $this->hour->countFiles();
     }
 
+    public function getItems(): array
+    {
+        $items = array();
+        foreach($this->getItemsObjects() as $item) {
+            $items[] = $item->toArray();
+        }
+
+        return $items;
+    }
+
     /**
      * @return Application_RequestLog_LogFile[]
      */
-    public function getItems() : array
+    public function getItemsObjects() : array
     {
         return $this->filterItems($this->hour->getFiles());
     }
 
+    /**
+     * @param UI_DataGrid $grid
+     * @return Application_RequestLog_LogFile[]
+     */
     public function getFilesForGrid(UI_DataGrid $grid) : array
     {
         return array_slice(
-            $this->getItems(),
+            $this->getItemsObjects(),
             $grid->getOffset(),
             $grid->getLimit()
         );

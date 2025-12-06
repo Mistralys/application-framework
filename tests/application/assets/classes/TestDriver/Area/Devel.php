@@ -19,5 +19,6 @@ class TestDriver_Area_Devel extends Application_Admin_Area_Devel
         $this->registerUsers();
         $this->registerDeploymentRegistry();
         $this->registerCSSGenerator();
+        $this->registerRenamer();
     }
 }

@@ -2,16 +2,20 @@
 
 declare(strict_types=1);
 
+use Application\Feedback\FeedbackCollection;
+use Application\Feedback\FeedbackRecord;
+use Application\FilterCriteria\Items\GenericIntegerItem;
+
 final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCriteria_DatabaseExtended
 {
-    public const JOIN_FEEDBACK = 'feedback';
-    public const JOIN_OPTIONAL_TABLE = 'table_optional_join';
-    public const JOIN_LAST_USED_VERSION = 'join_last_used_version';
+    public const string JOIN_FEEDBACK = 'feedback';
+    public const string JOIN_OPTIONAL_TABLE = 'table_optional_join';
+    public const string JOIN_LAST_USED_VERSION = 'join_last_used_version';
 
-    public const CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
-    public const CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
-    public const CUSTOM_COL_TEXT = 'text';
-    public const CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
+    public const string CUSTOM_COL_USER_FEEDBACK_AMOUNT = 'feedback_amount';
+    public const string CUSTOM_COL_LAST_USED_VERSION = 'custom_last_used_version';
+    public const string CUSTOM_COL_TEXT = 'text';
+    public const string CUSTOM_COL_CASE_TEXT_EMPTY = 'custom_case_text_empty';
 
     /**
      * Enables the custom column, which automatically
@@ -59,11 +63,17 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
     protected function getSelect() : array
     {
         return array(
-            $this->getColEmail()
+            $this->getColEmail(),
+            $this->getColUserID()
         );
     }
 
-    protected function getSearchFields() : array
+    public function getIDKeyName(): string
+    {
+        return Application_Users::PRIMARY_NAME;
+    }
+
+    public function getSearchFields() : array
     {
         return array(
             $this->getColEmail()
@@ -75,9 +85,15 @@ final class TestDriver_FilterCriteria_TestCriteria extends Application_FilterCri
         return (string)$this->statement('{users}.{email}');
     }
 
+    public function getColUserID() : string
+    {
+        return (string)$this->statement('{users}.{users_primary}');
+    }
+
     protected function getQuery() : DBHelper_StatementBuilder
     {
         return $this->statement(
+            /** @lang text */
             "SELECT 
                 {WHAT} 
             FROM 
@@ -159,7 +175,7 @@ EOT;
     {
         $container
             ->table('{table_users}', Application_Users::TABLE_NAME)
-            ->table('{table_feedback}', Application_Feedback::TABLE_NAME)
+            ->table('{table_feedback}', FeedbackCollection::TABLE_NAME)
             ->table('{table_optional}', self::JOIN_OPTIONAL_TABLE)
             ->table('{table_permanent_join}', self::JOIN_LAST_USED_VERSION)
             ->table('{table_settings}', Application_Users::TABLE_USER_SETTINGS)
@@ -173,8 +189,8 @@ EOT;
             ->field('{amount_feedbacks}', self::CUSTOM_COL_USER_FEEDBACK_AMOUNT)
             ->field('{email}', Application_Users_User::COL_EMAIL)
             ->field('{users_primary}', Application_Users::PRIMARY_NAME)
-            ->field('{feedback_primary}', Application_Feedback::PRIMARY_NAME)
-            ->field('{feedback_text}', Application_Feedback_Report::COL_FEEDBACK);
+            ->field('{feedback_primary}', FeedbackCollection::PRIMARY_NAME)
+            ->field('{feedback_text}', FeedbackRecord::COL_FEEDBACK);
     }
 
     protected function _registerJoins() : void
@@ -204,5 +220,22 @@ EOT;
             self::JOIN_OPTIONAL_TABLE,
             "JOIN {table_optional}"
         );
+    }
+
+    /**
+     * @return GenericIntegerItem[]
+     */
+    public function getItemsObjects(): array
+    {
+        $result = array();
+
+        foreach ($this->getItems() as $item) {
+            $result[] = new GenericIntegerItem(
+                (int)$item[Application_Users::PRIMARY_NAME],
+                (string)$item[Application_Users_User::COL_EMAIL]
+            );
+        }
+
+        return $result;
     }
 }

@@ -10,12 +10,16 @@ declare(strict_types=1);
 namespace Connectors\Response;
 
 use Application;
+use Application_Exception;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\ConvertHelper\JSONConverter;
 use Connectors_Request;
 use Connectors_Response;
 use HTTP_Request2_Response;
+use Mistralys\AppFramework\Helpers\JSONUnserializer;
+use Mistralys\AppFramework\Helpers\JSONUnserializerException;
+use Throwable;
 
 /**
  * Utility class that handles serializing and unserializing
@@ -27,10 +31,10 @@ use HTTP_Request2_Response;
  */
 class ResponseSerializer
 {
-    public const KEY_STATUS_CODE = 'statusCode';
-    public const KEY_STATUS_MESSAGE = 'statusMessage';
-    public const KEY_BODY = 'body';
-    public const KEY_REQUEST = 'request';
+    public const string KEY_STATUS_CODE = 'statusCode';
+    public const string KEY_STATUS_MESSAGE = 'statusMessage';
+    public const string KEY_BODY = 'body';
+    public const string KEY_REQUEST = 'request';
 
     public static function serialize(Connectors_Response $response) : string
     {
@@ -44,7 +48,14 @@ class ResponseSerializer
 
     public static function unserialize(string $serialized) : ?Connectors_Response
     {
-        $data = ArrayDataCollection::create(JSONConverter::json2array($serialized));
+        $unserialized = JSONUnserializer::create($serialized, 'Unserialize cached connector response data', false)->getData();
+
+        if($unserialized === null)
+        {
+            return null;
+        }
+
+        $data = ArrayDataCollection::create($unserialized);
 
         $request = Connectors_Request::unserialize($data->getString(self::KEY_REQUEST));
         if($request === null)

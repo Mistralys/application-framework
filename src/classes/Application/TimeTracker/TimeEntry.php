@@ -11,6 +11,7 @@ namespace Application\TimeTracker;
 use Application;
 use Application\MarkdownRenderer;
 use Application\TimeTracker\Admin\EntryAdminURLs;
+use Application\TimeTracker\Admin\TimeUIManager;
 use Application\TimeTracker\Types\TimeEntryType;
 use Application\TimeTracker\Types\TimeEntryTypes;
 use Application_User;
@@ -27,6 +28,16 @@ use function AppUtils\parseDurationString;
  */
 class TimeEntry extends DBHelper_BaseRecord
 {
+    public const string PLACEHOLDER_TICKET_ID = '$ticketID';
+
+    public static function duration2hoursDec(DurationStringInfo $duration) : string
+    {
+        return sprintf(
+            '%s h',
+            $duration->getTotalHoursDec()
+        );
+    }
+
     protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue)
     {
     }
@@ -75,6 +86,24 @@ class TimeEntry extends DBHelper_BaseRecord
         return parseDurationString($this->getRecordIntKey(TimeTrackerCollection::COL_DURATION));
     }
 
+    public function isProcessed() : bool
+    {
+        return $this->getRecordBooleanKey(TimeTrackerCollection::COL_PROCESSED);
+    }
+
+    public function setProcessed(bool $processed) : self
+    {
+        $this->setRecordBooleanKey(TimeTrackerCollection::COL_PROCESSED, $processed);
+        return $this;
+    }
+
+    public function setTicket(string $ticketID, string $ticketURL='') : self
+    {
+        $this->setRecordKey(TimeTrackerCollection::COL_TICKET, $ticketID);
+        $this->setRecordKey(TimeTrackerCollection::COL_TICKET_URL, $ticketURL);
+        return $this;
+    }
+
     public function getTypeID() : string
     {
         return $this->getRecordStringKey(TimeTrackerCollection::COL_TYPE);
@@ -85,14 +114,38 @@ class TimeEntry extends DBHelper_BaseRecord
         return TimeEntryTypes::getInstance()->getByID($this->getTypeID());
     }
 
-    public function getTicket() : string
+    public function getTicketID() : string
     {
         return $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET);
     }
 
+    public function getTicketURL() : string
+    {
+        $url = $this->getRecordStringKey(TimeTrackerCollection::COL_TICKET_URL);
+        if(!empty($url)) {
+            return $url;
+        }
+
+        $ticketID = $this->getTicketID();
+        if(empty($ticketID)) {
+            return '';
+        }
+
+        return str_replace(
+            self::PLACEHOLDER_TICKET_ID,
+            $this->getTicketID(),
+            TimeUIManager::getBaseTicketURL()
+        );
+    }
+
     public function renderTicket() : string
     {
-        return MarkdownRenderer::create()->render($this->getTicket());
+        $url = $this->getTicketURL();
+        if(!empty($url)) {
+            return (string)sb()->link($this->getTicketID(), $url, true);
+        }
+
+        return $this->getTicketID();
     }
 
     public function getComments() : string

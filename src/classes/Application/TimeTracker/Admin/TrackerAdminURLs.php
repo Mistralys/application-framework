@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin;
 
+use Application\TimeTracker\Admin\Screens\BaseAutoFillScreen;
 use Application\TimeTracker\Admin\Screens\BaseCreateScreen;
 use Application\TimeTracker\Admin\Screens\BaseExportScreen;
 use Application\TimeTracker\Admin\Screens\BaseImportScreen;
@@ -11,8 +12,9 @@ use Application\TimeTracker\Admin\Screens\BaseListScreen;
 use Application\TimeTracker\Admin\Screens\BaseTimeTrackerArea;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseDayListScreen;
 use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalListScreen;
+use Application\TimeTracker\Admin\Screens\ListScreen\BaseGlobalSettingsScreen;
+use Application\TimeTracker\Admin\Screens\ListScreen\BaseTimeSpansListScreen;
 use AppUtils\Microtime;
-use TestDriver\Area\TimeTrackerScreen\ListScreen\DayListScreen;
 use UI\AdminURLs\AdminURL;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -22,6 +24,12 @@ class TrackerAdminURLs
     {
         return $this->base()
             ->mode(BaseCreateScreen::URL_NAME);
+    }
+
+    public function autoFill() : AdminURLInterface
+    {
+        return $this->base()
+            ->mode(BaseAutoFillScreen::URL_NAME);
     }
 
     public function list() : AdminURLInterface
@@ -64,6 +72,18 @@ class TrackerAdminURLs
         }
 
         return $url;
+    }
+
+    public function timeSpans() : AdminURLInterface
+    {
+        return $this->list()
+            ->submode(BaseTimeSpansListScreen::URL_NAME);
+    }
+
+    public function globalSettings() : AdminURLInterface
+    {
+        return $this->list()
+            ->submode(BaseGlobalSettingsScreen::URL_NAME);
     }
 
     public function base() : AdminURLInterface

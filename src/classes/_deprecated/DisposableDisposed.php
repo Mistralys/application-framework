@@ -6,7 +6,7 @@
 
 declare(strict_types=1);
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 
 /**
  * @package Application

@@ -20,12 +20,3 @@ parameters:
         -
             message: '#this might not be defined.#'
             path: ../../src/themes/default*
-        -
-            message: '#is not nullable.#'
-            path: ../../src*
-        -
-            message: '#is unused.#'
-            path: ../../src*
-        -
-            message: '#never read, only written.#'
-            path: ../../src*

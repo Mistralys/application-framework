@@ -249,7 +249,7 @@ class Application_Localization
         }
     }
     
-    public static function getTranslationIcon(Localization_Scanner_StringHash $hash) : UI_Icon
+    public static function getTranslationIcon(Localization\Scanner\StringHash $hash) : UI_Icon
     {
         if($hash->isTranslated()) {
             return UI::icon()->ok()->makeSuccess();
@@ -258,7 +258,7 @@ class Application_Localization
         return UI::icon()->notAvailable()->makeDangerous();
     }
 
-    public static function injectJS(Localization_Scanner_StringHash $hash) : void
+    public static function injectJS(Localization\Scanner\StringHash $hash) : void
     {
         $text = $hash->getText();
         $value = '';
@@ -277,7 +277,7 @@ class Application_Localization
         );
     }
     
-    public static function resolveDisplayText(Localization_Scanner_StringHash $hash) : string
+    public static function resolveDisplayText(Localization\Scanner\StringHash $hash) : string
     {
         if ($hash->isTranslated())
         {

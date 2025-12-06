@@ -13,19 +13,19 @@ namespace Application\Collection;
  * @subpackage Collection
  *
  * @method IntegerCollectionItemInterface[] getAll()
- * @method IntegerCollectionItemInterface createDummyRecord()
+ * @method IntegerCollectionItemInterface createStubRecord()
  */
 interface IntegerCollectionInterface extends BaseCollectionInterface
 {
     /**
-     * @param int|string|NULL $record_id
+     * @param int $record_id
      * @return bool
      */
-    public function idExists($record_id): bool;
+    public function idExists(int $record_id): bool;
 
     /**
-     * @param int|string $record_id
+     * @param int $record_id
      * @return IntegerCollectionItemInterface
      */
-    public function getByID($record_id): IntegerCollectionItemInterface;
+    public function getByID(int $record_id): IntegerCollectionItemInterface;
 }

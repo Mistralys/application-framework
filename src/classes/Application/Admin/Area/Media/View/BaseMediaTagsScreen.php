@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace Application\Admin\Area\Media\View;
 
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
 use Application\Tags\AdminScreens\RecordTaggingScreenInterface;
 use Application\Tags\AdminScreens\RecordTaggingScreenTrait;
 use Application\Tags\Taggables\TaggableInterface;
-use Application_Admin_Area_Mode_Submode_CollectionRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSubmode;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @package Media
@@ -22,17 +24,22 @@ use Application_Admin_Area_Mode_Submode_CollectionRecord;
  * @property MediaRecord $record
  */
 class BaseMediaTagsScreen
-    extends Application_Admin_Area_Mode_Submode_CollectionRecord
+    extends BaseRecordSubmode
     implements RecordTaggingScreenInterface
 {
     use RecordTaggingScreenTrait;
 
-    public const URL_NAME = 'tagging';
-    public const FORM_NAME = 'media_tags';
+    public const string URL_NAME = 'tagging';
+    public const string FORM_NAME = 'media_tags';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_VIEW_TAGS;
     }
 
     protected function createCollection() : MediaCollection
@@ -40,9 +47,9 @@ class BaseMediaTagsScreen
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getNavigationTitle(): string

@@ -6,6 +6,7 @@
 
 use Application\AppFactory;
 use Application\Driver\DriverException;
+use Application\FilterSettingsInterface;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use Application\Interfaces\FilterCriteriaInterface;
 use Application\Interfaces\HiddenVariablesInterface;
@@ -777,10 +778,10 @@ class UI_DataGrid implements HiddenVariablesInterface
      * Adds an action to the grid that can be run for the selected
      * elements (works only if multi select is enabled).
      * @param string $name
-     * @param string|number|UI_Renderable_Interface|NULL $label
+     * @param string|int|float|StringableInterface|null $label
      * @return UI_DataGrid_Action_Default
      */
-    public function addAction(string $name, $label) : UI_DataGrid_Action_Default
+    public function addAction(string $name, string|int|float|StringableInterface|null $label) : UI_DataGrid_Action_Default
     {
         $action = new UI_DataGrid_Action_Default($this, $name, $label);
 
@@ -822,12 +823,12 @@ class UI_DataGrid implements HiddenVariablesInterface
      * elements, but which will display a confirmation dialog before
      * starting the action. Only works if multi select is enabled.
      * @param string $name
-     * @param string|number|UI_Renderable_Interface|NULL $label
-     * @param string|number|UI_Renderable_Interface|NULL $confirmMessage
+     * @param string|int|float|StringableInterface|NULL $label
+     * @param string|int|float|StringableInterface|NULL $confirmMessage
      * @return UI_DataGrid_Action_Confirm
      * @throws UI_Exception
      */
-    public function addConfirmAction(string $name, $label, $confirmMessage) : UI_DataGrid_Action_Confirm
+    public function addConfirmAction(string $name, string|int|float|StringableInterface|null $label, string|int|float|StringableInterface|null $confirmMessage) : UI_DataGrid_Action_Confirm
     {
         $action = new UI_DataGrid_Action_Confirm($this, $name, $label, $confirmMessage);
 
@@ -1418,16 +1419,16 @@ class UI_DataGrid implements HiddenVariablesInterface
     }
 
     protected ?FilterCriteriaInterface $filterCriteria = null;
-    protected ?Application_FilterSettings $filterSettings = null;
+    protected ?FilterSettingsInterface $filterSettings = null;
 
     /**
      * Configures the data grid using the specified filter settings and filter criteria.
      *
-     * @param Application_FilterSettings $settings
+     * @param FilterSettingsInterface $settings
      * @param FilterCriteriaInterface $criteria
      * @return UI_DataGrid
      */
-    public function configure(Application_FilterSettings $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
+    public function configure(FilterSettingsInterface $settings, FilterCriteriaInterface $criteria) : UI_DataGrid
     {
         $this->start();
 
@@ -1469,7 +1470,7 @@ class UI_DataGrid implements HiddenVariablesInterface
     * Creates an entry object for the grid: these are used internally
     * to handle individual rows in the table.
     *
-    * @param array<string, string|int|float|StringableInterface|NULL> $data Associative array with key => value pairs for columns in the row.
+    * @param array<string, string|int|float|DateTime|StringableInterface|NULL> $data Associative array with key => value pairs for columns in the row.
     * @return UI_DataGrid_Entry
     */
     public function createEntry(array $data=array()) : UI_DataGrid_Entry
@@ -1480,10 +1481,10 @@ class UI_DataGrid implements HiddenVariablesInterface
    /**
     * Creates a heading entry that can be used to create subtitles in a grid.
     *
-    * @param string $title
+    * @param string|StringableInterface $title
     * @return UI_DataGrid_Entry_Heading
     */
-    public function createHeadingEntry(string $title) : UI_DataGrid_Entry_Heading
+    public function createHeadingEntry(string|StringableInterface $title) : UI_DataGrid_Entry_Heading
     {
         return new UI_DataGrid_Entry_Heading($this, $title);
     }
@@ -2304,7 +2305,7 @@ class UI_DataGrid implements HiddenVariablesInterface
 
         $actionName = $this->getAction();
         foreach ($actions as $action) {
-            if($action=='__separator') {
+            if($action === '__separator') {
                 continue;
             }
             if ($action->getName() === $actionName) {

@@ -21,6 +21,8 @@ use Application\User\LayoutWidth;
 use Application\User\LayoutWidths;
 use Application\User\Roles\RoleCollection;
 use Application\User\UserException;
+use Application\Users\Rights\UserAdminRightsInterface;
+use Application\Users\Rights\UserAdminRightsTrait;
 use AppLocalize\Localization;
 use AppLocalize\Localization\Locales\LocaleInterface;
 use AppUtils\ClassHelper;
@@ -49,13 +51,16 @@ abstract class Application_User
     MediaRightsInterface,
     NewsRightsInterface,
     TagsRightsInterface,
-    CountryRightsInterface
+    CountryRightsInterface,
+    UserAdminRightsInterface
 {
     use Application_Traits_Loggable;
     use MediaRightsTrait;
     use NewsRightsTrait;
     use TagsRightsTrait;
     use CountryRightsTrait;
+    use UserAdminRightsTrait;
+
     public const ERROR_CREATE_METHOD_NOT_IMPLEMENTED = 20001;
     public const ERROR_CREATE_SYSTEMUSER_METHOD_NOT_IMPLEMENTED = 20002;
     public const ERROR_NO_ROLES_DEFINED = 20003;
@@ -169,8 +174,8 @@ abstract class Application_User
      * Sets an array setting: serializes the data to store it as a string.
      *
      * @param string $name
-     * @param array<mixed> $default
-     * @return array<mixed>
+     * @param array<int|string,mixed> $default
+     * @return array<int|string,mixed>
      */
     public function getArraySetting(string $name, array $default=array()) : array
     {
@@ -931,7 +936,7 @@ abstract class Application_User
         self::$rightsManager->registerGroup(
             self::RIGHTS_CORE,
             t('System core'),
-            Closure::fromCallable(array($this, 'registerRights_system_core'))
+            $this->registerRights_system_core(...)
         );
 
         // Give the developer all rights.
@@ -994,6 +999,7 @@ abstract class Application_User
         $this->registerTagRights($group);
         $this->registerMediaRights($group);
         $this->registerCountryRights($group);
+        $this->registerUserAdminRights($group);
 
         $group->registerRight(self::RIGHT_DEVELOPER, t('Developer'))
             ->actionAdministrate()

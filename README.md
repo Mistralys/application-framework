@@ -75,6 +75,20 @@ You will find it in the `tests/application` folder.
 5. Edit the settings in both files.
 6. Access the `tests/application` folder via the webserver.
 
+## Composer commands
+
+These are custom Composer commands that are available 
+when developing locally.
+
+### Clear caches
+
+Clears all caches used by the framework, including the dynamic
+class cache.
+
+```bash
+composer clear-caches
+```
+
 ## Documentation
 
 The framework's documentation is available locally by pointing a browser to 

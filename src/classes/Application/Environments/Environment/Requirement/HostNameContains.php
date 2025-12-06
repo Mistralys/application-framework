@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the {@link Application_Environments_Environment_Requirement_HostNameContains} class.
- *
  * @package Application
  * @subpackage Environments
- * @see Application_Environments_Environment_Requirement_HostNameContains
  */
 
 declare(strict_types=1);
@@ -19,15 +16,8 @@ declare(strict_types=1);
  */
 class Application_Environments_Environment_Requirement_HostNameContains extends Application_Environments_Environment_Requirement
 {
-   /**
-    * @var string
-    */
-    protected $search;
- 
-    /**
-     * @var string
-     */
-    protected static $hostName;
+    protected string $search;
+    protected static ?string $hostName = null;
     
     public function __construct(string $search)
     {
@@ -58,6 +48,6 @@ class Application_Environments_Environment_Requirement_HostNameContains extends 
     
     public function isValid() : bool
     {
-        return strpos(self::$hostName, $this->search) !== false;
+        return str_contains(self::$hostName, $this->search);
     }
 }

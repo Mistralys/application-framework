@@ -4,18 +4,14 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens;
 
-use Application\TimeTracker\Admin\Screens\BaseListScreen;
+use Application\Admin\BaseArea;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area;
 use UI;
 use UI_Icon;
 
-abstract class BaseTimeTrackerArea extends Application_Admin_Area
+abstract class BaseTimeTrackerArea extends BaseArea
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'time-tracker';
+    public const string URL_NAME = 'time-tracker';
 
     public function getURLName(): string
     {

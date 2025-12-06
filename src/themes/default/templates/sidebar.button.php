@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the template class {@see template_default_frame}.
- *
  * @package UserInterface
  * @subpackage Templates
- * @see template_default_frame
  */
 
 declare(strict_types=1);
@@ -22,6 +19,10 @@ use AppUtils\Traits\ClassableTrait;
 class template_default_sidebar_button extends UI_Page_Template_Custom implements ClassableInterface
 {
     use ClassableTrait;
+
+    const string VAR_BUTTON = 'button';
+    const string VAR_MODE = 'mode';
+    const string VAR_DESIGN = 'design';
 
     protected function generateOutput() : void
     {
@@ -55,7 +56,7 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
     private function renderLabel() : string
     {
         $label = $this->button->getLabel();
-        if ($this->design == 'developer') {
+        if ($this->design === 'developer') {
             $label = '<b>' . t('DEV:') . '</b> ' . $label;
         }
 
@@ -94,56 +95,30 @@ class template_default_sidebar_button extends UI_Page_Template_Custom implements
         '</span>' .
         $icon;
     }
+    private UI_Page_Sidebar_Item_Button $button;
 
-    /**
-     * @var UI_Page_Sidebar_Item_Button
-     */
-    private $button;
-
-    /**
-     * @var UI_Bootstrap_DropdownMenu|NULL
-     */
-    private $menu = null;
+    private ?UI_Bootstrap_DropdownMenu $menu = null;
 
     /**
      * @var array<string,mixed>
      */
-    private $attributes = array();
+    private array $attributes = array();
 
-    /**
-     * @var string
-     */
-    private $mode = '';
+    private string $mode = '';
+    private string $tagname = 'button';
+    private string $design = 'default';
 
-    /**
-     * @var string
-     */
-    private $tagname = 'button';
-
-    /**
-     * @var string
-     */
-    private $design = 'default';
-
-    /**
-     * @var string
-     */
-    private $html = '';
-
-    /**
-     * @throws Application_Exception
-     */
     protected function preRender() : void
     {
-        $this->button = $this->getObjectVar('button', UI_Page_Sidebar_Item_Button::class);
-        $this->mode = $this->getStringVar('mode');
+        $this->button = $this->getObjectVar(self::VAR_BUTTON, UI_Page_Sidebar_Item_Button::class);
+        $this->mode = $this->getStringVar(self::VAR_MODE);
 
         if ($this->button instanceof UI_Page_Sidebar_Item_DropdownButton) {
             $this->menu = $this->button->getMenu();
         }
 
-        if($this->hasVarNonEmpty('design')) {
-            $this->design = $this->getStringVar('design');
+        if($this->hasVarNonEmpty(self::VAR_DESIGN)) {
+            $this->design = $this->getStringVar(self::VAR_DESIGN);
         }
 
         $this->addClass('btn');

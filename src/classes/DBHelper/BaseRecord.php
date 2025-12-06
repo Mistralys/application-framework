@@ -1,17 +1,20 @@
 <?php
 /**
- * File containing the {@link DBHelper_BaseRecord} class.
  * @package Application
  * @subpackage Core
- * @see DBHelper_BaseRecord
  */
 
-use Application\Collection\CollectionItemInterface;
-use Application\Collection\IntegerCollectionItemInterface;
-use Application\Exception\DisposableDisposedException;
+declare(strict_types=1);
+
+use Application\Disposables\Attributes\DisposedAware;
+use Application\Disposables\DisposableTrait;
+use Application\Disposables\DisposableDisposedException;
 use AppUtils\ConvertHelper;
-use AppUtils\ConvertHelper_Exception;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\BaseRecord\BaseRecordException;
 use DBHelper\BaseRecord\Event\KeyModifiedEvent;
+use DBHelper\Interfaces\DBHelperRecordInterface;
+use DBHelper\Traits\RecordKeyHandlersTrait;
 
 /**
  * Base container class for a single record in a database. 
@@ -22,24 +25,15 @@ use DBHelper\BaseRecord\Event\KeyModifiedEvent;
  * @subpackage Core
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  */
-abstract class DBHelper_BaseRecord
-    implements
-    IntegerCollectionItemInterface,
-    Application_Interfaces_Loggable,
-    Application_Interfaces_Disposable
+abstract class DBHelper_BaseRecord implements DBHelperRecordInterface
 {
     use Application_Traits_Loggable;
-    use Application_Traits_Disposable;
+    use DisposableTrait;
     use Application_Traits_Eventable;
+    use RecordKeyHandlersTrait;
 
-    public const ERROR_RECORD_DOES_NOT_EXIST = 13301;
-    public const ERROR_RECORD_KEY_UNKNOWN = 13302;
-
-    /**
-     * @deprecated Use {@see self::STUB_ID} instead.
-     */
-    public const DUMMY_ID = self::STUB_ID;
-    public const STUB_ID = -1;
+    public const int ERROR_RECORD_DOES_NOT_EXIST = 13301;
+    public const int ERROR_RECORD_KEY_UNKNOWN = 13302;
 
     /**
      * @var array<string,mixed>|NULL
@@ -48,43 +42,38 @@ abstract class DBHelper_BaseRecord
     protected string $recordTypeName;
     protected string $recordTable;
     protected string $recordPrimaryName;
-    protected bool $isDummy = false;
+    protected bool $isStub = false;
    
    /**
     * @var string[]
     */
     protected array $customModified = array();
     
-   /**
-    * @var DBHelper_BaseCollection
-    */
-    protected $collection;
+    protected DBHelperCollectionInterface $collection;
 
     protected int $recordID;
     protected string $instanceID;
     protected static int $instanceCounter = 0;
-    protected string $parentPrimaryName;
 
     /**
      * @param int|string $primary_id
-     * @param DBHelper_BaseCollection $collection
+     * @param DBHelperCollectionInterface $collection
      * @throws Application_Exception|DBHelper_Exception
      */
-    public function __construct($primary_id, DBHelper_BaseCollection $collection)
+    public function __construct(int|string $primary_id, DBHelperCollectionInterface $collection)
     {
         self::$instanceCounter++;
 
         $this->collection = $collection;
         $this->recordTable = $collection->getRecordTableName();
         $this->recordPrimaryName = $collection->getRecordPrimaryName();
-        $this->parentPrimaryName = $collection->getParentPrimaryName();
         $this->recordTypeName = $collection->getRecordTypeName();
         $this->recordID = (int)$primary_id;
-        $this->instanceID = (string)self::$instanceCounter;
+        $this->instanceID = 'DBR'.self::$instanceCounter;
 
-        if($this->recordID === self::STUB_ID)
+        if($this->recordID === DBHelperRecordInterface::STUB_ID)
         {
-            $this->constructDummy();
+            $this->constructStub();
             return;
         }
         
@@ -95,40 +84,30 @@ abstract class DBHelper_BaseRecord
         $this->init();
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     public function getRecordData(): array
     {
         return (array)$this->recordData;
     }
 
-    private function constructDummy() : void
+    private function constructStub() : void
     {
-        $this->isDummy = true;
+        $this->isStub = true;
 
         $this->recordData = array(
-            $this->recordPrimaryName => self::STUB_ID
+            $this->recordPrimaryName => DBHelperRecordInterface::STUB_ID
         );
 
         $this->recordKeys = array_keys($this->recordData);
 
-        $this->initDummy();
+        $this->initStub();
     }
 
-    /**
-     * @return string
-     */
     public function getInstanceID(): string
     {
         return $this->instanceID;
     }
 
-    /**
-     * @throws Application_Exception
-     * @throws DisposableDisposedException
-     * @throws DBHelper_Exception
-     */
+    #[DisposedAware]
     public function refreshData() : void
     {
         $this->requireNotDisposed('Refreshing the record\'s data from DB.');
@@ -159,7 +138,7 @@ abstract class DBHelper_BaseRecord
         );
 
         if(empty($this->recordData)) {
-            throw new Application_Exception(
+            throw new BaseRecordException(
                 'Record not found',
                 sprintf(
                     'Tried to retrieve a [%s] with primary id [%s] from table [%s].',
@@ -177,65 +156,45 @@ abstract class DBHelper_BaseRecord
         }
     }
 
-    protected function init()
+    protected function init() : void
     {
         
     }
 
    /**
-    * Used to initialize dummy records: called instead
-    * of the init() method when using dummies.
+    * Used to initialize stub records: called instead
+    * of the init() method when using stubs.
     */
-    protected function initDummy()
+    protected function initStub() : void
     {
         
     }
 
-    /**
-     * @return string
-     */
-    public function getRecordTable()
+    public function getRecordTable() : string
     {
         return $this->recordTable;
     }
 
-    /**
-     * @return string
-     */
     public function getRecordPrimaryName() : string
     {
         return $this->recordPrimaryName;
     }
 
-    public function getParentPrimaryName() : string
-    {
-        return $this->parentPrimaryName;
-    }
-
-    /**
-     * @return string
-     */
     public function getRecordTypeName() : string
     {
         return $this->recordTypeName;
     }
     
-   /**
-    * Whether this is a dummy record that is used only to
-    * access information on this record type.
-    * 
-    * @return boolean
-    */
-    public function isDummy()
+    public function isStub() : bool
     {
-        return $this->isDummy;
+        return $this->isStub;
     }
     
    /**
     * Retrieves the collection used to access records like this.
-    * @return DBHelper_BaseCollection
+    * @return DBHelperCollectionInterface
     */
-    public function getCollection()
+    public function getCollection() : DBHelperCollectionInterface
     {
         return $this->collection;
     }
@@ -250,200 +209,40 @@ abstract class DBHelper_BaseRecord
         return $this->recordID;
     }
 
-    /**
-     * @param string $name
-     * @param mixed $default
-     * @return mixed
-     * @throws DisposableDisposedException
-     */
-    public function getRecordKey($name, $default=null)
+    #[DisposedAware]
+    public function getRecordKey(string $name, mixed $default=null) : mixed
     {
         $this->requireNotDisposed('Get a record data key');
 
-        if(isset($this->recordData[$name])) {
-            return $this->recordData[$name];
-        }
-        
-        return $default;
+        return $this->recordData[$name] ?? $default;
     }
 
-    /**
-     * Retrieves a data key as an integer. Converts the value to int,
-     * so beware using this on non-integer keys.
-     *
-     * @param string $name
-     * @param int $default
-     * @return int
-     * @throws DisposableDisposedException
-     */
-    public function getRecordIntKey(string $name, int $default=0) : int
-    {
-        $value = $this->getRecordKey($name);
-        if($value !== null && $value !== '') {
-            return intval($value);
-        }
-        
-        return $default;
-    }
-
-    /**
-     * Retrieves a data key as a float. Converts the value to float,
-     * so beware using this on non-float keys.
-     *
-     * @param string $name
-     * @param float $default
-     * @return float
-     * @throws DisposableDisposedException
-     */
-    public function getRecordFloatKey(string $name, float $default=0) : float
-    {
-        $value = $this->getRecordKey($name);
-        if($value !== null && $value !== '') {
-            return floatval($value);
-        }
-
-        return $default;
-    }
-
-    /**
-     * Retrieves a data key, ensuring that it is a string.
-     *
-     * @param string $name
-     * @param string $default
-     * @return string
-     * @throws DisposableDisposedException
-     */
-    public function getRecordStringKey(string $name, string $default='') : string
-    {
-        $value = $this->getRecordKey($name);
-        if(!empty($value) && is_string($value)) {
-            return $value;
-        }
-        
-        return $default;
-    }
-
-    /**
-     * Retrieves a data key as a DateTime object.
-     * @param string $name
-     * @param DateTime|null $default
-     * @return DateTime|null
-     * @throws Exception
-     */
-    public function getRecordDateKey(string $name, ?DateTime $default=null) : ?DateTime
-    {
-        $value = $this->getRecordKey($name);
-        if($value !== null) {
-            return new DateTime($value);
-        }
-        
-        return $default;
-    }
-
-    /**
-     * Treats a key as a string boolean value and returns
-     * the current value as a boolean.
-     *
-     * @param string $name
-     * @param boolean $default
-     * @return boolean
-     * @throws DisposableDisposedException
-     * @throws ConvertHelper_Exception
-     */
-    protected function getRecordBooleanKey($name, $default=false) : bool
-    {
-        $value = $this->getRecordKey($name, $default);
-        if($value===null) {
-            $value = $default;
-        }
-        
-        return ConvertHelper::string2bool($value);
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     * @throws DisposableDisposedException
-     */
-    protected function recordKeyExists(string $name) : bool
+    #[DisposedAware]
+    public function recordKeyExists(string $name) : bool
     {
         $this->requireNotDisposed('Checking if a key exists.');
 
-        return in_array($name, $this->recordKeys);
+        return in_array($name, $this->recordKeys, true);
     }
 
     /**
      * @var string[]
      */
-    protected $modified = array();
+    protected array $modified = array();
 
-    /**
-     * Converts a boolean value to its string representation to use
-     * as internal value for a property.
-     *
-     * @param string $name
-     * @param boolean $boolean
-     * @param boolean $yesno Whether to use the "yes/no" notation. Otherwise "true/false" is used.
-     * @return boolean Whether the value has changed.
-     * @throws Application_Exception
-     * @throws DisposableDisposedException
-     * @throws ConvertHelper_Exception
-     */
-    public function setRecordBooleanKey(string $name, bool $boolean, bool $yesno=true) : bool
+    #[DisposedAware]
+    public function setRecordKey(string $name, mixed $value) : bool
     {
-        $value = ConvertHelper::boolStrict2string($boolean, $yesno);
-        return $this->setRecordKey($name, $value);
-    }
-
-    /**
-     * @param string $name
-     * @param DateTime $date
-     * @return bool
-     * @throws Application_Exception
-     * @throws DisposableDisposedException
-     * @throws ConvertHelper_Exception
-     */
-    public function setRecordDateKey(string $name, DateTime $date) : bool
-    {
-        return $this->setRecordKey($name, $date->format('Y-m-d H:i:s'));
-    }
-
-    /**
-     * @param string $name
-     * @return bool
-     * @throws DisposableDisposedException
-     */
-    public function hasKey(string $name) : bool
-    {
-        $this->requireNotDisposed('Check if a data key is present.');
-
-        return array_key_exists($name, $this->recordData);
-    }
-
-    /**
-     * Sets the value of a data key of the record. If the data key has been
-     * registered, the {@link recordKeyModified()} method is also called
-     * to notify of changes.
-     *
-     * @param string $name
-     * @param mixed $value
-     * @return boolean
-     * @throws Application_Exception
-     * @throws DisposableDisposedException
-     * @throws ConvertHelper_Exception
-     */
-    public function setRecordKey(string $name, $value) : bool
-    {
-        if($this->isDummy) {
+        if($this->isStub) {
             return false;
         }
 
         $this->requireNotDisposed('Setting a record key');
         
-        $this->requireKey($name);
+        $this->requireRecordKeyExists($name);
         
         $previous = $this->getRecordKey($name);
-        if(ConvertHelper::areStringsEqual($value, $previous)) {
+        if(ConvertHelper::areVariablesEqual($value, $previous)) {
             return false;
         }
 
@@ -465,7 +264,7 @@ abstract class DBHelper_BaseRecord
 
         $this->log(sprintf('Data key [%s] has been modified.', $name));
 
-        if(!in_array($name, $this->modified))
+        if(!in_array($name, $this->modified, true))
         {
             $this->modified[] = $name;
 
@@ -482,15 +281,17 @@ abstract class DBHelper_BaseRecord
     /**
      * @param string $name
      * @return bool
-     * @throws DisposableDisposedException|DBHelper_Exception
+     * @throws DisposableDisposedException
+     * @throws BaseRecordException
      */
-    protected function requireKey(string $name) : bool
+    #[DisposedAware]
+    public function requireRecordKeyExists(string $name) : bool
     {
-        if($this->isDummy || $this->recordKeyExists($name)) {
+        if($this->isStub || $this->recordKeyExists($name)) {
             return true;
         }
         
-        throw new DBHelper_Exception(
+        throw new BaseRecordException(
             'Unknown record key',
             sprintf(
                 'Cannot set key [%s] of [%s] record, it does not exist. Available keys are: [%s].',
@@ -511,58 +312,34 @@ abstract class DBHelper_BaseRecord
     */
     public function isModified(?string $key=null) : bool
     {
-        if($this->isDummy) {
+        if($this->isStub) {
             return false;
         }
         
-        if(!empty($key) && $this->requireKey($key)) {
-            return in_array($key, $this->modified);
+        if(!empty($key) && $this->requireRecordKeyExists($key)) {
+            return in_array($key, $this->modified, true);
         }
         
         return !empty($this->modified) || !empty($this->customModified);
     }
 
-    /**
-     * Checks whether any structural data keys have been modified.
-     * @return bool
-     */
-    public function isStructureModified() : bool
+    public function hasStructuralChanges() : bool
     {
-        if($this->isDummy) {
+        if($this->isStub) {
             return false;
         }
 
-        foreach($this->registeredKeys as $key => $info) {
-            if($info['isStructural'] && in_array($key, $this->modified)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(
+            $this->registeredKeys,
+            fn($info, $key) => $info['isStructural'] && in_array($key, $this->modified, true)
+        );
     }
     
-   /**
-    * Retrieves the names of all keys that have been modified since the last save.
-    * @return string[]
-    */
     public function getModifiedKeys() : array
     {
         return $this->modified;
     }
 
-    /**
-     * Saves all changes in the record. Only the modified keys
-     * are saved each time using the internal changes tracking.
-     *
-     * @param bool $silent Whether to not process the post save events.
-     *                       The postSave() method will still be called, but
-     *                       the context will reflect the silent mode. This
-     *                       has to be checked manually.
-     *
-     * @return boolean Whether there was anything to save.
-     * @throws DisposableDisposedException
-     * @throws DBHelper_Exception|ConvertHelper_Exception
-     */
     public function save(bool $silent=false) : bool
     {
         if(!$this->isModified()) {
@@ -585,7 +362,7 @@ abstract class DBHelper_BaseRecord
             $context->makeSilent();
         }
 
-        $this->postSave($context);
+        $this->_postSave($context);
         
         return true;
     }
@@ -665,15 +442,6 @@ abstract class DBHelper_BaseRecord
         $this->modified = array();
     }
 
-    /**
-     * Like {@see DBHelper_BaseRecord::save()}, but
-     * returns $this instead of the boolean status.
-     *
-     * @param bool $silent
-     * @return $this
-     * @throws DisposableDisposedException
-     * @throws DBHelper_Exception
-     */
     public function saveChained(bool $silent=false) : self
     {
         $this->save($silent);
@@ -688,29 +456,6 @@ abstract class DBHelper_BaseRecord
         
     }
     
-    /**
-     * @param string[] $columns
-     */
-    protected function fixUTF8($columns)
-    {
-        foreach($this->recordData as $key => $value) {
-            if(in_array($key, $columns)) {
-                $this->recordData[$key] = ConvertHelper::string2utf8($value);
-            }
-        }
-    }
-
-    /**
-     * @param string[] $customKeys
-     * @return string[]
-     */
-    protected function getWhereKeys($customKeys=array())
-    {
-        $where = $this->collection->getForeignKeys();
-        $where[$this->recordPrimaryName] = $this->getID();
-        return array_merge($customKeys, $where);
-    }
-
     /**
      * @var array<string,array{label:string,isStructural:bool}>
      */
@@ -735,14 +480,7 @@ abstract class DBHelper_BaseRecord
         );
     }
 
-    /**
-     * Retrieves the record's parent record: this is only
-     * available if the record's collection has a parent
-     * collection.
-     *
-     * @return DBHelper_BaseRecord|NULL
-     */
-    public function getParentRecord()
+    public function getParentRecord() : ?DBHelperRecordInterface
     {
         return $this->collection->getParentRecord();
     }
@@ -754,7 +492,7 @@ abstract class DBHelper_BaseRecord
      * record. Can be extended to add any tasks that
      * the record type may need after saving.
      */
-    protected function postSave(DBHelper_BaseCollection_OperationContext_Save $context) : void
+    protected function _postSave(DBHelper_BaseCollection_OperationContext_Save $context) : void
     {
 
     }
@@ -774,7 +512,7 @@ abstract class DBHelper_BaseRecord
      * @param mixed $newValue
      * @return bool True to allow the change, false to abort it.
      */
-    protected function recordRegisteredKeyBeforeModified(string $name, string $label, bool $isStructural, $oldValue, $newValue) : bool
+    protected function recordRegisteredKeyBeforeModified(string $name, string $label, bool $isStructural, mixed $oldValue, mixed $newValue) : bool
     {
         return true;
     }
@@ -785,17 +523,19 @@ abstract class DBHelper_BaseRecord
     * these changes automatically as needed, for example to add changelog
     * entries.
     *
-    * NOTE: This is not related to the collection's registered keys.
+    * > NOTE: This is not related to the collection's registered keys,
+    * > but the record's own registered keys, as is typically done in
+    * > the {@see self::init()} method, using the method {@see self::registerRecordKey()}.
     *  
     * @param string $name Name of the data key
     * @param string $label Human-readable label of the key
     * @param boolean $isStructural Whether changing this key means it's a structural (critical) change
-    * @param string $oldValue The previous value
-    * @param string $newValue The new value
+    * @param mixed $oldValue The previous value
+    * @param mixed $newValue The new value
     */
     abstract protected function recordRegisteredKeyModified($name, $label, $isStructural, $oldValue, $newValue);
     
-    private function triggerKeyModified(string $name, $oldValue, $newValue, bool $structural=false, bool $isCustom=false) : void
+    private function triggerKeyModified(string $name, mixed $oldValue, mixed $newValue, bool $structural=false, bool $isCustom=false) : void
     {
         $label = null;
         $isStructural = $structural;
@@ -828,26 +568,11 @@ abstract class DBHelper_BaseRecord
         );
     }
 
-    /**
-     * Adds a listener for the event {@see KeyModifiedEvent}.
-     *
-     * NOTE: The callback gets the event instance as sole argument.
-     *
-     * @param callable $callback
-     * @return Application_EventHandler_EventableListener
-     */
     public function onKeyModified(callable $callback) : Application_EventHandler_EventableListener
     {
         return $this->addEventListener(KeyModifiedEvent::EVENT_NAME, $callback);
     }
 
-   /**
-    * This is called once when the record has been created, 
-    * and allows the record to run any additional initializations
-    * it may need.
-    *
-    * @param DBHelper_BaseCollection_OperationContext_Create $context
-    */
     final public function onCreated(DBHelper_BaseCollection_OperationContext_Create $context) : void
     {
         $this->_onCreated($context);
@@ -858,12 +583,6 @@ abstract class DBHelper_BaseRecord
         
     }
     
-   /**
-    * Called when the record has been deleted by the 
-    * collection. 
-    * 
-    * @param DBHelper_BaseCollection_OperationContext_Delete $context
-    */
     final public function onDeleted(DBHelper_BaseCollection_OperationContext_Delete $context) : void
     {
         $this->_onDeleted($context);
@@ -893,7 +612,7 @@ abstract class DBHelper_BaseRecord
 
     protected function setCustomModified(string $name, bool $structural=false, $oldValue=null, $newValue=null) : void
     {
-        if(in_array($name, $this->customModified)) {
+        if(in_array($name, $this->customModified, true)) {
             return;
         }
 
@@ -910,10 +629,6 @@ abstract class DBHelper_BaseRecord
         );
     }
 
-    /**
-     * @return array<string,mixed>
-     * @throws DisposableDisposedException
-     */
     public function getFormValues() : array
     {
         $this->requireNotDisposed('Get form values');

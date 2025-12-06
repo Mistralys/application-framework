@@ -6,8 +6,10 @@
 declare(strict_types=1);
 
 use AppUtils\ClassHelper;
-use AppUtils\ClassHelper\BaseClassHelperException;
+use AppUtils\ClassHelper\ClassNotExistsException;
+use AppUtils\ClassHelper\ClassNotImplementsException;
 use Connectors\Connector\StubConnector;
+use Mistralys\VariableHasher\VariableHasher;
 
 /**
  * External API connectors manager: handles access to
@@ -19,7 +21,7 @@ use Connectors\Connector\StubConnector;
  */
 class Connectors
 {
-    public const ERROR_INVALID_CONNECTOR_TYPE = 100701;
+    public const int ERROR_INVALID_CONNECTOR_TYPE = 100701;
 
     /**
      * @var array<string,Connectors_Connector>
@@ -31,17 +33,24 @@ class Connectors
      * the name of the connector file, case-sensitive. Will throw
      * an exception if the type does not exist.
      *
-     * @param string|class-string $typeOrClass Connector type ID or class name.
+     * Connector instances are cached, so multiple calls with the same
+     * arguments will return the same instance.
+     *
+     * @param string|class-string<Connectors_Connector> $typeOrClass Connector type ID or class name.
+     * @param mixed ...$constructorArguments Optional arguments to pass to the connector's constructor.
      * @return Connectors_Connector
      *
-     * @throws BaseClassHelperException
+     * @throws ClassNotExistsException
+     * @throws ClassNotImplementsException
      * @see Connectors::ERROR_INVALID_CONNECTOR_TYPE
      */
-    public static function createConnector(string $typeOrClass) : Connectors_Connector
+    public static function createConnector(string $typeOrClass, ...$constructorArguments) : Connectors_Connector
     {
-        if(isset(self::$connectors[$typeOrClass]))
+        $cacheKey = VariableHasher::create($typeOrClass, $constructorArguments)->getHash();
+
+        if(isset(self::$connectors[$cacheKey]))
         {
-            return self::$connectors[$typeOrClass];
+            return self::$connectors[$cacheKey];
         }
 
         if(class_exists($typeOrClass)) {
@@ -50,11 +59,15 @@ class Connectors
             $class = ClassHelper::requireResolvedClass('Connectors_Connector_' . $typeOrClass);
         }
 
-        return ClassHelper::requireObjectInstanceOf(
+        $instance = ClassHelper::requireObjectInstanceOf(
             Connectors_Connector::class,
-            new $class(),
+            new $class(...$constructorArguments),
             self::ERROR_INVALID_CONNECTOR_TYPE
         );
+
+        self::$connectors[$cacheKey] = $instance;
+
+        return $instance;
     }
 
     public static function createStubConnector() : StubConnector
@@ -63,5 +76,16 @@ class Connectors
             StubConnector::class,
             self::createConnector(StubConnector::class)
         );
+    }
+
+    public static function connectorExists(string $connectorID) : bool
+    {
+        if(class_exists($connectorID) && is_a($connectorID, Connectors_Connector::class, true)) {
+            return true;
+        }
+
+        $class = ClassHelper::resolveClassName('Connectors_Connector_' . $connectorID);
+
+        return $class !== null && class_exists($class) && is_a($class, Connectors_Connector::class, true);
     }
 }

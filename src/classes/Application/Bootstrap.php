@@ -21,11 +21,12 @@ require_once __DIR__ . '/ConfigSettings/BaseConfigRegistry.php';
 
 class Application_Bootstrap
 {
-    public const ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
-    public const ERROR_AUTOLOADER_NOT_STARTED = 28102; 
-    public const ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103; 
-    public const ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
-    public const ERROR_MISSING_CONFIG_SETTING = 28105;
+    public const int ERROR_INVALID_BOOTSTRAP_CLASS = 28101;
+    public const int ERROR_AUTOLOADER_NOT_STARTED = 28102;
+    public const int ERROR_AUTOLOAD_FILE_NOT_FOUND = 28103;
+    public const int ERROR_NON_FRAMEWORK_EXCEPTION = 28104;
+    public const int ERROR_MISSING_CONFIG_SETTING = 28105;
+    public const int ERROR_APP_ALREADY_BOOTED = 28106;
 
     private static ClassLoader $autoLoader;
     private static bool $initialized = false;
@@ -87,13 +88,20 @@ class Application_Bootstrap
    /**
     * Boots an admin screen using its class name.
     * 
-    * @param string $class
+    * @param class-string<Application_Bootstrap_Screen> $class
     * @param array $params
     * @param bool $displayException Whether to automatically show the exception screen, or just pass them on.
     * @throws Application_Exception
     */
     public static function bootClass(string $class, array $params=array(), bool $displayException=true) : void
     {
+        self::requireNotBooted($class);
+
+        // already booted with this class
+        if(self::$bootClass === $class) {
+            return;
+        }
+
         // Allow the request log to make changes to the session
         if($class === Application_Bootstrap_Screen_RequestLog::class) {
             Application_Bootstrap_Screen_RequestLog::init();
@@ -108,20 +116,11 @@ class Application_Bootstrap
 
         try
         {
-            $screen = new $class($params);
-            
-            if(!$screen instanceof Application_Bootstrap_Screen)
-            {
-                throw new BootException(
-                    'Invalid bootstrap screen',
-                    sprintf(
-                        'The screen [%s] is not an instance of [%s].',
-                        $class,
-                        Application_Bootstrap_Screen::class
-                    ),
-                    self::ERROR_INVALID_BOOTSTRAP_CLASS
-                );
-            }
+            $screen = ClassHelper::requireObjectInstanceOf(
+                Application_Bootstrap_Screen::class,
+                new $class($params),
+                self::ERROR_INVALID_BOOTSTRAP_CLASS
+            );
             
             $screen->boot();
 
@@ -146,6 +145,29 @@ class Application_Bootstrap
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param class-string<Application_Bootstrap_Screen> $class
+     * @return void
+     * @throws BootException
+     */
+    private static function requireNotBooted(string $class) : void
+    {
+        if(!isset(self::$bootClass)) {
+            return;
+        }
+
+        throw new BootException(
+            'Bootstrap already performed',
+            sprintf(
+                'The application has already been booted using the class [%s]. '.PHP_EOL.
+                'Cannot boot again with class [%s].',
+                self::$bootClass,
+                $class
+            ),
+            self::ERROR_APP_ALREADY_BOOTED
+        );
     }
 
     /**
@@ -206,9 +228,9 @@ class Application_Bootstrap
     * constant or the default value of a registered constant.
     * 
     * @param string $name
-    * @return string|number|bool|NULL
+    * @return string|int|float|bool|array|NULL
     */
-    public static function getSetting(string $name)
+    public static function getSetting(string $name) : string|int|float|bool|array|NULL
     {
         if(defined($name))
         {
@@ -298,8 +320,16 @@ class Application_Bootstrap
         register_shutdown_function(array(self::class, 'handleShutDown'));
     }
 
-    private static function initClassLoading() : void
+    private static bool $initializedClassLoading = false;
+
+    public static function initClassLoading() : void
     {
+        if(self::$initializedClassLoading) {
+            return;
+        }
+
+        self::$initializedClassLoading = true;
+
         Application::log('Bootstrap | Initializing class loading, setting the cache folder.');
 
         ClassHelper::setCacheFolder(ClassCacheHandler::getCacheFolder());
@@ -536,9 +566,9 @@ function boot_define(string $name, $value)
  * from a registered setting or an actual constant.
  * 
  * @param string $name
- * @return string|number|bool|NULL The value, or NULL if it does not exist.
+ * @return string|int|float|bool|array<int|string,mixed>|NULL The value, or NULL if it does not exist.
  */
-function boot_constant(string $name)
+function boot_constant(string $name) : string|int|float|bool|array|NULL
 {
     return Application_Bootstrap::getSetting($name);
 }

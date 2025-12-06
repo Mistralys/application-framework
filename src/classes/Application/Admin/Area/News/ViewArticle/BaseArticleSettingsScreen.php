@@ -4,26 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News\ViewArticle;
 
-use Application\Admin\Area\Mode\Submode\BaseCollectionEditExtended;
 use Application\Admin\Area\News\BaseViewArticleScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
 use Application\NewsCentral\NewsScreenRights;
 use Application\NewsCentral\NewsSettingsManager;
-use Application\Traits\AllowableMigrationTrait;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property BaseViewArticleScreen $mode
  * @property NewsEntry $record
  * @property NewsCollection $collection
  */
-abstract class BaseArticleSettingsScreen extends BaseCollectionEditExtended
+abstract class BaseArticleSettingsScreen extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName(): string
     {
@@ -50,6 +47,9 @@ abstract class BaseArticleSettingsScreen extends BaseCollectionEditExtended
         return NewsScreenRights::SCREEN_ARTICLE_SETTINGS;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getFeatureRights(): array
     {
         return array(
@@ -72,7 +72,7 @@ abstract class BaseArticleSettingsScreen extends BaseCollectionEditExtended
         return AppFactory::createNews();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t('The settings have been saved successfully at %1$s.', sb()->time());
     }

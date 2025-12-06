@@ -58,9 +58,23 @@ trait ListBuilderScreenTrait
 
     protected function _renderContent() : UI_Themes_Theme_ContentRenderer
     {
+        $builder = $this->getBuilder();
+
         return $this->renderer
-            ->appendContent($this->getBuilder())
+            ->appendContent($this->_renderAboveList($builder))
+            ->appendContent($builder)
+            ->appendContent($this->_renderBelowList($builder))
             ->makeWithSidebar();
+    }
+
+    protected function _renderAboveList(ListBuilderInterface $builder): string
+    {
+        return '';
+    }
+
+    protected function _renderBelowList(ListBuilderInterface $builder): string
+    {
+        return '';
     }
 
     public function getDefaultAction(): string

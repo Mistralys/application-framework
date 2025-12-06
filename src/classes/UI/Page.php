@@ -7,7 +7,7 @@
  */
 
 use Application\Interfaces\Admin\AdminScreenInterface;
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\ClassNotExistsException;
 use AppUtils\ClassHelper\ClassNotImplementsException;
@@ -493,10 +493,10 @@ class UI_Page extends UI_Renderable
      * intelligently, for example adding a state badge if the
      * revisionable supports states.
      *
-     * @param RevisionableStatelessInterface $revisionable
+     * @param RevisionableInterface $revisionable
      * @return UI_Page_RevisionableTitle
      */
-    public function createRevisionableTitle(RevisionableStatelessInterface $revisionable) : UI_Page_RevisionableTitle
+    public function createRevisionableTitle(RevisionableInterface $revisionable) : UI_Page_RevisionableTitle
     {
         return new UI_Page_RevisionableTitle($this, $revisionable);
     }
@@ -569,10 +569,10 @@ class UI_Page extends UI_Renderable
     /**
      * Retrieves the currently active administration screen.
      *
-     * @return AdminScreenInterface
+     * @return AdminScreenInterface|NULL
      * @throws Application_Exception
      */
-    public function getActiveScreen() : AdminScreenInterface
+    public function getActiveScreen() : ?AdminScreenInterface
     {
         return $this->driver->getActiveScreen();
     }

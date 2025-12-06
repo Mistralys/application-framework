@@ -1,18 +1,17 @@
 <?php
 /**
- * File containing the class {@see \Application\Countries\CountriesCollection}.
- *
  * @package Application
  * @subpackage Countries
- * @see \Application\Countries\CountriesCollection
  */
 
 declare(strict_types=1);
 
 namespace Application\Countries;
 
+use Application\AppFactory;
 use Application_Countries;
 use Application_Countries_Country;
+use AppUtils\FileHelper\FolderInfo;
 
 /**
  * Utility class for working with collections of countries,
@@ -35,7 +34,7 @@ class CountriesCollection
     private Application_Countries $collection;
     private bool $excludeInvariant = false;
 
-    private function __construct(array $countries=array())
+    protected function __construct(array $countries=array())
     {
         $this->collection = Application_Countries::getInstance();
 
@@ -61,6 +60,10 @@ class CountriesCollection
         return $this;
     }
 
+    /**
+     * @param Application_Countries_Country $country
+     * @return $this
+     */
     public function addCountry(Application_Countries_Country $country) : self
     {
         $id = $country->getID();
@@ -73,6 +76,11 @@ class CountriesCollection
         return $this;
     }
 
+    public static function getAPIMethodsFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/API/Methods');
+    }
+
     public function hasCountries() : bool
     {
         return !empty($this->countries);
@@ -81,6 +89,36 @@ class CountriesCollection
     public function countCountries() : int
     {
         return count($this->countries);
+    }
+
+    /**
+     * @param Application_Countries_Country $country
+     * @return $this
+     */
+    public function removeCountry(Application_Countries_Country $country) : self
+    {
+        $id = $country->getID();
+
+        if(isset($this->countries[$id]))
+        {
+            unset($this->countries[$id]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Application_Countries_Country[] $countries
+     * @return $this
+     */
+    public function removeCountries(array $countries) : self
+    {
+        foreach($countries as $country)
+        {
+            $this->removeCountry($country);
+        }
+
+        return $this;
     }
 
     /**
@@ -312,5 +350,32 @@ class CountriesCollection
     public function hasCountry(Application_Countries_Country $country) : bool
     {
         return $this->hasID($country->getID());
+    }
+
+    /**
+     * Checks whether the collection contains the specified country ID.
+     * @param int $id
+     * @return bool
+     */
+    public function idExists(int $id) : bool
+    {
+        return in_array($id, $this->getIDs());
+    }
+
+    /**
+     * Attempts to find a country available in the collection
+     * from the current request, using the standard request
+     * parameter {@see Application_Countries::REQUEST_PARAM_ID}.
+     * 
+     * @return Application_Countries_Country|null
+     */
+    public function getByRequest() : ?Application_Countries_Country
+    {
+        $country = AppFactory::createCountries()->getByRequest();
+        if($country !== null && $this->hasCountry($country)) {
+            return $country;
+        }
+
+        return null;
     }
 }

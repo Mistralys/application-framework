@@ -9,9 +9,10 @@
 
 declare(strict_types=1);
 
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use AppUtils\BaseException;
 use AppUtils\ConvertHelper_Exception;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Adds create and save capabilities to the base record settings form.
@@ -40,10 +41,10 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
     * submitted and is valid, will create the record from
     * the form data and return it.
     * 
-    * @return DBHelper_BaseRecord
+    * @return DBHelperRecordInterface
     * @throws BaseException
     */
-    public function createRecord() : DBHelper_BaseRecord
+    public function createRecord() : DBHelperRecordInterface
     {
         $this->initSettingsForm();
 
@@ -56,7 +57,7 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
         }
 
         if(!$this->isFormValid()) {
-            throw new Application_Exception(
+            throw new Application_Formable_Exception(
                 'Form is invalid',
                 $this->renderErrorMessages(),
                 self::ERROR_CREATE_FORM_INVALID
@@ -80,18 +81,17 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      *
      * @param Application_Formable_RecordSettings_ValueSet $recordData
      * @param Application_Formable_RecordSettings_ValueSet $internalValues
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      *
      * @throws Application_Exception
      * @throws DisposableDisposedException
-     * @throws ConvertHelper_Exception
      * @throws DBHelper_Exception
      */
-    protected function createRecordFromValues(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : DBHelper_BaseRecord
+    protected function createRecordFromValues(Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : DBHelperRecordInterface
     {
         if($this->isEditMode())
         {
-            throw new Application_Exception(
+            throw new Application_Formable_Exception(
                 'Cannot create records in edit mode',
                 '',
                 self::ERROR_CREATE_IN_EDIT_MODE
@@ -126,11 +126,11 @@ abstract class Application_Formable_RecordSettings_Extended extends Application_
      *
      * The record is saved again after this.
      *
-     * @param DBHelper_BaseRecord $record
+     * @param DBHelperRecordInterface $record
      * @param Application_Formable_RecordSettings_ValueSet $recordData
      * @param Application_Formable_RecordSettings_ValueSet $internalValues
      */
-    abstract protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void;
+    abstract protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues) : void;
 
     /**
      * Retrieves the data array to use to create the new record

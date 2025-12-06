@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Application\AppFactory;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ClassHelper;
 use AppUtils\ClassHelper\BaseClassHelperException;
@@ -60,7 +61,6 @@ class UI_Form extends UI_Renderable
     public const REL_LAYOUT_LESS_GROUP = 'LayoutlessGroup';
     public const FORM_PREFIX = 'form-';
     public const ELEMENT_TYPE_DATE_PICKER = 'datepicker';
-
 
 
     protected string $id;
@@ -161,20 +161,7 @@ class UI_Form extends UI_Renderable
 
         self::$customElementsRegistered = true;
 
-        $driver = Application_Driver::getInstance();
-        $app = $driver->getApplication();
-
-        $folders = array(
-            $app->getClassesFolder().'/UI/Form/Element',
-            $driver->getClassesFolder().'/FormElements'
-        );
-
-        foreach($folders as $folder)
-        {
-            if(!is_dir($folder)) {
-                continue;
-            }
-
+        foreach($this->getClassFolders() as $folder) {
             $names = FileHelper::createFileFinder($folder)
                 ->getPHPClassNames();
 
@@ -185,6 +172,20 @@ class UI_Form extends UI_Renderable
                 $this->registerCustomElement($id, $name);
             }
         }
+    }
+
+    private function getClassFolders() : array
+    {
+        $driver = Application_Driver::getInstance();
+        $app = $driver->getApplication();
+
+        // Start with the built-in form elements
+        $folders = array($app->getClassesFolder().'/UI/Form/Element');
+
+        // Then add application-specific and external form elements
+        array_push($folders, ...AppFactory::createFoldersManager()->choose()->formElements()->resolveFolders());
+
+        return $folders;
     }
 
    /**
@@ -413,9 +414,20 @@ class UI_Form extends UI_Renderable
         $container = $this->resolveContainer($container);
 
         $group = $container->addGroup($name);
-        $group->setAttribute('rel', UI_Form::REL_LAYOUT_LESS_GROUP);
+        $group->setAttribute('rel', self::REL_LAYOUT_LESS_GROUP);
 
         return $group;
+    }
+
+    /**
+     * @param HTML_QuickForm2_Node $element
+     * @return HTML_QuickForm2_Node
+     * @see UI_Form_Renderer_CommentGenerator::addMarkdownComment()
+     */
+    public function addMarkdownSupport(HTML_QuickForm2_Node $element) : HTML_QuickForm2_Node
+    {
+        $element->setRuntimeProperty(UI_Form_Renderer_CommentGenerator::PROPERTY_MARKDOWN_SUPPORT, true);
+        return $element;
     }
 
     /**
@@ -1593,12 +1605,12 @@ class UI_Form extends UI_Renderable
      * Adds a hidden variable to the form that will get submitted along with visible fields.
      *
      * @param string $name
-     * @param string|null $value
+     * @param string|int|float|null $value
      * @param string|null $id
      * @return HTML_QuickForm2_Element_InputHidden
      * @throws HTML_QuickForm2_InvalidArgumentException
      */
-    public function addHiddenVar(string $name, ?string $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
+    public function addHiddenVar(string $name, string|int|float|null $value = null, ?string $id = null) : HTML_QuickForm2_Element_InputHidden
     {
         if (!isset($this->hiddens[$name]))
         {
@@ -1607,6 +1619,8 @@ class UI_Form extends UI_Renderable
 
         if($value === null) {
             $value = (string)$this->hiddens[$name]->getValue();
+        } else {
+            $value = (string)$value;
         }
 
         if(!empty($value)) {
@@ -1911,6 +1925,14 @@ class UI_Form extends UI_Renderable
     {
         $element->addRule('regex', t('Must be a valid e-mail address.'), RegexHelper::REGEX_EMAIL);
         $element->setAttribute('data-type', 'email');
+
+        return $element;
+    }
+
+    public function addRuleURL(HTML_QuickForm2_Element $element): HTML_QuickForm2_Node
+    {
+        $element->addRule('regex', t('Must be a valid URL.'), RegexHelper::REGEX_URL);
+        $element->setAttribute('data-type', 'url');
 
         return $element;
     }

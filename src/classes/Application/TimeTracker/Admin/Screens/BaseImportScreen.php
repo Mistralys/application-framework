@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Application\TimeTracker\Admin\Screens;
 
 use Application;
+use Application\Admin\Area\BaseMode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use Application\TimeTracker\Export\TimeExporter;
 use Application\TimeTracker\Export\TimeImporter;
 use Application\TimeTracker\TimeTrackerCollection;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
 use AppUtils\FileHelper\MimeTypesEnum;
@@ -19,11 +18,10 @@ use HTML_QuickForm2_Element_InputFile;
 use UI;
 use UI_Themes_Theme_ContentRenderer;
 
-abstract class BaseImportScreen extends Application_Admin_Area_Mode
+abstract class BaseImportScreen extends BaseMode
 {
-    use AllowableMigrationTrait;
+    public const string URL_NAME = 'import';
 
-    public const URL_NAME = 'import';
     private TimeTrackerCollection $timeTracker;
     private HTML_QuickForm2_Element_InputFile $fileElement;
 

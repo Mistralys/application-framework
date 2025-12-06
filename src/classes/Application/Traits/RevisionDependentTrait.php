@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Traits;
 
 use Application\Revisionable\RevisionableException;
-use Application\Revisionable\RevisionableStatelessInterface;
+use Application\Revisionable\RevisionableInterface;
 use Application\Revisionable\RevisionDependentInterface;
 
 /**
@@ -30,7 +30,7 @@ trait RevisionDependentTrait
                 get_class($dependent->getRevisionable()),
                 get_class($this)
             ),
-            RevisionableStatelessInterface::ERROR_DEPENDENT_CLASS_MISMATCH
+            RevisionableInterface::ERROR_DEPENDENT_CLASS_MISMATCH
         );
     }
 
@@ -53,7 +53,7 @@ trait RevisionDependentTrait
                 $this->getRevision(),
                 $this->getIdentification()
             ),
-            RevisionableStatelessInterface::ERROR_DEPENDENT_REVISION_MISMATCH
+            RevisionableInterface::ERROR_DEPENDENT_REVISION_MISMATCH
         );
     }
 }

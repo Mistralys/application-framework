@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Application\Revisionable\RevisionableInterface;
+
 interface UI_Interfaces_Conditional
 {
    /**
@@ -19,10 +21,10 @@ interface UI_Interfaces_Conditional
     public function requireFalse(bool $statement, string $reason='') : self;
 
    /**
-    * @param Application_Revisionable $revisionable
+    * @param RevisionableInterface $revisionable
     * @return $this
     */
-    public function requireChanging(Application_Revisionable $revisionable) : self;
+    public function requireChanging(RevisionableInterface $revisionable) : self;
     
    /**
     * @param Application_LockableRecord_Interface $record

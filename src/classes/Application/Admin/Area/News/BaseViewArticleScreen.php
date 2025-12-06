@@ -8,20 +8,16 @@ use Application\Admin\Area\News\ViewArticle\BaseArticleStatusScreen;
 use Application\AppFactory;
 use Application\NewsCentral\NewsCollection;
 use Application\NewsCentral\NewsEntry;
-use Application\NewsCentral\NewsRightsInterface;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_CollectionRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
 
 /**
  * @property NewsEntry $record
  */
-abstract class BaseViewArticleScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewArticleScreen extends BaseRecordMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'view';
+    public const string URL_NAME = 'view';
 
     public function getURLName(): string
     {

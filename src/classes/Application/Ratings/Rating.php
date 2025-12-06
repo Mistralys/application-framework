@@ -39,13 +39,13 @@ class Application_Ratings_Rating extends DBHelper_BaseRecord
         return $this;
     }
     
-    protected ?Application_Ratings_Screens_Screen $screen = null;
+    protected ?RatingScreenRecord $screen = null;
     
    /**
     * 
-    * @return Application_Ratings_Screens_Screen
+    * @return RatingScreenRecord
     */
-    public function getScreen() : Application_Ratings_Screens_Screen
+    public function getScreen() : RatingScreenRecord
     {
         if(!isset($this->screen)) {
             $this->screen = $this->collection->createScreens()->getByID($this->getScreenID());

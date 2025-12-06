@@ -6,7 +6,7 @@ namespace Application\AjaxMethods;
 
 use Application;
 use Application_AjaxMethod;
-use Application_Feedback;
+use Application\Feedback\FeedbackCollection;
 
 class AddFeedbackMethod extends Application_AjaxMethod
 {
@@ -27,7 +27,7 @@ class AddFeedbackMethod extends Application_AjaxMethod
         );
 
         $this->sendResponse(array(
-            Application_Feedback::PRIMARY_NAME => $report->getID()
+            FeedbackCollection::PRIMARY_NAME => $report->getID()
         ));
     }
 
@@ -42,7 +42,7 @@ class AddFeedbackMethod extends Application_AjaxMethod
     private $url;
 
     /**
-     * @var Application_Feedback
+     * @var FeedbackCollection
      */
     private $collection;
 

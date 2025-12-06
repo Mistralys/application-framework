@@ -4,27 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Admin\Area\News\ViewCategory;
 
-use Application\Admin\Area\Mode\Submode\BaseCollectionEditExtended;
 use Application\Admin\Area\News\BaseViewCategoryScreen;
 use Application\AppFactory;
-use Application\Interfaces\AllowableInterface;
 use Application\NewsCentral\Categories\CategoriesCollection;
 use Application\NewsCentral\Categories\Category;
 use Application\NewsCentral\Categories\CategorySettingsManager;
 use Application\NewsCentral\NewsScreenRights;
-use Application\Traits\AllowableMigrationTrait;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Submode\BaseRecordSettingsSubmode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * @property BaseViewCategoryScreen $mode
  * @property Category $record
  * @property CategoriesCollection $collection
  */
-abstract class BaseCategorySettingsScreen extends BaseCollectionEditExtended
+abstract class BaseCategorySettingsScreen extends BaseRecordSettingsSubmode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'settings';
+    public const string URL_NAME = 'settings';
 
     public function getURLName(): string
     {
@@ -51,6 +47,9 @@ abstract class BaseCategorySettingsScreen extends BaseCollectionEditExtended
         return NewsScreenRights::SCREEN_CATEGORY_SETTINGS;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getFeatureRights(): array
     {
         return array(
@@ -73,7 +72,7 @@ abstract class BaseCategorySettingsScreen extends BaseCollectionEditExtended
         return AppFactory::createNews()->createCategories();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t('The settings have been saved successfully at %1$s.', sb()->time());
     }

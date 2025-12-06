@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the interface {@see Application_Session_AuthTypes_OAuthInterface}.
- *
  * @package Application
  * @subpackage Sessions
- * @see Application_Session_AuthTypes_OAuthInterface
  */
 
 declare(strict_types=1);
@@ -21,5 +18,8 @@ declare(strict_types=1);
  */
 interface Application_Session_AuthTypes_OAuthInterface
 {
-    public const ERROR_AUTH_DID_NOT_EXIT = 75601;
+    public const string TYPE_ID = 'OAuth';
+
+    public const int ERROR_AUTH_DID_NOT_EXIT = 75601;
+    public const int ERROR_USER_NO_EMAIL_ADDRESS = 75602;
 }

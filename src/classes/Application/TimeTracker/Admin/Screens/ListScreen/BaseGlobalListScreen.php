@@ -4,24 +4,22 @@ declare(strict_types=1);
 
 namespace Application\TimeTracker\Admin\Screens\ListScreen;
 
+use Application\Admin\Area\Mode\BaseSubmode;
 use Application\AppFactory;
 use Application\TimeTracker\Admin\TimeListBuilder;
 use Application\TimeTracker\Admin\TimeUIManager;
-use Application\Traits\AllowableMigrationTrait;
-use Application_Admin_Area_Mode_Submode;
 use Application\TimeTracker\Admin\TimeTrackerScreenRights;
 use UI;
 use UI\DataGrid\ListBuilder\ListBuilderScreenInterface;
 use UI\DataGrid\ListBuilder\ListBuilderScreenTrait;
 use UI\Interfaces\ListBuilderInterface;
 
-class BaseGlobalListScreen extends Application_Admin_Area_Mode_Submode implements ListBuilderScreenInterface
+class BaseGlobalListScreen extends BaseSubmode implements ListBuilderScreenInterface
 {
-    use AllowableMigrationTrait;
     use ListBuilderScreenTrait;
 
-    public const URL_NAME = 'global';
-    public const LIST_ID = 'time-entries-global';
+    public const string URL_NAME = 'global';
+    public const string LIST_ID = 'time-entries-global';
 
     public function getURLName(): string
     {

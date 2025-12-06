@@ -10,7 +10,7 @@ use Application\Ajax\AjaxMethodInterface;
 use Application\Ajax\BaseHTMLAjaxMethod;
 use Application\Ajax\BaseJSONAjaxMethod;
 use Application\AppFactory;
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 use AppUtils\ArrayDataCollection;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;

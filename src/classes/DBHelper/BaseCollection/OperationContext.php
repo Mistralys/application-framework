@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Abstract base class for contexts used when a
@@ -25,12 +27,12 @@ abstract class DBHelper_BaseCollection_OperationContext implements OptionableInt
     use OptionableTrait;
 
     protected string $contextID;
-    protected DBHelper_BaseCollection $collection;
-    protected DBHelper_BaseRecord $record;
+    protected DBHelperCollectionInterface $collection;
+    protected DBHelperRecordInterface $record;
     protected bool $silent = false;
     protected static int $contextIDCounter = 0;
 
-    public function __construct(DBHelper_BaseRecord $record)
+    public function __construct(DBHelperRecordInterface $record)
     {
         self::$contextIDCounter++;
 
@@ -60,14 +62,14 @@ abstract class DBHelper_BaseCollection_OperationContext implements OptionableInt
     }
 
     /**
-     * @return DBHelper_BaseRecord
+     * @return DBHelperRecordInterface
      */
-    public function getRecord(): DBHelper_BaseRecord
+    public function getRecord(): DBHelperRecordInterface
     {
         return $this->record;
     }
 
-    public function getCollection() : DBHelper_BaseCollection
+    public function getCollection() : DBHelperCollectionInterface
     {
         return $this->collection;
     }

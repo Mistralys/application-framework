@@ -6,22 +6,28 @@ namespace Application\Admin\Area\Media;
 
 use Application\Admin\Area\Media\View\BaseMediaStatusScreen;
 use Application\AppFactory;
+use Application\Media\Admin\MediaScreenRights;
 use Application\Media\Collection\MediaCollection;
 use Application\Media\Collection\MediaRecord;
-use Application\Tags\TagCollection;
-use Application_Admin_Area_Mode_CollectionRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordMode;
 use UI;
+use UI\AdminURLs\AdminURLInterface;
 
 /**
  * @property MediaRecord $record
  */
-abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_CollectionRecord
+abstract class BaseViewMediaScreen extends BaseRecordMode
 {
-    public const URL_NAME = 'view';
+    public const string URL_NAME = 'view';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return MediaScreenRights::SCREEN_VIEW;
     }
 
     protected function createCollection() : MediaCollection
@@ -29,19 +35,14 @@ abstract class BaseViewMediaScreen extends Application_Admin_Area_Mode_Collectio
         return AppFactory::createMediaCollection();
     }
 
-    public function getRecordMissingURL(): string
+    public function getRecordMissingURL(): AdminURLInterface
     {
-        return (string)$this->createCollection()->adminURL()->list();
+        return $this->createCollection()->adminURL()->list();
     }
 
     public function getDefaultSubmode(): string
     {
         return BaseMediaStatusScreen::URL_NAME;
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return $this->user->canViewMedia();
     }
 
     public function getNavigationTitle(): string

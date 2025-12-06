@@ -18,20 +18,20 @@ interface ScreenRightsInterface
 {
     /**
      * Fetches the right for a specific admin screen class.
-     * @param AdminScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $screen
      * @return string
      */
-    public function getByScreen($screen) : string;
+    public function getByScreen(AdminScreenInterface|string $screen) : string;
 
     /**
-     * @param AdminScreenInterface|class-string $screen
+     * @param AdminScreenInterface|class-string<AdminScreenInterface> $screen
      * @return bool
      */
-    public function screenExists($screen) : bool;
+    public function screenExists(AdminScreenInterface|string $screen) : bool;
 
     /**
      * Fetches rights by admin screen class.
-     * @return array<class-string,string>
+     * @return array<class-string<AdminScreenInterface>,string>
      */
     public function getAll() : array;
 }

@@ -34,17 +34,16 @@ class GridConfigurator implements UI_Renderable_Interface
 {
     use UI_Traits_RenderableGeneric;
 
-    public const ERROR_MISSING_INVALID_COLUMNS = 162801;
+    public const int ERROR_MISSING_INVALID_COLUMNS = 162801;
 
-    public const REQUEST_PARAM_SAVE = 'save-configuration';
-    public const REQUEST_PARAM_COLUMNS = 'columns';
-    public const REQUEST_PARAM_VISIBILITY = 'visibility';
-    public const REQUEST_PARAM_RESET_GRID = 'reset_data_grid';
+    public const string REQUEST_PARAM_SAVE = 'save-configuration';
+    public const string REQUEST_PARAM_COLUMNS = 'columns';
+    public const string REQUEST_PARAM_VISIBILITY = 'visibility';
+    public const string REQUEST_PARAM_RESET_GRID = 'reset_data_grid';
 
     private UI_DataGrid $grid;
     private UI $ui;
     private Application_Request $request;
-    private bool $processed = false;
 
     public function __construct(UI_DataGrid $grid)
     {

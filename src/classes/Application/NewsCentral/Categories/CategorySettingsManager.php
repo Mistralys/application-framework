@@ -9,20 +9,20 @@ use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
 use Application_Formable_RecordSettings_ValueSet;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Element_InputText;
 use UI;
 
 class CategorySettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_LABEL = 'label';
+    public const string SETTING_LABEL = 'label';
 
     public function __construct(Application_Formable $formable, ?Category $record = null)
     {
         parent::__construct($formable, AppFactory::createNews()->createCategories(), $record);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 

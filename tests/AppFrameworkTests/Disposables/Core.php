@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use AppFrameworkTestClasses\ApplicationTestCase;
-use Application\Exception\DisposableDisposedException;
+use Application\Disposables\DisposableDisposedException;
 
 class Disposables_CoreTests extends ApplicationTestCase
 {

@@ -15,6 +15,14 @@
     "icon": "plus-circle",
     "type": ""
   },
+  "apiClients": {
+    "icon": "project-diagram",
+    "type": "fas"
+  },
+  "apiKeys": {
+    "icon": "key",
+    "type": "fas"
+  },
   "attention_required": {
     "icon": "exclamation-triangle",
     "type": ""
@@ -57,6 +65,14 @@
   },
   "button": {
     "icon": "external-link-square-alt",
+    "type": ""
+  },
+  "cache": {
+    "icon": "memory",
+    "type": "fas"
+  },
+  "calculate": {
+    "icon": "calculator",
     "type": ""
   },
   "calendar": {
@@ -123,6 +139,10 @@
     "icon": "link",
     "type": ""
   },
+  "command_deck": {
+    "icon": "dice-d20",
+    "type": "fas"
+  },
   "commands": {
     "icon": "terminal",
     "type": ""
@@ -154,6 +174,10 @@
   "countries": {
     "icon": "flag",
     "type": "far"
+  },
+  "css": {
+    "icon": "css3",
+    "type": ""
   },
   "csv": {
     "icon": "file-alt",
@@ -451,6 +475,10 @@
     "icon": "arrows-alt-v",
     "type": "fas"
   },
+  "news": {
+    "icon": "newspaper",
+    "type": "far"
+  },
   "next": {
     "icon": "chevron-right",
     "type": ""
@@ -635,6 +663,10 @@
     "icon": "shopping-cart",
     "type": ""
   },
+  "snowflake": {
+    "icon": "snowflake",
+    "type": "far"
+  },
   "sort": {
     "icon": "sort",
     "type": ""
@@ -687,6 +719,10 @@
     "icon": "table",
     "type": ""
   },
+  "tags": {
+    "icon": "tag",
+    "type": "fas"
+  },
   "tariff_matrix": {
     "icon": "table",
     "type": ""
@@ -711,6 +747,10 @@
     "icon": "clock",
     "type": ""
   },
+  "time-tracker": {
+    "icon": "biohazard",
+    "type": "fas"
+  },
   "toggle": {
     "icon": "retweet",
     "type": ""
@@ -726,6 +766,10 @@
   "transmission": {
     "icon": "satellite-dish",
     "type": ""
+  },
+  "tree": {
+    "icon": "sitemap",
+    "type": "fas"
   },
   "uncombine": {
     "icon": "unlink",
@@ -791,6 +835,10 @@
     "icon": "star",
     "type": "far"
   },
+  "wizard": {
+    "icon": "hat-wizard",
+    "type": "fas"
+  },
   "wordwrap": {
     "icon": "terminal",
     "type": "fas"
@@ -806,37 +854,5 @@
   "yes": {
     "icon": "check",
     "type": ""
-  },
-  "command_deck":{
-    "icon": "dice-d20",
-    "type": "fas"
-  },
-  "snowflake":{
-    "icon": "snowflake",
-    "type": "far"
-  },
-  "news":{
-    "icon": "newspaper",
-    "type": "far"
-  },
-  "css": {
-    "icon": "css3",
-    "type": ""
-  },
-  "tags": {
-    "icon": "tag",
-    "type": "fas"
-  },
-  "tree": {
-    "icon": "sitemap",
-    "type": "fas"
-  },
-  "cache": {
-    "icon": "memory",
-    "type": "fas"
-  },
-  "time-tracker": {
-    "icon": "biohazard",
-    "type": "fas"
   }
 }

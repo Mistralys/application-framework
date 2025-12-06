@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 use AppUtils\Interfaces\OptionableInterface;
 use AppUtils\Traits\OptionableTrait;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 
 /**
  * Base class for select elements that allow choosing
@@ -495,7 +496,7 @@ abstract class Application_Formable_Selector implements OptionableInterface
         return $el;
     }
 
-    protected function registerEntry(string $id, string $label, ?DBHelper_BaseRecord $record=null) : Application_Formable_RecordSelector_Entry
+    protected function registerEntry(string $id, string $label, ?DBHelperRecordInterface $record=null) : Application_Formable_RecordSelector_Entry
     {
         $entry = new Application_Formable_RecordSelector_Entry($id, $label);
 

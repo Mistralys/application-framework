@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Application\Traits;
 
 use Application\Interfaces\AllowableInterface;
+use Application\Interfaces\AllowableMigrationInterface;
 
 /**
  * Temporary trait used to prepare applications for the
@@ -23,11 +24,11 @@ use Application\Interfaces\AllowableInterface;
  *
  * @package Application
  * @subpackage Traits
- * @see AllowableInterface
+ * @see AllowableMigrationInterface
  */
 trait AllowableMigrationTrait
 {
-    abstract public function getRequiredRight() : string;
+    abstract public function getRequiredRight() : ?string;
 
     /**
      * @return array<string,string> Human-readable feature label > Right name pairs.
@@ -39,6 +40,12 @@ trait AllowableMigrationTrait
 
     public function isUserAllowed() : bool
     {
-        return $this->getUser()->can($this->getRequiredRight());
+        $right = $this->getRequiredRight();
+
+        if(!empty($right)) {
+            return $this->getUser()->can($right);
+        }
+
+        return true;
     }
 }

@@ -8,6 +8,7 @@
  */
 
 use Application\AppFactory;
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
 
 /**
  * Used to add and retrieve messages stored stored in the
@@ -40,19 +41,11 @@ class Application_Messagelogs extends DBHelper_BaseCollection
     public const TABLE_NAME = 'app_messagelog';
     public const PRIMARY_NAME = 'log_id';
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordClassName()
-     */
     public function getRecordClassName() : string
     {
         return Application_Messagelogs_Log::class;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordFiltersClassName()
-     */
     public function getRecordFiltersClassName() : string
     {
         return Application_Messagelogs_FilterCriteria::class;
@@ -63,10 +56,6 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         return Application_Messagelogs_FilterSettings::class;
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordDefaultSortKey()
-     */
     public function getRecordDefaultSortKey() : string
     {
         return 'date';
@@ -74,13 +63,9 @@ class Application_Messagelogs extends DBHelper_BaseCollection
 
     public function getRecordDefaultSortDir() : string
     {
-        return self::SORT_DIR_DESC;
+        return DBHelperCollectionInterface::SORT_DIR_DESC;
     }
     
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordSearchableColumns()
-     */
     public function getRecordSearchableColumns() : array
     {
         return array(
@@ -89,28 +74,16 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         );
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTableName()
-     */
     public function getRecordTableName() : string
     {
         return self::TABLE_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordPrimaryName()
-     */
     public function getRecordPrimaryName() : string
     {
         return self::PRIMARY_NAME;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordTypeName()
-     */
     public function getRecordTypeName() : string
     {
         return 'appmessagelog';
@@ -150,33 +123,16 @@ class Application_Messagelogs extends DBHelper_BaseCollection
         );
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getCollectionLabel()
-     */
     public function getCollectionLabel() : string
     {
         return t('Message logs');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordLabel()
-     */
     public function getRecordLabel() : string
     {
         return t('Message log entry');
     }
 
-    /**
-     * {@inheritDoc}
-     * @see DBHelper_BaseCollection::getRecordProperties()
-     */
-    public function getRecordProperties() : array
-    {
-        return array();
-    }
-    
     public function addInfo(string $message, string $category='', ?Application_User $user=null) : Application_Messagelogs_Log
     {
         return $this->logMessage(self::MESSAGELOG_INFORMATION, $message, $category, $user);

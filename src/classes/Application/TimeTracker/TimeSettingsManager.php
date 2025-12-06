@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Application\TimeTracker;
 
 use Application\AppFactory;
-use Application\MarkdownRenderer;
 use Application\TimeTracker\Admin\TimeUIManager;
 use Application_Formable;
 use Application_Formable_RecordSettings_Extended;
@@ -14,23 +13,23 @@ use Application_Formable_RecordSettings_ValueSet;
 use AppUtils\DateTimeHelper\DaytimeStringInfo;
 use AppUtils\DateTimeHelper\DurationStringInfo;
 use AppUtils\DateTimeHelper\TimeDurationCalculator;
-use AppUtils\Microtime;
 use Closure;
-use DBHelper_BaseRecord;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use HTML_QuickForm2_Node;
 use Application\TimeTracker\Types\TimeEntryTypes;
 use HTML_QuickForm2_Rule_Callback;
 
 class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
 {
-    public const SETTING_DATE = 'date';
-    public const SETTING_START_TIME = 'start';
-    public const SETTING_END_TIME = 'end';
-    public const SETTING_TYPE = 'type';
-    public const SETTING_DURATION = 'duration';
-    public const SETTING_TICKET = 'ticket';
-    public const SETTING_COMMENTS = 'comments';
-    public const FORMAT_PLACEHOLDER = '$format';
+    public const string SETTING_DATE = 'date';
+    public const string SETTING_START_TIME = 'start';
+    public const string SETTING_END_TIME = 'end';
+    public const string SETTING_TYPE = 'type';
+    public const string SETTING_DURATION = 'duration';
+    public const string SETTING_TICKET = 'ticket';
+    public const string SETTING_COMMENTS = 'comments';
+    public const string FORMAT_PLACEHOLDER = '$format';
+    public const string SETTING_TICKET_URL = 'ticketURL';
 
     public function __construct(Application_Formable $formable, ?TimeEntry $record = null)
     {
@@ -39,7 +38,7 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $this->setDefaultsUseStorageNames(true);
     }
 
-    protected function processPostCreateSettings(DBHelper_BaseRecord $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
+    protected function processPostCreateSettings(DBHelperRecordInterface $record, Application_Formable_RecordSettings_ValueSet $recordData, Application_Formable_RecordSettings_ValueSet $internalValues): void
     {
     }
 
@@ -96,6 +95,10 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $group->registerSetting(self::SETTING_TICKET)
             ->setStorageName(TimeTrackerCollection::COL_TICKET)
             ->setCallback(Closure::fromCallable(array($this, 'injectTicket')));
+
+        $group->registerSetting(self::SETTING_TICKET_URL)
+            ->setStorageName(TimeTrackerCollection::COL_TICKET_URL)
+            ->setCallback(Closure::fromCallable(array($this, 'injectTicketURL')));
 
         $group->registerSetting(self::SETTING_COMMENTS)
             ->setStorageName(TimeTrackerCollection::COL_COMMENTS)
@@ -272,12 +275,17 @@ class TimeSettingsManager extends Application_Formable_RecordSettings_Extended
         $el = $this->addElementText($setting->getName(), t('Ticket'));
         $el->addFilterTrim();
         $el->addClass('input-xxlarge');
-        $el->setComment(sb()
-            ->t('The related ticket reference, if any.')
-            ->nl()
-            ->note()
-            ->t('You can use %1$s syntax to add a link.', MarkdownRenderer::getName())
-        );
+        $el->setComment(t('The related ticket number, if any.'));
+
+        return $el;
+    }
+
+    private function injectTicketURL(Application_Formable_RecordSettings_Setting $setting) : HTML_QuickForm2_Node
+    {
+        $el = $this->addElementText($setting->getName(), t('Ticket link'));
+        $el->addFilterTrim();
+        $el->addClass('input-xxlarge');
+        $el->setComment(t('Link to the ticket in the ticketing system, if relevant.'));
 
         return $el;
     }

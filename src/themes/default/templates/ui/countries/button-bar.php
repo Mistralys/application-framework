@@ -31,7 +31,7 @@
     
     $this->ui->addStylesheet('ui-countries-buttonbar.css');
     
-    $hasSubtitle = $this->driver->getActiveScreen()->getRenderer()->hasSubtitle();
+    $hasSubtitle = $this->driver->getActiveScreen()?->getRenderer()->hasSubtitle() ?? false;
     
 ?>
 <div class="countries-buttonbar <?php if($hasSubtitle) { echo 'with-subtitle'; } ?>">

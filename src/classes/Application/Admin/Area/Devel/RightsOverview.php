@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
+use Application\Admin\Area\BaseMode;
 use Application\Development\DevScreenRights;
-use Application\Traits\AllowableMigrationTrait;
 
-abstract class Application_Admin_Area_Devel_RightsOverview extends Application_Admin_Area_Mode
+abstract class Application_Admin_Area_Devel_RightsOverview extends BaseMode
 {
-    use AllowableMigrationTrait;
-
-    public const URL_NAME = 'rightsoverview';
+    public const string URL_NAME = 'rightsoverview';
 
     public function getURLName() : string
     {

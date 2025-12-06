@@ -46,6 +46,11 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
         parent::__construct($page);
     }
 
+    public function getTemplateID(): string
+    {
+        return $this->templateID;
+    }
+
     public static function create(string $id, ?UI_Page $page=null) : UI_Page_Navigation
     {
         if($page === null) {
@@ -125,7 +130,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
     }
 
     /**
-     * @param string $templateID
+     * @param string|class-string<UI_Page_Template> $templateID
      * @return $this
      */
     public function setTemplateID(string $templateID) : self
@@ -151,7 +156,7 @@ class UI_Page_Navigation extends UI_Renderable implements ClassableInterface
         
         $this->addClass('nav');
         
-        $template = $this->page->createTemplate($this->templateID);
+        $template = $this->page->createTemplate($this->getTemplateID());
         $template->setVar('navigation', $this);
 
         return $template->render().$this->append;

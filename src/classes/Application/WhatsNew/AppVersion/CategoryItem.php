@@ -1,10 +1,7 @@
 <?php
 /**
- * File containing the class {@see \Application\WhatsNew\AppVersion\CategoryItem}.
- *
  * @package Application
  * @subpackage WhatsNew
- * @see \Application\WhatsNew\AppVersion\CategoryItem
  */
 
 declare(strict_types=1);
@@ -185,7 +182,7 @@ class CategoryItem
 
     protected function renderImages() : void
     {
-        if (strpos($this->text, '{') === false)
+        if (!str_contains($this->text, '{'))
         {
             return;
         }

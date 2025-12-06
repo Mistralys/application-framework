@@ -42,7 +42,7 @@ class ResponseError
     }
 
     /**
-     * @return array<mixed>
+     * @return array<int|string,mixed>
      */
     public function getData(): array
     {

@@ -1,13 +1,13 @@
 <?php
 /**
- * File containing the {@see Application_Formable_RecordSelector} class.
- * 
  * @package Application
  * @subpackage Formable
- * @see Application_Formable_RecordSelector
  */
 
 declare(strict_types=1);
+
+use DBHelper\BaseCollection\DBHelperCollectionInterface;
+use DBHelper\DBHelperFilterCriteriaInterface;
 
 /**
  * Base class for select elements that allow choosing
@@ -22,8 +22,8 @@ declare(strict_types=1);
  */
 abstract class Application_Formable_RecordSelector extends Application_Formable_Selector
 {
-    protected DBHelper_BaseCollection $collection;
-    protected DBHelper_BaseFilterCriteria $filters;
+    protected DBHelperCollectionInterface $collection;
+    protected DBHelperFilterCriteriaInterface $filters;
     
     public function __construct(Application_Interfaces_Formable $formable)
     {
@@ -39,8 +39,8 @@ abstract class Application_Formable_RecordSelector extends Application_Formable_
     {
 
     }
-    
-    abstract public function createCollection();
+
+    abstract public function createCollection() : DBHelperCollectionInterface;
     
     abstract protected function configureFilters() : void;
 
@@ -56,7 +56,7 @@ abstract class Application_Formable_RecordSelector extends Application_Formable_
         return $name; 
     }
 
-    public function getFilters() : DBHelper_BaseFilterCriteria
+    public function getFilters() : DBHelperFilterCriteriaInterface
     {
         return $this->filters;
     }

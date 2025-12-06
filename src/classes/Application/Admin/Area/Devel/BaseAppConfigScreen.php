@@ -172,6 +172,7 @@ abstract class BaseAppConfigScreen extends Application_Admin_Area_Mode
 
         $this->addConstant(t('Host'), BaseConfigRegistry::LDAP_HOST);
         $this->addConstant(t('Port'), BaseConfigRegistry::LDAP_PORT);
+        $this->addConstantBool(t('SSL enabled?'), BaseConfigRegistry::LDAP_SSL_ENABLED)->makeEnabledDisabled();
         $this->addConstant(t('User'), BaseConfigRegistry::LDAP_USERNAME);
         $this->addConstant(t('Base DN'), BaseConfigRegistry::LDAP_DN);
         $this->addConstant(t('Member suffix'), BaseConfigRegistry::LDAP_MEMBER_SUFFIX);

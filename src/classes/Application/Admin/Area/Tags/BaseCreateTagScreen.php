@@ -5,22 +5,28 @@ declare(strict_types=1);
 namespace Application\Area\Tags;
 
 use Application\AppFactory;
+use Application\Tags\Admin\TagScreenRights;
 use Application\Tags\TagRecord;
-use Application_Admin_Area_Mode_CollectionCreate;
-use Application_Formable_RecordSettings;
+use Application\Tags\TagSettingsManager;
 use Application\Tags\TagCollection;
 use AppUtils\ClassHelper;
-use DBHelper_BaseRecord;
+use DBHelper\Admin\Screens\Mode\BaseRecordCreateMode;
+use DBHelper\Interfaces\DBHelperRecordInterface;
 use UI;
 
-abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_CollectionCreate
+abstract class BaseCreateTagScreen extends BaseRecordCreateMode
 {
-    public const URL_NAME = 'create';
-    public const REQUEST_PARAM_PARENT_TAG = 'parent-tag';
+    public const string URL_NAME = 'create';
+    public const string REQUEST_PARAM_PARENT_TAG = 'parent-tag';
 
     public function getURLName(): string
     {
         return self::URL_NAME;
+    }
+
+    public function getRequiredRight(): string
+    {
+        return TagScreenRights::SCREEN_CREATE;
     }
 
     public function createCollection() : TagCollection
@@ -28,7 +34,7 @@ abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_Collectio
         return AppFactory::createTags();
     }
 
-    public function getSuccessMessage(DBHelper_BaseRecord $record): string
+    public function getSuccessMessage(DBHelperRecordInterface $record): string
     {
         return t(
             'The tag %1$s has been created successfully at %2$s.',
@@ -37,10 +43,7 @@ abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_Collectio
         );
     }
 
-    /**
-     * @return Application_Formable_RecordSettings|NULL
-     */
-    public function getSettingsManager(): ?Application_Formable_RecordSettings
+    public function getSettingsManager(): ?TagSettingsManager
     {
         return $this->createCollection()
             ->createSettingsManager($this, null)
@@ -55,7 +58,7 @@ abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_Collectio
         }
     }
 
-    public function getSuccessURL(DBHelper_BaseRecord $record): string
+    public function getSuccessURL(DBHelperRecordInterface $record): string
     {
         $parent = $this->resolveParentTag();
         if($parent !== null) {
@@ -85,11 +88,6 @@ abstract class BaseCreateTagScreen extends Application_Admin_Area_Mode_Collectio
     public function getBackOrCancelURL(): string
     {
         return $this->createCollection()->getAdminListURL();
-    }
-
-    public function isUserAllowed(): bool
-    {
-        return true;
     }
 
     public function getTitle(): string

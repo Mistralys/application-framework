@@ -3,10 +3,13 @@
 declare(strict_types=1);
 
 use Application\AppFactory;
+use AppLocalize\Localization\Country\CountryDE;
+use AppLocalize\Localization\Country\CountryGB;
+use AppLocalize\Localization\Country\CountryMX;
 
 class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
 {
-    public const URL_NAME = 'wizard';
+    public const string URL_NAME = 'wizard';
 
     protected function init() : void
     {
@@ -30,9 +33,9 @@ class TestDriver_Area_WizardTest_Wizard extends Application_Admin_Wizard
     }
 
     private array $requiredCountries = array(
-        'uk' => 'United Kingdom',
-        'de' => 'Germany',
-        'mx' => 'Mexico'
+        CountryGB::ISO_CODE => 'United Kingdom',
+        CountryDE::ISO_CODE => 'Germany',
+        CountryMX::ISO_CODE => 'Mexico'
     );
 
     private function createCountries() : void
