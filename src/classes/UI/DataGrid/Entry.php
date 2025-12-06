@@ -192,6 +192,13 @@ class UI_DataGrid_Entry implements ClassableInterface, ArrayAccess
     public function select(bool $select=true) : self
     {
         $this->selected = $select;
+
+        if($select) {
+            $this->addClass('active');
+        } else {
+            $this->removeClass('active');
+        }
+
         return $this;
     }
 
