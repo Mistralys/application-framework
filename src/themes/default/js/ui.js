@@ -571,7 +571,7 @@ var UI =
 			body.addClass('non-zoomable');
 		}
 
-		body.css('padding-top', $('#app-mainnav').height()+'px');
+		$('#content_area').css('padding-top', $('#app-mainnav').height()+'px');
 		
 		$('form').submit(function() {
 			UI.formSubmitting = true;
