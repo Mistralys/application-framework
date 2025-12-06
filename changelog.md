@@ -11,6 +11,8 @@
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
 - DBHelper: Added `addWhereColumnNOT_LIKE()` to the filter criteria.
+- UI: Lots of small fixes and improvements.
+- UI: The footer now always sticks to the bottom in short content pages.
 
 ## v6.1.1 - Renamer Performance
 - Renamer: Improved memory usage when processing large amounts of data.
