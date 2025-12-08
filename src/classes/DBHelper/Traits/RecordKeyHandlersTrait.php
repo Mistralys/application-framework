@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace DBHelper\Traits;
 
+use Application\AppFactory;
 use Application\Disposables\DisposableDisposedException;
+use Application_Users_User;
 use AppUtils\ConvertHelper;
 use AppUtils\Microtime;
 use DateTime;
@@ -86,6 +88,37 @@ trait RecordKeyHandlersTrait
                 $this->getIdentification()
             ),
             BaseRecordException::ERROR_RECORD_KEY_INVALID_MICROTIME
+        );
+    }
+
+    public function getRecordUserKey(string $name) : ?Application_Users_User
+    {
+        $userID = $this->getRecordIntKey($name);
+
+        $collection = AppFactory::createUsers();
+        if($userID > 0 && $collection->idExists($userID)) {
+            return $collection->getByID($userID);
+        }
+
+        return null;
+    }
+
+    public function requireRecordUserKey(string $name) : Application_Users_User
+    {
+        $user = $this->getRecordUserKey($name);
+
+        if($user !== null) {
+            return $user;
+        }
+
+        throw new BaseRecordException(
+            'No user available.',
+            sprintf(
+                'The record key [%s] does not contain a valid user ID in the record [%s].',
+                $name,
+                $this->getIdentification()
+            ),
+            BaseRecordException::ERROR_RECORD_KEY_INVALID_USER
         );
     }
 

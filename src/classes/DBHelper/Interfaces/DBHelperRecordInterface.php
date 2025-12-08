@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace DBHelper\Interfaces;
 
 use Application\Collection\IntegerCollectionItemInterface;
+use Application\Disposables\Attributes\DisposedAware;
 use Application\Disposables\DisposableDisposedException;
 use Application_EventHandler_EventableListener;
 use Application\Disposables\DisposableInterface;
+use Application_Users_User;
 use AppUtils\ConvertHelper_Exception;
 use AppUtils\Microtime;
 use DateTime;
@@ -70,6 +72,10 @@ interface DBHelperRecordInterface extends IntegerCollectionItemInterface, Dispos
      * @throws BaseRecordException
      */
     public function requireRecordMicrotimeKey(string $name) : Microtime;
+
+    public function getRecordUserKey(string $name) : ?Application_Users_User;
+
+    public function requireRecordUserKey(string $name) : Application_Users_User;
 
     /**
      * @return array<string,mixed>

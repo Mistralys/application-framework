@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace DBHelper\Traits;
 
 use Application_EventHandler_EventableListener;
+use Application_Users_User;
 use AppUtils\Microtime;
 use DateTime;
 use DBHelper\BaseCollection\DBHelperCollectionInterface;
@@ -113,6 +114,16 @@ trait RecordDecoratorTrait
     public function getRecordBooleanKey(string $name, bool $default = false): bool
     {
         return $this->getDecoratedRecord()->getRecordBooleanKey($name, $default);
+    }
+
+    public function getRecordUserKey(string $name) : ?Application_Users_User
+    {
+        return $this->getDecoratedRecord()->getRecordUserKey($name);
+    }
+
+    public function requireRecordUserKey(string $name) : Application_Users_User
+    {
+        return $this->getDecoratedRecord()->requireRecordUserKey($name);
     }
 
     public function recordKeyExists(string $name): bool
