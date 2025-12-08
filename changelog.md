@@ -11,6 +11,7 @@
 - FilterCriteria: Fixed a legacy callable causing a PHP error.
 - DBHelper: Fixed `getByRequest()` causing a type error with null values.
 - DBHelper: Added `addWhereColumnNOT_LIKE()` to the filter criteria.
+- DBHelper: Added `getRecordUserKey()` and `requireRecordUserKey()`.
 - UI: Lots of small fixes and improvements.
 - UI: The footer now always sticks to the bottom in short content pages.
 - Core: Started adding an agent guide for common practices.
