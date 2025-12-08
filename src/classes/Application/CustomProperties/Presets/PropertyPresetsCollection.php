@@ -26,7 +26,7 @@ use DBHelper_BaseCollection;
  * @subpackage Custom properties
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  *
- * @method PropertyPresetRecord getByID($presetID)
+ * @method PropertyPresetRecord getByID(int $presetID)
  * @method PropertyPresetRecord[] getAll()
  * @method PropertyFilterCriteria getFilterCriteria()
  * @method PropertyPresetRecord createNewRecord(array $data = array(), bool $silent = false)

@@ -244,10 +244,8 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         return $this->getRecordTypeName().'-datagrid';
     }
 
-    public function getByID($record_id) : DBHelperRecordInterface
+    public function getByID(int $record_id) : DBHelperRecordInterface
     {
-        $record_id = (int)$record_id;
-
         $this->requireNotDisposed('Get a record by its ID.');
 
         if(isset($this->records[$record_id])) {
@@ -359,6 +357,7 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         $where[$key] = $value;
 
         $query = sprintf(
+            /** @lang text */
             "SELECT
                 `%s`
             FROM
@@ -533,6 +532,13 @@ abstract class DBHelper_BaseCollection implements DBHelperCollectionInterface
         );
     }
 
+    /**
+     * @param array<string,mixed> $data
+     * @param bool $silent
+     * @param array<string,mixed> $options Available options:
+     *                     - {@see DBHelperCollectionInterface::OPTION_CUSTOM_RECORD_ID} : int - Use a custom record ID when creating the record.
+     * @return DBHelperRecordInterface
+     */
     public function createNewRecord(array $data=array(), bool $silent=false, array $options=array()) : DBHelperRecordInterface
     {
         $this->requireNotDisposed('Create a new record');

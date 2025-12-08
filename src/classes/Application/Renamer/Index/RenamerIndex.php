@@ -9,7 +9,7 @@ use DBHelper_BaseCollection;
 
 /**
  * @method RenamerRecord[] getAll()
- * @method RenamerRecord getByID($record_id)
+ * @method RenamerRecord getByID(int $record_id)
  */
 class RenamerIndex extends DBHelper_BaseCollection
 {

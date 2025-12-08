@@ -39,7 +39,7 @@ use DBHelper\Interfaces\DBHelperRecordInterface;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * 
  * @method Application_CustomProperties_Property[] getAll()
- * @method Application_CustomProperties_Property getByID($property_id)
+ * @method Application_CustomProperties_Property getByID(int $property_id)
  * @method Application_CustomProperties_Property createNewRecord(array $data=array(), bool $silent=false)
  */
 class Application_CustomProperties extends DBHelper_BaseCollection

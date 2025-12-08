@@ -27,7 +27,7 @@ use DBHelper\BaseCollection\BaseChildCollection;
  * @method APIKeyFilterCriteria getFilterCriteria()
  * @method APIKeyFilterSettings getFilterSettings()
  * @method APIKeyRecord[] getAll()
- * @method APIKeyRecord getByID($record_id)
+ * @method APIKeyRecord getByID(int $record_id)
  * @method APIKeyRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  */
 class APIKeysCollection extends BaseChildCollection

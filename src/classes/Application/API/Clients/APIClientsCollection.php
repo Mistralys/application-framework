@@ -25,7 +25,7 @@ use DBHelper_BaseCollection;
  * @method APIClientFilterCriteria getFilterCriteria()
  * @method APIClientFilterSettings getFilterSettings()
  * @method APIClientRecord[] getAll()
- * @method APIClientRecord getByID($record_id)
+ * @method APIClientRecord getByID(int $record_id)
  * @method APIClientRecord createNewRecord(array $data = array(), bool $silent = false, array $options = array())
  */
 class APIClientsCollection extends DBHelper_BaseCollection

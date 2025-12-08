@@ -138,16 +138,14 @@ class Application_Users extends DBHelper_BaseCollection
     }
 
     /**
-     * @param int|string $record_id
+     * @param int $record_id
      * @return Application_Users_User
      *
      * @throws ClassNotExistsException
      * @throws ClassNotImplementsException
      */
-    public function getByID($record_id) : Application_Users_User
+    public function getByID(int $record_id) : Application_Users_User
     {
-        $record_id = (int)$record_id;
-
         return ClassHelper::requireObjectInstanceOf(
             Application_Users_User::class,
             parent::getByID($record_id)

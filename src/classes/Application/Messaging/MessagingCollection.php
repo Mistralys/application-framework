@@ -80,13 +80,11 @@ class MessagingCollection extends DBHelper_BaseCollection
     /**
      * Retrieves a message by its ID.
      *
-     * @param int|string $record_id
+     * @param int $record_id
      * @return Application_Messaging_Message
      */
-    public function getByID($record_id): Application_Messaging_Message
+    public function getByID(int $record_id): Application_Messaging_Message
     {
-        $record_id = (int)$record_id;
-
         if (isset($this->messages[$record_id])) {
             return $this->messages[$record_id];
         }

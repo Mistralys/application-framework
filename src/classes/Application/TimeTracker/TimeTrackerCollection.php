@@ -21,7 +21,7 @@ use Application\TimeTracker\Admin\TrackerAdminURLs;
  * @subpackage Entries
  *
  * @method TimeEntry[] getAll()
- * @method TimeEntry getByID($record_id)
+ * @method TimeEntry getByID(int $record_id)
  * @method TimeFilterCriteria getFilterCriteria()
  * @method TimeFilterSettings getFilterSettings()
  * @method TimeEntry createNewRecord(array $data = array(), bool $silent = false, array $options = array())

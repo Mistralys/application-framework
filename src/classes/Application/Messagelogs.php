@@ -22,7 +22,7 @@ use DBHelper\BaseCollection\DBHelperCollectionInterface;
  * @author Sebastian Mordziol <s.mordziol@mistralys.eu>
  * 
  * @method Application_Messagelogs_FilterCriteria getFilterCriteria()
- * @method Application_Messagelogs_Log getByID($log_id)
+ * @method Application_Messagelogs_Log getByID(int $log_id)
  * @method Application_Messagelogs_FilterSettings getFilterSettings()
  * @method Application_Messagelogs_Log createNewRecord(array $data=array(), bool $silent=false)
  */

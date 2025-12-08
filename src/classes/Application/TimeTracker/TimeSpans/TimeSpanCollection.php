@@ -12,7 +12,7 @@ use DBHelper_BaseCollection;
  * @method TimeSpanFilterCriteria getFilterCriteria()
  * @method TimeSpanFilterSettings getFilterSettings()
  * @method TimeSpanRecord[] getAll()
- * @method TimeSpanRecord[] getByID($record_id)
+ * @method TimeSpanRecord[] getByID(int $record_id)
  */
 class TimeSpanCollection extends DBHelper_BaseCollection
 {
