@@ -14,6 +14,7 @@ use Application\API\Clients\APIClientsCollection;
 use Application\AppFactory\AppFactoryException;
 use Application\AppFactory\ClassCacheHandler;
 use Application\CacheControl\CacheManager;
+use Application\Campaigns\CampaignCollection;
 use Application\DeploymentRegistry\DeploymentRegistry;
 use Application\Driver\DevChangelog;
 use Application\Driver\DriverException;
@@ -199,6 +200,14 @@ class AppFactory
     public static function createUser() : Application_User
     {
         return Application::getUser();
+    }
+
+    public static function createCampaigns() : CampaignCollection
+    {
+        return ClassHelper::requireObjectInstanceOf(
+            CampaignCollection::class,
+            DBHelper::createCollection(CampaignCollection::class)
+        );
     }
 
     public function createDriverSettings() : DriverSettings
