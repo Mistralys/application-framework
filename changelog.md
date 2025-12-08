@@ -13,6 +13,7 @@
 - DBHelper: Added `addWhereColumnNOT_LIKE()` to the filter criteria.
 - UI: Lots of small fixes and improvements.
 - UI: The footer now always sticks to the bottom in short content pages.
+- Core: Started adding an agent guide for common practices.
 
 ## v6.1.1 - Renamer Performance
 - Renamer: Improved memory usage when processing large amounts of data.
