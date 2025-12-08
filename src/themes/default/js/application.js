@@ -210,20 +210,8 @@ var application =
         // make the sidebar sticky so it scrolls along with the user
         Sidebar.Start();
 
-        // we resize the layout once at startup, but after a short delay to
-        // allow for dynamic resizing on initialization to have happened before
-        // we do it.
-        this.timedAdjustLayout();
-
         // add tooltips where applicable
         this.tooltipify();
-
-        // when the content area is resized (which may happen on the clientside via
-        // scripts when content is added or when using accordeons and the like, we
-        // need to update the layout so the sticky sidebar behaves as intended.
-        $('#content').resize(function () {
-            application.adjustLayout();
-        });
 
         // avoid the bootstrap menus to close when clicking in a form in the menu
         // for this, the <li> with the form elements needs to have the [.dropdown-form]
@@ -264,18 +252,6 @@ var application =
     	UI.MakeTooltip('[data-toggle="tooltip"]');
         UI.MakeTooltip('acronym[rel="tooltip"]');
         UI.MakeTooltip('i[rel="tooltip"]');
-    },
-
-    /**
-     * This should be called every time clientside script modify the height
-     * of the page: it adjusts the size of the sidebar to the height of the
-     * page itself to make sure it does not go out of bounds.
-     * @deprecated
-     */
-    adjustLayout: function () {
-    },
-
-    timedAdjustLayout: function () {
     },
 
     /**

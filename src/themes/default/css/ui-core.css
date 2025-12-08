@@ -9,13 +9,22 @@
     --box-spacing-xl: 35px;
 }
 
+HTML, BODY{
+    height: 100%;
+    margin: 0;
+}
+
 BODY {
-    padding-top: 3.5rem;
-    position: absolute; /* to make it fill the viewport even in smaller resolutions */
-    min-width: fit-content; /* to fix the body being smaller than the content in smaller resolutions */
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     color: var(--color-text);
     background: var(--color-bg-document);
+}
+
+#content_area{
+    flex: 1;
+    background: var(--color-bg-content);
 }
 
 .clickable {
@@ -76,6 +85,15 @@ BODY.dev-user .right-developer{
     text-shadow: 0 1px 0 var(--color-mainnav-text-shadow);
     border: solid 1px transparent;
     border-bottom: 0;
+}
+
+.navbar .nav li.dropdown.open>.dropdown-toggle .caret{
+    border-top-color: var(--color-mainnav-hover-text);
+    border-bottom-color: var(--color-mainnav-hover-text);
+}
+
+#app-mainnav .nav li.dropdown.open>.dropdown-toggle{
+    background: var(--color-mainnav-hover-bg);
 }
 
 .navbar-appswitcher {
@@ -163,7 +181,7 @@ UL.nav > LI{
 /* region: Navigation - Quicknav */
 
 BODY.with-quicknav{
-    padding-top: 5.5rem;
+    /*padding-top: 5.5rem;*/
 }
 
 #app-quicknav .nav > LI > A{
@@ -203,10 +221,6 @@ BODY.with-quicknav{
     width: 32px;
     height: 32px;
     background-position: center top;
-}
-
-#content_area {
-    background: var(--color-bg-content);
 }
 
 #content_frame {
@@ -357,21 +371,21 @@ DIV.log > CODE {
 }
 
 .hint-developer {
-    background: var(--color-hint-developer-bg);
+    background: var(--color-syshint-developer-bg);
     color: var(--color-text-inverted);
-    border: solid 1px var(--color-hint-border-developer);
+    border: solid 1px var(--color-syshint-developer-border);
 }
 
 .hint-system{
-    background: var(--color-hint-system-bg);
-    border: solid 1px var(--color-hint-border-system);
+    background: var(--color-syshint-default-bg);
+    border: solid 1px var(--color-syshint-default-border);
     color: var(--color-text-inverted);
 }
 
 .hint-success {
-    background: var(--color-hint-system-success);
+    background: var(--color-syshint-success-bg);
     color: var(--color-text-inverted);
-    border-color: var(--color-hint-border-success);
+    border-color: var(--color-syshint-success-border);
 }
 
 .help {
@@ -932,15 +946,15 @@ BODY.fontsize-bigger.non-zoomable {
     width: 90.9%;
 }
 
-#content_frame .nav-pills.subnav {
+.nav-pills.subnav {
     padding: 0;
-    border-top: solid 1px var(--color-pills-bg);
-    border-bottom: solid 1px var(--color-pills-bg);
-    background: var(--color-pills-bg);
+    border-top: solid 1px var(--color-pills-subnav-border);
+    border-bottom: solid 1px var(--color-pills-subnav-border);
+    background: var(--color-pills-subnav-bg);
     margin-bottom: 30px;
 }
 
-#content_frame .nav-pills.subnav > li > a {
+.nav-pills.subnav > li > a {
     border-radius: 0;
     padding-top: 12px;
     padding-bottom: 12px;
@@ -1015,6 +1029,18 @@ BODY.fontsize-bigger.non-zoomable {
 LI,
 UL.last-with-spacing > LI:last-child{
     padding-bottom: 0.2rem;
+}
+
+LI.dropdown-item.divider{
+    padding-bottom: 0;
+}
+
+.navbar .nav>li>.dropdown-menu:before{
+    border-bottom-color: var(--accent-menu-bg);
+}
+
+.navbar .nav>li>.dropdown-menu:after{
+    border-bottom-color: var(--accent-menu-bg);
 }
 
 UL > LI:last-child{
