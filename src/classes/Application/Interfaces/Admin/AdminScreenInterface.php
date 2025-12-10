@@ -20,6 +20,7 @@ use Application_EventHandler_EventableListener;
 use Application_Interfaces_Eventable;
 use Application_Interfaces_Formable;
 use Application_Interfaces_Loggable;
+use AppUtils\Interfaces\StringPrimaryRecordInterface;
 use UI;
 use UI\AdminURLs\AdminURLInterface;
 use UI\Page\Navigation\QuickNavigation;
@@ -56,7 +57,8 @@ interface AdminScreenInterface
     Application_Interfaces_Loggable,
     Application_Interfaces_Eventable,
     ScreenAccessInterface,
-    AllowableInterface
+    AllowableInterface,
+    StringPrimaryRecordInterface
 {
     public const ERROR_SIDEBAR_NOT_AVAILABLE_YET = 96701;
     public const ERROR_MISSING_URL_PARAMETER = 96702;
