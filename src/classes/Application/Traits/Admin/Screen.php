@@ -17,6 +17,7 @@ use Application\Admin\Screens\Events\ContentRenderedEvent;
 use Application\Admin\Screens\Events\SidebarHandledEvent;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AppUtils\ClassHelper;
+use AppUtils\ClassHelper\BaseClassHelperException;
 use AppUtils\ConvertHelper;
 use AppUtils\FileHelper;
 use AppUtils\FileHelper\FileInfo;
@@ -978,22 +979,26 @@ trait Application_Traits_Admin_Screen
     }
 
     /**
-     * @param string $id
+     * @param string|class-string<AdminScreenInterface> $idOrClass
      * @param bool $adminMode
      * @return AdminScreenInterface
      * @throws Application_Exception
      */
-    protected function createSubscreen(string $id, bool $adminMode) : AdminScreenInterface
+    protected function createSubscreen(string $idOrClass, bool $adminMode) : AdminScreenInterface
     {
-        $screenID = $this->requireValidSubscreenID($id);
-        $key = $screenID.'.'.ConvertHelper::boolStrict2string($adminMode);
+        if(class_exists($idOrClass)) {
+            $screenID = getClassTypeName($idOrClass);
+            $key = $idOrClass.'.'.ConvertHelper::boolStrict2string($adminMode);
+        } else {
+            $screenID = $this->requireValidSubscreenID($idOrClass);
+            $key = $screenID . '.' . ConvertHelper::boolStrict2string($adminMode);
+        }
         
-        if(isset($this->subscreens[$key]))
-        {
+        if(isset($this->subscreens[$key])) {
             return $this->subscreens[$key];
         }
 
-        $this->log(sprintf('Creating child screen [%s] with class ID [%s].', $id, $screenID));
+        $this->log(sprintf('Creating child screen [%s] with class ID [%s].', $idOrClass, $screenID));
 
         $screen = $this->createSubscreenInstance($screenID, $adminMode);
         $this->subscreens[$key] = $screen;
@@ -1001,18 +1006,29 @@ trait Application_Traits_Admin_Screen
         return $screen;
     }
 
-    protected function createSubscreenInstance(string $screenID, bool $adminMode) : AdminScreenInterface
+    /**
+     * @param string|class-string<AdminScreenInterface> $idOrClass
+     * @param bool $adminMode
+     * @return AdminScreenInterface
+     *
+     * @throws BaseClassHelperException
+     */
+    protected function createSubscreenInstance(string $idOrClass, bool $adminMode) : AdminScreenInterface
     {
-        $class = ClassHelper::requireResolvedClass(sprintf(
-            '%s_%s',
-            get_class($this),
-            $screenID
-        ));
-
         $previousMode = $this->adminMode;
 
         if(!$adminMode && $this->adminMode) {
             $this->adminMode = false;
+        }
+
+        if(class_exists($idOrClass)) {
+            $class = $idOrClass;
+        } else {
+            $class = ClassHelper::requireResolvedClass(sprintf(
+                '%s_%s',
+                get_class($this),
+                $idOrClass
+            ));
         }
 
         $instance = ClassHelper::requireObjectInstanceOf(
@@ -1022,7 +1038,7 @@ trait Application_Traits_Admin_Screen
 
         $this->log(
             'Created child screen with class ID [%s] and URL name [%s].',
-            $screenID,
+            $idOrClass,
             $instance->getURLName()
         );
 
