@@ -9,8 +9,11 @@ declare(strict_types=1);
 namespace Application\Composer;
 
 use Application;
+use Application\Admin\Index\AdminScreenIndexer;
+use Application\API\APIManager;
 use Application\AppFactory;
 use Application\AppFactory\ClassCacheHandler;
+use Application\ApplicationException;
 use Application\Bootstrap\ComposerScriptBootstrap;
 use Application\CacheControl\CacheManager;
 use Application_Bootstrap;
@@ -35,6 +38,7 @@ class ComposerScripts
 
         self::clearCaches();
         self::apiMethodIndex();
+        self::indexAdminScreens();
     }
 
     public static function clearCaches() : void
@@ -58,13 +62,30 @@ class ComposerScripts
         self::doApiMethodIndex();
     }
 
+    public static function indexAdminScreens() : void
+    {
+        self::init();
+
+        self::doIndexAdminScreens();
+    }
+
+    private static function doIndexAdminScreens() : void
+    {
+        echo 'Indexing admin screens...'.PHP_EOL;
+
+        $indexer = new AdminScreenIndexer(AppFactory::createDriver());
+        $indexer->index();
+
+        echo '- Found '.$indexer->countScreens().' screens.'.PHP_EOL;
+    }
+
     public static function doApiMethodIndex() : void
     {
         self::doClearCaches();
 
         AppFactory::createLogger()->logModeEcho();
 
-        Application\API\APIManager::getInstance()->getMethodIndex()->build();
+        APIManager::getInstance()->getMethodIndex()->build();
     }
 
     private static bool $initialized = false;
@@ -94,7 +115,7 @@ class ComposerScripts
 
         $file = FileInfo::factory($bootstrap);
         if(!$file->exists()) {
-            throw new Application_Exception(
+            throw new ApplicationException(
                 'The bootstrap file could not be found at: '.$bootstrap,
                 '',
                 self::ERROR_BOOTSTRAP_NOT_FOUND
