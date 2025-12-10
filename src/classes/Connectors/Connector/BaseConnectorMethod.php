@@ -42,8 +42,7 @@ abstract class BaseConnectorMethod implements Application_Interfaces_Loggable
      */
     public function getID(): string
     {
-        $tokens = explode('_', get_class($this));
-        return array_pop($tokens);
+        return getClassTypeName($this);
     }
 
     /**
