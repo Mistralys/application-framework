@@ -29,7 +29,7 @@ abstract class BaseReadArticleScreen extends BaseSubmode
 
     public function getTitle(): string
     {
-        return $this->article->getLabel();
+        return t('News Article');
     }
 
     public function getRequiredRight(): string
