@@ -19,4 +19,5 @@ interface ScreenDataInterface
     public const string KEY_ROOT_FLAT = 'flat';
     public const string KEY_ROOT_TREE = 'tree';
     public const string KEY_SCREEN_SUBSCREEN_CLASSES = 'subscreenClasses';
+    public const string KEY_SCREEN_SUBSCREENS = 'subscreens';
 }
