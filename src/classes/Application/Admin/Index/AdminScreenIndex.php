@@ -8,6 +8,7 @@ use Application;
 use Application\Interfaces\Admin\AdminScreenInterface;
 use AdminException;
 use AppUtils\ArrayDataCollection;
+use AppUtils\FileHelper\FolderInfo;
 use AppUtils\FileHelper\PHPFile;
 use UI\AdminURLs\AdminURLInterface;
 
@@ -160,5 +161,20 @@ class AdminScreenIndex
         }
 
         return $subject;
+    }
+
+    public static function getAdminScreensFolder() : FolderInfo
+    {
+        return FolderInfo::factory(__DIR__.'/Screens')->requireExists();
+    }
+
+    public function getTree() : array
+    {
+        return $this->tree;
+    }
+
+    public function countScreens() : int
+    {
+        return count($this->flat);
     }
 }
