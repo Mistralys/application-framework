@@ -162,9 +162,9 @@ class AdminScreenInfoCollector
     {
         $array = $this->toArray();
 
-        $array['subscreens'] = array();
+        $array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS] = array();
         foreach($this->subscreens as $subscreen) {
-            $array['subscreens'] = array_merge($array['subscreens'], $subscreen->toTreeArray());
+            $array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS] = array_merge($array[ScreenDataInterface::KEY_SCREEN_SUBSCREENS], $subscreen->toTreeArray());
         }
 
         return array(
