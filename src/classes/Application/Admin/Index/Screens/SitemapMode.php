@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Application\Admin\Index\Screens;
 
 use Application\Admin\Area\BaseMode;
+use Application\Admin\Index\AdminScreenIndex;
 use Application\Admin\Traits\DevelModeInterface;
 use Application\Admin\Traits\DevelModeTrait;
 use Application\Development\Admin\DevScreenRights;
+use Application\Themes\DefaultTemplate\Admin\SitemapTmpl;
+use UI_Themes_Theme_ContentRenderer;
 
 class SitemapMode extends BaseMode implements DevelModeInterface
 {
@@ -27,7 +30,7 @@ class SitemapMode extends BaseMode implements DevelModeInterface
 
     public function getTitle(): string
     {
-        return t('Sitemap');
+        return t('Application Sitemap');
     }
 
     public function getDevCategory(): string
@@ -50,12 +53,24 @@ class SitemapMode extends BaseMode implements DevelModeInterface
         return null;
     }
 
-    /*
-     * NOTICE: This non-MFA VPN setup will be discontinued on 31st December 2025.
-     * Please use the new profiles with the Suffix'MFA'.SELFADMINS: To be able to
-     * use the new Setup make sure you have a suitable up-to-date certificate via
-     * vpn.ionos.org and the updated vpn-profile'united-internet-ui.evpn.mfa.xml'
-     * aswell as an MFA token enrolled for SSO within you EIAM Account.If you have
-     * any questions, please contact Global IT Support or yout local IT-Service
-     */
+    protected function _renderContent() : UI_Themes_Theme_ContentRenderer
+    {
+        return $this->renderer
+            ->makeWithoutSidebar()
+            ->appendTemplateClass(SitemapTmpl::class);
+    }
+
+    protected function _handleHelp(): void
+    {
+        $this->renderer->setTitle($this->getTitle());
+
+        $this->renderer->setAbstract(sb()
+            ->t(
+                'This shows a tree of all administration screens available in the %1$s application.',
+                $this->driver->getAppNameShort()
+            )
+            ->nl()
+            ->t('There are a total of %1$d screens in the registry.', AdminScreenIndex::getInstance()->countScreens())
+        );
+    }
 }

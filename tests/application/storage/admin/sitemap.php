@@ -50,6 +50,7 @@ return array (
     'devel.renamer.results' => 'Application\\Renamer\\Admin\\Screens\\Submode\\ResultsSubmode',
     'devel.renamer.search' => 'Application\\Renamer\\Admin\\Screens\\Submode\\SearchSubmode',
     'devel.rightsoverview' => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
+    'devel.sitemap' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
     'devel.whatsneweditor' => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
     'devel.whatsneweditor.edit' => 'Application\\WhatsNew\\Admin\\Screens\\EditSubmode',
     'global' => 'TestDriver\\Area\\TimeTrackerScreen\\ListScreen\\GlobalListScreen',
@@ -166,6 +167,23 @@ return array (
       array (
       ),
     ),
+    'Application\\Admin\\Index\\Screens\\SitemapMode' => 
+    array (
+      'id' => 'SitemapMode',
+      'urlName' => 'sitemap',
+      'urlPath' => 'devel.sitemap',
+      'title' => 'Application Sitemap',
+      'navigationTitle' => 'Sitemap',
+      'requiredRight' => 'Developer',
+      'featureRights' => 
+      array (
+      ),
+      'class' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
+      'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Index/Screens',
+      'subscreenClasses' => 
+      array (
+      ),
+    ),
     'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode' => 
     array (
       'id' => 'AppSettingsDevelMode',
@@ -266,21 +284,22 @@ return array (
       'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
-        1 => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
-        2 => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
-        3 => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
-        4 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
-        5 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
-        6 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-        7 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-        8 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-        9 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        10 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-        11 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
-        12 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        13 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        14 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        0 => 'Application\\Admin\\Index\\Screens\\SitemapMode',
+        1 => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
+        2 => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
+        3 => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
+        4 => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
+        5 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
+        6 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
+        7 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
+        8 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
+        9 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
+        10 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
+        11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        12 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
+        13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
+        14 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        15 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
     ),
     'Application\\Development\\Admin\\Screens\\DevelOverviewMode' => 
@@ -2628,21 +2647,22 @@ return array (
       'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Development/Admin/Screens',
       'subscreenClasses' => 
       array (
-        0 => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
-        1 => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
-        2 => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
-        3 => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
-        4 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
-        5 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
-        6 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
-        7 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
-        8 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
-        9 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
-        10 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
-        11 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
-        12 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
-        13 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
-        14 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
+        0 => 'Application\\Admin\\Index\\Screens\\SitemapMode',
+        1 => 'Application\\AppSettings\\Admin\\Screens\\AppSettingsDevelMode',
+        2 => 'Application\\CacheControl\\Admin\\Screens\\CacheControlMode',
+        3 => 'Application\\DeploymentRegistry\\Admin\\Screens\\DeploymentHistoryMode',
+        4 => 'Application\\Development\\Admin\\Screens\\DatabaseDumpDevMode',
+        5 => 'Application\\Development\\Admin\\Screens\\DevelOverviewMode',
+        6 => 'Application\\Environments\\Admin\\Screens\\AppConfigMode',
+        7 => 'Application\\ErrorLog\\Admin\\Screens\\ErrorLogMode',
+        8 => 'Application\\Maintenance\\Admin\\Screens\\MaintenanceMode',
+        9 => 'Application\\Messagelogs\\Admin\\Screens\\MessageLogDevelMode',
+        10 => 'Application\\Renamer\\Admin\\Screens\\Mode\\RenamerMode',
+        11 => 'Application\\Sets\\Admin\\Screens\\ApplicationSetsMode',
+        12 => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
+        13 => 'Application\\WhatsNew\\Admin\\Screens\\WhatsNewEditorMode',
+        14 => 'UI\\Admin\\Screens\\AppInterfaceDevelMode',
+        15 => 'UI\\Admin\\Screens\\CSSGenDevelMode',
       ),
       'subscreens' => 
       array (
@@ -3171,6 +3191,26 @@ return array (
           ),
           'class' => 'Application\\Users\\Admin\\Screens\\Mode\\RightsOverviewDevelMode',
           'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Users/Admin/Screens/Mode',
+          'subscreenClasses' => 
+          array (
+          ),
+          'subscreens' => 
+          array (
+          ),
+        ),
+        'sitemap' => 
+        array (
+          'id' => 'SitemapMode',
+          'urlName' => 'sitemap',
+          'urlPath' => 'devel.sitemap',
+          'title' => 'Application Sitemap',
+          'navigationTitle' => 'Sitemap',
+          'requiredRight' => 'Developer',
+          'featureRights' => 
+          array (
+          ),
+          'class' => 'Application\\Admin\\Index\\Screens\\SitemapMode',
+          'path' => 'Users/smordziol/Webserver/libraries/application-framework/src/classes/Application/Admin/Index/Screens',
           'subscreenClasses' => 
           array (
           ),

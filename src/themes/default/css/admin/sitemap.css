@@ -1,0 +1,28 @@
+.depth-0 > LI > A{
+    font-weight: bold;
+}
+
+.depth-1{
+    margin-left: 1rem;
+    margin-bottom: 0;
+}
+
+.depth-2{
+    margin-left: 2rem;
+    margin-bottom: 0;
+}
+
+.depth-3{
+    margin-left: 3rem;
+    margin-bottom: 0;
+}
+
+.depth-4{
+    margin-left: 4rem;
+    margin-bottom: 0;
+}
+
+.sitemap-screens > LI > A{
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
