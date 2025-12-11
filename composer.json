@@ -56,6 +56,18 @@
       }
     },
     {
+      "type": "package",
+      "package": {
+        "name": "apereo/phpcas",
+        "version": "1.6.2",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/EsupPortail/phpCAS",
+          "reference": "master"
+        }
+      }
+    },
+    {
       "type": "vcs",
       "url": "https://github.com/zenorocha/clipboard.js.git"
     }
@@ -92,7 +104,7 @@
     "hybridauth/hybridauth": "^3.8.2",
     "league/commonmark": "^2.6.0",
     "zenorocha/clipboardjs": "v2.0.8",
-    "apereo/phpcas": ">=1.6.1",
+    "apereo/phpcas": ">=1.6.2",
     "roave/security-advisories": "dev-latest",
     "php": "^8.4",
     "ext-curl": "*",
